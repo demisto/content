@@ -32,16 +32,18 @@ The playbooks are also included in the "Playbook Recommendation".
 ## Playbooks
 
 The pack consists of three comprehensive playbooks tailored for handling common cloud security incidents
+
 ### 1. Cloud Token Theft
 
 The Cloud Token Theft playbook is designed to guide security analysts through the response process in cases of compromised cloud access tokens. These tokens are crucial for accessing cloud resources and are often targeted by attackers to gain unauthorized access.
 
-
 <~XSIAM>
+
 - [Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cloud-token-theft-response)
 </~XSIAM>
 
 <~XSOAR>
+
 - [Cortex XDR - Cloud Token Theft Response](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---x-cloud-token-theft-response)
 </~XSOAR>
 
@@ -50,10 +52,12 @@ The Cloud Token Theft playbook is designed to guide security analysts through th
 The Cryptojacking Response playbook assists security teams in detecting and mitigating cryptojacking incidents, where attackers illicitly use an organization's cloud resources to mine cryptocurrencies.
 
 <~XSIAM>
+
 - [Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/x-cloud-cryptomining)
 </~XSIAM>
 
 <~XSOAR>
+
 - [Cortex XDR - Cloud Cryptojacking](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-cryptomining)
 </~XSOAR>
 
@@ -62,18 +66,20 @@ The Cryptojacking Response playbook assists security teams in detecting and miti
 The IAM User Investigation playbook provides step-by-step instructions for investigating suspicious activities related to IAM (Identity and Access Management) users in the cloud environment. It aids in identifying potential account compromises and unauthorized access.
 
 <~XSIAM>
+
 - [Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cloud-iam-user-access-investigation)
 </~XSIAM>
 
 <~XSOAR>
+
 - [Cortex XDR - Cloud IAM User Access Investigation](https://xsoar.pan.dev/docs/reference/playbooks/cortex-xdr---cloud-iam-user-access-investigation)
 </~XSOAR>
 
 ### Investigative Playbooks
 
-* [Cloud Response - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-response---generic)
-* [Cloud Threat Hunting - Persistence](https://xsoar.pan.dev/docs/reference/playbooks/cloud-threat-hunting---persistence)
-* [Cloud Enrichment - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-enrichment---generic)
+- [Cloud Response - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-response---generic)
+- [Cloud Threat Hunting - Persistence](https://xsoar.pan.dev/docs/reference/playbooks/cloud-threat-hunting---persistence)
+- [Cloud Enrichment - Generic](https://xsoar.pan.dev/docs/reference/playbooks/cloud-enrichment---generic)
 
 ## How to Use the Playbooks
 

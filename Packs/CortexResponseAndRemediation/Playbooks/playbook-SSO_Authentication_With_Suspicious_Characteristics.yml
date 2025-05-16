@@ -865,13 +865,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
+    taskid: 5838e1c9-cafe-4588-b1f8-91f18d903503
     type: condition
     task:
-      id: 10ecbe66-7ca4-4080-89bb-d5af2ae0c4d0
-      description: ""
+      id: 5838e1c9-cafe-4588-b1f8-91f18d903503
       version: -1
       name: Check for suspicious evidence
+      description: ""
       type: condition
       iscommand: false
       brand: ""
@@ -884,14 +884,26 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEqualString
+      - - operator: isNotEmpty
           left:
             value:
-              simple: OktaLogs
+              complex:
+                root: OktaLogs
+                filters:
+                - - operator: isNotEqualString
+                    left:
+                      value:
+                        simple: OktaLogs
+                      iscontext: true
+                    right:
+                      value:
+                        simple: No logs found
+                - - operator: isNotEmpty
+                    left:
+                      value:
+                        simple: OktaLogs
+                      iscontext: true
             iscontext: true
-          right:
-            value:
-              simple: No logs found
           ignorecase: true
         - operator: greaterThanOrEqual
           left:
@@ -962,6 +974,15 @@ tasks:
           right:
             value:
               simple: '"TOR_PROXY"'
+          ignorecase: true
+        - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyUser.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: HIGH
           ignorecase: true
     continueonerrortype: ""
     view: |-

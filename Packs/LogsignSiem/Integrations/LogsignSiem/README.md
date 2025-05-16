@@ -4,7 +4,6 @@ This integration was integrated and tested with version 4.6.x of Logsign SIEM
 
 ## Configure Logsign SIEM in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. https://192.168.0.1) | Logsign SIEM API URL | True |
@@ -17,29 +16,31 @@ This integration was integrated and tested with version 4.6.x of Logsign SIEM
 | Max Fetch | Maximum number of incidents per fetch \(Recommended less than 200\) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### logsign-fetch-incidents
+
 ***
 Gets Incidents from Logsign SIEM
-
 
 #### Base Command
 
 `logsign-fetch-incidents`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| last_run | Last Run Fomat: '%Y-%m-%dT%H:%M:%SZ'. Possible values are: . | Required | 
-| query | Lucene query support | Optional | 
-
+| last_run | Last Run Fomat: '%Y-%m-%dT%H:%M:%SZ'. Possible values are: . | Required |
+| query | Lucene query support | Optional |
 
 #### Context Output
 
 | **Output Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Logsign.Incidents.Severity.Name | String | Incident Severity | 
+| Logsign.Incidents.Severity.Name | String | Incident Severity |
 | Logsign.Incidents.Time.Generated | date | Time Generation of incident |
 | Logsign.Incidents.EventMap.Context | String | Context of Event |
 | Logsign.Incidents.Event.Category | String | Category of triggered event |
@@ -53,8 +54,6 @@ Gets Incidents from Logsign SIEM
 | Logsign.Incidents.Alert.AlertUID | Number | ID of Incident |
 | Logsign.Incidents.Alert.TriggerEventID | Number | Trigger Event ID |
 | Logsign.Incidents.EventSource.HostName | String | The eventsource hostname that are associated with the incident |
-
-
 
 #### Command Example
 
@@ -203,34 +202,35 @@ Gets Incidents from Logsign SIEM
 ![Logsign-FetchIncident-HumanReadable-Data](../../doc_files/logsign-fetch-inc-HR.jpg)
 
 ### logsign-get-columns-query
+
 ***
 Gets column values based on your lucene query
-
 
 #### Base Command
 
 `logsign-get-columns-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query Description. | Required | 
-| grouped_column | Group Column . | Required | 
-| criteria | Criteria Value. Possible values are: unique,  value. | Required | 
-| time_frame | Time Frame (e.g 1 hour). | Required | 
-
+| query | Query Description. | Required |
+| grouped_column | Group Column . | Required |
+| criteria | Criteria Value. Possible values are: unique,  value. | Required |
+| time_frame | Time Frame (e.g 1 hour). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogsignSiem.Columns | Unknown | Column list returned as the result of the query | 
-
+| LogsignSiem.Columns | Unknown | Column list returned as the result of the query |
 
 #### Command Example
+
 ```!logsign-get-columns-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"```
 
 #### Context Example
+
 ```json
 {
     "Logsign SIEM": {
@@ -250,41 +250,41 @@ Gets column values based on your lucene query
 #### Human Readable Output
 
 >### Results
+>
 >|columns|
 >|---|
 >|192.168.1.35,<br/>192.168.1.17,<br/>192.168.1.18,<br/>192.168.1.5,<br/>192.168.1.93|
 
-
-
 ### logsign-get-count-query
+
 ***
 Gets count of column values.
-
 
 #### Base Command
 
 `logsign-get-count-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query. | Required | 
-| grouped_column | Grouped Column. | Required | 
-| criteria | Criteria Value. Possible values are: unique,  value. | Required | 
-| time_frame | Time Frame. | Required | 
-
+| query | Query. | Required |
+| grouped_column | Grouped Column. | Required |
+| criteria | Criteria Value. Possible values are: unique,  value. | Required |
+| time_frame | Time Frame. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogsignSiem.Count | Number | Count number returned as the result of the query | 
-
+| LogsignSiem.Count | Number | Count number returned as the result of the query |
 
 #### Command Example
+
 ```!logsign-get-count-query criteria="value" grouped_column="Source.IP" query="*" time_frame="1 day"```
 
 #### Context Example
+
 ```json
 {
     "Logsign SIEM": {
@@ -298,6 +298,7 @@ Gets count of column values.
 #### Human Readable Output
 
 >### Results
+>
 >|count|
 >|---|
 >| 785554 |

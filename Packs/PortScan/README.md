@@ -2,14 +2,13 @@ Port scanning is a reconnaissance method often used by attackers when gathering 
 
 This pack helps you speed response by providing the necessary configuration and checks for correctly responding to port scans originating outside or within the network, and takes appropriate steps to quickly contain malicious events.
 
-
 ##### What does this pack do?
+
 - Gathers information about IPs and enriches hostnames associated with the port scan.
 - Identifies critical assets involved in the incident, and escalates the incident accordingly.
 - Identifies malware associated with internal network scans, hunts instances of the malware across the organization and blocks it.
 - Pivots from attacking IPs to find hosted domains and block them to prevent further malicious activity from the same source.
 - Blocks ports upon approval and isolates infected hosts.
-
 
 As part of this pack, you will also get out-of-the-box incident fields, layouts and playbooks for port scan investigations. All of these are easily customizable to suit the needs of your organization.
 

@@ -1,9 +1,9 @@
-#Qualys FIM: File Integrity Monitoring
+# Qualys FIM: File Integrity Monitoring
 
 Log and track file changes across global IT systems.
 This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
-## Configure qualys_fim in Cortex
 
+## Configure qualys_fim in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -19,42 +19,45 @@ This integration was integrated and tested with version 2.6.0.0-23 of qualys_fim
 | Proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### qualys-fim-events-list
+
 ***
 Retrieve a list of all FIM events from the current user account.
-
 
 #### Base Command
 
 `qualys-fim-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
-| limit | The number of records to include. | Optional | 
-| incident_ids | Comma-separated list of incident IDs to be included while searching for events in incidents. | Optional | 
-| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional | 
-
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional |
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional |
+| limit | The number of records to include. | Optional |
+| incident_ids | Comma-separated list of incident IDs to be included while searching for events in incidents. | Optional |
+| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.Events.id | str | Event ID. | 
-| QualysFIM.Events.fullPath | str | Full path of the event. | 
-| QualysFIM.Events.dateTime | str | Date/time the event occurred.  | 
-| QualysFIM.Events.severity | int | Event severity. | 
-| QualysFIM.Events.agentId | str | Agent ID. | 
-
+| QualysFIM.Events.id | str | Event ID. |
+| QualysFIM.Events.fullPath | str | Full path of the event. |
+| QualysFIM.Events.dateTime | str | Date/time the event occurred.  |
+| QualysFIM.Events.severity | int | Event severity. |
+| QualysFIM.Events.agentId | str | Agent ID. |
 
 #### Command Example
+
 ```!qualys-fim-events-list limit=12 sort=least_recent filter=severity:4```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1034,7 +1037,8 @@ Retrieve a list of all FIM events from the current user account.
 
 #### Human Readable Output
 
->### Listed 12 Events:
+>### Listed 12 Events
+>
 >|id|severity|dateTime|agentId|fullPath|
 >|---|---|---|---|---|
 >| de361739-a082-3240-8459-786b8ed5fa3b | 4 | 2021-01-17 16:16:57 | 12345678 | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
@@ -1050,40 +1054,40 @@ Retrieve a list of all FIM events from the current user account.
 >| 5d6084f2-3a47-3c71-8131-ebd2f1d7c684 | 4 | 2021-01-17 16:18:20 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\COMPONENTS{b30b23f5-4b70-11e6-80e6-e41d2d18dfd0}.TxR.2.regtrans-ms |
 >| 2e84bdd4-5395-3549-a29f-548e3aca0e83 | 4 | 2021-01-17 16:18:46 | 12345678 | \Device\HarddiskVolume2\Windows\System32\config\SOFTWARE.LOG2 |
 
-
 ### qualys-fim-event-get
+
 ***
 Retrieve information about a given event, by event ID.
-
 
 #### Base Command
 
 `qualys-fim-event-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| event_id | ID of the event to retrieve information about. | Required | 
-
+| event_id | ID of the event to retrieve information about. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.Event.id | str | Event ID. | 
-| QualysFIM.Event.fullPath | str | Full path of the event. | 
-| QualysFIM.Event.dateTime | str | Date/time the event occurred.  | 
-| QualysFIM.Event.name | str | Event name. | 
-| QualysFIM.Event.severity | int | Event severity. | 
-| QualysFIM.Event.action | str | Event action. | 
-| QualysFIM.Event.incidentId | str | Event ID. | 
-| QualysFIM.Event.profiles | str | List of all monitoring profiles name. | 
-
+| QualysFIM.Event.id | str | Event ID. |
+| QualysFIM.Event.fullPath | str | Full path of the event. |
+| QualysFIM.Event.dateTime | str | Date/time the event occurred.  |
+| QualysFIM.Event.name | str | Event name. |
+| QualysFIM.Event.severity | int | Event severity. |
+| QualysFIM.Event.action | str | Event action. |
+| QualysFIM.Event.incidentId | str | Event ID. |
+| QualysFIM.Event.profiles | str | List of all monitoring profiles name. |
 
 #### Command Example
+
 ```!qualys-fim-event-get event_id=de361739-a082-3240-8459-786b8ed5fa3b```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1173,47 +1177,48 @@ Retrieve information about a given event, by event ID.
 
 #### Human Readable Output
 
->### Found Event:
+>### Found Event
+>
 >|name|action|id|severity|action|incidentId|profiles|type|dateTime|fullPath|
 >|---|---|---|---|---|---|---|---|---|---|
 >| Svc.log | Content | de361739-a082-3240-8459-786b8ed5fa3b | 4 | Content | 4710aa44-8d69-4c00-8013-737768cb54be | test_01 | File | 2021-01-17 16:16:57 | \Device\HarddiskVolume2\Windows\System32\LogFiles\Sum\Svc.log |
 
-
 ### qualys-fim-incidents-list
+
 ***
 Retrieve a list of all FIM incidents from the current user account.
-
 
 #### Base Command
 
 `qualys-fim-incidents-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
-| limit | The number of records to include. | Optional | 
-| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional | 
-| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional | 
-
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional |
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional |
+| limit | The number of records to include. | Optional |
+| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional |
+| sort | The method by which to sort the requested events. Possible values: "most_recent" and "least_recent". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.Incidents.id | str | Incident ID. | 
-| QualysFIM.Incidents.name | str | Incident name. | 
-| QualysFIM.Incidents.type | str | Incident type. | 
-| QualysFIM.Incidents.occurred | str | Indicates when the incident was created. | 
-| QualysFIM.Incidents.username | str | Name of the user who created this incident. | 
-| QualysFIM.Incidents.status | str | Incident status. | 
-
+| QualysFIM.Incidents.id | str | Incident ID. |
+| QualysFIM.Incidents.name | str | Incident name. |
+| QualysFIM.Incidents.type | str | Incident type. |
+| QualysFIM.Incidents.occurred | str | Indicates when the incident was created. |
+| QualysFIM.Incidents.username | str | Name of the user who created this incident. |
+| QualysFIM.Incidents.status | str | Incident status. |
 
 #### Command Example
+
 ```!qualys-fim-incidents-list sort=least_recent limit=15 attributes=name,status,id filter=status:closed```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1300,7 +1305,8 @@ Retrieve a list of all FIM incidents from the current user account.
 
 #### Human Readable Output
 
->### Listed 15 Incidents:
+>### Listed 15 Incidents
+>
 >|id|name|status|
 >|---|---|---|
 >| 4710aa44-8d69-4c00-8013-737768cb54be | Deletion of Log Files | CLOSED |
@@ -1319,44 +1325,44 @@ Retrieve a list of all FIM incidents from the current user account.
 >| b6997b4d-8451-438b-9333-0f1ec81b870c | test100 | CLOSED |
 >| a9be84fd-5a7f-45b1-9f69-b1507ab2b218 | wwww | CLOSED |
 
-
 ### qualys-fim-incidents-get-events
+
 ***
 Retrieve a list of the events logged under an incident.
-
 
 #### Base Command
 
 `qualys-fim-incidents-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | ID of the incident to retrieve the events for. | Required | 
-| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
-| limit | The number of records to include. | Optional | 
-| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional | 
-
+| incident_id | ID of the incident to retrieve the events for. | Required |
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional |
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional |
+| limit | The number of records to include. | Optional |
+| attributes | Comma-separated list of attributes to include in the response. By default, all attributes will be returned in the result, i.e., attributes="attributes=name,id". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.IncidentEvents.id | str | Event ID. | 
-| QualysFIM.IncidentEvents.name | str | Event name. | 
-| QualysFIM.IncidentEvents.severity | str | Event severity. | 
-| QualysFIM.IncidentEvents.type | str | Event type. | 
-| QualysFIM.IncidentEvents.occurred | str | Indicates when the event was created. | 
-| QualysFIM.IncidentEvents.username | str | Name of the user who created this incident. | 
-| QualysFIM.IncidentEvents.status | str | Incident status. | 
-| QualysFIM.IncidentEvents.action | str | Action that was taken that triggered the event creation. | 
-
+| QualysFIM.IncidentEvents.id | str | Event ID. |
+| QualysFIM.IncidentEvents.name | str | Event name. |
+| QualysFIM.IncidentEvents.severity | str | Event severity. |
+| QualysFIM.IncidentEvents.type | str | Event type. |
+| QualysFIM.IncidentEvents.occurred | str | Indicates when the event was created. |
+| QualysFIM.IncidentEvents.username | str | Name of the user who created this incident. |
+| QualysFIM.IncidentEvents.status | str | Incident status. |
+| QualysFIM.IncidentEvents.action | str | Action that was taken that triggered the event creation. |
 
 #### Command Example
+
 ```!qualys-fim-incidents-get-events incident_id=4710aa44-8d69-4c00-8013-737768cb54be limit=7 attributes=id,name,type page_number=2 filter=action:create```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1403,7 +1409,8 @@ Retrieve a list of the events logged under an incident.
 
 #### Human Readable Output
 
->### Listed 7 Events From Incident:
+>### Listed 7 Events From Incident
+>
 >|id|name|type|
 >|---|---|---|
 >| 85873770-2c46-3c1c-94f6-a1fd117ca504 | 8fe303d4743fc547b447af276bb19008 | File |
@@ -1414,43 +1421,43 @@ Retrieve a list of the events logged under an incident.
 >| 87399be0-69fe-3881-85a1-b01ce1288672 | EtwRTTerminal-Services-LSM-ApplicationLag-6812.etl | File |
 >| 0636da15-3c33-359f-9574-0bbc2d331e8a | SRUtmp.log | File |
 
-
 ### qualys-fim-incident-create
+
 ***
 Create a manual FIM incident of type "DEFAULT".
-
 
 #### Base Command
 
 `qualys-fim-incident-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| from_date | Date from which to start the event search. Example format: yyyy-mm-dd, 2021-01-01. | Optional | 
-| to_date | Date at which to stop the event search. Example format: yyyy-mm-dd, 2021-02-30. | Optional | 
-| filters | Filter the events list by providing a query using Qualys syntax. i.e., "dateTime : ['2021-01-01'..'2021-03-29']. When you use this argument it will overwrite the "from_date" and "to_date" arguments. If you don't use the filter, the query will include the events from the last 24 hours. Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| name | The name of the incident. Must be less than 128 characters. | Required | 
-| reviewers | Reviewers who will approve the incident. | Optional | 
-| comment | Comments for approval of the incident. | Optional | 
-
+| from_date | Date from which to start the event search. Example format: yyyy-mm-dd, 2021-01-01. | Optional |
+| to_date | Date at which to stop the event search. Example format: yyyy-mm-dd, 2021-02-30. | Optional |
+| filters | Filter the events list by providing a query using Qualys syntax. i.e., "dateTime : ['2021-01-01'..'2021-03-29']. When you use this argument it will overwrite the "from_date" and "to_date" arguments. If you don't use the filter, the query will include the events from the last 24 hours. Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional |
+| name | The name of the incident. Must be less than 128 characters. | Required |
+| reviewers | Reviewers who will approve the incident. | Optional |
+| comment | Comments for approval of the incident. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.CreatedIncident.id | str | Incident ID. | 
-| QualysFIM.CreatedIncident.name | str | Incident name. | 
-| QualysFIM.CreatedIncident.occurred | str | Indicates when the incident was created. | 
-| QualysFIM.CreatedIncident.username | str | Name of the user who created the incident. | 
-| QualysFIM.CreatedIncident.status | str | Incident status. | 
-| QualysFIM.CreatedIncident.reviewers | str | List of reviewers who will approve the incident. | 
-
+| QualysFIM.CreatedIncident.id | str | Incident ID. |
+| QualysFIM.CreatedIncident.name | str | Incident name. |
+| QualysFIM.CreatedIncident.occurred | str | Indicates when the incident was created. |
+| QualysFIM.CreatedIncident.username | str | Name of the user who created the incident. |
+| QualysFIM.CreatedIncident.status | str | Incident status. |
+| QualysFIM.CreatedIncident.reviewers | str | List of reviewers who will approve the incident. |
 
 #### Command Example
+
 ```!qualys-fim-incident-create name=testtest7 comment=new_incident filters="dateTime: ['2021-01-01'..'2021-02-15']"```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1481,51 +1488,52 @@ Create a manual FIM incident of type "DEFAULT".
 #### Human Readable Output
 
 >### Created New Incident: testtest7
+>
 >|id|name|reviewers|username|occurred|filters|approvalType|
 >|---|---|---|---|---|---|---|
 >| 5f9f5504-46eb-4a30-b022-fd0dba7758eb | testtest7 | useruser | Qmasters | 2021-02-16 09:52:48 | dateTime: ['2021-01-01'..'2021-02-15'] | MANUAL |
 
-
 ### qualys-fim-incident-approve
+
 ***
 Mark an existing FIM incident as approved.
-
 
 #### Base Command
 
 `qualys-fim-incident-approve`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| approval_status | The approval status of the incident. Possible values: "APPROVED", "POLICY_VIOLATION", "UNAPPROVED". | Required | 
-| change_type | Type of incidents. Possible values: "MANUAL", "AUTOMATED", "COMPROMISE", "OTHER". | Required | 
-| comment | Comments for the incidents. | Required | 
-| incident_id | incident ID to approve. | Required | 
-| disposition_category | The category of the incident created by the rule. Possible values: "PATCHING", "PRE_APPROVED_CHANGE_CONTROL", "CONFIGURATION_CHANGE", "HUMAN_ERROR", "DATA_CORRUPTION", "EMERGENCY_CHANGE", "CHANGE_CONTROL_VIOLATION", "GENERAL_HACKING", "MALWARE". | Required | 
-
+| approval_status | The approval status of the incident. Possible values: "APPROVED", "POLICY_VIOLATION", "UNAPPROVED". | Required |
+| change_type | Type of incidents. Possible values: "MANUAL", "AUTOMATED", "COMPROMISE", "OTHER". | Required |
+| comment | Comments for the incidents. | Required |
+| incident_id | incident ID to approve. | Required |
+| disposition_category | The category of the incident created by the rule. Possible values: "PATCHING", "PRE_APPROVED_CHANGE_CONTROL", "CONFIGURATION_CHANGE", "HUMAN_ERROR", "DATA_CORRUPTION", "EMERGENCY_CHANGE", "CHANGE_CONTROL_VIOLATION", "GENERAL_HACKING", "MALWARE". | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.ApprovedIncident.id | str | Incident ID. | 
-| QualysFIM.ApprovedIncident.name | str | Incident name. | 
-| QualysFIM.ApprovedIncident.type | str | Incident type. | 
-| QualysFIM.ApprovedIncident.filterFromDate | str | The date from which to filter the approved incident. | 
-| QualysFIM.ApprovedIncident.filterToDate | str | The date until when to filter the approved incident. | 
-| QualysFIM.ApprovedIncident.approvalDate | str | Approval date of the incident. | 
-| QualysFIM.ApprovedIncident.approvalStatus | str | Approval status of the incident. | 
-| QualysFIM.ApprovedIncident.comment | str | Comments for incidents created by the rule. | 
-| QualysFIM.ApprovedIncident.username | str | Name of the user who created this incident. | 
-| QualysFIM.ApprovedIncident.status | str | Incident status. | 
-| QualysFIM.ApprovedIncident.reviewers | str | List of reviewers who will approve the incident. | 
-
+| QualysFIM.ApprovedIncident.id | str | Incident ID. |
+| QualysFIM.ApprovedIncident.name | str | Incident name. |
+| QualysFIM.ApprovedIncident.type | str | Incident type. |
+| QualysFIM.ApprovedIncident.filterFromDate | str | The date from which to filter the approved incident. |
+| QualysFIM.ApprovedIncident.filterToDate | str | The date until when to filter the approved incident. |
+| QualysFIM.ApprovedIncident.approvalDate | str | Approval date of the incident. |
+| QualysFIM.ApprovedIncident.approvalStatus | str | Approval status of the incident. |
+| QualysFIM.ApprovedIncident.comment | str | Comments for incidents created by the rule. |
+| QualysFIM.ApprovedIncident.username | str | Name of the user who created this incident. |
+| QualysFIM.ApprovedIncident.status | str | Incident status. |
+| QualysFIM.ApprovedIncident.reviewers | str | List of reviewers who will approve the incident. |
 
 #### Command Example
+
 ```!qualys-fim-incident-approve incident_id=8af30349-bd07-4c0d-8469-58d9d7218ffa approval_status=APPROVED change_type=AUTOMATED comment=approved disposition_category=MALWARE```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1571,42 +1579,43 @@ Mark an existing FIM incident as approved.
 #### Human Readable Output
 
 >### Approved Incident: testtest
+>
 >|id|name|type|filterFromDate|filterToDate|filters|approvalDate|approvalStatus|approvalType|comment|createdByName|status|reviewers|dispositionCategory|changeType|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8af30349-bd07-4c0d-8469-58d9d7218ffa | testtest | DEFAULT | 2021-01-01 00:00:00 | 2021-02-15 00:00:00 | dateTime: ['2021-01-01'..'2021-02-15'] | 2021-02-16 09:52:49 | APPROVED | MANUAL | approved | Qmasters | CLOSED | useruser | MALWARE | AUTOMATED |
 
-
 ### qualys-fim-assets-list
+
 ***
 Retrieve a list of all FIM assets.
-
 
 #### Base Command
 
 `qualys-fim-assets-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attributes | The list of comma-separated attributes that you want to include in the response. By default, all attributes will be returned in the result. i.e: attributes="attributes=interfaces.hostname". | Optional | 
-| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional | 
-| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional | 
-| limit | The number of records to include. | Optional | 
-
+| attributes | The list of comma-separated attributes that you want to include in the response. By default, all attributes will be returned in the result. i.e: attributes="attributes=interfaces.hostname". | Optional |
+| filter | Filter the events list by providing a query using Qualys syntax. i.e., "id:ebe6c64a-8b0d-3401-858d-d57fb25860c7". Refer to the "How to Search" Qualys FIM guide for more information about Qualys syntax: https://qualysguard.qg2.apps.qualys.com/fim/help/search/language.htm. | Optional |
+| page_number | Page number (index) to list items from. The "limit" argument defines the page size (the number of items in a page). | Optional |
+| limit | The number of records to include. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| QualysFIM.Assets.hostname | str | Asset hostname. | 
-| QualysFIM.Assets.lastCheckedIn | str | Date the asset was last checked. | 
-| QualysFIM.Assets.created | str | Date the asset was created.  | 
-
+| QualysFIM.Assets.hostname | str | Asset hostname. |
+| QualysFIM.Assets.lastCheckedIn | str | Date the asset was last checked. |
+| QualysFIM.Assets.created | str | Date the asset was created.  |
 
 #### Command Example
+
 ```!qualys-fim-assets-list limit=3```
 
 #### Context Example
+
 ```json
 {
     "QualysFIM": {
@@ -1927,7 +1936,8 @@ Retrieve a list of all FIM assets.
 
 #### Human Readable Output
 
->### Listed 2 Assets:
+>### Listed 2 Assets
+>
 >|Hostname|Last Activity|Creation Time|Agent Version|Driver Version|Last Agent Update|Asset ID|
 >|---|---|---|---|---|---|---|
 >| Qmasters_desktop | 2021-02-16 08:18:39 | 2021-01-10 11:58:40 | 1.1.1.1 | 4.1.0.744 | 2021-02-16 09:31:25 | b1caea93-0d21-4343-801c-92009f036c79 |

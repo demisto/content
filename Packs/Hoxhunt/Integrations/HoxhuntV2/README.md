@@ -3,7 +3,6 @@ This integration was integrated and tested with version August 2024 of Hoxhunt.
 
 ## Configure Hoxhunt v2 in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | e.g. <https://api.hoxhunt.com/graphql-external> | True |
@@ -42,12 +41,11 @@ Gets the current user information from Hoxhunt.
 
 ```!hoxhunt-current-user-get```
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| HoxHunt.CurrentUser | string | Current User information from Hoxhunt. | 
+| HoxHunt.CurrentUser | string | Current User information from Hoxhunt. |
 
 ### hoxhunt-incident-threats-get
 
@@ -62,16 +60,16 @@ Gets threats from Hoxhunt.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident the threats will be from. | Required | 
-| sort | Sorting strategy to use when returning threats from API. Defaults to createdAt_DESC. See Hoxhunt API documentation for more information. | Optional | 
-| limit | Limit the amount of threats returned. Defaults to 50, maximum is 100. | Optional | 
-| filter | Filter string to use to pick only threats of interest. See Hoxhunt API documentation for more information. | Optional | 
+| incident_id | The ID of the Hoxhunt incident the threats will be from. | Required |
+| sort | Sorting strategy to use when returning threats from API. Defaults to createdAt_DESC. See Hoxhunt API documentation for more information. | Optional |
+| limit | Limit the amount of threats returned. Defaults to 50, maximum is 100. | Optional |
+| filter | Filter string to use to pick only threats of interest. See Hoxhunt API documentation for more information. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.Threats | string | Threats from Hoxhunt. | 
+| Hoxhunt.Threats | string | Threats from Hoxhunt. |
 
 ##### Command Example
 
@@ -90,19 +88,18 @@ Add Incident note.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident to which the note will be added. | Required | 
-| note | The text content of the note to add to the Hoxhunt incident. | Required | 
+| incident_id | The ID of the Hoxhunt incident to which the note will be added. | Required |
+| note | The text content of the note to add to the Hoxhunt incident. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.addIncidentNode | string | Add Incident note. | 
+| Hoxhunt.addIncidentNode | string | Add Incident note. |
 
 ##### Command Example
 
 ```!hoxhunt-incident-note-add incident_id="12345" note="Investigated and escalated to the SOC team."```
-
 
 ### hoxhunt-incident-threats-remove
 
@@ -117,18 +114,17 @@ Remove all threats that belong to an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident from which threats will be removed. | Required | 
+| incident_id | The ID of the Hoxhunt incident from which threats will be removed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.removeIncidentThreats | number | Returns number of removed threats. | 
+| Hoxhunt.removeIncidentThreats | number | Returns number of removed threats. |
 
 ##### Command Example
 
 ```!hoxhunt-incident-threats-remove incident_id="12345"```
-
 
 ### hoxhunt-incident-soc-feedback-send
 
@@ -143,20 +139,19 @@ Send feedback to reporters of incident about whether the reported email was safe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident for which SOC feedback will be sent. | Required | 
-| custom_message | A custom message to include with the SOC feedback. | Required | 
-| threat_feedback_reported_at_limit | Datetime limit. Accepts (&lt;number&gt; &lt;time unit&gt;), e.g "7 days", "one month" or a iso string (e.g. "2024-10-30T08:37:42.359Z") | Required | 
+| incident_id | The ID of the Hoxhunt incident for which SOC feedback will be sent. | Required |
+| custom_message | A custom message to include with the SOC feedback. | Required |
+| threat_feedback_reported_at_limit | Datetime limit. Accepts (&lt;number&gt; &lt;time unit&gt;), e.g "7 days", "one month" or a iso string (e.g. "2024-10-30T08:37:42.359Z") | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.sendIncidentSocFeedback | string | The reporter will be informed the incident has been resolved and that no further actions are required from them. | 
+| Hoxhunt.sendIncidentSocFeedback | string | The reporter will be informed the incident has been resolved and that no further actions are required from them. |
 
 ##### Command Example
 
 ```!hoxhunt-incident-soc-feedback-send incident_id="12345" custom_message="User reported a phishing email." threat_feedback_reported_at_limit="2024-09-01T00:00:00Z"```
-
 
 ### hoxhunt-incident-set-sensitive
 
@@ -171,19 +166,18 @@ Set incident to contain sensitive information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident to be marked as sensitive or not sensitive. | Required | 
-| is_sensitive | True or False Boolean for whether the incident contains sensitive information. Possible values are: TRUE, FALSE. | Required | 
+| incident_id | The ID of the Hoxhunt incident to be marked as sensitive or not sensitive. | Required |
+| is_sensitive | True or False Boolean for whether the incident contains sensitive information. Possible values are: TRUE, FALSE. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.setIncidentSensitive | string | Incident sensitivity information. | 
+| Hoxhunt.setIncidentSensitive | string | Incident sensitivity information. |
 
 ##### Command Example
 
 ```!hoxhunt-incident-set-sensitive incident_id="12345" is_sensitive=true```
-
 
 ### hoxhunt-incident-set-soc-classification
 
@@ -198,19 +192,18 @@ Set soc classification for an incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident to classify. | Required | 
-| classification | The SOC classification to apply to the incident. Possible values are: MALICIOUS, SPAM, SAFE. | Required | 
+| incident_id | The ID of the Hoxhunt incident to classify. | Required |
+| classification | The SOC classification to apply to the incident. Possible values are: MALICIOUS, SPAM, SAFE. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.setIncidentSocClassification | string | Incident SOC classification information. | 
+| Hoxhunt.setIncidentSocClassification | string | Incident SOC classification information. |
 
 ##### Command Example
 
 ```!hoxhunt-incident-set-soc-classification incident_id="12345" classification="Malware"```
-
 
 ### hoxhunt-incident-update-state
 
@@ -225,15 +218,14 @@ Updates Incident state.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| incident_id | The ID of the Hoxhunt incident to update. | Required | 
-| state | The new state of the incident. Possible values are: OPEN, RESOLVED. | Required | 
-
+| incident_id | The ID of the Hoxhunt incident to update. | Required |
+| state | The new state of the incident. Possible values are: OPEN, RESOLVED. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Hoxhunt.updateIncidentState | string | Incident state information. | 
+| Hoxhunt.updateIncidentState | string | Incident state information. |
 
 ##### Command Example
 
@@ -271,7 +263,6 @@ To set up the mirroring:
     | Incoming | Any changes in Hoxhunt v2 events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in Hoxhunt v2 events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Hoxhunt v2 events will be reflected in both directions. |
-
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and Hoxhunt v2.

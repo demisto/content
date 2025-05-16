@@ -1,8 +1,12 @@
-RunZero is a network discovery and asset inventory platform that uncovers every network in use and identifies every device connected–without credentials. 
+RunZero is a network discovery and asset inventory platform that uncovers every network in use and identifies every device connected–without credentials.
 Scan your network and build your asset inventory in minutes.
+
 ## What does this pack do?
+
 This pack includes the RunZero integration and RunZeroEventCollector integrations that do the following:
-### RunZero integration:
+
+### RunZero integration
+
 - Get all assets from RunZero.
 - Search for specific asset using filters.
 - Delete a service.
@@ -17,6 +21,8 @@ This pack includes the RunZero integration and RunZeroEventCollector integration
 - Remove tags from assets or services.
 
 <~XSIAM>
-### RunZeroEventCollector integration for XSIAM:
+
+### RunZeroEventCollector integration for XSIAM
+
 - Fetches RunZero events.
 </~XSIAM>

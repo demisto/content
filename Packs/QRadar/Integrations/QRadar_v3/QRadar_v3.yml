@@ -2572,7 +2572,7 @@ script:
       - UNKNOWN
     - name: time_to_live
       description: 'The time to live interval, for example: "1 month" or "5 minutes".'
-    description: | 
+    description: |
       Creates a new reference set. If the provided name is already in use, this command will fail.
       Deprecated, Use qradar-reference-set-create instead.
     hidden: true
@@ -3120,7 +3120,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isremotesyncin: true
   longRunning: true
   isFetchSamples: true

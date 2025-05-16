@@ -18,7 +18,7 @@ This pack contains a Certstream integration, parsing scripts, threat intel integ
 
 Before using the Certstream Pack and integration, ensure that you have completed the following steps:
 
-1. **Create Domain's Homographs List**: Run the `Create list for PTH` playbook in playground to generate a list of domains and their homographs or create the list manually in the expected format: 
+1. **Create Domain's Homographs List**: Run the `Create list for PTH` playbook in playground to generate a list of domains and their homographs or create the list manually in the expected format:
 
 ```json
 {

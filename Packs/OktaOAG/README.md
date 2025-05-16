@@ -19,18 +19,22 @@ This pack includes Cortex XSIAM content.
 6. Click ***Validate Forwarder***. The Access Gateway then attempts to validate the remote logger connection information. If required, correct any input errors. On successful validation, the **Validate Forwarder** button changes to **Forwarder Validated**.
 7. Click **Okay**. The log forwarder definition appears in the list of log forwarders.
 
-* Pay attention: Timestamp support is available for the format **%Y-%m-%d{Key}%H:%M:%E3S%Ez**.
+- Pay attention: Timestamp support is available for the format **%Y-%m-%d{Key}%H:%M:%E3S%Ez**.
 
 ## Collect Events from Vendor
 
 In order to use the collector, you can use the following option to collect events from the vendor:
- - [Broker VM](#broker-vm)
+
+- [Broker VM](#broker-vm)
 
 You will need to configure the vendor and product for this specific collector.
+
 ### Broker VM
+
 You will need to use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).\
 You can configure the specific vendor and product for this instance.
-1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**. 
+
+1. Navigate to **Settings** -> **Configuration** -> **Data Broker** -> **Broker VMs**.
 2. Right-click, and select **Syslog Collector** -> **Configure**.
 3. When configuring the Syslog Collector, set:
    - vendor as vendor - Okta

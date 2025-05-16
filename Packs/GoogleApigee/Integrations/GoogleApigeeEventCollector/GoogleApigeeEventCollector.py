@@ -77,6 +77,7 @@ class Client(BaseClient):
             token_expiration_seconds=float(token_expiration_seconds),
             current_time=current_time
         ):
+            demisto.debug('existing access token is valid, no need to regenerate token')
             return access_token
         # There's no token or it is expired
         access_token, token_expiration_seconds, refresh_token = self.get_token_request(refresh_token)
@@ -87,7 +88,7 @@ class Client(BaseClient):
             REFRESH_TOKEN_STR: refresh_token,
         }
         set_integration_context(context=integration_context)
-        demisto.debug('successfully updated access token')
+        demisto.info('successfully updated access token')
 
         return access_token
 
@@ -98,15 +99,7 @@ class Client(BaseClient):
        Returns:
            tuple[str, str]: token and its expiration date
         """
-        grant_type = REFRESH_TOKEN_STR if refresh_token else 'password'
-        data = {
-            'grant_type': grant_type
-        }
-        if refresh_token:
-            data[REFRESH_TOKEN_STR] = refresh_token
-        else:
-            data['username'] = self.username
-            data['password'] = self.password
+        data = Client.generate_data_with_refresh_token(refresh_token) if refresh_token else self.generate_data_with_username()
         # The "Authorization" token is a hard-coded value that the API requires in the header.
         # https://docs.apigee.com/api-platform/system-administration/management-api-tokens
         headers = {
@@ -116,9 +109,34 @@ class Client(BaseClient):
         }
         zone = f'{self.zone}.' if self.zone else ''
         url = f'https://{zone}login.apigee.com/oauth/token'
-        token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
+        try:
+            token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
+        except Exception as e:
+            if refresh_token and 'Invalid refresh token' in str(e):
+                demisto.debug(f'Failed to generate access token using refresh token. Attempting to generate a new access token \
+                    using username and password. Original error is: {str(e)}')
+                data = self.generate_data_with_username()
+                token_response = self._http_request('POST', full_url=url, url_suffix='/oauth/token', data=data, headers=headers)
+            else:
+                raise e
         return token_response.get(ACCESS_TOKEN_STR), token_response.get('expires_in'), token_response.get(REFRESH_TOKEN_STR)
 
+    @staticmethod
+    def generate_data_with_refresh_token(refresh_token: str) -> dict:
+        demisto.debug('generates a new access token based on a refresh token.')
+        return {
+            'grant_type': REFRESH_TOKEN_STR,
+            REFRESH_TOKEN_STR: refresh_token
+        }
+    
+    def generate_data_with_username(self) -> dict:
+        demisto.debug('generates a new access token based on a username and password.')
+        return {
+            'grant_type': 'password',
+            'username': self.username,
+            'password': self.password,
+        }
+    
     @staticmethod
     def is_token_valid(token_initiate_time: float, token_expiration_seconds: float, current_time: float) -> bool:
         """

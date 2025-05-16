@@ -4,13 +4,12 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
 
 ## Use Cases
 
-*   Retrieves a list of testing scenarios.
-*   Executes testing of penetration assessments.
-*   Retrieves detailed assessment results.
-*   Triggers other playbook-based assessment results.
+* Retrieves a list of testing scenarios.
+* Executes testing of penetration assessments.
+* Retrieves detailed assessment results.
+* Triggers other playbook-based assessment results.
 
 ## Configure AttackIQ Platform in Cortex
-
 
 | **Parameter** | **Description** | **Example** |
 | ---------             | -----------           | -------            |
@@ -19,7 +18,6 @@ This integration was integrated and tested with AttackIQ FireDrill v2.15.96.
 |  API Token | Account's private token (as appears in attackIQ UI). | N/A  |
 | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
 | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  https:/<span></span>/proxyserver.com |
-
 
 ## Commands
 
@@ -73,11 +71,13 @@ Returns all assessment information by ID.
 | AttackIQ.Assessment.RemainingPages | Number | The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1. |
 
 ##### Command Example
+
 ```
 !attackiq-get-assessment-by-id assessment_id=c4e352ae-1506-4c74-bd90-853f02dd765a
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Assessment": {
@@ -166,11 +166,13 @@ Returns all assessment details by page.
 | AttackIQ.Assessment.MasterJobCount | Number | The number of tests that ran in the assessment. |
 
 ##### Command Example
+
 ```
 !attackiq-list-assessments page_size=5
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Assessment": 11
@@ -189,7 +191,7 @@ Returns all assessment details by page.
 | 5baca9b4-e55c-497f-a05a-8004b9a36efe | Custom | Custom project | goo<span></span>@test.com | 2019-09-10T08:38:55.165853Z | 2019-09-10T08:38:55.165874Z |
 | 58440d47-d7b5-4f57-913f-3e13903fa2fc | Arseny's ransomware project | Test of common ransomware variants | foo<span></span>@test.com | 2019-09-02T11:52:13.933084Z | 2019-09-02T11:52:16.100942Z |
 
-### Activate an assessment 
+### Activate an assessment
 
 * * *
 
@@ -206,9 +208,11 @@ Deprecated, without available replacement. Activates the assessment, which is re
 | assessment_id | ID of the assessment to activate. | Required |
 
 ##### Command Example
+
 ```
 !attackiq-activate-assessment assessment_id=c4e352ae-1506-4c74-bd90-853f02dd765a
 ```
+
 ##### Human Readable Output
 
 Successfully activated project c4e352ae-1506-4c74-bd90-853f02dd765a
@@ -231,6 +235,7 @@ Runs all tests in the assessment.
 | on_demand_only | Runs only on-demand tests in the assessment. True executes tests in the assessment that are not scheduled to run. False executes all tests in the assessment including scheduled tests. The default is false. | Optional |
 
 ##### Command Example
+
 ```
 !attackiq-run-all-tests-in-assessment assessment_id=8978fe24-607a-4815-a36a-89fb6191b318
 ```
@@ -263,11 +268,13 @@ Returns an assessment execution status when running an on-demand execution only.
 | AttackIQ.Assessment.Id | String | The ID of the assessment. |
 
 ##### Command Example
+
 ```
 !attackiq-get-assessment-execution-status assessment_id=c4e352ae-1506-4c74-bd90-853f02dd765a
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Assessment": {
@@ -310,11 +317,13 @@ Returns the status of the test.
 | AttackIQTest.Id | String | The ID of the assessment test. |
 
 ##### Command Example
+
 ```
 !attackiq-get-test-execution-status test_id=9aed2cef-8c64-4e29-83b4-709de5963b66
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQTest": {
@@ -384,11 +393,13 @@ Returns a list of tests by an assessment.
 | AttackIQTest.Count | Number | The total number of tests. |
 
 ##### Command Example
+
 ```
 !attackiq-list-tests-by-assessment assessment_id=c4e352ae-1506-4c74-bd90-853f02dd765a page_size=3 page_number=1
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQTest": 0
@@ -552,11 +563,13 @@ Returns the test results of an assessment.
 | AttackIQTestResult.Count | Number | The total number of tests. |
 
 ##### Command Example
+
 ```
 !attackiq-get-test-results test_id=1c350a5a-84f2-4938-93d8-cc31f0a99482 page_number=10 page_size=5 outcome_filter=Passed
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQTestResult": 62
@@ -575,8 +588,6 @@ Returns the test results of an assessment.
 | Arseny's ransomware project | Download AutoLocky Ransomware | ec2amaz-g4iu5no | 172.31.39.254 |   | 2019-09-16T08:41:32.646222Z |   |
 | Arseny's ransomware project | Download Mobef Ransomware | ec2amaz-g4iu5no | 172.31.39.254 |   | 2019-09-16T08:41:23.089756Z |   |
 | Arseny's ransomware project | Download BadBlock Ransomeware | ec2amaz-g4iu5no | 172.31.39.254 |   | 2019-09-16T08:41:18.225112Z |   |
-
-
 
 ### List all assessment templates
 
@@ -604,11 +615,13 @@ There are no input arguments for this command.
 | AttackIQ.Template.Hidden | Boolean | Whether the template is hidden. |
 
 ##### Command Example
+
 ```
 !attackiq-list-assessment-templates
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Template": [
@@ -870,11 +883,13 @@ There are no input arguments for this command.
 | AttackIQ.Asset.Groups.Name | String | The name of the asset's group. |
 
 ##### Command Example
+
 ```
 !attackiq-list-assets
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Asset": [
@@ -903,7 +918,7 @@ There are no input arguments for this command.
 
 ##### Human Readable Output
 
-##### Assets:
+##### Assets
 
 | **ID** | **Hostname** | **IPv4** | **MacAddress** | **Domain** | **Description** | **User** | **Status** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -958,11 +973,13 @@ Creates a new assesment.
 | AttackIQ.Assessment.RemainingPages | Number | The number of remaining pages to return. For example, if the total number of pages is 6, and the last fetch was page 5, the value is 1. |
 
 ##### Command Example
+
 ```
 !attackiq-create-assessment name="Assessment from test playbook" template_id="d09d29ba-eed8-4212-bff2-4d1ee11ed80c"
 ```
 
 ##### Context Example
+
 ```
 {
     "AttackIQ.Assessment": {
@@ -998,7 +1015,7 @@ Creates a new assesment.
 
 ##### Human Readable Output
 
-##### Created Assessment: 08023e86-3b8c-4f98-ab46-7c931d759157 successfully.
+##### Created Assessment: 08023e86-3b8c-4f98-ab46-7c931d759157 successfully
 
 | **Id** | **Name** | **Description** | **User** | **Created** | **Modified** |
 | --- | --- | --- | --- | --- | --- |
@@ -1027,6 +1044,7 @@ Adds assets or asset groups to an assesment.
 There are no context outputs for this command.
 
 ##### Command Example
+
 ```
 !attackiq-add-assets-to-assessment assets="03e17460-849e-4b86-b6c6-ef0db72823ff" assessment_id="b2fc06d4-5d0a-4924-a126-66320887dce0"
 ```
@@ -1056,6 +1074,7 @@ Deletes an assessment.
 There are no context outputs for this command.
 
 ##### Command Example
+
 ```
 !attackiq-delete-assessment assessment_id="b2fc06d4-5d0a-4924-a126-66320887dce0"
 ```

@@ -1,10 +1,8 @@
 
-
 Use Group-IB Threat Intelligence & Attribution Feed integration to fetch IOCs from various Group-IB collections.
 This integration was integrated and tested with version 1.0 of Group-IB Threat Intelligence & Attribution Feed
 
 ## Configure Group-IB Threat Intelligence & Attribution Feed in Cortex
-
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -26,7 +24,6 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
 |  |  | False |
 |  |  | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -37,7 +34,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Get limited count of indicators for specified collection and get all indicators from particular events by id.
 
-
 #### Base Command
 
 `gibtia-get-indicators`
@@ -46,10 +42,9 @@ Get limited count of indicators for specified collection and get all indicators 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| collection | GIB Collection to get indicators from. Possible values are: compromised/mule, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, hi/threat, apt/threat, osi/vulnerability, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc. | Required | 
-| id | Incident Id to get indicators(if set, all the indicators will be provided from particular incident). | Optional | 
-| limit | Limit of indicators to display in War Room. Possible values are: 10, 20, 30, 40, 50. Default is 50. | Optional | 
-
+| collection | GIB Collection to get indicators from. Possible values are: compromised/mule, compromised/imei, attacks/ddos, attacks/deface, attacks/phishing, attacks/phishing_kit, hi/threat, apt/threat, osi/vulnerability, suspicious_ip/tor_node, suspicious_ip/open_proxy, suspicious_ip/socks_proxy, malware/cnc. | Required |
+| id | Incident Id to get indicators(if set, all the indicators will be provided from particular incident). | Optional |
+| limit | Limit of indicators to display in War Room. Possible values are: 10, 20, 30, 40, 50. Default is 50. | Optional |
 
 #### Context Output
 

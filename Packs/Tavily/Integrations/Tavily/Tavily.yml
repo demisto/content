@@ -1,0 +1,56 @@
+category: Utilities
+commonfields:
+  id: Tavily
+  version: -1
+sectionOrder:
+  - Connect
+configuration:
+- name: url
+  display: Server URL
+  defaultvalue: https://api.tavily.com
+  type: 0
+  required: true
+  section: Connect
+- display: API Key
+  additionalinfo: The API Key to use for the connection
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: "Tavily is a web service that provides real-time web search and retrieval capabilities through an API, enabling developers to fetch and extract relevant information from the internet in structured formats like JSON."
+display: Tavily
+name: Tavily
+script:
+  commands:
+  - arguments:
+    - description: The URL to extract content from.
+      name: url
+      required: true
+    description: Extract web page content from a specified URL.
+    name: tavily-extract
+    outputs:
+    - contextPath: Tavily.URL
+      description: The URL from which the content was extracted.
+      type: string
+    - contextPath: Tavily.Content
+      description: The full content extracted from the URL.
+      type: string
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.1.0
+tests:
+- No tests (auto formatted)

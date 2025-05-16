@@ -4,7 +4,6 @@ Please see the [Okta Auth0 rate limit policy](https://auth0.com/docs/troubleshoo
 
 ## Configure Okta Auth0 Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -14,7 +13,6 @@ Please see the [Okta Auth0 rate limit policy](https://auth0.com/docs/troubleshoo
 | The maximum number of events per fetch |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -34,9 +32,9 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. Maximum is 2000. Default is 10. | Optional | 
-| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. Maximum is 2000. Default is 10. | Optional |
+| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional |
 
 #### Context Output
 

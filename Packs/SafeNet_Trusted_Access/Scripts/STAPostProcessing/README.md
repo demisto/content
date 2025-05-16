@@ -1,6 +1,7 @@
 Post processing script to remove the user from the Unusual Activity Group on Close Form.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Post processing script to remove the user from the Unusual Activity Group on Clo
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

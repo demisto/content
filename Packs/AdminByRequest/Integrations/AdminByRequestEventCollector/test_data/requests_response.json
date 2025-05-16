@@ -1,0 +1,147 @@
+[
+    {
+        "scanResults": [],
+        "id": 1,
+        "traceNo": "11",
+        "settingsName": "Setting",
+        "type": "Session",
+        "typeCode": 1,
+        "status": "Denied",
+        "statusCode": 3,
+        "application": {
+            "file": null,
+            "name": null,
+            "vendor": null,
+            "version": null,
+            "sha256": null,
+            "scanResult": null,
+            "scanResultCode": 0,
+            "threat": null,
+            "virustotalLink": null
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "computer": {
+            "name": "Dummy Computer",
+            "platform": "DUMMY",
+            "platformCode": 1,
+            "make": "",
+            "model": "1.1.1"
+        },
+        "reason": "Software update",
+        "approvedBy": null,
+        "approvedByEmail": null,
+        "deniedReason": "Dummy",
+        "deniedBy": "Jhon Doe",
+        "deniedByEmail": "example@example.com",
+        "requestTime": "2025-04-08T09:11:57",
+        "auditlogLink": "https://example.com"
+    },
+    {
+        "scanResults": [
+            {
+                "scanResult": "Clean",
+                "scanResultCode": 0,
+                "engine": "DUMMY",
+                "threat": null
+            }
+        ],
+        "id": 2,
+        "traceNo": "22",
+        "settingsName": "Setting",
+        "type": "Run As Admin",
+        "typeCode": 2,
+        "status": "Denied",
+        "statusCode": 3,
+        "application": {
+            "name": "Application Dummy",
+            "path": "/exmaple/dummy",
+            "file": "dummyfile",
+            "version": null,
+            "vendor": null,
+            "sha256": "",
+            "scanResult": "Clean",
+            "scanResultCode": 0,
+            "threat": null,
+            "virustotalLink": "https://example.com"
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "computer": {
+            "name": "Dummy Computer",
+            "platform": "DUMMY",
+            "platformCode": 1,
+            "make": "",
+            "model": "1.1.1"
+        },
+        "reason": "gaming class",
+        "approvedBy": null,
+        "approvedByEmail": null,
+        "deniedReason": "Dummy",
+        "deniedBy": "Jhon Doe",
+        "deniedByEmail": "example@example.com",
+        "requestTime": "2025-04-08T09:11:57",
+        "auditlogLink": "https://example.com"
+    },
+    {
+        "scanResults": [
+            {
+                "scanResult": "Clean",
+                "scanResultCode": 0,
+                "engine": "DUMMY",
+                "threat": null
+            }
+        ],
+        "id": 3,
+        "traceNo": "33",
+        "settingsName": "Dummy",
+        "type": "Dummy Type",
+        "typeCode": 3,
+        "status": "Denied",
+        "statusCode": 3,
+        "application": {
+            "name": "Application Dummy",
+            "path": "/exmaple/dummy",
+            "file": "dummyfile",
+            "version": null,
+            "vendor": null,
+            "sha256": "",
+            "scanResult": "Clean",
+            "scanResultCode": 0,
+            "threat": null,
+            "virustotalLink": "https://example.com"
+        },
+        "user": {
+            "account": "dummy_user",
+            "fullName": "Dummy User",
+            "email": "example@example.com",
+            "phone": "000000000",
+            "isAdmin": false
+        },
+        "computer": {
+            "name": "Dummy Computer",
+            "platform": "DUMMY",
+            "platformCode": 1,
+            "make": "",
+            "model": "1.1.1"
+        },
+        "reason": "Software update",
+        "approvedBy": null,
+        "approvedByEmail": null,
+        "deniedReason": "Dummy",
+        "deniedBy": "Jhon Doe",
+        "deniedByEmail": "example@example.com",
+        "requestTime": "2025-04-08T09:11:57",
+        "auditlogLink": "https://example.com"
+    }
+]

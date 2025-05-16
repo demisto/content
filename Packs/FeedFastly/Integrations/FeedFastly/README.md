@@ -2,7 +2,6 @@ Use Fastly Feed to get assigned CIDRs and add them to your firewall's allow-list
 
 ## Configure Fastly Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -19,22 +18,24 @@ Use Fastly Feed to get assigned CIDRs and add them to your firewall's allow-list
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### fastly-get-indicators
+
 ***
 Fetches indicators from the feed.
-
 
 #### Base Command
 
 `fastly-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | limits the number of context indicators to output. Default is 50. | Optional | 
-
+| limit | limits the number of context indicators to output. Default is 50. | Optional |
 
 #### Context Output
 

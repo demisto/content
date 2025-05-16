@@ -2,7 +2,6 @@ Palo Alto Networks Trend Micro Email Security Event Collector integration for XS
 
 ## Configure Trend Micro Email Security Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Service URL |  | True |
@@ -12,7 +11,6 @@ Palo Alto Networks Trend Micro Email Security Event Collector integration for XS
 | Use system proxy settings |  | False |
 | Hide sensitive details from email |  | False |
 | The maximum number of events per fetch. | The maximum number of events to fetch every time fetch is executed. | False |
-
 
 **Note**: There are three types of events that the integration fetches, When the max fetch parameter is set to 1000 then 1000 logs will be retrieved from each type so that a total of 3000 logs can be retrieved.
 
@@ -34,9 +32,9 @@ Manual command to fetch events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_fetch | The maximum number of events to get. Default is 500. | Optional | 
-| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional | 
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
+| max_fetch | The maximum number of events to get. Default is 500. | Optional |
+| since | Occurrence time of the least recent event to include (inclusive). Default is 3 days. | Optional |
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
 
 #### Context Output
 

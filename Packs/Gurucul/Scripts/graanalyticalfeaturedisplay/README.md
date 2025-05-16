@@ -1,6 +1,7 @@
 Display GRA analytical feature on the layout
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Display GRA analytical feature on the layout
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Cisco AMP Event Collector in Cortex
 
-
 | **Parameter**                           | **Required** |
 |-----------------------------------------| --- |
 | Server URL (e.g., https://some_url.com) | True |
@@ -14,7 +13,6 @@ This is the default integration for this content pack when configured by the Dat
 | Max events number per fetch             | False |
 | Trust any certificate (not secure)      | False |
 | Use system proxy settings               | False |
-
 
 ## Commands
 
@@ -34,9 +32,9 @@ Gets events from Cisco AMP.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| max_events_per_fetch | Maximum results to return. | Required | 
-| from_date | From date to get events from. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| max_events_per_fetch | Maximum results to return. | Required |
+| from_date | From date to get events from. | Optional |
 
 #### Context Output
 

@@ -1,14 +1,16 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
 import secrets
 import tempfile
 from datetime import UTC
-from dateparser import parse
-from urllib3 import disable_warnings
 from math import ceil
-from google.cloud import storage  # type: ignore[attr-defined]
+
+import demistomock as demisto
+from CommonServerPython import *
 from CoreIRApiModule import *
+from dateparser import parse
+from google.cloud import storage  # type: ignore[attr-defined]
+from urllib3 import disable_warnings
+
+from CommonServerUserPython import *
 
 disable_warnings()
 DEMISTO_TIME_FORMAT: str = "%Y-%m-%dT%H:%M:%SZ"
@@ -112,7 +114,7 @@ def prepare_disable_iocs(iocs: str) -> tuple[str, list]:
 def create_file_iocs_to_keep(file_path, batch_size: int = 200):
     with open(file_path, "a") as _file:
         total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
+        for i in range(ceil(total_size / batch_size)):
             iocs: list = get_iocs(page=i, size=batch_size)
             for ios in (x.get("value", "") for x in iocs):
                 _file.write(ios + "\n")
@@ -121,7 +123,7 @@ def create_file_iocs_to_keep(file_path, batch_size: int = 200):
 def create_file_sync(file_path, batch_size: int = 200):
     with open(file_path, "a") as _file:
         total_size: int = get_iocs_size()
-        for i in range(0, ceil(total_size / batch_size)):
+        for i in range(ceil(total_size / batch_size)):
             iocs: list = get_iocs(page=i, size=batch_size)
             for ioc in (demisto_ioc_to_core(x) for x in iocs):
                 if ioc:
@@ -211,7 +213,7 @@ def demisto_ioc_to_core(ioc: dict) -> dict:
             core_ioc["status"] = "DISABLED"
         return core_ioc
     except KeyError as error:
-        demisto.debug(f"unexpected IOC format in key: {str(error)}, {str(ioc)}")
+        demisto.debug(f"unexpected IOC format in key: {error!s}, {ioc!s}")
         return {}
 
 
@@ -263,7 +265,7 @@ def get_last_iocs(batch_size=200) -> list:
     query = create_last_iocs_query(from_date=last_run["time"], to_date=current_run)
     total_size = get_iocs_size(query)
     iocs: list = []
-    for i in range(0, ceil(total_size / batch_size)):
+    for i in range(ceil(total_size / batch_size)):
         iocs.extend(get_iocs(query=query, page=i, size=batch_size))
     last_run["time"] = current_run
     set_integration_context(last_run)

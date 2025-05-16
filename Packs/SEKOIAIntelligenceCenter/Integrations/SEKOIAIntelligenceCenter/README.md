@@ -5,7 +5,6 @@ This integration was integrated and tested with version 2.20220712 of SEKOIA.IO 
 
 ## Configure SEKOIAIntelligenceCenter in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
@@ -13,7 +12,6 @@ This integration was integrated and tested with version 2.20220712 of SEKOIA.IO 
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Source Reliability | Reliability of the source providing the intelligence data. |  |
-
 
 ## Commands
 
@@ -23,8 +21,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### GetObservable
 
 ***
-Query SEKOIA.IO Intelligence Center for information about this observable. 
-
+Query SEKOIA.IO Intelligence Center for information about this observable.
 
 #### Base Command
 
@@ -34,25 +31,24 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | Indicator value. | Required | 
-| type | Indicator type. | Required | 
-
+| value | Indicator value. | Required |
+| type | Indicator type. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| GetObservable.Output | String | SEKOIA.IO returned data | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| SEKOIAIntelligenceCenter.total | Number | Total number of object returned | 
-| SEKOIAIntelligenceCenter.items.x_inthreat_short_display | String | Short display name of the observable | 
-| SEKOIAIntelligenceCenter.items.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.created | Date | Observable creation date | 
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.value | String | Value of the item | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
+| GetObservable.Output | String | SEKOIA.IO returned data |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| SEKOIAIntelligenceCenter.total | Number | Total number of object returned |
+| SEKOIAIntelligenceCenter.items.x_inthreat_short_display | String | Short display name of the observable |
+| SEKOIAIntelligenceCenter.items.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.created | Date | Observable creation date |
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.value | String | Value of the item |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
 
 #### Command example
 
@@ -101,12 +97,10 @@ Query SEKOIA.IO Intelligence Center for information about this observable.
 >**No entries.**
 >Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/email-addr--cd6440d1-725c-5eb9-bff0-5e62c65ee263) for more information.
 
-
 ### GetIndicator
 
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-
 
 #### Base Command
 
@@ -116,37 +110,36 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | Indicator value. | Required | 
-| type | Indicator type. | Required | 
-
+| value | Indicator value. | Required |
+| type | Indicator type. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| SEKOIAIntelligenceCenter.items.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs | String | Source references of the observable | 
-| SEKOIAIntelligenceCenter.items.spec_version | String | STIX specification version used | 
-| SEKOIAIntelligenceCenter.items.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.modified | Date | Last modification date of the item | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.pattern | String | STIX pattern of the item | 
-| SEKOIAIntelligenceCenter.items.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.object_marking_refs | String | Unique identifier of the marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.indicator_types | String | STIX indicator types | 
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| SEKOIAIntelligenceCenter.items.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.x_inthreat_sources_refs | String | Source references of the observable |
+| SEKOIAIntelligenceCenter.items.spec_version | String | STIX specification version used |
+| SEKOIAIntelligenceCenter.items.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.modified | Date | Last modification date of the item |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.pattern | String | STIX pattern of the item |
+| SEKOIAIntelligenceCenter.items.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.object_marking_refs | String | Unique identifier of the marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.indicator_types | String | STIX indicator types |
 
 #### Command example
 
@@ -220,12 +213,10 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 >
 >Please consult the [dedicated page](https://app.sekoia.io/intelligence/objects/indicator--d394449b-6bc7-4d48-b392-6f898190bd2a) for more information.
 
-
 ### ip
 
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-
 
 #### Base Command
 
@@ -235,69 +226,68 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | Indicator value. | Required | 
-
+| ip | Indicator value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| IP.Address | String | IP address | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| IP.Address | String | IP address |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
 
@@ -1358,12 +1348,11 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 #### Human Readable Output
 
->### Indicator 206.189.85.18 is linked to the following:
+>### Indicator 206.189.85.18 is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| FinFisher | [FinFisher](https://attack.mitre.org/software/S0182) is a government-grade commercial surveillance spyware reportedly sold exclusively to government agencies for use in targeted and lawful criminal investigations. It is heavily obfuscated and uses multiple anti-analysis techniques. It has other variants including [Wingbird](https://attack.mitre.org/software/S0176). (Citation: FinFisher Citation) (Citation: Microsoft SIR Vol 21) (Citation: FireEye FinSpy Sept 2017) (Citation: Securelist BlackOasis Oct 2017) (Citation: Microsoft FinFisher March 2018) | malware | FinFisher |  | false | 2019-07-19T15:25:38.820741Z | 2021-11-23T09:13:59.891896Z | [More info about FinFisher on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--a36a2045-61dd-4462-8d5a-95d6732b74c3) |
-
 
 ### url
 
@@ -1380,69 +1369,68 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Indicator value. | Required | 
-
+| url | Indicator value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| URL.Data | String | The URL | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| URL.Data | String | The URL |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
 
@@ -5963,12 +5951,11 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### Indicator <http://truesec.pro/> is linked to the following:
+>### Indicator <http://truesec.pro/> is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Phishing | Adversaries may send phishing messages to gain access to victim systems. All forms of phishing are electronically delivered social engineering. Phishing can be targeted, known as spearphishing. In spearphishing, a specific individual, company, or industry will be targeted by the adversary. More generally, adversaries can conduct non-targeted phishing, such as in mass malware spam campaigns.<br/><br/>Adversaries may send victims emails containing malicious attachments or links, typically to execute malicious code on victim systems or to gather credentials for use of [Valid Accounts](https://attack.mitre.org/techniques/T1078). Phishing may also be conducted via third-party services, like social media platforms. | attack-pattern |  |  | false | 2020-08-27T16:06:57.165806Z | 2022-01-28T08:06:15.568392Z | [More info about Phishing on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/attack-pattern--a5911dd1-af0e-4164-a099-a1fa4909e42e) |
-
 
 ### domain
 
@@ -5985,69 +5972,68 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Indicator value. | Required | 
-
+| domain | Indicator value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
 
@@ -6513,18 +6499,16 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### Indicator eicar.sekoia.io is linked to the following:
+>### Indicator eicar.sekoia.io is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| Dropper TEST EICAR SEKOIA.IO | *Context*<br/>This Dropper is used by SEKOIA Red Team as a demonstration to illustrate how an inoculated file could also be used as a malicious file to install dangerous content onto the corporate  environment.<br/><br/>*Execution stages*<br/>This dropper is known to be distributed as a Powershell script.<br/>- At execution, it drops a text payload (inoculated payload part of the EICAR campaign)<br/>- If Internet connectivity is available, the dropper contacts a Command and control server to  install additional modules (deactivated in the EICAR campaign) <br/> | malware | EICAR,<br/>Malware TEST EICAR SEKOIA.IO,<br/>Dropper TEST EICAR SEKOIA.IO |  | false | 2020-05-26T13:19:41.236073Z | 2020-06-22T09:09:28.349981Z | [More info about Dropper TEST EICAR SEKOIA.IO on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--2850a39e-39a1-4701-a3cc-185478464dc5) |
 
-
 ### file
 
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-
 
 #### Base Command
 
@@ -6534,72 +6518,71 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Indicator value. | Required | 
-
+| file | Indicator value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
 
@@ -8893,24 +8876,22 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 #### Human Readable Output
 
->### Indicator [file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888'] is linked to the following:
+>### Indicator [file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888'] is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
->| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>* Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>* Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
+>| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>*Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>*Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
 
->### Indicator [file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888' OR file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.'SHA-512' = '346c463b203b4aa72b5a6a3dee547d29aa03b85027f8dbb6ae61b4a81dd1f3c939f0e21b041124a0a070c1d82ef39820e191bc551d44bde8153df9a24e2f002b'] is linked to the following:
+>### Indicator [file:hashes.MD5 = 'e1d4d2e829885b322f7e619cbfc2615f' OR file:hashes.'SHA-1' = 'cb6dfb7d8732a74187f61db80aa9f31a29c10888' OR file:hashes.'SHA-256' = '8fdc11e44341c3df5a8020b3313eb0a33b2d77fa05d4af0168f911b3a4d3b74a' OR file:hashes.'SHA-512' = '346c463b203b4aa72b5a6a3dee547d29aa03b85027f8dbb6ae61b4a81dd1f3c939f0e21b041124a0a070c1d82ef39820e191bc551d44bde8153df9a24e2f002b'] is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
->| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>* Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>* Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
-
+>| Agent Tesla | # Resume<br/><br/>Agent Tesla is a spyware that steals passwords and collects information about the actions of its victims by recording keystrokes and user interactions. The malware can be used by attackers to spy on victims, allowing them to see everything that has been typed in supported programs and web-browsers. The spyware has been observed in the world since 2014 and has become extremely popular in the cybercriminal community in recent years.<br/><br/># Chain of infection<br/><br/>The most widespread delivery method for Agent Tesla is malicious spam, via Microsoft Word documents that contain an embedded executed file or exploit. The email accounts used to spread the spyware are often legitimate accounts that have been compromised. Agent Tesla operators act out of opportunism and lack the sophistication seen in elaborate operations such as big game hunting.<br/><br/>Once the user has clicked on the malicious document, the executable is downloaded and renamed. The downloaded file runs itself and creates a child process. Before taking actions on objectives, Agent Tesla checks the environment of the compromised machine to avoid being deployed in a Virtual Machine and therefore bypass sandbox analysis. Multiple sandbox evasion techniques are performed - such as reading hardware parameters, disabling AMSI scans, checking for user input or using sleeping functions.<br/><br/>Agent Tesla establishes persistence by creating a registry RUN key to run at boot, or creating a scheduled task via schtasks.exe. Once well installed, the malware takes actions on objectives and sends data to the Command & Control server. Latest Agent Tesla versions offer different means of communication - over SMTP, FTP or HTTP, but also using Telegram, Discord or Tor network.<br/>According to SEKOIA research, most Agent Tesla operators employ SMTP communications on port 587 using compromised email accounts.<br/><br/># Capacity<br/><br/>*Taking fingerprint:<br/>For example, it corresponds to the footprint of an infected machine:<br/>\`\`\`<br/>Time: 02/11/2021 08:45:53<br/>User Name: JohnDoe<br/>Computer Name: ACME-JOHN-DOE-PC<br/>OSFullName: Microsoft Windows 7 Édition Intégrale<br/>CPU: Intel(R) Core(TM)2 Duo CPU E8400 @ 3.00GHz<br/>RAM: 3931,59 MB<br/>IP Address:<br/>\`\`\`<br/>In some cases, Agent Tesla requests \`api.ipify[.]org\`, a simple public IP address API, to retrieve the victim IP address.<br/>The body of each email sent to C2 begins with the fingerprint.<br/><br/>* Stealing password (from many applications):<br/>Those information are sent by email whose subject is \`PW_JohnDoe/ACME-JOHN-DOE-PC\`, \`PW\` for password.<br/><br/>*Keystroke logging:<br/>The subject of the email is \`KL_JohnDoe/ACME-JOHN-DOE-PC\`, \`KL\` for Keystroke logging.<br/><br/>* Stealing cookies:<br/>Agent Tesla archives the directories that store the cookies of different browsers, e.g.: \`C:\Users\JohnDoe\AppData\Local\Google\Chrome\User Data\Default\`, and adds it as attachment to emails whose subject is \`CO_JohnDoe/ACME-JOHN-DOE-PC\`, \`CO\` for Cookies.<br/><br/>* Capturing clipboard:<br/>Screenshots are taken by the spyware and sent by email whose subject is \`SC_JohnDoe/ACME-JOHN-DOE-PC\`, \`SC\` for SCreenshot.<br/><br/>Other capabilities are available, but are less used. | malware | Agent Tesla,<br/>AgentTesla,<br/>AgenTesla,<br/>Negasteal |  | false | 2019-07-19T15:25:33.745282Z | 2021-12-23T19:52:16.428429Z | [More info about Agent Tesla on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/malware--1db42657-baba-4ada-a07b-a55d21bfdb9f) |
 
 ### email
 
 ***
 Query SEKOIA.IO Intelligence Center for information about this indicator. No information is returned if the value is not a known by SEKOIA.IO as an indicator (IoC). STIX IDs can be resolved from SEKOIA.IO Intelligence Center application.
-
 
 #### Base Command
 
@@ -8920,69 +8901,68 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | Indicator value. | Required | 
-
+| email | Indicator value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| IP.Address | String | IP address | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| IP.Address | String | IP address |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command example
 
@@ -9218,18 +9198,16 @@ Query SEKOIA.IO Intelligence Center for information about this indicator. No inf
 
 #### Human Readable Output
 
->### Indicator eicar@sekoia.io is linked to the following:
+>### Indicator eicar@sekoia.io is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|
 >| EICAR Unit of SEKOIA | This Intrusion Set is known to be operated by SEKOIA by its EICAR unit. This unit aims at creating fictitious environment mimicking real attackers to present how threat intelligence can help real organizations to protect themselves.<br/> | intrusion-set | EICAR,<br/>TEST EICAR SEKOIA.IO,<br/>EICAR Unit of SEKOIA | Simulation of real Threat Actor for Test purpose | false | 2020-05-26T13:18:26.429787Z | 2020-06-02T13:28:51.131904Z | [More info about EICAR Unit of SEKOIA on SEKOIA.IO](https://app.sekoia.io/intelligence/objects/intrusion-set--4d1fd514-d9a4-45f3-988a-d811df72df2f) |
 
-
 ### GetIndicatorContext
 
 ***
 Query SEKOIA.IO Intelligence Center for context around this indicator
-
 
 #### Base Command
 
@@ -9239,74 +9217,73 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| value | Indicator value. | Required | 
-| type | Indicator type. | Required | 
-
+| value | Indicator value. | Required |
+| type | Indicator type. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SEKOIAIntelligenceCenter.items.type | String | Observable type | 
-| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item | 
-| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date | 
-| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source | 
-| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report | 
-| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations | 
-| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects | 
-| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item | 
-| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable | 
-| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type | 
-| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked | 
-| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types | 
-| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type | 
-| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item | 
-| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern | 
-| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types | 
-| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used | 
-| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase | 
-| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated | 
-| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references | 
-| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date | 
-| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names | 
-| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name | 
-| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL | 
-| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities | 
-| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type | 
-| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages | 
-| SEKOIAIntelligenceCenter.items.objects.description | String | Item description | 
-| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date | 
-| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type | 
-| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID | 
-| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector | 
-| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information | 
-| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source | 
-| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors | 
-| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class | 
-| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type | 
-| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type | 
-| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available | 
-| IP.Address | String | IP address | 
-| URL.Data | String | The URL | 
-| Domain.Name | String | The domain name, for example: "google.com". | 
-| DBotScore.Indicator | String | The indicator name. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
+| SEKOIAIntelligenceCenter.items.type | String | Observable type |
+| SEKOIAIntelligenceCenter.items.id | String | Unique identifier of the item |
+| SEKOIAIntelligenceCenter.items.objects.valid_from | Date | Beginning of the item validity date |
+| SEKOIAIntelligenceCenter.items.objects.x_inthreat_sources_refs | String | Unique identifier of the observable source |
+| SEKOIAIntelligenceCenter.items.objects.spec_version | String | STIX specification version |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_in_flint | Boolean | Is this indicator from a SEKOIA FLINT report |
+| SEKOIAIntelligenceCenter.items.objects.lang | String | Language of the indicator data |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_locations | String | UUID of the impacted locations |
+| SEKOIAIntelligenceCenter.items.objects.id | String | UUID of the objects |
+| SEKOIAIntelligenceCenter.items.objects.created_by_ref | String | Unique identifier of the creator of the item |
+| SEKOIAIntelligenceCenter.items.objects.modified | Date | Modification date of the observable |
+| SEKOIAIntelligenceCenter.items.objects.type | String | STIX Object type |
+| SEKOIAIntelligenceCenter.items.objects.revoked | Boolean | Is this item revoked |
+| SEKOIAIntelligenceCenter.items.objects.created | Date | Creation date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_observable_types | String | Intelligence Center observable types |
+| SEKOIAIntelligenceCenter.items.objects.pattern_type | String | STIX pattern type |
+| SEKOIAIntelligenceCenter.items.objects.name | String | Name of the item |
+| SEKOIAIntelligenceCenter.items.objects.pattern | String | STIX pattern |
+| SEKOIAIntelligenceCenter.items.objects.indicator_types | String | STIX indicator types |
+| SEKOIAIntelligenceCenter.items.objects.object_marking_refs | String | Unique identifier of the Object Marking reference \(TLP\) |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_impacted_sectors | String | UUID of the impacted sectors |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.kill_chain_name | String | Name of the kill chain used |
+| SEKOIAIntelligenceCenter.items.objects.kill_chain_phases.phase_name | String | Name of the kill chain phase |
+| SEKOIAIntelligenceCenter.items.objects.confidence | Number | Indicator confidence score |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_deprecated | Boolean | Is the item deprecated |
+| SEKOIAIntelligenceCenter.items.objects.valid_until | Date | Expiration date of the item |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_external_refs | String | External references |
+| SEKOIAIntelligenceCenter.items.objects.first_seen | Date | Item first seen date |
+| SEKOIAIntelligenceCenter.items.objects.aliases | String | Item aliases names |
+| SEKOIAIntelligenceCenter.items.objects.is_family | Boolean | Is the item part of a family |
+| SEKOIAIntelligenceCenter.items.objects.external_references.description | String | Object external references description |
+| SEKOIAIntelligenceCenter.items.objects.external_references.source_name | String | Object external references source name |
+| SEKOIAIntelligenceCenter.items.objects.external_references.url | String | Object external references URL |
+| SEKOIAIntelligenceCenter.items.objects.capabilities | String | Malware capabilities |
+| SEKOIAIntelligenceCenter.items.objects.malware_types | String | Malware type |
+| SEKOIAIntelligenceCenter.items.objects.implementation_languages | String | Malware implementation languages |
+| SEKOIAIntelligenceCenter.items.objects.description | String | Item description |
+| SEKOIAIntelligenceCenter.items.objects.stop_time | Date | Stop time date |
+| SEKOIAIntelligenceCenter.items.objects.relationship_type | String | STIX object relationship type |
+| SEKOIAIntelligenceCenter.items.objects.target_ref | String | Target reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.source_ref | String | Source reference UUID |
+| SEKOIAIntelligenceCenter.items.objects.start_time | Date | Object start time |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_sector | Boolean | Is the object a sector |
+| SEKOIAIntelligenceCenter.items.objects.contact_information | String | Object contact information |
+| SEKOIAIntelligenceCenter.items.objects.x_ic_is_source | Boolean | Is the object a source |
+| SEKOIAIntelligenceCenter.items.objects.sectors | String | Associated sectors |
+| SEKOIAIntelligenceCenter.items.objects.identity_class | String | Object identity class |
+| SEKOIAIntelligenceCenter.items.objects.definition_type | String | Object definition type |
+| SEKOIAIntelligenceCenter.items.objects.definition.tlp | String | TLP type |
+| SEKOIAIntelligenceCenter.has_more | Boolean | Is more information available |
+| IP.Address | String | IP address |
+| URL.Data | String | The URL |
+| Domain.Name | String | The domain name, for example: "google.com". |
+| DBotScore.Indicator | String | The indicator name. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
 
 #### Command example
 
@@ -9542,7 +9519,7 @@ Query SEKOIA.IO Intelligence Center for context around this indicator
 
 #### Human Readable Output
 
->### Indicator eicar@sekoia.io is linked to the following:
+>### Indicator eicar@sekoia.io is linked to the following
 
 >|name|description|type|aliases|goals|revoked|created|modified|more_info|
 >|---|---|---|---|---|---|---|---|---|

@@ -221,19 +221,19 @@
     "Results": [
         {
             "OrderItems_Id": 160086,
-            "OrderItems_OrderId": 153797, 
-            "OrderItems_Status": "Complete", 
+            "OrderItems_OrderId": 153797,
+            "OrderItems_Status": "Complete",
             "OrderItems_CreatedDate": "2019-04-02",
             "OrderItems_SalePrice": 54,
             "Products_Brand": "Alternative",
             "Products_ItemName": "Alternative Women's Alice Drop Shoulder V-Neck",
             "Users_Name": "Chelsea Mccormick",
             "Users_Email": "example@gmail.com"
-        }, 
+        },
         {
             "OrderItems_Id": 63757,
-            "OrderItems_OrderId": 58557, 
-            "OrderItems_Status": "Cancelled", 
+            "OrderItems_OrderId": 58557,
+            "OrderItems_Status": "Cancelled",
             "OrderItems_CreatedDate": "2019-04-19",
             "OrderItems_SalePrice": 49.5,
             "Products_Brand": "Lucky Brand",
@@ -574,13 +574,13 @@
 <pre>"LookerResults": {
         "InlineQuery": [
             {
-                "OrderItems_OrderId": 5704, 
-                "OrderItems_Status": "Cancelled", 
+                "OrderItems_OrderId": 5704,
+                "OrderItems_Status": "Cancelled",
                 "Products_Brand": "Ray-Ban"
-            }, 
+            },
             {
-                "OrderItems_OrderId": 1535, 
-                "OrderItems_Status": "Cancelled", 
+                "OrderItems_OrderId": 1535,
+                "OrderItems_Status": "Cancelled",
                 "Products_Brand": "Ray-Ban"
             }
         ]

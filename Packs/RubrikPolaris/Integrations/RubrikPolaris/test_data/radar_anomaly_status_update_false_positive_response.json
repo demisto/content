@@ -1,0 +1,15 @@
+{
+    "raw_response": {
+        "data": {
+            "resolveAnomaly": {}
+        }
+    },
+    "outputs": {
+        "command_name": "rubrik-radar-anomaly-update-status",
+        "anomaly_id": "00000000-0000-0000-0000-000000000001",
+        "anomaly_type": "FILESYSTEM",
+        "workload_id": "00000000-0000-0000-0000-000000000001",
+        "false_positive_reason": "test reason",
+        "false_positive_type": "other"
+    }
+}

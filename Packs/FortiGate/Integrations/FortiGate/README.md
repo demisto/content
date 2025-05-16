@@ -3,7 +3,6 @@ This integration was integrated and tested with version 7.2.5 of FortiGate.
 
 ## Configure FortiGate in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. https://192.168.0.1) | True |
@@ -13,7 +12,6 @@ This integration was integrated and tested with version 7.2.5 of FortiGate.
 | API Key | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 ## Commands
 
@@ -74,8 +72,11 @@ Retrieve firewall IPv4 addresses. Addresses define sources and destinations of n
 | Fortigate.Address.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv4s name=playbook-address-ipv4```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -107,10 +108,10 @@ Retrieve firewall IPv4 addresses. Addresses define sources and destinations of n
 #### Human Readable Output
 
 >### Firewall Address IPv4s
+>
 >|Name|Details|Type|Routable|
 >|---|---|---|---|
 >| playbook-address-ipv4 | IL | geography | disable |
-
 
 ### fortigate-create-firewall-address-ipv4
 
@@ -152,8 +153,11 @@ Create firewall IPv4 addresses. Addresses define sources and destinations of net
 | Frotigate.Address.MAC | String | MAC addresses. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv4 name=playbook-address-ipv4 country=IL```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -167,7 +171,7 @@ Create firewall IPv4 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv4' was successfully created.
+>## The firewall address 'playbook-address-ipv4' was successfully created
 
 ### fortigate-update-firewall-address-ipv4
 
@@ -209,8 +213,11 @@ Update firewall IPv4 addresses. Addresses define sources and destinations of net
 | Frotigate.Address.MAC | String | MAC addresses. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv4 name=playbook-address-ipv4 comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -223,7 +230,7 @@ Update firewall IPv4 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv4' was successfully updated.
+>## The firewall address 'playbook-address-ipv4' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv4
 
@@ -249,8 +256,11 @@ Delete firewall IPv4 addresses. Addresses define sources and destinations of net
 | Frotigate.Address.Deleted | Boolean | Whether the address was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv4 name=playbook-address-ipv4```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -264,7 +274,7 @@ Delete firewall IPv4 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv4' was successfully deleted.
+>## The firewall address 'playbook-address-ipv4' was successfully deleted
 
 ### fortigate-list-firewall-address-ipv6s
 
@@ -315,8 +325,11 @@ Retrieve firewall IPv6 addresses. Addresses define sources and destinations of n
 | Fortigate.Address6.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv6s name=playbook-address-ipv6 comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -344,10 +357,10 @@ Retrieve firewall IPv6 addresses. Addresses define sources and destinations of n
 #### Human Readable Output
 
 >### Firewall Address IPv6s
+>
 >|Name|Details|Type|
 >|---|---|---|
 >| playbook-address-ipv6 | IL | geography |
-
 
 ### fortigate-create-firewall-address-ipv6
 
@@ -389,8 +402,11 @@ Create firewall IPv6 addresses. Addresses define sources and destinations of net
 | Frotigate.Address6.SDN | String | Software-defined networking. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv6 name=playbook-address-ipv6 country=IL```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -404,7 +420,7 @@ Create firewall IPv6 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv6' was successfully created.
+>## The firewall address 'playbook-address-ipv6' was successfully created
 
 ### fortigate-update-firewall-address-ipv6
 
@@ -447,8 +463,11 @@ Update firewall IPv6 addresses. Addresses define sources and destinations of net
 | Frotigate.Address6.SDN | String | Software-defined networking. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv6 name=playbook-address-ipv6```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -461,7 +480,7 @@ Update firewall IPv6 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv6' was successfully updated.
+>## The firewall address 'playbook-address-ipv6' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv6
 
@@ -487,8 +506,11 @@ Delete firewall IPv6 addresses. Addresses define sources and destinations of net
 | Fortigate.Address6.Deleted | Boolean | Whether the address was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv6 name=playbook-address-ipv6```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -502,7 +524,7 @@ Delete firewall IPv6 addresses. Addresses define sources and destinations of net
 
 #### Human Readable Output
 
->## The firewall address 'playbook-address-ipv6' was successfully deleted.
+>## The firewall address 'playbook-address-ipv6' was successfully deleted
 
 ### fortigate-list-firewall-address-ipv4-multicasts
 
@@ -538,8 +560,11 @@ Retrieve firewall IPv4 multicast addresses. Multicasting allows a single source 
 | Fortigate.AddressMulticast.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv4-multicasts name=playbook-address-ipv4-multicast```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -558,10 +583,10 @@ Retrieve firewall IPv4 multicast addresses. Multicasting allows a single source 
 #### Human Readable Output
 
 >### Firewall Address IPv4 Multicasts
+>
 >|Name|Details|Type|
 >|---|---|---|
 >| playbook-address-ipv4-multicast | 0.0.0.0-0.0.0.0 | broadcastmask |
-
 
 ### fortigate-create-firewall-address-ipv4-multicast
 
@@ -594,8 +619,11 @@ Create firewall IPv4 multicast addresses. Multicasting allows a single source to
 | Frotigate.AddressMulticast.FinalIP | String | Final input IP address. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv4-multicast name=playbook-address-ipv4-multicast type="Broadcast Subnet" first_ip=0.0.0.0 final_ip=0.0.0.0```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -611,7 +639,7 @@ Create firewall IPv4 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully created.
+>## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully created
 
 ### fortigate-update-firewall-address-ipv4-multicast
 
@@ -644,8 +672,11 @@ Update firewall IPv4 multicast addresses. Multicasting allows a single source to
 | Frotigate.AddressMulticast.FinalIP | String | Final input IP address. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv4-multicast name=playbook-address-ipv4-multicast comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -658,7 +689,7 @@ Update firewall IPv4 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully updated.
+>## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv4-multicast
 
@@ -684,8 +715,11 @@ Delete firewall IPv4 multicast addresses. Multicasting allows a single source to
 | Fortigate.AddressMulticast.Deleted | Boolean | Whether the address multicast was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv4-multicast name=playbook-address-ipv4-multicast```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -699,7 +733,7 @@ Delete firewall IPv4 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully deleted.
+>## The firewall address multicast IPv4 'playbook-address-ipv4-multicast' was successfully deleted
 
 ### fortigate-list-firewall-address-ipv6-multicasts
 
@@ -731,8 +765,11 @@ Retrieve firewall IPv6 multicast addresses. Multicasting allows a single source 
 | Fortigate.Address6Multicast.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv6-multicasts name=playbook-address-ipv6-multicast```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -749,10 +786,10 @@ Retrieve firewall IPv6 multicast addresses. Multicasting allows a single source 
 #### Human Readable Output
 
 >### Firewall Address IPv6 Multicasts
+>
 >|Name|Details|
 >|---|---|
 >| playbook-address-ipv6-multicast | ff00::/8 |
-
 
 ### fortigate-create-firewall-address-ipv6-multicast
 
@@ -782,8 +819,11 @@ Create firewall IPv6 multicast addresses. Multicasting allows a single source to
 | Frotigate.Address6Multicast.Mask | String | The subnet mask of the address. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv6-multicast name=playbook-address-ipv6-multicast address=ff00:: mask=8```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -798,7 +838,7 @@ Create firewall IPv6 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully created.
+>## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully created
 
 ### fortigate-update-firewall-address-ipv6-multicast
 
@@ -828,8 +868,11 @@ Update firewall IPv6 multicast addresses. Multicasting allows a single source to
 | Frotigate.Address6Multicast.Mask | String | The subnet mask of the address. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv6-multicast name=playbook-address-ipv6-multicast comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -842,7 +885,7 @@ Update firewall IPv6 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully updated.
+>## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv6-multicast
 
@@ -868,8 +911,11 @@ Delete firewall IPv6 multicast addresses. Multicasting allows a single source to
 | Fortigate.Address6Multicast.Deleted | Boolean | Whether the address multicast was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv6-multicast name=playbook-address-ipv6-multicast```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -883,7 +929,7 @@ Delete firewall IPv6 multicast addresses. Multicasting allows a single source to
 
 #### Human Readable Output
 
->## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully deleted.
+>## The firewall address multicast IPv6 'playbook-address-ipv6-multicast' was successfully deleted
 
 ### fortigate-list-firewall-address-ipv4-groups
 
@@ -922,8 +968,11 @@ Retrieve firewall IPv4 address groups. Address groups are designed for ease of u
 | Fortigate.AddressGroup.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv4-groups groupName=playbook-address-ipv4-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -950,10 +999,10 @@ Retrieve firewall IPv4 address groups. Address groups are designed for ease of u
 #### Human Readable Output
 
 >### Firewall Address IPv4 Groups
+>
 >|Name|Details|Type|Routable|
 >|---|---|---|---|
 >| playbook-address-ipv4-group | playbook-address-ipv4-1 | default | disable |
-
 
 ### fortigate-create-firewall-address-ipv4-group
 
@@ -984,8 +1033,11 @@ Create firewall IPv4 address groups. Address groups are designed for ease of use
 | Fortigate.AddressGroup.Address | String | The address group members. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv4-group groupName=playbook-address-ipv4-group address=playbook-address-ipv4-1```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -999,7 +1051,7 @@ Create firewall IPv4 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully created.
+>## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully created
 
 ### fortigate-update-firewall-address-ipv4-group
 
@@ -1031,8 +1083,11 @@ Update firewall IPv4 address groups. Address groups are designed for ease of use
 | Frotigate.AddressGroup.UUID | String | Universally Unique Identifier. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv4-group groupName=playbook-address-ipv4-group address=playbook-address-ipv4-2 action=add```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1052,7 +1107,7 @@ Update firewall IPv4 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully updated.
+>## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv4-group
 
@@ -1078,8 +1133,11 @@ Delete firewall IPv4 address groups. Address groups are designed for ease of use
 | Fortigate.AddressGroup.Deleted | Boolean | Whether the address group was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv4-group name=playbook-address-ipv4-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1093,7 +1151,7 @@ Delete firewall IPv4 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully deleted.
+>## The firewall address IPv4 group 'playbook-address-ipv4-group' was successfully deleted
 
 ### fortigate-list-firewall-address-ipv6-groups
 
@@ -1127,8 +1185,11 @@ Retrieve firewall IPv6 address groups. Address groups are designed for ease of u
 | Fortigate.Address6Group.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-address-ipv6-groups name=playbook-address-ipv6-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1146,10 +1207,10 @@ Retrieve firewall IPv6 address groups. Address groups are designed for ease of u
 #### Human Readable Output
 
 >### Firewall Address IPv6 Groups
+>
 >|Name|
 >|---|
 >| playbook-address-ipv6-group |
-
 
 ### fortigate-create-firewall-address-ipv6-group
 
@@ -1177,8 +1238,11 @@ Create firewall IPv6 address groups. Address groups are designed for ease of use
 | Fortigate.Address6Group.Address | String | The address group members. |
 
 #### Command example
+
 ```!fortigate-create-firewall-address-ipv6-group name=playbook-address-ipv6-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1192,7 +1256,7 @@ Create firewall IPv6 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully created.
+>## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully created
 
 ### fortigate-update-firewall-address-ipv6-group
 
@@ -1221,8 +1285,11 @@ Update firewall IPv6 address groups. Address groups are designed for ease of use
 | Fortigate.Address6Group.Address | String | The address group members. |
 
 #### Command example
+
 ```!fortigate-update-firewall-address-ipv6-group name=playbook-address-ipv6-group members=playbook-address-ipv6-1 action=add```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1240,7 +1307,7 @@ Update firewall IPv6 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully updated.
+>## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully updated
 
 ### fortigate-delete-firewall-address-ipv6-group
 
@@ -1266,8 +1333,11 @@ Delete firewall IPv6 address groups. Address groups are designed for ease of use
 | Fortigate.Address6Group.Deleted | Boolean | Whether the address group was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-address-ipv6-group name=playbook-address-ipv6-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1281,7 +1351,7 @@ Delete firewall IPv6 address groups. Address groups are designed for ease of use
 
 #### Human Readable Output
 
->## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully deleted.
+>## The firewall address IPv6 group 'playbook-address-ipv6-group' was successfully deleted
 
 ### fortigate-list-firewall-services
 
@@ -1334,8 +1404,11 @@ Retrieve firewall services. A service is the combination of network protocols an
 | Fortigate.Service.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-services serviceName=playbook-service```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1371,10 +1444,10 @@ Retrieve firewall services. A service is the combination of network protocols an
 #### Human Readable Output
 
 >### Firewall Services
+>
 >|Name|Details|IP/FQDN|Protocol|
 >|---|---|---|---|
 >| playbook-service | TCP/1-2 UDP/3-4 SCTP/5-6 | 0.0.0.0 | TCP/UDP/SCTP |
-
 
 ### fortigate-create-firewall-service
 
@@ -1420,8 +1493,11 @@ Create firewall services. A service is the combination of network protocols and 
 | Fortigate.Service.Name | String | The service name. |
 
 #### Command example
+
 ```!fortigate-create-firewall-service serviceName=playbook-service tcpRange=1-2 udpRange=3-4 sctpRange=5-6```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1439,7 +1515,7 @@ Create firewall services. A service is the combination of network protocols and 
 
 #### Human Readable Output
 
->## The firewall service 'playbook-service' was successfully created.
+>## The firewall service 'playbook-service' was successfully created
 
 ### fortigate-update-firewall-service
 
@@ -1485,8 +1561,11 @@ Update firewall services. A service is the combination of network protocols and 
 | Fortigate.Service.Name | String | The service name. |
 
 #### Command example
+
 ```!fortigate-update-firewall-service name=playbook-service comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1504,7 +1583,7 @@ Update firewall services. A service is the combination of network protocols and 
 
 #### Human Readable Output
 
->## The firewall service 'playbook-service' was successfully updated.
+>## The firewall service 'playbook-service' was successfully updated
 
 ### fortigate-delete-firewall-service
 
@@ -1530,8 +1609,11 @@ Delete firewall services. A service is the combination of network protocols and 
 | Fortigate.Service.Deleted | Boolean | Whether the service was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-service name=playbook-service```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1545,7 +1627,7 @@ Delete firewall services. A service is the combination of network protocols and 
 
 #### Human Readable Output
 
->## The firewall service 'playbook-service' was successfully deleted.
+>## The firewall service 'playbook-service' was successfully deleted
 
 ### fortigate-list-firewall-service-groups
 
@@ -1578,8 +1660,11 @@ Retrieve firewall service groups. Service groups are collections of predefined s
 | Fortigate.ServiceGroup.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-firewall-service-groups name=playbook-service-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1602,10 +1687,10 @@ Retrieve firewall service groups. Service groups are collections of predefined s
 #### Human Readable Output
 
 >### Firewall Service Groups
+>
 >|Name|Members|
 >|---|---|
 >| playbook-service-group | playbook-service-1 |
-
 
 ### fortigate-create-firewall-service-group
 
@@ -1633,8 +1718,11 @@ Create firewall service groups. Service groups are collections of predefined ser
 | Fortigate.ServiceGroup.Members | String | Service objects contained within the group. |
 
 #### Command example
+
 ```!fortigate-create-firewall-service-group name=playbook-service-group members=playbook-service-1```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1648,7 +1736,7 @@ Create firewall service groups. Service groups are collections of predefined ser
 
 #### Human Readable Output
 
->## The firewall service group 'playbook-service-group' was successfully created.
+>## The firewall service group 'playbook-service-group' was successfully created
 
 ### fortigate-update-firewall-service-group
 
@@ -1677,8 +1765,11 @@ Update firewall service groups. Service groups are collections of predefined ser
 | Fortigate.ServiceGroup.Service.Name | String | Service objects contained within the group. |
 
 #### Command example
+
 ```!fortigate-update-firewall-service-group groupName=playbook-service-group comment=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1696,7 +1787,7 @@ Update firewall service groups. Service groups are collections of predefined ser
 
 #### Human Readable Output
 
->## The firewall service group 'playbook-service-group' was successfully updated.
+>## The firewall service group 'playbook-service-group' was successfully updated
 
 ### fortigate-delete-firewall-service-group
 
@@ -1722,8 +1813,11 @@ Delete firewall service groups. Service groups are collections of predefined ser
 | Fortigate.ServiceGroup.Deleted | Boolean | Whether the service group was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-service-group groupName=playbook-service-group```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1737,7 +1831,7 @@ Delete firewall service groups. Service groups are collections of predefined ser
 
 #### Human Readable Output
 
->## The firewall service group 'playbook-service-group' was successfully deleted.
+>## The firewall service group 'playbook-service-group' was successfully deleted
 
 ### fortigate-list-firewall-policies
 
@@ -1789,8 +1883,11 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
 | Fortigate.Policy.Schedule | String | The name of the schedule. |
 
 #### Command example
+
 ```!fortigate-list-firewall-policies policyName=playbook-policy-123456789```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1835,10 +1932,10 @@ Retrieve firewall policies. Firewall policies dictate the traffic flow and its p
 #### Human Readable Output
 
 >### Firewall Policies
+>
 >|ID|Name|From|To|Source|Destination|Schedule|Service|Action|NAT|Security Profiles|Log|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 18 | playbook-policy-123456789 | port1 | port2 | playbook-address-ipv4-1 | playbook-address-ipv4-1 | always | playbook-service-1 | accept | enable | no-inspection,<br/>default,<br/>single | utm |
-
 
 ### fortigate-create-firewall-policy
 
@@ -1891,8 +1988,11 @@ Create firewall policies. Firewall policies dictate the traffic flow and its pro
 | Fortigate.Policy.Description | String | The policy description. |
 
 #### Command example
+
 ```!fortigate-create-firewall-policy policyName=playbook-policy sourceIntf=port1 dstIntf=port2 action=accept service=playbook-service-1 source=playbook-address-ipv4-1 destination=playbook-address-ipv4-2```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -1937,7 +2037,7 @@ Create firewall policies. Firewall policies dictate the traffic flow and its pro
 
 #### Human Readable Output
 
->## The firewall policy 'playbook-policy' was successfully created.
+>## The firewall policy 'playbook-policy' was successfully created
 
 ### fortigate-update-firewall-policy
 
@@ -1988,8 +2088,11 @@ Update firewall policies. Firewall policies dictate the traffic flow and its pro
 | Fortigate.Policy.Schedule | String | The name of the schedule. |
 
 #### Command example
+
 ```!fortigate-update-firewall-policy policyID=123456789 field=description value=helloworld```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -2032,7 +2135,7 @@ Update firewall policies. Firewall policies dictate the traffic flow and its pro
 
 #### Human Readable Output
 
->## The firewall policy '123456789' was successfully updated.
+>## The firewall policy '123456789' was successfully updated
 
 ### fortigate-move-firewall-policy
 
@@ -2060,8 +2163,11 @@ Move the position of firewall policies. Firewall policies dictate the traffic fl
 | Fortigate.Policy.Moved | Boolean | Whether the policy was moved. |
 
 #### Command example
+
 ```!fortigate-move-firewall-policy policyID=123456789 position=after neighbor=1010101```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -2075,7 +2181,7 @@ Move the position of firewall policies. Firewall policies dictate the traffic fl
 
 #### Human Readable Output
 
->## The firewall policy '123456789' was successfully moved.
+>## The firewall policy '123456789' was successfully moved
 
 ### fortigate-delete-firewall-policy
 
@@ -2101,8 +2207,11 @@ Delete firewall policies. Firewall policies dictate the traffic flow and its pro
 | Fortigate.Policy.Deleted | Boolean | Whether the policy was deleted. |
 
 #### Command example
+
 ```!fortigate-delete-firewall-policy policyID=123456789```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -2116,7 +2225,7 @@ Delete firewall policies. Firewall policies dictate the traffic flow and its pro
 
 #### Human Readable Output
 
->## The firewall policy '123456789' was successfully deleted.
+>## The firewall policy '123456789' was successfully deleted
 
 ### fortigate-list-system-vdoms
 
@@ -2144,8 +2253,11 @@ Retrieve system VDOMs. Virtual Domains (VDOMs) are used to divide a FortiGate in
 | Fortigate.VDOM.Name | String | The virtual domain name. |
 
 #### Command example
+
 ```!fortigate-list-system-vdoms```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -2162,10 +2274,10 @@ Retrieve system VDOMs. Virtual Domains (VDOMs) are used to divide a FortiGate in
 #### Human Readable Output
 
 >### Virtual Domains
+>
 >|Name|ShortName|VClusterID|
 >|---|---|---|
 >| root | root | 0 |
-
 
 ### fortigate-list-banned-ips
 
@@ -2197,8 +2309,11 @@ Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for 
 | Fortigate.BannedIP.VDOM | String | Virtual domains \(VDOMs\) enable you to partition and use your FortiGate unit as if it were multiple units. |
 
 #### Command example
+
 ```!fortigate-list-banned-ips```
+
 #### Context Example
+
 ```json
 {
     "Fortigate": {
@@ -2251,6 +2366,7 @@ Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for 
 #### Human Readable Output
 
 >### Banned IPs
+>
 >|IP|IsV6|Created|Expires|Source|
 >|---|---|---|---|---|
 >| 0.0.0.0 | 0 | 2023-12-06 17:44:09 | 1970-01-01 00:00:00 | Administrative |
@@ -2258,7 +2374,6 @@ Retrieve Banned IPs. Banned IPs are IP addresses that have been quarantined for 
 >| 3.3.3.3 | 0 | 2023-11-27 05:33:41 | 1970-01-01 00:00:00 | AV |
 >| 4.4.4.4 | 0 | 2023-11-27 05:33:49 | 1970-01-01 00:00:00 | DOS |
 >| 5.5.5.5 | 0 | 2023-11-27 05:34:00 | 1970-01-01 00:00:00 | Administrative |
-
 
 ### fortigate-ban-ip
 
@@ -2280,11 +2395,14 @@ Ban IPs. Banned IPs are IP addresses that have been quarantined for a variety of
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortigate-ban-ip ip_address=0.0.0.0 expiry=0```
+
 #### Human Readable Output
 
->## The IPs '0.0.0.0' were successfully banned.
+>## The IPs '0.0.0.0' were successfully banned
 
 ### fortigate-unban-ip
 
@@ -2305,8 +2423,11 @@ Unban IPs. Banned IPs are IP addresses that have been quarantined for a variety 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortigate-unban-ip ip_address=0.0.0.0```
+
 #### Human Readable Output
 
->## The IPs '0.0.0.0' were successfully unbanned.
+>## The IPs '0.0.0.0' were successfully unbanned

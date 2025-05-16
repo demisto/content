@@ -3,7 +3,7 @@ version: -1
 name: Get Original Email - EWS
 description: |-
   This playbook retrieves the original email in a thread, including headers and attachments, when the reporting user forwarded the original email not as an attachment.
-  Note:\ You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
+  Note: You must have the necessary eDiscovery permissions in the EWS integration to execute a global search.
 starttaskid: "0"
 tasks:
   "0":

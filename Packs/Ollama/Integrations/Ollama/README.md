@@ -1,6 +1,6 @@
 Integrate with open source LLMs using Ollama. With an instance of Ollama running locally you can use this integration to have a conversation in an Incident, download models, and create new models.
-## Configure Ollama in Cortex
 
+## Configure Ollama in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -13,7 +13,6 @@ Integrate with open source LLMs using Ollama. With an instance of Ollama running
 | Cloudflare Access Client Id | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access ID here. | False |
 | Cloudflare Access Client Secret | If Ollama is running behind CLoudflare ZeroTrust, provide the Service Access Secret here. | False |
 | Default Model | Some commands allow you to specify a model. If no model is provided, this value will be used. | False |
-
 
 ## Commands
 
@@ -38,7 +37,7 @@ Get a list of all available models
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.models | unknown | Output of the command | 
+| ollama.models | unknown | Output of the command |
 
 ### ollama-model-pull
 
@@ -53,13 +52,13 @@ Pull a model
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | Name of model to pull. See https://ollama.com/library for a list of options. | Optional | 
+| model | Name of model to pull. See https://ollama.com/library for a list of options. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.pull | unknown | Output of the command | 
+| ollama.pull | unknown | Output of the command |
 
 ### ollama-model-delete
 
@@ -74,13 +73,13 @@ Delete a model
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The name of the model to delete. | Optional | 
+| model | The name of the model to delete. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.delete | unknown | Output of the command | 
+| ollama.delete | unknown | Output of the command |
 
 ### ollama-conversation
 
@@ -95,14 +94,14 @@ General chat command that tracks the conversation history in the Incident.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The model name. | Optional | 
-| message | The message to be sent. | Required | 
+| model | The model name. | Optional |
+| message | The message to be sent. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.history | unknown | Output of the command | 
+| ollama.history | unknown | Output of the command |
 
 ### ollama-model-info
 
@@ -117,13 +116,13 @@ Show information for a specific model.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | name of the model to show. | Optional | 
+| model | name of the model to show. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.show | unknown | Output of the command | 
+| ollama.show | unknown | Output of the command |
 
 ### ollama-model-create
 
@@ -138,14 +137,14 @@ Create a new model from a Modelfile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | name of the model to create. | Required | 
-| model_file | contents of the Modelfile. | Required | 
+| model | name of the model to create. | Required |
+| model_file | contents of the Modelfile. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.create | unknown | Output of the command | 
+| ollama.create | unknown | Output of the command |
 
 ### ollama-generate
 
@@ -160,11 +159,11 @@ Generate a response for a given prompt with a provided model. Conversation histo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| model | The model name. | Optional | 
-| message | The message to be sent. | Optional | 
+| model | The model name. | Optional |
+| message | The message to be sent. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ollama.generate | unknown | Output of the command | 
+| ollama.generate | unknown | Output of the command |

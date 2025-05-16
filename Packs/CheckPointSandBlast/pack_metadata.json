@@ -10,7 +10,9 @@
     "categories": [
         "Forensics & Malware Analysis"
     ],
-    "tags": [],
+    "tags": [
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "checkpoint",

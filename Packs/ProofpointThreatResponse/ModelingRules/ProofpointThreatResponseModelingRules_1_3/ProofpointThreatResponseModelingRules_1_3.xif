@@ -5,12 +5,19 @@ alter
         attacker_ip_1 = json_extract_scalar(hosts, "$.attacker.0"),
         attacker_ip_2 = json_extract_scalar(hosts, "$.attacker.1"),
         attacker_ip_3 = json_extract_scalar(hosts, "$.attacker.2"),
-        incident_field_values = incident_field_values -> []
+        incident_field_values = incident_field_values -> [],
+        temp_url = arraymap(hosts -> url[],replex("@element", "\\"", "")),
+        temp_url2 = arraymap(arrayindex(event -> emails[], 0) -> urls[], replex("@element", "\\"", "")),
+        temp_original_threat_name = event -> threatname
 | alter
-        src_ipv4 = arraycreate(attacker_ip_1, attacker_ip_2, attacker_ip_3)
+        src_ipv4 = arraycreate(attacker_ip_1, attacker_ip_2, attacker_ip_3),
+        url = arraystring(temp_url , ", "),
+        url2 = arraystring(temp_url2 , ", ")
 // Mapping fields
 | alter
         xdm.event.id = to_string(id),
+        xdm.network.http.url = coalesce(url2,url),
+        xdm.alert.original_threat_name = temp_original_threat_name,
         xdm.alert.category = json_extract_scalar(event, "$.category"),
         xdm.alert.severity = json_extract_scalar(event, "$.severity"),
         xdm.email.sender = json_extract_scalar(emails, "$.sender.email"),

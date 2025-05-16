@@ -2,6 +2,7 @@ The Tenable Vulnerability Management pack helps organizations automate their sca
 Use the Tenable Vulnerability Management integration to manage scans and to view assets.
 
 ## What does this pack do
+
 Among other things, this integration enables you to:
 
 - Initiate vulnerability scans on demand.

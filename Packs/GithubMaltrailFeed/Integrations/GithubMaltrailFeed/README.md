@@ -2,7 +2,6 @@ Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
 
 ## Configure Github Maltrail Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Token | API Token | True |
@@ -18,7 +17,6 @@ Fetches Indicators from Github Repo https://github.com/stamparm/maltrail
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-
 
 ## Commands
 
@@ -38,7 +36,7 @@ Get indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return to the output. Default is 50. | Optional | 
+| limit | The maximum number of results to return to the output. Default is 50. | Optional |
 
 #### Context Output
 

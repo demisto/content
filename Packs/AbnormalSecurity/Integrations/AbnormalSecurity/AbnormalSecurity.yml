@@ -74,7 +74,7 @@ configuration:
   section: Collect
 - display: Polling Lag Time (in minutes)
   name: polling_lag
-  defaultvalue: "0"
+  defaultvalue: "2"
   type: 0
   required: false
   additionalinfo: Time in minutes to subtract from polling time window for data consistency
@@ -795,7 +795,7 @@ script:
     description: Get the latest threat intel feed.
     name: abnormal-security-get-latest-threat-intel-feed
     deprecated: true
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   script: ""
   subtype: python3
   type: python

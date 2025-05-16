@@ -610,7 +610,7 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     adjusted_end_time = fixed_current_time - polling_lag
     expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
+    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lt {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
     _, incidents = fetch_incidents(
@@ -869,7 +869,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
 
     # Verify the filter contains latestTimeRemediated with adjusted time due to polling lag
     assert "latestTimeRemediated gte" in threats_call_kwargs['filter_']
-    assert "latestTimeRemediated lte" in threats_call_kwargs['filter_']
+    assert "latestTimeRemediated lt" in threats_call_kwargs['filter_']
     assert threats_call_kwargs['max_incidents_to_fetch'] == max_incidents
 
     # 2. Verify abuse campaigns pagination (this is called next in the code)

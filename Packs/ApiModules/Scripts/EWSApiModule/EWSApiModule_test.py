@@ -1,5 +1,12 @@
+import base64
+import json
 import os
+import uuid
+from unittest.mock import MagicMock
+
 import EWSApiModule
+import exchangelib
+import pytest
 from EWSApiModule import (
     EWSClient,
     GetSearchableMailboxes,
@@ -20,58 +27,50 @@ from EWSApiModule import (
     move_item,
     move_item_between_mailboxes,
     recover_soft_delete_item,
-    switch_hr_headers
+    switch_hr_headers,
 )
-
-import pytest
-from unittest.mock import MagicMock
-import json
-import base64
-import uuid
-
-import exchangelib
 from exchangelib import (
     BASIC,
     DELEGATE,
     OAUTH2,
-    Credentials,
     Configuration,
+    Credentials,
     EWSDateTime,
     EWSTimeZone,
     FileAttachment,
     Folder,
     Message,
 )
-from exchangelib.protocol import Protocol
 from exchangelib.attachments import AttachmentId
-from exchangelib.util import TNS
+from exchangelib.protocol import Protocol
 from exchangelib.settings import OofSettings
+from exchangelib.util import TNS
 from MicrosoftApiModule import AzureCloud, AzureCloudEndpoints
 
-''' Constants '''
+""" Constants """
 
-CLIENT_ID = 'test_client_id'
-CLIENT_SECRET = 'test_client_secret'
+CLIENT_ID = "test_client_id"
+CLIENT_SECRET = "test_client_secret"
 ACCESS_TYPE = DELEGATE
-DEFAULT_TARGET_MAILBOX = 'test@default_target_mailbox.com'
-EWS_SERVER = 'http://test_ews_server.com'
+DEFAULT_TARGET_MAILBOX = "test@default_target_mailbox.com"
+EWS_SERVER = "http://test_ews_server.com"
 MAX_FETCH = 10
-FOLDER = 'test_folder'
-REQUEST_TIMEOUT = '120'
-VERSION_STR = '2013'
+FOLDER = "test_folder"
+REQUEST_TIMEOUT = "120"
+VERSION_STR = "2013"
 BUILD = exchangelib.version.EXCHANGE_2013
 VERSION = exchangelib.Version(BUILD)
 AUTH_TYPE = BASIC
-MSG_ID = 'message_1'
-DICSOVERY_EWS_SERVER = 'https://auto-discovered-server.com'
+MSG_ID = "message_1"
+DICSOVERY_EWS_SERVER = "https://auto-discovered-server.com"
 DISCOVERY_SERVER_BUILD = exchangelib.version.EXCHANGE_2016
 DISCOVERY_VERSION = exchangelib.Version(DISCOVERY_SERVER_BUILD)
 
-''' Utilities '''
+""" Utilities """
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -97,13 +96,22 @@ def client():
     )
 
 
-class MockAccount():
+class MockAccount:
     class MockRights:
         def __init__(self, *args, **kwargs):
             self.read = True
 
-    def __init__(self, primary_smtp_address, access_type, autodiscover, credentials=None, config=None, default_timezone=None,
-                 *args, **kwargs):
+    def __init__(
+        self,
+        primary_smtp_address,
+        access_type,
+        autodiscover,
+        credentials=None,
+        config=None,
+        default_timezone=None,
+        *args,
+        **kwargs,
+    ):
         self.primary_smtp_address = primary_smtp_address
         self.access_type = access_type
         self.autodiscover = autodiscover
@@ -113,7 +121,7 @@ class MockAccount():
 
         if autodiscover:
             if not credentials:
-                raise ValueError('Credentials must be provided for autodiscovery')
+                raise ValueError("Credentials must be provided for autodiscovery")
 
             config = Configuration(
                 service_endpoint=DICSOVERY_EWS_SERVER,
@@ -122,7 +130,7 @@ class MockAccount():
                 version=DISCOVERY_VERSION,
             )
         elif not config:
-            raise ValueError('Autodiscovery is false and no config was provided')
+            raise ValueError("Autodiscovery is false and no config was provided")
 
         self.version = config.version
         self.protocol = Protocol(config=config)
@@ -132,30 +140,40 @@ class MockAccount():
 
         def mock_floordiv(name):
             return self.root.tois
+
         self.root.tois.__floordiv__.side_effect = mock_floordiv
         self.root.effective_rights = MagicMock()
         self.root.effective_rights.read = True
 
         self.inbox = MagicMock()
         self.drafts = MagicMock()
-        self.drafts.messages = {MSG_ID: Message(account=MagicMock(spec=exchangelib.Account),
-                                                id=MSG_ID, subject='Test subject', body='Test body')}
+        self.drafts.messages = {
+            MSG_ID: Message(account=MagicMock(spec=exchangelib.Account), id=MSG_ID, subject="Test subject", body="Test body")
+        }
         self.inbox.get = MagicMock(side_effect=lambda id: self.drafts.messages.get(id))
 
-        self.oof_settings = MagicMock(spec=OofSettings, state='Disabled', external_audience='All',
-                                      start=EWSDateTime(2025, 2, 4, 8, 0, tzinfo=EWSTimeZone(key='UTC')),
-                                      end=EWSDateTime(2025, 2, 5, 8, 0, tzinfo=EWSTimeZone(key='UTC')),
-                                      internal_reply='reply_internal', external_reply='reply_external')
+        self.oof_settings = MagicMock(
+            spec=OofSettings,
+            state="Disabled",
+            external_audience="All",
+            start=EWSDateTime(2025, 2, 4, 8, 0, tzinfo=EWSTimeZone(key="UTC")),
+            end=EWSDateTime(2025, 2, 5, 8, 0, tzinfo=EWSTimeZone(key="UTC")),
+            internal_reply="reply_internal",
+            external_reply="reply_external",
+        )
 
         self.recoverable_items_deletions = MagicMock()
-        self.mock_deleted_messages = [MagicMock(spec=Message, subject="Test Subject 1", id="id1", message_id="message1"),
-                                      MagicMock(spec=Message, subject="Test Subject 2", id="id2", message_id="message2"),
-                                      MagicMock(spec=Message, subject="Test Subject 3", id="id3", message_id="message3")]
+        self.mock_deleted_messages = [
+            MagicMock(spec=Message, subject="Test Subject 1", id="id1", message_id="message1"),
+            MagicMock(spec=Message, subject="Test Subject 2", id="id2", message_id="message2"),
+            MagicMock(spec=Message, subject="Test Subject 3", id="id3", message_id="message3"),
+        ]
 
         def mock_filter(message_id__in):
             output = MagicMock()
             output.all = lambda: [msg for msg in self.mock_deleted_messages if msg.message_id in message_id__in]
             return output
+
         self.recoverable_items_deletions.filter = mock_filter
         self.save_instance()
 
@@ -175,12 +193,12 @@ class MockAccount():
 @pytest.fixture()
 def mock_account(mocker):
     mockAccount = mocker.MagicMock(wraps=MockAccount, instances=[])
-    mocker.patch('EWSApiModule.Account', mockAccount)
-    mocker.patch.object(MockAccount, 'save_instance', side_effect=lambda self: mockAccount.instances.append(self), autospec=True)
+    mocker.patch("EWSApiModule.Account", mockAccount)
+    mocker.patch.object(MockAccount, "save_instance", side_effect=lambda self: mockAccount.instances.append(self), autospec=True)
     return mockAccount
 
 
-''' Tests '''
+""" Tests """
 
 
 def test_client_configure_oauth(mocker):
@@ -192,7 +210,7 @@ def test_client_configure_oauth(mocker):
     Then:
         - The Credentials and Configuration objects are created correctly
     """
-    ACCESS_TOKEN = 'test_access_token'
+    ACCESS_TOKEN = "test_access_token"
 
     class MockMSClient:
         def __init__(self, *args, **kwargs):
@@ -201,13 +219,13 @@ def test_client_configure_oauth(mocker):
         def get_access_token(self):
             return ACCESS_TOKEN
 
-    mocker.patch('EWSApiModule.MicrosoftClient', MockMSClient)
+    mocker.patch("EWSApiModule.MicrosoftClient", MockMSClient)
 
     azure_cloud = AzureCloud(
-        origin='test_origin',
-        name='test_name',
-        abbreviation='test_abrv',
-        endpoints=AzureCloudEndpoints(active_directory='', exchange_online='https://outlook.office365.com')
+        origin="test_origin",
+        name="test_name",
+        abbreviation="test_abrv",
+        endpoints=AzureCloudEndpoints(active_directory="", exchange_online="https://outlook.office365.com"),
     )
 
     client = EWSClient(
@@ -219,21 +237,21 @@ def test_client_configure_oauth(mocker):
         max_fetch=MAX_FETCH,
         auth_type=OAUTH2,
         azure_cloud=azure_cloud,
-        version='O365',
+        version="O365",
     )
 
     credentials = client.credentials
     assert isinstance(credentials, exchangelib.OAuth2AuthorizationCodeCredentials)
     assert credentials.client_id == CLIENT_ID
     assert credentials.client_secret == CLIENT_SECRET
-    assert credentials.access_token['access_token'] == ACCESS_TOKEN
+    assert credentials.access_token["access_token"] == ACCESS_TOKEN
 
     config = client.config
     assert config
     assert config.credentials == credentials
     assert config.auth_type == OAUTH2
     assert config.version == exchangelib.Version(exchangelib.version.EXCHANGE_O365)
-    assert config.service_endpoint == 'https://outlook.office365.com/EWS/Exchange.asmx'
+    assert config.service_endpoint == "https://outlook.office365.com/EWS/Exchange.asmx"
 
 
 def test_client_configure_onprem(mocker, client):
@@ -246,7 +264,7 @@ def test_client_configure_onprem(mocker, client):
     Then:
         - The Credentials and Configuration objects are created correctly
     """
-    mocked_account = mocker.patch('EWSApiModule.Account')
+    mocked_account = mocker.patch("EWSApiModule.Account")
 
     assert not client.auto_discover
     mocked_account.assert_not_called()
@@ -332,12 +350,14 @@ def test_client_get_protocol(client):
     Then:
         - The Protocol object is returned correctly
     """
-    expected_protocol = Protocol(config=Configuration(
-        service_endpoint=EWS_SERVER,
-        credentials=Credentials(username=CLIENT_ID, password=CLIENT_SECRET),
-        auth_type=AUTH_TYPE,
-        version=VERSION,
-    ))
+    expected_protocol = Protocol(
+        config=Configuration(
+            service_endpoint=EWS_SERVER,
+            credentials=Credentials(username=CLIENT_ID, password=CLIENT_SECRET),
+            auth_type=AUTH_TYPE,
+            version=VERSION,
+        )
+    )
 
     assert client.get_protocol() == expected_protocol
 
@@ -351,12 +371,14 @@ def test_client_get_protocol_autodiscover(mock_account):
     Then:
         - The Protocol object is returned correctly based on the auto-discovered configuration
     """
-    expected_protocol = Protocol(config=Configuration(
-        service_endpoint=DICSOVERY_EWS_SERVER,
-        credentials=Credentials(username=CLIENT_ID, password=CLIENT_SECRET),
-        auth_type=AUTH_TYPE,
-        version=DISCOVERY_VERSION,
-    ))
+    expected_protocol = Protocol(
+        config=Configuration(
+            service_endpoint=DICSOVERY_EWS_SERVER,
+            credentials=Credentials(username=CLIENT_ID, password=CLIENT_SECRET),
+            auth_type=AUTH_TYPE,
+            version=DISCOVERY_VERSION,
+        )
+    )
 
     client = EWSClient(
         client_id=CLIENT_ID,
@@ -370,7 +392,7 @@ def test_client_get_protocol_autodiscover(mock_account):
     assert client.get_protocol() == expected_protocol
 
 
-@pytest.mark.parametrize('target_mailbox', [None, 'test_target_mailbox'])
+@pytest.mark.parametrize("target_mailbox", [None, "test_target_mailbox"])
 def test_client_get_account(client, mock_account, target_mailbox):
     """
     Given:
@@ -380,7 +402,7 @@ def test_client_get_account(client, mock_account, target_mailbox):
     Then:
         - The Account object is returned correctly
     """
-    time_zone = 'test_tz'
+    time_zone = "test_tz"
 
     account = client.get_account(target_mailbox=target_mailbox, time_zone=time_zone)
     assert isinstance(account, MockAccount)
@@ -410,7 +432,7 @@ def test_client_get_account_autodiscover(mock_account):
     Then:
         - The Account object is returned correctly based on the auto-discovered configuration
     """
-    time_zone = 'test_tz'
+    time_zone = "test_tz"
 
     client = EWSClient(
         client_id=CLIENT_ID,
@@ -449,10 +471,11 @@ def test_client_get_items_from_mailbox(mocker, client):
     Then:
         - Mailbox items are returned as expected
     """
-    mock_items = {'item_id_1': 'item_1',
-                  'item_id_2': 'item_2',
-                  'item_id_3': 'item_3',
-                  }
+    mock_items = {
+        "item_id_1": "item_1",
+        "item_id_2": "item_2",
+        "item_id_3": "item_3",
+    }
 
     def mock_account_fetch(self, ids: list[exchangelib.items.Item]):
         mocked_items = []
@@ -466,7 +489,7 @@ def test_client_get_items_from_mailbox(mocker, client):
             mocked_items.append(mocked_item)
         return mocked_items
 
-    mocker.patch.object(EWSApiModule.Account, 'fetch', mock_account_fetch)
+    mocker.patch.object(EWSApiModule.Account, "fetch", mock_account_fetch)
 
     items = client.get_items_from_mailbox(client.get_account(), list(mock_items.keys()))
 
@@ -484,10 +507,11 @@ def test_client_get_item_from_mailbox(mocker, client):
     Then:
         - The item is returned as expected
     """
-    mock_items = {'item_id_1': 'item_1',
-                  'item_id_2': 'item_2',
-                  'item_id_3': 'item_3',
-                  }
+    mock_items = {
+        "item_id_1": "item_1",
+        "item_id_2": "item_2",
+        "item_id_3": "item_3",
+    }
 
     def mock_account_fetch(self, ids: list[exchangelib.items.Item]):
         mocked_items = []
@@ -501,7 +525,7 @@ def test_client_get_item_from_mailbox(mocker, client):
             mocked_items.append(mocked_item)
         return mocked_items
 
-    mocker.patch.object(EWSApiModule.Account, 'fetch', mock_account_fetch)
+    mocker.patch.object(EWSApiModule.Account, "fetch", mock_account_fetch)
 
     item = client.get_item_from_mailbox(client.get_account(), list(mock_items.keys())[0])
 
@@ -519,13 +543,13 @@ def test_client_get_attachments_for_item(mocker, client):
     Then:
         - The attachments for the item are returned as expected
     """
-    item_id = 'item_id_1'
-    attach_ids = ['attach_id_1', 'attach_id_2', 'attach_id_3']
+    item_id = "item_id_1"
+    attach_ids = ["attach_id_1", "attach_id_2", "attach_id_3"]
     mock_item = mocker.MagicMock()
     mock_item.id = item_id
     mock_item.attachments = [mocker.MagicMock(attachment_id=mocker.MagicMock(id=id)) for id in attach_ids]
 
-    mocker.patch.object(EWSClient, 'get_item_from_mailbox', return_value=mock_item)
+    mocker.patch.object(EWSClient, "get_item_from_mailbox", return_value=mock_item)
 
     expected_attach_ids = attach_ids[:2]
     attachments = client.get_attachments_for_item(item_id, client.get_account(), expected_attach_ids)
@@ -535,11 +559,10 @@ def test_client_get_attachments_for_item(mocker, client):
         assert attachment.attachment_id.id in expected_attach_ids
 
 
-@pytest.mark.parametrize('folder_path, is_public, expected_is_public', [
-    (FOLDER, True, True),
-    (FOLDER, False, False),
-    ('Calendar', True, False),
-    ('Deleted Items', True, False)])
+@pytest.mark.parametrize(
+    "folder_path, is_public, expected_is_public",
+    [(FOLDER, True, True), (FOLDER, False, False), ("Calendar", True, False), ("Deleted Items", True, False)],
+)
 def test_client_is_default_folder(folder_path, is_public, expected_is_public):
     """
     Given:
@@ -565,7 +588,7 @@ def test_client_is_default_folder(folder_path, is_public, expected_is_public):
     assert client.is_default_folder(folder_path) == expected_is_public
 
 
-@pytest.mark.parametrize('is_public', [True, False])
+@pytest.mark.parametrize("is_public", [True, False])
 def test_client_is_default_folder_with_override(is_public):
     """
     Given:
@@ -600,7 +623,7 @@ def test_client_get_folder_by_path(mocker, mock_account):
     Then:
         - The folder at the specified path is returned
     """
-    path = 'Inbox/Subfolder/Test'
+    path = "Inbox/Subfolder/Test"
 
     client = EWSClient(
         client_id=CLIENT_ID,
@@ -618,7 +641,7 @@ def test_client_get_folder_by_path(mocker, mock_account):
 
     client.get_folder_by_path(path, account)
 
-    expected_calls = [mocker.call(part) for part in path.split('/')]
+    expected_calls = [mocker.call(part) for part in path.split("/")]
     assert account.root.tois.__floordiv__.call_args_list == expected_calls  # type: ignore
 
 
@@ -632,10 +655,10 @@ def test_client_send_email(mocker, mock_account):
         - The email is saved and sent successfully
         - The account field of the message is set
     """
-    send_and_save_mock = mocker.patch.object(EWSApiModule.Message, 'send_and_save')
+    send_and_save_mock = mocker.patch.object(EWSApiModule.Message, "send_and_save")
     message = Message(
-        subject='Test subject',
-        body='Test message',
+        subject="Test subject",
+        body="Test message",
     )
 
     client = EWSClient(
@@ -668,11 +691,11 @@ def test_client_reply_email(mocker, mock_account):
     """
 
     def mock_save(self, folder):
-        folder.messages['reply_1'] = self
-        return mocker.MagicMock(id='reply_1')
+        folder.messages["reply_1"] = self
+        return mocker.MagicMock(id="reply_1")
 
-    mocker.patch.object(exchangelib.items.ReplyToItem, 'save', mock_save)
-    mocked_reply_send = mocker.patch.object(exchangelib.items.ReplyToItem, 'send')
+    mocker.patch.object(exchangelib.items.ReplyToItem, "save", mock_save)
+    mocked_reply_send = mocker.patch.object(exchangelib.items.ReplyToItem, "send")
     client = EWSClient(
         client_id=CLIENT_ID,
         client_secret=CLIENT_SECRET,
@@ -685,15 +708,15 @@ def test_client_reply_email(mocker, mock_account):
         folder=FOLDER,
     )
 
-    reply_body = 'This is a reply'
-    reply_to = ['recipient@example.com']
-    reply_cc = ['cc_recipient@example.com']
+    reply_body = "This is a reply"
+    reply_to = ["recipient@example.com"]
+    reply_cc = ["cc_recipient@example.com"]
     reply_bcc = []
     message = client.reply_email(
         inReplyTo=MSG_ID,
         to=reply_to,
         body=reply_body,
-        subject='',
+        subject="",
         bcc=reply_bcc,
         cc=reply_cc,
         htmlBody=None,
@@ -701,7 +724,7 @@ def test_client_reply_email(mocker, mock_account):
     )
 
     assert isinstance(message, exchangelib.items.ReplyToItem)
-    assert 'Re:' in str(message.subject)
+    assert "Re:" in str(message.subject)
     assert message.new_body == reply_body
     assert message.to_recipients == reply_to
     assert message.cc_recipients == reply_cc
@@ -719,18 +742,18 @@ def test_handle_html(mocker):
     Then:
         - Clean the HTML string and add the relevant references to image files
     """
-    mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
+    mocker.patch.object(uuid, "uuid4", return_value="abcd1234")
 
     html_input = '<html><body>some text <img src="data:image/abcd;base64,abcd"></body></html>'
     expected_clean_body = '<html><body>some text <img src="cid:image0@abcd1234_abcd1234"></body></html>'
-    expected_attachment_params = [{'data': b'i\xb7\x1d', 'name': 'image0', 'cid': 'image0@abcd1234_abcd1234'}]
+    expected_attachment_params = [{"data": b"i\xb7\x1d", "name": "image0", "cid": "image0@abcd1234_abcd1234"}]
 
     clean_body, attachments = handle_html(html_input)
     assert clean_body == expected_clean_body
     assert len(attachments) == len(expected_attachment_params)
     for i, attachment in enumerate(attachments):
         assert isinstance(attachment, FileAttachment)
-        attachment_params = {'data': attachment.content, 'name': attachment.name, 'cid': attachment.content_id}
+        attachment_params = {"data": attachment.content, "name": attachment.name, "cid": attachment.content_id}
         assert attachment_params == expected_attachment_params[i]
 
 
@@ -743,10 +766,10 @@ def test_handle_html_no_images(mocker):
     Then:
         - No images will be detected and the output will be the original HTML content
     """
-    mocker.patch.object(uuid, 'uuid4', return_value='abcd1234')
+    mocker.patch.object(uuid, "uuid4", return_value="abcd1234")
 
-    html_input = '<html><body>some text</body></html>'
-    expected_clean_body = '<html><body>some text</body></html>'
+    html_input = "<html><body>some text</body></html>"
+    expected_clean_body = "<html><body>some text</body></html>"
     expected_attachment_params = []
 
     clean_body, attachments = handle_html(html_input)
@@ -755,7 +778,7 @@ def test_handle_html_no_images(mocker):
     assert len(attachments) == len(expected_attachment_params)
     for i, attachment in enumerate(attachments):
         assert isinstance(attachment, FileAttachment)
-        attachment_params = {'data': attachment.content, 'name': attachment.name, 'cid': attachment.content_id}
+        attachment_params = {"data": attachment.content, "name": attachment.name, "cid": attachment.content_id}
         assert attachment_params == expected_attachment_params[i]
 
 
@@ -768,7 +791,7 @@ def test_handle_html_longer_input():
     Then:
         - The function correctly extracts all image sources
     """
-    html_content = '''<html>
+    html_content = """<html>
     <body>
         <h1>Test Email</h1>
         <p>This is a test email with attached images.</p>
@@ -781,13 +804,13 @@ def test_handle_html_longer_input():
         <a href="https://example.com">A link without an image</a>
     </body>
     </html>
-    '''
+    """
 
     expected_image_data = [
         base64.b64decode("iVBORw0KGgoAAAANSUhEUgA=="),
         base64.b64decode("/9j/4AAQSkZJRgABAQEAYABgAAD/2w=="),
     ]
-    expected_parsed_html = '''<html>
+    expected_parsed_html = """<html>
     <body>
         <h1>Test Email</h1>
         <p>This is a test email with attached images.</p>
@@ -800,12 +823,13 @@ def test_handle_html_longer_input():
         <a href="https://example.com">A link without an image</a>
     </body>
     </html>
-    '''
+    """
 
     clean_body, extracted_images = handle_html(html_content)
 
-    assert clean_body == expected_parsed_html.format(image0_cid=extracted_images[0].content_id,
-                                                     image1_cid=extracted_images[1].content_id)
+    assert clean_body == expected_parsed_html.format(
+        image0_cid=extracted_images[0].content_id, image1_cid=extracted_images[1].content_id
+    )
     assert len(extracted_images) == 2
     for i, image in enumerate(extracted_images):
         assert image.content == expected_image_data[i]
@@ -820,18 +844,14 @@ def test_get_config_args_from_context(mocker):
     Then:
      - A configuration object is created based on the context information
     """
-    mocker.patch('EWSApiModule.get_build_from_context', return_value=BUILD)
-    context = {
-        'auth_type': 'test_auth_type',
-        'api_version': VERSION_STR,
-        'service_endpoint': 'test_service_endpoint'
-    }
+    mocker.patch("EWSApiModule.get_build_from_context", return_value=BUILD)
+    context = {"auth_type": "test_auth_type", "api_version": VERSION_STR, "service_endpoint": "test_service_endpoint"}
     credentials = Credentials(username=CLIENT_ID, password=CLIENT_SECRET)
     expected_args = {
-        'credentials': credentials,
-        'auth_type': context['auth_type'],
-        'version': exchangelib.Version(BUILD, VERSION_STR),
-        'service_endpoint': context['service_endpoint'],
+        "credentials": credentials,
+        "auth_type": context["auth_type"],
+        "version": exchangelib.Version(BUILD, VERSION_STR),
+        "service_endpoint": context["service_endpoint"],
     }
     config_args = get_config_args_from_context(context, credentials)
 
@@ -847,18 +867,21 @@ def test_get_build_from_context():
     Then:
      - A Build object is returned based on the context information
     """
-    context = {'build': '10.0.10.1'}
+    context = {"build": "10.0.10.1"}
 
     build = get_build_from_context(context)
 
     assert build == exchangelib.Build(10, 0, 10, 1)
 
 
-@pytest.mark.parametrize('version, expected', [
-    ('2013', exchangelib.version.EXCHANGE_2013),
-    ('2016', exchangelib.version.EXCHANGE_2016),
-    ('2013_SP1', exchangelib.version.EXCHANGE_2013_SP1),
-])
+@pytest.mark.parametrize(
+    "version, expected",
+    [
+        ("2013", exchangelib.version.EXCHANGE_2013),
+        ("2016", exchangelib.version.EXCHANGE_2016),
+        ("2013_SP1", exchangelib.version.EXCHANGE_2013_SP1),
+    ],
+)
 def test_get_onprem_build(version, expected):
     """
     Given:
@@ -871,11 +894,7 @@ def test_get_onprem_build(version, expected):
     assert get_on_prem_build(version) == expected
 
 
-@pytest.mark.parametrize('version', [
-    ('2004'),
-    ('test_version'),
-    ('2003_SP1')
-])
+@pytest.mark.parametrize("version", [("2004"), ("test_version"), ("2003_SP1")])
 def test_get_onprem_build_bad_version(version):
     """
     Given:
@@ -899,14 +918,14 @@ def test_filter_dict_null():
         - New dict is returned with the None values filtered out
     """
     test_dict = {
-        'some_val': 0,
-        'bad_val': None,
-        'another_val': 'val',
-        'another_bad_one': None,
+        "some_val": 0,
+        "bad_val": None,
+        "another_val": "val",
+        "another_bad_one": None,
     }
     expected_output = {
-        'some_val': 0,
-        'another_val': 'val',
+        "some_val": 0,
+        "another_val": "val",
     }
 
     assert filter_dict_null(test_dict) == expected_output
@@ -922,22 +941,14 @@ def test_switch_hr_headers():
         - The keys that are present are switched
     """
     test_context = {
-        'willswitch': '1234',
-        'wontswitch': '111',
-        'alsoswitch': 5555,
+        "willswitch": "1234",
+        "wontswitch": "111",
+        "alsoswitch": 5555,
     }
 
-    header_changes = {
-        'willswitch': 'newkey',
-        'alsoswitch': 'annothernewkey',
-        'doesnt_exiest': 'doesnt break'
-    }
+    header_changes = {"willswitch": "newkey", "alsoswitch": "annothernewkey", "doesnt_exiest": "doesnt break"}
 
-    expected_output = {
-        'annothernewkey': 5555,
-        'newkey': '1234',
-        'wontswitch': '111'
-    }
+    expected_output = {"annothernewkey": 5555, "newkey": "1234", "wontswitch": "111"}
 
     assert switch_hr_headers(test_context, header_changes) == expected_output
 
@@ -952,16 +963,16 @@ def test_get_entry_for_object():
         - All empty values are filtered from the results object
         - Readable output table is created correctly with the requested swapped headers
     """
-    obj = [{'a': 1, 'b': 2, 'c': None, 'd': 3}, {'a': 11, 'b': None, 'c': 5, 'd': 6}, {'a': 3}]
+    obj = [{"a": 1, "b": 2, "c": None, "d": 3}, {"a": 11, "b": None, "c": 5, "d": 6}, {"a": 3}]
 
-    expected_output = [{'a': 1, 'b': 2, 'd': 3}, {'a': 11, 'c': 5, 'd': 6}, {'a': 3}]
-    expected_hr = '### test\n|a|b|col|\n|---|---|---|\n| 1 | 2 |  |\n| 11 |  | 5 |\n| 3 |  |  |\n'
+    expected_output = [{"a": 1, "b": 2, "d": 3}, {"a": 11, "c": 5, "d": 6}, {"a": 3}]
+    expected_hr = "### test\n|a|b|col|\n|---|---|---|\n| 1 | 2 |  |\n| 11 |  | 5 |\n| 3 |  |  |\n"
 
-    entry = get_entry_for_object('test', 'test_key', obj, headers=['a', 'b', 'col'], hr_header_changes={'c': 'col'})
+    entry = get_entry_for_object("test", "test_key", obj, headers=["a", "b", "col"], hr_header_changes={"c": "col"})
 
     assert entry.readable_output == expected_hr
     assert entry.outputs == expected_output
-    assert entry.outputs_prefix == 'test_key'
+    assert entry.outputs_prefix == "test_key"
 
 
 def test_get_entry_for_object_empty():
@@ -973,9 +984,9 @@ def test_get_entry_for_object_empty():
     Then:
         - A message indicating there is no result is returned
     """
-    entry = get_entry_for_object('empty_obj', 'test_key', {})
+    entry = get_entry_for_object("empty_obj", "test_key", {})
 
-    assert 'There is no output' in entry.readable_output
+    assert "There is no output" in entry.readable_output
 
 
 def test_delete_attachments_for_message(mocker, client):
@@ -989,20 +1000,25 @@ def test_delete_attachments_for_message(mocker, client):
         - The requested attachments are deleted from the given email
     """
     mock_items = {
-        'itemid_1': [FileAttachment(name='attach_1', content='test_content_1', attachment_id=AttachmentId(id='attach1')),
-                     FileAttachment(name='attach_2', content='test_content_2', attachment_id=AttachmentId(id='attach2'))],
-        'itemid_2': [],
+        "itemid_1": [
+            FileAttachment(name="attach_1", content="test_content_1", attachment_id=AttachmentId(id="attach1")),
+            FileAttachment(name="attach_2", content="test_content_2", attachment_id=AttachmentId(id="attach2")),
+        ],
+        "itemid_2": [],
     }
-    mocker.patch.object(EWSClient, 'get_attachments_for_item',
-                        side_effect=lambda item_id, _account, _attach_ids: mock_items.get(item_id, f'Item {item_id} not found'))
-    attachment_detach_mock = mocker.patch.object(FileAttachment, 'detach')
+    mocker.patch.object(
+        EWSClient,
+        "get_attachments_for_item",
+        side_effect=lambda item_id, _account, _attach_ids: mock_items.get(item_id, f"Item {item_id} not found"),
+    )
+    attachment_detach_mock = mocker.patch.object(FileAttachment, "detach")
 
     expected_output = [
-        {'attachmentId': 'attach1', 'action': 'deleted'},
-        {'attachmentId': 'attach2', 'action': 'deleted'},
+        {"attachmentId": "attach1", "action": "deleted"},
+        {"attachmentId": "attach2", "action": "deleted"},
     ]
 
-    result = delete_attachments_for_message(client, 'itemid_1')
+    result = delete_attachments_for_message(client, "itemid_1")
 
     assert result[0].outputs == expected_output
     assert attachment_detach_mock.call_count == len(expected_output)
@@ -1018,8 +1034,9 @@ def test_get_searchable_mailboxes(mocker, client):
         - A list containing the relevant details for each searchable mailbox is returned
     """
     from xml.etree import ElementTree as ET
+
     mock_elements = [
-        ET.fromstring(f'''
+        ET.fromstring(f"""
             <t:SearchableMailbox xmlns:t="{TNS}">
                 <t:PrimarySmtpAddress>user1@example.com</t:PrimarySmtpAddress>
                 <t:ReferenceId>00000000-0000-0000-0000-000000000001</t:ReferenceId>
@@ -1027,8 +1044,8 @@ def test_get_searchable_mailboxes(mocker, client):
                 <t:IsExternalMailbox>false</t:IsExternalMailbox>
                 <t:ExternalEmailAddress></t:ExternalEmailAddress>
             </t:SearchableMailbox>
-        '''),
-        ET.fromstring(f'''
+        """),
+        ET.fromstring(f"""
             <t:SearchableMailbox xmlns:t="{TNS}">
                 <t:PrimarySmtpAddress>user2@example.com</t:PrimarySmtpAddress>
                 <t:ReferenceId>00000000-0000-0000-0000-000000000002</t:ReferenceId>
@@ -1036,8 +1053,8 @@ def test_get_searchable_mailboxes(mocker, client):
                 <t:IsExternalMailbox>false</t:IsExternalMailbox>
                 <t:ExternalEmailAddress></t:ExternalEmailAddress>
             </t:SearchableMailbox>
-        '''),
-        ET.fromstring(f'''
+        """),
+        ET.fromstring(f"""
             <t:SearchableMailbox xmlns:t="{TNS}">
                 <t:PrimarySmtpAddress>external@otherdomain.com</t:PrimarySmtpAddress>
                 <t:ReferenceId>00000000-0000-0000-0000-000000000003</t:ReferenceId>
@@ -1045,19 +1062,32 @@ def test_get_searchable_mailboxes(mocker, client):
                 <t:IsExternalMailbox>true</t:IsExternalMailbox>
                 <t:ExternalEmailAddress>external@otherdomain.com</t:ExternalEmailAddress>
             </t:SearchableMailbox>
-        ''')
+        """),
     ]
 
     expected_output = [
-        {'mailbox': 'user1@example.com', 'mailboxId': '00000000-0000-0000-0000-000000000001',
-         'displayName': 'User One', 'isExternal': 'false'},
-        {'mailbox': 'user2@example.com', 'mailboxId': '00000000-0000-0000-0000-000000000002',
-         'displayName': 'User Two', 'isExternal': 'false'},
-        {'mailbox': 'external@otherdomain.com', 'mailboxId': '00000000-0000-0000-0000-000000000003',
-         'displayName': 'External User', 'isExternal': 'true', 'externalEmailAddress': 'external@otherdomain.com'}
+        {
+            "mailbox": "user1@example.com",
+            "mailboxId": "00000000-0000-0000-0000-000000000001",
+            "displayName": "User One",
+            "isExternal": "false",
+        },
+        {
+            "mailbox": "user2@example.com",
+            "mailboxId": "00000000-0000-0000-0000-000000000002",
+            "displayName": "User Two",
+            "isExternal": "false",
+        },
+        {
+            "mailbox": "external@otherdomain.com",
+            "mailboxId": "00000000-0000-0000-0000-000000000003",
+            "displayName": "External User",
+            "isExternal": "true",
+            "externalEmailAddress": "external@otherdomain.com",
+        },
     ]
 
-    mocker.patch.object(GetSearchableMailboxes, '_get_elements', return_value=mock_elements)
+    mocker.patch.object(GetSearchableMailboxes, "_get_elements", return_value=mock_elements)
 
     results = get_searchable_mailboxes(client)
 
@@ -1073,21 +1103,20 @@ def test_move_item_between_mailboxes(mocker, client, mock_account):
     Then:
         - The requested item is exported to the destination mailbox and deleted from the source mailbox
     """
-    mocker.patch.object(EWSClient, 'get_item_from_mailbox', return_value='item_to_move')
-    mocker.patch.object(EWSClient, 'get_folder_by_path', side_effect=lambda path, _account, _is_public: f'folder-{path}')
+    mocker.patch.object(EWSClient, "get_item_from_mailbox", return_value="item_to_move")
+    mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, _account, _is_public: f"folder-{path}")
 
-    export_mock = mocker.patch.object(MockAccount, 'export', side_effect=lambda items: items)
-    upload_mock = mocker.patch.object(MockAccount, 'upload')
-    bulk_delete_mock = mocker.patch.object(MockAccount, 'bulk_delete')
+    export_mock = mocker.patch.object(MockAccount, "export", side_effect=lambda items: items)
+    upload_mock = mocker.patch.object(MockAccount, "upload")
+    bulk_delete_mock = mocker.patch.object(MockAccount, "bulk_delete")
 
-    move_item_between_mailboxes(src_client=client,
-                                item_id='item_id',
-                                destination_mailbox='dest_mailbox',
-                                destination_folder_path='dest_folder')
+    move_item_between_mailboxes(
+        src_client=client, item_id="item_id", destination_mailbox="dest_mailbox", destination_folder_path="dest_folder"
+    )
 
-    export_mock.assert_called_once_with(['item_to_move'])
-    upload_mock.assert_called_once_with([('folder-dest_folder', 'item_to_move')])
-    bulk_delete_mock.assert_called_once_with(['item_to_move'])
+    export_mock.assert_called_once_with(["item_to_move"])
+    upload_mock.assert_called_once_with([("folder-dest_folder", "item_to_move")])
+    bulk_delete_mock.assert_called_once_with(["item_to_move"])
 
 
 def test_move_item(mocker, client, mock_account):
@@ -1100,16 +1129,16 @@ def test_move_item(mocker, client, mock_account):
         - The requested item is moved to the specified destination folder
     """
     message_mock = MagicMock(spec=Message)
-    get_item_mock = mocker.patch.object(EWSClient, 'get_item_from_mailbox', return_value=message_mock)
-    mocker.patch.object(EWSClient, 'get_folder_by_path', side_effect=lambda path, is_public: f'folder-{path}')
+    get_item_mock = mocker.patch.object(EWSClient, "get_item_from_mailbox", return_value=message_mock)
+    mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, is_public: f"folder-{path}")
 
-    move_item(client, 'item1', 'dest_folder')
+    move_item(client, "item1", "dest_folder")
 
-    assert get_item_mock.call_args[0][1] == 'item1'
-    message_mock.move.assert_called_once_with('folder-dest_folder')
+    assert get_item_mock.call_args[0][1] == "item1"
+    message_mock.move.assert_called_once_with("folder-dest_folder")
 
 
-@pytest.mark.parametrize('delete_type', ['trash', 'soft', 'hard'])
+@pytest.mark.parametrize("delete_type", ["trash", "soft", "hard"])
 def test_delete_items(mocker, client, delete_type):
     """
     Given:
@@ -1120,19 +1149,22 @@ def test_delete_items(mocker, client, delete_type):
         - The requested items are deleted from the mailbox
     """
     mock_items = {
-        'item1': MagicMock(spec=Message, id='item1', message_id='msg1'),
-        'item2': MagicMock(spec=Message, id='item2', message_id='msg2'),
-        'item3': MagicMock(spec=Message, id='item3', message_id='msg3'),
+        "item1": MagicMock(spec=Message, id="item1", message_id="msg1"),
+        "item2": MagicMock(spec=Message, id="item2", message_id="msg2"),
+        "item3": MagicMock(spec=Message, id="item3", message_id="msg3"),
     }
-    mocker.patch.object(EWSClient, 'get_items_from_mailbox',
-                        side_effect=lambda _target_mailbox, item_ids: [mock_items[item_id] for item_id in item_ids])
+    mocker.patch.object(
+        EWSClient,
+        "get_items_from_mailbox",
+        side_effect=lambda _target_mailbox, item_ids: [mock_items[item_id] for item_id in item_ids],
+    )
 
-    item_ids = 'item1, item3'
-    expect_deleted = ['item1', 'item3']
+    item_ids = "item1, item3"
+    expect_deleted = ["item1", "item3"]
     expected_methods = {
-        'trash': 'move_to_trash',
-        'soft': 'soft_delete',
-        'hard': 'delete',
+        "trash": "move_to_trash",
+        "soft": "soft_delete",
+        "hard": "delete",
     }
 
     delete_items(client, item_ids, delete_type)
@@ -1158,13 +1190,13 @@ def test_get_out_of_office_state(client, mock_account):
         - The out of office state is returned with the expected fields and values
     """
     expected_output = {  # Defined in MockAccount self.oof_settings
-        'state': 'Disabled',
-        'externalAudience': 'All',
-        'start': '2025-02-04T08:00:00Z',
-        'end': '2025-02-05T08:00:00Z',
-        'internalReply': 'reply_internal',
-        'externalReply': 'reply_external',
-        'mailbox': 'test@default_target_mailbox.com',
+        "state": "Disabled",
+        "externalAudience": "All",
+        "start": "2025-02-04T08:00:00Z",
+        "end": "2025-02-05T08:00:00Z",
+        "internalReply": "reply_internal",
+        "externalReply": "reply_external",
+        "mailbox": "test@default_target_mailbox.com",
     }
 
     result = get_out_of_office_state(client)
@@ -1181,13 +1213,13 @@ def test_recover_soft_delete_item(client, mock_account):
     Then:
         - The messages are recovered and moved to the target folder
     """
-    ids_to_recover = 'message1, message3'
-    target_folder = 'target'
-    expected_recovered_ids = {'message1', 'message3'}
+    ids_to_recover = "message1, message3"
+    target_folder = "target"
+    expected_recovered_ids = {"message1", "message3"}
     result = recover_soft_delete_item(client, ids_to_recover, target_folder)
 
     assert isinstance(result.outputs, list)
-    assert {entry['messageId'] for entry in result.outputs} == expected_recovered_ids
+    assert {entry["messageId"] for entry in result.outputs} == expected_recovered_ids
     for message in mock_account.instances[0].mock_deleted_messages:
         if message.message_id in expected_recovered_ids:
             message.move.assert_called_once()
@@ -1203,14 +1235,12 @@ def test_create_folder(mocker, client, mock_account):
         - New folder is created successfully under the expected path
     """
 
-    folder_name = 'test_folder'
-    parent_folder_name = 'parent_folder'
-    full_path = 'parent_folder/test_folder'
-    mock_folders = {
-        parent_folder_name: MagicMock(spec=Folder, path=parent_folder_name)
-    }
+    folder_name = "test_folder"
+    parent_folder_name = "parent_folder"
+    full_path = "parent_folder/test_folder"
+    mock_folders = {parent_folder_name: MagicMock(spec=Folder, path=parent_folder_name)}
 
-    class MockFolder():
+    class MockFolder:
         def __init__(self, parent, name, *args, **kwargs):
             self.name = name
             self.parent = parent
@@ -1220,8 +1250,8 @@ def test_create_folder(mocker, client, mock_account):
             assert self.parent
             mock_folders[os.path.join(self.parent.path, self.name)] = MagicMock(spec=Folder, name=self.name)
 
-    mocker.patch.object(EWSClient, 'get_folder_by_path', side_effect=lambda path, _account: mock_folders[path])
-    mocker.patch('EWSApiModule.Folder', MockFolder)
+    mocker.patch.object(EWSClient, "get_folder_by_path", side_effect=lambda path, _account: mock_folders[path])
+    mocker.patch("EWSApiModule.Folder", MockFolder)
 
     create_folder(client, folder_name, parent_folder_name)
 
@@ -1237,25 +1267,22 @@ def test_get_folder(mocker, client, mock_account):
     Then:
         - The folder is retrieved and its relevant properties are returned
     """
-    mock_folder = MagicMock(spec=Folder,
-                            total_count=50,
-                            id='folder_1',
-                            child_folder_count=0,
-                            changekey='test_key',
-                            unread_count=5)
-    mock_folder.name = 'target_folder'
-    mocker.patch.object(EWSClient, 'get_folder_by_path', return_value=mock_folder)
+    mock_folder = MagicMock(
+        spec=Folder, total_count=50, id="folder_1", child_folder_count=0, changekey="test_key", unread_count=5
+    )
+    mock_folder.name = "target_folder"
+    mocker.patch.object(EWSClient, "get_folder_by_path", return_value=mock_folder)
 
     expected_output = {
-        'name': 'target_folder',
-        'totalCount': 50,
-        'id': 'folder_1',
-        'childrenFolderCount': 0,
-        'changeKey': 'test_key',
-        'unreadCount': 5,
+        "name": "target_folder",
+        "totalCount": 50,
+        "id": "folder_1",
+        "childrenFolderCount": 0,
+        "changeKey": "test_key",
+        "unreadCount": 5,
     }
 
-    result = get_folder(client, 'target_folder')
+    result = get_folder(client, "target_folder")
 
     assert result.outputs == expected_output
 
@@ -1271,45 +1298,46 @@ def test_get_expanded_group(mocker, client):
         - A list containing the relevant details for each member of the expanded group is returned
     """
     from xml.etree import ElementTree as ET
+
     mock_elements = [
-        ET.fromstring(f'''
+        ET.fromstring(f"""
             <t:Mailbox xmlns:t="{TNS}">
                 <t:Name>User One</t:Name>
                 <t:EmailAddress>user1@example.com</t:EmailAddress>
                 <t:RoutingType>SMTP</t:RoutingType>
                 <t:MailboxType>Mailbox</t:MailboxType>
             </t:Mailbox>
-        '''),
-        ET.fromstring(f'''
+        """),
+        ET.fromstring(f"""
             <t:Mailbox xmlns:t="{TNS}">
                 <t:Name>User Two</t:Name>
                 <t:EmailAddress>user2@example.com</t:EmailAddress>
                 <t:RoutingType>SMTP</t:RoutingType>
                 <t:MailboxType>Mailbox</t:MailboxType>
             </t:Mailbox>
-        '''),
-        ET.fromstring(f'''
+        """),
+        ET.fromstring(f"""
             <t:Mailbox xmlns:t="{TNS}">
                 <t:Name>Distribution List</t:Name>
                 <t:EmailAddress>distlist@example.com</t:EmailAddress>
                 <t:RoutingType>SMTP</t:RoutingType>
                 <t:MailboxType>PublicDL</t:MailboxType>
             </t:Mailbox>
-        ''')
+        """),
     ]
 
     expected_output = [
-        {'displayName': 'User One', 'mailbox': 'user1@example.com', 'mailboxType': 'Mailbox'},
-        {'displayName': 'User Two', 'mailbox': 'user2@example.com', 'mailboxType': 'Mailbox'},
-        {'displayName': 'Distribution List', 'mailbox': 'distlist@example.com', 'mailboxType': 'PublicDL'}
+        {"displayName": "User One", "mailbox": "user1@example.com", "mailboxType": "Mailbox"},
+        {"displayName": "User Two", "mailbox": "user2@example.com", "mailboxType": "Mailbox"},
+        {"displayName": "Distribution List", "mailbox": "distlist@example.com", "mailboxType": "PublicDL"},
     ]
 
-    mocker.patch.object(EWSApiModule.ExpandGroup, '_get_elements', return_value=mock_elements)
+    mocker.patch.object(EWSApiModule.ExpandGroup, "_get_elements", return_value=mock_elements)
 
-    results = get_expanded_group(client, 'group@example.com')
+    results = get_expanded_group(client, "group@example.com")
 
     assert isinstance(results.outputs, dict)
-    assert results.outputs['members'] == expected_output
+    assert results.outputs["members"] == expected_output
 
 
 def test_mark_item_as_read(mocker, client):
@@ -1323,21 +1351,22 @@ def test_mark_item_as_read(mocker, client):
         - Each item from the provided ids is marked as read
     """
     mock_items = [
-        MagicMock(spec=Message, id='item1', is_read=False, message_id='msg1'),
-        MagicMock(spec=Message, id='item2', is_read=False, message_id='msg2'),
-        MagicMock(spec=Message, id='item3', is_read=False, message_id='msg3'),
+        MagicMock(spec=Message, id="item1", is_read=False, message_id="msg1"),
+        MagicMock(spec=Message, id="item2", is_read=False, message_id="msg2"),
+        MagicMock(spec=Message, id="item3", is_read=False, message_id="msg3"),
     ]
-    mocker.patch.object(EWSClient, 'get_items_from_mailbox',
-                        side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids])
+    mocker.patch.object(
+        EWSClient, "get_items_from_mailbox", side_effect=lambda _target, ids: [item for item in mock_items if item.id in ids]
+    )
 
-    item_ids = 'item1, item3'
+    item_ids = "item1, item3"
 
-    result = mark_item_as_read(client, item_ids, 'read')
+    result = mark_item_as_read(client, item_ids, "read")
 
-    expected_read_items = ['item1', 'item3']
+    expected_read_items = ["item1", "item3"]
     expected_output = [
-        {'itemId': 'item1', 'messageId': 'msg1', 'action': 'marked-as-read'},
-        {'itemId': 'item3', 'messageId': 'msg3', 'action': 'marked-as-read'}
+        {"itemId": "item1", "messageId": "msg1", "action": "marked-as-read"},
+        {"itemId": "item3", "messageId": "msg3", "action": "marked-as-read"},
     ]
 
     for item in mock_items:

@@ -7,9 +7,13 @@
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security"
+    ],
     "useCases": [
         "Phishing"
     ],

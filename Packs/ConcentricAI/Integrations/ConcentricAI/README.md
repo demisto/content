@@ -2,7 +2,6 @@ Concentric’s Semantic Intelligence™ solution discovers and protects business
 
 ## Configure ConcentricAI in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -16,7 +15,6 @@ Concentric’s Semantic Intelligence™ solution discovers and protects business
 | Incident type |  | False |
 | Fetch incidents |  | False |
 | First Fetch Time of Risks |  | False |
-
 
 ## Commands
 
@@ -36,17 +34,17 @@ Get's file information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| path | Path of the file. | Required | 
-| file-name | Name of File. | Required | 
+| path | Path of the file. | Required |
+| file-name | Name of File. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConcentricAI.FileInfo.risk_names | String | Risk names. | 
-| ConcentricAI.FileInfo.ownerDetails | String | owner Details. | 
-| ConcentricAI.FileInfo.pii | String | PII present in file or not | 
-| ConcentricAI.FileInfo.cid | String | File ID | 
+| ConcentricAI.FileInfo.risk_names | String | Risk names. |
+| ConcentricAI.FileInfo.ownerDetails | String | owner Details. |
+| ConcentricAI.FileInfo.pii | String | PII present in file or not |
+| ConcentricAI.FileInfo.cid | String | File ID |
 
 ### concentricai-get-users-overview
 
@@ -61,11 +59,12 @@ Get overview of Users involved
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| max_users | Maximum no. of users fetched per category. Default is 50. | Optional | 
+| max_users | Maximum no. of users fetched per category. Default is 50. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### concentricai-get-user-details
 
 ***
@@ -79,11 +78,12 @@ Get's user details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | Enter user name. | Required | 
+| user | Enter user name. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### concentricai-get-file-sharing-details
 
 ***
@@ -97,11 +97,11 @@ Get's file sharing details
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cid | File ID. | Required | 
+| cid | File ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConcentricAI.FileSharingInfo.type | Array | Sharing type. | 
-| ConcentricAI.FileSharingInfo.user_name | Array | User name. | 
+| ConcentricAI.FileSharingInfo.type | Array | Sharing type. |
+| ConcentricAI.FileSharingInfo.user_name | Array | User name. |

@@ -35,7 +35,6 @@ The EWS integration can be used for the following use cases.
 
 This integration is based on the `exchangelib` python module. For more information about the module, check the [documentation](https://ecederstrand.github.io/exchangelib/).
 
-
 ## Set up the Third Party System
 
 There are two application authentication methods available.
@@ -44,7 +43,6 @@ Follow your preferred method's guide on how to use the admin consent flow in ord
 * [Cortex XSOAR Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#cortex-xsoar-application)
     To allow access to EWS O365, an administrator has to approve the Demisto app using an admin consent flow, by clicking on the following [link](https://oproxy.demisto.ninja/ms-ews-o365).
     After authorizing the Demisto app, you will get an ID, Token, and Key, which needs to be added to the integration instance configuration's corresponding fields.
-
 
 * [Self-Deployed Application](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#self-deployed-application) - Client Credential Flow.
 
@@ -66,7 +64,7 @@ The need for this permission is specified in each relevant command's Permission 
 To set this permission follow these steps:
 
 1. Navigate to **Home** > **App registrations**.
-2. Search for your app under *all applications*.
+2. Search for your app under _all applications_.
 3. Click **API permissions** > **Add permission**.
 4. Search for `Office 365 Exchange Online` API > `Application Permission`> `full_access_as_app` permission.
 
@@ -113,8 +111,8 @@ When set to get a long period of time, the `Timeout` field might need to be set 
 
 Pay special attention to the following fields in the instance settings:
 
-- `Email Address` – mailbox to fetch incidents from.  
-- `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
+* `Email Address` – mailbox to fetch incidents from.  
+* `Name of the folder from which to fetch incidents` – use this field to configure the destination folder from where emails should be fetched. The default is Inbox folder.
 
 #### Permissions
 
@@ -327,7 +325,7 @@ There are no input arguments for this command.
 
 >|displayName|isExternal|mailbox|mailboxId|
 >|--- |--- |--- |--- |
->|test|false|test@demistodev.onmicrosoft.com|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\*-*\*|
+>|test|false|test@demistodev.onmicrosoft.com|/o=Exchange\*\*\*/ou=Exchange Administrative Group ()/cn=\*\*/cn=\*\\_-_\*|
 
 ##### Context Example
 
@@ -349,7 +347,6 @@ There are no input arguments for this command.
 ```
 
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-move-item</h3></summary>
@@ -374,7 +371,6 @@ No known limitations.
 |target-folder-path|The path to the folder to which to move the item. Complex paths are supported, for example, "Inbox\Phishing".|Required|
 |target-mailbox|The mailbox on which to run the command.|Optional|
 |is-public|Whether the target folder is a public folder.|Optional|
-
 
 #### Outputs
 
@@ -413,7 +409,6 @@ No known limitations.
 ```
 
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-delete-items</h3></summary>
@@ -472,8 +467,8 @@ No known limitations.
 }
 
 ```
-</details>
 
+</details>
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-search-mailbox</h3></summary>
@@ -590,9 +585,7 @@ No known limitations.
 
 ```
 
-
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-contacts</h3></summary>
@@ -674,7 +667,6 @@ No known limitations.
 
 </details>
 
-
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-out-of-office</h3></summary>
 
@@ -696,7 +688,6 @@ No known limitations.
 |--- |--- |--- |
 |target-mailbox|The mailbox for which to get the out-of-office status.|Required|
 
-
 #### Outputs
 
 |**Path**|**Type**|**Description**|
@@ -708,7 +699,6 @@ No known limitations.
 |Account.Email.OutOfOffice.internalReply|Unknown|Out-of-office internal reply.|
 |Account.Email.OutOfOffice.externalReply|Unknown|Out-of-office external reply.|
 |Account.Email.OutOfOffice.mailbox|Unknown|Out-of-office mailbox.|
-
 
 #### Examples
 
@@ -741,9 +731,7 @@ No known limitations.
 
 ```
 
-
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-recover-messages</h3></summary>
@@ -804,9 +792,7 @@ No known limitations.
 
 ```
 
-
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-create-folder</h3></summary>
@@ -835,7 +821,6 @@ No known limitations.
 
 There is no context output for this command.
 
-
 #### Examples
 
 ```
@@ -845,7 +830,6 @@ There is no context output for this command.
 ##### Human Readable Output
 >
 > Folder Inbox\Created Folder created successfully
-
 
 </details>
 
@@ -904,7 +888,6 @@ There is no context output for this command.
 
 </details>
 
-
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-find-folders</h3></summary>
 
@@ -937,7 +920,6 @@ No known limitations.
 |EWS.Folders.unreadCount|number|Number of unread items in the folder.|
 |EWS.Folders.changeKey|number|Folder change key.|
 |EWS.Folders.childrenFolderCount|number|Number of sub-folders.|
-
 
 #### Examples
 
@@ -1011,7 +993,6 @@ root
 
 </details>
 
-
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-items-from-folder</h3></summary>
 
@@ -1036,7 +1017,6 @@ No known limitations.
 |target-mailbox|The mailbox on which to apply the command.|Optional|
 |is-public|Whether the folder is a public folder. Default is 'False'.|Optional|
 |get-internal-items|If the email item contains another email as an attachment (EML or MSG file), whether to retrieve the EML/MSG file attachment. Can be "yes" or "no". Default is "no".|Optional|
-
 
 #### Outputs
 
@@ -1130,7 +1110,6 @@ No known limitations.
 
 </details>
 
-
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-items</h3></summary>
 
@@ -1152,7 +1131,6 @@ No known limitations.
 |--- |--- |--- |
 |item-ids|A CSV list of item IDs.|Required|
 |target-mailbox|The mailbox on which to run the command on.|Optional|
-
 
 #### Outputs
 
@@ -1199,7 +1177,6 @@ Identical outputs to `ews-get-items-from-folder` command.
 ```
 
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-move-item-between-mailboxes</h3></summary>
@@ -1259,7 +1236,6 @@ No known limitations.
 ```
 
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-get-folder</h3></summary>
@@ -1326,7 +1302,6 @@ If Exchange is configured with an international flavor, `Inbox` will be named ac
 ```
 
 </details>
-
 
 <details>
 <summary><h3 style={{display: 'inline'}}>ews-expand-group</h3></summary>
@@ -1417,7 +1392,6 @@ No known limitations.
 |EWS.Items.itemId|String|The ID of the item.|
 |EWS.Items.messageId|String|The message ID of the item.|
 
-
 #### Examples
 
 ```
@@ -1474,8 +1448,8 @@ When sending the email to an Outlook account, Outlook UI fails to display custom
 | to | Email addresses for the 'To' field. Supports comma-separated values. | Optional |
 | cc | Email addresses for the 'Cc' field. Supports comma-separated values. | Optional |
 | bcc | Email addresses for the 'Bcc' field. Supports comma-separated values. | Optional |
-| subject | Subject for the email to be sent. | Optional | 
-| body | The contents (body) of the email to be sent in plain text. | Optional | 
+| subject | Subject for the email to be sent. | Optional |
+| body | The contents (body) of the email to be sent in plain text. | Optional |
 | htmlBody | The contents (body) of the email to be sent in HTML format. | Optional |
 | attachIDs | A comma-separated list of War Room entry IDs that contain the files to attach to the email. | Optional |
 | attachNames | A comma-separated list to rename file names of corresponding attachment IDs. For example, rename the first two files - attachNames=file_name1,file_name2. rename first and third file - attachNames=file_name1,,file_name3. | Optional |
@@ -1562,7 +1536,6 @@ Reply to an email
 
 Impersonation rights are required. To perform actions on the target mailbox of other users, the service account must be part of the `ApplicationImpersonation` role.
 
-
 #### Limitations
 
 No known limitations.
@@ -1582,11 +1555,9 @@ No known limitations.
 | attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
 | attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional |
 
-
 #### Outputs
 
 There is no context output for this command.
-
 
 #### Examples
 
@@ -1599,7 +1570,6 @@ There is no context output for this command.
 >|attachments|from|subject|to|
 >|---|---|---|---|
 >|  | avishai@demistodev.onmicrosoft.com | hi | avishai@demistodev.onmicrosoft.com |
-
 
 </details>
 
@@ -1622,16 +1592,11 @@ No known limitations.
 
 There is no input for this command.
 
-
 #### Outputs
 
 There is no context output for this command.
 
-
-
-
 </details>
-
 
 ## Troubleshooting
 
@@ -1647,8 +1612,8 @@ There is no context output for this command.
 <details><summary><h3 style={{display: 'inline'}}> Fetching Incidents crash due to unparsable emails </h3></summary>
 If you find that your fetch incidents command is unable to parse a specific invalid email due to various parsing issues, you can follow these steps:
 
-1. In the instance configuration, navigate to the *Collect* section and click on *Advanced Settings*.
-2. Check the box labeled *Skip unparsable emails during fetch incidents*.
+1. In the instance configuration, navigate to the _Collect_ section and click on _Advanced Settings_.
+2. Check the box labeled _Skip unparsable emails during fetch incidents_.
 
 By enabling this option, the integration can catch and skip unparsable emails without causing the fetch incidents command to crash.
 When this parameter is active, a message will appear in the "Fetch History" panel of the instance whenever an unparsable email is recognized and skipped.

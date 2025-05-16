@@ -2,13 +2,14 @@ This integration fetches audit log events from an Oracle Cloud Infrastructure re
 Audit log events can be used for security audits, to track usage of and changes to Oracle Cloud Infrastructure resources, and to help ensure compliance with standards or regulations.
 
 ## API References
+
 [Oracle Cloud Infrastructure Audit Logs API documentation](https://docs.oracle.com/en-us/iaas/Content/Logging/Concepts/audit_logs.htm)
 [Oracle Cloud Infrastructure Audit API Endpoints (available Regions)](https://docs.oracle.com/en-us/iaas/api/#/en/audit/20190901)
 
 ## Configure Oracle Cloud Infrastructure Event Collector in Cortex
 
-
 #### OCI Related Parameters
+
 Oracle Cloud Infrastructure SDKs and CLI require basic configuration information, which is achieved by using configuration parameters either with a configuration file or a runtime defined configuration dictionary. This integration uses the runtime defined configuration dictionary.
 More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/API/Concepts/sdkconfig.htm).
 
@@ -26,9 +27,11 @@ More about OCI configuration [here](https://docs.oracle.com/en-us/iaas/Content/A
 | User system proxy settings  | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.                                                                                                                                                                             | False        |
 
 ## Commands
+
 You can execute the following command from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### oracle-cloud-infrastructure-get-events
+
 ***
 Manual command to fetch and display events.
 
@@ -40,4 +43,4 @@ Manual command to fetch and display events.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Default is false. | True | 
+| should_push_events | Set this argument to true in order to create events, otherwise the command will only display them. Default is false. | True |

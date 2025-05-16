@@ -2,7 +2,6 @@ Okta Advanced Server Access integration for Cortex XSIAM allows you to fetch log
 
 ## Configure Okta ASA in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL (e.g. https://app.scaleft.com) |  | True |

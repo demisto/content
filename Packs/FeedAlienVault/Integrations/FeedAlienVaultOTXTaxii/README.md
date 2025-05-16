@@ -4,7 +4,6 @@ This integration can only fetch indicators from **active** collections. Active c
 
 ## Configure AlienVault OTX TAXII Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | feed | The fetch indicators. | False |
@@ -21,43 +20,42 @@ This integration can only fetch indicators from **active** collections. Active c
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
-
 If you do not know which collections are available - do not set the `Collections` and `All Collections` parameters. The resulting error message will list all the accessible collections.
 
 **Note**: not all listed collections are **active**.
 
-
-
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators
+
 ***
 Gets the indicators from AlienVault OTX.
-
 
 ##### Base Command
 
 `alienvaultotx-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Required | 
-
+| limit | The maximum number of indicators to return. The default value is 10. | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!alienvaultotx-get-indicators limit=3```
 
-
 ##### Human Readable Output
-### Indicators from AlienVault OTX TAXII:
+
+### Indicators from AlienVault OTX TAXII
+
 |value|type|
 |---|---|
 | 1.2.3.4 | IP |
@@ -65,6 +63,7 @@ There is no context output for this command.
 | demisto\<span\>.com | Domain |
 
 ## Video Demo
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAlienVault/AlienVault_OTX_Feed_Demo.mp4"
             type="video/mp4"/>

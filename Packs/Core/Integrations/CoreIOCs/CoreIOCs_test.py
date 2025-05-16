@@ -1,7 +1,6 @@
-from CoreIOCs import *
 import pytest
+from CoreIOCs import *
 from freezegun import freeze_time
-
 
 Client.severity = "INFO"
 client = Client({"url": "https://example.com"})
@@ -246,8 +245,8 @@ class TestCreateFile:
             "unexpected IOC format in key: '"
         ), f"create_file_sync empty message\n\tstarts: {error_msg}\n\tinstead: unexpected IOC format in key: '"  # noqa: E501
         assert error_msg.endswith(
-            f"', {str(defective_indicator)}"
-        ), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {str(defective_indicator)}"  # noqa: E501
+            f"', {defective_indicator!s}"
+        ), f"create_file_sync empty message\n\tends: {error_msg}\n\tinstead: ', {defective_indicator!s}"  # noqa: E501
 
     def test_create_file_iocs_to_keep_without_iocs(self, mocker):
         """

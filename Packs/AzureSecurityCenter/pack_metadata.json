@@ -8,13 +8,17 @@
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Analytics & SIEM"
+        "Analytics & SIEM",
+        "Cloud Service Provider"
     ],
-    "tags": [],
+    "tags": [
+        "IT"
+    ],
     "useCases": [],
     "keywords": [
         "security center",
-        "azure"
+        "azure",
+        "Microsoft"
     ],
     "marketplaces": [
         "xsoar",

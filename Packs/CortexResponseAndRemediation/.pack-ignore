@@ -20,6 +20,9 @@ ignore=PB106
 [file:README.md]
 ignore=RM104,RM106
 
+[file:1_1_45.md]
+ignore=RN114
+
 # GR103 fails on SearchAlertsv2
 [file:playbook-A_user_executed_multiple_LDAP_enumeration_queries.yml]
 ignore=GR103

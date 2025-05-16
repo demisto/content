@@ -5,6 +5,7 @@ This pack enables you to query for Indicators of Compromise, CVEs, Campaigns, Th
 as providing additional information about the relationships between these various entities.
 
 # What does this pack do?
+
 - Query for and enrich Indicators of Compromise (FQDNs, URLs, IP Addresses, and File Hashes)
 - Query for and enrich CVEs
 - Query for and view Threat Actors and Malware Families

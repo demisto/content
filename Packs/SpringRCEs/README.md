@@ -12,7 +12,6 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 
 **CVE-2022-22947 - RCE in "Spring Cloud Gateway"**
 
-
 **Spring Core vulnerability requirements:**
 
 * JDK 9 or higher
@@ -27,15 +26,14 @@ Later, it was discovered that these are two separate vulnerabilities, one in Spr
 * 3.2.3
 
 This pack will provide you with a first response kit which includes:
+
 * Hunting
 * Remediation
 * Mitigations
 
-
 More information about the vulnerability:
 
-[CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild
-](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
+[CVE-2022-22965: Spring Core Remote Code Execution Vulnerability Exploited In the Wild](https://unit42.paloaltonetworks.com/cve-2022-22965-springshell/)
 
 Note: This is a beta playbook, which lets you implement and test pre-release software. Since the playbook is beta, it might contain bugs. Updates to the pack during the beta phase might include non-backward compatible features. We appreciate your feedback on the quality and usability of the pack to help us identify issues, fix them, and continually improve.
 

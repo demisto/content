@@ -26,7 +26,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": -250
+          "y": -216
         }
       }
     note: false
@@ -113,7 +113,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "20"
     scriptarguments:
       interval_in_seconds:
         simple: "60"
@@ -126,8 +126,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 70
+          "x": 650,
+          "y": 35
         }
       }
     note: false
@@ -155,7 +155,7 @@ tasks:
       {
         "position": {
           "x": 370,
-          "y": 1960
+          "y": 1562
         }
       }
     note: false
@@ -196,8 +196,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1260
+          "x": 919,
+          "y": 1062
         }
       }
     note: false
@@ -233,8 +233,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 230
+          "x": 650,
+          "y": 311
         }
       }
     note: false
@@ -272,8 +272,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 910
+          "x": 649,
+          "y": 822
         }
       }
     note: false
@@ -316,8 +316,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 1080
+          "x": 649,
+          "y": 934
         }
       }
     note: false
@@ -360,8 +360,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 710,
-          "y": 400
+          "x": 650,
+          "y": 434
         }
       }
     note: false
@@ -404,8 +404,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 910,
-          "y": 1430
+          "x": 919,
+          "y": 1179
         }
       }
     note: false
@@ -476,8 +476,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 1610
+          "x": 1138,
+          "y": 1317
         }
       }
     note: false
@@ -508,7 +508,7 @@ tasks:
       {
         "position": {
           "x": 940,
-          "y": 735
+          "y": 693
         }
       }
     note: false
@@ -538,8 +538,49 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1140,
-          "y": 1780
+          "x": 1138,
+          "y": 1439
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: ff99cb20-73b0-4e10-83aa-722b129df86f
+    type: condition
+    task:
+      id: ff99cb20-73b0-4e10-83aa-722b129df86f
+      version: -1
+      name: Is there a job to commit?
+      description: ""
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "8"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Panorama.Commit.JobID
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 650,
+          "y": 157
         }
       }
     note: false
@@ -553,18 +594,20 @@ view: |-
   {
     "linkLabelsPosition": {
       "13_5_#default#": 0.1,
-      "13_6_Panorama": 0.73,
+      "13_6_Panorama": 0.51,
       "14_12_yes": 0.24,
       "15_17_#default#": 0.2,
       "15_5_yes": 0.1,
-      "1_5_#default#": 0.17
+      "1_5_#default#": 0.1,
+      "20_5_#default#": 0.11,
+      "20_8_yes": 0.52
     },
     "paper": {
       "dimensions": {
-        "height": 2275,
-        "width": 1150,
+        "height": 1838,
+        "width": 1149,
         "x": 370,
-        "y": -250
+        "y": -216
       }
     }
   }
@@ -572,7 +615,7 @@ inputs:
 - key: device-group
   value: {}
   required: false
-  description: ""
+  description: "The device group to work on. Exists only in panorama."
   playbookInputQuery:
 outputs:
 - contextPath: Panorama.Commit.JobID

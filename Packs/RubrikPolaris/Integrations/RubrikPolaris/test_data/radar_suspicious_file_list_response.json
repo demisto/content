@@ -36,6 +36,8 @@
         "detectionTime": "2024-02-05T18:49:03.000Z",
         "snapshotDate": "2024-02-05T16:59:30.000Z",
         "encryption": "HIGH",
+        "resolutionStatus": "UNRESOLVED",
+        "anomalyType": "FILESYSTEM",
         "anomalyInfo": {
           "strainAnalysisInfo": [
             {
@@ -217,6 +219,8 @@
     "detectionTime": "2024-02-05T18:49:03.000Z",
     "snapshotDate": "2024-02-05T16:59:30.000Z",
     "encryption": "HIGH",
+    "resolutionStatus": "UNRESOLVED",
+    "anomalyType": "FILESYSTEM",
     "anomalyInfo": {
       "strainAnalysisInfo": [
         {

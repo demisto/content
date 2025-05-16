@@ -1,16 +1,16 @@
 id: Retrieve Related Alerts - Dataminr Pulse
 version: -1
 name: Retrieve Related Alerts - Dataminr Pulse
-description: This playbook is used to run the Default playbook from XSOAR and to fetch related alerts for Dataminr Pulse. The information required to fetch related alerts will be used from the incident s alert ID for which the playbook is going to run. After that, it will store them in the context.
+description: This playbook is used to fetch related alerts for Dataminr Pulse. The information required to fetch related alerts will be used from the incident s alert ID for which the playbook is going to run. After that, it will store them in the context.
 starttaskid: "0"
 fromversion: 6.5.0
 tasks:
   "0":
     id: "0"
-    taskid: 975a6b7c-614c-44b7-8f5f-bf6258c9e3ee
+    taskid: beb58f8a-d438-4280-8dad-8bae2e1d0e58
     type: start
     task:
-      id: 975a6b7c-614c-44b7-8f5f-bf6258c9e3ee
+      id: beb58f8a-d438-4280-8dad-8bae2e1d0e58
       version: -1
       name: ""
       description: "Start of playbook"
@@ -18,13 +18,13 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "3"
+      - "6"
     separatecontext: false
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 50
+          "y": -200
         }
       }
     note: false
@@ -36,10 +36,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: 57d06e6f-6049-4a25-8ab1-21da51208039
+    taskid: aa47a806-130f-4186-8ca2-e0a0a9dbce3a
     type: regular
     task:
-      id: 57d06e6f-6049-4a25-8ab1-21da51208039
+      id: aa47a806-130f-4186-8ca2-e0a0a9dbce3a
       version: -1
       name: Fetch related alerts
       description: Retrieves the alerts related to the provided Alert ID.
@@ -68,7 +68,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 360
+          "y": 720
         }
       }
     note: false
@@ -80,10 +80,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: f8eeaaf1-fca8-4d80-8496-ec68de67e2c4
+    taskid: 124c9c5a-667e-42e9-8351-ecf71e919a69
     type: title
     task:
-      id: f8eeaaf1-fca8-4d80-8496-ec68de67e2c4
+      id: 124c9c5a-667e-42e9-8351-ecf71e919a69
       version: -1
       name: end
       type: title
@@ -95,7 +95,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 540
+          "y": 890
         }
       }
     note: false
@@ -107,10 +107,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 23cec11c-ca3e-4277-8af1-5b370a8f47cd
+    taskid: 1edeb9b6-f905-457b-89f8-27eaed93985c
     type: regular
     task:
-      id: 23cec11c-ca3e-4277-8af1-5b370a8f47cd
+      id: 1edeb9b6-f905-457b-89f8-27eaed93985c
       version: -1
       name: Delete Context for Related Alerts
       description: |-
@@ -132,11 +132,174 @@ tasks:
       subplaybook:
         simple: auto
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 450,
-          "y": 180
+          "y": 560
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 9f59002f-0d6d-4723-886e-53c429c22b66
+    type: condition
+    task:
+      id: 9f59002f-0d6d-4723-886e-53c429c22b66
+      version: -1
+      name: Is include related alerts enabled?
+      description: Check whether the values provided in parameters are equal.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "5"
+      "yes":
+      - "3"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: inputs.include_related_alerts
+                transformers:
+                - operator: Stringify
+                - operator: toLowerCase
+            iscontext: true
+          right:
+            value:
+              simple: "true"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: cc4e929f-237a-4bbf-8b0b-49049380e468
+    type: condition
+    task:
+      id: cc4e929f-237a-4bbf-8b0b-49049380e468
+      version: -1
+      name: Wants to include related alerts?
+      description: Collect the information to include related alerts.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "no":
+      - "2"
+      "yes":
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 360
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    message:
+      to: null
+      subject: null
+      body:
+        simple: Wants to include related alerts?
+      methods: []
+      format: ""
+      bcc: null
+      cc: null
+      timings:
+        retriescount: 2
+        retriesinterval: 360
+        completeafterreplies: 1
+        completeafterv2: true
+        completeaftersla: false
+      replyOptions:
+      - "yes"
+      - "no"
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: 7e22ddf6-d65b-4f7a-8223-7e342c79fb18
+    type: condition
+    task:
+      id: 7e22ddf6-d65b-4f7a-8223-7e342c79fb18
+      version: -1
+      name: Is Dataminr Pulse integration enabled?
+      description: Checks whether Dataminr Pulse integration is enabled or not.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "2"
+      "yes":
+      - "4"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isExists
+          left:
+            value:
+              complex:
+                root: modules
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: modules.brand
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Dataminr Pulse
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: modules.state
+                      iscontext: true
+                    right:
+                      value:
+                        simple: active
+                    ignorecase: true
+                accessor: name
+            iscontext: true
+          right:
+            value: {}
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": -50
         }
       }
     note: false
@@ -148,17 +311,31 @@ tasks:
     isautoswitchedtoquietmode: false
 view: |-
   {
-    "linkLabelsPosition": {},
+    "linkLabelsPosition": {
+      "4_3_yes": 0.48,
+      "4_5_#default#": 0.53,
+      "5_2_no": 0.24,
+      "5_3_yes": 0.52,
+      "6_2_#default#": 0.44,
+      "6_4_yes": 0.64
+    },
     "paper": {
       "dimensions": {
-        "height": 555,
-        "width": 380,
+        "height": 1155,
+        "width": 610,
         "x": 450,
-        "y": 50
+        "y": -200
       }
     }
   }
-inputs: []
+inputs:
+- key: include_related_alerts
+  value:
+    simple: ${incident.labels.include_related_alerts}
+  required: false
+  description: Boolean value indicating whether to include related alerts. If set
+    to "true", it includes related alerts; otherwise, it does not.
+  playbookInputQuery: null
 outputs: []
 tests:
 - DataminrPulse-Test

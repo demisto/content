@@ -1,6 +1,7 @@
 Unzip a gz file and upload to war room
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Unzip a gz file and upload to war room
 | Tags | Utility, file |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Unzip a gz file and upload to war room
 | entryID | CSV list of entry ids for the gzipped files to unzip. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -399,6 +399,8 @@ class QueryParams:
 
 
 class Cache:
+    CACHE_ROOT_KEY = "XQLDSHelperCache"
+
     @staticmethod
     def __compress(val: str) -> dict[Hashable, str]:
         return {"type": "gz+b85x", "data": base64.b85encode(gzip.compress(val.encode())).decode().replace("$", ":")}
@@ -419,7 +421,7 @@ class Cache:
         query_hash: str,
         cache_node: str,
     ) -> Any:
-        cache = self.__context.get(self.__key)
+        cache = self.__repo.get(self.__key)
         if not isinstance(cache, dict):
             return None
 
@@ -458,7 +460,7 @@ class Cache:
                     "command": "Set",
                     target: incident_id,
                     "arguments": {
-                        "key": self.__key,
+                        "key": f"{Cache.CACHE_ROOT_KEY}.{self.__key}",
                         "value": cache,
                         "append": "false",
                     },
@@ -468,11 +470,11 @@ class Cache:
     def __init__(
         self,
         name: str,
-        context: ContextData,
+        repo: dict[Hashable, Any] | None,
     ) -> None:
         name = urllib.parse.quote(name).replace(".", "%2E")
-        self.__key = f"XQLDSHelperCache.{name}"
-        self.__context = context
+        self.__key = name
+        self.__repo = repo or {}
 
     def save_recordset(
         self,
@@ -1744,13 +1746,31 @@ class EntryBuilder:
 
 class Main:
     @staticmethod
-    def __create_context(
+    def __create_base_context(
         args: dict[Hashable, Any],
+    ) -> dict[str, Any]:
+        """Create the base context data.
+
+        :param args: The argument parameters.
+        :return: The base context data.
+        """
+        context = args.get("context_data")
+        if isinstance(context, str):
+            context = json.loads(context)
+
+        assert context is None or isinstance(context, dict), (
+            f"Context data must be of type str, dict, or null - {type(context)}"
+        )
+        return dict(demisto.context(), **(context or {}))
+
+    @staticmethod
+    def __create_context(
+        base_context: dict[str, Any],
         template: dict[Hashable, Any],
     ) -> ContextData:
         """Create the context data.
 
-        :param args: The argument parameters.
+        :param base_context: The base context data.
         :param template: The template.
         :return: The context data.
         """
@@ -1768,7 +1788,7 @@ class Main:
             for path in paths:
                 pit = iter(path)
                 nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(iter(lambda: next(nit), '')):
+                if parent == ''.join(itertools.takewhile(lambda x: x != "", iter(nit))):
                     cpaths.append(''.join(list(pit)))
             return cpaths
 
@@ -1857,15 +1877,8 @@ class Main:
         fields = dict(fields, **(fields.get("CustomFields") or {}))
         fields.pop("CustomFields", None)
 
-        context = args.get("context_data")
-        if isinstance(context, str):
-            context = json.loads(context)
-
-        assert context is None or isinstance(context, dict), (
-            f"Context data must be of type str, dict, or null - {type(context)}"
-        )
         entries = {
-            "context": dict(demisto.context(), **(context or {})),
+            "context": base_context,
             "alert": fields if is_xsiam() else None,
             "incident": None if is_xsiam() else fields,
         }
@@ -2216,7 +2229,11 @@ class Main:
         self.__args = args
         self.__template_name, self.__template = self.__get_template(args)
         self.__variable_substitution = self.__get_variable_substitution(args, self.__template)
-        self.__context: ContextData = self.__create_context(args, self.__template)
+        
+        context = self.__create_base_context(args)
+        self.__context: ContextData = self.__create_context(context, self.__template)
+
+        self.__cache_repo = demisto.get(context, Cache.CACHE_ROOT_KEY)
         self.__cache_type: str = args.get("cache_type") or CacheType.RECORDSET
         if self.__cache_type not in [str(x) for x in list(CacheType)]:
             raise DemistoException(f"Invalid cache_type - {self.__cache_type}")
@@ -2253,7 +2270,7 @@ class Main:
             formatter=formatter,
             context=self.__context,
         )
-        cache = Cache(name=self.__template_name, context=self.__context)
+        cache = Cache(name=self.__template_name, repo=self.__cache_repo)
         entry = cache.load_entry(query_params.query_hash()) if self.__cache_type == CacheType.ENTRY else None
 
         need_query = not entry and self.__is_query_executable()

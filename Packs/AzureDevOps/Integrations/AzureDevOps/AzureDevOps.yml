@@ -2,6 +2,9 @@ category: Utilities
 commonfields:
   id: AzureDevOps
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: App Registration Client ID
   defaultvalue: '8f8ed6e7-3207-4ebd-885d-6413b601088c'
@@ -9,11 +12,13 @@ configuration:
   name: client_id
   required: true
   type: 0
+  section: Connect
 - additionalinfo: Organization name
   display: Organization
   name: organization
   required: true
   type: 0
+  section: Connect
   defaultvalue:
 - additionalinfo: Maximum is 200.
   defaultvalue: '50'
@@ -21,54 +26,64 @@ configuration:
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: The name of the project which the pull requests belongs to. A project name can be obtained by running the 'azure-devops-project-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Project Name
   name: project
   type: 0
   defaultvalue:
   required: false
+  section: Collect
 - additionalinfo: The name of the repository pull request's target branch. A repository name can be obtained by running the 'azure-devops-repository-list' command. This argument is mandatory for Fetch functionality and will be the default value in all the commands. You can override the default using the command argument.
   display: Default Repository Name
   name: repository
   type: 0
   defaultvalue:
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   additionalinfo:
   required: false
+  section: Collect
 - display: Outgoing mirroring
   name: is_mirroring
   type: 8
   defaultvalue: "false"
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   defaultvalue: "false"
   additionalinfo:
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   defaultvalue: "false"
   additionalinfo:
   required: false
+  section: Connect
 - name: auth_type
   display: Authentication Type
   required: true
   defaultvalue: Device Code
   type: 15
+  section: Connect
   additionalinfo: Type of authentication - could be Authorization Code flow (recommended), Device Code flow or Client Credentials flow.
   options:
   - Authorization Code
@@ -80,6 +95,7 @@ configuration:
   type: 0
   additionalinfo: ""
   required: false
+  section: Connect
 - name: credentials
   display: Client Secret
   defaultvalue:
@@ -88,16 +104,19 @@ configuration:
   displaypassword: Client Secret
   hiddenusername: true
   required: false
+  section: Connect
 - name: redirect_uri
   display: Application redirect URI
   defaultvalue:
   type: 0
   additionalinfo: ""
   required: false
+  section: Connect
 - name: auth_code
   display: Authorization code
   defaultvalue:
   type: 9
+  section: Connect
   additionalinfo: For user-auth mode - received from the authorization step. See Detailed Instructions (?) section.
   displaypassword: Authorization code
   hiddenusername: true
@@ -2987,7 +3006,7 @@ script:
   - description: Generate the login url used for Authorization code flow.
     name: azure-devops-generate-login-url
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.117163
+  dockerimage: demisto/crypto:1.0.0.2787132
   isremotesyncout: true
   ismappable: true
   isfetch: true

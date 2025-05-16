@@ -10,7 +10,9 @@
     "categories": [
         "Messaging and Conferencing"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
         "Cisco Spark"

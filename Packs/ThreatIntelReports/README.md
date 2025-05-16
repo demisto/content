@@ -3,11 +3,13 @@ Threat intel reports summarize and share threat intelligence research conducted 
 ## What does this pack do?
 
 This pack lets you:
+
 - Create threat intel reports based on out-of-the-box or customized layouts, while applying rich formatting to the body of the report.
 - Publish a report within Cortex XSOAR to share with other users.
 - Export a report to PDF format.
 
 The pack comes with 5 out-of-the-box report layouts for easier use:
+
 1. Executive Brief
 2. Campaign Report
 3. Threat actor report

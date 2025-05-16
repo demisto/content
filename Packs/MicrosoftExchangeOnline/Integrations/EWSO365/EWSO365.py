@@ -1827,11 +1827,11 @@ def sub_main():  # pragma: no cover
             "ews-expand-group": get_expanded_group,
             "ews-mark-items-as-read": mark_item_as_read,
             "ews-delete-attachment": delete_attachments_for_message,
+            "ews-get-attachment": fetch_attachments_for_message,
         }
 
         # commands that may return multiple results or non-note result
         special_output_commands = {
-            "ews-get-attachment": fetch_attachments_for_message,
             "ews-get-items-as-eml": get_item_as_eml,
             "reply-mail": reply_mail,
         }

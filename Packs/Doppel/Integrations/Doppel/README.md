@@ -12,14 +12,14 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
     | --- | --- | --- |
     | Doppel Tenant URL | The tenant URL of the Doppel. | True |
     | API Key | API key to use for the connection. | True |
-    | Fetch incidents |  | False |
-    | Incident type |  | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) |  | False |
-    | Fetch incidents timeout: The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. |  | False |
-    | Number of incidents for each fetch.: Due to API limitations, the maximum is 100. |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Incidents Fetch Interval |  | False |
+    | Fetch incidents | Enables the Integration to pull Doppel Alerts. | False |
+    | Incident type | Classifies the type of security incident. (Use this only if classifiers are not used). | False |
+    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | Sets the historical period for the first data retrieval operation. | False |
+    | Fetch incidents timeout | The time limit in seconds for fetch incidents to run. Leave this empty to cancel the timeout limit. | False |
+    | Number of incidents for each fetch | The number of Doppel Alerts to be fetched per polling process. | False |
+    | Trust any certificate (not secure) | Trust any SSL Certificates while interacting with Servers | False |
+    | Use system proxy settings | Uses your system Proxy Setting | False |
+    | Incidents Fetch Interval |  The interval specifies the cadence with which the Doppel alerts be fetched | False |
     | Mirror Direction | Choose the direction to mirror the incident: Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), or Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
     
 4. Click **Test** to validate the URLs, token, and connection.

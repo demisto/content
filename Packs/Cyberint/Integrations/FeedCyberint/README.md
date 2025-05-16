@@ -54,8 +54,11 @@ Gets indicators from the feed.
 | Cyberint.indicator.confidence        | String | The feed confidence. |
 
 #### Command example
+
 ```!cyberint-get-indicators limit=10 execution-timeout=700```
+
 #### Context Example
+
 ```json
 {
     "Cyberint": [
@@ -272,10 +275,10 @@ Gets indicators from the feed.
 | Detected activity | String   | Type of detected activity.             |
 | IoC type          | String   | The indicator type.                    |
 | IoC value         | String   | The indicator value.                   |
-| Observation date	| String   | Observation date of detected activity. |
-| Severity score     | Number | 	Severity score of detected activity.  |
-| Confidence | Number | 	Confidence of detected activity.      |
-| Description | String | 	Description of detected activity.     |
+| Observation date | String   | Observation date of detected activity. |
+| Severity score     | Number |  Severity score of detected activity.  |
+| Confidence | Number |  Confidence of detected activity.      |
+| Description | String |  Description of detected activity.     |
 
 ### cyberint-get-file-sha256
 
@@ -306,8 +309,11 @@ Gets File SHA256 from the feed.
 | Cyberint.file_sha256.risk.occurrences_count     | String | Occurrences count. |
 
 #### Command example
+
 ```!cyberint-get-file-sha256 value=6a7b02c43837dcb8e40d271edb88d13d2e723c721a74931857aaef4853317789```
+
 #### Context Example
+
 ```json
 {
     "data": {
@@ -351,14 +357,16 @@ Gets File SHA256 from the feed.
 #### Human Readable Output
 
 ##### File SHA256 Entity
+
 | **Name**          | **Type**  | **Description** |
 |-------------------|----------|----------------|
 | Type              | String   | The indicator type. |
 | Value             | String   | The indicator value. |
 | Malicious score   | Number   | Malicious score. |
-| Benign	           | Boolean   | Benign. |
+| Benign            | Boolean   | Benign. |
 
 ##### File SHA256 Enrichment
+
 | **Name**          | **Type**  | **Description**        |
 |-------------------|----------|------------------------|
 | Filenames  | String   | List of filenames.     |
@@ -366,13 +374,14 @@ Gets File SHA256 from the feed.
 | Download URLs  | String   | List of download URLs. |
 
 ##### File SHA256 Detected activities
+
 | **Name**          | **Type**  | **Description**             |
 |-------------------|----------|-----------------------------|
 | Type                   | String   | Type of detected activity.               |
-| Observation date	| String   | Observation date of detected activity.   |
-| Description | String | 	Description of detected activity.       |
-| Confidence | Number | 	Confidence of detected activity.        |
-| Occurrences count | Number | 	Occurrences count of detected activity. |
+| Observation date | String   | Observation date of detected activity.   |
+| Description | String |  Description of detected activity.       |
+| Confidence | Number |  Confidence of detected activity.        |
+| Occurrences count | Number |  Occurrences count of detected activity. |
 
 ### cyberint-get-domain
 
@@ -416,8 +425,11 @@ Gets Domain from the feed.
 | Cyberint.domain.benign                         | String   | Benign. |
 
 #### Command example
+
 ```!cyberint-get-domain value=dummy.com```
+
 #### Context Example
+
 ```json
 {
     "data": {
@@ -476,43 +488,46 @@ Gets Domain from the feed.
 #### Human Readable Output
 
 ##### Domain Entity
+
 | **Name**          | **Type**  | **Description** |
 |-------------------|----------|----------------|
 | Type              | String   | The indicator type. |
 | Value             | String   | The indicator value. |
 | Malicious score   | Number   | Malicious score. |
 | Occurrences count | Number   | Occurrences count. |
-| Benign	           | Boolean   | Benign. |
+| Benign            | Boolean   | Benign. |
 
 ##### Domain Enrichment
+
 | **Name**          | **Type**  | **Description**                |
 |-------------------|----------|--------------------------------|
 | IPs               | String   | List of IP addresses.          |
 | Whois registrant name          | String   | Whois registrant name.         |
-| Whois registrant email	           | String   | Whois registrant email.        |
-| Whois registrant organization	           | String   | Whois registrant organization. |
-| Whois registrant country	           | String   | Whois registrant country.      |
-| Whois registrant telephone	          | String   | Whois registrant telephone.    |
-| Whois technical contact email	          | String   | Whois technical contact email.    |
-| Whois technical contact name	          | String   | Whois technical contact name.    |
-| Whois technical contact organization	          | String   | Whois technical contact organization.    |
-| Whois registrar name	          | String   | Whois registrar name.    |
-| Whois admin contact name	          | String   | Whois admin contact name.    |
-| Whois admin contact organization	          | String   | Whois admin contact organization.    |	
-| Whois admin contact email	          | String   | Whois admin contact email.    |
-| Whois admin contact email	          | String   | Whois admin contact email.    |
-| Created date	          | String   | Created date.    |
-| Updated date	          | String   | Updated date.    |
-| Expiration date	          | String   | Expiration date.    |
+| Whois registrant email            | String   | Whois registrant email.        |
+| Whois registrant organization            | String   | Whois registrant organization. |
+| Whois registrant country            | String   | Whois registrant country.      |
+| Whois registrant telephone           | String   | Whois registrant telephone.    |
+| Whois technical contact email           | String   | Whois technical contact email.    |
+| Whois technical contact name           | String   | Whois technical contact name.    |
+| Whois technical contact organization           | String   | Whois technical contact organization.    |
+| Whois registrar name           | String   | Whois registrar name.    |
+| Whois admin contact name           | String   | Whois admin contact name.    |
+| Whois admin contact organization           | String   | Whois admin contact organization.    | 
+| Whois admin contact email           | String   | Whois admin contact email.    |
+| Whois admin contact email           | String   | Whois admin contact email.    |
+| Created date           | String   | Created date.    |
+| Updated date           | String   | Updated date.    |
+| Expiration date           | String   | Expiration date.    |
 
 ##### Domain Detected activities
+
 | **Name**          | **Type**  | **Description**                          |
 |-------------------------------------|----------|------------------------------------------|
 | Type                   | String   | Type of detected activity.               |
-| Observation date	| String   | Observation date of detected activity.   |
-| Description | String | 	Description of detected activity.       |
-| Confidence | Number | 	Confidence of detected activity.        |
-| Occurrences count | Number | 	Occurrences count of detected activity. |
+| Observation date | String   | Observation date of detected activity.   |
+| Description | String |  Description of detected activity.       |
+| Confidence | Number |  Confidence of detected activity.        |
+| Occurrences count | Number |  Occurrences count of detected activity. |
 
 ### cyberint-get-ipv4
 
@@ -546,8 +561,11 @@ Gets Domain from the feed.
 | Cyberint.ipv4.benign                        | String   | Benign. |
 
 #### Command example
+
 ```!cyberint-get-ipv4 value=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "data": {
@@ -644,6 +662,7 @@ Gets Domain from the feed.
 #### Human Readable Output
 
 ##### IPv4 Entity
+
 | **Name**          | **Type**  | **Description** |
 |-------------------|----------|----------------|
 | Type              | String   | The indicator type. |
@@ -652,23 +671,25 @@ Gets Domain from the feed.
 | Occurrences count | Number   | Occurrences count. |
 | IPs               | String   | List of IP addresses. |
 | Hostname          | String   | Hostname. |
-| Domain	           | String   | Domain. |
-| Benign	           | Boolean   | Benign. |
+| Domain            | String   | Domain. |
+| Benign            | Boolean   | Benign. |
 
 ##### IPv4 Enrichment
+
 | **Name**          | **Type**  | **Description**             |
 |-------------------|----------|-----------------------------|
-| Suspicious Urls	 | String   | List of Suspicious Urls.    |
-| Suspicious Domains | String   | List of Suspicious domains. |	
+| Suspicious Urls  | String   | List of Suspicious Urls.    |
+| Suspicious Domains | String   | List of Suspicious domains. | 
 
 ##### IPv4 Detected activities
+
 | **Name**          | **Type**  | **Description**             |
 |-------------------|----------|-----------------------------|
 | Type                   | String   | Type of detected activity.               |
-| Observation date	| String   | Observation date of detected activity.   |
-| Description | String | 	Description of detected activity.       |
-| Confidence | Number | 	Confidence of detected activity.        |
-| Occurrences count | Number | 	Occurrences count of detected activity. |
+| Observation date | String   | Observation date of detected activity.   |
+| Description | String |  Description of detected activity.       |
+| Confidence | Number |  Confidence of detected activity.        |
+| Occurrences count | Number |  Occurrences count of detected activity. |
 
 ### cyberint-get-url
 
@@ -699,8 +720,11 @@ Gets Domain from the feed.
 | Cyberint.url.benign                 | String   | Benign. |
 
 #### Command example
+
 ```!cyberint-get-url value=http://dummy.com```
+
 #### Context Example
+
 ```json
 {
     "data": {
@@ -735,6 +759,7 @@ Gets Domain from the feed.
 #### Human Readable Output
 
 ##### URL Entity
+
 | **Name**          | **Type**  | **Description** |
 |-------------------|----------|----------------|
 | Type              | String   | The indicator type. |
@@ -743,14 +768,15 @@ Gets Domain from the feed.
 | Occurrences count | Number   | Occurrences count. |
 | IPs               | String   | List of IP addresses. |
 | Hostname          | String   | Hostname. |
-| Domain	           | String   | Domain. |
-| Benign	           | Boolean   | Benign. |
+| Domain            | String   | Domain. |
+| Benign            | Boolean   | Benign. |
 
 ##### URL Detected activities
+
 | **Name**          | **Type**  | **Description**                          |
 |-------------------------------------|----------|------------------------------------------|
 | Type                   | String   | Type of detected activity.               |
-| Observation date	| String   | Observation date of detected activity.   |
-| Description | String | 	Description of detected activity.       |
-| Confidence | Number | 	Confidence of detected activity.        |
-| Occurrences count | Number | 	Occurrences count of detected activity. |
+| Observation date | String   | Observation date of detected activity.   |
+| Description | String |  Description of detected activity.       |
+| Confidence | Number |  Confidence of detected activity.        |
+| Occurrences count | Number |  Occurrences count of detected activity. |

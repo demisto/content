@@ -1,6 +1,7 @@
 This script runs the StringSifter ML tool for malware analysis and ranking of words. You can enter an entryID or string_text as input.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ This script runs the StringSifter ML tool for malware analysis and ranking of wo
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +22,7 @@ This script runs the StringSifter ML tool for malware analysis and ranking of wo
 | entryID | The file to process. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

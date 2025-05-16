@@ -1,16 +1,16 @@
-# Using the templates:
+## Using the templates:
 Every category of integration has a unique, corresponding template. Copy the integration from its folder to a new folder under `Integrations`.
 Each template contains standard commands (such as `!ip` and `!file`), outputs (such as DBotScore, IP, Email, etc.).
 
 It also contains examples of how to use basic Demisto functions (such as return_outputs and assign_params) and Demisto code conventions.
 
 Use the template as a guideline and feel free to modify as needed.
-# Using the BaseClient:
-## Overview
+## Using the BaseClient:
+### Overview
 The BaseClient class is meant to contain all of the HTTP requests made to the API. It is used as a wrapper to the API. **Do not use the BaseClient as it is, use a new `Client` class as demonstrated below**.
 Commands in the BaseClient should call the private `BaseClient._http_request` method.
-## Initiate the BaseClient
-#### Parameters:
+### Initiate the BaseClient
+##### Parameters:
 * *base_url (str)* **required**:  
     Base server address with suffix, for example: https://example.com/api/v2/.
 * *verify (bool)*: 
@@ -26,7 +26,7 @@ Commands in the BaseClient should call the private `BaseClient._http_request` me
 * *auth (dict or tuple)*:
     The request authorization, for example: (username, password).
     **Default is `None`**
-#### Example:
+##### Example:
 ```python
 base_client = BaseClient(
     'https://example.com/api/v2/',
@@ -37,9 +37,9 @@ base_client = BaseClient(
 )
 ```
 
-### **the _http_request method**
+#### **the _http_request method**
 _http_request is a universal method that can handle any request and throw standard errors if needed. The format is such that users (and the developers) can understand.
-#### Parameters:
+##### Parameters:
 * method (str) **required**:
     The HTTP method, for example, GET, POST, and so on.
 
@@ -85,9 +85,9 @@ _http_request is a universal method that can handle any request and throw standa
 The method returns depends on the resp_type parameter
 can be ``dict``, ``str``, ``requests.Response`` or ``ElemntTree``
 
-# How to use in integration:
+## How to use in integration:
 Never use raw `BaseClient`. Base client is meant to be inherited from.
-### Example:
+#### Example:
 ```python
 class Client(BaseClient):
     def get_something(self, id_of_something: str) -> dict:
@@ -128,7 +128,7 @@ if __name__ == 'builtins':
     main()
 ```
 
-### Break in to code flow:
+#### Break in to code flow:
 1. **Running main:**
    ```python
     # Runs main when running command in Demisto

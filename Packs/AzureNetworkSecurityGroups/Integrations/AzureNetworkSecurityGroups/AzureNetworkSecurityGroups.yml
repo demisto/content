@@ -903,7 +903,7 @@ script:
       type: String
       isArray: false
       required: true
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3174650
   runonce: false
   script: '-'
   subtype: python3

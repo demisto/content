@@ -9,7 +9,9 @@ Download all reports associated with the email address.
 | Version | 6.0.0 |
 
 ## Dependencies
+
 This script uses the following commands and scripts.
+
 * cofense-report-list
 * cofense-report-download
 
@@ -20,13 +22,15 @@ This script uses the following commands and scripts.
 | email | From address for which to download the report. |
 
 ## Outputs
+
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!CofenseTriageReportDownloadScript email=dummy@xyz.com```
 
 ## Context Example
+
 ```json
 {
     "File": [

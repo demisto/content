@@ -1,3 +1,6 @@
+[file:DataminrPulse.yml]
+ignore=IN124
+
 [file:incidentfield-Dataminr-Pulse-Alert-Type.json]
 ignore=IF115
 

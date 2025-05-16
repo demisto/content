@@ -22,12 +22,12 @@ This script is used in the following playbooks and scripts.
 
 ---
 
-| **Argument Name** | **Description** |
-| --- | --- |
-| packs_data | Information about the packs to install including pack ID and version. |
-| pack_id_key | The key in which the pack ID is stored. |
-| pack_version_key | The key in which the pack version is stored. Enter "latest" to update all packs to the latest version. |
-| install_dependencies | Whether to install the pack dependencies. |
+| **Argument Name** | **Description**                                                                                                           |
+| --- |---------------------------------------------------------------------------------------------------------------------------|
+| packs_data | Information about the packs to install including pack ID and version.                                                     |
+| pack_id_key | The key in which the pack ID is stored.                                                                                   |
+| pack_version_key | The key in which the pack version is stored. Enter "latest" to update all packs to the latest version.                    |
+| install_dependencies | Whether to install the pack dependencies. In XSIAM or XSOAR 8.x and above, this argument is set to "true" by default. |
 
 ## Outputs
 

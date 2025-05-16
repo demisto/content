@@ -1,6 +1,7 @@
-from CoreXQLApiModule import *
 import demistomock as demisto
 from CommonServerPython import *
+from CoreXQLApiModule import *
+
 from CommonServerUserPython import *
 
 # Disable insecure warnings
@@ -97,7 +98,7 @@ def main() -> None:
         else:
             raise NotImplementedError(f"Command {command} does not exist.")
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

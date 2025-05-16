@@ -9,7 +9,7 @@ from SiemApiModule import *  # noqa: E402
 
 urllib3.disable_warnings()
 VENDOR = "salesforce"
-PRODUCT = 'event-audit'
+PRODUCT = "event-audit"
 
 
 class SalesforceClient(IntegrationEventsClient):
@@ -22,10 +22,11 @@ class SalesforceGetEvents(IntegrationGetEvents):
     A class to handle the flow of the integration
     """
 
-    def __init__(self, client: SalesforceClient, options: IntegrationOptions,
-                 files_limit: int, query: str, after: str, last_id: str) -> None:
+    def __init__(
+        self, client: SalesforceClient, options: IntegrationOptions, files_limit: int, query: str, after: str, last_id: str
+    ) -> None:
         self.client: SalesforceClient = client
-        self.instance_url: str = ''
+        self.instance_url: str = ""
         self.query: str = query
         self.files_limit: int = files_limit
         self.after: str = after
@@ -36,15 +37,15 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
     def get_token(self):
         res = self.client.call(self.client.request).json()
-        self.client.request.headers = {'Authorization': f"Bearer {res.get('access_token')}"}
-        self.instance_url = res.get('instance_url')
+        self.client.request.headers = {"Authorization": f"Bearer {res.get('access_token')}"}
+        self.instance_url = res.get("instance_url")
 
     def pull_log_files(self):
-        query = f'{self.query}+and+CreatedDate+>+{self.after} limit {self.files_limit}'
+        query = f"{self.query}+and+CreatedDate+>+{self.after} limit {self.files_limit}"
 
-        demisto.info('Searching files last modified from {}'.format(self.after))
+        demisto.info(f"Searching files last modified from {self.after}")
 
-        url = f'https://um6.salesforce.com/services/data/v44.0/query?q={query}'
+        url = f"https://um6.salesforce.com/services/data/v44.0/query?q={query}"
 
         self.client.request.url = url
         self.client.request.method = Method.GET
@@ -52,26 +53,26 @@ class SalesforceGetEvents(IntegrationGetEvents):
         return self.get_files_from_res(res)
 
     def get_files_from_res(self, query_res):
-        files = query_res['records']
-        done_status = query_res['done']
+        files = query_res["records"]
+        done_status = query_res["done"]
 
         while done_status is False:
-            query = query_res['nextRecordsUrl']
+            query = query_res["nextRecordsUrl"]
             try:
-                self.client.request.url = f'{self.instance_url}{query}'
+                self.client.request.url = f"{self.instance_url}{query}"
                 self.client.request.method = Method.GET
                 query_res = self.client.call(self.client.request).json()
             except Exception as err:
-                demisto.error(f'File list getting failed: {err}')
+                demisto.error(f"File list getting failed: {err}")
 
-            done_status = query_res['done']
-            for file in query_res['records']:
+            done_status = query_res["done"]
+            for file in query_res["records"]:
                 files.append(file)
 
-        demisto.info('Total number of files is {}.'.format(len(files)))
+        demisto.info(f"Total number of files is {len(files)}.")
 
         # sort all files by date
-        files.sort(key=lambda k: dateparser.parse(k.get('LogDate')))
+        files.sort(key=lambda k: dateparser.parse(k.get("LogDate")))
 
         if not self.last_id:
             return files
@@ -83,34 +84,34 @@ class SalesforceGetEvents(IntegrationGetEvents):
             if last_id_found:
                 new_files.append(file)
 
-            if file['Id'] == self.last_id:
+            if file["Id"] == self.last_id:
                 last_id_found = True
 
         return new_files
 
     def get_file_raw_lines(self, file_url, file_in_tmp_path):
-        url = f'{self.instance_url}{file_url}'
+        url = f"{self.instance_url}{file_url}"
         try:
             r = requests.get(url, stream=True, headers=self.client.request.headers)
             if r.status_code == 401:
                 self.get_token()
                 r = requests.get(url, stream=True, headers=self.client.request.headers)
 
-            with open(file_in_tmp_path, 'wb') as f:
+            with open(file_in_tmp_path, "wb") as f:
                 for chunk in r.iter_content(chunk_size=1024 * 1024):
                     if chunk:  # filter out keep-alive new chunks
                         f.write(chunk)
             if r.status_code == 200:
-                demisto.info(f'File successfully downloaded from url {url}')
+                demisto.info(f"File successfully downloaded from url {url}")
             else:
-                demisto.info(f'File downloading failed. {r.status_code} {r.text} {file_url}')
+                demisto.info(f"File downloading failed. {r.status_code} {r.text} {file_url}")
         except Exception as err:
-            demisto.error(f'File downloading failed. {err} {file_url}')
+            demisto.error(f"File downloading failed. {err} {file_url}")
 
     @staticmethod
     def gen_chunks_to_object(file_in_tmp_path, chunksize=100):
         field_names = [name.lower() for name in list(csv.reader(open(file_in_tmp_path)))[0]]
-        field_names = [x if x != 'type' else 'type_' for x in field_names]
+        field_names = [x if x != "type" else "type_" for x in field_names]
         reader = csv.DictReader(open(file_in_tmp_path), fieldnames=field_names)
         chunk: list = []
         next(reader)
@@ -133,8 +134,8 @@ class SalesforceGetEvents(IntegrationGetEvents):
 
         for line in log_files:
             events_list = []
-            local_filename = line["LogFile"].replace('/', '_').replace(':', '_')
-            file_in_tmp_path = "{}/{}".format(temp_dir.name, local_filename)
+            local_filename = line["LogFile"].replace("/", "_").replace(":", "_")
+            file_in_tmp_path = f"{temp_dir.name}/{local_filename}"
             self.get_file_raw_lines(line["LogFile"], file_in_tmp_path)
 
             for chunk in self.gen_chunks_to_object(file_in_tmp_path=file_in_tmp_path, chunksize=2000):
@@ -149,12 +150,11 @@ class SalesforceGetEvents(IntegrationGetEvents):
         last_file = self.last_file
 
         if last_file:
-            last_timestamp = last_file['LogDate']
+            last_timestamp = last_file["LogDate"]
             timestamp = dateparser.parse(last_timestamp)
             if timestamp is None:
-                raise TypeError('Failed to parse LogDate')
-            return {'after': timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"),
-                    'last_id': last_file['Id']}
+                raise TypeError("Failed to parse LogDate")
+            return {"after": timestamp.strftime("%Y-%m-%dT%H:%M:%SZ"), "last_id": last_file["Id"]}
 
         return {}
 
@@ -170,7 +170,7 @@ def get_timestamp_format(value):
     if not isinstance(value, datetime):
         timestamp = dateparser.parse(value)
     if timestamp is None:
-        raise TypeError(f'after is not a valid time {value}')
+        raise TypeError(f"after is not a valid time {value}")
     return timestamp.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
@@ -178,49 +178,52 @@ def main():
     # Args is always stronger. Get last run even stronger
     demisto_params = demisto.params() | demisto.args() | demisto.getLastRun()
 
-    demisto_params['client_id'] = demisto_params['client_id']['password']
-    demisto_params['client_secret'] = demisto_params['client_secret']['password']
-    demisto_params['password'] = demisto_params['credentials']['password']
-    demisto_params['username'] = demisto_params['credentials']['identifier']
-    files_limit = int(demisto_params.get('files_limit'))
-    should_push_events = argToBoolean(demisto_params.get('should_push_events', 'false'))
+    demisto_params["client_id"] = demisto_params["client_id"]["password"]
+    demisto_params["client_secret"] = demisto_params["client_secret"]["password"]
+    demisto_params["password"] = demisto_params["credentials"]["password"]
+    demisto_params["username"] = demisto_params["credentials"]["identifier"]
+    files_limit = int(demisto_params.get("files_limit"))
+    should_push_events = argToBoolean(demisto_params.get("should_push_events", "false"))
 
-    demisto_params['method'] = Method.POST
+    demisto_params["method"] = Method.POST
 
     request = IntegrationHTTPRequest(**demisto_params)
 
     # add the params to the url in order to make the request without decoding the params
-    url = urljoin(demisto_params.get("url"), 'services/oauth2/token')
-    request.url = f'{url}?grant_type=password&' \
-                  f'client_id={demisto_params.get("client_id")}&' \
-                  f'client_secret={demisto_params.get("client_secret")}&' \
-                  f'username={demisto_params.get("username")}&' \
-                  f'password={demisto_params.get("password")}'
+    url = urljoin(demisto_params.get("url"), "services/oauth2/token")
+    request.url = (
+        f'{url}?grant_type=password&'
+        f'client_id={demisto_params.get("client_id")}&'
+        f'client_secret={demisto_params.get("client_secret")}&'
+        f'username={demisto_params.get("username")}&'
+        f'password={demisto_params.get("password")}'
+    )
 
     options = IntegrationOptions.parse_obj(demisto_params)
     client = SalesforceClient(request, options)
 
-    after = get_timestamp_format(demisto_params.get('after'))
+    after = get_timestamp_format(demisto_params.get("after"))
 
-    get_events = SalesforceGetEvents(client, options, files_limit, demisto_params.get('query'),
-                                     after, demisto_params.get('last_id'))
+    get_events = SalesforceGetEvents(
+        client, options, files_limit, demisto_params.get("query"), after, demisto_params.get("last_id")
+    )
 
     command = demisto.command()
     try:
-        if command == 'test-module':
+        if command == "test-module":
             get_events.files_limit = 1
             get_events.run()
-            return_results('ok')
-        elif command in ('salesforce-get-events', 'fetch-events'):
+            return_results("ok")
+        elif command in ("salesforce-get-events", "fetch-events"):
             events = get_events.run()
 
-            if command == 'fetch-events':
+            if command == "fetch-events":
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
                 demisto.setLastRun(get_events.get_last_run_details())
 
-            elif command == 'salesforce-get-events':
+            elif command == "salesforce-get-events":
                 command_results = CommandResults(
-                    readable_output=tableToMarkdown('salesforce audit Logs', events, headerTransform=pascalToSpace),
+                    readable_output=tableToMarkdown("salesforce audit Logs", events, headerTransform=pascalToSpace),
                     raw_response=events,
                 )
                 return_results(command_results)
@@ -231,5 +234,5 @@ def main():
         return_error(str(e))
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

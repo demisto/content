@@ -21,7 +21,8 @@
     "hidden": false,
     "openEnded": false,
     "associatedTypes": [
-        "CheckPointHEC Security Event"
+        "CheckPointHEC Security Event",
+        "CheckPointHEC Restore Request"
     ],
     "associatedToAll": false,
     "unmapped": false,

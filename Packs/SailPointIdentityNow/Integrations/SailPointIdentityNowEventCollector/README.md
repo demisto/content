@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3 of SailPoint API.
 
 ## Configure SailPoint IdentityNow Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | IdentityNow Server URL (e.g., https://{tenant}.api.identitynow.com)  <br /> In order to get the tenant name, follow this [link](https://developer.sailpoint.com/docs/api/getting-started/#find-your-tenant-name).| True |
@@ -12,7 +11,6 @@ This integration was integrated and tested with version 3 of SailPoint API.
 | Max number of events per fetch | False |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 Note: After generating client credentials, it is required to allow the following scopes: sp, search, read.
 
@@ -34,8 +32,8 @@ Gets events from SailPoint IdentityNow. This command is used for developing/debu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional | 
-| limit | Maximum number of results to return. Default is 50. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Optional |
+| limit | Maximum number of results to return. Default is 50. | Optional |
 | from_date | Date from which to get events in the format of %Y-%m-%dT%H:%M:%S. | Optional |
 | from_id | An ID of the event to retrieve events from.| Optional |
 

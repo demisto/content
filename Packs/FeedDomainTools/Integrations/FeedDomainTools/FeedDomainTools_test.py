@@ -119,6 +119,7 @@ def test_conversion_feed_to_indicato_obj(mocker, dt_feeds_client):
     [
         "nod",
         "nad",
+        "noh",
         "domaindiscovery",
         "domainrdap"
     ],
@@ -137,6 +138,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
     mock_feed_response = {
         "nod": feed_mock_response.NOD_FEED_RESPONSE,
         "nad": feed_mock_response.NAD_FEED_RESPONSE,
+        "noh": feed_mock_response.NOH_FEED_RESPONSE,
         "domaindiscovery": feed_mock_response.DOMAINDISCOVERY_RESPONSE,
         "domainrdap": feed_mock_response.DOMAINRDAP_RESPONSE,
     }
@@ -153,6 +155,7 @@ def test_get_indicators_command(mocker, dt_feeds_client, feed_type):
     expected_indicator_results = {
         "nod": feed_mock_response.NOD_PARSED_INDICATOR_RESPONSE,
         "nad": feed_mock_response.NAD_PARSED_INDICATOR_RESPONSE,
+        "noh": feed_mock_response.NOH_PARSED_INDICATOR_RESPONSE,
         "domaindiscovery": feed_mock_response.DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE,
         "domainrdap": feed_mock_response.DOMAINRDAP_PARSED_INDICATOR_RESPONSE
     }
@@ -190,7 +193,7 @@ def test_fetch_indicators_command(mocker, dt_feeds_client):
     )
     results = fetch_indicators_command(dt_feeds_client, params={"top": "2"})
 
-    assert len(results) == 8
+    assert len(results) == 10
 
 
 def test_calling_command_using_main(mocker, dt_feeds_client):

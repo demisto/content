@@ -93,7 +93,7 @@ This integration supports a default Classifier (Panorama Classifier) and Mapper 
 
 ## Configure Panorama on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to **Settings** > **Integrations** > **Instances**.
 2. Search for Panorama.
 3. Click **Add instance** to create and configure a new integration instance.
 

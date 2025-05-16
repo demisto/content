@@ -15,11 +15,10 @@ from AzureLogAnalytics import (
     run_search_job_command,
     tags_arg_to_request_format,
 )
-from pytest_mock import MockerFixture
-from requests_mock import MockerCore
-
 from CommonServerPython import CommandResults, DemistoException, ScheduledCommand
 from MicrosoftApiModule import *  # noqa: E402
+from pytest_mock import MockerFixture
+from requests_mock import MockerCore
 
 
 def util_load_json(path: str) -> dict:
@@ -260,9 +259,8 @@ def test_test_module_command_with_managed_identities(
      - Ensure the output are as expected
     """
     import AzureLogAnalytics
-    from AzureLogAnalytics import MANAGED_IDENTITIES_TOKEN_URL, main
-
     import demistomock as demisto
+    from AzureLogAnalytics import MANAGED_IDENTITIES_TOKEN_URL, main
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
@@ -299,9 +297,8 @@ def test_generate_login_url(mocker: MockerFixture) -> None:
     """
     # prepare
     import AzureLogAnalytics
-    from AzureLogAnalytics import main
-
     import demistomock as demisto
+    from AzureLogAnalytics import main
 
     redirect_uri = "redirect_uri"
     tenant_id = "tenant_id"

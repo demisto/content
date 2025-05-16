@@ -2,7 +2,6 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 
 ## Configure TAXII 2 Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -30,67 +29,69 @@ Ingest indicator feeds from TAXII 2.0 and 2.1 servers.
 | Tags | Supports CSV values. | False |
 | Default API Root to use | The Default API Root to use (e.g. default, public). If left empty, the server default API root will be used. When the server has no default root, the first available API root will be used instead. Providing an API root that can't be reached will result in an error message with all possible API roots listed. | False |
 
-
 ### Using API Token authentication
+
 In order to use the integration with an API token you'll first need to change the `Username / API Key (see '?')` field to `_api_token_key`. Following this step, you can now enter the API Token into the `Password` field - this value will be used as an API key.
 
-
 ### Using custom authentication header
+
 In case the TAXII 2 server you're trying to connect to requires a custom authentication header, you'll first need to change the `Username / API Key (see '?')` field to `_header:` and the custom header name, e.g. `_header:custom_auth`. Following this step, you can now enter the custom auth header value into the `Password` field - this value will be used as a custom auth header.
 
 ### Complex Observation Mode
+
 Two or more Observation Expressions MAY be combined using a complex observation operator such as "AND", "OR", and "FOLLOWEDBY". e.g. `[ IP = 'b' ] AND [ URL = 'd' ]`. These relationships are not represented in in CORTEX XSOAR TIM indicators. You can opt to create them while ignoring these relations, or you can opt to ignore these expressions - if you chose the latter, then no indicator will be created for complex observations.
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### taxii2-get-indicators
+
 ***
 Allows you to test your feed and to make sure you can fetch indicators successfuly.
-
 
 #### Base Command
 
 `taxii2-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| raw | Will return only the rawJSON of the indicator object. | Optional | 
-| limit | Maximum number of indicators to fetch. | Optional | 
-| added_after | Fetch only indicators that were added to the server after the given time. Please provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. | Optional | 
-
+| raw | Will return only the rawJSON of the indicator object. | Optional |
+| limit | Maximum number of indicators to fetch. | Optional |
+| added_after | Fetch only indicators that were added to the server after the given time. Please provide a &lt;number&gt; and &lt;time unit&gt; of type minute/hour/day. For example, 1 minute, 12 hour, 24 days. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TAXII2.Indicators.type | String | Indicator type. | 
-| TAXII2.Indicators.value | String | Indicator value. | 
-| TAXII2.Indicators.rawJSON | String | Indicator rawJSON. | 
-
+| TAXII2.Indicators.type | String | Indicator type. |
+| TAXII2.Indicators.value | String | Indicator value. |
+| TAXII2.Indicators.rawJSON | String | Indicator rawJSON. |
 
 #### Command Example
+
 ```!taxii2-get-indicators limit=3```
 
 #### Human Readable Output
+
 |value|type|
 |---|---|
 | coronashop.jp | Domain |
 | e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e | File |
 | 2014\[.\]zzux\[.\]com | Domain |
 
-
 ### taxii2-get-collections
+
 ***
 Gets the list of collections from the discovery service.
-
 
 #### Base Command
 
 `taxii2-get-collections`
+
 #### Input
 
 There are no input arguments for this command.
@@ -99,14 +100,15 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| TAXII2.Collections.ID | String | Collection ID. | 
-| TAXII2.Collections.Name | String | Collection Name. | 
-
+| TAXII2.Collections.ID | String | Collection ID. |
+| TAXII2.Collections.Name | String | Collection Name. |
 
 #### Command Example
+
 ```!taxii2-get-collections```
 
 #### Human Readable Output
+
 |Name|ID|
 |---|---|
 | Phish Tank | 107 |
@@ -121,14 +123,15 @@ There are no input arguments for this command.
 | CyberCrime | 41 |
 | Emerging Threats - Compromised | 68 |
 
-
 ### taxii2-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
 
 #### Base Command
 
 `taxii2-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -138,7 +141,9 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!taxii2-reset-fetch-indicators```
 
 #### Human Readable Output
+
 Fetch was reset successfully. Your next indicator fetch will collect indicators from the configured "First Fetch Time"

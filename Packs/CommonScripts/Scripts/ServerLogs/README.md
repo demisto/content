@@ -1,4 +1,5 @@
 Uses the ssh integration to grab the host server logs
+This script is supported only on Cortex XSOAR on-prem (version 6.X).
 
 ## Script Data
 ---

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 4.0 of Celonis.
 
 ## Configure Celonis in Cortex
 
-
 | **Parameter** | **Description**                                                                                                                    | **Required** |
 | --- |------------------------------------------------------------------------------------------------------------------------------------| --- |
 | Server URL | The endpoint URL is constructed using the team name and realm in the format: https://&lt;teamname&gt;.&lt;realm&gt;.celonis.cloud. | True |
@@ -16,7 +15,7 @@ This integration was integrated and tested with version 4.0 of Celonis.
 
 API keys, passed in an HTTP header like this: Authorization: Bearer API_KEY.
 
-#### How to create an OAuth client and generate client ID and Client Secret:
+#### How to create an OAuth client and generate client ID and Client Secret
 
 1. To start, you need to create an OAuth client in your team and then grant this client API permissions.
 2. Click **Admin & Settings** and select **Applications**.
@@ -52,16 +51,17 @@ Retrieves a list of audit logs events from the Celonis instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to true in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. | Required | 
-| start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
-| end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required | 
+| should_push_events | Set this argument to true in order to create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of events to return. | Required |
+| start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required |
+| end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS.sssZ". Example: 2025-02-04T10:33:24.647Z. | Required |
 
 #### Context Output
 
 | **Path**      | **Type** | **Description**                |
 |---------------| --- |--------------------------------|
-| Celonis.Audit | List | The list of audit logs events. | 
+| Celonis.Audit | List | The list of audit logs events. |
 
 #### Command example
+
 ```!celonis-get-events should_push_events=false limit=10 end_date=2025-02-04T10:33:24.647Z start_date=2025-02-10T10:33:24.647Z```

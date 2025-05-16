@@ -10,5 +10,11 @@
     "first_seen": "27-12-2023 05:42:18 AM",
     "last_seen": "27-12-2023 05:42:18 AM",
     "brand": "Mock Brand",
-    "timestamp": 1703655740964
+    "timestamp": 1703655740964,
+    "screenshots": [
+        {
+            "filename": "screenshot1.png",
+            "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"
+        }
+    ]
 }

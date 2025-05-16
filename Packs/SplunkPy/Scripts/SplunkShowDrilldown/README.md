@@ -1,6 +1,7 @@
 Automation to display drilldown search results from Splunk.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Automation to display drilldown search results from Splunk.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

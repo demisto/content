@@ -53,7 +53,7 @@ display: Generic Webhook (Form Data)
 name: Generic Webhook (Form Data)
 script:
   commands: []
-  dockerimage: demisto/fastapi:0.115.4.115067
+  dockerimage: demisto/fastapi:0.115.12.3243695
   longRunning: true
   longRunningPort: true
   script: '-'

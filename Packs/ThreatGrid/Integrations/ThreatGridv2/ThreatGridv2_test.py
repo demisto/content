@@ -838,3 +838,59 @@ def test_upload_sample_method(
     mock_client.upload_sample(files=files, payload=payload)
     assert mock_func.call_args[1] == expected_call
     assert "Authorization" not in mock_client._headers if files else True
+    
+
+
+@pytest.mark.parametrize("input_data, expected_output", [
+    # --- Basic cases ---
+    ("Visit <http://example.com>", "Visit http://example.com"),
+    ("Secure: <https://secure.com>", "Secure: https://secure.com"),
+    ("Go to <www.site.com>", "Go to www.site.com"),
+
+    # --- No change cases ---
+    ("No brackets here", "No brackets here"),
+    ("<not-a-url>", "<not-a-url>"),
+
+    # --- Dict ---
+    (
+        {"url": "<https://abc.com>"},
+        {"url": "https://abc.com"}
+    ),
+
+    # --- List ---
+    (
+        ["<http://example.com>", "<https://example.com>", "safe"],
+        ["http://example.com", "https://example.com", "safe"]
+    ),
+
+    # --- Nested dict ---
+    (
+        {"data": {"link": "<http://abc.com>", "text": "clean"}},
+        {"data": {"link": "http://abc.com", "text": "clean"}}
+    ),
+
+    # --- Nested list ---
+    (
+        [{"url": "<http://1.com>"}, {"url": "<www.2.com>"}],
+        [{"url": "http://1.com"}, {"url": "www.2.com"}]
+    ),
+
+    # --- Deep nesting ---
+    (
+        {"outer": [{"inner": {"site": "<https://nested.com>"}}]},
+        {"outer": [{"inner": {"site": "https://nested.com"}}]}
+    ),
+])
+def test_remove_angle_brackets_from_urls(input_data, expected_output):
+    """
+    Given:
+        - A response input with different structures (string, list, dict) containing URLs wrapped in angle brackets.
+    When:
+        - Calling the `remove_angle_brackets_from_urls` function
+    Then:
+        - URLs like <http://...>, <https://...>, and <www...> should be unwrapped and returned without angle brackets
+        - All other strings and non-URL values should remain unchanged
+        - The function should work recursively for nested lists and dictionaries
+    """
+    from ThreatGridv2 import remove_angle_brackets
+    assert remove_angle_brackets(input_data) == expected_output

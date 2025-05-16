@@ -1,7 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *
 import traceback
+
+import demistomock as demisto
 import urllib3
+from CommonServerPython import *
 from requests import Response
 
 # Disable insecure warnings

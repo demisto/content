@@ -2,7 +2,6 @@ Use the Blocklist.de feed integration to fetch indicators from the feed.
 
 ## Configure Blocklist.de Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -20,28 +19,29 @@ Use the Blocklist.de feed integration to fetch indicators from the feed.
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### blocklist_de-get-indicators
+
 ***
 Gets the feed indicators.
-
 
 #### Base Command
 
 `blocklist_de-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional | 
-| indicator_type | The indicator type. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 50. Default is 50. | Optional |
+| indicator_type | The indicator type. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 #### Human Readable Output
 

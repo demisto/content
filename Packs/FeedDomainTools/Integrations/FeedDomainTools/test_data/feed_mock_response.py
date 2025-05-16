@@ -24,6 +24,19 @@ NAD_FEED_RESPONSE = [
     '{"timestamp":"2025-01-13T13:37:00Z","domain":"vontresesworldofhair.ws"}',
 ]
 
+NOH_FEED_RESPONSE = [
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"70-182-75-162_s-104-93-21-49_ts-1745420863-clienttons-s.akamaihd.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"0436e3e5.metrics-bunny.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"mailrelay.salon-gossip.com"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"jdpf23tilukrq2ajaiya-pzoxrc-94dbdaf6b-clientnsv4-s.akamaihd.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"wdkaurv71m355nb9jupvbr2l.security-notification.co.in"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"eabqbsyxfgmqakqce3yboaadqnuasart-f-cfbdb0fbf-clienttons-s.akamaihd.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"mk5z4atilukrq2ajajba-pxwook-1e57a800d-clientnsv4-s.akamaihd.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"eabqbua7ausackqce3yloaaaanuasast-f-62424322b-clienttons-s.akamaihd.net"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"peste.bi.wealthsimple.co"}',
+    '{"timestamp":"2025-04-23T15:08:43Z","domain":"jdagdhdilukte2ajaiya-pqb6kc-b9a8d2c13-clientnsv4-s.akamaihd.net"}',
+]
+
 DOMAINDISCOVERY_RESPONSE = [
     '{"timestamp":"2025-03-07T17:27:11Z","domain":"yashh.xin"}',
     '{"timestamp":"2025-03-07T17:27:11Z","domain":"joinoramaenergy.com"}',
@@ -348,6 +361,159 @@ NAD_PARSED_INDICATOR_RESPONSE = [
     },
 ]
 
+NOH_PARSED_INDICATOR_RESPONSE = [
+    {
+        "value": "70-182-75-162_s-104-93-21-49_ts-1745420863-clienttons-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "70-182-75-162_s-104-93-21-49_ts-1745420863-clienttons-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "0436e3e5.metrics-bunny.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "0436e3e5.metrics-bunny.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "mailrelay.salon-gossip.com",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "mailrelay.salon-gossip.com",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "jdpf23tilukrq2ajaiya-pzoxrc-94dbdaf6b-clientnsv4-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "jdpf23tilukrq2ajaiya-pzoxrc-94dbdaf6b-clientnsv4-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "wdkaurv71m355nb9jupvbr2l.security-notification.co.in",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "wdkaurv71m355nb9jupvbr2l.security-notification.co.in",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "eabqbsyxfgmqakqce3yboaadqnuasart-f-cfbdb0fbf-clienttons-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "eabqbsyxfgmqakqce3yboaadqnuasart-f-cfbdb0fbf-clienttons-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "mk5z4atilukrq2ajajba-pxwook-1e57a800d-clientnsv4-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "mk5z4atilukrq2ajajba-pxwook-1e57a800d-clientnsv4-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "eabqbua7ausackqce3yloaaaanuasast-f-62424322b-clienttons-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "eabqbua7ausackqce3yloaaaanuasast-f-62424322b-clienttons-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "peste.bi.wealthsimple.co",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "peste.bi.wealthsimple.co",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+    {
+        "value": "jdagdhdilukte2ajaiya-pqb6kc-b9a8d2c13-clientnsv4-s.akamaihd.net",
+        "type": "Domain",
+        "fields": {
+            "tags": "DomainToolsFeeds,noh",
+            "service": "DomainTools Feeds",
+            "firstseenbysource": "2025-04-23T15:08:43Z",
+            "sourcebrands": "FeedDomainTools",
+        },
+        "rawJSON": {
+            "value": "jdagdhdilukte2ajaiya-pqb6kc-b9a8d2c13-clientnsv4-s.akamaihd.net",
+            "type": "Domain",
+            "timestamp": "2025-04-23T15:08:43Z",
+        },
+    },
+]
+
 
 DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE = [
     {
@@ -362,7 +528,7 @@ DOMAINDISCOVERY_PARSED_INDICATOR_RESPONSE = [
         "rawJSON": {
             "value": "yashh.xin",
             "type": "Domain",
-            "timestamp": "2025-03-07T17:27:11Z"
+            "timestamp": "2025-03-07T17:27:11Z",
         },
     },
     {

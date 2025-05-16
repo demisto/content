@@ -1,8 +1,8 @@
-This script is used to simplify the process of creating a new Issue in Jira. 
+This script is used to simplify the process of creating a new Issue in Jira.
 You can specify custom fields using the `customFields` argument.
 
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,16 +12,21 @@ You can specify custom fields using the `customFields` argument.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * jira-create-issue
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Indeni Demo
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -42,6 +47,7 @@ This script is used in the following playbooks and scripts.
 | customFields | Comma-separated custom field keys and values to include in the created incident, e.g. \`customfield_10101=foo,customfield_10102=bar\` |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
