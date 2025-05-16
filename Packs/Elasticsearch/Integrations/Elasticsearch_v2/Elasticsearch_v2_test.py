@@ -65,6 +65,27 @@ ES_V7_RESPONSE = {
     },
 }
 
+ES_V9_RESPONSE = {
+    "took": 11,
+    "is_partial": False,
+    "columns":
+    [
+        {
+            "name": "alertDetails.alertuser",
+            "type": "text"
+        }
+    ],
+    "values":
+    [
+        [
+            "karl@test.io"
+        ],
+        [
+            "karl@test.io"
+        ]
+    ]
+}
+
 ES_V8_RESPONSE = {
     "took": 8,
     "timed_out": False,
@@ -1137,3 +1158,28 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         Elasticsearch_v2.verify_es_server_version(server_details)
     assert server_version in str(e.value)
+
+
+def test_search_command_with_query_esql(mocker):
+    """
+    Given
+      - query to the search command with esql
+
+    When
+    - executing the es-esql-search command
+
+    Then
+     - Make sure that the expected message is returned.
+    """
+    import Elasticsearch_v2
+
+    args ={
+        "query": """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *""",
+        "limit": "1"
+    }
+    search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "es-esql-search", return_value=ES_V9_RESPONSE)
+    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
+    Elasticsearch_v2.search_esql_command(args, {})
+    assert search_mock.call_args.kwargs["took"] == 11
+    # assert search_mock.call_args.kwargs["size"] == 5
+    # assert search_mock.call_args.kwargs["from_"] == 0

@@ -12,17 +12,19 @@ The permissions required to use this integration depends on which operations you
 
 ## Configure Elasticsearch v2 in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. By default this is 9200. | True |
-| Username for server login | Provide Username \+ Passoword instead of API key \+ API ID | False |
+| Server URL | The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments. | False |
+| Username for server login | Provide Username \+ Password instead of API key \+ API ID | False |
+| Password |  | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-| Client type | For Elasticsearch version 7 and below, select 'Elasticsearch'. For Elasticsearch server version 8, select 'Elasticsearch_v8'. In some hosted Elasticsearch environments, the standard Elasticsearch client is not supported. If you encounter any related client issues, consider using the 'OpenSearch' client type. | False |
+| Client type | In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type. | False |
 | Index from which to fetch incidents (CSV) |  | False |
-| Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query | False |
-| Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation. | False |
-| Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered. | False |
+| Query String | The query will be used when fetching incidents. Index time field will be used as a filter in the query.<br/><br/>The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '\!es-integration-health-check' command. | False |
+| Index time field (for sorting sort and limiting data) | The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.<br/><br/>The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '\!es-integration-health-check' command. | False |
+| Raw Query | Will override the 'Query String' Lucene syntax string. Results will not be filtered.<br/><br/>The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '\!es-integration-health-check' command. | False |
 | Time field type |  | False |
 | Map JSON fields into labels |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
@@ -30,6 +32,8 @@ The permissions required to use this integration depends on which operations you
 | Request timeout (in seconds). |  | False |
 | Incident type |  | False |
 | Fetch incidents |  | False |
+| Incidents Fetch Interval |  | False |
+
 
 ## Commands
 
@@ -49,36 +53,36 @@ Queries an index.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| index | The index in which to perform a search. | Required |
-| query | The string to query (in Lucene syntax). Possible values are: . | Optional |
-| fields | A comma-separated list of document fields to fetch. If empty, the entire document is fetched. | Optional |
-| explain | Calculates an explanation of a score for a query. For example, "value:1.6943597". Possible values are: true, false. Default is false. | Optional |
-| page | The page number from which to start a search. Default is 0. | Optional |
-| size | The number of documents displayed per page. Can be an integer between "1" and "10,000". Default is 100. | Optional |
-| sort-field | The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server. Possible values are: . | Optional |
-| sort-order | The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined. Possible values are: asc, desc. Default is asc. | Optional |
-| query_dsl | Will overwrite the ‘query' arguments. | Optional |
-| timestamp_range_start | The starting time of the time range. | Optional |
-| timestamp_range_end | The ending time of the time range. | Optional |
-| timestamp_field | Timestamp field name. Default is @timestamp. | Optional |
+| index | The index in which to perform a search. | Required | 
+| query | The string to query (in Lucene syntax). Possible values are: . | Optional | 
+| fields | A comma-separated list of document fields to fetch. If empty, the entire document is fetched. | Optional | 
+| explain | Calculates an explanation of a score for a query. For example, "value:1.6943597". Possible values are: true, false. Default is false. | Optional | 
+| page | The page number from which to start a search. Default is 0. | Optional | 
+| size | The number of documents displayed per page. Can be an integer between "1" and "10,000". Default is 100. | Optional | 
+| sort-field | The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server. Possible values are: . | Optional | 
+| sort-order | The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined. Possible values are: asc, desc. Default is asc. | Optional | 
+| query_dsl | Will overwrite the ‘query' arguments. | Optional | 
+| timestamp_range_start | The starting time of the time range. | Optional | 
+| timestamp_range_end | The ending time of the time range. | Optional | 
+| timestamp_field | Timestamp field name. Default is @timestamp. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Search.Results._index | String | The index to which the document belongs. |
-| Elasticsearch.Search.Results._id | String | The ID of the document. |
-| Elasticsearch.Search.Results._type | String | The mapping type of the document. |
-| Elasticsearch.Search.max_score | Number | The maximum relevance score of a query. |
-| Elasticsearch.Search.Query | String | The query performed in the search. |
-| Elasticsearch.Search.total.value | Number | The number of search results. |
-| Elasticsearch.Search.Results._score | Number | The relevance score of the search result. |
-| Elasticsearch.Search.Index | String | The index in which the search was performed. |
-| Elasticsearch.Search.Server | String | The server on which the search was performed. |
-| Elasticsearch.Search.timed_out | Boolean | Whether the search stopped due to a timeout. |
-| Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. |
-| Elasticsearch.Search.Page | Number | The page number from which the search started. |
-| Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. |
+| Elasticsearch.Search.Results._index | String | The index to which the document belongs. | 
+| Elasticsearch.Search.Results._id | String | The ID of the document. | 
+| Elasticsearch.Search.Results._type | String | The mapping type of the document. | 
+| Elasticsearch.Search.max_score | Number | The maximum relevance score of a query. | 
+| Elasticsearch.Search.Query | String | The query performed in the search. | 
+| Elasticsearch.Search.total.value | Number | The number of search results. | 
+| Elasticsearch.Search.Results._score | Number | The relevance score of the search result. | 
+| Elasticsearch.Search.Index | String | The index in which the search was performed. | 
+| Elasticsearch.Search.Server | String | The server on which the search was performed. | 
+| Elasticsearch.Search.timed_out | Boolean | Whether the search stopped due to a timeout. | 
+| Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. | 
+| Elasticsearch.Search.Page | Number | The page number from which the search started. | 
+| Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. | 
 
 ### search
 
@@ -93,33 +97,33 @@ Searches an index.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| index | The index in which to perform a search. | Required |
-| query | The string to query (in Lucene syntax). Possible values are: . | Optional |
-| fields | A comma-separated list of document fields to fetch. If empty, fetches the entire document. | Optional |
-| explain | Calculates an explanation of a score for a query. For example, "value:1.6943597". Possible values are: true, false. Default is false. | Optional |
-| page | The page number from which to start a search. Default is 0. | Optional |
-| size | The number of documents displayed per page. Can be an integer between "1" and "10,000". Default is 100. | Optional |
-| sort-field | The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server. Possible values are: . | Optional |
-| sort-order | The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined. Possible values are: asc, desc. Default is asc. | Optional |
-| timestamp_field | Timestamp field name. Default is @timestamp. | Optional |
+| index | The index in which to perform a search. | Required | 
+| query | The string to query (in Lucene syntax). Possible values are: . | Optional | 
+| fields | A comma-separated list of document fields to fetch. If empty, fetches the entire document. | Optional | 
+| explain | Calculates an explanation of a score for a query. For example, "value:1.6943597". Possible values are: true, false. Default is false. | Optional | 
+| page | The page number from which to start a search. Default is 0. | Optional | 
+| size | The number of documents displayed per page. Can be an integer between "1" and "10,000". Default is 100. | Optional | 
+| sort-field | The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server. Possible values are: . | Optional | 
+| sort-order | The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined. Possible values are: asc, desc. Default is asc. | Optional | 
+| timestamp_field | Timestamp field name. Default is @timestamp. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.Search.Results._index | String | The index to which the document belongs. |
-| Elasticsearch.Search.Results._id | String | The ID of the document. |
-| Elasticsearch.Search.Results._type | String | The mapping type of the document. |
-| Elasticsearch.Search.max_score | Number | The maximum relevance score of a query. |
-| Elasticsearch.Search.Query | String | The query performed in the search. |
-| Elasticsearch.Search.total.value | Number | The number of search results. |
-| Elasticsearch.Search.Results._score | Number | The relevance score of the search result. |
-| Elasticsearch.Search.Index | String | The index in which the search was performed. |
-| Elasticsearch.Search.Server | String | The server on which the search was performed. |
-| Elasticsearch.Search.timed_out | Boolean | Whether the search stopped due to a time out. |
-| Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. |
-| Elasticsearch.Search.Page | Number | The page number from which the search started. |
-| Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. |
+| Elasticsearch.Search.Results._index | String | The index to which the document belongs. | 
+| Elasticsearch.Search.Results._id | String | The ID of the document. | 
+| Elasticsearch.Search.Results._type | String | The mapping type of the document. | 
+| Elasticsearch.Search.max_score | Number | The maximum relevance score of a query. | 
+| Elasticsearch.Search.Query | String | The query performed in the search. | 
+| Elasticsearch.Search.total.value | Number | The number of search results. | 
+| Elasticsearch.Search.Results._score | Number | The relevance score of the search result. | 
+| Elasticsearch.Search.Index | String | The index in which the search was performed. | 
+| Elasticsearch.Search.Server | String | The server on which the search was performed. | 
+| Elasticsearch.Search.timed_out | Boolean | Whether the search stopped due to a time out. | 
+| Elasticsearch.Search.took | Number | The time in milliseconds taken for the search to complete. | 
+| Elasticsearch.Search.Page | Number | The page number from which the search started. | 
+| Elasticsearch.Search.Size | Number | The maximum number of scores that a search can return. | 
 
 ### get-mapping-fields
 
@@ -132,12 +136,12 @@ Returns the schema of the index to fetch from. This commmand should be used for 
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
 ### es-eql-search
 
 ***
@@ -244,12 +248,12 @@ Returns the health status of the integration. This commmand should be used for d
 
 #### Input
 
-There are no input arguments for this command.
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
 
 #### Context Output
 
 There is no context output for this command.
-
 ### es-get-indices-statistics
 
 ***
@@ -263,16 +267,39 @@ Returns Elasticsearch indices statistics and information. This command is not su
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indices to return. Default is 50. | Optional |
-| all_results | Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored. | Optional |
+| limit | The maximum number of indices to return. Default is 50. | Optional | 
+| all_results | Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored. Possible values are: false, true. Default is false. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Elasticsearch.IndexStatistics.Name | String | The name of the index. |
-| Elasticsearch.IndexStatistics.Status | String | The status of the index. |
-| Elasticsearch.IndexStatistics.Health | String | The health status of the index. |
-| Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. |
-| Elasticsearch.IndexStatistics.DocumentsCount | Number | The number of documents that are indexed in the index. |
-| Elasticsearch.IndexStatistics.DocumentsDeleted | Number | The number of documents that were deleted from the index. |
+| Elasticsearch.IndexStatistics.Name | String | The name of the index. | 
+| Elasticsearch.IndexStatistics.Status | String | The status of the index. | 
+| Elasticsearch.IndexStatistics.Health | String | The health status of the index. | 
+| Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. | 
+| Elasticsearch.IndexStatistics.DocumentsCount | Number | The number of documents that are indexed in the index. | 
+| Elasticsearch.IndexStatistics.DocumentsDeleted | Number | The number of documents that were deleted from the index. | 
+
+### es-esql-search
+
+***
+Search using ES|QL query. (Elastic >=8.11)
+
+#### Base Command
+
+`es-esql-search`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | The ES\|QL query string to execute using piped syntax (e.g., FROM index \| WHERE field == "value"). | Required | 
+| limit | Maximum number of results to return. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Elasticsearch.Search | unknown | ES|QL Search Result | 
+
