@@ -1,160 +1,165 @@
 category: Database
-sectionOrder:
-- Connect
-- Collect
 commonfields:
-  id: Elasticsearch v2
+  id: Elasticsearch v2_Custom
   version: -1
 configuration:
-- display: Server URL
+- additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
+  display: Server URL
   name: url
   required: false
-  type: 0
-  additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
   section: Connect
+  type: 0
 - additionalinfo: Provide Username + Password instead of API key + API ID
   display: Username for server login
   name: credentials
+  required: false
+  section: Connect
   type: 9
-  section: Connect
-  required: false
-- display: Trust any certificate (not secure)
+- advanced: true
+  display: Trust any certificate (not secure)
   name: insecure
-  type: 8
-  section: Connect
-  advanced: true
   required: false
-- display: Use system proxy settings
+  section: Connect
+  type: 8
+- advanced: true
+  display: Use system proxy settings
   name: proxy
-  type: 8
-  section: Connect
-  advanced: true
   required: false
-- defaultvalue: Elasticsearch
-  additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  section: Connect
+  type: 8
+- additionalinfo: In some hosted ElasticSearch environments, the standard ElasticSearch client is not supported. If you encounter any related client issues, please consider using the OpenSearch client type.
+  advanced: true
+  defaultvalue: Elasticsearch
   display: Client type
   name: client_type
   options:
   - Elasticsearch
   - OpenSearch
   - Elasticsearch_v8
-  type: 15
-  section: Connect
-  advanced: true
+  - Elasticsearch_v9
   required: false
+  section: Connect
+  type: 15
 - display: Index from which to fetch incidents (CSV)
   name: fetch_index
-  type: 0
-  section: Collect
   required: false
-- display: Query String
-  name: fetch_query
+  section: Collect
   type: 0
-  additionalinfo: |-
+- additionalinfo: |-
     The query will be used when fetching incidents. Index time field will be used as a filter in the query.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
-  section: Collect
+  display: Query String
+  name: fetch_query
   required: false
-- display: Index time field (for sorting sort and limiting data)
-  name: fetch_time_field
+  section: Collect
   type: 0
-  section: Collect
-  required: false
-  additionalinfo: |-
+- additionalinfo: |-
     The time field on which sorting and limiting are performed. If using a nested field, separate field names using dot notation.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
-- display: Raw Query
-  name: raw_query
-  type: 12
-  additionalinfo: |-
+  display: Index time field (for sorting sort and limiting data)
+  name: fetch_time_field
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: |-
     Will override the 'Query String' Lucene syntax string. Results will not be filtered.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
-  section: Collect
   advanced: true
+  display: Raw Query
+  name: raw_query
   required: false
-- display: Time field type
-  defaultvalue: 'Simple-Date'
+  section: Collect
+  type: 12
+- advanced: true
+  defaultvalue: Simple-Date
+  display: Time field type
   name: time_method
-  type: 15
   options:
   - Simple-Date
   - Timestamp-Seconds
   - Timestamp-Milliseconds
-  section: Collect
-  advanced: true
   required: false
-- defaultvalue: 'true'
+  section: Collect
+  type: 15
+- advanced: true
+  defaultvalue: "true"
   display: Map JSON fields into labels
   name: map_labels
-  type: 8
-  section: Collect
-  advanced: true
   required: false
-- defaultvalue: '3 days'
+  section: Collect
+  type: 8
+- defaultvalue: 3 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
-  type: 0
-  section: Collect
   required: false
-- defaultvalue: '50'
+  section: Collect
+  type: 0
+- defaultvalue: "50"
   display: The maximum number of results to return per fetch.
   name: fetch_size
-  type: 0
+  required: false
   section: Collect
-  required: false
-- display: Request timeout (in seconds).
-  name: timeout
   type: 0
-  defaultvalue: '60'
-  section: Connect
-  advanced: true
+- advanced: true
+  defaultvalue: "60"
+  display: Request timeout (in seconds).
+  name: timeout
   required: false
+  section: Connect
+  type: 0
 - display: Incident type
   name: incidentType
-  type: 13
-  section: Connect
   required: false
+  section: Connect
+  type: 13
 - display: Fetch incidents
   name: isFetch
-  type: 8
-  section: Collect
   required: false
+  section: Collect
+  type: 8
+- defaultvalue: "1"
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: Elasticsearch v2
-name: Elasticsearch v2
+display: Elasticsearch v2_Custom
+name: Elasticsearch v2_Custom
 script:
   commands:
   - arguments:
     - description: The index in which to perform a search.
       name: index
       required: true
-    - description: The string to query (in Lucene syntax).
+    - auto: PREDEFINED
+      description: The string to query (in Lucene syntax).
       name: query
       predefined:
-      - ''
+      - ""
     - description: A comma-separated list of document fields to fetch. If empty, the entire document is fetched.
       isArray: true
       name: fields
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       name: explain
       predefined:
-      - 'true'
-      - 'false'
-    - defaultValue: '0'
+      - "true"
+      - "false"
+    - defaultValue: "0"
       description: The page number from which to start a search.
       name: page
-    - defaultValue: '100'
+    - defaultValue: "100"
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
-    - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
+    - auto: PREDEFINED
+      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       name: sort-field
       predefined:
-      - ''
+      - ""
     - auto: PREDEFINED
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
@@ -168,8 +173,8 @@ script:
       name: timestamp_range_start
     - description: The ending time of the time range.
       name: timestamp_range_end
-    - description: Timestamp field name.
-      defaultValue: "@timestamp"
+    - defaultValue: '@timestamp'
+      description: Timestamp field name.
       name: timestamp_field
     description: Queries an index.
     name: es-search
@@ -217,30 +222,32 @@ script:
     - description: The index in which to perform a search.
       name: index
       required: true
-    - description: The string to query (in Lucene syntax).
+    - auto: PREDEFINED
+      description: The string to query (in Lucene syntax).
       name: query
       predefined:
-      - ''
+      - ""
     - description: A comma-separated list of document fields to fetch. If empty, fetches the entire document.
       isArray: true
       name: fields
     - auto: PREDEFINED
-      defaultValue: 'false'
+      defaultValue: "false"
       description: Calculates an explanation of a score for a query. For example, "value:1.6943597".
       name: explain
       predefined:
-      - 'true'
-      - 'false'
-    - defaultValue: '0'
+      - "true"
+      - "false"
+    - defaultValue: "0"
       description: The page number from which to start a search.
       name: page
-    - defaultValue: '100'
+    - defaultValue: "100"
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
-    - description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
+    - auto: PREDEFINED
+      description: The field by which to sort the results table. The supported result types are boolean, numeric, date, and keyword fields. Keyword fields require the doc_values parameter to be set to "true" from the Elasticsearch server.
       name: sort-field
       predefined:
-      - ''
+      - ""
     - auto: PREDEFINED
       defaultValue: asc
       description: The order by which to sort the results table. The results tables can only be sorted if a sort-field is defined.
@@ -248,8 +255,8 @@ script:
       predefined:
       - asc
       - desc
-    - description: Timestamp field name.
-      defaultValue: "@timestamp"
+    - defaultValue: '@timestamp'
+      description: Timestamp field name.
       name: timestamp_field
     description: Searches an index.
     name: search
@@ -293,25 +300,25 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  - name: get-mapping-fields
+  - arguments: []
     description: Returns the schema of the index to fetch from. This commmand should be used for debugging purposes.
-  - name: es-integration-health-check
+    name: get-mapping-fields
+  - arguments: []
     description: Returns the health status of the integration. This commmand should be used for debugging purposes.
-  - name: es-get-indices-statistics
-    description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
-    arguments:
-    - description: The maximum number of indices to return.
+    name: es-integration-health-check
+  - arguments:
+    - defaultValue: "50"
+      description: The maximum number of indices to return.
       name: limit
-      required: false
-      defaultValue: '50'
-    - description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
+    - auto: PREDEFINED
+      defaultValue: "false"
+      description: Whether to retrieve all the Elasticsearch indices. If true, the "limit" argument will be ignored.
       name: all_results
-      required: false
-      defaultValue: false
-      auto: PREDEFINED
       predefined:
-      - 'false'
-      - 'true'
+      - "false"
+      - "true"
+    description: Returns Elasticsearch indices statistics and information. This command is not supported for client type OpenSearch.
+    name: es-get-indices-statistics
     outputs:
     - contextPath: Elasticsearch.IndexStatistics.Name
       description: The name of the index.
@@ -331,9 +338,7 @@ script:
     - contextPath: Elasticsearch.IndexStatistics.DocumentsDeleted
       description: The number of documents that were deleted from the index.
       type: Number
-  - description: Search using EQL query.
-    name: es-eql-search
-    arguments:
+  - arguments:
     - description: The index in which to perform a search.
       name: index
       required: true
@@ -350,16 +355,18 @@ script:
     - defaultValue: event.category
       description: The event category field.
       name: event_category_field
-    - defaultValue: '100'
+    - defaultValue: "100"
       description: The number of documents displayed per page. Can be an integer between "1" and "10,000".
       name: size
     - description: The starting time of the time range.
       name: timestamp_range_start
     - description: The ending time of the time range.
       name: timestamp_range_end
-    - description: Timestamp field name.
-      defaultValue: "@timestamp"
+    - defaultValue: '@timestamp'
+      description: Timestamp field name.
       name: timestamp_field
+    description: Search using EQL query.
+    name: es-eql-search
     outputs:
     - contextPath: Elasticsearch.Search.Results._index
       description: The index to which the document belongs.
@@ -400,16 +407,17 @@ script:
     - contextPath: Elasticsearch.Search.Size
       description: The maximum number of scores that a search can return.
       type: Number
-  - name: es-index
-    arguments:
-    - name: index_name
+  - arguments:
+    - description: The name of the index to ingest into.
+      name: index_name
       required: true
-      description: The name of the index to ingest into.
-    - name: document
+    - description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents.
+      name: document
       required: true
-      description: The document object (JSON format) to be indexed. See Elasticsearch documentation (https://www.elastic.co/guide/en/elasticsearch/client/python-api/current/examples.html#ex-index) for further information about indexing documents.
-    - name: id
-      description: The ID of the indexed document (will be generated if empty).
+    - description: The ID of the indexed document (will be generated if empty).
+      name: id
+    description: Indexes a document into an Elasticsearch index.
+    name: es-index
     outputs:
     - contextPath: Elasticsearch.Index.id
       description: The ID of the indexed document.
@@ -423,19 +431,22 @@ script:
     - contextPath: Elasticsearch.Index.result
       description: The result of the index operation.
       type: string
-    description: Indexes a document into an Elasticsearch index.
+  - arguments:
+    - description: The ES|QL query string to execute using piped syntax (e.g., FROM index | WHERE field == "value").
+      name: query
+      required: true
+    - description: Maximum number of results to return
+      name: limit
+    description: Search using ES|QL query. (Elastic >=8.11)
+    name: es-esql-search
+    outputs:
+    - contextPath: Elasticsearch.Search
+      description: ES|QL Search Result
   dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
+  ismappable: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
-  ismappable: true
-autoUpdateDockerImage: false
 fromversion: 5.0.0
-defaultmapperin: Elasticsearch - Incoming Mapper
-tests:
-- Elasticsearch_v2_test
-- Elasticsearch_v2_test-v6
-- Elasticsearch_v2_test-v7-v8
-- Elasticsearch_v2_test-v8
