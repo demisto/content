@@ -27,14 +27,14 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import NotFoundError, RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
-    from elastic_transport import RequestsHttpNode
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
+    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment, misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment]
+    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment, misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
+from elastic_transport import RequestsHttpNode
 
 
 ES_DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss.SSSSSS"
@@ -160,7 +160,7 @@ def get_api_key_header_val(api_key):
 def elasticsearch_builder(proxies):
     """Builds an Elasticsearch obj with the necessary credentials, proxy settings and secure connection."""
 
-    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection]] = {
+    connection_args: Dict[str, Union[bool, int, str, list, tuple[str, str], RequestsHttpConnection, RequestsHttpNode]] = {
         "hosts": [SERVER],
         "verify_certs": INSECURE,
         "timeout": TIMEOUT,
@@ -330,7 +330,11 @@ def search_command(proxies):
     demisto.debug(f"Executing search with index={index}, query={query}, query_dsl={query_dsl}")
 
     if query_dsl:
-        response = execute_raw_query(es, query_dsl, index, size, base_page)
+        query_dsl = query_string_to_dict(query_dsl)
+        if query_dsl.get("size", False) or query_dsl.get("page", False):
+            response = execute_raw_query(es, query_dsl, index)
+        else:
+            response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -499,16 +503,7 @@ def test_fetch_query(es):
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     demisto.debug(f"Test fetch query response: {response}")
-    _, total_results = get_total_results(response)
-
-    if total_results > 0:
-        return response
-
-    else:
-        # failed to get the TIME_FIELD with the FETCH_QUERY
-        # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
-        # Thus this does not return an error message
-        return None
+    return response
 
 
 def test_timestamp_format(timestamp):
@@ -627,21 +622,6 @@ def integration_health_check(proxies):
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
 
-            # try to get response from FETCH_QUERY - if exists check the time field from that query
-            if RAW_QUERY:
-                raw_query = RAW_QUERY
-                try:
-                    raw_query = json.loads(raw_query)
-                except Exception as e:
-                    demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
-
-                temp = es.search(index=FETCH_INDEX, body={"query": raw_query})
-            else:
-                temp = test_fetch_query(es)
-
-            if temp:
-                response = temp
-
             # get the value in the time field
             source = response.get("hits", {}).get("hits")[0].get("_source", {})
             hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD)))
@@ -658,7 +638,27 @@ def integration_health_check(proxies):
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + "\n" + TIME_FIELD + " fetched: " + hit_date)
-
+        
+        # try to get response from FETCH_QUERY or RAW_QUERY
+        try:
+            if RAW_QUERY:
+                fetch_result = execute_raw_query(es, RAW_QUERY)
+            else:
+                fetch_result = test_fetch_query(es)
+            
+            # validate that the response actually returned results and did not time out
+            if fetch_result and isinstance(fetch_result.get("timed_out"), bool):
+                if fetch_result.get("timed_out"):
+                    return_error(f"Elasticsearch fetching has timed out. Fetching response was:\n{str(fetch_result)}")
+                _, total_results = get_total_results(fetch_result)
+                if total_results == 0:
+                    demisto.info("Elasticsearch fetching test returned 0 hits, but this might be expected.")
+            else:
+                return_error("Elasticsearch fetching was unsuccessful. Fetching returned the following invalid object:\n"
+                             + str(fetch_result))
+        except Exception as ex:
+            return_error(f"An exception has been thrown trying to test Elasticsearch fetching:\n{str(ex)}", error=str(ex))
+    
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
@@ -844,9 +844,11 @@ def get_time_range(
     return {"range": {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+def query_string_to_dict(raw_query) -> Dict:
+    """Parses a query_dsl string or bytearray into a Dict to make its fields accessible"""
     try:
-        raw_query = json.loads(raw_query)
+        if not isinstance(raw_query, Dict):
+            raw_query = json.loads(raw_query)
         if raw_query.get("query"):
             demisto.debug("Query provided already has a query field. Sending as is.")
             body = raw_query
@@ -855,17 +857,27 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     except (ValueError, TypeError) as e:
         body = {"query": raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
+    return body
+
+
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+    body = query_string_to_dict(raw_query)
 
     requested_index = index or FETCH_INDEX
+    
+    # update parameters if given
+    if isinstance(size, int):
+        body["size"] = size
+    if isinstance(page, int):
+        body["page"] = page
+    
+    search = Search(using=es, index=requested_index).update_from_dict(body)
 
-    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
-        search = Search(using=es, index=requested_index).query(body.get("query"))
-        if size and isinstance(page, int):
-            search = search[page : page + size]
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
         response = search.execute().to_dict()
-
-    else:  # Elasticsearch v7 and below or OpenSearch
-        response = es.search(index=requested_index, body=body, size=size, from_=page)
+    else:  # Elasticsearch v7 and below
+        # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
+        response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     demisto.debug(f"Raw query response: {response}")
     return response
