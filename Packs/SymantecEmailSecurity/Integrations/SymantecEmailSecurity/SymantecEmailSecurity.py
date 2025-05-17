@@ -933,9 +933,10 @@ def test_module(
 
     try:
         if credentials:
+            username, password = credentials
             if url_ioc:
                 try:
-                    Client(url_ioc, *credentials, verify=verify, proxy=proxy).list_ioc()
+                    Client(url_ioc, username=username, password=password, verify=verify, proxy=proxy).list_ioc()
                 except DemistoException as exc:
                     if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
                         return "The given URL for 'Server URL - IOC' is invalid. Please verify the URL."
@@ -943,7 +944,9 @@ def test_module(
 
             if url_data_feeds:
                 try:
-                    Client(url_data_feeds, *credentials, verify=verify, proxy=proxy).list_data("all", convert_datetime_string("3 days"))
+                    Client(url_data_feeds, username=username, password=password, verify=verify, proxy=proxy).list_data(
+                        "all", convert_datetime_string("3 days")
+                    )
                 except DemistoException as exc:
                     if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
                         return "The given URL for 'Server URL - Data Feeds' is invalid. Please verify the URL."
@@ -951,7 +954,7 @@ def test_module(
 
             if url_email_queue:
                 try:
-                    Client(url_email_queue, *credentials, verify=verify, proxy=proxy).list_email_queue()
+                    Client(url_email_queue, username=username, password=password, verify=verify, proxy=proxy).list_email_queue()
                 except DemistoException as exc:
                     if exc.res and exc.res.status_code == http.HTTPStatus.NOT_FOUND:
                         return "The given URL for 'Server URL - Email Queue' is invalid. Please verify the URL."
@@ -1835,8 +1838,8 @@ def main() -> None:
                     url_data_feeds=url_data_feeds,
                     url_email_queue=url_email_queue,
                     quarantine_client=quarantine_client,
-                    verify_certificate=verify_certificate,
-                    proxy=proxy
+                    verify=verify_certificate,
+                    proxy=proxy,
                 )
             )
         elif is_fetch:

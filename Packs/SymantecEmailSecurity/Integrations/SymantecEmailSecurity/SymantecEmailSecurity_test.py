@@ -1543,6 +1543,7 @@ def test_fetch_incidents_quarantine(
     assert incidents == expected_incidents
     assert next_run == expected_next_run
 
+
 def test_client_created_with_verify_and_proxy(mocker):
     """
     Given: params for test module
@@ -1550,32 +1551,15 @@ def test_client_created_with_verify_and_proxy(mocker):
     Then: Validate the client created in the test module handle proxy.
     """
     from SymantecEmailSecurity import test_module
+
     mocker.patch.object(SymantecEmailSecurity.Client, "list_ioc", return_value=None)
-    mock_client = mocker.patch.object(SymantecEmailSecurity, 'Client')
-    result = test_module(
-        credentials=("username", "password"),
-        url_ioc="https://iocapi.example.com",
-        verify=True,
-        proxy=True
-    )
+    mock_client = mocker.patch.object(SymantecEmailSecurity, "Client")
+    result = test_module(credentials=("username", "password"), url_ioc="https://iocapi.example.com", verify=True, proxy=True)
 
     # Assert
     assert result == "ok"
-    mock_client.assert_called_with(
-        "https://iocapi.example.com", "username", "password",
-        verify=True,
-        proxy=True
-    )
+    mock_client.assert_called_with("https://iocapi.example.com", "username", "password", verify=True, proxy=True)
 
-    result = test_module(
-        credentials=("username", "password"),
-        url_ioc="https://iocapi.example.com",
-        verify=True,
-        proxy=False
-    )
+    result = test_module(credentials=("username", "password"), url_ioc="https://iocapi.example.com", verify=True, proxy=False)
 
-    mock_client.assert_called_with(
-        "https://iocapi.example.com", "username", "password",
-        verify=True,
-        proxy=False
-    )
+    mock_client.assert_called_with("https://iocapi.example.com", "username", "password", verify=True, proxy=False)
