@@ -30,12 +30,13 @@ The normalization rules included in this pack supports the following log types:
 There are additional Azure log types which are collected via the [Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-logs-from-Microsoft-Azure-Event-Hub) data source that are normalized into XDM via separate dedicated packs.   
 See the table below that lists these additional log types, along the relevant marketplace pack that handles their XDM modeling. 
 
-  | Log Type | Marketplace Pack | 
-  | :------------------------------------------------------------------------------------------------------------------------ | :-------------------------------------------------------------------------------------- |
-  | [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs) | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureFirewall/) |
-  | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs) | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/) |
-  | [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs) | [Azure Kubernetes Services](https://cortex.marketplace.pan.dev/marketplace/details/AzureKubernetesServices/) |
-  | [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#overview-of-logging-types) | [Azure App Service](https://cortex.marketplace.pan.dev/marketplace/details/AzureAppService/) |
+  | Log Type                                                                                                                                      | Marketplace Pack                                                                                             | 
+  |:----------------------------------------------------------------------------------------------------------------------------------------------|:-------------------------------------------------------------------------------------------------------------|
+  | [Azure Firewall Resource Logs](https://learn.microsoft.com/en-us/azure/firewall/monitor-firewall-reference#resource-logs)                     | [Azure Firewall](https://cortex.marketplace.pan.dev/marketplace/details/AzureFirewall/)                      |
+  | [Azure WAF Resource Logs](https://learn.microsoft.com/en-us/azure/application-gateway/monitor-application-gateway-reference#resource-logs)    | [Azure WAF](https://cortex.marketplace.pan.dev/marketplace/details/AzureWAF/)                                |
+  | [Azure AKS Resource Logs](https://learn.microsoft.com/en-us/azure/aks/monitor-aks-reference#resource-logs)                                    | [Azure Kubernetes Services](https://cortex.marketplace.pan.dev/marketplace/details/AzureKubernetesServices/) |
+  | [Azure App Service Resource Logs](https://learn.microsoft.com/en-us/azure/app-service/troubleshoot-diagnostic-logs#overview-of-logging-types) | [Azure App Service](https://cortex.marketplace.pan.dev/marketplace/details/AzureAppService/)                 |
+  | [Azure DevOps](https://learn.microsoft.com/en-us/azure/devops/organizations/audit/auditing-events?view=azure-devops#areas)                    | [Azure DevOps](https://cortex.marketplace.pan.dev/marketplace/details/AzureDevOps/)                      |
 
 ***
 

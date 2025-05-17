@@ -45,10 +45,11 @@ This pack contains an integration, whose main purpose is to manage Git repositor
 
 ### Timestamp Ingestion
 
-For *msft_azure_devops_raw*, timestamp ingestion is according to the following field:
+For *msft_azure_devops_raw*, timestamp field used during ingestion depends on the ingestion method:
 
-- TimeGenerated
+- For Log-analytics: <code>TimeGenerated</code> is used.
+- For Azure Event Hub: <code>eventTime</code> is used.
 
-The timestamp is in UTC time zone YYYY-mm-ddTHH:MM:SS.ssssZ format. E.g.: 2025-02-04T11:23:29.0324070Z
+The timestamp is in UTC time zone *YYYY-mm-ddTHH:MM:SS.ssssZ* format. E.g.: 2025-02-04T11:23:29.0324070Z
 
 </~XSIAM>
