@@ -1558,8 +1558,8 @@ def test_client_created_with_verify_and_proxy(mocker):
 
     # Assert
     assert result == "ok"
-    mock_client.assert_called_with("https://iocapi.example.com", "username", "password", verify=True, proxy=True)
+    mock_client.assert_called_with("https://iocapi.example.com", username="username", password="password", verify=True, proxy=True)
 
     result = test_module(credentials=("username", "password"), url_ioc="https://iocapi.example.com", verify=True, proxy=False)
 
-    mock_client.assert_called_with("https://iocapi.example.com", "username", "password", verify=True, proxy=False)
+    mock_client.assert_called_with("https://iocapi.example.com", username="username", password="password", verify=True, proxy=False)
