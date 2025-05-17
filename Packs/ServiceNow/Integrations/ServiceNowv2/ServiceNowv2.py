@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 
 import demistomock as demisto  # noqa: F401
 
-# disable insecure warnings 
+# disable insecure warningss
 import urllib3
 from CommonServerPython import *  # noqa: F401
 
