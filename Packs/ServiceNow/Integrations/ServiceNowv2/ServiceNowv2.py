@@ -3563,8 +3563,8 @@ def main():
 
     # use jwt only with OAuth
     if use_jwt and use_oauth:
-        raise ValueError("choose only one authentication method (OAuth ot JWT)")
-    elif use_jwt and not use_oauth:
+        raise ValueError("Please choose only one authentication method (OAuth or JWT)")
+    elif use_jwt:
         use_oauth = True
     jwt_params = {}
     if use_oauth:  # if the `Use OAuth` checkbox was checked, client id & secret should be in the credentials fields
