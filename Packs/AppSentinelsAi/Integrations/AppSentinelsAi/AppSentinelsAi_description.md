@@ -1,7 +1,7 @@
 ## How to generate and use your AppSentinels API key
 
 ### 1. Log in to AppSentinels
-- Go to [https://appsentinels.ai](https://appsentinels.ai) and log in to your organization’s account.
+- Go to AppSentinels.ai platform and log in to your organization’s account.
 
 ### 2. Navigate to API Settings
 - In the AppSentinels portal, go to:  

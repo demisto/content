@@ -13,7 +13,7 @@ MOCK_API_KEY = "dummy_api_key"
 MOCK_ORGANIZATION = "dummy_org"
 MOCK_APPLICATION = "dummy_app"
 
-from AppSentinelsAiEventCollector import Client, BASE_EVENT_BODY, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
+from AppSentinelsAi import Client, BASE_EVENT_BODY, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
 
 
 @pytest.fixture
