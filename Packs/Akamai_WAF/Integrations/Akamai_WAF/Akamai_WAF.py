@@ -15,15 +15,13 @@ demisto.debug('pack name = Akamai WAF, pack version = 2.1.2')
 import re
 import time
 from datetime import datetime
-import json
+import re
 
+""" IMPORTS """
+# Std imports
 # 3-rd party imports
-import requests
-import urllib3
 
 # Local imports
-from akamai.edgegrid import EdgeGridAuth
-
 """
 
 GLOBALS/PARAMS
@@ -742,7 +740,7 @@ class Client(BaseClient):
         body = {"comments": comment, "notificationRecipients": notify}
         return self._http_request(
             method="POST",
-            url_suffix=f"/network-list/v2/network-lists/{network_list_id}/environments/{env}/activate",
+            url_suffix=f"/network-list/v2/network-lists/{network_list_id}/environments/{env}" "/activate",
             json_data=body,
             resp_type="response",
         )
@@ -1708,7 +1706,7 @@ class Client(BaseClient):
 
     def list_papi_property_by_hostname(
         self,
-        hostname: str,
+        hostname: str = None,
         network: str = None,
         contract_id: str = None,
         group_id: str = None,
@@ -1993,6 +1991,92 @@ class Client(BaseClient):
             params=params,
         )
 
+    def new_datastream(
+        self,
+        stream_name: str,
+        group_id: int,
+        contract_id: str,
+        properties: list,
+        dataset_fields: list,
+        interval_in_seconds: int = 30,
+        log_format: str = "JSON",
+        field_delimiter: str = None,
+        upload_file_prefix: str = None,
+        upload_file_suffix: str = None,
+        ca_cert: str = None,
+        client_cert: str = None,
+        client_key: str = None,
+        content_type: str = None,
+        custom_header_name: str = None,
+        custom_header_value: str = None,
+        compress_logs: bool = True,
+        destination_type: str = "SPLUNK",
+        display_name: str = None,
+        endpoint: str = None,
+        event_collector_token: str = None,
+        tls_hostname: str = None,
+        notification_emails: list = [],
+        collect_midgress: bool = False,
+        activate: bool = True,
+    ) -> dict:
+        """
+            Creates a stream configuration. Within a stream configuration,
+            you can select properties to monitor in the stream, data set fields to collect in logs,
+            and a destination to send these log files to. Get the streamId value from the response
+            to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+            Apart from the log and delivery frequency configurations, you can decide whether to activate
+            the stream on making the request or later using the activate parameter.
+            Note that only active streams collect and send logs to their destinations.
+
+        Args:
+            change_path: Change path on which to perform the desired operation.
+            account_switch_key: For customers who manage more than one account,
+                this runs the operation from another account. The Identity and
+                Access Management API provides a list of available account switch keys.
+
+        Returns:
+            The response confirms the stream has been created and returns its details.
+        """
+        method = "post"
+        url_suffix = "datastream-config-api/v2/log/streams"
+        headers = {"Content-Type": "application/json", "accept": "application/json"}
+        params = {"activate": activate}
+
+        body = {
+            "streamName": stream_name,
+            "groupId": group_id,
+            "contractId": contract_id,
+            "notificationEmails": notification_emails,
+            "properties": properties,
+            "datasetFields": dataset_fields,
+            "deliveryConfiguration": {
+                "frequency": {"intervalInSeconds": interval_in_seconds},
+                "format": log_format,
+                "fieldDelimiter": field_delimiter,
+            },
+            "destination": {
+                "destinationType": destination_type,
+                "compressLogs": compress_logs,
+                "displayName": display_name,
+                "endpoint": endpoint,
+                "eventCollectorToken": event_collector_token,
+                "caCert": ca_cert,
+                "clientCert": client_cert,
+                "clientKey": client_key,
+                "customHeaderName": custom_header_name,
+                "customHeaderValue": custom_header_value,
+                "tlsHostname": tls_hostname,
+            },
+        }
+        remove_nulls_from_dictionary(body)  # <==
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            json_data=body,
+            params=params,
+        )
+
     def get_cps_enrollment_by_id(self, enrollment_id: int) -> dict:
         """
             Returns the Enarollment by enrollment id
@@ -2027,7 +2111,6 @@ class Client(BaseClient):
         )
 
     # created by D.S.
-
     def list_dns_zone_recordsets(self, zone: str):
         """
         List Edge DNS zone recordsets
@@ -2041,6 +2124,340 @@ class Client(BaseClient):
         return self._http_request(
             method="Get",
             url_suffix=f"config-dns/v2/zones/{zone}/recordsets?showAll=true",
+        )
+
+    def list_idam_properties(self):
+        """
+        List properties or includes via Identify and Access Managment (IDAM) API
+
+        Returns:
+            <Response [200]>
+        """
+
+        all_properties = self._http_request(method="GET", url_suffix="/identity-management/v3/user-admin/properties")
+
+        return all_properties
+
+    def list_datastreams(self, group_id: int = 0):
+        """
+        Returns the latest versions of the stream configurations for all groups within the account.
+
+        Returns:
+            <Response [200]>
+        """
+        url_suffix = "/datastream-config-api/v2/log/streams"
+        if group_id != 0:
+            url_suffix = f"{url_suffix}?groupId={group_id}"
+
+        all_datastreams = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return all_datastreams
+
+    def get_datastream(self, stream_id: int, version: int):
+        """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+        Args:
+            stream_id: integer. Uniquely identifies the stream.
+            version: integer. Identifies the version of the stream. If omitted, the operation returns the latest version of the
+            stream.
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = f"/datastream-config-api/v2/log/streams/{stream_id}"
+        if version != 0:
+            url_suffix = f"{url_suffix}?version={version}"
+        datastream = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return datastream
+
+    def list_datastream_groups(self, contract_id: str = ""):
+        """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+        Args:
+            contract_id: Uniquely identifies the contract that belongs to a group.
+
+        Returns:
+            <Response [200]>
+        """
+        url_suffix = "datastream-config-api/v2/log/groups"
+        if contract_id:
+            url_suffix = f"{url_suffix}?contractId={contract_id}"
+        groups = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return groups
+
+    def list_datastream_properties_bygroup(self, group_id: int):
+        """
+        Returns properties that are active on the production and staging network and available within a specific group.
+        Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+        Args:
+            group_id: integer,required. Uniquely identifies the group that can access the product.
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = f"datastream-config-api/v2/log/groups/{group_id}/properties"
+        properties = self._http_request(method="GET", url_suffix=url_suffix)
+
+        return properties
+
+    def delete_datastream(self, stream_id: int):
+        """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+        Args:
+            stream_id: Unique identifer of a stream
+
+        Returns:
+            <Response [204]>
+        """
+
+        url_suffix = f"datastream-config-api/v2/log/streams/{stream_id}"
+        output = self._http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
+        return output
+
+    def patch_datastream(
+        self,
+        stream_id: int,
+        body: list,
+        activate: str,
+    ) -> dict:
+        """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+        Args:
+            stream_id: The unique identifier of the stream.
+            activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                      Patch a stream that is active, you need to set this member to true.
+            body: Json data used to patch the datastream.
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created property.
+        """
+
+        headers = {"accept": "application/json", "content-type": "application/json-patch+json"}
+
+        return self._http_request(
+            method="PATCH",
+            url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}?activate={activate}",
+            headers=headers,
+            json_data=body,
+        )
+
+    def activate_datastream(
+        self,
+        stream_id: int,
+        option: str,
+    ) -> dict:
+        """
+        Activate/Deactivate the latest version of a DataStream.
+
+        Args:
+            stream_id: Uniquely identifies the stream.
+            action: "activate" or "deactivate"
+
+        Returns:
+            <Response [201]>
+            The response provides a URL link to the newly created datastream.
+        """
+
+        headers = {"accept": "application/json"}
+
+        return self._http_request(
+            method="POST", url_suffix=f"datastream-config-api/v2/log/streams/{stream_id}/{option}", headers=headers
+        )
+
+    def get_client_lists(self):
+        """
+        Get accessible client lists.
+
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+
+        url_suffix = "client-list/v1/lists"
+        return self._http_request(method="GET", url_suffix=url_suffix)
+
+    def list_edgehostname(self, contract_id: str, group_id: str):
+        """
+        Lists all edge hostnames available under a contract.
+
+        Args:
+            contract_id: Unique identifier of a contract.
+            group_id: Unique identifier of a group.
+
+        Args:
+
+        Returns:
+            <Response [200]>
+        """
+        headers = {"accept": "application/json", "PAPI-Use-Prefixes": "true"}
+        if group_id == "na":
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&options=mapDetails"
+        else:
+            url_suffix = f"papi/v1/edgehostnames?contractId={contract_id}&groupId={group_id}&options=mapDetails"
+        return self._http_request(method="GET", url_suffix=url_suffix, headers=headers)
+
+    def generic_api_call(
+        self,
+        method,
+        url_suffix="",
+        headers=None,
+        json_data=None,
+        params=None,
+        data=None,
+        files=None,
+        timeout=None,
+        resp_type="json",
+        ok_codes=None,
+        return_empty_response=False,
+        retries=0,
+        status_list_to_retry=None,
+        backoff_factor=5,
+        raise_on_redirect=False,
+        raise_on_status=False,
+        empty_valid_codes=None,
+        with_metrics=False,
+        **kwargs,
+    ):
+        """
+            Generic API Call command.
+
+        Args:
+            :type method: ``str``
+            :param method: The HTTP method, for example: GET, POST, and so on.
+
+            :type url_suffix: ``str``
+            :param url_suffix: The API endpoint.
+
+            :type headers: ``dict``
+            :param headers: Headers to send in the request. If None, will use self._headers.
+
+            :type params: ``dict``
+            :param params: URL parameters to specify the query.
+
+            :type data: ``dict``
+            :param data: The data to send in a 'POST' request.
+
+            :type json_data: ``dict``
+            :param json_data: The dictionary to send in a 'POST' request.
+
+            :type files: ``dict``
+            :param files: The file data to send in a 'POST' request.
+
+            :type timeout: ``float`` or ``tuple``
+            :param timeout:
+                The amount of time (in seconds) that a request will wait for a client to
+                establish a connection to a remote machine before a timeout occurs.
+                can be only float (Connection Timeout) or a tuple (Connection Timeout, Read Timeout).
+
+            :type resp_type: ``str``
+            :param resp_type:
+                Determines which data format to return from the HTTP request. The default
+                is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+                 to return the full response object.
+
+            :type ok_codes: ``tuple``
+            :param ok_codes:
+                The request codes to accept as OK, for example: (200, 201, 204). If you specify
+                "None", will use self._ok_codes.
+
+            :type retries: ``int``
+            :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+            :type status_list_to_retry: ``iterable``
+            :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+                A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+                and the response status code is in ``status_list_to_retry``.
+
+            :type backoff_factor ``float``
+            :param backoff_factor:
+                A backoff factor to apply between attempts after the second try
+                (most errors are resolved immediately by a second try without a
+                delay). urllib3 will sleep for::
+
+                    {backoff factor} * (2 ** ({number of total retries} - 1))
+
+                seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+                for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+                than :attr:`Retry.BACKOFF_MAX`.
+
+                By default, backoff_factor set to 5
+
+            :type raise_on_redirect ``bool``
+            :param raise_on_redirect: Whether, if the number of redirects is
+                exhausted, to raise a MaxRetryError, or to return a response with a
+                response code in the 3xx range.
+
+            :type raise_on_status ``bool``
+            :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+                whether we should raise an exception, or return a response,
+                if status falls in ``status_forcelist`` range and retries have
+                been exhausted.
+
+            :type empty_valid_codes: ``list``
+            :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+                can vary)
+
+            :type with_metrics ``bool``
+            :param with_metrics: Whether or not to calculate execution metrics from the response
+
+            :return: Depends on the resp_type parameter
+            :rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+
+        Returns:
+            Depends on the resp_type parameter.
+            rtype: ``dict`` or ``str`` or ``bytes`` or ``xml.etree.ElementTree.Element`` or ``requests.Response``
+
+        """
+        method = method
+        headers = headers
+        url_suffix = url_suffix
+        params = params
+        data = data
+        json_data = json_data
+
+        return self._http_request(
+            method=method,
+            url_suffix=url_suffix,
+            headers=headers,
+            params=params,
+            data=data,
+            json_data=json_data,
+            files=files,
+            timeout=timeout,
+            resp_type=resp_type,
+            ok_codes=ok_codes,
+            return_empty_response=return_empty_response,
+            retries=retries,
+            status_list_to_retry=status_list_to_retry,
+            backoff_factor=backoff_factor,
+            raise_on_redirect=raise_on_redirect,
+            raise_on_status=raise_on_status,
+            empty_valid_codes=empty_valid_codes,
+            with_metrics=with_metrics,
+            **kwargs,
         )
 
 
@@ -2062,19 +2479,21 @@ def get_network_lists_ec(raw_response: list = None) -> tuple[list, list]:
         for network in raw_response:
             entry_context.append(
                 assign_params(
-                    Name=network.get("name"),
-                    Type=network.get("type"),
-                    UniqueID=network.get("uniqueId"),
-                    CreateDate=network.get("CreateDate"),
-                    CreatedBy=network.get("createdBy"),
-                    ExpeditedProductionActivationStatus=network.get("expeditedProductionActivationStatus"),
-                    ExpeditedStagingActivationStatus=network.get("expeditedStagingActivationStatus"),
-                    ProductionActivationStatus=network.get("productionActivationStatus"),
-                    StagingActivationStatus=network.get("stagingActivationStatus"),
-                    UpdateDate=network.get("updateDate"),
-                    UpdatedBy=network.get("updatedBy"),
-                    ElementCount=network.get("elementCount"),
-                    Elements=network.get("list"),
+                    **{
+                        "Name": network.get("name"),
+                        "Type": network.get("type"),
+                        "UniqueID": network.get("uniqueId"),
+                        "CreateDate": network.get("CreateDate"),
+                        "CreatedBy": network.get("createdBy"),
+                        "ExpeditedProductionActivationStatus": network.get("expeditedProductionActivationStatus"),
+                        "ExpeditedStagingActivationStatus": network.get("expeditedStagingActivationStatus"),
+                        "ProductionActivationStatus": network.get("productionActivationStatus"),
+                        "StagingActivationStatus": network.get("stagingActivationStatus"),
+                        "UpdateDate": network.get("updateDate"),
+                        "UpdatedBy": network.get("updatedBy"),
+                        "ElementCount": network.get("elementCount"),
+                        "Elements": network.get("list"),
+                    }
                 )
             )
             human_readable.append(
@@ -2127,9 +2546,23 @@ def new_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         propertylink = raw_response.get("propertyLink", "")
-        regex_match = re.search("prp_\d+", propertylink)
-        entry_context.append(assign_params(PropertyLink=propertylink, PropertyId=regex_match.group(0) if regex_match else ""))
-        human_readable.append(assign_params(PropertyLink=propertylink, PropertyId=regex_match.group(0) if regex_match else ""))
+        regex_match = re.search(r"prp_\d+", propertylink)
+        entry_context.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyId": regex_match.group(0) if regex_match else "",
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyId": regex_match.group(0) if regex_match else "",
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2148,15 +2581,17 @@ def list_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         entry_context.append(
             assign_params(
-                AccountId=raw_response.get("accountId", ""),
-                ContractId=raw_response.get("contractId", ""),
-                GroupId=raw_response.get("groupId", ""),
-                PropertyId=raw_response.get("propertyId", ""),
-                PropertyName=raw_response.get("propertyName", ""),
-                LatestVersion=raw_response.get("latestVersion", ""),
-                StagingVersion=raw_response.get("stagingVersion", ""),
-                ProductionVersion=raw_response.get("productionVersion", ""),
-                AssetId=raw_response.get("assetId", ""),
+                **{
+                    "AccountId": raw_response.get("accountId", ""),
+                    "ContractId": raw_response.get("contractId", ""),
+                    "GroupId": raw_response.get("groupId", ""),
+                    "PropertyId": raw_response.get("propertyId", ""),
+                    "PropertyName": raw_response.get("propertyName", ""),
+                    "LatestVersion": raw_response.get("latestVersion", ""),
+                    "StagingVersion": raw_response.get("stagingVersion", ""),
+                    "ProductionVersion": raw_response.get("productionVersion", ""),
+                    "AssetId": raw_response.get("assetId", ""),
+                }
             )
         )
         human_readable = entry_context
@@ -2179,15 +2614,23 @@ def clone_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         propertylink = raw_response.get("propertyLink", "")
         property_name = raw_response.get("propertyName")
-        regex_match = re.search("prp_\d+", propertylink)
+        regex_match = re.search(r"prp_\d+", propertylink)
         entry_context.append(
             assign_params(
-                PropertyLink=propertylink, PropertyName=property_name, PropertyId=regex_match.group(0) if regex_match else ""
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyName": property_name,
+                    "PropertyId": regex_match.group(0) if regex_match else "",
+                }
             )
         )
         human_readable.append(
             assign_params(
-                PropertyLink=propertylink, PropertyName=property_name, PropertyId=regex_match.group(0) if regex_match else ""
+                **{
+                    "PropertyLink": propertylink,
+                    "PropertyName": property_name,
+                    "PropertyId": regex_match.group(0) if regex_match else "",
+                }
             )
         )
 
@@ -2211,8 +2654,24 @@ def add_papi_property_hostname_command_ec(raw_response: dict) -> tuple[list, lis
         domain_prefix = raw_response.get("domainPrefix")
         edge_hostname_id = raw_response.get("edgeHostnameId")
         etag = raw_response.get("etag")
-        entry_context.append(assign_params(DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id, Etag=etag))
-        human_readable.append(assign_params(DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id, Etag=etag))
+        entry_context.append(
+            assign_params(
+                **{
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                    "Etag": etag,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                    "Etag": etag,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2233,8 +2692,22 @@ def list_papi_edgehostname_bygroup_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         domain_prefix = raw_response.get("domainPrefix")
         edge_hostname_id = raw_response.get("edgeHostnameId")
-        entry_context.append(assign_params(DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id))
-        human_readable.append(assign_params(DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id))
+        entry_context.append(
+            assign_params(
+                **{
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2255,13 +2728,25 @@ def new_papi_edgehostname_command_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         edgeHostnameLink = raw_response.get("edgeHostnameLink", "")
         domain_prefix = raw_response.get("domainPrefix")
-        regex_match = re.search("ehn_\d+", edgeHostnameLink)
+        regex_match = re.search(r"ehn_\d+", edgeHostnameLink)
         edge_hostname_id = regex_match.group(0) if regex_match else ""
         entry_context.append(
-            assign_params(EdgeHostnameLink=edgeHostnameLink, DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id)
+            assign_params(
+                **{
+                    "EdgeHostnameLink": edgeHostnameLink,
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                }
+            )
         )
         human_readable.append(
-            assign_params(EdgeHostnameLink=edgeHostnameLink, DomainPrefix=domain_prefix, EdgeHostnameId=edge_hostname_id)
+            assign_params(
+                **{
+                    "EdgeHostnameLink": edgeHostnameLink,
+                    "DomainPrefix": domain_prefix,
+                    "EdgeHostnameId": edge_hostname_id,
+                }
+            )
         )
 
     return entry_context, human_readable
@@ -2303,8 +2788,8 @@ def get_cps_enrollment_by_cnname_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         enrollmentId = raw_response.get("id")
         cnname = raw_response.get("csr", {}).get("cn")
-        entry_context.append(assign_params(EnrollmentId=enrollmentId, CN=cnname))
-        human_readable.append(assign_params(EnrollmentId=enrollmentId, CN=cnname))
+        entry_context.append(assign_params(**{"EnrollmentId": enrollmentId, "CN": cnname}))
+        human_readable.append(assign_params(**{"EnrollmentId": enrollmentId, "CN": cnname}))
 
     return entry_context, human_readable
 
@@ -2323,8 +2808,8 @@ def list_papi_cpcodeid_bygroup_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         cpcode_name = raw_response.get("cpcodeName")
         cpcode_id = raw_response.get("cpcodeId")
-        entry_context.append(assign_params(CpcodeName=cpcode_name, CpcodeId=cpcode_id))
-        human_readable.append(assign_params(CpcodeName=cpcode_name, CpcodeId=cpcode_id))
+        entry_context.append(assign_params(**{"CpcodeName": cpcode_name, "CpcodeId": cpcode_id}))
+        human_readable.append(assign_params(**{"CpcodeName": cpcode_name, "CpcodeId": cpcode_id}))
 
     return entry_context, human_readable
 
@@ -2345,10 +2830,10 @@ def new_papi_cpcode_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         cpcodeLink = raw_response.get("cpcodeLink", "")
         cpcode_name = raw_response.get("cpcodeName")
-        regex_match = re.search("cpc_\d+", cpcodeLink)
+        regex_match = re.search(r"cpc_\d+", cpcodeLink)
         cpcode_id = regex_match.group(0) if regex_match else ""
-        entry_context.append(assign_params(CpcodeLink=cpcodeLink, CpcodeName=cpcode_name, CpcodeId=cpcode_id))
-        human_readable.append(assign_params(CpcodeLink=cpcodeLink, CpcodeName=cpcode_name, CpcodeId=cpcode_id))
+        entry_context.append(assign_params(**{"CpcodeLink": cpcodeLink, "CpcodeName": cpcode_name, "CpcodeId": cpcode_id}))
+        human_readable.append(assign_params(**{"CpcodeLink": cpcodeLink, "CpcodeName": cpcode_name, "CpcodeId": cpcode_id}))
 
     return entry_context, human_readable
 
@@ -2368,8 +2853,20 @@ def patch_papi_property_rule_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         etag = raw_response.get("etag")
-        entry_context.append(assign_params(Etag=etag))
-        human_readable.append(assign_params(Etag=etag))
+        entry_context.append(
+            assign_params(
+                **{
+                    "Etag": etag,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "Etag": etag,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2389,12 +2886,22 @@ def activate_papi_property_command_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         activationLink = raw_response.get("activationLink", "")
-        regex_match = re.search("atv_\d+", activationLink)
+        regex_match = re.search(r"atv_\d+", activationLink)
         entry_context.append(
-            assign_params(ActivationLink=activationLink, ActivationId=regex_match.group(0) if regex_match else "")
+            assign_params(
+                **{
+                    "ActivationLink": activationLink,
+                    "ActivationId": regex_match.group(0) if regex_match else "",
+                }
+            )
         )
         human_readable.append(
-            assign_params(ActivationLink=activationLink, ActivationId=regex_match.group(0) if regex_match else "")
+            assign_params(
+                **{
+                    "ActivationLink": activationLink,
+                    "ActivationId": regex_match.group(0) if regex_match else "",
+                }
+            )
         )
 
     return entry_context, human_readable
@@ -2415,8 +2922,8 @@ def clone_security_policy_command_ec(raw_response: dict) -> tuple[list, list]:
         config_id = raw_response.get("configId")
         policy_id = raw_response.get("policyId")
         policy_name = raw_response.get("policyName")
-        entry_context.append(assign_params(Id=config_id, PolicyId=policy_id, PolicyName=policy_name))
-        human_readable.append(assign_params(Id=config_id, PolicyId=policy_id, PolicyName=policy_name))
+        entry_context.append(assign_params(**{"Id": config_id, "PolicyId": policy_id, "PolicyName": policy_name}))
+        human_readable.append(assign_params(**{"Id": config_id, "PolicyId": policy_id, "PolicyName": policy_name}))
 
     return entry_context, human_readable
 
@@ -2439,8 +2946,8 @@ def new_match_target_command_ec(raw_response: dict) -> tuple[list, list]:
         config_id = raw_response.get("configId")
         targetId = raw_response.get("targetId")
         policy_id = raw_response.get("securityPolicy", {}).get("policyId")
-        entry_context.append(assign_params(Id=config_id, TargetId=targetId, PolicyId=policy_id))
-        human_readable.append(assign_params(Id=config_id, TargetId=targetId, PolicyId=policy_id))
+        entry_context.append(assign_params(**{"Id": config_id, "TargetId": targetId, "PolicyId": policy_id}))
+        human_readable.append(assign_params(**{"Id": config_id, "TargetId": targetId, "PolicyId": policy_id}))
 
     return entry_context, human_readable
 
@@ -2461,8 +2968,8 @@ def activate_appsec_config_version_command_ec(raw_response: dict) -> tuple[list,
     if raw_response:
         config_id = raw_response.get("configId")
         activation_id = raw_response.get("activationId")
-        entry_context.append(assign_params(Id=config_id, ActivationId=activation_id, Status="submitted"))
-        human_readable.append(assign_params(Id=config_id, ActivationId=activation_id, Status="submitted"))
+        entry_context.append(assign_params(**{"Id": config_id, "ActivationId": activation_id, "Status": "submitted"}))
+        human_readable.append(assign_params(**{"Id": config_id, "ActivationId": activation_id, "Status": "submitted"}))
     return entry_context, human_readable
 
 
@@ -2483,8 +2990,8 @@ def get_appsec_config_activation_status_command_ec(raw_response: dict) -> tuple[
         network = raw_response.get("network")
         status = raw_response.get("status")
         activation_id = raw_response.get("activationId")
-        entry_context.append(assign_params(ActivationId=activation_id, Network=network, Status=status))
-        human_readable.append(assign_params(ActivationId=activation_id, Network=network, Status=status))
+        entry_context.append(assign_params(**{"ActivationId": activation_id, "Network": network, "Status": status}))
+        human_readable.append(assign_params(**{"ActivationId": activation_id, "Network": network, "Status": status}))
     return entry_context, human_readable
 
 
@@ -2509,12 +3016,24 @@ def get_appsec_config_latest_version_command_ec(raw_response: dict) -> tuple[lis
         stagingVersion = raw_response.get("stagingVersion")
         entry_context.append(
             assign_params(
-                Name=name, Id=id, LatestVersion=latestVersion, ProductionVersion=productionVersion, StagingVersion=stagingVersion
+                **{
+                    "Name": name,
+                    "Id": id,
+                    "LatestVersion": latestVersion,
+                    "ProductionVersion": productionVersion,
+                    "StagingVersion": stagingVersion,
+                }
             )
         )
         human_readable.append(
             assign_params(
-                Name=name, Id=id, LatestVersion=latestVersion, ProductionVersion=productionVersion, StagingVersion=stagingVersion
+                **{
+                    "Name": name,
+                    "Id": id,
+                    "LatestVersion": latestVersion,
+                    "ProductionVersion": productionVersion,
+                    "StagingVersion": stagingVersion,
+                }
             )
         )
     return entry_context, human_readable
@@ -2538,11 +3057,41 @@ def get_security_policy_id_by_name_command_ec(raw_response: dict, is_baseline_po
         policy_name = raw_response.get("policyName")
         policy_id = raw_response.get("policyId")
         if is_baseline_policy == "yes":
-            entry_context.append(assign_params(Id=config_id, BasePolicyName=policy_name, BasePolicyId=policy_id))
-            human_readable.append(assign_params(Id=config_id, BasePolicyName=policy_name, BasePolicyId=policy_id))
+            entry_context.append(
+                assign_params(
+                    **{
+                        "Id": config_id,
+                        "BasePolicyName": policy_name,
+                        "BasePolicyId": policy_id,
+                    }
+                )
+            )
+            human_readable.append(
+                assign_params(
+                    **{
+                        "Id": config_id,
+                        "BasePolicyName": policy_name,
+                        "BasePolicyId": policy_id,
+                    }
+                )
+            )
         else:
-            entry_context.append(assign_params(PolicyName=policy_name, PolicyId=policy_id))
-            human_readable.append(assign_params(PolicyName=policy_name, PolicyId=policy_id))
+            entry_context.append(
+                assign_params(
+                    **{
+                        "PolicyName": policy_name,
+                        "PolicyId": policy_id,
+                    }
+                )
+            )
+            human_readable.append(
+                assign_params(
+                    **{
+                        "PolicyName": policy_name,
+                        "PolicyId": policy_id,
+                    }
+                )
+            )
     return entry_context, human_readable
 
 
@@ -2564,8 +3113,22 @@ def clone_appsec_config_version_command_ec(raw_response: dict) -> tuple[list, li
     if raw_response:
         config_id = raw_response.get("configId")
         version = raw_response.get("version")
-        entry_context.append(assign_params(Id=config_id, NewVersion=version))
-        human_readable.append(assign_params(Id=config_id, NewVersion=version))
+        entry_context.append(
+            assign_params(
+                **{
+                    "Id": config_id,
+                    "NewVersion": version,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "Id": config_id,
+                    "NewVersion": version,
+                }
+            )
+        )
     return entry_context, human_readable
 
 
@@ -2606,8 +3169,8 @@ def get_papi_property_activation_status_command_ec(raw_response: dict) -> tuple[
         network = raw_response["activations"]["items"][0].get("network")
         status = raw_response["activations"]["items"][0].get("status")
         activation_id = raw_response["activations"]["items"][0].get("activationId")
-        entry_context.append(assign_params(ActivationId=activation_id, Network=network, Status=status))
-        human_readable.append(assign_params(ActivationId=activation_id, Network=network, Status=status))
+        entry_context.append(assign_params(**{"ActivationId": activation_id, "Network": network, "Status": status}))
+        human_readable.append(assign_params(**{"ActivationId": activation_id, "Network": network, "Status": status}))
     return entry_context, human_readable
 
 
@@ -2627,8 +3190,8 @@ def get_papi_edgehostname_creation_status_command_ec(raw_response: dict) -> tupl
     if raw_response:
         edgehostname_id = raw_response["edgeHostnames"]["items"][0].get("edgeHostnameId")
         status = raw_response["edgeHostnames"]["items"][0].get("status")
-        entry_context.append(assign_params(EdgeHostnameId=edgehostname_id, Status=status))
-        human_readable.append(assign_params(EdgeHostnameId=edgehostname_id, Status=status))
+        entry_context.append(assign_params(**{"EdgeHostnameId": edgehostname_id, "Status": status}))
+        human_readable.append(assign_params(**{"EdgeHostnameId": edgehostname_id, "Status": status}))
 
     return entry_context, human_readable
 
@@ -2647,15 +3210,17 @@ def get_papi_property_bygroup_ec(raw_response: dict) -> tuple[list, list]:
     if raw_response:
         entry_context.append(
             assign_params(
-                AccountId=raw_response["accountId"],
-                ContractId=raw_response["contractId"],
-                GroupId=raw_response["groupId"],
-                PropertyId=raw_response["propertyId"],
-                PropertyName=raw_response["propertyName"],
-                LatestVersion=raw_response["latestVersion"],
-                StagingVersion=raw_response["stagingVersion"],
-                ProductionVersion=raw_response["productionVersion"],
-                AssetId=raw_response["assetId"],
+                **{
+                    "AccountId": raw_response["accountId"],
+                    "ContractId": raw_response["contractId"],
+                    "GroupId": raw_response["groupId"],
+                    "PropertyId": raw_response["propertyId"],
+                    "PropertyName": raw_response["propertyName"],
+                    "LatestVersion": raw_response["latestVersion"],
+                    "StagingVersion": raw_response["stagingVersion"],
+                    "ProductionVersion": raw_response["productionVersion"],
+                    "AssetId": raw_response["assetId"],
+                }
             )
         )
         human_readable = entry_context
@@ -2677,8 +3242,20 @@ def new_papi_property_version_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         version_link = raw_response.get("versionLink", "")
-        entry_context.append(assign_params(VersionLink=version_link))
-        human_readable.append(assign_params(VersionLink=version_link))
+        entry_context.append(
+            assign_params(
+                **{
+                    "VersionLink": version_link,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "VersionLink": version_link,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2697,8 +3274,20 @@ def list_papi_property_activations_ec(raw_response: dict) -> tuple[list, list]:
     human_readable = []
     if raw_response:
         activations = raw_response.get("activations", {}).get("items", [])
-        entry_context.append(assign_params(Activations=activations))
-        human_readable.append(assign_params(Activations=activations))
+        entry_context.append(
+            assign_params(
+                **{
+                    "Activations": activations,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "Activations": activations,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2716,8 +3305,22 @@ def list_appsec_configuration_activation_history_ec(raw_response: dict, config_i
     entry_context = []
     human_readable = []
     if raw_response:
-        entry_context.append(assign_params(id=config_id, ActivationHistory=raw_response.get("activationHistory")))
-        human_readable.append(assign_params(id=config_id, Activations=raw_response.get("activationHistory")))
+        entry_context.append(
+            assign_params(
+                **{
+                    "id": config_id,
+                    "ActivationHistory": raw_response.get("activationHistory"),
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "id": config_id,
+                    "Activations": raw_response.get("activationHistory"),
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2737,8 +3340,22 @@ def list_papi_property_by_hostname_ec(raw_response: dict, cname_from: str) -> tu
     human_readable = []
     if raw_response:
         properties = raw_response.get("hostnames", {}).get("items", [])
-        entry_context.append(assign_params(CNameFrom=cname_from, Properties=properties))
-        human_readable.append(assign_params(CNameFrom=cname_from, Properties=properties))
+        entry_context.append(
+            assign_params(
+                **{
+                    "CNameFrom": cname_from,
+                    "Properties": properties,
+                }
+            )
+        )
+        human_readable.append(
+            assign_params(
+                **{
+                    "CNameFrom": cname_from,
+                    "Properties": properties,
+                }
+            )
+        )
 
     return entry_context, human_readable
 
@@ -2784,7 +3401,9 @@ def update_cps_enrollment_ec(raw_response: dict) -> tuple[list, list]:
             changeId = changes[0].split("/")[6]
         else:
             changeId = ""
-        entry_context.append(assign_params(id=enrollmentId, enrollment=enrollment, changeId=changeId, changes=changes))
+        entry_context.append(
+            assign_params(**{"id": enrollmentId, "enrollment": enrollment, "changeId": changeId, "changes": changes})
+        )
         human_readable = entry_context
     return entry_context, human_readable
 
@@ -2809,7 +3428,7 @@ def update_cps_enrollment_schedule_ec(raw_response: dict) -> tuple[list, list]:
         else:
             changeId = ""
             enrollmentId = ""
-        entry_context.append(assign_params(id=enrollmentId, changeId=changeId, change=change))
+        entry_context.append(assign_params(**{"id": enrollmentId, "changeId": changeId, "change": change}))
         human_readable = entry_context
     return entry_context, human_readable
 
@@ -2830,6 +3449,22 @@ def try_parsing_date(date: str, arr_fmt: list):
         except ValueError:
             pass
     raise ValueError(f"The date you provided does not match the wanted format {arr_fmt}")
+
+
+def filter_empty_values(d):
+    """
+    Use a recursive function to filter out keys with empty values at all levels.
+    Args:
+        d: dictionary to be filtered
+    Returns:
+        A dictionary without empty list.
+    """
+    if isinstance(d, dict):
+        return {k: filter_empty_values(v) for k, v in d.items() if v not in ([], "", {})}
+    elif isinstance(d, list):
+        return [filter_empty_values(i) for i in d]
+    else:
+        return d
 
 
 """ COMMANDS """
@@ -3806,8 +4441,7 @@ def add_papi_property_hostname_command(
     raw_response["edgeHostnameId"] = edge_hostname_id
     entry_context, human_readable_ec = add_papi_property_hostname_command_ec(raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix"
-        f" == obj.DomainPrefix)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -3922,8 +4556,7 @@ def new_papi_edgehostname_command(
             raw_response["domainPrefix"] = domain_prefix
             entry_context, human_readable_ec = new_papi_edgehostname_command_ec(raw_response)
     context_entry: dict = {
-        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix"
-        f" == obj.DomainPrefix)": entry_context
+        f"{INTEGRATION_CONTEXT_NAME}.PapiProperty.EdgeHostnames(val.DomainPrefix && val.DomainPrefix == obj.DomainPrefix)": entry_context
     }
     human_readable = tableToMarkdown(
         name=title,
@@ -4280,8 +4913,7 @@ def clone_security_policy_command(
             title = f"{INTEGRATION_NAME} - clone security policy command - found existing Security Policy"
             entry_context, human_readable_ec = clone_security_policy_command_ec(returnDict)
             context_entry = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName"
-                f" == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
             }
             human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
             return human_readable, context_entry, raw_response
@@ -4310,8 +4942,7 @@ def clone_security_policy_command(
             title = f"{INTEGRATION_NAME} - clone security policy"
             entry_context, human_readable_ec = clone_security_policy_command_ec(raw_response)
             context_entry = {
-                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName"
-                f" == obj.PolicyName)": entry_context
+                f"{INTEGRATION_CONTEXT_NAME}.AppSecConfig.Policy(val.PolicyName && val.PolicyName == obj.PolicyName)": entry_context
             }
             human_readable = tableToMarkdown(name=title, t=human_readable_ec, removeNull=True)
         return human_readable, context_entry, raw_response
@@ -4509,7 +5140,7 @@ def get_appsec_config_latest_version_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
-    for _i in range(int(retries)):
+    for _i in range(0, int(retries)):
         raw_response: dict = client.list_appsec_config()
         lookupKey = "name"
         lookupValue = sec_config_name
@@ -4816,6 +5447,8 @@ def patch_papi_property_rule_siteshield_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
+    import json
+
     body = [{"op": operation, "path": path, "value": json.loads(ssmap)}]
 
     raw_response: dict = client.patch_papi_property_rule(
@@ -4992,6 +5625,9 @@ def patch_papi_property_rule_command(
     Returns:
         human readable (markdown format), entry context and raw response
     """
+
+    import json
+
     body = [{"op": operation, "path": path, "value": json.loads(value) if value_to_json.lower() == "yes" else value}]
 
     raw_response: dict = client.patch_papi_property_rule(
@@ -5279,7 +5915,7 @@ def list_appsec_configuration_activation_history_command(
 @logger
 def list_papi_property_by_hostname_command(
     client: Client,
-    hostname: str,
+    hostname: str = None,
     network: str = None,
     contract_id: str = None,
     group_id: str = None,
@@ -5436,6 +6072,8 @@ def update_cps_enrollment_command(
     renewal_date_check_override: str = "true",
     allow_missing_certificate_addition: str = "false",
 ) -> tuple[str, dict, Union[list, dict]]:
+    import json
+
     """
         Updates an enrollment with changes. Response type will vary depending on the type and impact of change.
         For example, changing SANs list may return HTTP 202 Accepted since the operation require a new certificate
@@ -5825,7 +6463,7 @@ def list_cps_active_certificates_command(
 
     Args:
         client:
-        contract_id: Unique Identifier of the contract on which to operate or view.
+        contract_id: Unique Identifier of a contract on which to operate or view.
 
     Returns:
         human readable (markdown format), entry context and raw response
@@ -5841,6 +6479,625 @@ def list_cps_active_certificates_command(
     human_readable = tableToMarkdown(
         name=title,
         t=human_readable_ec.get("enrollments"),
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def new_datastream_command(
+    client: Client,
+    stream_name: str,
+    group_id: int,
+    contract_id: str,
+    properties: str,
+    dataset_fields: str,
+    interval_in_seconds: int = 30,
+    log_format: str = "JSON",
+    field_delimiter: str = None,
+    upload_file_prefix: str = None,
+    upload_file_suffix: str = None,
+    ca_cert: str = None,
+    client_cert: str = None,
+    client_key: str = None,
+    content_type: str = None,
+    custom_header_name: str = None,
+    custom_header_value: str = None,
+    compress_logs: bool = True,
+    destination_type: str = "SPLUNK",
+    display_name: str = None,
+    endpoint: str = None,
+    event_collector_token: str = None,
+    tls_hostname: str = None,
+    notification_emails: str = None,
+    collect_midgress: bool = False,
+    activate: bool = True,
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Creates a stream configuration. Within a stream configuration,
+        you can select properties to monitor in the stream, data set fields to collect in logs,
+        and a destination to send these log files to. Get the streamId value from the response
+        to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL.
+        Apart from the log and delivery frequency configurations, you can decide whether to activate
+        the stream on making the request or later using the activate parameter.
+        Note that only active streams collect and send logs to their destinations.
+        NOTE: "SPLUNK" and "HTTPS" are the only two types tested
+
+    Args:
+        client:
+        stream_name: The name of the stream.
+        group_id: The unique identifier of the group that has access to the product and this stream
+                  configuration.
+        contract_id: The unique identifier of the contract that has access to the product.
+        properties: The unique identifier of the properties that belong to the same product and to be monitored
+                    in the stream. Note that a stream can only log data for active properties.
+                    A property can be activated in Property Manager.
+        dataset_fields: The unique identifier of the data set fields to be included in stream logs.
+                        In case of STRUCTURED format, the order of the identifiers define how the value for
+                        these fields appear in the log lines.
+        interval_in_seconds: The interval in seconds (30 or 60) after which the system bundles log lines into
+                             a file and sends it to a destination.
+        log_format: The format in which you want to receive log files. STRUCTURED or JSON are the currently
+                    available formats. When the delimiter is present in the request, STRUCTURED format needs
+                    to be defined.
+        field_delimiter: A delimiter that separates data set fields in the log lines, either SPACE or TAB.
+                         Set this only for the STRUCTURED log file format.
+        upload_file_prefix: The prefix of the log file to be used when sending to a object-based destination.
+                            It's a string of at most 200 characters. If unspecified, it defaults to ak. This
+                            member supports Dynamic time variables, but doesn't support the . character.
+        upload_file_suffix: The suffix of the log file that you want to send to a object-based destination.
+                            It's a static string of at most 10 characters. If unspecified, it defaults to ds.
+                            This member doesn't support Dynamic time variables, and the ., /, %, ? characters.
+        ca_cert: The certification authority (CA) certificate used to verify the origin server's certificate.
+                 If the certificate is not signed by a well-known certification authority, enter the CA certificate
+                 in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it
+                 in the response as true.
+        client_cert: The PEM-formatted digital certificate you want to authenticate requests to your destination
+                     with. If you want to use mutual authentication, you need to provide both the client certificate
+                     and the client key. If you pass this member, the mTlsEnabled member replaces it in the response
+                     as true.
+        client_key: The private key in the non-encrypted PKCS8 format that authenticates with the back-end server.
+                    If you want to use mutual authentication, you need to provide both the client certificate and
+                    the client key.
+        content_type: The type of the resource passed in the request's custom header.
+        custom_header_name: A human-readable name for the request's custom header, containing only alphanumeric,
+                            dash, and underscore characters.
+        custom_header_value: The custom header's contents passed with the request that contains information about
+                             the client connection.
+        compress_logs: Enables gzip compression for a log file sent to a destination. True by default.
+        destination_type: The destination configuration in the stream to send logs.
+                          Note: "SPLUNK" and "HTTPS" are the only two types tested.
+        display_name: The name of the destination.
+        endpoint: The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used
+                  as endpoint URLs.
+        event_collector_token: The Event Collector token for your Splunk account.
+        tls_hostname: The hostname that verifies the server's certificate and matches the Subject Alternative Names
+                      (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint
+                      URL.
+        notification_emails: A list of e-mail addresses where you want to send notifications about activations and
+                             deactivations of the stream. You can omit this member and activate or deactivate the
+                             stream without notifications.
+        collect_midgress: Indicates if you've opted to capture midgress traffic within the Akamai platform, such as
+                          between two edge servers.
+        activate: Activates the stream at the time of the request, false by default. When Edit a stream or Patch a
+                  stream that is active, set this value to true.
+
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    notification_emails_list: list = argToList(notification_emails)
+    properties_list: list = argToList(properties)
+    properties_list_dict: list = []
+    for item in properties_list:
+        properties_list_dict.append({"propertyId": int(item)})
+    dataset_fields_list: list = argToList(dataset_fields)
+    dataset_fields_list_dict: list = []
+    for item in dataset_fields_list:
+        dataset_fields_list_dict.append({"datasetFieldId": int(item)})
+    raw_response: dict = client.new_datastream(
+        stream_name=stream_name,
+        group_id=group_id,
+        contract_id=contract_id,
+        properties=properties_list_dict,
+        dataset_fields=dataset_fields_list_dict,
+        interval_in_seconds=interval_in_seconds,
+        log_format=log_format,
+        field_delimiter=field_delimiter,
+        upload_file_prefix=upload_file_prefix,
+        upload_file_suffix=upload_file_suffix,
+        ca_cert=ca_cert,
+        client_cert=client_cert,
+        client_key=client_key,
+        content_type=content_type,
+        custom_header_name=custom_header_name,
+        custom_header_value=custom_header_value,
+        compress_logs=compress_logs,
+        destination_type=destination_type,
+        display_name=display_name,
+        endpoint=endpoint,
+        event_collector_token=event_collector_token,
+        tls_hostname=tls_hostname,
+        notification_emails=notification_emails_list,
+        collect_midgress=collect_midgress,
+        activate=activate,
+    )
+
+    title = f"{INTEGRATION_NAME} - new datastream"
+    entry_context = raw_response
+    human_readable_ec = raw_response
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": entry_context}
+
+    human_readable = tableToMarkdown(
+        name=title,
+        t=human_readable_ec,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastreams_command(client: Client, group_id: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get the latest versions of the stream configurations for all groups within the account.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastreams(group_id=group_id)
+    title = f"{INTEGRATION_NAME} - list datastreams command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreams": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_datastream_command(client: Client, stream_id: int, version: int = 0) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns information about any version of a stream, including details about the monitored properties,
+        logged data set fields, and log delivery destination. If you omit the version query parameter,
+        this operation returns the last version of the stream.
+
+    Args:
+        client:
+        stream_id: The uniquely identifier of the stream.
+        version: The uniquely identifier of the version of the stream.
+                 If omitted, the operation returns the latest version of the stream.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_datastream(stream_id=stream_id, version=version)
+    title = f"{INTEGRATION_NAME} - get datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamDetails": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_idam_properties_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists the properties and includes for the current account via Identity Access Management Module
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_idam_properties()
+    title = f"{INTEGRATION_NAME} - list idam properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Idam.Properties": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_groups_command(client: Client, contract_id: str = "") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Returns access groups with contracts on your account. You can later use the groupId and contractId values
+        to create and view streams or list properties by group. Set the contractId query parameter to get groups
+        for a specific contract.
+
+    Args:
+        client:
+        contract_id: Uniquely identifies the contract that belongs to a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_datastream_groups(contract_id=contract_id)
+    title = f"{INTEGRATION_NAME} - list datastream groups command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStreamGroups": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_datastream_properties_bygroup_command(client: Client, group_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+         Get properties that are active on the production and staging network and available within a specific group.
+         Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+    Args:
+        client:
+        group_id: The unique identifier of the group that has access to the product and this stream configuration.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+    raw_response: dict = client.list_datastream_properties_bygroup(group_id=group_id)
+    title = f"{INTEGRATION_NAME} - list datastream active properties command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Group": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def delete_datastream_command(client: Client, stream_id: int) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and
+        that you stop receiving logs for the properties that this stream monitors. Before deleting any stream,
+        you need to deactivate it first.
+
+    Args:
+        stream_id: Unique identifer of a stream
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.delete_datastream(stream_id=stream_id)
+
+    if "Response [204]" in str(raw_response):
+        dict_response: dict = {"stream_id": stream_id, "deletion": "completed"}
+    else:
+        dict_response: dict = {"stream_id": stream_id, "deletion": f"failed - {str(raw_response)}"}
+
+    title = f"{INTEGRATION_NAME} - delete datastream command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream": dict_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=dict_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, dict_response
+
+
+@logger
+def patch_datastream_command(
+    client: Client,
+    stream_id: int,
+    path: str,
+    value: str,
+    value_to_json: str,
+    activate: str = "true",
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates
+        a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE
+        operation. When updating configuration objects such as destination or deliveryConfiguration, pass a
+        complete object to avoid overwriting current details with default values for omitted members such as
+        tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to
+        their destinations. You need to set the activate parameter to true while patching active streams, and
+        optionally for inactive streams if you want to activate them upon request.
+
+    Args:
+        stream_id: The unique identifier of the stream.
+        activate: Activates the stream at the time of the request, false by default. When you Edit a stream or
+                  Patch a stream that is active, you need to set this member to true.
+        path: A JSON Pointer that identifies the values you want to replace in the stream configuration. This
+              member's value is / followed by any of the configuration object's top-level member name.
+        value: Specifies the data to replace at the path location, any type of data including objects and arrays.
+               Pass complete objects to avoid overwriting current details with default values for omitted members.
+        value_to_json: Whether convert the value above into Json or not.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    import json
+
+    body = [{"op": "REPLACE", "path": path, "value": json.loads(value) if value_to_json.lower() == "yes" else value}]
+
+    raw_response: dict = client.patch_datastream(stream_id=stream_id, activate=activate, body=body)
+
+    title = f"{INTEGRATION_NAME} - Patch datastream command"
+
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Datastream": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def activate_datastream_command(
+    client: Client,
+    stream_id: int,
+    option: str = "activate",
+) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Activate/Deactivate the latest version of a DataStream.
+
+    Args:
+        stream_id: Uniquely identifies the stream.
+        option: "activate" or "deactivate"
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.activate_datastream(stream_id=stream_id, option=option)
+
+    title = f"{INTEGRATION_NAME} - Activate DataStream command"
+
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.DataStream.Activation": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def get_client_lists_command(client: Client) -> tuple[str, dict, Union[list, dict]]:
+    """
+        Get accessible client lists.
+
+    Args:
+        client:
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.get_client_lists()
+    title = f"{INTEGRATION_NAME} - Get Client List command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.ClientList": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def list_edgehostname_command(client: Client, contract_id: str, group_id: str = "na") -> tuple[str, dict, Union[list, dict]]:
+    """
+        Lists all edge hostnames available under a contract.
+
+    Args:
+        client:
+        contract_id: Unique identifier of a contract.
+        group_id: Unique identifier of a group.
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    raw_response: dict = client.list_edgehostname(contract_id=contract_id, group_id=group_id)
+    title = f"{INTEGRATION_NAME} - List Edgehostname command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}.Edgehostname": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
+        removeNull=True,
+    )
+    return human_readable, context_entry, raw_response
+
+
+@logger
+def generic_api_call_command(
+    client: Client,
+    method,
+    url_suffix="",
+    headers=None,
+    json_data=None,
+    params=None,
+    data=None,
+    files=None,
+    timeout=None,
+    resp_type="json",
+    ok_codes=None,
+    return_empty_response=False,
+    retries=0,
+    status_list_to_retry=None,
+    backoff_factor=5,
+    raise_on_redirect=False,
+    raise_on_status=False,
+    empty_valid_codes=None,
+    with_metrics=False,
+    **kwargs,
+):
+    """
+        Generic API Call command.
+
+    Args:
+        client:
+        :type method: ``str``
+        :param method: The HTTP method, for example: GET, POST, and so on.
+
+        :type url_suffix: ``str``
+        :param url_suffix: The API endpoint.
+
+        :type headers: ``dict``
+        :param headers: Headers to send in the request. If None, will use self._headers.
+
+        :type params: ``dict``
+        :param params: URL parameters to specify the query.
+
+        :type data: ``dict``
+        :param data: The data to send in a 'POST' request.
+
+        :type json_data: ``dict``
+        :param json_data: The dictionary to send in a 'POST' request.
+
+        :type files: ``dict``
+        :param files: The file data to send in a 'POST' request.
+
+        :type timeout: ``float`` or ``comma separated two floats``
+        :param timeout:
+            The amount of time (in seconds) that a request will wait for a client to
+            establish a connection to a remote machine before a timeout occurs.
+            can be only float (Connection Timeout) or Comma Seperated two floats for
+            Connection Timeout and Read Timeout. (Samput Input: 60, 60)
+
+        :type resp_type: ``str``
+        :param resp_type:
+            Determines which data format to return from the HTTP request. The default
+            is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response'
+             to return the full response object.
+
+        :type ok_codes: ``comma separated integars`` or None
+        :param ok_codes:
+            The request codes to accept as OK, for example: 200, 201, 204. If you specify
+            "None", will use self._ok_codes. Default is None.
+
+        :type retries: ``int``
+        :param retries: How many retries should be made in case of a failure. when set to '0'- will fail on the first time
+
+        :type status_list_to_retry: ``iterable``
+        :param status_list_to_retry: A set of integer HTTP status codes that we should force a retry on.
+            A retry is initiated if the request method is in ['GET', 'POST', 'PUT']
+            and the response status code is in ``status_list_to_retry``.
+
+        :type backoff_factor ``float``
+        :param backoff_factor:
+            A backoff factor to apply between attempts after the second try
+            (most errors are resolved immediately by a second try without a
+            delay). urllib3 will sleep for::
+
+                {backoff factor} * (2 ** ({number of total retries} - 1))
+
+            seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep
+            for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer
+            than :attr:`Retry.BACKOFF_MAX`.
+
+            By default, backoff_factor set to 5
+
+        :type raise_on_redirect ``bool``
+        :param raise_on_redirect: Whether, if the number of redirects is
+            exhausted, to raise a MaxRetryError, or to return a response with a
+            response code in the 3xx range.
+
+        :type raise_on_status ``bool``
+        :param raise_on_status: Similar meaning to ``raise_on_redirect``:
+            whether we should raise an exception, or return a response,
+            if status falls in ``status_forcelist`` range and retries have
+            been exhausted.
+
+        :type empty_valid_codes: sinlge integer or ``comma separated integers``
+        :param empty_valid_codes: A list of all valid status codes of empty responses (usually only 204, but
+            can vary)
+
+        :type with_metrics ``bool``
+        :param with_metrics: Whether or not to calculate execution metrics from the response
+
+    Returns:
+        human readable (markdown format), entry context and raw response
+    """
+
+    if headers is not None and not isinstance(headers, dict):
+        headers = json.loads(headers)
+    if params is not None and not isinstance(params, dict):
+        params = json.loads(params)
+    if data is not None and not isinstance(data, dict):
+        data = json.loads(data)
+    if json_data is not None and not isinstance(json_data, dict):
+        json_data = json.loads(json_data)
+    if files is not None and not isinstance(files, dict):
+        files = json.loads(files)
+    if timeout is not None:
+        if "," in timeout:
+            timeout = tuple([float(x) for x in timeout.split(",")])
+        else:
+            timeout = float(timeout)
+    if ok_codes is not None:
+        if "," in ok_codes:
+            ok_codes = tuple([int(x) for x in ok_codes.split(",")])
+    if retries is not None:
+        retries = int(retries)
+    if status_list_to_retry is not None:
+        if "," in status_list_to_retry:
+            status_list_to_retry = [int(x) for x in status_list_to_retry.split(",")]
+        else:
+            status_list_to_retry = [int(status_list_to_retry)]
+    if backoff_factor is not None:
+        backoff_factor = float(backoff_factor)
+    if raise_on_redirect is not None:
+        raise_on_redirect = argToBoolean(raise_on_redirect)
+    if raise_on_status is not None:
+        raise_on_status = argToBoolean(raise_on_status)
+    if empty_valid_codes is not None:
+        if "," in empty_valid_codes:
+            empty_valid_codes = [int(x) for x in empty_valid_codes.split(",")]
+        else:
+            empty_valid_codes = [int(empty_valid_codes)]
+    if with_metrics is not None:
+        with_metrics = argToBoolean(with_metrics)
+
+    raw_response = client.generic_api_call(
+        method=method,
+        url_suffix=url_suffix,
+        headers=headers,
+        params=params,
+        data=data,
+        json_data=json_data,
+        files=files,
+        timeout=timeout,
+        resp_type=resp_type,
+        ok_codes=ok_codes,
+        return_empty_response=return_empty_response,
+        retries=retries,
+        status_list_to_retry=status_list_to_retry,
+        backoff_factor=backoff_factor,
+        raise_on_redirect=raise_on_redirect,
+        raise_on_status=raise_on_status,
+        empty_valid_codes=empty_valid_codes,
+        with_metrics=with_metrics,
+        **kwargs,
+    )
+
+    title = f"{INTEGRATION_NAME} - Generic API Call command"
+    context_entry: dict = {f"{INTEGRATION_CONTEXT_NAME}": raw_response}
+    human_readable = tableToMarkdown(
+        name=title,
+        t=raw_response,
         removeNull=True,
     )
     return human_readable, context_entry, raw_response
@@ -5909,8 +7166,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-clone-appsec-config-version": clone_appsec_config_version_command,
         f"{INTEGRATION_COMMAND_NAME}-patch-papi-property-rule-httpmethods": patch_papi_property_rule_httpmethods_command,
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-activation-status-command": get_papi_property_activation_status_command,
-        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command":  # noqa: E501
-        get_papi_edgehostname_creation_status_command,  # noqa: E501
+        f"{INTEGRATION_COMMAND_NAME}-get-papi-edgehostname-creation-status-command": get_papi_edgehostname_creation_status_command,
         f"{INTEGRATION_COMMAND_NAME}-acknowledge-warning-command": acknowledge_warning_command,
         f"{INTEGRATION_COMMAND_NAME}-get-production-deployment": get_production_deployment_command,
         f"{INTEGRATION_COMMAND_NAME}-get-change-history": get_change_history_command,
@@ -5926,8 +7182,7 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-get-papi-property-by-id": get_papi_property_by_id_command,
         f"{INTEGRATION_COMMAND_NAME}-new-papi-property-version": new_papi_property_version_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-activations": list_papi_property_activations_command,
-        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history":  # noqa: E501
-        list_appsec_configuration_activation_history_command,  # noqa: E501
+        f"{INTEGRATION_COMMAND_NAME}-list-appsec-configuration-activation-history": list_appsec_configuration_activation_history_command,
         f"{INTEGRATION_COMMAND_NAME}-list-papi-property-by-hostname": list_papi_property_by_hostname_command,
         f"{INTEGRATION_COMMAND_NAME}-list-siteshield-map": list_siteshield_maps_command,
         f"{INTEGRATION_COMMAND_NAME}-get-cps-enrollment-deployment": get_cps_enrollment_deployment_command,
@@ -5941,6 +7196,18 @@ def main():
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zones": list_dns_zones_command,
         f"{INTEGRATION_COMMAND_NAME}-list-dns-zone-recordsets": list_dns_zone_recordsets_command,
         f"{INTEGRATION_COMMAND_NAME}-list-cps-active-certificates": list_cps_active_certificates_command,
+        f"{INTEGRATION_COMMAND_NAME}-new-datastream": new_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-idam-properties": list_idam_properties_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastreams": list_datastreams_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-datastream": get_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-groups": list_datastream_groups_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-datastream-properties-bygroup": list_datastream_properties_bygroup_command,
+        f"{INTEGRATION_COMMAND_NAME}-delete-datastream": delete_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-patch-datastream": patch_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-activate-datastream": activate_datastream_command,
+        f"{INTEGRATION_COMMAND_NAME}-get-client_lists": get_client_lists_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-edgehostname": list_edgehostname_command,
+        f"{INTEGRATION_COMMAND_NAME}-generic-api-call-command": generic_api_call_command,
     }
     try:
         readable_output, outputs, raw_response = commands[command](client=client, **demisto.args())
