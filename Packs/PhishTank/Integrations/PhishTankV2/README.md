@@ -50,6 +50,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 
 #### Command Example
 
