@@ -183,7 +183,6 @@ class ClientV3(BaseClient):
             resp_type (str, optional): The response type of the request. Defaults to "json".
         """
         signed = self.prepare_request(method=method, url_suffix=url_suffix, query_string=query_string, payload=payload)
-        demisto.info(f"[test] {signed=}")
         return self._http_request(
             method="POST",
             data=signed,
@@ -249,23 +248,17 @@ class ClientV3(BaseClient):
             ok_codes (tuple): An HTTP status code of success.
         """
         next_page = ""
-        page_size = 1
-        demisto.info(f"[test] {query_string=}")
-        next_page_addition = self.add_pagination(next_page, page_size)
-        demisto.info(f"[test] {next_page_addition=}")
-        query_string = query_string + next_page_addition
-
-        response = self.send_request_to_api("GET", url_suffix, query_string, ok_codes=tuple(ok_codes))
-        demisto.info(f"[test] response first execution with {response=} and {page_size=}")
+        response = self.send_request_to_api(
+            "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
+        )
         data = response.get("data")
 
         while next_page := response.get("metadata", {}).get("pagination", {}).get("nextPage", ""):
             response = self.send_request_to_api(
                 "GET", url_suffix, query_string + self.add_pagination(next_page, page_size), ok_codes=tuple(ok_codes)
             )
-            demisto.info(f"[test] response second execution with {response=} and {page_size=}")
             data += response.get("data")
-            break
+
         return data
 
     def api_request_absolute(
@@ -1112,7 +1105,7 @@ def get_device_command(args, client) -> CommandResults:
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
 
-    res = client.api_request_absolute("GET", "/v3/reporting/devices", query_string=query_string, page_size=500)
+    res = client.api_request_absolute("GET", "/v3/reporting/devices", query_string=query_string)
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
         human_readable = tableToMarkdown(f"{INTEGRATION} devices list:", outputs, removeNull=True)
