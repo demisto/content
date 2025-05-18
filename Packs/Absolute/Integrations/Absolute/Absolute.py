@@ -75,7 +75,7 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "policyGroupName",
     "isStolen",
     "deviceStatus.type",
-    "deviceStatus.reported",
+    "deviceStatus.reported",5
     "networkSSID",
 ]
 
@@ -108,6 +108,7 @@ CLIENT_V3_JWS_VALIDATION_URL_SUFFIX = "/jws/validate"
 VENDOR = "Absolute"
 PRODUCT = "Secure Endpoint"
 HEADERS_V3: dict = {"content-type": "text/plain"}
+MAX_PAGE_SIZE = 500  # Max allowed page size to solve the issue on absolute end where reaching the page size yield all results.
 
 
 class ClientV3(BaseClient):
@@ -1109,7 +1110,7 @@ def get_device_command(args, client) -> CommandResults:
         "GET",
         "/v3/reporting/devices",
         query_string=query_string,
-        page_size=500,
+        page_size=MAX_PAGE_SIZE,
     )
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
