@@ -20,7 +20,6 @@
         "platform",
         "marketplacev2"
     ],
-    "defaultDataSource": "AppSentinels.ai",
     "supportedModules": [
         "X1",
         "X3",
