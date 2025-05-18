@@ -254,10 +254,8 @@ class ClientV3(BaseClient):
         next_page_addition = self.add_pagination(next_page, page_size)
         demisto.info(f"[test] {next_page_addition=}")
         query_string = query_string + next_page_addition
-        
-        response = self.send_request_to_api(
-            "GET", url_suffix, query_string, ok_codes=tuple(ok_codes)
-        )
+
+        response = self.send_request_to_api("GET", url_suffix, query_string, ok_codes=tuple(ok_codes))
         demisto.info(f"[test] response first execution with {response=} and {page_size=}")
         data = response.get("data")
 
@@ -400,8 +398,7 @@ def validate_absolute_api_url(base_url: str) -> str:
 def test_module(client: ClientV3) -> str:  # pragma: no cover
     """Tests API connectivity to Absolute"""
     try:
-        client.api_request_absolute('GET', '/v3/reporting/devices', query_string='',
-                                    page=0, page_size=1, specific_page=True)
+        client.api_request_absolute("GET", "/v3/reporting/devices", query_string="", page=0, page_size=1, specific_page=True)
         message = "ok"
     except DemistoException as e:
         if "Forbidden" in str(e) or "Authorization" in str(e):
