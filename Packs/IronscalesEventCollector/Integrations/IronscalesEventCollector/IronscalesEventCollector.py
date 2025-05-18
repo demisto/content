@@ -94,6 +94,17 @@ class Client(BaseClient):  # pragma: no cover
         return time_encoded
 
     def get_all_incident_ids(self, start_time: datetime, max_fetch: int, last_id=None) -> List[int]:
+        """
+            Pull all the incident IDs from the API, using pagination mechanizm with respect to max_fetch
+
+        Args:
+            start_time: from what time to start pulling
+            max_fetch: max number of incidents to fetch
+            last_id: last id from the last run
+        Returns:
+            List of incident IDs
+        """
+
         curr_time = datetime.now(timezone.utc)  # Get the current datetime with UTC timezone
         curr_time = self.convert_time(curr_time)
         start = self.convert_time(start_time)
@@ -106,7 +117,7 @@ class Client(BaseClient):  # pragma: no cover
             params["page"] = page
             response = self._http_request(method="GET", url_suffix=f"/incident/{self.company_id}/list/", params=params)
             total_pages = response.get("total_pages")
-            new_incidents = [incident.get("incidentID") for incident in response.get("incidents")] or []
+            new_incidents = [incident.get("incidentID") for incident in response.get("incidents", [])]
             if not new_incidents or page > total_pages:
                 break
             page += 1
@@ -303,7 +314,9 @@ def main():
                 last_id=demisto.getLastRun().get("last_id"),
             )
             send_events_to_xsiam(events, VENDOR, PRODUCT)
-            demisto.setLastRun({"last_id": last_id, "last_incident_time": events[-1].get("first_reported_date")})
+            demisto.setLastRun(
+                {"last_id": last_id, "last_incident_time": events[-1].get("first_reported_date") if events else None}
+            )
 
     # Log exceptions
     except Exception as e:

@@ -311,7 +311,7 @@ def test_all_incidents_last_id_complex(mocker):
 
     def ids_generator():
         i = 1
-        while True:
+        while i < 100:
             yield {"total_pages": 100, "incidents": [{"incidentID": i}, {"incidentID": i + 1}]}
             i += 2
 
