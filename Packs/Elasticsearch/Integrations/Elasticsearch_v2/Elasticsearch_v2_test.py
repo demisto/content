@@ -1167,27 +1167,3 @@ def test_search_command_with_query_esql(mocker):
         assert result["values"][0] == ["karl@test.io"]
         assert result["columns"][0]["type"] == "text"
         mock_search.assert_called_once_with(args, {})
-
-
-def test_search_command_with_query_esql_limit(mocker):
-    """
-    Given
-      - query to the search command with esql and limit
-
-    When
-    - executing the es-esql-search command
-
-    Then
-     - Make sure that the expected message is returned.
-    """
-    import Elasticsearch_v2
-
-    args = {"query": """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *""", "limit": "1"}
-
-    with patch.object(Elasticsearch_v2, "search_esql_command", return_value=ES_V9_RESPONSE) as mock_search:
-        result = Elasticsearch_v2.search_esql_command(args, {})
-        assert result["took"] == 11
-        assert len(result["values"]) == 1
-        assert result["values"][0] == ["karl@test.io"]
-        assert result["columns"][0]["type"] == "text"
-        mock_search.assert_called_once_with(args, {})
