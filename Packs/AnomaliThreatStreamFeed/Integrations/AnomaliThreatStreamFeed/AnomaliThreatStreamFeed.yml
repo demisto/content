@@ -7,7 +7,7 @@ commonfields:
   version: -1
 configuration:
 - display: Fetch indicators
-  defaultvalue: 'true'
+  defaultvalue: true
   name: feed
   type: 8
   required: false
@@ -118,8 +118,29 @@ display: Anomali ThreatStream Feed
 name: Anomali ThreatStream Feed
 script:
   commands:
-  - description: test
+  - arguments:
+    - name: indicator_type 
+      auto: PREDEFINED
+      description: The indictor type to analyze.
+      isArray: false
+      required: false
+      predefined:
+      - 'domain'
+      - 'ip'
+      - 'md5'
+      - 'url'
+      - 'email'
+      - 'string'
+    - name: limit
+      default: false
+      description: Maximum number of objects to return (default is 10)
+      isArray: false
+      required: false
+      type: Number
+    description: Gets indicators from the feed. (Test function)
     name: threatstream-feed-get-indicators
+  - description: ''
+    name: fetch-indicators
   dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
   script: '-'
@@ -127,4 +148,4 @@ script:
   type: python
 tests:
 - ThreatStream-Test # TODO fix
-fromversion: 6.0.0
+fromversion: 5.5.0
