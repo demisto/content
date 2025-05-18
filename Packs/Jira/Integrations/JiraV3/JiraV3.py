@@ -1548,27 +1548,6 @@ def get_project_id_from_name(client: JiraBaseClient, project_name: str) -> str:
     return queried_projects[0].get("id", "")
 
 
-def get_jira_display_url(client: JiraBaseClient) -> str:
-    """Returns the project id of the project with the name project_name
-
-    Args:
-        client (JiraBaseClient): The Jira client.
-
-    Raises:
-        DemistoException: If no projects were found with the respective project name.
-        DemistoException: If more than one project was found with the respective project name.
-
-    Returns:
-        str: The project id corresponding to the project name.
-    """
-    ui_base_url = ""
-    if isinstance(client, JiraCloudClient):
-        ui_base_url = client.get_jira_base_url()
-    elif isinstance(client, JiraOnPremClient):
-        return client.server_url
-    return ui_base_url
-
-
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
     """This function takes in the pagination arguments supported by XSOAR, and maps them to a corresponding pagination dictionary
     that the API supports.
