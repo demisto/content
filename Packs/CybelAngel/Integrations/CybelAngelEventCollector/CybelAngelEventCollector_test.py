@@ -92,10 +92,8 @@ def create_domain_events(start_id: int, amount_of_events: int, start_date: str, 
             ID_KEYS[DOMAIN]: i,
             "detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
-        for i in range(start_id, start_id + amount_of_events)
+        for i in range(start_id + amount_of_events - 1, start_id - 1, -1)
     ]
-    # reverse so that newest appears first if your client expects descending
-    events.reverse()
     return {"results": events, "total": len(events) if total == 0 else total}
 
 
@@ -1011,31 +1009,35 @@ def test_cybelangel_report_attachment_get_command(mocker):
 def test_fetch_events_domain_two_call_paging(mocker):
     """
     Given:
-      - no last run
+      - last run holds ids [1,..,25]
       - 100 total domain events in the 1-minute window
-      - max_fetch_domain = 50
+      - max_fetch_domain = 70
 
     When:
       - running fetch-events
 
     Then:
-      - send_events_to_xsiam is called with exactly 50 events
-      - those 50 are the oldest ones (IDs 1..50) in ascending time
-      - lastRun is set to the time & ID of event 50
+      - send_events_to_xsiam is called with exactly 70 events
+      - those 70 are with IDs 26..95 in ascending time
+      - lastRun is set to the time & ID of event 95
     """
     import CybelAngelEventCollector
     from CybelAngelEventCollector import Client, DOMAIN, ID_KEYS, LATEST_TIME, LATEST_FETCHED_IDS
 
     send_events = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
-    mocker.patch.object(demisto, "getLastRun", return_value={})
+    mocker.patch.object(
+        demisto,
+        "getLastRun",
+        return_value={DOMAIN: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: list(range(1, 26))}},
+    )
     mocker.patch.object(
         demisto,
         "params",
         return_value={
             "url": TEST_URL,
             "credentials": {"identifier": "1234", "password": "1234"},
-            "max_fetch_domain": 50,
+            "max_fetch_domain": 70,
             "events_type_to_fetch": DOMAIN,
             "is_fetch_events": True,
         },
@@ -1050,11 +1052,93 @@ def test_fetch_events_domain_two_call_paging(mocker):
     assert send_events.called, "events should have been sent"
     fetched = send_events.call_args[0][0]
 
-    assert len(fetched) == 50
+    assert len(fetched) == 70
 
     returend_ids = [event[ID_KEYS[DOMAIN]] for event in fetched]
-    assert returend_ids == list(range(1, 51))
+    assert returend_ids == list(range(26, 96))
 
     lr = set_last_run.call_args[0][0]
     assert lr[DOMAIN][LATEST_TIME] == fetched[-1]["_time"]
     assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == fetched[-1][ID_KEYS[DOMAIN]]
+
+
+def test_get_latest_event_time_and_ids():
+    """
+    Given:
+      - Server holds 6 events with the same timestamp.
+      - 3 events already fetched.
+      - fetching 3 additional events.
+
+    When:
+      - Calling get_latest_event_time_and_ids.
+
+    Then:
+    - last_ids holds all 6 events.
+    - last_time does n0t changes.
+    """
+    from CybelAngelEventCollector import get_latest_event_time_and_ids
+
+    last_run_time = "2024-02-29T13:48:32"
+    events = [
+        {
+            ID_KEYS[REPORT]: f"{i}",
+            "_time": last_run_time,
+        }
+        for i in range(4, 7)
+    ]
+    last_run_ids = ["1", "2", "3"]
+    last_time, last_ids = get_latest_event_time_and_ids(
+        events=events, event_type=REPORT, last_run_time=last_run_time, last_run_ids=last_run_ids
+    )
+    assert last_time == last_run_time
+    assert len(last_ids) == 6
+    assert set(last_ids) == {"1", "2", "3", "4", "5", "6"}
+
+
+def test_fetch_events_same_timestamp(mocker):
+    """
+    Given:
+      - Server holds 6 events with the same timestamp.
+      - 3 events already fetched in the last run.
+
+    When:
+      - Calling fetch_events
+
+    Then:
+      - get_domain_watchlist called with limit = 6.
+      - Only events 4,5,6 are send back from the function.
+      - lastRun is set to the same time with all 6 ids.
+    """
+    from CybelAngelEventCollector import fetch_events
+
+    last_run_time = "2024-02-29T13:48:32"
+    last_run_ids = ["1", "2", "3"]
+    mocker.patch.object(
+        demisto, "getLastRun", return_value={DOMAIN: {LATEST_TIME: last_run_time, LATEST_FETCHED_IDS: last_run_ids}}
+    )
+
+    class DummyClient(Client):
+        def __init__(self):
+            self.called = {}
+
+        def get_domain_watchlist(self, start_date, end_date, limit):
+            # capture how many we asked for
+            self.called["limit"] = limit
+            # return that many events, IDs "1".."limit", all at the same timestamp
+            return [{ID_KEYS[DOMAIN]: str(i), "_time": last_run_time} for i in range(1, limit + 1)]
+
+    client = DummyClient()
+    max_fetch = {DOMAIN: 3}
+
+    events, new_last_run = fetch_events(client, max_fetch, [DOMAIN])
+    assert client.called["limit"] == 6
+
+    # 2) only the three unseen events are returned
+    assert len(events) == 3
+    returned_ids = [e[ID_KEYS[DOMAIN]] for e in events]
+    assert returned_ids == ["4", "5", "6"]
+
+    # 3) last_run for REPORT contains all six IDs in order, time unchanged
+    assert DOMAIN in new_last_run
+    assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
+    assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {"1", "2", "3", "4", "5", "6"}
