@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 
 ## Configure Atlassian Confluence Cloud in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
@@ -15,16 +14,19 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | Max number of events per fetch |  | False |
 | Fetch Events |  | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### confluence-cloud-space-create
+
 ***
 Creates a new space.<br/>
 Note: If no permissions are specified, the default space permissions defined by the Confluence cloud account admin will be used.
 
 #### Create Space with permissions
+
 - The command arguments 'permission_account_id', 'permission_group_name', and 'permission_operations' can be used to limit access of the space to one individual or one group.<br/>
 For Example: !confluence-cloud-space-create unique_key=”Demo” name=”DemoSpace”  permission_account_id=”123af245667” permission_group_name=”administrators” permission_operations=”read:space,write:page”
   
@@ -34,76 +36,77 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 #### Base Command
 
 `confluence-cloud-space-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| unique_key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters.<br/><br/>Note: unique_key cannot change after the space is created. | Required | 
-| name | The name of the new space. The maximum length is 200 characters. | Required | 
-| description | The description of the new space. | Optional | 
-| is_private_space | Whether the user wants to create a private space.<br/><br/>Note: If this option is set to true, permission cannot be applied. <br/><br/>Default is false. | Optional | 
-| permission_account_id | The account ID of the user to whom permission should be granted. <br/><br/>Note: To retrieve the account ID, execute the confluence-cloud-user-list command. | Optional | 
-| permission_group_name | The group name to whom permission should be granted. <br/><br/>Note: To retrieve the group name, execute the confluence-cloud-group-list command. | Optional | 
-| permission_operations | A comma-separated list of the permissions that should be applied.<br/><br/>Note: Requires either permission_account_id or permission_group_name.<br/><br/>Format accepted: operation1:targetType1, operation2:targetType2<br/><br/>For example: read:space, create:page<br/><br/>Possible values for operations: create, read, delete, export, administer.<br/>Possible values for targetType: space, page, blogpost, comment, attachment. | Optional | 
-| advanced_permissions | Specify 'advanced_permissions' to grant access to multiple users or groups. 'advanced_permissions' has priority over 'permission_operations'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid JSON for advanced_permissions, navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it. | Optional | 
-
+| unique_key | The key for the new space. It can contain any alphanumeric character (a-z, 0-9). The maximum length is 255 characters.<br/><br/>Note: unique_key cannot change after the space is created. | Required |
+| name | The name of the new space. The maximum length is 200 characters. | Required |
+| description | The description of the new space. | Optional |
+| is_private_space | Whether the user wants to create a private space.<br/><br/>Note: If this option is set to true, permission cannot be applied. <br/><br/>Default is false. | Optional |
+| permission_account_id | The account ID of the user to whom permission should be granted. <br/><br/>Note: To retrieve the account ID, execute the confluence-cloud-user-list command. | Optional |
+| permission_group_name | The group name to whom permission should be granted. <br/><br/>Note: To retrieve the group name, execute the confluence-cloud-group-list command. | Optional |
+| permission_operations | A comma-separated list of the permissions that should be applied.<br/><br/>Note: Requires either permission_account_id or permission_group_name.<br/><br/>Format accepted: operation1:targetType1, operation2:targetType2<br/><br/>For example: read:space, create:page<br/><br/>Possible values for operations: create, read, delete, export, administer.<br/>Possible values for targetType: space, page, blogpost, comment, attachment. | Optional |
+| advanced_permissions | Specify 'advanced_permissions' to grant access to multiple users or groups. 'advanced_permissions' has priority over 'permission_operations'. <br/><br/>Note: Add backslash(\\) before quotes.<br/><br/>For example: [ { \"subjects\": { \"user\": { \"results\": [ { \"accountId\": \"5ff2e30b4d2179006ea18449\" } ] }, \"group\": { \"results\": [ { \"name\": \"administrators\" } ] } }, \"operation\": { \"operation\": \"read\", \"targetType\": \"space\" }, \"anonymousAccess\": false, \"unlicensedAccess\": false } ]<br/><br/>To prepare a valid JSON for advanced_permissions, navigate to https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-post and see the permission parameter in it. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | Number | ID of the space. | 
-| ConfluenceCloud.Space.key | String | Key of the space. | 
-| ConfluenceCloud.Space.name | String | Name of the space. | 
-| ConfluenceCloud.Space.description.view.value | String | The description of the space in view format. | 
-| ConfluenceCloud.Space.description.view.representation | String | Representation format of the description in view format. | 
-| ConfluenceCloud.Space.description.plain.value | String | The description of the space in plain format. | 
-| ConfluenceCloud.Space.description.plain.representation | String | Representation format of the description in plain format. | 
-| ConfluenceCloud.Space.homepage.id | String | ID of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.type | String | Type of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.status | String | Status of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.title | String | Title of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Space.homepage._links.self | String | Link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.tinyui | String | Tiny link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.editui | String | Edit the user interface link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.webui | String | Web user interface link to the homepage of the space. | 
-| ConfluenceCloud.Space.type | String | Type of the space. | 
-| ConfluenceCloud.Space.permissions.id | Number | ID of the space permission. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.type | String | Type of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.accountId | String | Account ID of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.accountType | String | Account type of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.email | String | Email of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.publicName | String | Public name of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path | String | Path of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width | Number | Width in pixels of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height | Number | Height in pixels of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault | Boolean | Whether the profile picture of the user is default picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.displayName | String | Display name of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results._links.self | String | Link to the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.size | Number | Size of the list of users for a given space. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.type | String | Type of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.name | String | Name of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.id | String | ID of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results._links.self | String | Link to the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.size | Number | Size of the list of groups for the given space. | 
-| ConfluenceCloud.Space.permissions.operation.operation | String | Name of the permission operation. | 
-| ConfluenceCloud.Space.permissions.operation.targetType | String | The space or content type that the operation applies to. | 
-| ConfluenceCloud.Space.permissions.anonymousAccess | Boolean | Whether anonymous users have permission to use the operation. | 
-| ConfluenceCloud.Space.permissions.unlicensedAccess | Boolean | Whether unlicensed users have access from JIRA Service Desk when used with the read space operation. | 
-| ConfluenceCloud.Space.status | String | Status of the space. | 
-| ConfluenceCloud.Space._links.webui | String | Web user interface link of the space. | 
-| ConfluenceCloud.Space._links.context | String | Context link of the space. | 
-| ConfluenceCloud.Space._links.self | String | Link to the space. | 
-| ConfluenceCloud.Space._links.collection | String | Collection link of the space. | 
-| ConfluenceCloud.Space._links.base | String | Base link to the space. | 
-
+| ConfluenceCloud.Space.id | Number | ID of the space. |
+| ConfluenceCloud.Space.key | String | Key of the space. |
+| ConfluenceCloud.Space.name | String | Name of the space. |
+| ConfluenceCloud.Space.description.view.value | String | The description of the space in view format. |
+| ConfluenceCloud.Space.description.view.representation | String | Representation format of the description in view format. |
+| ConfluenceCloud.Space.description.plain.value | String | The description of the space in plain format. |
+| ConfluenceCloud.Space.description.plain.representation | String | Representation format of the description in plain format. |
+| ConfluenceCloud.Space.homepage.id | String | ID of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.type | String | Type of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.status | String | Status of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.title | String | Title of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Space.homepage._links.self | String | Link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.tinyui | String | Tiny link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.editui | String | Edit the user interface link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.webui | String | Web user interface link to the homepage of the space. |
+| ConfluenceCloud.Space.type | String | Type of the space. |
+| ConfluenceCloud.Space.permissions.id | Number | ID of the space permission. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.type | String | Type of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.accountId | String | Account ID of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.accountType | String | Account type of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.email | String | Email of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.publicName | String | Public name of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path | String | Path of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width | Number | Width in pixels of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height | Number | Height in pixels of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault | Boolean | Whether the profile picture of the user is default picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.displayName | String | Display name of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. |
+| ConfluenceCloud.Space.permissions.subjects.user.results._links.self | String | Link to the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.size | Number | Size of the list of users for a given space. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.type | String | Type of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.name | String | Name of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.id | String | ID of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results._links.self | String | Link to the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.size | Number | Size of the list of groups for the given space. |
+| ConfluenceCloud.Space.permissions.operation.operation | String | Name of the permission operation. |
+| ConfluenceCloud.Space.permissions.operation.targetType | String | The space or content type that the operation applies to. |
+| ConfluenceCloud.Space.permissions.anonymousAccess | Boolean | Whether anonymous users have permission to use the operation. |
+| ConfluenceCloud.Space.permissions.unlicensedAccess | Boolean | Whether unlicensed users have access from JIRA Service Desk when used with the read space operation. |
+| ConfluenceCloud.Space.status | String | Status of the space. |
+| ConfluenceCloud.Space._links.webui | String | Web user interface link of the space. |
+| ConfluenceCloud.Space._links.context | String | Context link of the space. |
+| ConfluenceCloud.Space._links.self | String | Link to the space. |
+| ConfluenceCloud.Space._links.collection | String | Collection link of the space. |
+| ConfluenceCloud.Space._links.base | String | Base link to the space. |
 
 #### Command Example
+
 ```!confluence-cloud-space-create name="hello_world" unique_key="helloworld111"```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2199,121 +2202,122 @@ A valid JSON schema can be found [here](https://developer.atlassian.com/cloud/co
 #### Human Readable Output
 
 >### Space
+>
 >|ID|Name|Type|Status|
 >|---|---|---|---|
 >| 16711682 | [hello_world](https://xsoar-bd.atlassian.net/wiki/spaces/helloworld111) | global | current |
 
-
 ### confluence-cloud-content-create
+
 ***
 Creates a page or blogpost for a given space.<br/>
 Note: To view the expansion of content properties, execute confluence-cloud-content-list and confluence-cloud-content-search commands.
 
-
 #### Base Command
 
 `confluence-cloud-content-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| title | The title of the content.<br/><br/>Note: The maximum title length is 255 characters. | Required | 
-| type | The type of the new content. <br/>Possible values: page, blogpost. | Required | 
-| space_key | The space key that the content is being created in. | Required | 
-| status | The status of the new content. <br/>Possible values: current, trashed, draft. <br/><br/>Note: The term 'current' refers to the content that is currently active.<br/><br/>Default is current. | Optional | 
-| body_value | The body of the new content.<br/><br/>Note: 'body_value' must be a string. In order to reflect 'body_value', 'body_representation' is required. | Optional | 
-| body_representation | The content format type. <br/>Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view. | Optional | 
-| ancestor_id | The ID of the parent content to create the child content.<br/><br/>Note: Supported for content type page only. To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=page" argument. | Optional | 
-
+| title | The title of the content.<br/><br/>Note: The maximum title length is 255 characters. | Required |
+| type | The type of the new content. <br/>Possible values: page, blogpost. | Required |
+| space_key | The space key that the content is being created in. | Required |
+| status | The status of the new content. <br/>Possible values: current, trashed, draft. <br/><br/>Note: The term 'current' refers to the content that is currently active.<br/><br/>Default is current. | Optional |
+| body_value | The body of the new content.<br/><br/>Note: 'body_value' must be a string. In order to reflect 'body_value', 'body_representation' is required. | Optional |
+| body_representation | The content format type. <br/>Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view. | Optional |
+| ancestor_id | The ID of the parent content to create the child content.<br/><br/>Note: Supported for content type page only. To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=page" argument. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. | 
-| ConfluenceCloud.Content.type | String | Type of the content. | 
-| ConfluenceCloud.Content.status | String | Status of the content. | 
-| ConfluenceCloud.Content.title | String | Title of the content. | 
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. | 
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. | 
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content | 
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. | 
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. | 
-| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. | 
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) | 
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.title | String | Title of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content.ancestors._links.self | String | Link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.tinyui | String | Tiny link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.editui | String | Edit user interface link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.webui | String | Web user interface link to the parent page of the content. | 
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content._links.editui | String | Edit user interface link of the content. | 
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
-| ConfluenceCloud.Content._links.context | String | Context link of the content. | 
-| ConfluenceCloud.Content._links.self | String | Link to the content. | 
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
-| ConfluenceCloud.Content._links.collection | String | Collection link of the content. | 
-| ConfluenceCloud.Content._links.base | String | Base link to the content. | 
-
+| ConfluenceCloud.Content.id | String | The ID of the content. |
+| ConfluenceCloud.Content.type | String | Type of the content. |
+| ConfluenceCloud.Content.status | String | Status of the content. |
+| ConfluenceCloud.Content.title | String | Title of the content. |
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. |
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content |
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. |
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
+| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. |
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) |
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.title | String | Title of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content.ancestors._links.self | String | Link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.tinyui | String | Tiny link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.editui | String | Edit user interface link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.webui | String | Web user interface link to the parent page of the content. |
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content._links.editui | String | Edit user interface link of the content. |
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
+| ConfluenceCloud.Content._links.context | String | Context link of the content. |
+| ConfluenceCloud.Content._links.self | String | Link to the content. |
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
+| ConfluenceCloud.Content._links.collection | String | Collection link of the content. |
+| ConfluenceCloud.Content._links.base | String | Base link to the content. |
 
 #### Command Example
+
 ```!confluence-cloud-content-create title="XSOAR_Page_234567" type=page space_key="XSOAR"```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2465,120 +2469,121 @@ Note: To view the expansion of content properties, execute confluence-cloud-cont
 #### Human Readable Output
 
 >### Content
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 16711862 | [XSOAR_Page_234567](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/pages/16711862/XSOAR_Page_234567) | page | current | XSOAR_Project | John Doe | 2021-09-02T06:36:33.937Z |
 
-
 ### confluence-cloud-comment-create
+
 ***
 Creates a comment for the given content.<br/>
 Note: To view the expansion of content properties, execute the confluence-cloud-content-list and confluence-cloud-content-search commands.
 
-
 #### Base Command
 
 `confluence-cloud-comment-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| status | The status of the new content. <br/>Possible values: current, trashed, draft. <br/><br/>Note: The term 'current' refers to the comment that is currently active.<br/><br/>Default is current. | Optional | 
-| body_value | The body of the new content.<br/><br/>Note: 'body_value' must be a string. | Required | 
-| body_representation | The content format type. <br/>Possible values: storage, editor2, editor. | Required | 
-| ancestor_id |The ID of the parent comment for which to create the child comment. <br/><br/>Note: To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=comment" argument. | Optional | 
-| container_id | The ID of the container for which to create a comment. <br/><br/>Note: To retrieve the container_id, execute the confluence-cloud-content-list command. | Required | 
-| container_type | The type of the container. <br/>Possible values: page, blogpost. | Optional | 
-
+| status | The status of the new content. <br/>Possible values: current, trashed, draft. <br/><br/>Note: The term 'current' refers to the comment that is currently active.<br/><br/>Default is current. | Optional |
+| body_value | The body of the new content.<br/><br/>Note: 'body_value' must be a string. | Required |
+| body_representation | The content format type. <br/>Possible values: storage, editor2, editor. | Required |
+| ancestor_id |The ID of the parent comment for which to create the child comment. <br/><br/>Note: To retrieve the ancestor_id, execute the confluence-cloud-content-search command using the query="type=comment" argument. | Optional |
+| container_id | The ID of the container for which to create a comment. <br/><br/>Note: To retrieve the container_id, execute the confluence-cloud-content-list command. | Required |
+| container_type | The type of the container. <br/>Possible values: page, blogpost. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Comment.id | String | The ID of the comment. | 
-| ConfluenceCloud.Comment.type | String | Type of the comment. | 
-| ConfluenceCloud.Comment.status | String | Status of the comment. | 
-| ConfluenceCloud.Comment.title | String | Title of the comment. | 
-| ConfluenceCloud.Comment.childTypes.attachment.value | Boolean | Whether the attachment has the given comment. | 
-| ConfluenceCloud.Comment.childTypes.attachment._links.self | String | Link to the attachment with the given comment. | 
-| ConfluenceCloud.Comment.childTypes.comment.value | Boolean | Whether a comment is associated with the given comment. | 
-| ConfluenceCloud.Comment.childTypes.comment._links.self | String | Link to the comment associated with the given comment. | 
-| ConfluenceCloud.Comment.childTypes.page.value | Boolean | Whether the page is associated with the given comment. | 
-| ConfluenceCloud.Comment.childTypes.page._links.self | String | Link to the page associated with the given comment. | 
-| ConfluenceCloud.Comment.space.id | Number | ID of the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space.key | String | Key of the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space.name | String | Name of the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space.type | String | Type of the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space.status | String | Status of the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space._links.webui | String | Web user interface link to the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.space._links.self | String | Link to the space that the comment is being created in. | 
-| ConfluenceCloud.Comment.history.latest | Boolean | Whether the comment is the latest comment. | 
-| ConfluenceCloud.Comment.history.createdBy.type | String | Type of the user who created the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.accountId | String | Account ID of the user creating the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.accountType | String | Account type of the user creating the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.email | String | Email of the user creating the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.publicName | String | Public name of the user creating the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Comment.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Comment.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is default. | 
-| ConfluenceCloud.Comment.history.createdBy.displayName | String | Display name of the user who created the comment. | 
-| ConfluenceCloud.Comment.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Comment.history.createdBy._links.self | String | Link to the creator of the comment. | 
-| ConfluenceCloud.Comment.history.createdDate | Date | Date and time, in ISO 8601 format, when the comment was created. | 
-| ConfluenceCloud.Comment.history._links.self | String | Link to the history of the comment. | 
-| ConfluenceCloud.Comment.version.by.type | String | Type of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.accountId | String | Account ID of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.accountType | String | Account type of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.email | String | Email of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.publicName | String | Public name of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.profilePicture.path | String | Profile picture of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Comment.version.by.displayName | String | Display name of the user  who last updated the comment. | 
-| ConfluenceCloud.Comment.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Comment.version.by._links.self | String | Link to the user who last updated the comment. | 
-| ConfluenceCloud.Comment.version.when | Date | Date and time, in ISO 8601 format, when the comment was updated. | 
-| ConfluenceCloud.Comment.version.friendlyWhen | String | Displays when the content was created. | 
-| ConfluenceCloud.Comment.version.message | String | Message of the updated comment. | 
-| ConfluenceCloud.Comment.version.number | Number | Version number of the updated comment. | 
-| ConfluenceCloud.Comment.version.minorEdit | Boolean | Whether the edit was minor. | 
-| ConfluenceCloud.Comment.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
-| ConfluenceCloud.Comment.version.contentTypeModified | Boolean | True if the comment type is modified in the version. \(e.g., page to blog\) | 
-| ConfluenceCloud.Comment.version._links.self | String | Link to the new version of the comment. | 
-| ConfluenceCloud.Comment.ancestors.id | String | ID of the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors.type | String | Type of the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors.status | String | Status of the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors.title | String | Title of the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors.extensions.location | String | Location of the comment. | 
-| ConfluenceCloud.Comment.ancestors._links.self | String | Link to the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors._links.tinyui | String | Tiny link to the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors._links.editui | String | Edit user interface link to the parent page of the comment. | 
-| ConfluenceCloud.Comment.ancestors._links.webui | String | Web user interface link to the parent page of the comment. | 
-| ConfluenceCloud.Comment.container.id | Number | ID of the container of the comment. | 
-| ConfluenceCloud.Comment.container.key | String | Key of the container of the comment. | 
-| ConfluenceCloud.Comment.container.name | String | Name of the container of the comment. | 
-| ConfluenceCloud.Comment.container.type | String | Type of the container of the comment. | 
-| ConfluenceCloud.Comment.container.status | String | Status of the container of the comment. | 
-| ConfluenceCloud.Comment.container._links.webui | String | Web user interface link to the container of the comment. | 
-| ConfluenceCloud.Comment.container._links.self | String | Link to the container of the comment. | 
-| ConfluenceCloud.Comment.body.storage.value | String | The body of the new comment. | 
-| ConfluenceCloud.Comment.body.storage.representation | String | Representation format of the comment. | 
-| ConfluenceCloud.Comment.extensions.location | String | Location of the comment. | 
-| ConfluenceCloud.Comment._links.editui | String | Edit user interface link of the comment. | 
-| ConfluenceCloud.Comment._links.webui | String | Web user interface link of the comment. | 
-| ConfluenceCloud.Comment._links.context | String | Context link of the comment. | 
-| ConfluenceCloud.Comment._links.self | String | Link to the comment. | 
-| ConfluenceCloud.Comment._links.tinyui | String | Tiny link of the comment. | 
-| ConfluenceCloud.Comment._links.collection | String | Collection link of the comment. | 
-| ConfluenceCloud.Comment._links.base | String | Base link to the comment. | 
-
+| ConfluenceCloud.Comment.id | String | The ID of the comment. |
+| ConfluenceCloud.Comment.type | String | Type of the comment. |
+| ConfluenceCloud.Comment.status | String | Status of the comment. |
+| ConfluenceCloud.Comment.title | String | Title of the comment. |
+| ConfluenceCloud.Comment.childTypes.attachment.value | Boolean | Whether the attachment has the given comment. |
+| ConfluenceCloud.Comment.childTypes.attachment._links.self | String | Link to the attachment with the given comment. |
+| ConfluenceCloud.Comment.childTypes.comment.value | Boolean | Whether a comment is associated with the given comment. |
+| ConfluenceCloud.Comment.childTypes.comment._links.self | String | Link to the comment associated with the given comment. |
+| ConfluenceCloud.Comment.childTypes.page.value | Boolean | Whether the page is associated with the given comment. |
+| ConfluenceCloud.Comment.childTypes.page._links.self | String | Link to the page associated with the given comment. |
+| ConfluenceCloud.Comment.space.id | Number | ID of the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space.key | String | Key of the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space.name | String | Name of the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space.type | String | Type of the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space.status | String | Status of the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space._links.webui | String | Web user interface link to the space that the comment is being created in. |
+| ConfluenceCloud.Comment.space._links.self | String | Link to the space that the comment is being created in. |
+| ConfluenceCloud.Comment.history.latest | Boolean | Whether the comment is the latest comment. |
+| ConfluenceCloud.Comment.history.createdBy.type | String | Type of the user who created the comment. |
+| ConfluenceCloud.Comment.history.createdBy.accountId | String | Account ID of the user creating the comment. |
+| ConfluenceCloud.Comment.history.createdBy.accountType | String | Account type of the user creating the comment. |
+| ConfluenceCloud.Comment.history.createdBy.email | String | Email of the user creating the comment. |
+| ConfluenceCloud.Comment.history.createdBy.publicName | String | Public name of the user creating the comment. |
+| ConfluenceCloud.Comment.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the comment. |
+| ConfluenceCloud.Comment.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
+| ConfluenceCloud.Comment.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
+| ConfluenceCloud.Comment.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is default. |
+| ConfluenceCloud.Comment.history.createdBy.displayName | String | Display name of the user who created the comment. |
+| ConfluenceCloud.Comment.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Comment.history.createdBy._links.self | String | Link to the creator of the comment. |
+| ConfluenceCloud.Comment.history.createdDate | Date | Date and time, in ISO 8601 format, when the comment was created. |
+| ConfluenceCloud.Comment.history._links.self | String | Link to the history of the comment. |
+| ConfluenceCloud.Comment.version.by.type | String | Type of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.accountId | String | Account ID of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.accountType | String | Account type of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.email | String | Email of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.publicName | String | Public name of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.profilePicture.path | String | Profile picture of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Comment.version.by.displayName | String | Display name of the user  who last updated the comment. |
+| ConfluenceCloud.Comment.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Comment.version.by._links.self | String | Link to the user who last updated the comment. |
+| ConfluenceCloud.Comment.version.when | Date | Date and time, in ISO 8601 format, when the comment was updated. |
+| ConfluenceCloud.Comment.version.friendlyWhen | String | Displays when the content was created. |
+| ConfluenceCloud.Comment.version.message | String | Message of the updated comment. |
+| ConfluenceCloud.Comment.version.number | Number | Version number of the updated comment. |
+| ConfluenceCloud.Comment.version.minorEdit | Boolean | Whether the edit was minor. |
+| ConfluenceCloud.Comment.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
+| ConfluenceCloud.Comment.version.contentTypeModified | Boolean | True if the comment type is modified in the version. \(e.g., page to blog\) |
+| ConfluenceCloud.Comment.version._links.self | String | Link to the new version of the comment. |
+| ConfluenceCloud.Comment.ancestors.id | String | ID of the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors.type | String | Type of the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors.status | String | Status of the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors.title | String | Title of the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors.extensions.location | String | Location of the comment. |
+| ConfluenceCloud.Comment.ancestors._links.self | String | Link to the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors._links.tinyui | String | Tiny link to the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors._links.editui | String | Edit user interface link to the parent page of the comment. |
+| ConfluenceCloud.Comment.ancestors._links.webui | String | Web user interface link to the parent page of the comment. |
+| ConfluenceCloud.Comment.container.id | Number | ID of the container of the comment. |
+| ConfluenceCloud.Comment.container.key | String | Key of the container of the comment. |
+| ConfluenceCloud.Comment.container.name | String | Name of the container of the comment. |
+| ConfluenceCloud.Comment.container.type | String | Type of the container of the comment. |
+| ConfluenceCloud.Comment.container.status | String | Status of the container of the comment. |
+| ConfluenceCloud.Comment.container._links.webui | String | Web user interface link to the container of the comment. |
+| ConfluenceCloud.Comment.container._links.self | String | Link to the container of the comment. |
+| ConfluenceCloud.Comment.body.storage.value | String | The body of the new comment. |
+| ConfluenceCloud.Comment.body.storage.representation | String | Representation format of the comment. |
+| ConfluenceCloud.Comment.extensions.location | String | Location of the comment. |
+| ConfluenceCloud.Comment._links.editui | String | Edit user interface link of the comment. |
+| ConfluenceCloud.Comment._links.webui | String | Web user interface link of the comment. |
+| ConfluenceCloud.Comment._links.context | String | Context link of the comment. |
+| ConfluenceCloud.Comment._links.self | String | Link to the comment. |
+| ConfluenceCloud.Comment._links.tinyui | String | Tiny link of the comment. |
+| ConfluenceCloud.Comment._links.collection | String | Collection link of the comment. |
+| ConfluenceCloud.Comment._links.base | String | Base link to the comment. |
 
 #### Command Example
+
 ```!confluence-cloud-comment-create body_value="hello" body_representation="storage" container_id=2031630```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2769,89 +2774,90 @@ Note: To view the expansion of content properties, execute the confluence-cloud-
 #### Human Readable Output
 
 >### Comment
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 16711873 | [Re: XSOAR_blogpost](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/blog/2021/08/06/2031630/XSOAR_blogpost?focusedCommentId=16711873#comment-16711873) | comment | current | XSOAR_Project | John Doe | 2021-09-02T06:36:36.737Z |
 
-
 ### confluence-cloud-space-list
+
 ***
 Returns a list of all Confluence spaces.
-
 
 #### Base Command
 
 `confluence-cloud-space-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| offset | The starting index of the returned spaces.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
-| space_key | The space key to retrieve the specific space.<br/><br/>Note: Supports a comma-separated list of values. | Optional | 
-| space_id | The space ID to retrieve the specific space.<br/><br/>Note: Supports a comma-separated list of values. | Optional | 
-| status | Filter the results to list the spaces based on their status. <br/>Possible values: current, archived.<br/><br/>Note: The term 'current' refers to the space that is currently active. | Optional | 
-| type | Filter the results to list the spaces based on their type. <br/>Possible values: global, personal. | Optional | 
-| favourite | Filter the results to the favorite spaces of the current user. <br/>Possible values: true, false. | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
-
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
+| offset | The starting index of the returned spaces.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional |
+| space_key | The space key to retrieve the specific space.<br/><br/>Note: Supports a comma-separated list of values. | Optional |
+| space_id | The space ID to retrieve the specific space.<br/><br/>Note: Supports a comma-separated list of values. | Optional |
+| status | Filter the results to list the spaces based on their status. <br/>Possible values: current, archived.<br/><br/>Note: The term 'current' refers to the space that is currently active. | Optional |
+| type | Filter the results to list the spaces based on their type. <br/>Possible values: global, personal. | Optional |
+| favourite | Filter the results to the favorite spaces of the current user. <br/>Possible values: true, false. | Optional |
+| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-space/#api-wiki-rest-api-space-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Space.id | Number | ID of the space. | 
-| ConfluenceCloud.Space.key | String | Key of the space. | 
-| ConfluenceCloud.Space.name | String | Name of the space. | 
-| ConfluenceCloud.Space.description.view.value | String | The description of the space in view format. | 
-| ConfluenceCloud.Space.description.view.representation | String | Representation format of the description in view format. | 
-| ConfluenceCloud.Space.description.plain.value | String | The description of the space in plain format. | 
-| ConfluenceCloud.Space.description.plain.representation | String | Representation format of the description in plain format. | 
-| ConfluenceCloud.Space.homepage.id | String | ID of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.type | String | Type of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.status | String | Status of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.title | String | Title of the homepage of the space. | 
-| ConfluenceCloud.Space.homepage.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Space.homepage._links.self | String | Link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.tinyui | String | Tiny link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.editui | String | Edit the user interface link to the homepage of the space. | 
-| ConfluenceCloud.Space.homepage._links.webui | String | Web user interface link to the homepage of the space. | 
-| ConfluenceCloud.Space.type | String | Type of the space. | 
-| ConfluenceCloud.Space.permissions.id | Number | ID of the space permission. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.type | String | Type of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.accountId | String | Account ID of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.accountType | String | Account type of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.email | String | Email of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.publicName | String | Public name to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path | String | Path of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width | Number | Width in pixels of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height | Number | Height in pixels of the user's profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault | Boolean | Whether the profile picture of the user is the default profile picture to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.displayName | String | Display name of the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. | 
-| ConfluenceCloud.Space.permissions.subjects.user.results._links.self | String | Link to the user to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.user.size | Number | Size of the list of users for a given space. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.type | String | Type of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.name | String | Name of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results.id | String | ID of the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.results._links.self | String | Link to the group to whom the space permission applies. | 
-| ConfluenceCloud.Space.permissions.subjects.group.size | Number | Size of the list of groups for the given space. | 
-| ConfluenceCloud.Space.permissions.operation.operation | String | Name of the permission operation. | 
-| ConfluenceCloud.Space.permissions.operation.targetType | String | The space or content type that the operation applies to. | 
-| ConfluenceCloud.Space.permissions.anonymousAccess | Boolean | Whether anonymous users have permission to use the operation. | 
-| ConfluenceCloud.Space.permissions.unlicensedAccess | Boolean | Whether unlicensed users have access from JIRA Service Desk when used with the read space operation. | 
-| ConfluenceCloud.Space.status | String | Status of the space. | 
-| ConfluenceCloud.Space._links.webui | String | Web user interface link of the space. | 
-| ConfluenceCloud.Space._links.context | String | Context link of the space. | 
-| ConfluenceCloud.Space._links.self | String | Link to the space. | 
-| ConfluenceCloud.Space._links.collection | String | Collection link of the space. | 
-| ConfluenceCloud.Space._links.base | String | Base link to the space. | 
-
+| ConfluenceCloud.Space.id | Number | ID of the space. |
+| ConfluenceCloud.Space.key | String | Key of the space. |
+| ConfluenceCloud.Space.name | String | Name of the space. |
+| ConfluenceCloud.Space.description.view.value | String | The description of the space in view format. |
+| ConfluenceCloud.Space.description.view.representation | String | Representation format of the description in view format. |
+| ConfluenceCloud.Space.description.plain.value | String | The description of the space in plain format. |
+| ConfluenceCloud.Space.description.plain.representation | String | Representation format of the description in plain format. |
+| ConfluenceCloud.Space.homepage.id | String | ID of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.type | String | Type of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.status | String | Status of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.title | String | Title of the homepage of the space. |
+| ConfluenceCloud.Space.homepage.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Space.homepage._links.self | String | Link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.tinyui | String | Tiny link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.editui | String | Edit the user interface link to the homepage of the space. |
+| ConfluenceCloud.Space.homepage._links.webui | String | Web user interface link to the homepage of the space. |
+| ConfluenceCloud.Space.type | String | Type of the space. |
+| ConfluenceCloud.Space.permissions.id | Number | ID of the space permission. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.type | String | Type of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.accountId | String | Account ID of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.accountType | String | Account type of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.email | String | Email of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.publicName | String | Public name to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.path | String | Path of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.width | Number | Width in pixels of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.height | Number | Height in pixels of the user's profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.profilePicture.isDefault | Boolean | Whether the profile picture of the user is the default profile picture to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.displayName | String | Display name of the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.results.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. |
+| ConfluenceCloud.Space.permissions.subjects.user.results._links.self | String | Link to the user to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.user.size | Number | Size of the list of users for a given space. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.type | String | Type of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.name | String | Name of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results.id | String | ID of the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.results._links.self | String | Link to the group to whom the space permission applies. |
+| ConfluenceCloud.Space.permissions.subjects.group.size | Number | Size of the list of groups for the given space. |
+| ConfluenceCloud.Space.permissions.operation.operation | String | Name of the permission operation. |
+| ConfluenceCloud.Space.permissions.operation.targetType | String | The space or content type that the operation applies to. |
+| ConfluenceCloud.Space.permissions.anonymousAccess | Boolean | Whether anonymous users have permission to use the operation. |
+| ConfluenceCloud.Space.permissions.unlicensedAccess | Boolean | Whether unlicensed users have access from JIRA Service Desk when used with the read space operation. |
+| ConfluenceCloud.Space.status | String | Status of the space. |
+| ConfluenceCloud.Space._links.webui | String | Web user interface link of the space. |
+| ConfluenceCloud.Space._links.context | String | Context link of the space. |
+| ConfluenceCloud.Space._links.self | String | Link to the space. |
+| ConfluenceCloud.Space._links.collection | String | Collection link of the space. |
+| ConfluenceCloud.Space._links.base | String | Base link to the space. |
 
 #### Command Example
+
 ```!confluence-cloud-space-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -2940,114 +2946,115 @@ Returns a list of all Confluence spaces.
 #### Human Readable Output
 
 >### Space(s)
+>
 >|ID|Space Key|Name|Type|Status|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 12943669 | unique2 | [11Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit](https://xsoar-bd.atlassian.net/wiki/spaces/unique2) | global | current | John Doe | 2021-08-26T08:50:12.879Z |
 >| 12976314 | unique22 | [11Nam quis nulla. Integer malesuada. In in enim a arcu imperdiet malesuada. Sed vel lectus. Donec odio urna, tempus molestie, porttitor ut, iaculis quis, sem. Phasellus rhoncus. Aenean id metus id velit](https://xsoar-bd.atlassian.net/wiki/spaces/unique22) | global | current | John Doe | 2021-08-26T13:19:25.526Z |
 
-
 ### confluence-cloud-content-list
+
 ***
 Returns the list of content of Confluence.
-
 
 #### Base Command
 
 `confluence-cloud-content-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| offset | The starting index of the returned content.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
-| space_key | The space key to retrieve the contents of a specific space. | Optional | 
-| type | The type to retrieve the contents. <br/>Possible values: page, blogpost. <br/><br/>Default is page. | Optional | 
-| sort_order | Order in which the response will be sorted. <br/>Possible values: asc, desc.<br/><br/>Note: If ‘sort_key’ is specified, the default value for ‘sort_order’ is ascending. | Optional | 
-| sort_key | Key based on which the response will be sorted.<br/><br/>Note: If 'sort_order' is specified, 'sort_key' is required. | Optional | 
-| creation_date | The date from which to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional | 
-| status | Filter the results to a set of content based on their status. If set to any, content with any status is returned. <br/>Possible values: any, current, trashed, draft, archived.<br/><br/>Note: The term 'current' refers to the content that is currently active. | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
-
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
+| offset | The starting index of the returned content.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional |
+| space_key | The space key to retrieve the contents of a specific space. | Optional |
+| type | The type to retrieve the contents. <br/>Possible values: page, blogpost. <br/><br/>Default is page. | Optional |
+| sort_order | Order in which the response will be sorted. <br/>Possible values: asc, desc.<br/><br/>Note: If ‘sort_key’ is specified, the default value for ‘sort_order’ is ascending. | Optional |
+| sort_key | Key based on which the response will be sorted.<br/><br/>Note: If 'sort_order' is specified, 'sort_key' is required. | Optional |
+| creation_date | The date from which to return the content created on that specific date. <br/>Formats accepted: 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd. | Optional |
+| status | Filter the results to a set of content based on their status. If set to any, content with any status is returned. <br/>Possible values: any, current, trashed, draft, archived.<br/><br/>Note: The term 'current' refers to the content that is currently active. | Optional |
+| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. | 
-| ConfluenceCloud.Content.type | String | Type of the content. | 
-| ConfluenceCloud.Content.status | String | Status of the content. | 
-| ConfluenceCloud.Content.title | String | Title of the content. | 
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to page associated with given content. | 
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. | 
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. | 
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. | 
-| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. | 
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony | 
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) | 
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. | 
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
-| ConfluenceCloud.Content._links.self | String | Link to the content. | 
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
-
+| ConfluenceCloud.Content.id | String | The ID of the content. |
+| ConfluenceCloud.Content.type | String | Type of the content. |
+| ConfluenceCloud.Content.status | String | Status of the content. |
+| ConfluenceCloud.Content.title | String | Title of the content. |
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to page associated with given content. |
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. |
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
+| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. |
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony |
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) |
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. |
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
+| ConfluenceCloud.Content._links.self | String | Link to the content. |
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
 
 #### Command Example
+
 ```!confluence-cloud-content-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -3347,34 +3354,35 @@ Returns the list of content of Confluence.
 #### Human Readable Output
 
 >### Content(s)
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|Version
 >|---|---|---|---|---|---|---|---|
 >| 65639 | [demo](https://xsoar-bd.atlassian.net/wiki/spaces/~680738455/pages/65639/demo) | page | current | John Doe | John Doe | 2021-08-02T09:53:05.077Z | 2 |
 >| 65656 | [Product requirements](https://xsoar-bd.atlassian.net/wiki/spaces/~680738455/pages/65656/Product+requirements) | page | current | John Doe | John Doe | 2021-08-02T09:53:05.312Z | 2 |
 
-
 ### confluence-cloud-content-delete
+
 ***
 Delete the content depending on the content's type and status.<br/><br/>
 Note: If the content's type is page or blogpost, it should be moved to trash before deleting permanently.
 
-
 #### Base Command
 
 `confluence-cloud-content-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_id | The ID of the content to be deleted. | Required | 
-| deletion_type | The deletion type for the content to be deleted.<br/>Possible values: move to trash (current), permanent delete (trashed), permanent delete draft (draft). | Optional | 
-
+| content_id | The ID of the content to be deleted. | Required |
+| deletion_type | The deletion type for the content to be deleted.<br/>Possible values: move to trash (current), permanent delete (trashed), permanent delete draft (draft). | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!confluence-cloud-content-delete content_id="3704312"```
 
 #### Human Readable Output
@@ -3382,115 +3390,116 @@ There is no context output for this command.
 >Content with Id 3704312 is deleted successfully.
 
 ### confluence-cloud-content-update
+
 ***
 Update the existing content with new content.<br/>
 Note: Updating draft content is currently not supported.
 
-
 #### Base Command
 
 `confluence-cloud-content-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| content_id | The ID of the content to be updated. | Required | 
-| status | The updated status of the content.<br/>Possible values: current, trashed, historical, draft.<br/><br/>Note: The term 'current' refers to the content that is currently active.<br/><br/>Default is current. | Optional | 
-| version | The new version for the updated content. Set the version to the current version number incremented by one. If the status changed to 'draft', then it must be 1.<br/><br/>Note: To retrieve the current version, execute the confluence-cloud-content-search command using the query="id={content_id}" argument. | Required | 
-| title | The updated title of the content. If the field is not changing, set the title to the current title.<br/><br/>Note: The maximum title length is 255 characters. | Required | 
-| type | The type of content. Set the type to the current type of the content. <br/>Possible values: page, blogpost, comment, attachment. | Required | 
-| body_value | The body of the content in the relevant format. | Optional | 
-| body_representation | The content format type.<br/>Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view.<br/><br/>Note: If type is comment, possible values are editor, editor2 or storage. | Optional | 
-
+| content_id | The ID of the content to be updated. | Required |
+| status | The updated status of the content.<br/>Possible values: current, trashed, historical, draft.<br/><br/>Note: The term 'current' refers to the content that is currently active.<br/><br/>Default is current. | Optional |
+| version | The new version for the updated content. Set the version to the current version number incremented by one. If the status changed to 'draft', then it must be 1.<br/><br/>Note: To retrieve the current version, execute the confluence-cloud-content-search command using the query="id={content_id}" argument. | Required |
+| title | The updated title of the content. If the field is not changing, set the title to the current title.<br/><br/>Note: The maximum title length is 255 characters. | Required |
+| type | The type of content. Set the type to the current type of the content. <br/>Possible values: page, blogpost, comment, attachment. | Required |
+| body_value | The body of the content in the relevant format. | Optional |
+| body_representation | The content format type.<br/>Possible values: view, export_view, styled_view, storage, editor2, anonymous_export_view.<br/><br/>Note: If type is comment, possible values are editor, editor2 or storage. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. | 
-| ConfluenceCloud.Content.type | String | Type of the content. | 
-| ConfluenceCloud.Content.status | String | Status of the content. | 
-| ConfluenceCloud.Content.title | String | Title of the content. | 
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with the given content. | 
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is default. | 
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. | 
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. | 
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is default. | 
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. | 
-| ConfluenceCloud.Content.version.friendlyWhen | String | Display the information of when the content was created. | 
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g. page to blog\) | 
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.title | String | Title of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content.ancestors._links.self | String | Link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.tinyui | String | Tiny link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.editui | String | Edit the user interface link to the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors._links.webui | String | Web user interface link to the parent page of the content. | 
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. | 
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
-| ConfluenceCloud.Content._links.context | String | Context link of the content. | 
-| ConfluenceCloud.Content._links.self | String | Link to the content. | 
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
-| ConfluenceCloud.Content._links.collection | String | Collection link of the content. | 
-| ConfluenceCloud.Content._links.base | String | Base link to the content. | 
-
+| ConfluenceCloud.Content.id | String | The ID of the content. |
+| ConfluenceCloud.Content.type | String | Type of the content. |
+| ConfluenceCloud.Content.status | String | Status of the content. |
+| ConfluenceCloud.Content.title | String | Title of the content. |
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with the given content. |
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is default. |
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. |
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is default. |
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
+| ConfluenceCloud.Content.version.friendlyWhen | String | Display the information of when the content was created. |
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g. page to blog\) |
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.title | String | Title of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content.ancestors._links.self | String | Link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.tinyui | String | Tiny link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.editui | String | Edit the user interface link to the parent page of the content. |
+| ConfluenceCloud.Content.ancestors._links.webui | String | Web user interface link to the parent page of the content. |
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. |
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
+| ConfluenceCloud.Content._links.context | String | Context link of the content. |
+| ConfluenceCloud.Content._links.self | String | Link to the content. |
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
+| ConfluenceCloud.Content._links.collection | String | Collection link of the content. |
+| ConfluenceCloud.Content._links.base | String | Base link to the content. |
 
 #### Command Example
+
 ```!confluence-cloud-content-update content_id=2097159 title="testing123" type=page version=5```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -3644,111 +3653,112 @@ Note: Updating draft content is currently not supported.
 #### Human Readable Output
 
 >### Content
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|
 >|---|---|---|---|---|---|---|
 >| 2097159 | [testing123](https://xsoar-bd.atlassian.net/wiki/spaces/XSOAR/pages/2097159/testing123) | page | current | XSOAR_Project | John Doe | 2021-08-06T06:23:36.076Z |
 
-
 ### confluence-cloud-content-search
+
 ***
 Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
-
 
 #### Base Command
 
 `confluence-cloud-content-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required | 
-| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. | Optional | 
-| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional | 
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
-
+| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required |
+| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
+| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. | Optional |
+| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional |
+| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. | 
-| ConfluenceCloud.Content.type | String | Type of the content. | 
-| ConfluenceCloud.Content.status | String | Status of the content. | 
-| ConfluenceCloud.Content.title | String | Title of the content. | 
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. | 
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. | 
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. | 
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. | 
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. | 
-| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. | 
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) | 
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
-| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. | 
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
-| ConfluenceCloud.Content._links.self | String | Link to the content. | 
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
-| ConfluenceCloud.PageToken.name | String | The command name. | 
-| ConfluenceCloud.PageToken.next_token | String | The next page token. | 
-
+| ConfluenceCloud.Content.id | String | The ID of the content. |
+| ConfluenceCloud.Content.type | String | Type of the content. |
+| ConfluenceCloud.Content.status | String | Status of the content. |
+| ConfluenceCloud.Content.title | String | Title of the content. |
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. |
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. |
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. |
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
+| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. |
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) |
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
+| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. |
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
+| ConfluenceCloud.Content._links.self | String | Link to the content. |
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
+| ConfluenceCloud.PageToken.name | String | The command name. |
+| ConfluenceCloud.PageToken.next_token | String | The next page token. |
 
 #### Command Example
+
 ```!confluence-cloud-content-search query="type=page" limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4079,50 +4089,52 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 #### Human Readable Output
 
 >### Content(s)
+>
 >|ID|Title|Type|Status|Space Name|Created By|Created At|Version|
 >|---|---|---|---|---|---|---|---|
 >| 8912897 | [Trial_1](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8912897/Trial_1) | page | current | Trial | John Doe | 2021-08-19T09:11:19.755Z | 3 |
 >| 8847372 | [Testing_XSOAR](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8847372/Testing_XSOAR) | page | current | Trial | John Doe | 2021-08-19T10:09:37.066Z | 3 |
+>
 Run the command with argument next_page_token=_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ== to see the next set of contents.
 
-
 ### confluence-cloud-user-list
+
 ***
 Returns a list of users.
-
 
 #### Base Command
 
 `confluence-cloud-user-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| offset | The starting index of the returned users. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
-
+| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
+| offset | The starting index of the returned users. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.User.type | String | Type of the user. | 
-| ConfluenceCloud.User.accountId | String | Account ID of the user. | 
-| ConfluenceCloud.User.accountType | String | Account type of the user. | 
-| ConfluenceCloud.User.publicName | String | The public name or nickname of the user. | 
-| ConfluenceCloud.User.profilePicture.path | String | Path of the user's profile picture. | 
-| ConfluenceCloud.User.profilePicture.width | Number | Width in pixels of the user's profile picture. | 
-| ConfluenceCloud.User.profilePicture.height | Number | Height in pixels of the user's profile picture. | 
-| ConfluenceCloud.User.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
-| ConfluenceCloud.User.displayName | String | Display name of the user. | 
-| ConfluenceCloud.User.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. | 
-| ConfluenceCloud.User._links.self | String | Link to the user. | 
-
+| ConfluenceCloud.User.type | String | Type of the user. |
+| ConfluenceCloud.User.accountId | String | Account ID of the user. |
+| ConfluenceCloud.User.accountType | String | Account type of the user. |
+| ConfluenceCloud.User.publicName | String | The public name or nickname of the user. |
+| ConfluenceCloud.User.profilePicture.path | String | Path of the user's profile picture. |
+| ConfluenceCloud.User.profilePicture.width | Number | Width in pixels of the user's profile picture. |
+| ConfluenceCloud.User.profilePicture.height | Number | Height in pixels of the user's profile picture. |
+| ConfluenceCloud.User.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
+| ConfluenceCloud.User.displayName | String | Display name of the user. |
+| ConfluenceCloud.User.isExternalCollaborator | Boolean | Whether the user is an external collaborator user. |
+| ConfluenceCloud.User._links.self | String | Link to the user. |
 
 #### Command Example
+
 ```!confluence-cloud-user-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4167,43 +4179,44 @@ Returns a list of users.
 #### Human Readable Output
 
 >### User(s)
+>
 >|Account ID|Name|User Type|
 >|---|---|---|
 >| 5d9afe0010f4800c341a2bba | Opsgenie Incident Timeline | known |
 >| 5d9b2860cd50b80dcea8a5b7 | Opsgenie Incident Timeline | known |
 
-
 ### confluence-cloud-group-list
+
 ***
 Returns all user groups.
-
 
 #### Base Command
 
 `confluence-cloud-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional | 
-| offset | The starting index of the returned groups.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional | 
-| access_type | The group permission level for which to filter results. <br/>Possible values: user, admin, site-admin. | Optional | 
-
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
+| offset | The starting index of the returned groups.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 0. | Optional |
+| access_type | The group permission level for which to filter results. <br/>Possible values: user, admin, site-admin. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Group.type | String | Type of the group. | 
-| ConfluenceCloud.Group.name | String | Name of the group. | 
-| ConfluenceCloud.Group.id | String | ID of the group. | 
-| ConfluenceCloud.Group._links.self | String | Link to the group. | 
-
+| ConfluenceCloud.Group.type | String | Type of the group. |
+| ConfluenceCloud.Group.name | String | Name of the group. |
+| ConfluenceCloud.Group.id | String | ID of the group. |
+| ConfluenceCloud.Group._links.self | String | Link to the group. |
 
 #### Command Example
+
 ```!confluence-cloud-group-list limit=2```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
@@ -4232,6 +4245,7 @@ Returns all user groups.
 #### Human Readable Output
 
 >### Group(s)
+>
 >|ID|Name|
 >|---|---|
 >| 10453df5-f7fc-47be-8ca7-bc2949c1bd5b | administrators |
@@ -4250,45 +4264,47 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional | 
-| start_date | Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds. | Optional | 
-| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Optional |
+| start_date | Filters the results to the records on or after the start date. The start date must be specified as epoch time in milliseconds. | Optional |
+| limit | The maximum number of records to return per page. Note, this may be restricted by fixed system limits. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Event.author.type | String | The type of author who created this event. | 
-| ConfluenceCloud.Event.author.displayName | String | The display nName of the author who created this event. | 
-| ConfluenceCloud.Event.author.operations | String | Nullable. Author's operations. | 
-| ConfluenceCloud.Event.author.username | String | Username of the author of this event. | 
-| ConfluenceCloud.Event.author.userKey | String | User key of the author of this event. | 
-| ConfluenceCloud.Event.author.accountId | String | Account ID of the author of this event. | 
-| ConfluenceCloud.Event.author.accountType | String | Type of account of the author of this event. | 
-| ConfluenceCloud.Event.author.externalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
-| ConfluenceCloud.Event.author.isExternalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. | 
-| ConfluenceCloud.Event.author.publicName | String | The public name of the author of this event. | 
-| ConfluenceCloud.Event.remoteAddress | String | The remote address from which the event was performed. | 
-| ConfluenceCloud.Event.creationDate | Number | The creation date-time of the audit record, as a timestamp. | 
-| ConfluenceCloud.Event.summary | Strings | Summary of the audit. | 
-| ConfluenceCloud.Event.description | String | Description of the audit. | 
-| ConfluenceCloud.Event.category | String | Category of the event. | 
-| ConfluenceCloud.Event.sysAdmin | Boolean | Was the event created by a system administrator. | 
-| ConfluenceCloud.Event.superAdmin | Boolean | Was the event created by a super administrator. | 
-| ConfluenceCloud.Event.affectedObject.name | String | Name of the object affected by the event. | 
-| ConfluenceCloud.Event.affectedObject.objectType | String | Type of the object affected by the event. | 
-| ConfluenceCloud.Event.changedValues.name | String | Name of the changed value. | 
-| ConfluenceCloud.Event.changedValues.oldValue | String | The old value before the change the event describes. | 
-| ConfluenceCloud.Event.changedValues.hiddenOldValue | String | The old hidden value before the change the event describes. | 
-| ConfluenceCloud.Event.changedValues.newValue | String | The new value after the change the event describes. | 
-| ConfluenceCloud.Event.changedValues.hiddenNewValue | String | The new hidden value after the change the event describes. | 
-| ConfluenceCloud.Event.associatedObjects.name | String | Name of the associated object. | 
-| ConfluenceCloud.Event.associatedObjects.objectType | String | Type of the associated object. | 
+| ConfluenceCloud.Event.author.type | String | The type of author who created this event. |
+| ConfluenceCloud.Event.author.displayName | String | The display nName of the author who created this event. |
+| ConfluenceCloud.Event.author.operations | String | Nullable. Author's operations. |
+| ConfluenceCloud.Event.author.username | String | Username of the author of this event. |
+| ConfluenceCloud.Event.author.userKey | String | User key of the author of this event. |
+| ConfluenceCloud.Event.author.accountId | String | Account ID of the author of this event. |
+| ConfluenceCloud.Event.author.accountType | String | Type of account of the author of this event. |
+| ConfluenceCloud.Event.author.externalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. |
+| ConfluenceCloud.Event.author.isExternalCollaborator | Boolean | Deprecated. Is the author of this event an external collaborator. |
+| ConfluenceCloud.Event.author.publicName | String | The public name of the author of this event. |
+| ConfluenceCloud.Event.remoteAddress | String | The remote address from which the event was performed. |
+| ConfluenceCloud.Event.creationDate | Number | The creation date-time of the audit record, as a timestamp. |
+| ConfluenceCloud.Event.summary | Strings | Summary of the audit. |
+| ConfluenceCloud.Event.description | String | Description of the audit. |
+| ConfluenceCloud.Event.category | String | Category of the event. |
+| ConfluenceCloud.Event.sysAdmin | Boolean | Was the event created by a system administrator. |
+| ConfluenceCloud.Event.superAdmin | Boolean | Was the event created by a super administrator. |
+| ConfluenceCloud.Event.affectedObject.name | String | Name of the object affected by the event. |
+| ConfluenceCloud.Event.affectedObject.objectType | String | Type of the object affected by the event. |
+| ConfluenceCloud.Event.changedValues.name | String | Name of the changed value. |
+| ConfluenceCloud.Event.changedValues.oldValue | String | The old value before the change the event describes. |
+| ConfluenceCloud.Event.changedValues.hiddenOldValue | String | The old hidden value before the change the event describes. |
+| ConfluenceCloud.Event.changedValues.newValue | String | The new value after the change the event describes. |
+| ConfluenceCloud.Event.changedValues.hiddenNewValue | String | The new hidden value after the change the event describes. |
+| ConfluenceCloud.Event.associatedObjects.name | String | Name of the associated object. |
+| ConfluenceCloud.Event.associatedObjects.objectType | String | Type of the associated object. |
 
 #### Command Example
+
 ```!confluence-cloud-get-events limit=1```
 
 #### Context Example
+
 ```json
 {
     "ConfluenceCloud": {
