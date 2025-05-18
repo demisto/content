@@ -65,6 +65,8 @@ class Client(BaseClient):
         self.organization = organization
         self.application = application
         self.base_event_body = base_event_body
+        self.api_key = api_key
+        self.user_key = user_key
 
     def get_events_request(self, params: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""

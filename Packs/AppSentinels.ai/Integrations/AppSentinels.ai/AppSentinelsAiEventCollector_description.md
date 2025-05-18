@@ -1,8 +1,16 @@
-### How to generate API key: 
-To use the API , you must first enable the API and set up an API key.
-- Log in to your portal account.
-- Navigate to Settings -> Data -> API.
-- You can use the copy icon to the right of the API key to copy it to the clipboard.
+## How to generate and use your AppSentinels API key
 
+### 1. Log in to AppSentinels
+- Go to [https://appsentinels.ai](https://appsentinels.ai) and log in to your organization’s account.
 
+### 2. Navigate to API Settings
+- In the AppSentinels portal, go to:  
+  **Settings → Integrations → API Access**  
+  *(The location may vary depending on UI updates.)*
 
+### 3. Generate User Key and API Key
+- Click **“Create API Key”** or **“Generate New Key”**.
+- Provide a name/label for the key.
+- Copy the following values:
+  - `API Key` – your organization's access key.
+  - `User Key` – your individual user identifier for API calls.
