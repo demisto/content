@@ -247,9 +247,9 @@ def get_events(client: Client, args: dict) -> CommandResults:
     max_events = arg_to_number(args.get("limit")) or default_max
     # User start date in the get events arguments, else get from today
     first_fetch = arg_to_datetime(args.get("first_fetch"))
-    first_fetch_date = first_fetch.strftime(DATE_FORMAT)
 
     if first_fetch:
+        first_fetch_date = first_fetch.strftime(DATE_FORMAT)
         params_run.update({"from_timestamp": first_fetch_date})
 
     output, _ = fetch_events(client, params_run, max_events, use_last_run_as_params=True)

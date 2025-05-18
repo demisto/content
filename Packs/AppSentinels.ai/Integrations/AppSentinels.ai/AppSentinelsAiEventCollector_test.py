@@ -138,7 +138,7 @@ class TestFetchEvents:
         events, _ = fetch_events(client, last_run, fetch_limit)
 
         assert len(events) == fetch_limit
-        assert last_run == {"last_event_id": mock_response_data["last_event_id"]}
+        assert last_run == {"last_event_id": mock_response_data["data"][1]["eventid"]}
         client.get_events_request.assert_called_once()
 
     def test_fetch_events_list_multiple_pages(self, client, mocker):
@@ -221,5 +221,60 @@ class TestFetchEvents:
 
         assert len(events) == 2
         assert last_run == {"last_event_id": 2}
+
+
+class TestGetEvents:
+    @pytest.fixture
+    def mock_client_get_events_request(self, mocker):
+        """Mocks the Client's get_events_request method."""
+        return mocker.patch.object(Client, "get_events_request")
+
+    def test_get_events_no_events(self, client, mock_client_get_events_request):
+        """Test get_events when the API returns no events."""
+        mock_client_get_events_request.return_value = {"data": []}
+        args = {}  # Empty args
+        result = get_events(client, args)
+
+        assert result.outputs == []
+        assert result.readable_output == "### AppSentinels.ai Record(s)\n**No entries.**\n"
+
+    def test_get_events_with_events(self, client, mock_client_get_events_request):
+        """Test get_events with events returned."""
+        dummy_data = util_load_json("test_data/events-dummy-data.json")
+        mock_events_data = {
+            "data": dummy_data
+        }
+        mock_client_get_events_request.return_value = mock_events_data
+        args = {}
+        result = get_events(client, args)
+
+        assert result.outputs == mock_events_data["data"]
+        assert result.outputs_prefix == "AppSentinels.ai."
+        # Basic check for table format, more detailed checks could be added
+        assert "ID" in result.readable_output
+        assert "Action" in result.readable_output
+
+    def test_get_events_with_limit(self, client, mock_client_get_events_request):
+        """Test get_events with a limit argument."""
+        mock_data = util_load_json("test_data/events-dummy-data.json")
+        mock_events_data = {
+            "data": mock_data
+        }
+        mock_client_get_events_request.return_value = mock_events_data
+        args = {"limit": 2}
+        result = get_events(client, args)
+        assert len(result.outputs) == 2
+
+    @freeze_time("2025-01-15 12:00:00")
+    def test_get_events_with_first_fetch(self, client, mock_client_get_events_request):
+        """Test get_events with a first_fetch argument."""
+        mock_events_data = {"data": []}
+        mock_client_get_events_request.return_value = mock_events_data
+        first_fetch_time = "1 Days"
+        args = {"first_fetch": first_fetch_time}
+        get_events(client, args)
+        mock_client_get_events_request.assert_called_once()
+        expected_params = {"from_timestamp": "2025-01-14T12:00:00.000000Z"}
+        mock_client_get_events_request.assert_called_with(params=expected_params)
 
 
