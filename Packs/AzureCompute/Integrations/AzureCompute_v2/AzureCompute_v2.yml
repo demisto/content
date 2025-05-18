@@ -70,7 +70,7 @@ configuration:
   type: 4
   hidden: true
   required: false
-  section: connect
+  section: Connect
 - displaypassword: Default Subscription ID
   name: cred_subscription_id
   hiddenusername: true

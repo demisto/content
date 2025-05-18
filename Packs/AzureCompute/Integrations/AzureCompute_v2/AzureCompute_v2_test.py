@@ -217,7 +217,7 @@ CREATE_NIC_EC = {
 }
 
 client = MsGraphClient(
-    base_url="url",
+    base_url="https://url",
     tenant_id="tenant",
     auth_id="auth_id",
     enc_key="enc_key",
@@ -225,7 +225,7 @@ client = MsGraphClient(
     verify="verify",
     proxy="proxy",
     self_deployed="self_deployed",
-    ok_codes=(1, 2),
+    ok_codes=(1, 2, 200),
     server="server",
     subscription_id="subscription_id",
     certificate_thumbprint="",
@@ -259,6 +259,24 @@ def test_create_vm_parameters(args, expected_parameters):
 def test_list_vms_command(mocker):
     vms_data = load_test_data("./test_data/list_vms_command.json")
     mocker.patch.object(client, "list_vms", return_value=vms_data)
+    command_results = list_vms_command(client, {"resource_group": "resource_group"}, {})
+    assert command_results.to_context()["EntryContext"] == VM_LIST_EC
+
+
+def test_list_vms_command_with_pagination(requests_mock, mocker):
+    """
+    Given: Two different response mocks where one contains nextLink field and both contains two different vms.
+    When: calling list_vms_command.
+    Then: Ensures the NextLink was extracted and used correctly in the following request and that the right results were returned.
+    """
+    vms_data = load_test_data("./test_data/list_vms_command_with_pagination.json")
+    response_one = vms_data[0]
+    response_two = vms_data[1]
+    from MicrosoftApiModule import MicrosoftClient
+
+    mocker.patch.object(MicrosoftClient, "get_access_token", return_value="auth")
+    requests_mock.get("https://url/resource_group/providers/Microsoft.Compute/virtualMachines", json=response_one)
+    requests_mock.get("https://url/resource_group/providers/Microsoft.Compute/virtualMachines_page_2", json=response_two)
     command_results = list_vms_command(client, {"resource_group": "resource_group"}, {})
     assert command_results.to_context()["EntryContext"] == VM_LIST_EC
 
