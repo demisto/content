@@ -4,7 +4,7 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 import urllib3
-from typing import Pattern
+from typing import Pattern  # noqa: UP035
 from ipaddress import ip_address, summarize_address_range
 
 # disable insecure warnings
@@ -295,7 +295,7 @@ class Client(BaseClient):
             err_msg = (
                 "Verify that the server URL parameter"
                 " is correct and that you have access to the server from your host."
-                "\nError Type: {}\nError Number: [{}]\nMessage: {}\n".format(err_type, exception.errno, exception.strerror)
+                f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
             )
             raise DemistoException(err_msg, exception)
 
