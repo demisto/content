@@ -1097,9 +1097,9 @@ def test_add_playbook_metadata_missing_context(mocker):
         "command_name": "test-command",
         "integration_name": "",
         "playbook_id": "",
-        "playbook_name": "missing_playbook_name",
-        "task_id": "missing_task_id",
-        "task_name": "missing_task_name",
+        "playbook_name": "",
+        "task_id": "",
+        "task_name": "",
     }
     assert data["request_data"]["playbook_metadata"] == expected_metadata
     demisto.debug.assert_called_once()
