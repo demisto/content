@@ -69,7 +69,7 @@ ES_V9_RESPONSE = {
     "took": 11,
     "is_partial": False,
     "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
-    "values": [["karl@test.io"], ["karl@test.io"]],
+    "values": [["karl@test.io"]],
 }
 
 ES_V8_RESPONSE = {
