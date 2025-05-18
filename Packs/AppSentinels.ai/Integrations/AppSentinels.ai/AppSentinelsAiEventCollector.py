@@ -151,7 +151,8 @@ def fetch_events_list(
 
             events.append(event)
 
-            if len(events) >= fetch_limit:
+            if fetch_limit and len(events) >= fetch_limit:
+                last_run["last_event_id"] = event["eventid"]
                 return events
 
         if not more_records:
