@@ -1345,12 +1345,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     if not (int_fetch_limit := arg_to_number(fetch_limit)):
         raise ValueError("limit cannot be empty.")
 
-    # When using the last alert timestamp from the previous run as the start timestamp,
-    # the API will return at least one alert that has already been received, which will be filtered out.
-    # Therefore, we increase the limit by one to meet the original requested limit.
-    if last_run:
-        int_fetch_limit += 1
-
     last_fetched_alert_create_time = last_run.get("last_fetched_alert_create_time")
     last_fetched_alerts_ids = last_run.get("last_fetched_alerts_ids", [])
     if not last_fetched_alert_create_time:
@@ -1360,14 +1354,14 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
     # Since the limit is passed down to the API and then a dedup takes place, increasing the limit
     # by the number of potential duplicate events prevents the case where all the events returned from the API
     # is filtered out in the dedup process
-    int_fetch_limit += len(last_fetched_alerts_ids)
-    incidents = []
+    api_fetch_limit = str(int_fetch_limit + len(last_fetched_alerts_ids))
+    incidents: List[Dict] = []
 
     response = client.search_alerts_request(
         sort_field="backend_timestamp",
         sort_order="ASC",
         create_time=assign_params(start=last_fetched_alert_create_time, end=datetime.now().strftime("%Y-%m-%dT%H:%M:%S.000Z")),
-        limit=str(int_fetch_limit),
+        limit=api_fetch_limit,
     )
 
     alerts = response.get("results", [])
@@ -1381,6 +1375,9 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
             if alert_id in last_fetched_alerts_ids:
                 demisto.debug(f"{LOG_INIT} got previously fetched alert {alert_id}, skipping it")
                 continue
+
+            if len(incidents) >= int_fetch_limit:
+                break
 
             alert_create_date = alert.get("backend_timestamp")
             incident = {

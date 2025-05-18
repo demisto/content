@@ -1,6 +1,7 @@
 import CarbonBlackEnterpriseEDR as cbe
 import demistomock as demisto
 import pytest
+import json
 from CarbonBlackEnterpriseEDR import (
     add_alert_notes_command,
     add_threat_notes_command,
@@ -657,10 +658,17 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
     """
     from CarbonBlackEnterpriseEDR import fetch_incidents
 
-    mocked_func = mocker.patch.object(CLIENT, "search_alerts_request", return_value={})
+    mocked_return_value = {
+        "results": [
+            {"id": "123", "backend_timestamp": "2025-05-18T13:15:00.001Z"},
+            {"id": "456", "backend_timestamp": "2025-05-18T13:15:00.002Z"},
+            {"id": "789", "backend_timestamp": "2025-05-18T13:15:00.003Z"},
+        ]
+    }
+    mocked_func = mocker.patch.object(CLIENT, "search_alerts_request", return_value=mocked_return_value)
     last_run = {"last_fetched_alert_create_time": "2000-07-16T05:26:05.491Z", "last_fetched_alerts_ids": ["123", "456"]}
-    limit = "50"
-    _, res = fetch_incidents(
+    limit = "2"
+    res, last_run = fetch_incidents(
         CLIENT,
         fetch_time="3 days",
         fetch_limit=limit,
@@ -668,12 +676,21 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
     )
 
     expected_limit = int(limit) + len(last_run["last_fetched_alerts_ids"]) + 1
+    expected_unfiltered_alert = mocked_return_value["results"][-1]
+    expected_incidents = [
+        {
+            "name": f"Carbon Black Enterprise EDR alert {expected_unfiltered_alert['id']}",
+            "occurred": expected_unfiltered_alert["backend_timestamp"],
+            "rawJSON": json.dumps(expected_unfiltered_alert),
+        }
+    ]
     mocked_func.assert_called_with(
         sort_field=mocker.ANY,
         sort_order=mocker.ANY,
         create_time=mocker.ANY,
         limit=str(expected_limit),
     )
+    assert res == expected_incidents
 
 
 @pytest.mark.parametrize("last_run, expected_last_run", check_getLastRun_data)
