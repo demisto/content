@@ -7,31 +7,31 @@ Configure Infoblox on XSOAR
 
 The API supports only HTTP Basic Authentication. Every user must have permissions that grants them access to the API.
 
-1.  Navigate to **Settings** > **Integrations**  > **Servers & Services**.
-2.  Search for Infoblox.
-3.  Click **Add instance** to create and configure a new integration instance.
+1. Navigate to **Settings** > **Integrations**  > **Servers & Services**.
+2. Search for Infoblox.
+3. Click **Add instance** to create and configure a new integration instance.
     * **Name**: a textual name for the integration instance.
     * **Server URL (e.g.,, https://example.net)**
     * **User Name**
     * **Password**
     * **Trust any certificate (not secure)**
     * **Use system proxy settings**
-4.  Click **Test** to validate the new instance.
+4. Click **Test** to validate the new instance.
 
 Commands
 --------
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-1.  [Get IP info: infoblox-get-ip](#infoblox-get-ip).
-2.  [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
-3.  [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
-4.  [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
-5.  [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
-6.  [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
-7.  [Creates a substitute record rule: infoblox-create-a-substitute-record-rule](#infoblox-create-a-substitute-record-rule).
-8.  [Creates a substitute rule for an AAAA record: infoblox-create-aaaa-substitute-record-rule](#infoblox-create-aaaa-substitute-record-rule).
-9.  [Creates a substitute rule for the MX record: infoblox-create-mx-substitute-record-rule](#infoblox-create-mx-substitute-record-rule).
+1. [Get IP info: infoblox-get-ip](#infoblox-get-ip).
+2. [Searches IP related objects by a given IP: infoblox-search-related-objects-by-ip](#infoblox-search-related-objects-by-ip).
+3. [Lists all response policy rules that belong to the.g.,ven response policy zone: infoblox-list-response-policy-zone-rules](#infoblox-list-response-policy-zone-rules).
+4. [List all response policy zones: infoblox-list-response-policy-zones](#infoblox-list-response-policy-zones).
+5. [Creates a response policy zone: infoblox-create-response-policy-zone](#infoblox-create-response-policy-zone).
+6. [Creates a response policy rule: infoblox-create-rpz-rule](#infoblox-create-rpz-rule).
+7. [Creates a substitute record rule: infoblox-create-a-substitute-record-rule](#infoblox-create-a-substitute-record-rule).
+8. [Creates a substitute rule for an AAAA record: infoblox-create-aaaa-substitute-record-rule](#infoblox-create-aaaa-substitute-record-rule).
+9. [Creates a substitute rule for the MX record: infoblox-create-mx-substitute-record-rule](#infoblox-create-mx-substitute-record-rule).
 10. [Creates a substitute rule for a NAPTR record: infoblox-create-naptr-substitute-record-rule](#infoblox-create-naptr-substitute-record-rule).
 11. [Creates a substitute rule of the PTR record: infoblox-create-ptr-substitute-record-rule](#infoblox-create-ptr-substitute-record-rule).
 12. [Creates a substitute rule of a SRV record: infoblox-create-srv-substitute-record-rule](#infoblox-create-srv-substitute-record-rule).
@@ -164,7 +164,7 @@ Searches IP related objects by a given IP.
 
 ##### Human Readable Output
 
-### Infoblox Integration - IP: 172.0.0.0 search results.
+### Infoblox Integration - IP: 172.0.0.0 search results
 
 | **Network** | **Network View** | **Reference ID** |
 | --- | --- | --- |
@@ -275,7 +275,7 @@ Lists all response policy rules that belong to the.g.,ven response policy zone.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Zone: Infoblow.com rule list.
+### Infoblox Integration - Zone: Infoblow.com rule list
 
 | **Comment** | **Disable** | **Name** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- |
@@ -443,7 +443,7 @@ List all response policy zones.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zones list (first 50 results):
+### Infoblox Integration - Response Policy Zones list (first 50 results)
 
 | **Disable** | **FQDN** | **Reference ID** | **Rpz Policy** | **Rpz Severity** | **Rpz Type** | **View** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -576,7 +576,7 @@ Creates a response policy rule.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-rpz-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-rpz-sub.infoblow.com has been created
 
 | **Canonical** | **Disable** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -636,7 +636,7 @@ Creates a substitute record rule.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-a-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-a-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -696,7 +696,7 @@ Creates a substitute rule for an AAAA record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-aaaa-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-aaaa-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Ipv 6 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -758,7 +758,7 @@ Creates a substitute rule for the MX record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-mx-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-mx-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Mail Exchanger** | **Name** | **Preference** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -824,7 +824,7 @@ Creates a substitute rule for a NAPTR record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-naptr-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-naptr-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Name** | **Order** | **Preference** | **Reference ID** | **Regexp** | **Replacement** | **Services** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -887,7 +887,7 @@ Creates a substitute rule of the PTR record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: None has been created:
+### Infoblox Integration - Response Policy Zone rule: None has been created
 
 | **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Ptrdname** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -953,7 +953,7 @@ Creates a substitute rule of a SRV record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-srv-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Name** | **Port** | **Priority** | **Reference ID** | **Target** | **Type** | **View** | **We.g.,t** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1013,7 +1013,7 @@ Create a substitute rule for a txt record.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: nightly-test-txt-sub.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: nightly-test-txt-sub.infoblow.com has been created
 
 | **Comment** | **Disable** | **Name** | **Reference ID** | **Text** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1073,7 +1073,7 @@ Create a substitute rule for an IPv4 rule.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: 3.3.3.3.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: 3.3.3.3.infoblow.com has been created
 
 | **Comment** | **Disable** | **Ipv 4 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1133,7 +1133,7 @@ Creates a substitute of the IPv6 record rule.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Response Policy Zone rule: 000:000:000::1.infoblow.com has been created:
+### Infoblox Integration - Response Policy Zone rule: 000:000:000::1.infoblow.com has been created
 
 | **Comment** | **Disable** | **Ipv 6 Addr** | **Name** | **Reference ID** | **Type** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1298,7 +1298,7 @@ Returns the object fields names which can be used in the search rules command.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Object record:rpz:cname supported fields:
+### Infoblox Integration - Object record:rpz:cname supported fields
 
 | **Field Names** |
 | --- |
@@ -1364,7 +1364,7 @@ Searches a specific rule by its name.
 
 ##### Human Readable Output
 
-### Infoblox Integration - Search result for: 4.4.4.5.infoblow.com:
+### Infoblox Integration - Search result for: 4.4.4.5.infoblow.com
 
 | **Canonical** | **Disable** | **Extattrs** | **Name** | **Reference ID** | **Use Ttl** | **View** | **Zone** |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -1448,6 +1448,7 @@ Known Limitations
 
 Troubleshooting
 ---------------
+
 <h5>Context Output</h5>
 There are no context output for this command.
 <p>&nbsp;</p>
@@ -1462,7 +1463,7 @@ There are no context output for this command.
 <h5>Human Readable Output</h5>
 <p>
 <p>
-Infoblox Integration - Response Policy Zone with the following id was deleted: 
+Infoblox Integration - Response Policy Zone with the following id was deleted:
  zone_rp/ZG5zLnpvbmUkLl9kZWZhdWx0LmNvbS50cGIubmlnaHRseS5pbmZvbmxveA:infonlox.nightly.tpb.com/default
 </p>
 </p>
@@ -1485,25 +1486,28 @@ Get all host records.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional | 
-| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
-| max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional | 
-| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
+| host_name | The hostname to retrieve records for, e.g., localhost.test. | Optional |
+| extattrs | Comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| max_results | The maximum number of records to return. Default is 50, maximum is 1000. | Optional |
+| additional_return_fields | Comma-separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infoblox.Host.Reference | String | The host record reference ID. | 
-| Infoblox.Host.IPv4Address | String | The host first IPv4 address. | 
-| Infoblox.Host.ConfigureForDHCP | Boolean | Whether the host is configured for DHCP. | 
-| Infoblox.Host.Name | String | The host record name. | 
-| Infoblox.Host.ExtendedAttributes | Unknown | The network extended attributes. | 
-| Infoblox.Host.AdditionalFields | Unknown | The additional fields for network. | 
+| Infoblox.Host.Reference | String | The host record reference ID. |
+| Infoblox.Host.IPv4Address | String | The host first IPv4 address. |
+| Infoblox.Host.ConfigureForDHCP | Boolean | Whether the host is configured for DHCP. |
+| Infoblox.Host.Name | String | The host record name. |
+| Infoblox.Host.ExtendedAttributes | Unknown | The network extended attributes. |
+| Infoblox.Host.AdditionalFields | Unknown | The additional fields for network. |
 
 #### Command example
+
 ```!infoblox-list-host-info```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1552,6 +1556,7 @@ Get all host records.
 #### Human Readable Output
 
 >### Host records (first 50)
+>
 >|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
 >|---|---|---|---|---|
 >| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
@@ -1559,10 +1564,12 @@ Get all host records.
 >| false | Site: Local | 255.255.255.192 | test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default |
 >| false | IB Discovery Owned: dummy value<br/>Site: ciac-5843 | 192.168.1.0 | ciac-3607.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default |
 
-
 #### Command example
+
 ```!infoblox-list-host-info additional_return_fields=extattrs,aliases```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1618,13 +1625,13 @@ Get all host records.
 #### Human Readable Output
 
 >### Host records (first 50)
+>
 >|ConfigureForDHCP|ExtendedAttributes|IPv4Address|Name|Reference|
 >|---|---|---|---|---|
 >| false |  | 192.168.10.10 | localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QuMTkyLjE2OC4xMC4xMC4:192.168.10.10/localhost.test/default |
 >| false | IB Discovery Owned: EMEA<br/>Site: Tel-Aviv | 192.168.100.100 | localdoman.localhost.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5sb2NhbGhvc3QubG9jYWxkb21hbi4xOTIuMTY4LjEwMC4xMDAu:192.168.100.100/localdoman.localhost.test/default |
 >| false | Site: Local | 255.255.255.192 | test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC4uMjU1LjI1NS4yNTUuMTkyLg:255.255.255.192/test/default |
 >| false | IB Discovery Owned: dummy value<br/>Site: ciac-5843 | 192.168.1.0 | ciac-3607.test | record:host_ipv4addr/ZG5zLmhvc3RfYWRkcmVzcyQuX2RlZmF1bHQudGVzdC5jaWFjLTM2MDcuMTkyLjE2OC4xLjAu:192.168.1.0/ciac-3607.test/default |
-
 
 ### infoblox-list-network-info
 
@@ -1639,24 +1646,27 @@ List network information.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional | 
-| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional | 
-| max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional | 
-| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional | 
+| pattern | Filter networks by pattern, e.g., '.0/24' for netmask, '192.168' for subnet. | Optional |
+| extattrs | comma-separated key/value formatted filter for extended attributes, e.g., "Site=New York,OtherProp=MyValue". | Optional |
+| max_results | The maximum number of records to return. Maximum is 1000. Default is 50. | Optional |
+| additional_return_fields | Comma separated list of additional fields to return for each host, e.g., extattrs,aliases. Default is extattrs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Infoblox.NetworkInfo.Reference | String | The network reference. | 
-| Infoblox.NetworkInfo.Name | String | The network name. | 
-| Infoblox.NetworkInfo.NetworkView | String | The network view name. | 
-| Infoblox.NetworkInfo.ExtendedAttributes | Unknown | The network extended attributes. | 
-| Infoblox.NetworkInfo.AdditionalFields | Unknown | The additional fields for network. | 
+| Infoblox.NetworkInfo.Reference | String | The network reference. |
+| Infoblox.NetworkInfo.Name | String | The network name. |
+| Infoblox.NetworkInfo.NetworkView | String | The network view name. |
+| Infoblox.NetworkInfo.ExtendedAttributes | Unknown | The network extended attributes. |
+| Infoblox.NetworkInfo.AdditionalFields | Unknown | The additional fields for network. |
 
 #### Command example
+
 ```!infoblox-list-network-info```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1683,15 +1693,18 @@ List network information.
 #### Human Readable Output
 
 >### Network information found (50 limit)
+>
 >|ExtendedAttributes|Name|NetworkView|Reference|
 >|---|---|---|---|
 >|  | 192.168.1.0/24 | default | network/ZG5zLm5ldHdvcmskMTkyLjE2OC4xLjAvMjQvMA:192.168.1.0/24/default |
 >| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |
 
-
 #### Command example
+
 ```!infoblox-list-network-info pattern=255.255 extattrs="Region=EMEA"```
+
 #### Context Example
+
 ```json
 {
     "Infoblox": {
@@ -1712,8 +1725,7 @@ List network information.
 #### Human Readable Output
 
 >### Network information found (50 limit)
+>
 >|ExtendedAttributes|Name|NetworkView|Reference|
 >|---|---|---|---|
 >| Region: EMEA | 255.255.255.192/26 | default | network/ZG5zLm5ldHdvcmskMjU1LjI1NS4yNTUuMTkyLzI2LzA:255.255.255.192/26/default |
-
-
