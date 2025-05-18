@@ -616,7 +616,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
+def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -1396,7 +1396,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    urls  = argToList(urls)
+    urls = argToList(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
@@ -1508,9 +1508,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(
-            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
-        )
+        return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
 
