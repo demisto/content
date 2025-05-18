@@ -13,7 +13,7 @@
         "URI Path Prameter": {},
         "status_code": 200,
         "uri_string": "GET /rest/products/search?q=orange&q=mango HTTP11",
-        "user_ip": "192.168.0.117"
+        "user_ip": "1.1.1.1"
       },
       "apiid": 10,
       "category": "SmartAlerts",
@@ -35,7 +35,7 @@
       "status": "Open",
       "subcategory": "IDOR_POLLUTION",
       "summary": "Duplicate Keys found in request Query For API GET /rest/products/search",
-      "threat_actor": "192.168.0.117",
+      "threat_actor": "1.1.1.1",
       "timestamp": "Fri, 07 Apr 2023 07:31:16 GMT",
       "type": "security_events",
       "user_tactic": "Recon OR Discovery"
@@ -54,7 +54,7 @@
         "URI Path Prameter": {},
         "status_code": 200,
         "uri_string": "GET /rest/products/search?q=orange&q=mango HTTP11",
-        "user_ip": "192.168.0.117"
+        "user_ip": "1.1.1.1"
       },
       "apiid": 10,
       "category": "SmartAlerts",
@@ -76,7 +76,7 @@
       "status": "Open",
       "subcategory": "IDOR_POLLUTION",
       "summary": "Duplicate Keys found in request Query For API GET /rest/products/search",
-      "threat_actor": "192.168.0.117",
+      "threat_actor": "1.1.1.1",
       "timestamp": "Fri, 07 Apr 2023 07:31:16 GMT",
       "type": "security_events",
       "user_tactic": "Recon OR Discovery"
@@ -95,7 +95,7 @@
         "URI Path Prameter": {},
         "status_code": 200,
         "uri_string": "GET /rest/products/search?q=orange&q=mango HTTP11",
-        "user_ip": "192.168.0.117"
+        "user_ip": "1.1.1.1"
       },
       "apiid": 10,
       "category": "SmartAlerts",
@@ -117,7 +117,7 @@
       "status": "Open",
       "subcategory": "IDOR_POLLUTION",
       "summary": "Duplicate Keys found in request Query For API GET /rest/products/search",
-      "threat_actor": "192.168.0.117",
+      "threat_actor": "1.1.1.1",
       "timestamp": "Fri, 07 Apr 2023 07:31:16 GMT",
       "type": "security_events",
       "user_tactic": "Recon OR Discovery"
@@ -136,7 +136,7 @@
         "URI Path Prameter": {},
         "status_code": 200,
         "uri_string": "GET /rest/products/search?q=orange&q=mango HTTP11",
-        "user_ip": "192.168.0.117"
+        "user_ip": "1.1.1.1"
       },
       "apiid": 13,
       "category": "SmartAlerts",
@@ -158,7 +158,7 @@
       "status": "Open",
       "subcategory": "IDOR_POLLUTION",
       "summary": "Duplicate Keys found in request Query For API GET /rest/products/search",
-      "threat_actor": "192.168.0.117",
+      "threat_actor": "1.1.1.1",
       "timestamp": "Fri, 07 Apr 2023 07:31:16 GMT",
       "type": "security_events",
       "user_tactic": "Recon OR Discovery"
