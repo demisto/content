@@ -1376,9 +1376,6 @@ def fetch_incidents(client: Client, fetch_time: str, fetch_limit: str, last_run:
                 demisto.debug(f"{LOG_INIT} got previously fetched alert {alert_id}, skipping it")
                 continue
 
-            if len(incidents) >= int_fetch_limit:
-                break
-
             alert_create_date = alert.get("backend_timestamp")
             incident = {
                 "name": f"Carbon Black Enterprise EDR alert {alert_id}",
