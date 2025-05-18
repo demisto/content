@@ -1,6 +1,6 @@
 category: Database
 commonfields:
-  id: Elasticsearch v2_Custom
+  id: Elasticsearch v2
   version: -1
 configuration:
 - additionalinfo: The Elasticsearch server to which the integration connects. Ensure that the URL includes the correct Elasticsearch port. The default port for Elasticsearch v7 and below is 9200. Use the Server URL for on-premises deployments.
@@ -126,8 +126,8 @@ configuration:
   required: false
   type: 19
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: Elasticsearch v2_Custom
-name: Elasticsearch v2_Custom
+display: Elasticsearch v2
+name: Elasticsearch v2
 script:
   commands:
   - arguments:
@@ -437,12 +437,12 @@ script:
       required: true
     - description: Maximum number of results to return
       name: limit
-    description: Search using ES|QL query. (Elastic >=8.11)
+    description: Search using ES|QL query. (Elastic >=8.11).
     name: es-esql-search
     outputs:
     - contextPath: Elasticsearch.Search
-      description: ES|QL Search Result
-  dockerimage: demisto/elasticsearch:1.0.0.2640600
+      description: ES|QL Search Result.
+  dockerimage: demisto/elasticsearch:1.0.0.3266095
   isfetch: true
   ismappable: true
   runonce: false
