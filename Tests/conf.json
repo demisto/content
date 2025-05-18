@@ -163,7 +163,8 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
+            "memory_threshold": 100
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
@@ -5801,7 +5802,7 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test",
-            "memory_threshold": 100
+            "memory_threshold": 250
         },
         {
             "integrations": "MattermostV2",
