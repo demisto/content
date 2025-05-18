@@ -52,7 +52,7 @@ configuration:
   - Domain watchlist
   hidden:
   - xsoar
-- display: The maximum number of report event per fetch
+- display: The maximum number of reports per fetch
   name: max_fetch
   defaultvalue: "5000"
   advanced: true

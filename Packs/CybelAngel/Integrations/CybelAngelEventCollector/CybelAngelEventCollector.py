@@ -135,14 +135,7 @@ class Client(BaseClient):
         reports = self.get_reports_list(params)
 
         demisto.debug(f"Get reports list returned {len(reports)} reports.")
-        for report in reports:
-            if updated_at := report.get("updated_at"):
-                _time_field = updated_at
-            else:
-                _time_field = report["created_at"]
-
-            report["_time"] = _time_field
-            report["SOURCE_LOG_TYPE"] = REPORT
+        reports = add_fields_to_events(reports, REPORT)
         reports = sorted(
             reports,
             key=lambda _report: dateparser.parse(_report["_time"]),  # type: ignore[arg-type, return-value]
@@ -186,11 +179,7 @@ class Client(BaseClient):
             demisto.debug("Type return error in credentials request")
             return []
 
-        for credential in response:
-            credential["_time"] = credential.get(TIME_FIELDS[CREDENTIALS])
-            credential["SOURCE_LOG_TYPE"] = CREDENTIALS
-
-        return response
+        return add_fields_to_events(response, CREDENTIALS)
 
     def get_domain_watchlist(
         self,
@@ -248,13 +237,7 @@ class Client(BaseClient):
             demisto.debug(f"Fetched {len(more_events)} domain events on second call")
             events.extend(more_events)
 
-        events.reverse()
-
-        for domain_result in events:
-            domain_result["_time"] = domain_result.get(TIME_FIELDS[DOMAIN])
-            domain_result["SOURCE_LOG_TYPE"] = DOMAIN
-
-        return events
+        return add_fields_to_events(events.reverse(), DOMAIN)
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -410,6 +393,20 @@ class Client(BaseClient):
             dict[str, Any] | Response: The response from the API.
         """
         return self.http_request("POST", "/api/v1/reports/remediation-request", data=data)
+
+
+def add_fields_to_events(events: list, event_type: str):
+    for event in events:
+        if event_type == REPORT:
+            if updated_at := event.get("updated_at"):
+                _time_field = updated_at
+            else:
+                _time_field = event["created_at"]
+        else:
+            _time_field = event.get(TIME_FIELDS[event_type])
+        event["_time"] = _time_field
+        event["source_log_type"] = event_type
+    return events
 
 
 def dedup_fetched_events(events: List[dict], last_run_fetched_event_ids: Set[str], event_type: str) -> List[dict]:
@@ -595,7 +592,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs=events,
         raw_response=events,
         readable_output=tableToMarkdown(
-            f"{event_type}", events, headers=["_time", "SOURCE_LOG_TYPE", ID_KEYS[event_type]], removeNull=True
+            f"{event_type}", events, headers=["_time", "source_log_type", ID_KEYS[event_type]], removeNull=True
         ),
     )
 
