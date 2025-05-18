@@ -410,7 +410,7 @@ def parse_item_as_dict(item, email_address=None, camel_case=False, compact_field
     if getattr(item, "folder", None):
         raw_dict["folder"] = parse_folder_as_json(item.folder)
         folder_path = (
-            item.folder.absolute[len(TOIS_PATH) :] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
+            item.folder.absolute[len(TOIS_PATH):] if item.folder.absolute.startswith(TOIS_PATH) else item.folder.absolute
         )
         raw_dict["folder_path"] = folder_path
 
@@ -544,7 +544,8 @@ def get_entry_for_item_attachment(item_id, attachment, target_email):  # pragma:
     dict_result.update(parse_item_as_dict(item, target_email, camel_case=True, compact_fields=True))
     title = (
         f'EWS get attachment got item for "{target_email}", '
-        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'  # noqa: E501
+        f'"{get_attachment_name(attachment_name=attachment.name, content_id=attachment.content_id, is_inline=attachment.is_inline)}"'
+    # noqa: E501
     )
 
     return get_entry_for_object(
@@ -1631,7 +1632,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         if last_modification_time is None or last_modification_time < item_modified_time:
                             last_modification_time = item_modified_time
 
-                    if item.id:
+                    if item.id and not item.is_read:
                         emails_ids.append(item.id)
 
                     if len(incidents) >= client.max_fetch:
