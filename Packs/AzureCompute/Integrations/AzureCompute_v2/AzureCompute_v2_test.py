@@ -309,7 +309,8 @@ def test_list_vms_command_with_pagination(requests_mock, mocker, args, expected_
     - Case 1: args without limit field (should use the default 50).
     - Case 2: args with limit = 2.
     When: calling list_vms_command.
-    Then: Ensures the NextLink was extracted and used correctly in the following request and that the right number of results were returned.
+    Then: Ensures the NextLink was extracted and used correctly in the following request,
+    and that the right number of results were returned.
     - Case 1: should return 3 entires.
     - Case 2: should return only 2 entries.
     """
