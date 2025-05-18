@@ -1604,6 +1604,17 @@ args_values: dict[str, Any] = {}
 # Dictionary for arguments used internally by this integration
 inner_args_values: dict[str, Any] = {}
 
+""" TIMEOUT HANDLING """
+
+
+class SignalTimeoutError(BaseException):
+    pass
+
+
+def timeout_handler(signum, frame):
+    raise SignalTimeoutError
+
+
 """ CLIENT CLASS """
 
 
@@ -3035,12 +3046,6 @@ def get_client_host_list_detection_with_timeout(
     """
     demisto.debug("Starting to get host list dectections via timed alarm signal.")
 
-    class SignalTimeoutError(BaseException):
-        pass
-
-    def timeout_handler(signum, frame):
-        raise SignalTimeoutError
-
     signal.signal(signal.SIGALRM, timeout_handler)
     signal.alarm(execution_timeout)
 
@@ -3464,7 +3469,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         send_data_to_xsiam(data=vulnerabilities, vendor=VENDOR, product="vulnerabilities", data_type="assets")
         demisto.setAssetsLastRun(new_last_run)
 
-    demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Last assets run object: {new_last_run}")
+    demisto.debug(f"Finished fetch assets and vulnerabilities run (by date). Set last assets run: {new_last_run}")
 
 
 def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str, Any]) -> None:
@@ -3513,7 +3518,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
         demisto.updateModuleHealth({"assetsPulled": cumulative_assets_count + cumulative_vulns_count})
 
     demisto.setAssetsLastRun(new_last_run)
-    demisto.debug(f"Finished fetch assets and vulnerabilities run (by QIDs). Last assets run object: {new_last_run}")
+    demisto.debug(f"Finished fetch assets and vulnerabilities run (by QIDs). Set last assets run: {new_last_run}")
 
 
 """ MAIN FUNCTION """
@@ -3772,7 +3777,6 @@ def main():  # pragma: no cover
         },
     }
 
-    demisto.debug("Running custom version 2 of QualysV2 with additional logs.")
     demisto.debug(f"Command being called is {command}")
     try:
         headers: dict = {"X-Requested-With": "Cortex"}
@@ -3824,7 +3828,7 @@ def main():  # pragma: no cover
 
         elif command == "fetch-assets":
             last_run = demisto.getAssetsLastRun()
-
+            demisto.debug(f"Got last assets run: {last_run}")
             demisto.debug(f"Fetch vulnerabilites behavior is set to: {fetch_vulnerabilities_behavior}")
             if fetch_vulnerabilities_behavior == "Fetch by unique QIDs of assets":
                 fetch_assets_and_vulnerabilities_by_qids(client, last_run)
