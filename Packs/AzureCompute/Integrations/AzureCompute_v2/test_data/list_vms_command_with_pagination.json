@@ -119,6 +119,63 @@
                     },
                     "provisioningState": "Succeeded"
                 }
+            },
+            {
+                "name": "vm3_name",
+                "id": "/subscriptions/subscription_id/resourceGroups/compute-integration/providers/Microsoft.Compute/virtualMachines/vm3_name",
+                "type": "Microsoft.Compute/virtualMachines",
+                "location": "westeurope",
+                "properties": {
+                    "vmId": "vm3_id",
+                    "hardwareProfile": {
+                        "vmSize": "Standard_B1s"
+                    },
+                    "storageProfile": {
+                        "imageReference": {
+                            "publisher": "RedHat",
+                            "offer": "RHEL",
+                            "sku": "7-RAW",
+                            "version": "latest"
+                        },
+                        "osDisk": {
+                            "osType": "Linux",
+                            "name": "vm3_name",
+                            "createOption": "FromImage",
+                            "caching": "ReadWrite",
+                            "managedDisk": {
+                                "storageAccountType": "Standard_LRS",
+                                "id": "/subscriptions/subscription_id/resourceGroups/compute-integration/providers/Microsoft.Compute/disks/vm3_name "
+                            },
+                            "diskSizeGB": 32
+                        },
+                        "dataDisks": [
+
+                        ]
+                    },
+                    "osProfile": {
+                        "computerName": "vm3_name",
+                        "adminUsername": "admin",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": false,
+                            "provisionVMAgent": true
+                        },
+                        "secrets": [
+
+                        ],
+                        "allowExtensionOperations": true
+                    },
+                    "networkProfile": {
+                        "networkInterfaces": [
+                            {
+                                "id": "/subscriptions/subscription_id/resourceGroups/compute-integration/providers/Microsoft.Network/networkInterfaces/compute-integration-nic",
+                                "properties": {
+                                    "primary": true
+                                }
+                            }
+                        ]
+                    },
+                    "provisioningState": "Succeeded"
+                }
             }
         ]
     }    

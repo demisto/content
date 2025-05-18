@@ -263,11 +263,55 @@ def test_list_vms_command(mocker):
     assert command_results.to_context()["EntryContext"] == VM_LIST_EC
 
 
-def test_list_vms_command_with_pagination(requests_mock, mocker):
+@pytest.mark.parametrize(
+    "args, expected_results",
+    [
+        (
+            {"resource_group": "resource_group"},
+            {
+                "Azure.Compute(val.Name && val.Name == obj.Name)": [
+                    {
+                        "Name": "testvm",
+                        "ID": "vm_id",
+                        "Size": 30,
+                        "OS": "Linux",
+                        "Location": "westeurope",
+                        "ProvisioningState": "Succeeded",
+                        "ResourceGroup": "resource_group",
+                    },
+                    {
+                        "Name": "vm2_name",
+                        "ID": "vm2_id",
+                        "Size": 32,
+                        "OS": "Linux",
+                        "Location": "westeurope",
+                        "ProvisioningState": "Succeeded",
+                        "ResourceGroup": "resource_group",
+                    },
+                    {
+                        "Name": "vm3_name",
+                        "ID": "vm3_id",
+                        "Size": 32,
+                        "OS": "Linux",
+                        "Location": "westeurope",
+                        "ProvisioningState": "Succeeded",
+                        "ResourceGroup": "resource_group",
+                    },
+                ]
+            },
+        ),
+        ({"resource_group": "resource_group", "limit": "2"}, VM_LIST_EC),
+    ],
+)
+def test_list_vms_command_with_pagination(requests_mock, mocker, args, expected_results):
     """
-    Given: Two different response mocks where one contains nextLink field and both contains two different vms.
+    Given: Two different response mocks where one contains nextLink field and one vms and second contains two different vms.
+    - Case 1: args without limit field (should use the default 50).
+    - Case 2: args with limit = 2.
     When: calling list_vms_command.
-    Then: Ensures the NextLink was extracted and used correctly in the following request and that the right results were returned.
+    Then: Ensures the NextLink was extracted and used correctly in the following request and that the right number of results were returned.
+    - Case 1: should return 3 entires.
+    - Case 2: should return only 2 entries.
     """
     vms_data = load_test_data("./test_data/list_vms_command_with_pagination.json")
     response_one = vms_data[0]
@@ -277,8 +321,8 @@ def test_list_vms_command_with_pagination(requests_mock, mocker):
     mocker.patch.object(MicrosoftClient, "get_access_token", return_value="auth")
     requests_mock.get("https://url/resource_group/providers/Microsoft.Compute/virtualMachines", json=response_one)
     requests_mock.get("https://url/resource_group/providers/Microsoft.Compute/virtualMachines_page_2", json=response_two)
-    command_results = list_vms_command(client, {"resource_group": "resource_group"}, {})
-    assert command_results.to_context()["EntryContext"] == VM_LIST_EC
+    command_results = list_vms_command(client, args, {})
+    assert command_results.to_context()["EntryContext"] == expected_results
 
 
 def test_get_vm_command(mocker):
