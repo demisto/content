@@ -668,14 +668,8 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
     mocked_func = mocker.patch.object(CLIENT, "search_alerts_request", return_value=mocked_return_value)
     last_run = {"last_fetched_alert_create_time": "2000-07-16T05:26:05.491Z", "last_fetched_alerts_ids": ["123", "456"]}
     limit = "2"
-    res, last_run = fetch_incidents(
-        CLIENT,
-        fetch_time="3 days",
-        fetch_limit=limit,
-        last_run=last_run,
-    )
 
-    expected_limit = int(limit) + len(last_run["last_fetched_alerts_ids"]) + 1
+    expected_limit = int(limit) + len(last_run["last_fetched_alerts_ids"])
     expected_unfiltered_alert = mocked_return_value["results"][-1]
     expected_incidents = [
         {
@@ -684,6 +678,15 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
             "rawJSON": json.dumps(expected_unfiltered_alert),
         }
     ]
+    
+    res, last_run = fetch_incidents(
+        CLIENT,
+        fetch_time="3 days",
+        fetch_limit=limit,
+        last_run=last_run,
+    )
+
+
     mocked_func.assert_called_with(
         sort_field=mocker.ANY,
         sort_order=mocker.ANY,
