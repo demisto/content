@@ -820,11 +820,12 @@ def test_search_command_with_query_dsl(mocker):
 
     Elasticsearch_v2.FETCH_INDEX = "index from parameter"
     index_from_arg = "index from arg"
-    mocker.patch.object(demisto, "args", return_value={"index": index_from_arg, "query_dsl": "test", "size": "5", "page": "0"})
+    mock_args = {"index": index_from_arg, "query_dsl": json.dumps({"match_all": {}}), "size": "5", "page": "0"}
+    mocker.patch.object(demisto, "args", return_value=mock_args)
     search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     Elasticsearch_v2.search_command({})
-    assert search_mock.call_args.kwargs["index"] == index_from_arg
+    assert search_mock.call_args.kwargs["index"] == [index_from_arg]
     assert search_mock.call_args.kwargs["size"] == 5
     assert search_mock.call_args.kwargs["from_"] == 0
 
