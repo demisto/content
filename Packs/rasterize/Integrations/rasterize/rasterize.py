@@ -268,7 +268,7 @@ class PychromeEventHandler:
                         self.retry_loading()
                     except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
                         # The tab is already stopping or has been stopped
-                        demisto.debug(f"Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
+                        demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
                         self.tab_ready_event.set()
                 else:
                     demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
@@ -293,7 +293,7 @@ class PychromeEventHandler:
             return frame_url
         except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
             # The tab is already stopping or has been stopped
-            demisto.debug(f"Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
+            demisto.debug(f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
             # We should set the event and return to avoid further processing
             self.tab_ready_event.set()
             return ""
