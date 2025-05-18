@@ -1369,7 +1369,7 @@ def isTimeSensitive():
     return False
 
 
-def _platformAPICall(self, path=None, method=None, params=None, data=None, timeout=None):
+def _platformAPICall(path=None, method=None, params=None, data=None, timeout=None):
     """
     Special platform API call to interact with the platform's backend services. Only available to OOB content.
 
