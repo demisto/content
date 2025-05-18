@@ -25,11 +25,11 @@ def check_logging(caplog):
     '''
     yield
     messages = [
-        "{}: {}".format(x.levelname, x.message) for x in caplog.get_records('call') if x.levelno >= logging.WARNING
+        "{}: {}".format(x.levelname, x.message) for x in caplog.get_records('call') if x.levelno >= logging.WARNING # noqa: UP032
     ]
     if messages:
         pytest.fail(
-            "warning messages encountered during testing: {}".format(messages)
+            "warning messages encountered during testing: {}".format(messages)  # noqa: UP032
         )
 
 
@@ -49,9 +49,9 @@ def check_std_out_err(capfd):
     yield
     (out, err) = capfd.readouterr()
     if out:
-        pytest.fail("Found output in stdout: [{}]".format(out.strip()))
+        pytest.fail("Found output in stdout: [{}]".format(out.strip())) # noqa: UP032
     if err:
-        pytest.fail("Found output in stderr: [{}]".format(err.strip()))
+        pytest.fail("Found output in stderr: [{}]".format(err.strip())) # noqa: UP032
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -74,9 +74,9 @@ def pytest_configure(config):
     if junit_xml and ".pre-commit" in junit_xml:
         image = os.getenv("DOCKER_IMAGE")
         if image:
-            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))    # noqa: UP032
         else:
-            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))   # noqa: UP032
 
 
 def pytest_addoption(parser):
