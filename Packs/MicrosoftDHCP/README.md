@@ -12,6 +12,7 @@ This pack includes Cortex XSIAM content.
 
 Note:
 Time parsing is supported only when the below fields have the mentioned formats:
+
 - date - MM/dd/yy (01/10/21)
 - time - hh:mm:ss (10:00:00)
 - timezone - +|-nn:nn (+03:00)
@@ -19,7 +20,6 @@ Time parsing is supported only when the below fields have the mentioned formats:
 ## Collect Events from Vendor
 
 In order to use the collector, use the [XDRC (XDR Collector)](#xdrc-xdr-collector) option.
-
 
 ### XDRC (XDR Collector)
 
@@ -32,8 +32,9 @@ As cortex XSIAM provides YAML template for DHCP, you can use the following steps
    1. In XSIAM, select **Settings** → **Configurations** → **XDR Collectors** → **Profiles** → **+Add Profile** → **Windows**.
    2. Select **Filebeat** profile or **Winlogbeat** profile, then click Next.
    3. Configure the General Information parameters:
-   - Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
 
-   - Add description here—(Optional) To provide additional context for the purpose or business reason that explains why you are creating the profile, specify a profile description.
+- Profile Name — Specify a unique Profile Name to identify the profile. The name can contain only letters, numbers, or spaces, and must be no more than 30 characters. The name you choose will be visible from the list of profiles when you configure a policy.
+
+- Add description here—(Optional) To provide additional context for the purpose or business reason that explains why you are creating the profile, specify a profile description.
 
    4. Configure the settings for the profile selected in Step 2 - To add the "DHCP" template, select it and click **Add**.
