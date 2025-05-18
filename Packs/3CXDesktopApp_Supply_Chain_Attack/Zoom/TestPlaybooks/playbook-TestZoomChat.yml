@@ -1,0 +1,1276 @@
+id: 7e010435-f76c-4044-8422-c14e5eab1b5e
+fromversion: 5.0.0
+version: 0
+vcShouldKeepItemLegacyProdMachine: false
+name: Zoom_Chat_Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: b228b22f-ea61-4533-85df-6cf137315b29
+    type: start
+    task:
+      id: b228b22f-ea61-4533-85df-6cf137315b29
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 92df7453-b189-40ca-89ec-7416b5fea4a6
+    type: regular
+    task:
+      id: 92df7453-b189-40ca-89ec-7416b5fea4a6
+      version: -1
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "57"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 195
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: 21b861ef-9d7f-4037-8724-9e858ba78d1b
+    type: regular
+    task:
+      id: 21b861ef-9d7f-4037-8724-9e858ba78d1b
+      version: -1
+      name: Verify channel created
+      description: List the existing channels
+      script: '|||zoom-list-account-public-channels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      channel_id:
+        simple: ${Zoom.Channel.id}
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1595
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: fb86be7c-b2a9-4509-8ea5-b341c45c9212
+    type: regular
+    task:
+      id: fb86be7c-b2a9-4509-8ea5-b341c45c9212
+      version: -1
+      name: Create new channel
+      description: Creates a channel for a user
+      script: '|||zoom-create-channel'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      Who can add new channel members:
+        simple: All channel members can add
+      channel_name:
+        simple: PlaybookTestChannel
+      channel_type:
+        simple: Public channel
+      member_emails:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: Usetobe
+          accessor: email
+      new_members_can_see_prev_msgs:
+        simple: "true"
+      posting_permissions:
+        simple: All members can post
+      retry-count:
+        simple: "1"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1420
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 50c3e517-7d13-4264-8584-7c552bc2b29f
+    type: regular
+    task:
+      id: 50c3e517-7d13-4264-8584-7c552bc2b29f
+      version: -1
+      name: Invite user to channel
+      description: Invites members that are in a user's contact list to a channel.
+      script: '|||zoom-invite-to-channel'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      members:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: email
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "5"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1770
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 3d70a19c-1e39-49d3-8cda-4e293e015189
+    type: regular
+    task:
+      id: 3d70a19c-1e39-49d3-8cda-4e293e015189
+      version: -1
+      name: Verify user added to channel ${Zoom.Channel.name}
+      description: List the existing channels
+      script: Zoom|||zoom-list-user-channels
+      type: regular
+      iscommand: true
+      brand: Zoom
+    nexttasks:
+      '#none#':
+      - "36"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      retry-count:
+        simple: "1"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1945
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 1bc8602b-7886-4db6-81ed-3613ff837165
+    type: regular
+    task:
+      id: 1bc8602b-7886-4db6-81ed-3613ff837165
+      version: -1
+      name: Delete created channel
+      description: Deletes a specific Zoom channel
+      script: Zoom|||zoom-delete-channel
+      type: regular
+      iscommand: true
+      brand: Zoom
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 4395
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: e3694e14-519c-4f15-8d3f-ea67f2f5d89d
+    type: regular
+    task:
+      id: e3694e14-519c-4f15-8d3f-ea67f2f5d89d
+      version: -1
+      name: Remove user from channel
+      description: Removes a member from a chat channel. A channel can have one or
+        many members.
+      script: '|||zoom-remove-from-channel'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "37"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      member_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: email
+      retry-count:
+        simple: "1"
+      retry-interval:
+        simple: "5"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2120
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f67fffb9-9b8a-4f6b-856b-a16c2cf5008f
+    type: regular
+    task:
+      id: f67fffb9-9b8a-4f6b-856b-a16c2cf5008f
+      version: -1
+      name: list user channels
+      description: List the existing channels
+      script: Zoom|||zoom-list-user-channels
+      type: regular
+      iscommand: true
+      brand: Zoom
+    nexttasks:
+      '#none#':
+      - "38"
+    scriptarguments:
+      retry-count:
+        simple: "1"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: dima
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2295
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: bd0c7472-2857-47e8-83c0-6573bda2b8bf
+    type: condition
+    task:
+      id: bd0c7472-2857-47e8-83c0-6573bda2b8bf
+      version: -1
+      name: verify user was removed from channel
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "35"
+      "yes":
+      - "40"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: notInList
+          left:
+            value:
+              simple: Zoom.Channel.channels.name
+            iscontext: true
+          right:
+            value:
+              simple: PlaybookTestChannel
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2470
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 2c97f41d-abf8-4961-8129-0c90b9b8a5e6
+    type: regular
+    task:
+      id: 2c97f41d-abf8-4961-8129-0c90b9b8a5e6
+      version: -1
+      name: Update channel permissions
+      description: Update an existing channel in zoom account
+      script: '|||zoom-update-channel'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "47"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      new_members_can_see_prev_msgs:
+        simple: "false"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2645
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1a83fec9-95f9-40a2-879f-92041eee8694
+    type: regular
+    task:
+      id: 1a83fec9-95f9-40a2-879f-92041eee8694
+      version: -1
+      name: Get all public channels
+      description: List the existing channels
+      script: '|||zoom-list-account-public-channels'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "44"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 545
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "44":
+    id: "44"
+    taskid: d75e03c6-c4ee-408e-80c7-1f324ad2d487
+    type: condition
+    task:
+      id: d75e03c6-c4ee-408e-80c7-1f324ad2d487
+      version: -1
+      name: Check if test channel exist
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "46"
+      "yes":
+      - "45"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: inList
+          left:
+            value:
+              simple: Zoom.Channel.channels.name
+            iscontext: true
+          right:
+            value:
+              simple: playbookTestChannel
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "45":
+    id: "45"
+    taskid: a1a7fc29-7059-40d4-8990-203397b72a59
+    type: regular
+    task:
+      id: a1a7fc29-7059-40d4-8990-203397b72a59
+      version: -1
+      name: Delete Channel
+      description: Deletes a specific Zoom channel
+      script: '|||zoom-delete-channel'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "46"
+    scriptarguments:
+      channel_id:
+        complex:
+          root: Zoom.Channel.channels
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.Channel.channels.name
+                iscontext: true
+              right:
+                value:
+                  simple: PlaybookTestChannel
+          accessor: id
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 895
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "46":
+    id: "46"
+    taskid: a4065d87-90ee-476e-8450-e97b9920572c
+    type: regular
+    task:
+      id: a4065d87-90ee-476e-8450-e97b9920572c
+      version: -1
+      name: Delete All Context
+      scriptName: DeleteContext
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "58"
+    scriptarguments:
+      all:
+        simple: "yes"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1070
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "47":
+    id: "47"
+    taskid: 14225472-3e51-4c2c-825a-153183d41cb9
+    type: regular
+    task:
+      id: 14225472-3e51-4c2c-825a-153183d41cb9
+      version: -1
+      name: Send message to Channel
+      description: Sends a file on Zoom to either an individual user in your contact
+        list or a channel of which you are a member.
+      script: '|||zoom-send-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "49"
+    scriptarguments:
+      message:
+        simple: Hi all!
+      to_channel:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2820
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "48":
+    id: "48"
+    taskid: 2bd75878-721b-4699-8244-46902bce9459
+    type: regular
+    task:
+      id: 2bd75878-721b-4699-8244-46902bce9459
+      version: -1
+      name: List user messages
+      description: List the existing channels
+      script: '|||zoom-list-messages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "50"
+    scriptarguments:
+      to_channel:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3170
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "49":
+    id: "49"
+    taskid: b89a17ac-694c-462a-8494-1312fc0c09fb
+    type: regular
+    task:
+      id: b89a17ac-694c-462a-8494-1312fc0c09fb
+      version: -1
+      name: Sleep(2sec)
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "48"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 2995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "50":
+    id: "50"
+    taskid: a1cfa9b2-fa09-4e6a-8025-383916c89499
+    type: condition
+    task:
+      id: a1cfa9b2-fa09-4e6a-8025-383916c89499
+      version: -1
+      name: Verify message created
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      "yes":
+      - "51"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Zoom.ChatMessage.messages.message
+            iscontext: true
+          right:
+            value:
+              simple: Hi all!
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3345
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "51":
+    id: "51"
+    taskid: bf32ea8c-993c-4410-81e9-6663bf010dc6
+    type: regular
+    task:
+      id: bf32ea8c-993c-4410-81e9-6663bf010dc6
+      version: -1
+      name: Update message
+      description: Edits a Zoom message.
+      script: '|||zoom-update-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "55"
+    scriptarguments:
+      message:
+        simple: HI all! update
+      message_id:
+        simple: ${Zoom.ChatMessage.id}
+      to_channel:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "53":
+    id: "53"
+    taskid: e3584795-9d9e-4c1a-8cf5-32c27692e278
+    type: regular
+    task:
+      id: e3584795-9d9e-4c1a-8cf5-32c27692e278
+      version: -1
+      name: List user messages
+      description: List the existing channels
+      script: '|||zoom-list-messages'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "54"
+    scriptarguments:
+      to_channel:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "54":
+    id: "54"
+    taskid: f69208dc-fa8b-4f13-889b-77797bea5792
+    type: regular
+    task:
+      id: f69208dc-fa8b-4f13-889b-77797bea5792
+      version: -1
+      name: verify message updated
+      description: |
+        Searches for string in a path in context. If path is null, string will be searched in full context.
+      scriptName: ContextSearchForString
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "56"
+    scriptarguments:
+      str:
+        simple: HI all! update
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4045
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "55":
+    id: "55"
+    taskid: 26fcea88-ade6-4e98-83b9-e7e8b00558f3
+    type: regular
+    task:
+      id: 26fcea88-ade6-4e98-83b9-e7e8b00558f3
+      version: -1
+      name: Sleep(2sec)
+      description: Sleep for X seconds
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "53"
+    scriptarguments:
+      seconds:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 3695
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: 8b4a5d48-22aa-4c85-8727-db345262e1a6
+    type: regular
+    task:
+      id: 8b4a5d48-22aa-4c85-8727-db345262e1a6
+      version: -1
+      name: Delete message
+      description: Deletes a Zoom message.
+      script: '|||zoom-delete-message'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      message_id:
+        simple: ${Zoom.ChatMessage.id}
+      to_channel:
+        complex:
+          root: Zoom.Channel
+          accessor: id
+          transformers:
+          - operator: atIndex
+            args:
+              index:
+                value:
+                  simple: "0"
+      user_id:
+        complex:
+          root: Zoom.User
+          filters:
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Zoom.User.first_name
+                iscontext: true
+              right:
+                value:
+                  simple: adminos
+          accessor: id
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 162.5,
+          "y": 4220
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 59f3578c-0536-4d07-8c70-7612f46dde61
+    type: regular
+    task:
+      id: 59f3578c-0536-4d07-8c70-7612f46dde61
+      version: -1
+      name: Get users
+      description: List the existing users
+      script: '|||zoom-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 370
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: f2a7b1e8-b73f-4804-896f-852b301d89d0
+    type: regular
+    task:
+      id: f2a7b1e8-b73f-4804-896f-852b301d89d0
+      version: -1
+      name: Get users
+      description: List the existing users
+      script: '|||zoom-list-users'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1245
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "38_35_#default#": 0.82,
+      "44_45_yes": 0.48,
+      "44_46_#default#": 0.56
+    },
+    "paper": {
+      "dimensions": {
+        "height": 4440,
+        "width": 492.5,
+        "x": 50,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+sourceplaybookid: Zoom_Test
