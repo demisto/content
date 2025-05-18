@@ -1399,7 +1399,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
         if missing_fields:
             missing_list = ", ".join(missing_fields)
-            raise DemistoException(f"Missing required field(s): {missing_list}")
+            raise DemistoException(f"Missing required field(s): {missing_list}.")
 
         policy = build_policy(args)
 
