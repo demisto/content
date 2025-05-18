@@ -256,34 +256,31 @@ class PychromeEventHandler:
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             try:
-                # The tab might be in the process of stopping, so we need to handle exceptions
-                if not (frame_url := self.get_frame_tree_url()):
-                    # If empty string returned, the event was already set in get_frame_tree_url
-                    return
-
                 # Check if the loaded page is a Chrome error page, which indicates a failed load
                 # Only retry loading when the URL is a direct file path
                 # This helps handle cases where local files fail to load on the first attempt
-                if frame_url.lower().startswith(CHROME_ERROR_URL) and self.path.lower().startswith("file://"):
-                    try:
+                if self.path.lower().startswith("file://"):
+                    frame_url = self.get_frame_tree_url()
+                    if frame_url and frame_url.lower().startswith(CHROME_ERROR_URL):
                         demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
                         self.retry_loading()
-                    except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
-                        # The tab is already stopping or has been stopped
-                        demisto.debug(
-                            f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
-                        )
+                    else:
+                        demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
                         self.tab_ready_event.set()
                 else:
                     demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
                     self.tab_ready_event.set()
+            except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
+                demisto.debug(
+                    f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}"
+                )
+                self.tab_ready_event.set()
             except Exception as ex:
-                # Catch any other unexpected exceptions
                 demisto.info(f"Unexpected exception in page_frame_stopped_loading {self.path=}, {self.tab.id=}: {ex}")
-                # Make sure we always set the event to prevent hanging
                 self.tab_ready_event.set()
 
-    def get_frame_tree_url(self):
+
+    def get_frame_tree_url(self) -> str:
         """
         Gets the frame tree URL from the tab and handles potential exceptions.
 
@@ -300,13 +297,17 @@ class PychromeEventHandler:
             demisto.debug(
                 f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
             )
-            # We should set the event and return to avoid further processing
-            self.tab_ready_event.set()
+            return ""
+        except Exception as ex:
+            demisto.info(f"Unexpected error getting frame tree URL: {ex}")
             return ""
 
     def retry_loading(self):
         """
         Attempts to reload the page multiple times.
+        
+        This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
+        if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
             demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
@@ -320,15 +321,24 @@ class PychromeEventHandler:
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            if not (frame_url := self.get_frame_tree_url()):
-                # If empty string returned, the event was already set in get_frame_tree_url
+            frame_url = self.get_frame_tree_url()
+
+            # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
+            if not frame_url:
+                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. Stopping retry attempts.")
+                self.tab_ready_event.set()
                 return
+                
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
                 self.tab_ready_event.set()
-                break
-        else:
-            demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+                return
+                
+            demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error.")
+
+        demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+        # Ensure we always set the event to prevent hanging
+        self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
