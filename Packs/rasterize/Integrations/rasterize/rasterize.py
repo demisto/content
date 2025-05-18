@@ -299,7 +299,7 @@ class PychromeEventHandler:
             )
             return ""
         except Exception as ex:
-            demisto.info(f"Unexpected error getting frame tree URL: {ex}")
+            demisto.debug(f"Unexpected error getting frame tree URL: {ex}")
             return ""
 
     def retry_loading(self):
