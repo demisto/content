@@ -1109,6 +1109,7 @@ def get_device_command(args, client) -> CommandResults:
         "GET",
         "/v3/reporting/devices",
         query_string=query_string,
+        page_size=500,
     )
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
