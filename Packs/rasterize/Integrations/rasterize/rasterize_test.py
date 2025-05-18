@@ -624,7 +624,7 @@ def test_is_mailto_urls(mocker: MockerFixture):
 def test_get_frame_tree_url_success(mocker: MockerFixture):
     """
     Test the get_frame_tree_url method of PychromeEventHandler with successful retrieval.
-    
+
     Given:
         - A PychromeEventHandler object with a mock tab that successfully returns a frame tree
     When:
@@ -635,16 +635,10 @@ def test_get_frame_tree_url_success(mocker: MockerFixture):
     """
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
-    mock_tab.Page.getFrameTree.return_value = {
-        "frameTree": {
-            "frame": {
-                "url": "https://test.com"
-            }
-        }
-    }
-    
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "https://test.com"}}}
+
     mock_event = mocker.Mock()
-    
+
     handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
 
     assert handler.get_frame_tree_url() == "https://test.com"
@@ -957,7 +951,7 @@ def test_retry_loading(mocker: MockerFixture):
 def test_get_frame_tree_url_exception_handling(exception_class, exception_message, mocker: MockerFixture):
     """
     Test the get_frame_tree_url method of PychromeEventHandler with exceptions.
-    
+
     Given:
         - A PychromeEventHandler object with a mock tab that raises exceptions
     When:
@@ -969,11 +963,11 @@ def test_get_frame_tree_url_exception_handling(exception_class, exception_messag
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
     mock_tab.Page.getFrameTree.side_effect = exception_class(exception_message)
-    
+
     mock_event = mocker.Mock()
-    
+
     handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
-    
+
     assert handler.get_frame_tree_url() == ""
     assert mock_event.set.called
 
@@ -1014,6 +1008,7 @@ def test_page_frame_stopped_loading(
 
     assert mock_event.set.called == mock_event_set_called
     assert mock_retry_loading.called == mock_retry_loading_called
+
 
 @pytest.mark.parametrize(
     "exception_class, exception_message",

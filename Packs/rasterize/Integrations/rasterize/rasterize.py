@@ -238,19 +238,21 @@ class PychromeEventHandler:
     def page_frame_stopped_loading(self, frameId):
         """
         Callback handler for when a frame has stopped loading in the page.
-        
+
         This method is called by Chrome when a frame in the page finishes loading. It checks if
         the finished frame is the main frame we're tracking, then verifies the loaded URL. If the
         URL indicates a Chrome error page for a local file, it attempts to retry loading. Otherwise,
         it signals that the page is ready by setting the tab_ready_event.
-        
+
         Args:
             frameId: The identifier of the frame that has finished loading
-            
+
         Returns:
             None
         """
-        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}, {self.path=}")
+        demisto.debug(
+            f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}, {self.path=}"
+        )
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
             try:
@@ -268,7 +270,9 @@ class PychromeEventHandler:
                         self.retry_loading()
                     except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
                         # The tab is already stopping or has been stopped
-                        demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
+                        demisto.debug(
+                            f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
+                        )
                         self.tab_ready_event.set()
                 else:
                     demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
@@ -282,7 +286,7 @@ class PychromeEventHandler:
     def get_frame_tree_url(self):
         """
         Gets the frame tree URL from the tab and handles potential exceptions.
-        
+
         Returns:
             str: The frame URL if successful, empty string on failure.
         """
@@ -293,7 +297,9 @@ class PychromeEventHandler:
             return frame_url
         except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
             # The tab is already stopping or has been stopped
-            demisto.debug(f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}")
+            demisto.debug(
+                f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
+            )
             # We should set the event and return to avoid further processing
             self.tab_ready_event.set()
             return ""
@@ -663,7 +669,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
+def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -1556,9 +1562,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(
-            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
-        )
+        return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
 
