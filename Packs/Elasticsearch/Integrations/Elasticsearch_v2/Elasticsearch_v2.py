@@ -1075,6 +1075,7 @@ def search_esql_command(args, proxies):
         }
     else:
         return_error("ES|QL Search is only supported in Elasticsearch 8.11 and above.")
+        return
 
     demisto.debug(f"ES|QL search body: {query}")
     res = es.perform_request(

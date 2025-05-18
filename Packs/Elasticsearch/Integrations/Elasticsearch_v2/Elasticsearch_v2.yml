@@ -430,12 +430,12 @@ script:
       required: true
     - description: Maximum number of results to return
       name: limit
-    description: Search using ES|QL query. (Elastic >=8.11)
+    description: Search using ES|QL query. (Elastic >=8.11).
     name: es-esql-search
     outputs:
     - contextPath: Elasticsearch.Search
-      description: ES|QL Search Result
-  dockerimage: demisto/elasticsearch:1.0.0.2640600
+      description: ES|QL Search Result.
+  dockerimage: demisto/elasticsearch:1.0.0.3266095
   isfetch: true
   runonce: false
   script: '-'
