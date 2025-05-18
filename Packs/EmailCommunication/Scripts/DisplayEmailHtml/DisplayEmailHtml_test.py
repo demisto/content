@@ -117,6 +117,7 @@ def test_create_email_html_saas(mocker):
     Then
     - The images' src attribute would be replaced as expected with a prefix of xsoar.
     """
+    import CommonServerPython
 
     from DisplayEmailHtml import create_email_html
 
