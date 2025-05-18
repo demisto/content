@@ -435,14 +435,14 @@ script:
     - description: The ES|QL query string to execute using piped syntax (e.g., FROM index | WHERE field == "value").
       name: query
       required: true
-    - description: Maximum number of results to return
+    - description: Maximum number of results to return.
       name: limit
     description: Search using ES|QL query. (Elastic >=8.11).
     name: es-esql-search
     outputs:
     - contextPath: Elasticsearch.Search
       description: ES|QL Search Result.
-  dockerimage: demisto/elasticsearch:1.0.0.3266095
+  dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
   ismappable: true
   runonce: false
