@@ -75,7 +75,7 @@ DEVICE_GET_COMMAND_RETURN_FIELDS = [
     "policyGroupName",
     "isStolen",
     "deviceStatus.type",
-    "deviceStatus.reported",5
+    "deviceStatus.reported",
     "networkSSID",
 ]
 
