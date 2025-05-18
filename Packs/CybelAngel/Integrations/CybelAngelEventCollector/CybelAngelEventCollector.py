@@ -237,7 +237,9 @@ class Client(BaseClient):
             demisto.debug(f"Fetched {len(more_events)} domain events on second call")
             events.extend(more_events)
 
-        return add_fields_to_events(events.reverse(), DOMAIN)
+        events.reverse()
+
+        return add_fields_to_events(events, DOMAIN)
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -404,6 +406,7 @@ def add_fields_to_events(events: list, event_type: str):
                 _time_field = event["created_at"]
         else:
             _time_field = event.get(TIME_FIELDS[event_type])
+
         event["_time"] = _time_field
         event["source_log_type"] = event_type
     return events
@@ -549,8 +552,7 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
             last_run[event_type] = {LATEST_TIME: now.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
         else:
             latest_time, latest_ids = get_latest_event_time_and_ids(events, event_type, last_time, last_ids)
-            demisto.debug(f"{event_type} latest time: {latest_time}")
-            demisto.debug(f"{event_type} latest IDs: {latest_ids}")
+            demisto.debug(f"{event_type} latest time: {latest_time}, latest IDs: {latest_ids}")
 
             last_run[event_type] = {LATEST_TIME: latest_time, LATEST_FETCHED_IDS: latest_ids}
             all_events.extend(events)
@@ -592,7 +594,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs=events,
         raw_response=events,
         readable_output=tableToMarkdown(
-            f"{event_type}", events, headers=["_time", "source_log_type", ID_KEYS[event_type]], removeNull=True
+            f"{event_type}", events, headers=["_time", "SOURCE_LOG_TYPE", ID_KEYS[event_type]], removeNull=True
         ),
     )
 
@@ -916,7 +918,7 @@ def get_last_run(now: datetime, events_type_to_fetch: list[str]) -> dict:
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
-        last_time = now - timedelta(days=30)  # TODO
+        last_time = now - timedelta(days=60)  # TODO
         demisto.debug("First run")
     for event_type in [REPORT, DOMAIN, CREDENTIALS]:
         if event_type not in last_run or (event_type in last_run and event_type not in events_type_to_fetch):

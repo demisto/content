@@ -14,7 +14,7 @@ Your API credentials are accessible in the Platform > Settings > API.
 ## CybelAngel Required Scopes
 - To fetch reports the api role required should be `reports.read`
 
-- To fetch Credential watchlist the api role required should be credentials.read
+- To fetch Credential watchlist the api role required should be `credentials.read`
 
 ## CybelAngel Rate Limits
 You are limited to 2000 bearer tokens per month, each token is valid for a period of 1 hour.
