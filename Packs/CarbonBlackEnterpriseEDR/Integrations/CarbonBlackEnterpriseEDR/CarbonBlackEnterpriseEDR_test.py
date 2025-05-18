@@ -643,6 +643,7 @@ check_getLastRun_data = [
     ),
 ]
 
+
 def test_fetch_incidents_duplicates_len_is_limit(mocker):
     """
     Given:
@@ -657,7 +658,7 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
     from CarbonBlackEnterpriseEDR import fetch_incidents
 
     mocked_func = mocker.patch.object(CLIENT, "search_alerts_request", return_value={})
-    last_run={"last_fetched_alert_create_time": "2000-07-16T05:26:05.491Z", "last_fetched_alerts_ids": ["123", "456"]}
+    last_run = {"last_fetched_alert_create_time": "2000-07-16T05:26:05.491Z", "last_fetched_alerts_ids": ["123", "456"]}
     limit = "50"
     _, res = fetch_incidents(
         CLIENT,
