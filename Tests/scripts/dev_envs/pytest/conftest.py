@@ -25,9 +25,9 @@ def check_logging(caplog):
     """
     yield
     messages = [
-        "{}: {}".format(x.levelname, x.message)
+        "{}: {}".format(x.levelname, x.message) # noqa: UP032
         for x in caplog.get_records("call")
-        if x.levelno >= logging.WARNING  # noqa: UP032
+        if x.levelno >= logging.WARNING
     ]
     if messages:
         pytest.fail(

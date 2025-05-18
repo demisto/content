@@ -705,7 +705,7 @@ def feed_main(feed_name, params=None, prefix=""):
     client = Client(**params)
     command = demisto.command()
     if command != "fetch-indicators":
-        demisto.info("Command being called is {}".format(command))
+        demisto.info(f"Command being called is {command}")
     if prefix and not prefix.endswith("-"):
         prefix += "-"
     # Switch case
