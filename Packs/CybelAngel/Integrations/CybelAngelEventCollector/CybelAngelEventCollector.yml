@@ -35,7 +35,7 @@ configuration:
   type: 8
   section: Collect
   advanced: true
-  required: true
+  required: false
   defaultvalue: 'false'
   hidden:
   - xsoar
@@ -120,7 +120,7 @@ script:
     - name: start_date
       description: 'Get reports from a specific start date formatted with ISO 8601, Example: "2025-01-14T10:22:45".'
       required: false
-    - description: 'Get reports until a specific end date formatted with ISO 8601, Example: "2025-01-14T10:22:45'
+    - description: 'Get reports until a specific end date formatted with ISO 8601, Example: "2025-01-14T10:22:45.'
       name: end_date
       required: false
     outputs:
