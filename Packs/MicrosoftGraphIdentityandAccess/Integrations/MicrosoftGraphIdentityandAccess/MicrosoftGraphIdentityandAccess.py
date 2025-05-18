@@ -400,6 +400,7 @@ class Client:  # pragma: no cover
             res = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
 
             if res.status_code == 204:
+                demisto.info(f"Conditional Access policy {policy_id} was successfully deleted.")
                 return CommandResults(readable_output=f"Conditional Access policy {policy_id} was successfully deleted.")
             else:
                 demisto.error(
@@ -409,6 +410,10 @@ class Client:  # pragma: no cover
                 raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.\n{res}")
 
         except Exception as e:
+            demisto.error(
+                f"Failed to delete Conditional Access policy {policy_id}. Status code: {res.status_code},"
+                f" Response: {res.text}"
+            )
             raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n {str(e)}")
 
     def create_conditional_access_policy(self, policy: Dict[str, Any]) -> CommandResults:
@@ -439,10 +444,11 @@ class Client:  # pragma: no cover
                     raw_response=res,
                 )
             else:
-                demisto.info(f"Error creating Conditional Access policy:\n{str(res)}")
+                demisto.error(f"Error creating Conditional Access policy:\n{str(res)}")
                 raise DemistoException(f"Error creating Conditional Access policy:\n{str(res)}")
 
         except Exception as e:
+            demisto.error(f"Error creating Conditional Access policy:\n{str(e)}")
             raise DemistoException(f"Error creating Conditional Access policy:\n{str(e)}")
 
     def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
@@ -469,16 +475,87 @@ class Client:  # pragma: no cover
                     readable_output=f"Conditional Access policy {policy_id} was successfully updated.",
                 )
             else:
-                demisto.info(f"An error occurred. Conditional Access policy {policy_id} could not be updated:\n{res}")
+                demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
                 raise DemistoException(f"An error occurred while updating Conditional Access policy '{policy_id}':\n{res}")
 
         except Exception as e:
+            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
             raise DemistoException(
                 f"Error updating Conditional Access policy:\n{str(e)}",
             )
 
 
 """ UTILITIES"""
+
+
+def build_policy(args: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Builds a Conditional Access policy object from the provided arguments.
+
+    Args:
+        args (dict): Command arguments containing policy details.
+            policy_name (str): Display name for the policy.
+            state (str): State of the policy (enabled, disabled, etc.).
+            sign_in_risk_levels (str): Risk levels for sign-in.
+            user_risk_levels (str): Risk levels for users.
+            client_app_types (str): List of client application types.
+            include_applications (str, optional): Applications to include.
+            exclude_applications (str, optional): Applications to exclude.
+            include_user_actions (str, optional): User actions to include.
+            include_users (str, optional): Users to include.
+            exclude_users (str, optional): Users to exclude.
+            include_roles (str, optional): Roles to include.
+            exclude_roles (str, optional): Roles to exclude.
+            include_groups (str, optional): Groups to include.
+            exclude_groups (str, optional): Groups to exclude.
+            include_platforms (str, optional): Platforms to include.
+            exclude_platforms (str, optional): Platforms to exclude.
+            include_locations (str, optional): Locations to include.
+            exclude_locations (str, optional): Locations to exclude.
+            grant_control_operator (str, optional): Operator for grant controls, default is AND.
+            grant_control_enforcement (str, optional): Enforcement controls, default is mfa.
+
+    Returns:
+        dict: A structured policy object ready to be used in creating a Conditional Access policy.
+
+    """
+
+    policy = {
+        "displayName": args.get("policy_name"),
+        "state": args.get("state"),
+        "conditions": {
+            "clientAppTypes": argToList(args.get("client_app_types")),
+            "applications": {
+                "includeApplications": argToList(args.get("include_applications")),
+                "excludeApplications": argToList(args.get("exclude_applications")),
+                "includeUserActions": argToList(args.get("include_user_actions")),
+            },
+            "users": {
+                "includeUsers": argToList(args.get("include_users")),
+                "excludeUsers": argToList(args.get("exclude_users")),
+                "includeRoles": argToList(args.get("include_roles")),
+                "excludeRoles": argToList(args.get("exclude_roles")),
+                "includeGroups": argToList(args.get("include_groups")),
+                "excludeGroups": argToList(args.get("exclude_groups")),
+            },
+            "platforms": {
+                "includePlatforms": argToList(args.get("include_platforms")),
+                "excludePlatforms": argToList(args.get("exclude_platforms")),
+            },
+            "locations": {
+                "includeLocations": argToList(args.get("include_locations")),
+                "excludeLocations": argToList(args.get("exclude_locations")),
+            },
+            "signInRiskLevels": argToList(args.get("sign_in_risk_levels")),
+            "userRiskLevels": argToList(args.get("user_risk_levels")),
+        },
+        "grantControls": {
+            "operator": args.get("grant_control_operator"),
+            "builtInControls": argToList(args.get("grant_control_enforcement")),
+        },
+    }
+
+    return policy
 
 
 def deep_get(root: dict[str, Any], path: list[str]) -> Any | None:
@@ -493,11 +570,18 @@ def deep_get(root: dict[str, Any], path: list[str]) -> Any | None:
         Any | None: The value at the specified path, or None if any key in the path doesn't exist.
     """
     try:
+        demisto.debug(f"Getting value from path {path} in dictionary")
         acc = root
-        for key in path:
+
+        for i, key in enumerate(path):
+            demisto.debug(f"Accessing key '{key}' ({i+1}/{len(path)})")
             acc = acc[key]
+
+        demisto.debug(f"Successfully retrieved value from path {path}")
         return acc
-    except (KeyError, TypeError):
+
+    except (KeyError, TypeError) as e:
+        demisto.info(f"Failed to get value from path {path}: {str(e)}")
         return None
 
 
@@ -555,29 +639,39 @@ def resolve_merge_value(
     specials = {"All", "all", "AllTrusted"}
     none_values = {"None", "none"}
 
+    demisto.debug(f"resolve_merge_value: Merging '{field}' values. Existing: {existing}, New: {new}")
+
     # Sign-in risk levels are a straight set-union because this filed can contain combination of
     # "none" and other values like "low", "medium", "high" (i.e: signInRiskLevels = "none", "low")
     if field == "signInRiskLevels":
-        return list(set(existing) | set(new))
+        result = list(set(existing) | set(new))
+        demisto.debug(f"resolve_merge_value: Field '{field}' is a sign-in risk level. Merged result: {result}")
+        return result
 
     # Existing == ['None'] → take the new list
     if set(existing).issubset(none_values):
+        demisto.debug(f"resolve_merge_value: Existing values for '{field}' are 'None'. Using new values: {new}")
         return new
 
     # Existing is a blocking special value → keep it, warn once
     if existing and existing[0] in specials:
-        messages.append(
+        message = (
             f"Field '{field}' kept as '{existing[0]}' (special value cannot be merged).\n"
             f"To update this field, use update_action='override'."
         )
+        messages.append(message)
+        demisto.debug(f"resolve_merge_value: {message}")
         return existing
 
     # Incoming list is itself only a special value → take it
     if set(new).issubset(specials):
+        demisto.debug(f"resolve_merge_value: New values for '{field}' contain only special values: {new}. Using new values.")
         return new
 
     # Otherwise, normal union
-    return list(set(existing) | set(new))
+    result = list(set(existing) | set(new))
+    demisto.debug(f"resolve_merge_value: Performed normal union for '{field}'. Merged result: {result}")
+    return result
 
 
 def merge_policy_section(
@@ -601,33 +695,54 @@ def merge_policy_section(
     """
 
     def walk(node_new: Dict[str, Any], path: List[str]) -> None:
+        demisto.debug(f"merge_policy_section - walk: Starting with path {path}")
+
         for key, val in node_new.items():
             current_path_to_key = path + [key]
+            demisto.debug(f"merge_policy_section - walk: Processing key {key} at path {'/'.join(current_path_to_key)}")
 
             # ── dive deeper
             if isinstance(val, dict):
+                demisto.debug(f"merge_policy_section - walk: Found dictionary at {'/'.join(current_path_to_key)}, diving deeper")
                 walk(val, current_path_to_key)
                 continue
 
             # ── override non-list leaves
             if not isinstance(val, list):
+                demisto.debug(
+                    f"merge_policy_section - walk: Found non-list value at {'/'.join(current_path_to_key)},"
+                    f"this value will be overriding"
+                )
                 messages.append(f"Field `{'/'.join(current_path_to_key)}` is not a list - overriding the value.")
                 continue
 
             existing_val = deep_get(base_existing, current_path_to_key)
+            demisto.debug(f"merge_policy_section - walk: Existing value at {'/'.join(current_path_to_key)}: {existing_val}")
+
             if isinstance(existing_val, list):
+                demisto.debug(f"merge_policy_section - walk: Merging lists for {'/'.join(current_path_to_key)}")
                 merged = resolve_merge_value(key, existing_val, val, messages)
+                demisto.debug(f"merge_policy_section - walk: Merged result for {'/'.join(current_path_to_key)}: {merged}")
                 deep_set(new, current_path_to_key, merged)
+
             else:
                 # no existing list (or wrong type) → leave new value as-is
                 if existing_val is None:
+                    demisto.debug(f"merge_policy_section - walk: No existing value at {'/'.join(current_path_to_key)}")
                     messages.append(f"Field `{'/'.join(current_path_to_key)}` was empty - new list left untouched.")
+                    demisto.debug(f"merge_policy_section - walk: new value at {'/'.join(current_path_to_key)} is {val}")
+
                 else:
+                    demisto.debug(f"merge_policy_section - walk: Existing value at {'/'.join(current_path_to_key)} is not a list")
                     messages.append(
                         f"Field `{'/'.join(current_path_to_key)}` exists but is not a list - new list left untouched."
                     )
 
+        demisto.debug(f"merge_policy_section - walk: Finished processing path {path}")
+
+    demisto.debug("merge_policy_section: Starting policy merge process")
     walk(new, [])
+    demisto.debug("merge_policy_section: Completed policy merge process")
 
 
 """ COMMAND FUNCTIONS """
@@ -1191,10 +1306,12 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     all_results = argToBoolean(args.get("all_results", True))
 
     if policy_id and filter_query:
-        raise DemistoException("Cannot provide both policy_id and filter_query at the same time.\nPlease choose one")
+        raise DemistoException("Cannot provide both policy_id and filter_query at the same time.\nPlease choose one.")
+
     policies: list[dict[str, Any]] = client.list_conditional_access_policies(policy_id, filter_query)
 
     if len(policies) == 0:
+        demisto.info("No Conditional Access policies found.")
         return CommandResults(readable_output="No Conditional Access policies found.")
     elif limit:
         max_items = int(limit)
@@ -1254,76 +1371,6 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
     policy_id = args.get("policy_id", "")
 
     return client.delete_conditional_access_policy(policy_id)
-
-
-def build_policy(args: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Builds a Conditional Access policy object from the provided arguments.
-
-    Args:
-        args (dict): Command arguments containing policy details.
-            policy_name (str): Display name for the policy.
-            state (str): State of the policy (enabled, disabled, etc.).
-            sign_in_risk_levels (str): Risk levels for sign-in.
-            user_risk_levels (str): Risk levels for users.
-            client_app_types (str): List of client application types.
-            include_applications (str, optional): Applications to include.
-            exclude_applications (str, optional): Applications to exclude.
-            include_user_actions (str, optional): User actions to include.
-            include_users (str, optional): Users to include.
-            exclude_users (str, optional): Users to exclude.
-            include_roles (str, optional): Roles to include.
-            exclude_roles (str, optional): Roles to exclude.
-            include_groups (str, optional): Groups to include.
-            exclude_groups (str, optional): Groups to exclude.
-            include_platforms (str, optional): Platforms to include.
-            exclude_platforms (str, optional): Platforms to exclude.
-            include_locations (str, optional): Locations to include.
-            exclude_locations (str, optional): Locations to exclude.
-            grant_control_operator (str, optional): Operator for grant controls, default is AND.
-            grant_control_enforcement (str, optional): Enforcement controls, default is mfa.
-
-    Returns:
-        dict: A structured policy object ready to be used in creating a Conditional Access policy.
-
-    """
-
-    policy = {
-        "displayName": args.get("policy_name"),
-        "state": args.get("state"),
-        "conditions": {
-            "clientAppTypes": argToList(args.get("client_app_types")),
-            "applications": {
-                "includeApplications": argToList(args.get("include_applications")),
-                "excludeApplications": argToList(args.get("exclude_applications")),
-                "includeUserActions": argToList(args.get("include_user_actions")),
-            },
-            "users": {
-                "includeUsers": argToList(args.get("include_users")),
-                "excludeUsers": argToList(args.get("exclude_users")),
-                "includeRoles": argToList(args.get("include_roles")),
-                "excludeRoles": argToList(args.get("exclude_roles")),
-                "includeGroups": argToList(args.get("include_groups")),
-                "excludeGroups": argToList(args.get("exclude_groups")),
-            },
-            "platforms": {
-                "includePlatforms": argToList(args.get("include_platforms")),
-                "excludePlatforms": argToList(args.get("exclude_platforms")),
-            },
-            "locations": {
-                "includeLocations": argToList(args.get("include_locations")),
-                "excludeLocations": argToList(args.get("exclude_locations")),
-            },
-            "signInRiskLevels": argToList(args.get("sign_in_risk_levels")),
-            "userRiskLevels": argToList(args.get("user_risk_levels")),
-        },
-        "grantControls": {
-            "operator": args.get("grant_control_operator"),
-            "builtInControls": argToList(args.get("grant_control_enforcement")),
-        },
-    }
-
-    return policy
 
 
 def create_conditional_access_policy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
