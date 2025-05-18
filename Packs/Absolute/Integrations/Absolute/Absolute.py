@@ -1105,7 +1105,11 @@ def get_device_command(args, client) -> CommandResults:
     else:
         query_string = parse_return_fields(",".join(DEVICE_GET_COMMAND_RETURN_FIELDS), query_string)
 
-    res = client.api_request_absolute("GET", "/v3/reporting/devices", query_string=query_string)
+    res = client.api_request_absolute(
+        "GET",
+        "/v3/reporting/devices",
+        query_string=query_string,
+    )
     if res:
         outputs = parse_device_list_response(copy.deepcopy(res))
         human_readable = tableToMarkdown(f"{INTEGRATION} devices list:", outputs, removeNull=True)
