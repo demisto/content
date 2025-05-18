@@ -1071,4 +1071,5 @@ def test_search_command_with_query_esql(mocker):
         result = Elasticsearch_v2.search_esql_command(args, {})
         assert result["took"] == 11
         assert result["values"][0] == ["karl@test.io"]
+        assert result["columns"][0]["type"] == "text"
         mock_search.assert_called_once_with(args, {})
