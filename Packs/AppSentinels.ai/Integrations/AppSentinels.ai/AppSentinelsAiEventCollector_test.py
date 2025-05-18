@@ -63,6 +63,18 @@ class TestHelperFunctions:
     def test_remove_first_run_params(self, input_params: Dict[str, Any], expected_params: Dict[str, Any]):
         """
         Test remove_first_run_params function behavior.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         params_copy = input_params.copy()  # Avoid modifying original test data
         remove_first_run_params(params_copy)
@@ -84,6 +96,18 @@ class TestFetchEvents:
     def test_fetch_events_list_initial_fetch(self, client, mocker, mock_response_data):
         """
         Test fetch_events_list for the initial fetch (no last_event_id).
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
         last_run = {}
@@ -112,6 +136,18 @@ class TestFetchEvents:
     def test_fetch_events_list_subsequent_fetch(self, client, mocker, mock_response_data):
         """
         Test fetch_events_list for subsequent fetches (with last_event_id).
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
         last_run = {"last_event_id": 10}  # Simulate a previous fetch
@@ -131,6 +167,18 @@ class TestFetchEvents:
     def test_fetch_events_list_fetch_limit(self, client, mocker, mock_response_data):
         """
         Test fetch_events_list with a fetch_limit.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
         last_run = {"last_event_id": 0}
@@ -144,6 +192,18 @@ class TestFetchEvents:
     def test_fetch_events_list_multiple_pages(self, client, mocker):
         """
         Test fetch_events_list with multiple pages of results.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mock_response_page1 = {
             "data": [
@@ -172,6 +232,18 @@ class TestFetchEvents:
     def test_fetch_events_list_no_events(self, client, mocker):
         """
         Test fetch_events_list when the API returns no events.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mocker.patch.object(client, "get_events_request", return_value={"data": [], "last_event_id": 0, "more_records": False})
         last_run = {}
@@ -183,6 +255,18 @@ class TestFetchEvents:
     def test_fetch_events_list_with_fetch_limit_smaller_than_page_size(self, client, mocker):
         """
         Test fetch_events_list with fetch_limit smaller than the events returned.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
         mock_response_data = {
             "data": [
@@ -204,6 +288,18 @@ class TestFetchEvents:
     def test_fetch_events_list_with_fetch_limit_larger_than_total_events(self, client, mocker):
         """
         Test fetch_events_list with fetch_limit larger than the total number of events.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
         """
 
         mock_response_data = {
@@ -230,7 +326,21 @@ class TestGetEvents:
         return mocker.patch.object(Client, "get_events_request")
 
     def test_get_events_no_events(self, client, mock_client_get_events_request):
-        """Test get_events when the API returns no events."""
+        """
+        Test get_events when the API returns no events.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
+        """
         mock_client_get_events_request.return_value = {"data": []}
         args = {}  # Empty args
         result = get_events(client, args)
@@ -239,7 +349,21 @@ class TestGetEvents:
         assert result.readable_output == "### AppSentinels.ai Record(s)\n**No entries.**\n"
 
     def test_get_events_with_events(self, client, mock_client_get_events_request):
-        """Test get_events with events returned."""
+        """
+        Test get_events with events returned.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
+        """
         dummy_data = util_load_json("test_data/events-dummy-data.json")
         mock_events_data = {
             "data": dummy_data
@@ -255,7 +379,21 @@ class TestGetEvents:
         assert "Action" in result.readable_output
 
     def test_get_events_with_limit(self, client, mock_client_get_events_request):
-        """Test get_events with a limit argument."""
+        """
+        Test get_events with a limit argument.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
+        """
         mock_data = util_load_json("test_data/events-dummy-data.json")
         mock_events_data = {
             "data": mock_data
@@ -267,7 +405,21 @@ class TestGetEvents:
 
     @freeze_time("2025-01-15 12:00:00")
     def test_get_events_with_first_fetch(self, client, mock_client_get_events_request):
-        """Test get_events with a first_fetch argument."""
+        """
+        Test fetch_by_aql_query function behavior on initial fetch.
+
+        Given:
+            - Valid HTTP request parameters.
+            - First fetch of the instance is running.
+            - from argument is None.
+
+        When:
+            - Fetching events.
+        Then:
+            - Make sure the request is sent with right parameters.
+            - Make sure the 'from' aql parameter request is sent with the "current" time 2023-01-01T01:00:00.
+            - Make sure the pagination logic performs as expected.
+        """
         mock_events_data = {"data": []}
         mock_client_get_events_request.return_value = mock_events_data
         first_fetch_time = "1 Days"
@@ -276,5 +428,4 @@ class TestGetEvents:
         mock_client_get_events_request.assert_called_once()
         expected_params = {"from_timestamp": "2025-01-14T12:00:00.000000Z"}
         mock_client_get_events_request.assert_called_with(params=expected_params)
-
 
