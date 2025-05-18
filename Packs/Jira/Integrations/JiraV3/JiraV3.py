@@ -1081,6 +1081,17 @@ class JiraCloudClient(JiraBaseClient):
         """
         return self.http_request(method="GET", url_suffix="rest/api/3/project/search", params=query_params)
 
+    def get_jira_base_url(self) -> str:
+        """
+        Fetches the Jira UI base URL from the serverInfo endpoint.
+        Requires the client to have a `get` method for REST calls.
+
+        Returns:
+            str: The Jira UI base URL (e.g., https://yourcompany.atlassian.net)
+        """
+        server_info = self.http_request(method="GET", url_suffix="rest/api/3/serverInfo")
+        return server_info["baseUrl"]
+
     def issues_to_backlog(self, board_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues, back to backlog of their board.
 
@@ -1535,6 +1546,27 @@ def get_project_id_from_name(client: JiraBaseClient, project_name: str) -> str:
     if len(queried_projects) > 1:
         raise DemistoException(f"Found more than one project with the name {project_name}")
     return queried_projects[0].get("id", "")
+
+
+def get_jira_display_url(client: JiraBaseClient) -> str:
+    """Returns the project id of the project with the name project_name
+
+    Args:
+        client (JiraBaseClient): The Jira client.
+
+    Raises:
+        DemistoException: If no projects were found with the respective project name.
+        DemistoException: If more than one project was found with the respective project name.
+
+    Returns:
+        str: The project id corresponding to the project name.
+    """
+    ui_base_url = ""
+    if isinstance(client, JiraCloudClient):
+        ui_base_url = client.get_jira_base_url()
+    elif isinstance(client, JiraOnPremClient):
+        return client.server_url
+    return ui_base_url
 
 
 def prepare_pagination_args(page: int | None = None, page_size: int | None = None, limit: int | None = None) -> Dict[str, int]:
@@ -2370,7 +2402,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False) -> list[CommandResults]:
+def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False, server_url: str = "") -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
@@ -2400,10 +2432,16 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_
         raise DemistoException("The summary argument must be provided.")
     res = client.create_issue(json_data=issue_fields)
 
-    ticket_url = res.get("self")
     ticket_id = res.get("id") or res.get("ticket_id")
     ticket_key = res.get("key", "")
     formatted_ticket_id = f"{ticket_key}-{ticket_id}"
+
+    if isinstance(client, JiraCloudClient):
+        ui_base_url = client.get_jira_base_url()
+    else:
+        ui_base_url = server_url
+    ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
+
     mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=formatted_ticket_id)
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
@@ -4866,7 +4904,7 @@ def main():  # pragma: no cover
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client=client))
         elif command == "jira-create-issue-quick-action":
-            return_results(create_issue_command(client=client, args=args, is_quick_action=True))
+            return_results(create_issue_command(client=client, args=args, is_quick_action=True, server_url=server_url))
         elif command == "update-remote-system":
             return_results(
                 update_remote_system_command(
