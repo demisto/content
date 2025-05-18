@@ -1,5 +1,4 @@
 Appsentinels.ai offers a platform for collecting, analyzing, and managing security events to provide comprehensive application protection.
-This integration was integrated and tested with version xx of AppSentinels.ai.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -9,8 +8,8 @@ This is the default integration for this content pack when configured by the Dat
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
-| User Key | The Client User key and API key for connection with AppSentinels.ai | True |
-| API Key |  | True |
+| User Key | The Client User key for connection with AppSentinels.ai | True |
+| API Key | The Client API key for connection with AppSentinels.ai | True |
 | Organization name | The Organization name. | True |
 | Application name | The Application name. | True |
 | Trust any certificate (not secure) |  | False |

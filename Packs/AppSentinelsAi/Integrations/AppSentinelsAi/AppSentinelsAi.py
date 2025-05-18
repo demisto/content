@@ -233,6 +233,7 @@ def fetch_events(
         use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
 
     Returns:
+        Tuple[list[dict[str, Any]], dict]: A tuple containing:
          - List of new records to be pushed into XSIAM.
          - Updated last_run dictionary.
     """
