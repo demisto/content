@@ -594,7 +594,9 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_key_field="id",
         outputs=events,
         raw_response=events,
-        readable_output=tableToMarkdown(f"{event_type}", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=True),
+        readable_output=tableToMarkdown(
+            f"{event_type}", events, headers=["_time", "SOURCE_LOG_TYPE", ID_KEYS[event_type]], removeNull=True
+        ),
     )
 
 

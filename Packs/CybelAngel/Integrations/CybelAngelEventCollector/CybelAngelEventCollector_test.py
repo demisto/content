@@ -1142,3 +1142,19 @@ def test_fetch_events_same_timestamp(mocker):
     assert DOMAIN in new_last_run
     assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
     assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {"1", "2", "3", "4", "5", "6"}
+
+
+def test_dedup_fetched_events_filters_and_preserves_order():
+    from CybelAngelEventCollector import dedup_fetched_events
+
+    events = [
+        {ID_KEYS[REPORT]: "1", "_time": "2025-01-01T00:00:00"},
+        {ID_KEYS[REPORT]: "2", "_time": "2025-01-01T00:00:01"},
+        {ID_KEYS[REPORT]: "3", "_time": "2025-01-01T00:00:02"},
+        {ID_KEYS[REPORT]: "4", "_time": "2025-01-01T00:00:03"},
+    ]
+    last_run_ids = {"2", "4"}
+
+    result = dedup_fetched_events(events, last_run_ids, REPORT)
+
+    assert [e[ID_KEYS[REPORT]] for e in result] == ["1", "3"]
