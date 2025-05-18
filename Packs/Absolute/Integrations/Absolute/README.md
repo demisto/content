@@ -778,7 +778,7 @@ Gets a list of device records and their corresponding data that meets the requir
 
 ### absolute-device-get
 ***
-Gets a list of device records and their corresponding data that meets the required fields for all devices in your account.
+Gets a list of device records and their corresponding data that meets the required fields for all devices in your account. Note that the command support only up to 500 different devices.
 
 
 #### Base Command
