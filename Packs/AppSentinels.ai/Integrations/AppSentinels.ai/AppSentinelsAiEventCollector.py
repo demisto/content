@@ -13,7 +13,9 @@ from CommonServerUserPython import *
 urllib3.disable_warnings()
 
 """ CONSTANTS """
-
+VENDOR = "AppSentinels"
+PRODUCT = "AppSentinels"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 BASE_EVENT_BODY: dict = {
     "aggregation": False,
     "api_id": 0,
@@ -64,7 +66,7 @@ class Client(BaseClient):
         self.base_event_body = base_event_body
 
     def get_events_request(self, params: dict) -> dict:
-        """Retrieve the detections from AdminByRequest  API."""
+        """Retrieve the detections from AppSentinels.ai  API."""
         url_suffix = f'/api/v1/{self.organization}/{self.application}/events'
         body = self.base_event_body.copy()
         body.update(params)
@@ -74,62 +76,146 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def fetch_events_list(client: Client, last_run: dict, use_last_run_as_params) -> list[dict[str, Any]]:
+# def fetch_events_list(client: Client, last_run: dict, use_last_run_as_params) -> list[dict[str, Any]]:
+#     """
+#     Main Function that Handles the Fetch action to the API service of AppSentinels.ai.
+#     Args:
+#         client (Client): The client object used to interact with the AppSentinels.ai service.
+#         last_run (dict): The last_run dictionary having the state of previous cycle.
+#         event_type (EventType): Event Type to fetch from API
+#         use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+#
+#     Returns:
+#         list[dict[str, Any]]: List of records retrieved from the api call.
+#     """
+#     params, suffix, last_run_key = validate_fetch_events_params(last_run, event_type, use_last_run_as_params)
+#     time_field, source_log_type = event_type.time_field, event_type.source_log_type
+#     fetch_limit = event_type.max_fetch
+#     last_id: int = 0
+#     output: list[dict[str, Any]] = []
+#     while True:
+#         try:
+#             # API call
+#             events = list(client.get_events_request(url_suffix=suffix, params=params))
+#         except DemistoException as error:
+#             err_type = getattr(error, "exception", None)
+#             # If we have a Connection error with the server - return clean error message
+#             if isinstance(err_type, requests.exceptions.ConnectionError):
+#                 clean_msg = str(error).split("\nError Type")[0]
+#                 raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {clean_msg}")
+#             else:
+#                 raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
+#
+#         if not events:
+#             break
+#
+#         for event in events:
+#             #  Updates each records in the list with _TIME and source_log_type fields
+#             #  based on specific fields for each EventType.
+#             last_id = event["id"]
+#             event["_TIME"] = time_field
+#             event["source_log_type"] = source_log_type
+#
+#             output.append(event)
+#
+#             if len(output) >= fetch_limit:
+#                 # update last run and return because we reach limit
+#                 last_run.update({last_run_key: int(last_id + 1)})
+#                 return output
+#
+#         # If it was the first run, we have a first run "params values"
+#         remove_first_run_params(params)
+#         params["startid"] = last_id + 1
+#
+#     # If we got at list one entity to add to output - update last ID
+#     if last_id:
+#         last_run.update({last_run_key: int(last_id + 1)})
+#
+#     return output
+
+def remove_first_run_params(params: dict[str, Any]) -> None:
     """
-    Main Function that Handles the Fetch action to the API service of AppSentinels.ai.
+    Remove the "First Run" items from the param dictionary.
+
     Args:
-        client (Client): The client object used to interact with the AppSentinels.ai service.
-        last_run (dict): The last_run dictionary having the state of previous cycle.
-        event_type (EventType): Event Type to fetch from API
-        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+        params (Dict[str, Any]): Integration parameters.
+
+    """
+    for key in ("from_timestamp", "to_timestamp"):
+        params.pop(key, None)
+
+def fetch_events_list(
+    client: Client, last_run: Dict, fetch_limit: Optional[int] = None
+) -> List[Dict]:
+    """
+    Fetches events from the AppSentinels.ai API, handling pagination and last_run.
+
+    Args:
+        client (Client): The client object for interacting with the AppSentinels.ai API.
+        last_run (Dict): A dictionary containing the last processed event ID.
+        fetch_limit (Optional[int]): The maximum number of events to fetch.
 
     Returns:
-        list[dict[str, Any]]: List of records retrieved from the api call.
+        List[Dict]: A list of fetched events.
     """
-    params, suffix, last_run_key = validate_fetch_events_params(last_run, event_type, use_last_run_as_params)
-    time_field, source_log_type = event_type.time_field, event_type.source_log_type
-    fetch_limit = event_type.max_fetch
-    last_id: int = 0
-    output: list[dict[str, Any]] = []
-    while True:
+    events: List[Dict] = []
+
+    params: Dict[str, Any] = {}  # Initialize params
+
+    # Determine the fetch params
+
+    if "last_event_id" not in last_run:
+        # Initial fetch: from 1 minute before now to now
+        current_time = get_current_time()
+        start_time = (current_time - timedelta(minutes=1)).strftime(DATE_FORMAT)
+        end_time = current_time.strftime(DATE_FORMAT)
+        params["from_timestamp"] = start_time
+        params["to_timestamp"] = end_time
+        demisto.debug(f"Fetching events from date={start_time} to date={end_time}.")
+    else:
+        # Subsequent fetches: use last_event_id
+        last_event_id_last = last_run["last_event_id"]
+        params["last_event_id"] = last_event_id_last
+        demisto.debug(f"Fetching with last_event_id: {last_event_id_last}")
+
+    while True:  
         try:
             # API call
-            events = list(client.get_events_request(url_suffix=suffix, params=params))
+            response_data = client.get_events_request(params=params)  # Use the client method
         except DemistoException as error:
-            err_type = getattr(error, "exception", None)
-            # If we have a Connection error with the server - return clean error message
-            if isinstance(err_type, requests.exceptions.ConnectionError):
-                clean_msg = str(error).split("\nError Type")[0]
-                raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {clean_msg}")
-            else:
-                raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
+            raise DemistoException(f"AppSentinels.ai: During fetch, exception occurred {str(error)}")
 
-        if not events:
+        if not response_data or not response_data.get("data"):
+            demisto.debug("No events returned from API.")
+            break  # Exit loop if no data
+
+        new_events = response_data.get("data", [])
+
+        if not new_events:
             break
 
-        for event in events:
-            #  Updates each records in the list with _TIME and source_log_type fields
-            #  based on specific fields for each EventType.
-            last_id = event["id"]
-            event["_TIME"] = time_field
-            event["source_log_type"] = source_log_type
+        last_event_id = response_data.get("last_event_id")
+        last_run["last_event_id"] = last_event_id
+        more_records = response_data.get("more_records", False)
 
-            output.append(event)
+        for event in new_events:
+            event["_TIME"] = event.get("timestamp")
+            event["source_log_type"] = "event"
 
-            if len(output) >= fetch_limit:
-                # update last run and return because we reach limit
-                last_run.update({last_run_key: int(last_id + 1)})
-                return output
+            events.append(event)
 
-        # If it was the first run, we have a first run "params values"
+            if len(events) >= fetch_limit:
+                return events
+
+        if not more_records:
+            break
+
+        # Update Params for next call
         remove_first_run_params(params)
-        params["startid"] = last_id + 1
+        params["last_event_id"] = last_event_id
 
-    # If we got at list one entity to add to output - update last ID
-    if last_id:
-        last_run.update({last_run_key: int(last_id + 1)})
 
-    return output
+    return events
 
 
 """ COMMAND FUNCTIONS """
@@ -152,23 +238,24 @@ def test_module(client: Client) -> str:
 
 
 def fetch_events(
-    client: Client, last_run: dict, use_last_run_as_params: bool = False
+    client: Client, last_run: dict, fetch_limit: int | None = None
 ) -> tuple[list[dict[str, Any]], dict]:
     """Fetch the specified AppSentinels.ai entity records.
 
      Args:
         client (Client): The client object used to interact with the AppSentinels.ai service.
         last_run (dict): The last_run dictionary having the state of previous cycle.
-        use_last_run_as_params (bool): Flag that sign do we use the last-run as params for the API call
+        fetch_limit (int | None): The maximum number of events to fetch.
 
     Returns:
          - List of new records to be pushed into XSIAM.
          - Updated last_run dictionary.
     """
     demisto.debug("AppSentinels.ai fetch_events invoked")
+
     events = []
 
-    output = fetch_events_list(client, last_run, event_type, use_last_run_as_params)
+    output = fetch_events_list(client, last_run, fetch_limit)
     events.extend(output)
 
     demisto.debug(f"AppSentinels.ai next_run is {last_run}")
@@ -235,16 +322,16 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, api_key=api_key, verify=verify_certificate, use_proxy=proxy)
+        client = Client(base_url=base_url, user_key=user_key, api_key=api_key, organization=organization, application=application,
+                        base_event_body=BASE_EVENT_BODY, verify=verify_certificate, use_proxy=proxy)
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
             result = test_module(client)
             return_results(result)
         elif command == "fetch-events":
-            fetch_events_types = set_event_type_fetch_limit(params)
             last_run = demisto.getLastRun()
-            events, next_run = fetch_events(client, last_run, fetch_events_types)
+            events, next_run = fetch_events(client, last_run, fetch_limit)
             if len(events):
                 demisto.debug(f"Sending {len(events)} events to XSIAM AppSentinels.ai, before server call.")
                 send_events_to_xsiam(events=events, vendor=VENDOR, product=PRODUCT)
