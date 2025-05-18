@@ -59,6 +59,14 @@
         "_raw_log": {
             "type": "string",
             "is_array": false
+        },
+        "Id": {
+            "type": "string",
+            "is_array": false
+        },
+        "TimeGenerated": {
+            "type": "string",
+            "is_array": false
         }
     }
 }
