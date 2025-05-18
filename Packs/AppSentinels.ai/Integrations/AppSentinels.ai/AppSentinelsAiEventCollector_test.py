@@ -1,11 +1,9 @@
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
-import json
-from typing import Dict, Any, List
-from datetime import datetime, timedelta
+from typing import Dict, Any
+from datetime import timedelta
 
-from demisto_sdk.commands.common.handlers import JSON_Handler
 
 import json
 
@@ -15,14 +13,7 @@ MOCK_API_KEY = "dummy_api_key"
 MOCK_ORGANIZATION = "dummy_org"
 MOCK_APPLICATION = "dummy_app"
 
-from AppSentinelsAiEventCollector import (
-    Client,
-    BASE_EVENT_BODY,
-    DATE_FORMAT,
-    remove_first_run_params,
-    fetch_events,
-    get_events
-)
+from AppSentinelsAiEventCollector import Client, BASE_EVENT_BODY, DATE_FORMAT, remove_first_run_params, fetch_events, get_events
 
 
 @pytest.fixture
@@ -196,18 +187,12 @@ class TestFetchEvents:
             - Make sure the pagination logic performs as expected.
         """
         mock_response_page1 = {
-            "data": [
-                {"eventid": 1, "timestamp": "2023-10-26T10:00:00Z"},
-                {"eventid": 2, "timestamp": "2023-10-26T10:01:00Z"}
-            ],
+            "data": [{"eventid": 1, "timestamp": "2023-10-26T10:00:00Z"}, {"eventid": 2, "timestamp": "2023-10-26T10:01:00Z"}],
             "last_event_id": 2,
             "more_records": True,
         }
         mock_response_page2 = {
-            "data": [
-                {"eventid": 3, "timestamp": "2023-10-26T10:02:00Z"},
-                {"eventid": 4, "timestamp": "2023-10-26T10:03:00Z"}
-            ],
+            "data": [{"eventid": 3, "timestamp": "2023-10-26T10:02:00Z"}, {"eventid": 4, "timestamp": "2023-10-26T10:03:00Z"}],
             "last_event_id": 4,
             "more_records": False,
         }
@@ -262,7 +247,7 @@ class TestFetchEvents:
                 {"eventid": 3, "timestamp": "2023-10-26T10:02:00Z"},
             ],
             "last_event_id": 3,
-            "more_records": False
+            "more_records": False,
         }
         mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
         last_run = {}
@@ -294,7 +279,7 @@ class TestFetchEvents:
                 {"eventid": 2, "timestamp": "2023-10-26T10:01:00Z"},
             ],
             "last_event_id": 2,
-            "more_records": False
+            "more_records": False,
         }
         mocker.patch.object(client, "get_events_request", return_value=mock_response_data)
         last_run = {}
@@ -346,9 +331,7 @@ class TestGetEvents:
             - Make sure the readable output looks as expected.
         """
         dummy_data = util_load_json("test_data/events-dummy-data.json")
-        mock_events_data = {
-            "data": dummy_data
-        }
+        mock_events_data = {"data": dummy_data}
         mock_client_get_events_request.return_value = mock_events_data
         args = {}
         result = get_events(client, args)
@@ -373,9 +356,7 @@ class TestGetEvents:
             - Make Sure the number of events are according to the limit.
         """
         mock_data = util_load_json("test_data/events-dummy-data.json")
-        mock_events_data = {
-            "data": mock_data
-        }
+        mock_events_data = {"data": mock_data}
         mock_client_get_events_request.return_value = mock_events_data
         args = {"limit": 2}
         result = get_events(client, args)

@@ -20,14 +20,21 @@ BASE_EVENT_BODY: dict = {
     "aggregation": False,
     "api_id": 0,
     "category": [
-        "CRS", "SchemaValidation", "SmartAlerts", "Reputation", "UsageAnomaly", "BehaviourAnomal",
-        "GeolocationAler", "PassiveScan", "ActiveScan", "AutomatedThreat", "Governance"
+        "CRS",
+        "SchemaValidation",
+        "SmartAlerts",
+        "Reputation",
+        "UsageAnomaly",
+        "BehaviourAnomal",
+        "GeolocationAler",
+        "PassiveScan",
+        "ActiveScan",
+        "AutomatedThreat",
+        "Governance",
     ],
     "include_runtime_scan": False,
-    "severity": [
-        "critical", "major", "minor", "info"
-    ],
-    "type": ["security_events", "vulnerabilities"]
+    "severity": ["critical", "major", "minor", "info"],
+    "type": ["security_events", "vulnerabilities"],
 }
 
 """ CLIENT CLASS """
@@ -36,9 +43,17 @@ BASE_EVENT_BODY: dict = {
 class Client(BaseClient):
     """Client class to interact with the service API"""
 
-    def __init__(self, base_url: str, user_key: str, api_key: str, organization: str, application: str, base_event_body: dict,
-                 verify: bool,
-                 use_proxy: bool) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        user_key: str,
+        api_key: str,
+        organization: str,
+        application: str,
+        base_event_body: dict,
+        verify: bool,
+        use_proxy: bool,
+    ) -> None:
         """
         Prepare constructor for Client class.
 
@@ -57,10 +72,10 @@ class Client(BaseClient):
 
         super().__init__(base_url=base_url, verify=verify, proxy=use_proxy)
         self._headers = {
-            'accept': 'application/json',
-            'apikey': api_key,
-            'x-user-key': user_key,
-            'Content-Type': 'application/json'
+            "accept": "application/json",
+            "apikey": api_key,
+            "x-user-key": user_key,
+            "Content-Type": "application/json",
         }
         self.organization = organization
         self.application = application
@@ -70,7 +85,7 @@ class Client(BaseClient):
 
     def get_events_request(self, params: dict) -> dict:
         """Retrieve the detections from AppSentinels.ai  API."""
-        url_suffix = f'/api/v1/{self.organization}/{self.application}/events'
+        url_suffix = f"/api/v1/{self.organization}/{self.application}/events"
         body = self.base_event_body.copy()
         body.update(params)
         return self._http_request("POST", url_suffix=url_suffix, headers=self._headers, json_data=body, resp_type="json")
@@ -91,9 +106,7 @@ def remove_first_run_params(params: dict[str, Any]) -> None:
         params.pop(key, None)
 
 
-def fetch_events_list(
-    client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_params: bool
-) -> List[Dict]:
+def fetch_events_list(client: Client, last_run: Dict, fetch_limit: int | None, use_last_run_as_params: bool) -> List[Dict]:
     """
     Fetches events from the AppSentinels.ai API, handling pagination and last_run.
 
@@ -283,8 +296,16 @@ def main():
     demisto.debug(f"Command being called is {command}")
 
     try:
-        client = Client(base_url=base_url, user_key=user_key, api_key=api_key, organization=organization, application=application,
-                        base_event_body=BASE_EVENT_BODY, verify=verify_certificate, use_proxy=proxy)
+        client = Client(
+            base_url=base_url,
+            user_key=user_key,
+            api_key=api_key,
+            organization=organization,
+            application=application,
+            base_event_body=BASE_EVENT_BODY,
+            verify=verify_certificate,
+            use_proxy=proxy,
+        )
         events: List[dict[str, Any]]
         if command == "test-module":
             # Command made to test the integration
