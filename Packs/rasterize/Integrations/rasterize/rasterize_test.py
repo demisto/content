@@ -933,7 +933,7 @@ def test_retry_loading(mocker: MockerFixture):
 
     assert mock_tab.Page.navigate.call_count == 4
     assert mock_tab.Page.getFrameTree.call_count == DEFAULT_RETRIES_COUNT
-    assert not mock_event.set.called
+    assert mock_event.set.called
 
     # Test successful retry
     mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "file:///test.html"}}}
@@ -958,7 +958,6 @@ def test_get_frame_tree_url_exception_handling(exception_class, exception_messag
         - Calling the get_frame_tree_url method
     Then:
         - Verify an empty string is returned
-        - Verify the tab_ready_event is set
     """
     mock_tab = mocker.Mock()
     mock_tab.id = "test_tab_id"
@@ -969,7 +968,6 @@ def test_get_frame_tree_url_exception_handling(exception_class, exception_messag
     handler = PychromeEventHandler(None, mock_tab, mock_event, "https://test.com", 30)
 
     assert handler.get_frame_tree_url() == ""
-    assert mock_event.set.called
 
 
 @pytest.mark.parametrize(

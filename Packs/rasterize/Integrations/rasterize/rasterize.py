@@ -271,14 +271,11 @@ class PychromeEventHandler:
                     demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
                     self.tab_ready_event.set()
             except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
-                demisto.debug(
-                    f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}"
-                )
+                demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}")
                 self.tab_ready_event.set()
             except Exception as ex:
                 demisto.info(f"Unexpected exception in page_frame_stopped_loading {self.path=}, {self.tab.id=}: {ex}")
                 self.tab_ready_event.set()
-
 
     def get_frame_tree_url(self) -> str:
         """
@@ -305,7 +302,7 @@ class PychromeEventHandler:
     def retry_loading(self):
         """
         Attempts to reload the page multiple times.
-        
+
         This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
         if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
@@ -325,15 +322,17 @@ class PychromeEventHandler:
 
             # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
             if not frame_url:
-                demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. Stopping retry attempts.")
+                demisto.debug(
+                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. Stopping retry attempts."
+                )
                 self.tab_ready_event.set()
                 return
-                
+
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
                 self.tab_ready_event.set()
                 return
-                
+
             demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error.")
 
         demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
