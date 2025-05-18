@@ -11,7 +11,7 @@ from uuid import uuid4
 
 @pytest.fixture(autouse=True)
 def check_logging(caplog):
-    '''
+    """
     Fixture validates that the python logger doesn't contain any warnings (or up) messages
 
     If your test fails and it is ok to have such messages then you can clear the log at the end of your test
@@ -22,10 +22,12 @@ def check_logging(caplog):
     def test_foo(caplog):
         logging.getLogger().warning('this is ok')
         caplog.clear()
-    '''
+    """
     yield
     messages = [
-        "{}: {}".format(x.levelname, x.message) for x in caplog.get_records('call') if x.levelno >= logging.WARNING # noqa: UP032
+        "{}: {}".format(x.levelname, x.message)
+        for x in caplog.get_records("call")
+        if x.levelno >= logging.WARNING  # noqa: UP032
     ]
     if messages:
         pytest.fail(
@@ -35,7 +37,7 @@ def check_logging(caplog):
 
 @pytest.fixture(autouse=True)
 def check_std_out_err(capfd):
-    '''
+    """
     Fixture validates that there is no output to stdout or stderr.
 
     If your test fails and it is ok to have output in stdout/stderr, you can disable the capture use "with capfd.disabled()"
@@ -45,13 +47,13 @@ def check_std_out_err(capfd):
     def test_boo(capfd):
         with capfd.disabled():
             print("this is ok")
-    '''
+    """
     yield
     (out, err) = capfd.readouterr()
     if out:
-        pytest.fail("Found output in stdout: [{}]".format(out.strip())) # noqa: UP032
+        pytest.fail("Found output in stdout: [{}]".format(out.strip()))  # noqa: UP032
     if err:
-        pytest.fail("Found output in stderr: [{}]".format(err.strip())) # noqa: UP032
+        pytest.fail("Found output in stderr: [{}]".format(err.strip()))  # noqa: UP032
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -74,9 +76,9 @@ def pytest_configure(config):
     if junit_xml and ".pre-commit" in junit_xml:
         image = os.getenv("DOCKER_IMAGE")
         if image:
-            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))    # noqa: UP032
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(image.replace("/", "_")))  # noqa: UP032
         else:
-            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))   # noqa: UP032
+            config.option.xmlpath = junit_xml.replace(".xml", "-{}.xml".format(str(uuid4())))  # noqa: UP032
 
 
 def pytest_addoption(parser):
