@@ -1632,7 +1632,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         if last_modification_time is None or last_modification_time < item_modified_time:
                             last_modification_time = item_modified_time
 
-                    if item.id and not item.is_read:
+                    if item.id and item.is_read is False:
                         emails_ids.append(item.id)
 
                     if len(incidents) >= client.max_fetch:
