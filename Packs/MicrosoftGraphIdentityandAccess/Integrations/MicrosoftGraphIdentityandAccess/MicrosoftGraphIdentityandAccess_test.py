@@ -100,10 +100,10 @@ def test_detection_to_incident(incident, expected):
             {
                 "name": "Azure User at Risk: test - atRisk - high",
                 "occurred": "2025-05-06Z",
-                "rawJSON": '{"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"}'
-            }
-        )
-    ]
+                "rawJSON": '{"userPrincipalName": "test", "riskLevel": "high", "riskState": "atRisk"}',
+            },
+        ),
+    ],
 )
 def test_risky_user_to_incident(incident, expected):
     """
@@ -124,27 +124,26 @@ def test_risky_user_to_incident(incident, expected):
     [
         ([], ([], "2025-05-14T01:00:00.0000000Z")),
         (
-            [ # incidents input
+            [  # incidents input
                 {
                     "userPrincipalName": "test",
                     "riskLevel": "medium",
                     "riskState": "atRisk",
-                    "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"
+                    "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z",
                 }
-            ], # expected output
-                (
-                    [
-                        {
-                            "name": "Azure User at Risk: test - atRisk - medium",
-                            "occurred": "2025-05-14T02:00:00.000000Z",
-                            "rawJSON": '{"userPrincipalName": "test", "riskLevel": "medium", "riskState": "atRisk", "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"}' # noqa: E501
-                        }
-
-                    ],
-                    "2025-05-14T02:00:00.0000000Z"
-                )
-        )
-    ]
+            ],  # expected output
+            (
+                [
+                    {
+                        "name": "Azure User at Risk: test - atRisk - medium",
+                        "occurred": "2025-05-14T02:00:00.000000Z",
+                        "rawJSON": '{"userPrincipalName": "test", "riskLevel": "medium", "riskState": "atRisk", "riskLastUpdatedDateTime": "2025-05-14T02:00:00.0000000Z"}',  # noqa: E501
+                    }
+                ],
+                "2025-05-14T02:00:00.0000000Z",
+            ),
+        ),
+    ],
 )
 def test_risky_users_to_incidents(incidents, expected):
     """
@@ -163,17 +162,9 @@ def test_risky_users_to_incidents(incidents, expected):
 @pytest.mark.parametrize(
     "last_fetch,parameters,expected",
     [
-        (
-            "2025-05-06",
-            {"alerts_to_fetch": "Risk Detections"},
-            "detectedDateTime gt 2025-05-06"
-        ),
-        (
-            "2025-05-06",
-            {"alerts_to_fetch": "Risky Users"},
-            "riskLastUpdatedDateTime gt 2025-05-06"
-        )
-    ]
+        ("2025-05-06", {"alerts_to_fetch": "Risk Detections"}, "detectedDateTime gt 2025-05-06"),
+        ("2025-05-06", {"alerts_to_fetch": "Risky Users"}, "riskLastUpdatedDateTime gt 2025-05-06"),
+    ],
 )
 def test_build_filter(last_fetch, parameters, expected):
     """

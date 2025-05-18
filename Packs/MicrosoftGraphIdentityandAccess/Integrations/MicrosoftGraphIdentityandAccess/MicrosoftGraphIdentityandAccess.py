@@ -265,7 +265,7 @@ class Client:  # pragma: no cover
         if odata:
             odata_query += odata
         if odata_filter:
-            odata_query += f'$filter={odata_filter}'
+            odata_query += f"$filter={odata_filter}"
         return self.ms_client.http_request("GET", f"v1.0/identityProtection/riskyUsers{odata_query}")["value"]
 
     def list_risky_users_history(self, limit: str, odata: str, user_id: str) -> list:
@@ -817,10 +817,9 @@ def risky_user_to_incident(riskyuser: dict, riskyuser_date: str) -> dict:
     riskyuser_risk_level: str = riskyuser.get("riskLevel", "")
     riskyuser_risk_state: str = riskyuser.get("riskState", "")
     incident = {
-        "name": f"Azure User at Risk:"
-                f" {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
+        "name": f"Azure User at Risk: {riskyuser_upn} - {riskyuser_risk_state} - {riskyuser_risk_level}",
         "occurred": f"{riskyuser_date}Z",
-        "rawJSON": json.dumps(riskyuser)
+        "rawJSON": json.dumps(riskyuser),
     }
 
     return incident
@@ -840,8 +839,9 @@ def risky_users_to_incidents(riskyusers: List[Dict[str, str]], last_fetch_dateti
         incident = risky_user_to_incident(riskyuser, riskyuser_datetime_in_azure_format)
         incidents.append(incident)
 
-        if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > \
-                datetime.strptime(date_str_to_azure_format(latest_incident_time), DATE_FORMAT):
+        if datetime.strptime(riskyuser_datetime_in_azure_format, DATE_FORMAT) > datetime.strptime(
+            date_str_to_azure_format(latest_incident_time), DATE_FORMAT
+        ):
             latest_incident_time = riskyuser_datetime
 
     return incidents, latest_incident_time
@@ -873,8 +873,8 @@ def fetch_incidents(client: Client, params: Dict[str, str]):  # pragma: no cover
     filter_expression = query_filter
 
     if params.get("alerts_to_fetch", "Risk Detections") == "Risky Users":
-        riskyusers: list = client.list_risky_users(limit, None, filter_expression) # type: ignore
-        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch) # type: ignore
+        riskyusers: list = client.list_risky_users(limit, None, filter_expression)  # type: ignore
+        incidents, latest_detection_time = risky_users_to_incidents(riskyusers, last_fetch_datetime=last_fetch)  # type: ignore
     else:
         detections: list = client.list_risk_detections(limit, None, filter_expression)  # type: ignore
         incidents, latest_detection_time = detections_to_incidents(detections, last_fetch_datetime=last_fetch)  # type: ignore
