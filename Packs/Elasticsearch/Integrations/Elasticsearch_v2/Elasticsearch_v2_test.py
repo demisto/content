@@ -867,8 +867,9 @@ def test_execute_raw_query_v8(mocker):
     """
     import Elasticsearch_v2
     import elastic_transport
-    class CustomExecute():
-        def to_dict(): # type: ignore
+
+    class CustomExecute:
+        def to_dict():  # type: ignore
             return ES_V8_RESPONSE
 
     mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", Elasticsearch_v2.ELASTICSEARCH_V8)
@@ -876,16 +877,9 @@ def test_execute_raw_query_v8(mocker):
     mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=CustomExecute)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     mocker.patch.object(elastic_transport.RequestsHttpNode, "__init__", return_value=None)
-    
+
     es = Elasticsearch_v2.elasticsearch_builder({})
-    raw_query_body = {
-        "query": {
-            "match": {
-                "name": "test"
-            }
-        },
-        "size": 2
-    }
+    raw_query_body = {"query": {"match": {"name": "test"}}, "size": 2}
     assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V8_RESPONSE
 
 

@@ -638,14 +638,14 @@ def integration_health_check(proxies):
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + "\n" + TIME_FIELD + " fetched: " + hit_date)
-        
+
         # try to get response from FETCH_QUERY or RAW_QUERY
         try:
             if RAW_QUERY:
                 fetch_result = execute_raw_query(es, RAW_QUERY)
             else:
                 fetch_result = test_fetch_query(es)
-            
+
             # validate that the response actually returned results and did not time out
             if fetch_result and isinstance(fetch_result.get("timed_out"), bool):
                 if fetch_result.get("timed_out"):
@@ -654,11 +654,13 @@ def integration_health_check(proxies):
                 if total_results == 0:
                     demisto.info("Elasticsearch fetching test returned 0 hits, but this might be expected.")
             else:
-                return_error("Elasticsearch fetching was unsuccessful. Fetching returned the following invalid object:\n"
-                             + str(fetch_result))
+                return_error(
+                    "Elasticsearch fetching was unsuccessful. Fetching returned the following invalid object:\n"
+                    + str(fetch_result)
+                )
         except Exception as ex:
             return_error(f"An exception has been thrown trying to test Elasticsearch fetching:\n{str(ex)}", error=str(ex))
-    
+
     else:
         # check that we can reach any indexes in the supplied server URL
         test_general_query(es)
@@ -864,13 +866,13 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     body = query_string_to_dict(raw_query)
 
     requested_index = index or FETCH_INDEX
-    
+
     # update parameters if given
     if isinstance(size, int):
         body["size"] = size
     if isinstance(page, int):
         body["page"] = page
-    
+
     search = Search(using=es, index=requested_index).update_from_dict(body)
 
     if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
