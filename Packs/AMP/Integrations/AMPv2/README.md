@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1 of CiscoAMP.
 
 ## Configure Cisco AMP Secure Endpoint in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -18,72 +17,77 @@ This integration was integrated and tested with version 1 of CiscoAMP.
 | Create relationships | Create relationships between indicators as part of Enrichment. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-amp-computer-list
+
 ***
 Fetch computers to shows information about them. Can be filtered by a variety of criteria.
-
 
 #### Base Command
 
 `cisco-amp-computer-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-| connector_guid | The connector GUID for a specific computer. | Optional | 
-| hostname | Comma-separated list of host names to filter by (has auto complete capabilities). | Optional | 
-| internal_ip | Internal IP to filter by. | Optional | 
-| external_ip | External IP to filter by. | Optional | 
-| group_guid | Comma-separated list of group GUIDs to filter by. | Optional | 
-| last_seen_within | Time range to filter by. | Optional | 
-| last_seen_over | Time range to filter over by. | Optional | 
-
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
+| connector_guid | The connector GUID for a specific computer. | Optional |
+| hostname | Comma-separated list of host names to filter by (has auto complete capabilities). | Optional |
+| internal_ip | Internal IP to filter by. | Optional |
+| external_ip | External IP to filter by. | Optional |
+| group_guid | Comma-separated list of group GUIDs to filter by. | Optional |
+| last_seen_within | Time range to filter by. | Optional |
+| last_seen_over | Time range to filter over by. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Computer.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Computer.hostname | String | Host's name. | 
-| CiscoAMP.Computer.windows_processor_id | String | Windows processor ID. | 
-| CiscoAMP.Computer.active | Boolean | Whether the computer is active. | 
-| CiscoAMP.Computer.connector_version | String | Version of the connector. | 
-| CiscoAMP.Computer.operating_system | String | Operating system of the computer. | 
-| CiscoAMP.Computer.os_version | String | Operating system version. | 
-| CiscoAMP.Computer.internal_ips | String | List of internal IPs. | 
-| CiscoAMP.Computer.external_ip | String | External IP. | 
-| CiscoAMP.Computer.group_guid | String | GUID of the group. | 
-| CiscoAMP.Computer.install_date | Date | Installation date. | 
-| CiscoAMP.Computer.is_compromised | Boolean | Whether the computer is compromised. | 
-| CiscoAMP.Computer.demo | Boolean | Whether the computer is a demo. | 
-| CiscoAMP.Computer.network_addresses.mac | String | List of MAC addresses. | 
-| CiscoAMP.Computer.network_addresses.ip | String | List of IP addresses. | 
-| CiscoAMP.Computer.policy.guid | String | GUID of the policy. | 
-| CiscoAMP.Computer.policy.name | String | Name of the policy. | 
-| CiscoAMP.Computer.groups.guid | String | GUID of the group. | 
-| CiscoAMP.Computer.groups.name | String | Name of the group. | 
-| CiscoAMP.Computer.last_seen | Date | Last date seen. | 
-| CiscoAMP.Computer.faults | String | Faults. | 
-| CiscoAMP.Computer.isolation.available | Boolean | Whether the isolation is available. | 
-| CiscoAMP.Computer.isolation.status | String | Status of the isolation. | 
-| CiscoAMP.Computer.orbital.status | String | Status of the orbital. | 
-| Endpoint.Hostname | String | The hostname of the endpoint. | 
-| Endpoint.ID | String | The endpoint's identifier. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.OS | String | The endpoint's operating system. | 
-| Endpoint.OSVersion | String | The endpoint's operating system's version. | 
-| Endpoint.Status | String | The status of the endpoint \(online/offline\). | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+| CiscoAMP.Computer.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Computer.hostname | String | Host's name. |
+| CiscoAMP.Computer.windows_processor_id | String | Windows processor ID. |
+| CiscoAMP.Computer.active | Boolean | Whether the computer is active. |
+| CiscoAMP.Computer.connector_version | String | Version of the connector. |
+| CiscoAMP.Computer.operating_system | String | Operating system of the computer. |
+| CiscoAMP.Computer.os_version | String | Operating system version. |
+| CiscoAMP.Computer.internal_ips | String | List of internal IPs. |
+| CiscoAMP.Computer.external_ip | String | External IP. |
+| CiscoAMP.Computer.group_guid | String | GUID of the group. |
+| CiscoAMP.Computer.install_date | Date | Installation date. |
+| CiscoAMP.Computer.is_compromised | Boolean | Whether the computer is compromised. |
+| CiscoAMP.Computer.demo | Boolean | Whether the computer is a demo. |
+| CiscoAMP.Computer.network_addresses.mac | String | List of MAC addresses. |
+| CiscoAMP.Computer.network_addresses.ip | String | List of IP addresses. |
+| CiscoAMP.Computer.policy.guid | String | GUID of the policy. |
+| CiscoAMP.Computer.policy.name | String | Name of the policy. |
+| CiscoAMP.Computer.groups.guid | String | GUID of the group. |
+| CiscoAMP.Computer.groups.name | String | Name of the group. |
+| CiscoAMP.Computer.last_seen | Date | Last date seen. |
+| CiscoAMP.Computer.faults | String | Faults. |
+| CiscoAMP.Computer.isolation.available | Boolean | Whether the isolation is available. |
+| CiscoAMP.Computer.isolation.status | String | Status of the isolation. |
+| CiscoAMP.Computer.orbital.status | String | Status of the orbital. |
+| Endpoint.Hostname | String | The hostname of the endpoint. |
+| Endpoint.ID | String | The endpoint's identifier. |
+| Endpoint.IPAddress | String | The endpoint's IP address. |
+| Endpoint.OS | String | The endpoint's operating system. |
+| Endpoint.OSVersion | String | The endpoint's operating system's version. |
+| Endpoint.Status | String | The status of the endpoint \(online/offline\). |
+| Endpoint.MACAddress | String | The endpoint's MAC address. |
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. |
 
 #### Command example
+
 ```!cisco-amp-computer-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -343,10 +347,13 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 32 |
+>
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
@@ -355,60 +362,62 @@ Fetch computers to shows information about them. Can be filtered by a variety of
 >| Demo_AMP_Intel | d6f49c17-9721-4c5b-a04f-32ba30be36a0 | Windows 10 (Build 10.0.19043.1202) | IP | fedd82f8-c74f-49f4-a463-e576d3beee92 | be84e169-0830-4b95-915b-1e203a82ed58 |
 >| Demo_AMP_MAP_FriedEx | 9a2abee8-b988-473b-9e99-a7abe6d068a5 | Windows 10 (Build 10.0.19044.1466) | IP | 6ed80412-0739-42c1-8f6d-32fb51b3f894 | 1a352c59-793b-44f3-b8f9-0ddd354057bc |
 
-
 ### cisco-amp-computer-trajectory-list
+
 ***
 Provides a list of all activities associated with a particular computer. This is analogous to the Device Trajectory on the FireAMP console.
-
 
 #### Base Command
 
 `cisco-amp-computer-trajectory-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| query_string | Freeform query string which currently accepts an: IP address, SHA-256, or URL. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 5000. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
+| query_string | Freeform query string which currently accepts an: IP address, SHA-256, or URL. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 5000. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerTrajectory.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.ComputerTrajectory.id | String | Event's ID. | 
-| CiscoAMP.ComputerTrajectory.timestamp | Number | Event's timestamp. | 
-| CiscoAMP.ComputerTrajectory.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. | 
-| CiscoAMP.ComputerTrajectory.date | Date | Event's date. | 
-| CiscoAMP.ComputerTrajectory.event_type | String | Event's type. | 
-| CiscoAMP.ComputerTrajectory.event_type_id | Number | Event's type ID. | 
-| CiscoAMP.ComputerTrajectory.group_guids | String | Group GUID. | 
-| CiscoAMP.ComputerTrajectory.severity | String | Event's severity. | 
-| CiscoAMP.ComputerTrajectory.detection | String | Event's detection. | 
-| CiscoAMP.ComputerTrajectory.detection_id | String | Event's detection ID. | 
-| CiscoAMP.ComputerTrajectory.file.disposition | String | Disposition of the file. | 
-| CiscoAMP.ComputerTrajectory.file.file_name | String | Name of the file. | 
-| CiscoAMP.ComputerTrajectory.file.file_path | String | Path to the file. | 
-| CiscoAMP.ComputerTrajectory.file.file_type | String | Type of the file. | 
-| CiscoAMP.ComputerTrajectory.file.identity.sha256 | String | File's SHA-256. | 
-| CiscoAMP.ComputerTrajectory.file.identity.sha1 | String | File's SHA-1. | 
-| CiscoAMP.ComputerTrajectory.file.identity.md5 | String | File's MD5. | 
-| CiscoAMP.ComputerTrajectory.file.parent.disposition | String | Disposition of parent. | 
-| CiscoAMP.ComputerTrajectory.file.parent.identity.sha256 | String | SHA-256 of parent. | 
-| CiscoAMP.ComputerTrajectory.scan.description | String | Description of the scan. | 
-| CiscoAMP.ComputerTrajectory.scan.clean | Boolean | Whether the scan is clean. | 
-| CiscoAMP.ComputerTrajectory.scan.scanned_files | Number | Number of scanned files. | 
-| CiscoAMP.ComputerTrajectory.scan.scanned_processes | Number | Number of scanned processes. | 
-| CiscoAMP.ComputerTrajectory.scan.scanned_paths | Number | Number of scanned paths. | 
-| CiscoAMP.ComputerTrajectory.scan.malicious_detections | Number | Number of malicious detections. | 
+| CiscoAMP.ComputerTrajectory.connector_guid | String | GUID of the connector. |
+| CiscoAMP.ComputerTrajectory.id | String | Event's ID. |
+| CiscoAMP.ComputerTrajectory.timestamp | Number | Event's timestamp. |
+| CiscoAMP.ComputerTrajectory.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. |
+| CiscoAMP.ComputerTrajectory.date | Date | Event's date. |
+| CiscoAMP.ComputerTrajectory.event_type | String | Event's type. |
+| CiscoAMP.ComputerTrajectory.event_type_id | Number | Event's type ID. |
+| CiscoAMP.ComputerTrajectory.group_guids | String | Group GUID. |
+| CiscoAMP.ComputerTrajectory.severity | String | Event's severity. |
+| CiscoAMP.ComputerTrajectory.detection | String | Event's detection. |
+| CiscoAMP.ComputerTrajectory.detection_id | String | Event's detection ID. |
+| CiscoAMP.ComputerTrajectory.file.disposition | String | Disposition of the file. |
+| CiscoAMP.ComputerTrajectory.file.file_name | String | Name of the file. |
+| CiscoAMP.ComputerTrajectory.file.file_path | String | Path to the file. |
+| CiscoAMP.ComputerTrajectory.file.file_type | String | Type of the file. |
+| CiscoAMP.ComputerTrajectory.file.identity.sha256 | String | File's SHA-256. |
+| CiscoAMP.ComputerTrajectory.file.identity.sha1 | String | File's SHA-1. |
+| CiscoAMP.ComputerTrajectory.file.identity.md5 | String | File's MD5. |
+| CiscoAMP.ComputerTrajectory.file.parent.disposition | String | Disposition of parent. |
+| CiscoAMP.ComputerTrajectory.file.parent.identity.sha256 | String | SHA-256 of parent. |
+| CiscoAMP.ComputerTrajectory.scan.description | String | Description of the scan. |
+| CiscoAMP.ComputerTrajectory.scan.clean | Boolean | Whether the scan is clean. |
+| CiscoAMP.ComputerTrajectory.scan.scanned_files | Number | Number of scanned files. |
+| CiscoAMP.ComputerTrajectory.scan.scanned_processes | Number | Number of scanned processes. |
+| CiscoAMP.ComputerTrajectory.scan.scanned_paths | Number | Number of scanned paths. |
+| CiscoAMP.ComputerTrajectory.scan.malicious_detections | Number | Number of malicious detections. |
 
 #### Command example
+
 ```!cisco-amp-computer-trajectory-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -490,10 +499,13 @@ Provides a list of all activities associated with a particular computer. This is
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Group GUIDs|
 >|---|---|---|---|
 >| 1667217305855411965 | 2022-10-31T11:55:05+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
@@ -502,36 +514,38 @@ Provides a list of all activities associated with a particular computer. This is
 >| 1667216538974189121 | 2022-10-31T11:42:18+00:00 | Endpoint Isolation Start Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
 >| 1667214907330813011 | 2022-10-31T11:15:07+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
 
-
 ### cisco-amp-computer-user-activity-list
+
 ***
 Fetch a list of computers that have observed activity by given username.
-
 
 #### Base Command
 
 `cisco-amp-computer-user-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Username to filter by. | Required | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| username | Username to filter by. | Required |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerUserActivity.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.ComputerUserActivity.hostname | String | Host's name. | 
-| CiscoAMP.ComputerUserActivity.active | Boolean | Whether the computer is active. | 
+| CiscoAMP.ComputerUserActivity.connector_guid | String | GUID of the connector. |
+| CiscoAMP.ComputerUserActivity.hostname | String | Host's name. |
+| CiscoAMP.ComputerUserActivity.active | Boolean | Whether the computer is active. |
 
 #### Command example
+
 ```!cisco-amp-computer-user-activity-list username=johndoe```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -584,10 +598,13 @@ Fetch a list of computers that have observed activity by given username.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 8 | 0 | 100 | 8 |
+>
 >### Activity Information
+>
 >|Connector GUID|Host Name|Active|
 >|---|---|---|
 >| 113c1a8e-8e66-409e-92a8-41b7d586be5d | Demo_AMP_Exploit_Prevention | true |
@@ -599,60 +616,62 @@ Fetch a list of computers that have observed activity by given username.
 >| d42cab73-c142-4c25-85d3-4bdefacb6b5b | Demo_AMP_Threat_Quarantined | true |
 >| d6f49c17-9721-4c5b-a04f-32ba30be36a0 | Demo_AMP_Intel | true |
 
-
 ### cisco-amp-computer-user-trajectory-list
+
 ***
 Fetch a specific computer's trajectory with a given connector_guid and filter for events with user name activity.
-
 
 #### Base Command
 
 `cisco-amp-computer-user-trajectory-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| username | Username to filter by. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 5000. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
+| username | Username to filter by. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 5000. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerUserTrajectory.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.ComputerUserTrajectory.id | String | Event's ID. | 
-| CiscoAMP.ComputerUserTrajectory.timestamp | Number | Event's timestamp. | 
-| CiscoAMP.ComputerUserTrajectory.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. | 
-| CiscoAMP.ComputerUserTrajectory.date | Date | Event's date. | 
-| CiscoAMP.ComputerUserTrajectory.event_type | String | Event's type. | 
-| CiscoAMP.ComputerUserTrajectory.event_type_id | Number | Event's type ID. | 
-| CiscoAMP.ComputerUserTrajectory.group_guids | String | Group GUID. | 
-| CiscoAMP.ComputerUserTrajectory.severity | String | Event's severity. | 
-| CiscoAMP.ComputerUserTrajectory.detection | String | Event's detection. | 
-| CiscoAMP.ComputerUserTrajectory.detection_id | String | Event's detection ID. | 
-| CiscoAMP.ComputerUserTrajectory.file.disposition | String | Disposition of the file. | 
-| CiscoAMP.ComputerUserTrajectory.file.file_name | String | Name of the file. | 
-| CiscoAMP.ComputerUserTrajectory.file.file_path | String | Path to the file. | 
-| CiscoAMP.ComputerUserTrajectory.file.file_type | String | Type of the file. | 
-| CiscoAMP.ComputerUserTrajectory.file.identity.sha256 | String | File's SHA-256. | 
-| CiscoAMP.ComputerUserTrajectory.file.identity.sha1 | String | File's SHA-1. | 
-| CiscoAMP.ComputerUserTrajectory.file.identity.md5 | String | File's MD5. | 
-| CiscoAMP.ComputerUserTrajectory.file.parent.disposition | String | Disposition of parent. | 
-| CiscoAMP.ComputerUserTrajectory.file.parent.identity.sha256 | String | SHA-256 of parent. | 
-| CiscoAMP.ComputerUserTrajectory.scan.description | String | Description. | 
-| CiscoAMP.ComputerUserTrajectory.scan.clean | Boolean | Whether the scan is clean. | 
-| CiscoAMP.ComputerUserTrajectory.scan.scanned_files | Number | Number of scanned files. | 
-| CiscoAMP.ComputerUserTrajectory.scan.scanned_processes | Number | Number of scanned processes. | 
-| CiscoAMP.ComputerUserTrajectory.scan.scanned_paths | Number | Number of scanned paths. | 
-| CiscoAMP.ComputerUserTrajectory.scan.malicious_detections | Number | Number of malicious detections. | 
+| CiscoAMP.ComputerUserTrajectory.connector_guid | String | GUID of the connector. |
+| CiscoAMP.ComputerUserTrajectory.id | String | Event's ID. |
+| CiscoAMP.ComputerUserTrajectory.timestamp | Number | Event's timestamp. |
+| CiscoAMP.ComputerUserTrajectory.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. |
+| CiscoAMP.ComputerUserTrajectory.date | Date | Event's date. |
+| CiscoAMP.ComputerUserTrajectory.event_type | String | Event's type. |
+| CiscoAMP.ComputerUserTrajectory.event_type_id | Number | Event's type ID. |
+| CiscoAMP.ComputerUserTrajectory.group_guids | String | Group GUID. |
+| CiscoAMP.ComputerUserTrajectory.severity | String | Event's severity. |
+| CiscoAMP.ComputerUserTrajectory.detection | String | Event's detection. |
+| CiscoAMP.ComputerUserTrajectory.detection_id | String | Event's detection ID. |
+| CiscoAMP.ComputerUserTrajectory.file.disposition | String | Disposition of the file. |
+| CiscoAMP.ComputerUserTrajectory.file.file_name | String | Name of the file. |
+| CiscoAMP.ComputerUserTrajectory.file.file_path | String | Path to the file. |
+| CiscoAMP.ComputerUserTrajectory.file.file_type | String | Type of the file. |
+| CiscoAMP.ComputerUserTrajectory.file.identity.sha256 | String | File's SHA-256. |
+| CiscoAMP.ComputerUserTrajectory.file.identity.sha1 | String | File's SHA-1. |
+| CiscoAMP.ComputerUserTrajectory.file.identity.md5 | String | File's MD5. |
+| CiscoAMP.ComputerUserTrajectory.file.parent.disposition | String | Disposition of parent. |
+| CiscoAMP.ComputerUserTrajectory.file.parent.identity.sha256 | String | SHA-256 of parent. |
+| CiscoAMP.ComputerUserTrajectory.scan.description | String | Description. |
+| CiscoAMP.ComputerUserTrajectory.scan.clean | Boolean | Whether the scan is clean. |
+| CiscoAMP.ComputerUserTrajectory.scan.scanned_files | Number | Number of scanned files. |
+| CiscoAMP.ComputerUserTrajectory.scan.scanned_processes | Number | Number of scanned processes. |
+| CiscoAMP.ComputerUserTrajectory.scan.scanned_paths | Number | Number of scanned paths. |
+| CiscoAMP.ComputerUserTrajectory.scan.malicious_detections | Number | Number of malicious detections. |
 
 #### Command example
+
 ```!cisco-amp-computer-user-trajectory-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -734,10 +753,13 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|
 >|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | None (Build None) |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Group GUIDs|
 >|---|---|---|---|
 >| 1667217305855411965 | 2022-10-31T11:55:05+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
@@ -746,47 +768,49 @@ Fetch a specific computer's trajectory with a given connector_guid and filter fo
 >| 1667216538974189121 | 2022-10-31T11:42:18+00:00 | Endpoint Isolation Start Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
 >| 1667214907330813011 | 2022-10-31T11:15:07+00:00 | Endpoint Isolation Stop Success | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
 
-
 ### cisco-amp-computer-vulnerabilities-list
+
 ***
 Provides a list of vulnerabilities observed on a specific computer. The vulnerabilities can be filtered to show only vulnerable applications observed for a specific time range.
-
 
 #### Base Command
 
 `cisco-amp-computer-vulnerabilities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| start_time | The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time. | Optional | 
-| end_time | The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
+| start_time | The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time. | Optional |
+| end_time | The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerVulnerability.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.ComputerVulnerability.application | String | Name of the application. | 
-| CiscoAMP.ComputerVulnerability.version | String | Version of the application. | 
-| CiscoAMP.ComputerVulnerability.file.filename | String | Name of the file. | 
-| CiscoAMP.ComputerVulnerability.file.identity.sha256 | String | File's SHA-256. | 
-| CiscoAMP.ComputerVulnerability.file.identity.sha1 | String | File's SHA-1. | 
-| CiscoAMP.ComputerVulnerability.file.identity.md5 | String | File's MD5. | 
-| CiscoAMP.ComputerVulnerability.cves.id | String | Common vulnerability exposure ID. | 
-| CiscoAMP.ComputerVulnerability.cves.link | String | Common vulnerability exposure link. | 
-| CiscoAMP.ComputerVulnerability.cves.cvss | Number | Common vulnerability scoring system. | 
-| CiscoAMP.ComputerVulnerability.latest_timestamp | Number | Vulnerability latest timestamp. | 
-| CiscoAMP.ComputerVulnerability.latest_date | Date | Vulnerability latest date. | 
+| CiscoAMP.ComputerVulnerability.connector_guid | String | GUID of the connector. |
+| CiscoAMP.ComputerVulnerability.application | String | Name of the application. |
+| CiscoAMP.ComputerVulnerability.version | String | Version of the application. |
+| CiscoAMP.ComputerVulnerability.file.filename | String | Name of the file. |
+| CiscoAMP.ComputerVulnerability.file.identity.sha256 | String | File's SHA-256. |
+| CiscoAMP.ComputerVulnerability.file.identity.sha1 | String | File's SHA-1. |
+| CiscoAMP.ComputerVulnerability.file.identity.md5 | String | File's MD5. |
+| CiscoAMP.ComputerVulnerability.cves.id | String | Common vulnerability exposure ID. |
+| CiscoAMP.ComputerVulnerability.cves.link | String | Common vulnerability exposure link. |
+| CiscoAMP.ComputerVulnerability.cves.cvss | Number | Common vulnerability scoring system. |
+| CiscoAMP.ComputerVulnerability.latest_timestamp | Number | Vulnerability latest timestamp. |
+| CiscoAMP.ComputerVulnerability.latest_date | Date | Vulnerability latest date. |
 
 #### Command example
+
 ```!cisco-amp-computer-vulnerabilities-list connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -887,67 +911,74 @@ Provides a list of vulnerabilities observed on a specific computer. The vulnerab
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 1 | 0 | 100 | 1 |
+>
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|Group GUID|
 >|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | None (Build None) | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 |
+>
 >### Vulnerabilities Information
+>
 >|Application|Version|Latest Date|File Name|SHA-256|
 >|---|---|---|---|---|
 >| Microsoft Office | 2013 | 2022-10-23T12:37:33+00:00 | WINWORD.EXE | 3D46E95284F93BBB76B3B7E1BF0E1B2D51E8A9411C2B6E649112F22F92DE63C2 |
 
-
 ### cisco-amp-computer-move
+
 ***
 Moves a computer to a group with a given connector_guid and group_guid.
-
 
 #### Base Command
 
 `cisco-amp-computer-move`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| group_guid | Group GUID to move the computer to. | Required | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
+| group_guid | Group GUID to move the computer to. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Computer.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Computer.hostname | String | Host's name. | 
-| CiscoAMP.Computer.windows_processor_id | String | Windows processor ID. | 
-| CiscoAMP.Computer.active | Boolean | Whether the computer is active. | 
-| CiscoAMP.Computer.connector_version | String | Version of the connector. | 
-| CiscoAMP.Computer.operating_system | String | Operating system of the computer. | 
-| CiscoAMP.Computer.os_version | String | Operating system version. | 
-| CiscoAMP.Computer.internal_ips | String | List of internal IPs. | 
-| CiscoAMP.Computer.external_ip | String | External IP. | 
-| CiscoAMP.Computer.group_guid | String | GUID of the group. | 
-| CiscoAMP.Computer.install_date | Date | Installation date. | 
-| CiscoAMP.Computer.is_compromised | Boolean | Whether the computer is compromised. | 
-| CiscoAMP.Computer.demo | Boolean | Whether the computer is a demo. | 
-| CiscoAMP.Computer.network_addresses.mac | String | List of MAC addresses. | 
-| CiscoAMP.Computer.network_addresses.ip | String | List of IP addresses. | 
-| CiscoAMP.Computer.policy.guid | String | GUID of the policy. | 
-| CiscoAMP.Computer.policy.name | String | Name of the policy. | 
-| CiscoAMP.Computer.groups.guid | String | GUID of the group. | 
-| CiscoAMP.Computer.groups.name | String | Name of the group. | 
-| CiscoAMP.Computer.last_seen | Date | Last date seen. | 
-| CiscoAMP.Computer.faults | String | Faults. | 
-| CiscoAMP.Computer.isolation.available | Boolean | Whether the isolation is available. | 
-| CiscoAMP.Computer.isolation.status | String | Status of the isolation. | 
-| CiscoAMP.Computer.orbital.status | String | Status of the orbital. | 
+| CiscoAMP.Computer.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Computer.hostname | String | Host's name. |
+| CiscoAMP.Computer.windows_processor_id | String | Windows processor ID. |
+| CiscoAMP.Computer.active | Boolean | Whether the computer is active. |
+| CiscoAMP.Computer.connector_version | String | Version of the connector. |
+| CiscoAMP.Computer.operating_system | String | Operating system of the computer. |
+| CiscoAMP.Computer.os_version | String | Operating system version. |
+| CiscoAMP.Computer.internal_ips | String | List of internal IPs. |
+| CiscoAMP.Computer.external_ip | String | External IP. |
+| CiscoAMP.Computer.group_guid | String | GUID of the group. |
+| CiscoAMP.Computer.install_date | Date | Installation date. |
+| CiscoAMP.Computer.is_compromised | Boolean | Whether the computer is compromised. |
+| CiscoAMP.Computer.demo | Boolean | Whether the computer is a demo. |
+| CiscoAMP.Computer.network_addresses.mac | String | List of MAC addresses. |
+| CiscoAMP.Computer.network_addresses.ip | String | List of IP addresses. |
+| CiscoAMP.Computer.policy.guid | String | GUID of the policy. |
+| CiscoAMP.Computer.policy.name | String | Name of the policy. |
+| CiscoAMP.Computer.groups.guid | String | GUID of the group. |
+| CiscoAMP.Computer.groups.name | String | Name of the group. |
+| CiscoAMP.Computer.last_seen | Date | Last date seen. |
+| CiscoAMP.Computer.faults | String | Faults. |
+| CiscoAMP.Computer.isolation.available | Boolean | Whether the isolation is available. |
+| CiscoAMP.Computer.isolation.status | String | Status of the isolation. |
+| CiscoAMP.Computer.orbital.status | String | Status of the orbital. |
 
 #### Command example
+
 ```!cisco-amp-computer-move connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 group_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -996,66 +1027,72 @@ Moves a computer to a group with a given connector_guid and group_guid.
 #### Human Readable Output
 
 >### Computer Information
+>
 >|Host Name|Connector GUID|Operating System|External IP|Group GUID|Policy GUID|
 >|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | Windows 10 (Build 10.0.19044.1466) | IP | bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 | 91c7894d-dd69-4a21-8cf6-5ebfc57ef4df |
 
-
 ### cisco-amp-computer-delete
+
 ***
 Deletes a specific computer with given connector GUID.
-
 
 #### Base Command
 
 `cisco-amp-computer-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-computer-delete connector_guid=dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43```
+
 #### Human Readable Output
 
 >Connector GUID: "dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43"
 >Successfully deleted.
 
 ### cisco-amp-computer-activity-list
+
 ***
 Fetch a list of computers that have observed files with a given file name. Provides the ability to search all computers across an organization for any events or activities associated with a file or network operation, and returns computers matching those criteria. There is a hard limit of 5000 historical entries searched.
-
 
 #### Base Command
 
 `cisco-amp-computer-activity-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query_string | Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, file name, and a URL Fragment. | Required | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| query_string | Freeform query string which currently accepts: IPv4 address (CIDR not supported), SHA-256, file name, and a URL Fragment. | Required |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerActivity.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.ComputerActivity.hostname | String | Host's name. | 
-| CiscoAMP.ComputerActivity.windows_processor_id | String | Windows processor ID. | 
-| CiscoAMP.ComputerActivity.active | Boolean | Whether the computer is active. | 
+| CiscoAMP.ComputerActivity.connector_guid | String | GUID of the connector. |
+| CiscoAMP.ComputerActivity.hostname | String | Host's name. |
+| CiscoAMP.ComputerActivity.windows_processor_id | String | Windows processor ID. |
+| CiscoAMP.ComputerActivity.active | Boolean | Whether the computer is active. |
 
 #### Command example
+
 ```!cisco-amp-computer-activity-list query_string=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1098,10 +1135,13 @@ Fetch a list of computers that have observed files with a given file name. Provi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 100 | 5 |
+>
 >### Activity Information
+>
 >|Connector GUID|Host Name|Windows Processor ID|Active|
 >|---|---|---|---|
 >| 1e104704-0b8f-4703-a49f-ec3d13e1e079 | Demo_Dyre | 346b8f2ad9e5107 | true |
@@ -1110,63 +1150,67 @@ Fetch a list of computers that have observed files with a given file name. Provi
 >| 4d91c4ea-4f4d-4b87-b5d7-d34cc2c678a5 | Demo_Global_Threat_Alerts | 9af0463d1852be7 | true |
 >| ab22d66b-3443-4653-99ec-1fdeb680f30b | Demo_TDSS | 0ad79f21856e34b | true |
 
-
 ### cisco-amp-computer-isolation-feature-availability-get
+
 ***
 Performs a feature availability request on a computer. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
-
 
 #### Base Command
 
 `cisco-amp-computer-isolation-feature-availability-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-computer-isolation-feature-availability-get connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Human Readable Output
 
 >Can get information about an isolation with computer-isolation-get
 >Can request to create a new isolation with computer-isolation-create
 
-
 ### cisco-amp-computer-isolation-get
+
 ***
 Returns a fine-grained isolation status for a computer. The available flag is set to true if isolation can be performed on the computer. Status will be set to one of - not_isolated, pending_start, isolated and pending_stop. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
-
 
 #### Base Command
 
 `cisco-amp-computer-isolation-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| connector_guid | The connector GUID for a specific computer. | Required | 
-
+| connector_guid | The connector GUID for a specific computer. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerIsolation.connector_guid | String | ID of the connector. | 
-| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. | 
-| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. | 
-| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. | 
-| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. | 
-| CiscoAMP.ComputerIsolation.ccms_message_guid | String | Cisco Cluster Management Suite message GUID. | 
-| CiscoAMP.ComputerIsolation.ccms_job_guid | String | Cisco Cluster Management Suite job GUID. | 
+| CiscoAMP.ComputerIsolation.connector_guid | String | ID of the connector. |
+| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. |
+| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. |
+| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. |
+| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. |
+| CiscoAMP.ComputerIsolation.ccms_message_guid | String | Cisco Cluster Management Suite message GUID. |
+| CiscoAMP.ComputerIsolation.ccms_job_guid | String | Cisco Cluster Management Suite job GUID. |
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-get connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1184,45 +1228,48 @@ Returns a fine-grained isolation status for a computer. The available flag is se
 #### Human Readable Output
 
 >### Isolation Information
+>
 >|Available|Status|Unlock Code|Comment|
 >|---|---|---|---|
 >| true | not_isolated | unlockme | End readme test |
 
-
 ### cisco-amp-computer-isolation-create
+
 ***
 Request isolation for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
-
 
 #### Base Command
 
 `cisco-amp-computer-isolation-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| comment | Comment for isolation. | Required | 
-| unlock_code | Isolation unlock code. | Required | 
-| status | Status of the current run. | Optional | 
-
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
+| connector_guid | The connector GUID for a specific computer. | Required |
+| comment | Comment for isolation. | Required |
+| unlock_code | Isolation unlock code. | Required |
+| status | Status of the current run. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerIsolation.connector_guid | String | ID of the connector. | 
-| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. | 
-| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. | 
-| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. | 
-| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. | 
-| CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. | 
+| CiscoAMP.ComputerIsolation.connector_guid | String | ID of the connector. |
+| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. |
+| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. |
+| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. |
+| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. |
+| CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. |
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-create connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 comment="readme generate test" unlock_code=unlockme interval_in_seconds=5 timeout_in_seconds=20```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1241,126 +1288,131 @@ Request isolation for a computer. Supports polling. Isolation must be enabled wi
 #### Human Readable Output
 
 >### Isolation Information
+>
 >|Available|Status|Unlock Code|Comment|Isolated By|
 >|---|---|---|---|---|
 >| true | isolated | unlockme | readme generate test | Lior Sabri |
 
-
 ### cisco-amp-computer-isolation-delete
+
 ***
 Request isolation stop for a computer. Supports polling. Isolation must be enabled within the computer's policy. This can be done through the instance. Log in to your account -> Management -> Policies -> Choose the relevant policy -> Edit -> Advanced Settings -> Endpoint Isolation -> Allow Endpoint Isolation.
-
 
 #### Base Command
 
 `cisco-amp-computer-isolation-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
-| connector_guid | The connector GUID for a specific computer. | Required | 
-| comment | Comment for isolation deletion. | Optional | 
-| status | Status of the current run. | Optional | 
-
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
+| connector_guid | The connector GUID for a specific computer. | Required |
+| comment | Comment for isolation deletion. | Optional |
+| status | Status of the current run. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. | 
-| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. | 
-| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. | 
-| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. | 
-| CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. | 
+| CiscoAMP.ComputerIsolation.available | Boolean | Set to true if isolation can be performed on the computer. |
+| CiscoAMP.ComputerIsolation.status | String | Will be set to one of: not_isolated, pending_start, isolated and pending_stop. |
+| CiscoAMP.ComputerIsolation.unlock_code | String | Isolation unlock code. |
+| CiscoAMP.ComputerIsolation.comment | String | Isolation comment. |
+| CiscoAMP.ComputerIsolation.isolated_by | String | Isolation initiator. |
 
 #### Command example
+
 ```!cisco-amp-computer-isolation-delete connector_guid=22d4a486-1732-4f8b-9a6f-18f172fe7af0 comment="End readme test" interval_in_seconds=5 timeout_in_seconds=20```
+
 #### Human Readable Output
 
 >Fetching Results:
 
 ### cisco-amp-event-list
+
 ***
 Fetch a list of events that can be filtered by a variety of criteria. Each criteria type is logically ANDed with the other criteria, each selection of a criteria is logically ORed. This is analogous to the Events view on the FireAMP Console.
-
 
 #### Base Command
 
 `cisco-amp-event-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_sha256 | Detection  SHA-256 to filter by. | Optional | 
-| application_sha256 | Application SHA-256 to filter by. | Optional | 
-| connector_guid | Comma-separated list for connector GUIDs to filter by. | Optional | 
-| group_guid | Comma-separated list for group GUIDs to filter by. | Optional | 
-| start_date | Fetch events that are newer than the given time. | Optional | 
-| event_type | Comma-separated list for event types to filter by. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| detection_sha256 | Detection  SHA-256 to filter by. | Optional |
+| application_sha256 | Application SHA-256 to filter by. | Optional |
+| connector_guid | Comma-separated list for connector GUIDs to filter by. | Optional |
+| group_guid | Comma-separated list for group GUIDs to filter by. | Optional |
+| start_date | Fetch events that are newer than the given time. | Optional |
+| event_type | Comma-separated list for event types to filter by. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Event.id | Number | Event's ID. | 
-| CiscoAMP.Event.timestamp | Number | Event's timestamp. | 
-| CiscoAMP.Event.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. | 
-| CiscoAMP.Event.date | Date | Event's date. | 
-| CiscoAMP.Event.event_type | String | Event's type. | 
-| CiscoAMP.Event.event_type_id | Number | Event's type ID. | 
-| CiscoAMP.Event.detection | String | Event's detection. | 
-| CiscoAMP.Event.detection_id | String | Event's detection ID. | 
-| CiscoAMP.Event.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Event.group_guids | String | Event's group GUID. | 
-| CiscoAMP.Event.severity | String | Event's severity. | 
-| CiscoAMP.Event.computer.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Event.computer.hostname | String | Host's name. | 
-| CiscoAMP.Event.computer.external_ip | String | External IP. | 
-| CiscoAMP.Event.computer.active | Boolean | Whether the computer is active. | 
-| CiscoAMP.Event.computer.user | String | Computer user. | 
-| CiscoAMP.Event.computer.network_addresses.ip | String | List of IP addresses. | 
-| CiscoAMP.Event.computer.network_addresses.mac | String | List of MAC addresses. | 
-| CiscoAMP.Event.file.disposition | String | Disposition of the file. | 
-| CiscoAMP.Event.file.file_name | String | Name of the file. | 
-| CiscoAMP.Event.file.file_path | String | Path to the file. | 
-| CiscoAMP.Event.file.identity.sha256 | String | File's SHA-256. | 
-| CiscoAMP.Event.file.identity.sha1 | String | File's SHA-1. | 
-| CiscoAMP.Event.file.identity.md5 | String | File's MD5 | 
-| CiscoAMP.Event.file.parent.process_id | Number | Parent's process ID. | 
-| CiscoAMP.Event.file.parent.file_name | String | Parent's file name. | 
-| CiscoAMP.Event.file.parent.disposition | String | Parent's disposition. | 
-| CiscoAMP.Event.file.parent.identity.sha256 | String | Parent's SHA-256. | 
-| CiscoAMP.Event.file.parent.identity.sha1 | String | Parent's SHA-1. | 
-| CiscoAMP.Event.file.parent.identity.md5 | String | Parent's MD5. | 
-| CiscoAMP.Event.scan.description | String | Description of the scan. | 
-| CiscoAMP.Event.scan.clean | Boolean | Whether the scam is clean. | 
-| CiscoAMP.Event.scan.scanned_files | Number | Number of scanned files. | 
-| CiscoAMP.Event.scan.scanned_processes | Number | Number of scanned processes. | 
-| CiscoAMP.Event.scan.scanned_paths | Number | Number of scanned paths. | 
-| CiscoAMP.Event.scan.malicious_detections | Number | Number of malicious detections. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.Path | String | The path where the file is located. | 
-| File.Hostname | String | The name of the host where the file was found. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | String | A description of why the file was determined to be malicious. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
+| CiscoAMP.Event.id | Number | Event's ID. |
+| CiscoAMP.Event.timestamp | Number | Event's timestamp. |
+| CiscoAMP.Event.timestamp_nanoseconds | Number | Event's timestamp in nano seconds. |
+| CiscoAMP.Event.date | Date | Event's date. |
+| CiscoAMP.Event.event_type | String | Event's type. |
+| CiscoAMP.Event.event_type_id | Number | Event's type ID. |
+| CiscoAMP.Event.detection | String | Event's detection. |
+| CiscoAMP.Event.detection_id | String | Event's detection ID. |
+| CiscoAMP.Event.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Event.group_guids | String | Event's group GUID. |
+| CiscoAMP.Event.severity | String | Event's severity. |
+| CiscoAMP.Event.computer.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Event.computer.hostname | String | Host's name. |
+| CiscoAMP.Event.computer.external_ip | String | External IP. |
+| CiscoAMP.Event.computer.active | Boolean | Whether the computer is active. |
+| CiscoAMP.Event.computer.user | String | Computer user. |
+| CiscoAMP.Event.computer.network_addresses.ip | String | List of IP addresses. |
+| CiscoAMP.Event.computer.network_addresses.mac | String | List of MAC addresses. |
+| CiscoAMP.Event.file.disposition | String | Disposition of the file. |
+| CiscoAMP.Event.file.file_name | String | Name of the file. |
+| CiscoAMP.Event.file.file_path | String | Path to the file. |
+| CiscoAMP.Event.file.identity.sha256 | String | File's SHA-256. |
+| CiscoAMP.Event.file.identity.sha1 | String | File's SHA-1. |
+| CiscoAMP.Event.file.identity.md5 | String | File's MD5 |
+| CiscoAMP.Event.file.parent.process_id | Number | Parent's process ID. |
+| CiscoAMP.Event.file.parent.file_name | String | Parent's file name. |
+| CiscoAMP.Event.file.parent.disposition | String | Parent's disposition. |
+| CiscoAMP.Event.file.parent.identity.sha256 | String | Parent's SHA-256. |
+| CiscoAMP.Event.file.parent.identity.sha1 | String | Parent's SHA-1. |
+| CiscoAMP.Event.file.parent.identity.md5 | String | Parent's MD5. |
+| CiscoAMP.Event.scan.description | String | Description of the scan. |
+| CiscoAMP.Event.scan.clean | Boolean | Whether the scam is clean. |
+| CiscoAMP.Event.scan.scanned_files | Number | Number of scanned files. |
+| CiscoAMP.Event.scan.scanned_processes | Number | Number of scanned processes. |
+| CiscoAMP.Event.scan.scanned_paths | Number | Number of scanned paths. |
+| CiscoAMP.Event.scan.malicious_detections | Number | Number of malicious detections. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The full file name \(including file extension\). |
+| File.Path | String | The path where the file is located. |
+| File.Hostname | String | The name of the host where the file was found. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| File.Malicious.Description | String | A description of why the file was determined to be malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command example
+
 ```!cisco-amp-event-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1502,10 +1554,13 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 1228 |
+>
 >### Event Information
+>
 >|ID|Date|Event Type|Connector GUID|
 >|---|---|---|---|
 >| 1667218513509436397 | 2022-10-31T12:15:13+00:00 | Endpoint Isolation Stop Success | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 |
@@ -1514,35 +1569,37 @@ Fetch a list of events that can be filtered by a variety of criteria. Each crite
 >| 1667217298837175263 | 2022-10-31T11:54:58+00:00 | Endpoint Isolation Start Success | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 |
 >| 1667216545769121964 | 2022-10-31T11:42:25+00:00 | Endpoint Isolation Stop Success | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 |
 
-
 ### cisco-amp-event-type-list
+
 ***
 Fetches a list of event types. Events are identified and filtered by a unique ID.
-
 
 #### Base Command
 
 `cisco-amp-event-type-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.EventType.id | Number | Event type ID. | 
-| CiscoAMP.EventType.name | String | Event type name. | 
-| CiscoAMP.EventType.description | String | Event type description. | 
+| CiscoAMP.EventType.id | Number | Event type ID. |
+| CiscoAMP.EventType.name | String | Event type name. |
+| CiscoAMP.EventType.description | String | Event type description. |
 
 #### Command example
+
 ```!cisco-amp-event-type-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1580,10 +1637,13 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 #### Human Readable Output
 
 >### Results
+>
 >|Total|
 >|---|
 >| 106 |
+>
 >### Event Type Information
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 50331649 | Initial Agent Registration | A new agent has registered with the system. |
@@ -1592,38 +1652,40 @@ Fetches a list of event types. Events are identified and filtered by a unique ID
 >| 554696715 | Scan Completed, No Detections | A scan has completed without detecting anything malicious. |
 >| 1091567628 | Scan Completed With Detections | A scan has completed and detected malicious items. |
 
-
 ### cisco-amp-file-list-list
+
 ***
 Returns a particular file list for application blocking or simple custom detection. file_list_guid must be provided to retrieve information about a particular file_list. Can fetch an application_blocking or simple_custom_detection file list. Defaults to application_blocking.
-
 
 #### Base Command
 
 `cisco-amp-file-list-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_list_type | Fetch a list type to return. Possible values are: Application Blocking, Simple Custom Detection. Default is Application Blocking. | Optional | 
-| name | Comma-separated list for name to filter by (has auto complete capabilities). | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-| file_list_guid | GUID of the file list to return. | Optional | 
-
+| file_list_type | Fetch a list type to return. Possible values are: Application Blocking, Simple Custom Detection. Default is Application Blocking. | Optional |
+| name | Comma-separated list for name to filter by (has auto complete capabilities). | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
+| file_list_guid | GUID of the file list to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.FileList.name | String | Name of blocking. | 
-| CiscoAMP.FileList.guid | String | File list GUID. | 
-| CiscoAMP.FileList.type | String | Type of blocking. | 
+| CiscoAMP.FileList.name | String | Name of blocking. |
+| CiscoAMP.FileList.guid | String | File list GUID. |
+| CiscoAMP.FileList.type | String | Type of blocking. |
 
 #### Command example
+
 ```!cisco-amp-file-list-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1639,48 +1701,53 @@ Returns a particular file list for application blocking or simple custom detecti
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 1 | 0 | 100 | 1 |
+>
 >### File List Information
+>
 >|GUID|Name|Type|
 >|---|---|---|
 >| 1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 | Blocked Application List | application_blocking |
 
-
 ### cisco-amp-file-list-item-list
+
 ***
 Returns a list of items for a particular file_list. file_list_guid must be provided to retrieve these items. A particular item can be returned by providing a SHA-256.
-
 
 #### Base Command
 
 `cisco-amp-file-list-item-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_list_guid | File list to return. | Required | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-| sha256 | File list item SHA-256 to search. | Optional | 
-
+| file_list_guid | File list to return. | Required |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
+| sha256 | File list item SHA-256 to search. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.FileListItem.name | String | Name of file list. | 
-| CiscoAMP.FileListItem.guid | String | File list GUID. | 
-| CiscoAMP.FileListItem.policies.name | String | Name of the policy. | 
-| CiscoAMP.FileListItem.policies.guid | String | Policy GUID. | 
-| CiscoAMP.FileListItem.items.sha256 | String | Item SHA-256. | 
-| CiscoAMP.FileListItem.items.source | String | Item source. | 
+| CiscoAMP.FileListItem.name | String | Name of file list. |
+| CiscoAMP.FileListItem.guid | String | File list GUID. |
+| CiscoAMP.FileListItem.policies.name | String | Name of the policy. |
+| CiscoAMP.FileListItem.policies.guid | String | Policy GUID. |
+| CiscoAMP.FileListItem.items.sha256 | String | Item SHA-256. |
+| CiscoAMP.FileListItem.items.source | String | Item source. |
 
 #### Command example
+
 ```!cisco-amp-file-list-item-list file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1738,12 +1805,17 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 0 | 0 | 100 | 0 |
+>
 >### File List Item Information
+>
 >**No entries.**
+>
 >### Related Policy Information
+>
 >|Name|Guid|
 >|---|---|
 >| Audit | be84e169-0830-4b95-915b-1e203a82ed58 |
@@ -1757,35 +1829,37 @@ Returns a list of items for a particular file_list. file_list_guid must be provi
 >| Audit | b4e266c8-ebd1-4e94-80b6-b04a966cb0d5 |
 >| Protect | 653508ed-28d4-465a-80c4-7ed9c0232b55 |
 
-
 ### cisco-amp-file-list-item-create
+
 ***
 Creates a file list item with a given SHA-256 for a specific file list with a given file_list_guid.
-
 
 #### Base Command
 
 `cisco-amp-file-list-item-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_list_guid | File list to add to. | Required | 
-| sha256 | File list item's SHA-256 to add. | Required | 
-| description | Description for the created item. | Optional | 
-
+| file_list_guid | File list to add to. | Required |
+| sha256 | File list item's SHA-256 to add. | Required |
+| description | Description for the created item. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.FileListItem.sha256 | String | Item SHA-256. | 
-| CiscoAMP.FileListItem.description | String | File's description. | 
-| CiscoAMP.FileListItem.source | String | Item source. | 
+| CiscoAMP.FileListItem.sha256 | String | Item SHA-256. |
+| CiscoAMP.FileListItem.description | String | File's description. |
+| CiscoAMP.FileListItem.source | String | Item source. |
 
 #### Command example
+
 ```!cisco-amp-file-list-item-create file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 sha256=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1800,94 +1874,100 @@ Creates a file list item with a given SHA-256 for a specific file list with a gi
 #### Human Readable Output
 
 >### File List Item Information
+>
 >|SHA-256|Source|
 >|---|---|
 >| ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad | Created by entering SHA-256 via Public api. |
 
-
 ### cisco-amp-file-list-item-delete
+
 ***
 Deletes a file list item with a given SHA-256 and associated to a file list with a given file_list_guid.
-
 
 #### Base Command
 
 `cisco-amp-file-list-item-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_list_guid | File list to delete from. | Required | 
-| sha256 | File list item SHA-256 to delete. | Required | 
-
+| file_list_guid | File list to delete from. | Required |
+| sha256 | File list item SHA-256 to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-file-list-item-delete file_list_guid=1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12 sha256=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Human Readable Output
 
 >SHA-256: "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad" Successfully deleted from File List GUID: "1bb5a8e3-fb59-4b3d-a106-d90b2a02ac12".
 
 ### cisco-amp-group-list
+
 ***
 Provides information about groups in an organization.
-
 
 #### Base Command
 
 `cisco-amp-group-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name to filter by (has auto complete capabilities). | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-| group_guid | Group's GUID. | Optional | 
-
+| name | Name to filter by (has auto complete capabilities). | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
+| group_guid | Group's GUID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Group.name | String | Name of the group. | 
-| CiscoAMP.Group.description | String | Group's description. | 
-| CiscoAMP.Group.guid | String | Group GUID. | 
-| CiscoAMP.Group.source | String | Creation source. | 
-| CiscoAMP.Group.creator | String | Creator of the group. | 
-| CiscoAMP.Group.created_at | Date | Date of creation. | 
-| CiscoAMP.Group.computers_count | Number | Number of computers in the group. | 
-| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. | 
-| CiscoAMP.Group.ancestry.name | String | Parent group name. | 
-| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. | 
-| CiscoAMP.Group.child_groups.name | String | Child group name. | 
-| CiscoAMP.Group.child_groups.guid | String | Child group GUID. | 
-| CiscoAMP.Group.policies.name | String | Policy name. | 
-| CiscoAMP.Group.policies.description | String | Policy description. | 
-| CiscoAMP.Group.policies.guid | String | Policy GUID. | 
-| CiscoAMP.Group.policies.product | String | Policy operating system product. | 
-| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. | 
-| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. | 
-| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. | 
-| CiscoAMP.Group.policies.file_lists.name | String | File list name. | 
-| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. | 
-| CiscoAMP.Group.policies.file_lists.type | String | File list type. | 
-| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. | 
-| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. | 
-| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. | 
-| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. | 
-| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. | 
-| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
+| CiscoAMP.Group.name | String | Name of the group. |
+| CiscoAMP.Group.description | String | Group's description. |
+| CiscoAMP.Group.guid | String | Group GUID. |
+| CiscoAMP.Group.source | String | Creation source. |
+| CiscoAMP.Group.creator | String | Creator of the group. |
+| CiscoAMP.Group.created_at | Date | Date of creation. |
+| CiscoAMP.Group.computers_count | Number | Number of computers in the group. |
+| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. |
+| CiscoAMP.Group.ancestry.name | String | Parent group name. |
+| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. |
+| CiscoAMP.Group.child_groups.name | String | Child group name. |
+| CiscoAMP.Group.child_groups.guid | String | Child group GUID. |
+| CiscoAMP.Group.policies.name | String | Policy name. |
+| CiscoAMP.Group.policies.description | String | Policy description. |
+| CiscoAMP.Group.policies.guid | String | Policy GUID. |
+| CiscoAMP.Group.policies.product | String | Policy operating system product. |
+| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. |
+| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. |
+| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. |
+| CiscoAMP.Group.policies.file_lists.name | String | File list name. |
+| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. |
+| CiscoAMP.Group.policies.file_lists.type | String | File list type. |
+| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. |
+| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. |
+| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. |
+| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. |
+| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. |
+| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. |
 
 #### Command example
+
 ```!cisco-amp-group-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -1960,10 +2040,13 @@ Provides information about groups in an organization.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 9 | 0 | 100 | 9 |
+>
 >### Group Information
+>
 >|Name|Description|GUID|Source|
 >|---|---|---|---|
 >| Audit | Audit Group for QMASTERS SECURITY SERVICES LTD | fedd82f8-c74f-49f4-a463-e576d3beee92 |  |
@@ -1976,65 +2059,67 @@ Provides information about groups in an organization.
 >| Server | Server Group for QMASTERS SECURITY SERVICES LTD | 9b54e512-b5ac-4865-ba1f-8cf2fbfbe052 |  |
 >| Triage | Triage Group for QMASTERS SECURITY SERVICES LTD | 6ed80412-0739-42c1-8f6d-32fb51b3f894 |  |
 
-
 ### cisco-amp-group-policy-update
+
 ***
 Updates a group to a given policy and returns all the policies in that group.
-
 
 #### Base Command
 
 `cisco-amp-group-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_guid | Group's GUID. | Required | 
-| windows_policy_guid | Policy GUID for Windows. | Optional | 
-| mac_policy_guid | Policy GUID for MAC. | Optional | 
-| android_policy_guid | Policy GUID for Android. | Optional | 
-| linux_policy_guid | Policy GUID for Linux. | Optional | 
-
+| group_guid | Group's GUID. | Required |
+| windows_policy_guid | Policy GUID for Windows. | Optional |
+| mac_policy_guid | Policy GUID for MAC. | Optional |
+| android_policy_guid | Policy GUID for Android. | Optional |
+| linux_policy_guid | Policy GUID for Linux. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Group.name | String | Name of the group. | 
-| CiscoAMP.Group.description | String | Group's description. | 
-| CiscoAMP.Group.guid | String | Group GUID. | 
-| CiscoAMP.Group.source | String | Creation source. | 
-| CiscoAMP.Group.creator | String | Creator of the group. | 
-| CiscoAMP.Group.created_at | Date | Date of creation. | 
-| CiscoAMP.Group.computers_count | Number | Number of computers in the group. | 
-| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. | 
-| CiscoAMP.Group.ancestry.name | String | Parent group name. | 
-| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. | 
-| CiscoAMP.Group.child_groups.name | String | Child group name. | 
-| CiscoAMP.Group.child_groups.guid | String | Child group GUID. | 
-| CiscoAMP.Group.policies.name | String | Policy name. | 
-| CiscoAMP.Group.policies.description | String | Policy description. | 
-| CiscoAMP.Group.policies.guid | String | Policy GUID. | 
-| CiscoAMP.Group.policies.product | String | Policy operating system product. | 
-| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. | 
-| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. | 
-| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. | 
-| CiscoAMP.Group.policies.file_lists.name | String | File list name. | 
-| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. | 
-| CiscoAMP.Group.policies.file_lists.type | String | File list type. | 
-| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. | 
-| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. | 
-| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. | 
-| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. | 
-| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. | 
-| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group the policy is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group the policy is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group the policy is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group the policy is used in. | 
+| CiscoAMP.Group.name | String | Name of the group. |
+| CiscoAMP.Group.description | String | Group's description. |
+| CiscoAMP.Group.guid | String | Group GUID. |
+| CiscoAMP.Group.source | String | Creation source. |
+| CiscoAMP.Group.creator | String | Creator of the group. |
+| CiscoAMP.Group.created_at | Date | Date of creation. |
+| CiscoAMP.Group.computers_count | Number | Number of computers in the group. |
+| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. |
+| CiscoAMP.Group.ancestry.name | String | Parent group name. |
+| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. |
+| CiscoAMP.Group.child_groups.name | String | Child group name. |
+| CiscoAMP.Group.child_groups.guid | String | Child group GUID. |
+| CiscoAMP.Group.policies.name | String | Policy name. |
+| CiscoAMP.Group.policies.description | String | Policy description. |
+| CiscoAMP.Group.policies.guid | String | Policy GUID. |
+| CiscoAMP.Group.policies.product | String | Policy operating system product. |
+| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. |
+| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. |
+| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. |
+| CiscoAMP.Group.policies.file_lists.name | String | File list name. |
+| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. |
+| CiscoAMP.Group.policies.file_lists.type | String | File list type. |
+| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. |
+| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. |
+| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. |
+| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. |
+| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. |
+| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group the policy is used in. |
+| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group the policy is used in. |
+| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group the policy is used in. |
+| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group the policy is used in. |
 
 #### Command example
+
 ```!cisco-amp-group-policy-update group_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98 windows_policy_guid=91c7894d-dd69-4a21-8cf6-5ebfc57ef4df```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2246,66 +2331,69 @@ Updates a group to a given policy and returns all the policies in that group.
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
 >| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
-
 ### cisco-amp-group-parent-update
+
 ***
 Converts an existing group to a child of another group or an existing child group to a root group (that is, one with no parent groups).
-
 
 #### Base Command
 
 `cisco-amp-group-parent-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| child_guid | Group's GUID. | Required | 
-| parent_group_guid | Group parent to set to child group. | Optional | 
-
+| child_guid | Group's GUID. | Required |
+| parent_group_guid | Group parent to set to child group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Group.name | String | Name of the group. | 
-| CiscoAMP.Group.description | String | Group's description. | 
-| CiscoAMP.Group.guid | String | Group GUID. | 
-| CiscoAMP.Group.source | String | Creation source. | 
-| CiscoAMP.Group.creator | String | Creator of the group. | 
-| CiscoAMP.Group.created_at | Date | Date of creation. | 
-| CiscoAMP.Group.computers_count | Number | Number of computers in the group. | 
-| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. | 
-| CiscoAMP.Group.ancestry.name | String | Parent group name. | 
-| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. | 
-| CiscoAMP.Group.child_groups.name | String | Child group name. | 
-| CiscoAMP.Group.child_groups.guid | String | Child group GUID. | 
-| CiscoAMP.Group.policies.name | String | Policy name. | 
-| CiscoAMP.Group.policies.description | String | Policy description. | 
-| CiscoAMP.Group.policies.guid | String | Policy GUID. | 
-| CiscoAMP.Group.policies.product | String | Policy operating system product. | 
-| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. | 
-| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. | 
-| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. | 
-| CiscoAMP.Group.policies.file_lists.name | String | File list name. | 
-| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. | 
-| CiscoAMP.Group.policies.file_lists.type | String | File list type. | 
-| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. | 
-| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. | 
-| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. | 
-| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. | 
-| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. | 
-| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
+| CiscoAMP.Group.name | String | Name of the group. |
+| CiscoAMP.Group.description | String | Group's description. |
+| CiscoAMP.Group.guid | String | Group GUID. |
+| CiscoAMP.Group.source | String | Creation source. |
+| CiscoAMP.Group.creator | String | Creator of the group. |
+| CiscoAMP.Group.created_at | Date | Date of creation. |
+| CiscoAMP.Group.computers_count | Number | Number of computers in the group. |
+| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. |
+| CiscoAMP.Group.ancestry.name | String | Parent group name. |
+| CiscoAMP.Group.ancestry.guid | String | Parent group GUID. |
+| CiscoAMP.Group.child_groups.name | String | Child group name. |
+| CiscoAMP.Group.child_groups.guid | String | Child group GUID. |
+| CiscoAMP.Group.policies.name | String | Policy name. |
+| CiscoAMP.Group.policies.description | String | Policy description. |
+| CiscoAMP.Group.policies.guid | String | Policy GUID. |
+| CiscoAMP.Group.policies.product | String | Policy operating system product. |
+| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. |
+| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. |
+| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. |
+| CiscoAMP.Group.policies.file_lists.name | String | File list name. |
+| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. |
+| CiscoAMP.Group.policies.file_lists.type | String | File list type. |
+| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. |
+| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. |
+| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. |
+| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. |
+| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. |
+| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. |
 
 #### Command example
+
 ```!cisco-amp-group-parent-update child_guid=bb5a9f90-d6fa-4fe7-99c8-e91060b49a98```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2517,62 +2605,65 @@ Converts an existing group to a child of another group or an existing child grou
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Creator|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|---|
 >| Lior-Group | Test group | Email | 2022-10-25 13:42:36 | 1 | 0 |
 
-
 ### cisco-amp-group-create
+
 ***
 Creates a new group along with a group name or description.
-
 
 #### Base Command
 
 `cisco-amp-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Group name. | Required | 
-| description | Group description. | Required | 
-
+| name | Group name. | Required |
+| description | Group description. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Group.name | String | Name of the group. | 
-| CiscoAMP.Group.description | String | Group's description. | 
-| CiscoAMP.Group.guid | String | Group GUID. | 
-| CiscoAMP.Group.source | String | Creation source. | 
-| CiscoAMP.Group.creator | String | Creator of the group. | 
-| CiscoAMP.Group.created_at | Date | Date of creation. | 
-| CiscoAMP.Group.computers_count | Number | Number of computers in the group. | 
-| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. | 
-| CiscoAMP.Group.policies.name | String | Policy name. | 
-| CiscoAMP.Group.policies.description | String | Policy description. | 
-| CiscoAMP.Group.policies.guid | String | Policy GUID. | 
-| CiscoAMP.Group.policies.product | String | Policy operating system product. | 
-| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. | 
-| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. | 
-| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. | 
-| CiscoAMP.Group.policies.file_lists.name | String | File list name. | 
-| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. | 
-| CiscoAMP.Group.policies.file_lists.type | String | File list type. | 
-| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. | 
-| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. | 
-| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. | 
-| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. | 
-| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. | 
-| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. | 
-| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. | 
+| CiscoAMP.Group.name | String | Name of the group. |
+| CiscoAMP.Group.description | String | Group's description. |
+| CiscoAMP.Group.guid | String | Group GUID. |
+| CiscoAMP.Group.source | String | Creation source. |
+| CiscoAMP.Group.creator | String | Creator of the group. |
+| CiscoAMP.Group.created_at | Date | Date of creation. |
+| CiscoAMP.Group.computers_count | Number | Number of computers in the group. |
+| CiscoAMP.Group.descendant_computers_count | Number | Number of computers from descendant groups. |
+| CiscoAMP.Group.policies.name | String | Policy name. |
+| CiscoAMP.Group.policies.description | String | Policy description. |
+| CiscoAMP.Group.policies.guid | String | Policy GUID. |
+| CiscoAMP.Group.policies.product | String | Policy operating system product. |
+| CiscoAMP.Group.policies.default | Boolean | Whether the policy is the default policy. |
+| CiscoAMP.Group.policies.serial_number | Number | Policy serial number. |
+| CiscoAMP.Group.policies.inherited | Boolean | Whether the policy is inherited. |
+| CiscoAMP.Group.policies.file_lists.name | String | File list name. |
+| CiscoAMP.Group.policies.file_lists.guid | String | File list GUID. |
+| CiscoAMP.Group.policies.file_lists.type | String | File list type. |
+| CiscoAMP.Group.policies.ip_lists.name | String | IP list name. |
+| CiscoAMP.Group.policies.ip_lists.guid | String | IP list GUID. |
+| CiscoAMP.Group.policies.ip_lists.type | String | IP list type. |
+| CiscoAMP.Group.policies.exclusion_sets.name | String | Exclusion set name. |
+| CiscoAMP.Group.policies.exclusion_sets.guid | String | Exclusion set GUID. |
+| CiscoAMP.Group.policies.used_in_groups.name | String | Name of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.description | String | Description of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.guid | String | GUID of the group it is used in. |
+| CiscoAMP.Group.policies.used_in_groups.source | String | Creation source of the group it is used in. |
 
 #### Command example
+
 ```!cisco-amp-group-create description="readme test group to be deleted" name="readme group"```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2851,76 +2942,82 @@ Creates a new group along with a group name or description.
 #### Human Readable Output
 
 >### Group Information
+>
 >|Name|Description|Created At|Computers Count|Descendant Computers Count|
 >|---|---|---|---|---|
 >| readme group | readme test group to be deleted | 2022-10-31 12:16:25 | 0 | 0 |
 
-
 ### cisco-amp-group-delete
+
 ***
 Destroys a group with a given GUID.
-
 
 #### Base Command
 
 `cisco-amp-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_guid | Group's GUID. | Required | 
-
+| group_guid | Group's GUID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-amp-group-delete group_guid=d088adeb-7cb4-48e4-807b-edcb828f4d29```
+
 #### Human Readable Output
 
 >Group GUID: "d088adeb-7cb4-48e4-807b-edcb828f4d29"
 >Successfully deleted.
 
 ### cisco-amp-indicator-list
+
 ***
 Show information about indicators.
-
 
 #### Base Command
 
 `cisco-amp-indicator-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator_guid | Indicator GUID. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| indicator_guid | Indicator GUID. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Indicator.name | String | Indicator name. | 
-| CiscoAMP.Indicator.description | String | Indicator description. | 
-| CiscoAMP.Indicator.guid | String | Indicator GUID. | 
-| CiscoAMP.Indicator.severity | String | Indicator severity. | 
-| CiscoAMP.Indicator.mitre.tactics.external_id | String | Mitre tactic ID. | 
-| CiscoAMP.Indicator.mitre.tactics.name | String | Mitre tactic name. | 
-| CiscoAMP.Indicator.mitre.tactics.mitre_url | String | Mitre tactic URL. | 
-| CiscoAMP.Indicator.mitre.techniques.external_id | String | Mitre technique ID. | 
-| CiscoAMP.Indicator.mitre.techniques.name | String | Mitre technique name. | 
-| CiscoAMP.Indicator.mitre.techniques.mitre_url | String | Mitre technique URL. | 
-| CiscoAMP.Indicator.observed_compromises | Number | Total number of observed compromises. | 
-| CiscoAMP.Indicator.observed_compromises.unresolved | Number | Number of unresolved compromises. | 
-| CiscoAMP.Indicator.observed_compromises.in_progress | Number | Number of compromises in progress. | 
-| CiscoAMP.Indicator.observed_compromises.resolved | Number | Number of resolved compromises. | 
+| CiscoAMP.Indicator.name | String | Indicator name. |
+| CiscoAMP.Indicator.description | String | Indicator description. |
+| CiscoAMP.Indicator.guid | String | Indicator GUID. |
+| CiscoAMP.Indicator.severity | String | Indicator severity. |
+| CiscoAMP.Indicator.mitre.tactics.external_id | String | Mitre tactic ID. |
+| CiscoAMP.Indicator.mitre.tactics.name | String | Mitre tactic name. |
+| CiscoAMP.Indicator.mitre.tactics.mitre_url | String | Mitre tactic URL. |
+| CiscoAMP.Indicator.mitre.techniques.external_id | String | Mitre technique ID. |
+| CiscoAMP.Indicator.mitre.techniques.name | String | Mitre technique name. |
+| CiscoAMP.Indicator.mitre.techniques.mitre_url | String | Mitre technique URL. |
+| CiscoAMP.Indicator.observed_compromises | Number | Total number of observed compromises. |
+| CiscoAMP.Indicator.observed_compromises.unresolved | Number | Number of unresolved compromises. |
+| CiscoAMP.Indicator.observed_compromises.in_progress | Number | Number of compromises in progress. |
+| CiscoAMP.Indicator.observed_compromises.resolved | Number | Number of resolved compromises. |
 
 #### Command example
+
 ```!cisco-amp-indicator-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -2968,10 +3065,13 @@ Show information about indicators.
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 5 | 0 | 5 | 910 |
+>
 >### Indicator Information
+>
 >|GUID|Name|Description|Severity|Observed Compromises|
 >|---|---|---|---|---|
 >| 5593ab7e-1db5-4759-9785-96c55824b675 | Crossrider.ioc | Crossrider is a an Adware variant that targets Mac with the intent of displaying ads. It also changes the default home page of Safari and Chrome browsers. | Medium | 0 |
@@ -2980,52 +3080,54 @@ Show information about indicators.
 >| 940bdaf4-4c89-4423-a55e-410ed56143a8 | JS.Trojan.Generic_48153.ioc | JS.Trojan.Generic_48153 is malware that contacts a remote server over HTTP. This IOC is based on Snort Intrusion Prevention System (IPS) rule id:48153 from the malware detection rulesets. This IOC fires when a URI pattern similar to this malware has been detected. The components of the URI this IOC inspects for are: "/01/Carontex". | Critical | 0 |
 >| 318d030d-7fdc-48f4-afcd-66c7c75cade7 | Linux.AutostartPersistence.ioc | Most Linux distributions support creation of auto-start files. This consists of placing a configuration file with a .desktop extension in the .config/autostart location. In this case, a suspicious auto-start entry was created. Linux malware such as x-agent also known as sofacy/sednit are known to do that. | High | 0 |
 
-
 ### cisco-amp-policy-list
+
 ***
 Gets information about policies by filtering with a product and name of a specific policy with a policy_guid.
-
 
 #### Base Command
 
 `cisco-amp-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_guid | Policy GUID. | Optional | 
-| product | Comma-separated list for products to filter by. | Optional | 
-| name | Comma-separated list for names to filter by (has auto complete capabilities). | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| policy_guid | Policy GUID. | Optional |
+| product | Comma-separated list for products to filter by. | Optional |
+| name | Comma-separated list for names to filter by (has auto complete capabilities). | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Policy.name | String | Policy name. | 
-| CiscoAMP.Policy.description | String | Policy description. | 
-| CiscoAMP.Policy.guid | String | Policy GUID. | 
-| CiscoAMP.Policy.product | String | Product used. | 
-| CiscoAMP.Policy.default | Boolean | Whether the policy is the default policy. | 
-| CiscoAMP.Policy.serial_number | Number | Policy serial number. | 
-| CiscoAMP.Policy.file_lists.name | String | File list name. | 
-| CiscoAMP.Policy.file_lists.guid | String | File list GUID. | 
-| CiscoAMP.Policy.file_lists.type | String | File list type. | 
-| CiscoAMP.Policy.ip_lists.name | String | IP list name. | 
-| CiscoAMP.Policy.ip_lists.guid | String | IP list GUID. | 
-| CiscoAMP.Policy.ip_lists.type | String | IP list type. | 
-| CiscoAMP.Policy.exclusion_sets.name | String | Exclusion set name. | 
-| CiscoAMP.Policy.exclusion_sets.guid | String | Exclusion set GUID. | 
-| CiscoAMP.Policy.used_in_groups.name | String | Group name. | 
-| CiscoAMP.Policy.used_in_groups.description | String | Group description. | 
-| CiscoAMP.Policy.used_in_groups.guid | String | Group GUID. | 
+| CiscoAMP.Policy.name | String | Policy name. |
+| CiscoAMP.Policy.description | String | Policy description. |
+| CiscoAMP.Policy.guid | String | Policy GUID. |
+| CiscoAMP.Policy.product | String | Product used. |
+| CiscoAMP.Policy.default | Boolean | Whether the policy is the default policy. |
+| CiscoAMP.Policy.serial_number | Number | Policy serial number. |
+| CiscoAMP.Policy.file_lists.name | String | File list name. |
+| CiscoAMP.Policy.file_lists.guid | String | File list GUID. |
+| CiscoAMP.Policy.file_lists.type | String | File list type. |
+| CiscoAMP.Policy.ip_lists.name | String | IP list name. |
+| CiscoAMP.Policy.ip_lists.guid | String | IP list GUID. |
+| CiscoAMP.Policy.ip_lists.type | String | IP list type. |
+| CiscoAMP.Policy.exclusion_sets.name | String | Exclusion set name. |
+| CiscoAMP.Policy.exclusion_sets.guid | String | Exclusion set GUID. |
+| CiscoAMP.Policy.used_in_groups.name | String | Group name. |
+| CiscoAMP.Policy.used_in_groups.description | String | Group description. |
+| CiscoAMP.Policy.used_in_groups.guid | String | Group GUID. |
 
 #### Command example
+
 ```!cisco-amp-policy-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3150,10 +3252,13 @@ Gets information about policies by filtering with a product and name of a specif
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 14 | 0 | 100 | 14 |
+>
 >### Policy Information
+>
 >|GUID|Name|Description|Product|Serial Number|
 >|---|---|---|---|---|
 >| 082bc9a3-b73a-4f42-8cc5-de1cd3748700 | Protect | This is the standard policy for the Secure Endpoint Connector that will quarantine malicious files and block malicious network connections. | android | 11 |
@@ -3171,49 +3276,51 @@ Gets information about policies by filtering with a product and name of a specif
 >| dd1da971-926c-42ab-9e5a-154f2695d995 | Server | This is a lightweight policy for high availability computers and servers that require maximum performance and uptime. | windows | 8 |
 >| 1a352c59-793b-44f3-b8f9-0ddd354057bc | Triage | This is an aggressive policy that enables the offline engine to scan computers that are suspected or known to be infected with malware. | windows | 6 |
 
-
 ### cisco-amp-app-trajectory-query-list
+
 ***
 Retrieve app_trajectory queries for a given ios bundle id.
-
 
 #### Base Command
 
 `cisco-amp-app-trajectory-query-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ios_bid | IOS bundle ID for app trajectory. | Required | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| ios_bid | IOS bundle ID for app trajectory. | Required |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.AppTrajectoryQuery.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.AppTrajectoryQuery.bundle_id | String | Bundle ID. | 
-| CiscoAMP.AppTrajectoryQuery.group_guids | String | List of group's GUIDs. | 
-| CiscoAMP.AppTrajectoryQuery.cdhash | String | CD hash. | 
-| CiscoAMP.AppTrajectoryQuery.timestamp | Number | Observed timestamp. | 
-| CiscoAMP.AppTrajectoryQuery.timestamp_nanoseconds | Number | Observed timestamp in nano seconds. | 
-| CiscoAMP.AppTrajectoryQuery.date | Date | Observed date. | 
-| CiscoAMP.AppTrajectoryQuery.query_type | String | The type of the query. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.dirty_url | String | Link to the observed URL. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.remote_ip | String | Remote IP. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.remote_port | Number | Remote port. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.local_ip | String | Local IP. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.local_port | Number | Local Port. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.direction | String | Outgoing or incoming connection. | 
-| CiscoAMP.AppTrajectoryQuery.network_info.protocol | String | Communication protocol used. | 
-| CiscoAMP.AppTrajectoryQuery.ver | String | Version. | 
+| CiscoAMP.AppTrajectoryQuery.connector_guid | String | GUID of the connector. |
+| CiscoAMP.AppTrajectoryQuery.bundle_id | String | Bundle ID. |
+| CiscoAMP.AppTrajectoryQuery.group_guids | String | List of group's GUIDs. |
+| CiscoAMP.AppTrajectoryQuery.cdhash | String | CD hash. |
+| CiscoAMP.AppTrajectoryQuery.timestamp | Number | Observed timestamp. |
+| CiscoAMP.AppTrajectoryQuery.timestamp_nanoseconds | Number | Observed timestamp in nano seconds. |
+| CiscoAMP.AppTrajectoryQuery.date | Date | Observed date. |
+| CiscoAMP.AppTrajectoryQuery.query_type | String | The type of the query. |
+| CiscoAMP.AppTrajectoryQuery.network_info.dirty_url | String | Link to the observed URL. |
+| CiscoAMP.AppTrajectoryQuery.network_info.remote_ip | String | Remote IP. |
+| CiscoAMP.AppTrajectoryQuery.network_info.remote_port | Number | Remote port. |
+| CiscoAMP.AppTrajectoryQuery.network_info.local_ip | String | Local IP. |
+| CiscoAMP.AppTrajectoryQuery.network_info.local_port | Number | Local Port. |
+| CiscoAMP.AppTrajectoryQuery.network_info.direction | String | Outgoing or incoming connection. |
+| CiscoAMP.AppTrajectoryQuery.network_info.protocol | String | Communication protocol used. |
+| CiscoAMP.AppTrajectoryQuery.ver | String | Version. |
 
 #### Command example
+
 ```!cisco-amp-app-trajectory-query-list ios_bid=com.apple.Safari.SafeBrowsing limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3292,6 +3399,7 @@ Retrieve app_trajectory queries for a given ios bundle id.
 #### Human Readable Output
 
 >### App Trajectory Information
+>
 >|Connector GUID|Date|Query Type|Dirty URL|
 >|---|---|---|---|
 >| dddd4ceb-4ce1-4f81-a7a7-04d13cc1df43 | 2022-10-24T12:01:59+00:00 | Network Query | https:<span>//</span>configuration.apple.com/configurations/internetservices/safari/SafeBrowsingRemoteConfiguration-0.plist |
@@ -3300,15 +3408,15 @@ Retrieve app_trajectory queries for a given ios bundle id.
 >| 8aa97bc7-3cc1-47aa-ad0a-0e23d5493aff | 2022-10-23T12:30:46+00:00 | Network Query | https:<span>//</span>safebrowsing.googleapis.com/v4/threatListUpdates:fetch |
 >| 8aa97bc7-3cc1-47aa-ad0a-0e23d5493aff | 2022-10-23T12:00:54+00:00 | Network Query | https:<span>//</span>safebrowsing.googleapis.com/v4/threatListUpdates:fetch |
 
-
 ### cisco-amp-version-get
+
 ***
 Get API version.
-
 
 #### Base Command
 
 `cisco-amp-version-get`
+
 #### Input
 
 There are no input arguments for this command.
@@ -3317,11 +3425,14 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Version.version | String | API version. | 
+| CiscoAMP.Version.version | String | API version. |
 
 #### Command example
+
 ```!cisco-amp-version-get```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -3337,57 +3448,60 @@ There are no input arguments for this command.
 >Version: v1.2.0
 
 ### cisco-amp-vulnerability-list
+
 ***
 Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software view on the AMP for Endpoints Console. The list can be filtered to show only the vulnerable programs detected for a specific time range. Provide a list of computers on which the vulnerability has been observed with a given SHA-256. The list item contains a summary of information on the vulnerability, including: application name and version, SHA-256 value for the executable file, connectors on which the vulnerable application was observed and the most recent CVSS score. IMPORTANT: The computer's key returns information about the last 1000 connectors on which the vulnerable application was observed.
-
 
 #### Base Command
 
 `cisco-amp-vulnerability-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha256 | SHA-256 that has been observed as a vulnerability. | Optional | 
-| group_guid | Comma-separated list for group GUIDs to filter by. | Optional | 
-| start_time | The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time. | Optional | 
-| end_time | The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date. | Optional | 
-| page | Page number to return. | Optional | 
-| page_size | Number of results in a page. Maximum is 500. | Optional | 
-| limit | Number of total results to return. | Optional | 
-
+| sha256 | SHA-256 that has been observed as a vulnerability. | Optional |
+| group_guid | Comma-separated list for group GUIDs to filter by. | Optional |
+| start_time | The start date and time expressed according to ISO 8601. The retrieved list will include vulnerable programs detected at start_time. | Optional |
+| end_time | The end date and/or time expressed according to ISO 8601. Exclusive - if end_time is a time, the list will only include vulnerable programs detected before end_time). Inclusive - if end_time is a date, the list will include vulnerable programs detected on the date. | Optional |
+| page | Page number to return. | Optional |
+| page_size | Number of results in a page. Maximum is 500. | Optional |
+| limit | Number of total results to return. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoAMP.Vulnerability.application | String | Name of the application. | 
-| CiscoAMP.Vulnerability.version | String | Version of the application. | 
-| CiscoAMP.Vulnerability.file.filename | String | Name of the file. | 
-| CiscoAMP.Vulnerability.file.identity.sha256 | String | File's SHA-256. | 
-| CiscoAMP.Vulnerability.latest_timestamp | Number | Vulnerability latest timestamp. | 
-| CiscoAMP.Vulnerability.latest_date | Date | Vulnerability latest date. | 
-| CiscoAMP.Vulnerability.computers_total_count | Number | Number of computers. | 
-| CiscoAMP.Vulnerability.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Vulnerability.hostname | String | Host's name. | 
-| CiscoAMP.Vulnerability.windows_processor_id | String | Windows processor ID. | 
-| CiscoAMP.Vulnerability.active | Boolean | Whether the computer is active. | 
-| CiscoAMP.Vulnerability.group_guid | String | Group's GUID. | 
-| CiscoAMP.Vulnerability.cves.id | String | Common vulnerability exposure ID. | 
-| CiscoAMP.Vulnerability.cves.link | String | Common vulnerability exposure link. | 
-| CiscoAMP.Vulnerability.cves.cvss | Number | Common vulnerability scoring system. | 
-| CiscoAMP.Vulnerability.groups.name | String | Group's name. | 
-| CiscoAMP.Vulnerability.groups.description | String | Group's description. | 
-| CiscoAMP.Vulnerability.groups.guid | String | Group's GUID. | 
-| CiscoAMP.Vulnerability.groups.source | String | Group's source of creation. | 
-| CiscoAMP.Vulnerability.computers.connector_guid | String | GUID of the connector. | 
-| CiscoAMP.Vulnerability.computers.hostname | String | Host's name. | 
-| CiscoAMP.Vulnerability.computers.windows_processor_id | String | Windows processor ID. | 
-| CiscoAMP.Vulnerability.computers.active | Boolean | Whether the computer is active. | 
+| CiscoAMP.Vulnerability.application | String | Name of the application. |
+| CiscoAMP.Vulnerability.version | String | Version of the application. |
+| CiscoAMP.Vulnerability.file.filename | String | Name of the file. |
+| CiscoAMP.Vulnerability.file.identity.sha256 | String | File's SHA-256. |
+| CiscoAMP.Vulnerability.latest_timestamp | Number | Vulnerability latest timestamp. |
+| CiscoAMP.Vulnerability.latest_date | Date | Vulnerability latest date. |
+| CiscoAMP.Vulnerability.computers_total_count | Number | Number of computers. |
+| CiscoAMP.Vulnerability.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Vulnerability.hostname | String | Host's name. |
+| CiscoAMP.Vulnerability.windows_processor_id | String | Windows processor ID. |
+| CiscoAMP.Vulnerability.active | Boolean | Whether the computer is active. |
+| CiscoAMP.Vulnerability.group_guid | String | Group's GUID. |
+| CiscoAMP.Vulnerability.cves.id | String | Common vulnerability exposure ID. |
+| CiscoAMP.Vulnerability.cves.link | String | Common vulnerability exposure link. |
+| CiscoAMP.Vulnerability.cves.cvss | Number | Common vulnerability scoring system. |
+| CiscoAMP.Vulnerability.groups.name | String | Group's name. |
+| CiscoAMP.Vulnerability.groups.description | String | Group's description. |
+| CiscoAMP.Vulnerability.groups.guid | String | Group's GUID. |
+| CiscoAMP.Vulnerability.groups.source | String | Group's source of creation. |
+| CiscoAMP.Vulnerability.computers.connector_guid | String | GUID of the connector. |
+| CiscoAMP.Vulnerability.computers.hostname | String | Host's name. |
+| CiscoAMP.Vulnerability.computers.windows_processor_id | String | Windows processor ID. |
+| CiscoAMP.Vulnerability.computers.active | Boolean | Whether the computer is active. |
 
 #### Command example
+
 ```!cisco-amp-vulnerability-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoAMP": {
@@ -4861,10 +4975,13 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 #### Human Readable Output
 
 >### Results
+>
 >|Current Item Count|Index|Items Per Page|Total|
 >|---|---|---|---|
 >| 8 | 0 | 100 | 8 |
+>
 >### Vulnerabilities Information
+>
 >|Application|Version|Latest Date|File Name|SHA-256|
 >|---|---|---|---|---|
 >| Mozilla Firefox | 41.0 | 2022-10-25T12:20:00+00:00 | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |
@@ -4876,40 +4993,42 @@ Fetch a list of vulnerabilities. This is analogous to the Vulnerable Software vi
 >| Microsoft Internet Explorer | 11 | 2022-10-04T07:02:26+00:00 | mshtml.dll | 1DC5D15A26A79BB46519952A60B15AA4ACB36F6CE3247EBF50DF9C157BC4FCF4 |
 >| Microsoft Office | 2016 | 2022-10-04T06:32:53+00:00 | OUTLOOK.EXE | 465F398AE8E3C32395EB7C04BC8CD24595068E6A127E243BED3E9B4931556BFC |
 
-
 ### endpoint
+
 ***
 Returns information about an endpoint.
-
 
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The endpoint ID. Takes priority over the IP and hostname arguments. | Optional | 
-| ip | The endpoint IP address. The IP argument has priority over the hostname argument. | Optional | 
-| hostname | The endpoint hostname. | Optional | 
-
+| id | The endpoint ID. Takes priority over the IP and hostname arguments. | Optional |
+| ip | The endpoint IP address. The IP argument has priority over the hostname argument. | Optional |
+| hostname | The endpoint hostname. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The hostname of the endpoint. | 
-| Endpoint.ID | String | The endpoint's identifier. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.OS | String | The endpoint's operating system. | 
-| Endpoint.OSVersion | String | The endpoint's operating system's version. | 
-| Endpoint.Status | String | The status of the endpoint \(online/offline\). | 
-| Endpoint.MACAddress | String | The endpoint's MAC address. | 
-| Endpoint.Vendor | String | The integration name of the endpoint vendor. | 
+| Endpoint.Hostname | String | The hostname of the endpoint. |
+| Endpoint.ID | String | The endpoint's identifier. |
+| Endpoint.IPAddress | String | The endpoint's IP address. |
+| Endpoint.OS | String | The endpoint's operating system. |
+| Endpoint.OSVersion | String | The endpoint's operating system's version. |
+| Endpoint.Status | String | The status of the endpoint \(online/offline\). |
+| Endpoint.MACAddress | String | The endpoint's MAC address. |
+| Endpoint.Vendor | String | The integration name of the endpoint vendor. |
 
 #### Command example
+
 ```!endpoint id=22d4a486-1732-4f8b-9a6f-18f172fe7af0```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -4928,47 +5047,50 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### CiscoAMP - Endpoint Demo_AMP
+>
 >|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Status|Vendor|
 >|---|---|---|---|---|---|---|---|
 >| Demo_AMP | 22d4a486-1732-4f8b-9a6f-18f172fe7af0 | IP | e6:80:50:1e:e5:20 | Windows 10 | 10.0.19044.1466 | Online | CiscoAMP Response |
 
-
 ### file
+
 ***
 Runs reputation on files.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
-
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Name | String | The full file name \(including file extension\). | 
-| File.Path | String | The path where the file is located. | 
-| File.Hostname | String | The name of the host where the file was found. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| File.Malicious.Description | String | A description of why the file was determined to be malicious. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Name | String | The full file name \(including file extension\). |
+| File.Path | String | The path where the file is located. |
+| File.Hostname | String | The name of the host where the file was found. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| File.Malicious.Description | String | A description of why the file was determined to be malicious. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command example
+
 ```!file file=ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -5052,6 +5174,7 @@ Runs reputation on files.
 #### Human Readable Output
 
 ### Cisco AMP - Hash Reputation for: 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F
+>
 >|Hashes|Hostname|Name|SHA256|
 >|---|---|---|---|
 >| {'type': 'SHA256', 'value': '4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F'} | Demo_AMP_Exploit_Prevention | firefox.exe | 4312CDB2EAD8FD8D2DD6D8D716F3B6E9717B3D7167A2A0495E4391312102170F |
