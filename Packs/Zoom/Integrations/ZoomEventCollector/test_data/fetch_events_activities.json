@@ -1,0 +1,113 @@
+{
+  "fetch_events_month_before": {
+    "from": "2023-02-01",
+    "to": "2023-03-01",
+    "page_size": 300,
+    "next_page_token": "",
+    "activity_logs": []
+  },
+  "fetch_events": {
+    "from": "2023-03-02",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "",
+    "activity_logs": [
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-29T11:38:50Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-29T07:59:46Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T10:04:13Z",
+        "type": "Sign out",
+        "ip_address": "8.8.8.8",
+        "client_type": "win",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T09:06:22Z",
+        "type": "Sign out",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T08:14:27Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      }
+    ]
+  },
+  "fetch_events_with_token": {
+    "from": "2023-03-21",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "next_token_activities",
+    "activity_logs": [
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-29T11:38:50Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-29T07:59:46Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      }
+    ]
+  },
+  "fetch_events_with_token_next": {
+    "from": "2023-03-21",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "",
+    "activity_logs": [
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T10:04:13Z",
+        "type": "Sign out",
+        "ip_address": "8.8.8.8",
+        "client_type": "win",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T09:06:22Z",
+        "type": "Sign out",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      },
+      {
+        "email": "admin@test.com",
+        "time": "2023-03-21T08:14:27Z",
+        "type": "Sign in",
+        "ip_address": "8.8.8.8",
+        "client_type": "Browser",
+        "version": "-"
+      }
+    ]
+  }
+}

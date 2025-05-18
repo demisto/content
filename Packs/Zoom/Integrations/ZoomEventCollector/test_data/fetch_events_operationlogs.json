@@ -1,0 +1,75 @@
+{
+  "fetch_events_month_before": {
+    "from": "2023-02-01",
+    "to": "2023-03-01",
+    "page_size": 300,
+    "next_page_token": "",
+    "operation_logs": []
+  },
+  "fetch_events": {
+    "from": "2023-03-02",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "",
+    "operation_logs": [
+      {
+        "time": "2023-03-21T08:22:09Z",
+        "operator": "test@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+      },
+      {
+        "time": "2023-03-21T08:22:06Z",
+        "operator": "admin@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+      },
+      {
+        "time": "2023-03-20T16:37:58Z",
+        "operator": "admin@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Update a Channel TestGroupChannel1  - Cloud Storage Retention: set to  - Name: from TestGroup1 to TestGroupChannel1"
+      }
+    ]
+  },
+  "fetch_events_with_token": {
+    "from": "2023-03-20",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "next_token_operationlogs",
+    "operation_logs": [
+      {
+        "time": "2023-03-21T08:22:09Z",
+        "operator": "test@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+      },
+      {
+        "time": "2023-03-21T08:22:06Z",
+        "operator": "admin@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Assign admin for channel TestChannel3  - test@test.com"
+      }
+    ]
+  },
+  "fetch_events_with_token_next": {
+    "from": "2023-03-20",
+    "to": "2023-03-30",
+    "page_size": 300,
+    "next_page_token": "",
+    "operation_logs": [
+      {
+        "time": "2023-03-20T16:37:58Z",
+        "operator": "admin@test.com",
+        "category_type": "Channels",
+        "action": "Update",
+        "operation_detail": "Update a Channel TestGroupChannel1  - Cloud Storage Retention: set to  - Name: from TestGroup1 to TestGroupChannel1"
+      }
+    ]
+  }
+}
