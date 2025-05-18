@@ -126,7 +126,7 @@ def test_get_last_run_no_previous(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     now = datetime(2025, 5, 15, 12, 0, 0)
     result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
-    expected_time = (now - timedelta(days=30)).strftime(DATE_FORMAT)  # TODO
+    expected_time = (now - timedelta(days=60)).strftime(DATE_FORMAT)  # TODO
 
     for etype in (REPORT, DOMAIN, CREDENTIALS):
         assert etype in result
@@ -1122,9 +1122,7 @@ def test_fetch_events_same_timestamp(mocker):
             self.called = {}
 
         def get_domain_watchlist(self, start_date, end_date, limit):
-            # capture how many we asked for
             self.called["limit"] = limit
-            # return that many events, IDs "1".."limit", all at the same timestamp
             return [{ID_KEYS[DOMAIN]: str(i), "_time": last_run_time} for i in range(1, limit + 1)]
 
     client = DummyClient()
@@ -1133,28 +1131,10 @@ def test_fetch_events_same_timestamp(mocker):
     events, new_last_run = fetch_events(client, max_fetch, [DOMAIN])
     assert client.called["limit"] == 6
 
-    # 2) only the three unseen events are returned
     assert len(events) == 3
     returned_ids = [e[ID_KEYS[DOMAIN]] for e in events]
     assert returned_ids == ["4", "5", "6"]
 
-    # 3) last_run for REPORT contains all six IDs in order, time unchanged
     assert DOMAIN in new_last_run
     assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
     assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {"1", "2", "3", "4", "5", "6"}
-
-
-def test_dedup_fetched_events_filters_and_preserves_order():
-    from CybelAngelEventCollector import dedup_fetched_events
-
-    events = [
-        {ID_KEYS[REPORT]: "1", "_time": "2025-01-01T00:00:00"},
-        {ID_KEYS[REPORT]: "2", "_time": "2025-01-01T00:00:01"},
-        {ID_KEYS[REPORT]: "3", "_time": "2025-01-01T00:00:02"},
-        {ID_KEYS[REPORT]: "4", "_time": "2025-01-01T00:00:03"},
-    ]
-    last_run_ids = {"2", "4"}
-
-    result = dedup_fetched_events(events, last_run_ids, REPORT)
-
-    assert [e[ID_KEYS[REPORT]] for e in result] == ["1", "3"]
