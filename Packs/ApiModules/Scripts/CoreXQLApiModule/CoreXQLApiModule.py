@@ -443,7 +443,6 @@ def add_playbook_metadata(data: dict, command: str):
         "integration_name": brand,
         "command_name": command,
     }
-    demisto.error(f'DANF playbook {playbook_metadata=}')
     data["request_data"]["playbook_metadata"] = playbook_metadata
     demisto.debug(
         f"Added playbook metadata data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}"
