@@ -5801,7 +5801,7 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test",
-            "memory_threshold": 100
+            "memory_threshold": 250
         },
         {
             "integrations": "MattermostV2",
