@@ -1,0 +1,1 @@
+Appsentinels.ai offers a platform for collecting, analyzing, and managing security events to provide comprehensive application protection.
