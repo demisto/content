@@ -32,6 +32,7 @@ class ServiceNowClient(BaseClient):
         """
         self.auth = None
         self.use_oauth = use_oauth
+        self.jwt: Optional[str] = None
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
@@ -47,6 +48,9 @@ class ServiceNowClient(BaseClient):
         self.base_url = url
         super().__init__(base_url=self.base_url, verify=verify, proxy=proxy, headers=headers, auth=self.auth)  # type
         # : ignore[misc]
+
+    def set_jwt(self, jwt: str):
+        self.jwt = jwt
 
     def http_request(
         self,
@@ -160,13 +164,17 @@ class ServiceNowClient(BaseClient):
             if previous_token.get("refresh_token"):
                 data["refresh_token"] = previous_token.get("refresh_token")
                 data["grant_type"] = "refresh_token"
-            else:
+            elif not self.jwt:
                 raise Exception(
                     "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
                 )
 
             try:
                 headers = {"Content-Type": "application/x-www-form-urlencoded"}
+                if self.jwt:
+                    data["assertion"] = self.jwt
+                    data["grant_type"] = "urn:ietf:params:oauth:grant-type:jwt-bearer"
+
                 res = super()._http_request(
                     method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
                 )

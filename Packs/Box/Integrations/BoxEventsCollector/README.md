@@ -14,7 +14,6 @@ This is the default integration for this content pack when configured by the Dat
 To acquire the "Credential JSON", you need to get a JWT token and an app from Box.
 You can use the guide from [Box V2](https://xsoar.pan.dev/docs/reference/integrations/box-v2#configure-the-box-application-to-interface-with-xsoar) to get those credentials.
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Verify SSL Certificate | False |
@@ -22,7 +21,6 @@ You can use the guide from [Box V2](https://xsoar.pan.dev/docs/reference/integra
 | Fetch Events | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) | False |
 | The maximum amount of events to fetch at once. 500 is maximum | False |
-
 
 ## Commands
 
