@@ -1,12 +1,9 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-CONSTANT_PACK_VERSION = '1.3.31'
-demisto.debug('pack id = Elasticsearch, pack version = 1.3.31')
+
+CONSTANT_PACK_VERSION = "1.3.32"
+demisto.debug("pack id = Elasticsearch, pack version = 1.3.32")
 import re
-
-
-
-
 
 
 """IMPORTS"""
@@ -551,7 +548,7 @@ def test_timestamp_format(timestamp):
 
 
 def test_connectivity_auth(proxies):
-    #test will not work through proxies - variable not used
+    # test will not work through proxies - variable not used
     headers = {"Content-Type": "application/json"}
     if API_KEY_ID:
         headers["authorization"] = get_api_key_header_val(API_KEY)
@@ -1045,37 +1042,28 @@ def search_esql_command(args, proxies):
     es = elasticsearch_builder(proxies)
 
     if limit:
-        query = {
-            "query": query + f"| LIMIT {limit}"
-        }
+        query = {"query": query + f"| LIMIT {limit}"}
     else:
-        query = {
-            "query": query
-        }
+        query = {"query": query}
 
     if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V9:
         headers = {
             "Content-Type": "application/vnd.elasticsearch+json; compatible-with=9",
-            "Accept": "application/vnd.elasticsearch+json; compatible-with=9"
+            "Accept": "application/vnd.elasticsearch+json; compatible-with=9",
         }
     elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
         headers = {
             "Content-Type": "application/vnd.elasticsearch+json; compatible-with=8",
-            "Accept": "application/vnd.elasticsearch+json; compatible-with=8"
+            "Accept": "application/vnd.elasticsearch+json; compatible-with=8",
         }
     else:
         return_error("ES|QL Search is only supported in Elasticsearch 8.11 and above.")
 
     demisto.debug(f"ES|QL search body: {query}")
-    res = es.perform_request(
-        method="POST",
-        path="/_query?format=json",
-        headers=headers,
-        body=query
-    )
+    res = es.perform_request(method="POST", path="/_query?format=json", headers=headers, body=query)
 
-    human_output_columns = [col['name'] for col in res['columns']]
-    human_output_rows = res['values']
+    human_output_columns = [col["name"] for col in res["columns"]]
+    human_output_rows = res["values"]
     human_output = []
 
     for row in human_output_rows:
@@ -1084,16 +1072,13 @@ def search_esql_command(args, proxies):
             row_dict[human_output_columns[i]] = row[i]
         human_output.append(row_dict)
 
-    search_human_readable = tableToMarkdown("Search query:", [{"Query": query.get("query"),
-                                                               "Total": str(len(human_output_rows))}], removeNull=True)
+    search_human_readable = tableToMarkdown(
+        "Search query:", [{"Query": query.get("query"), "Total": str(len(human_output_rows))}], removeNull=True
+    )
     hits_human_readable = tableToMarkdown("Results:", human_output, removeNull=True)
     total_human_readable = search_human_readable + "\n" + hits_human_readable
 
-    return CommandResults(
-        readable_output= total_human_readable,
-        outputs_prefix="Elasticsearch.Search",
-        outputs=human_output
-    )
+    return CommandResults(readable_output=total_human_readable, outputs_prefix="Elasticsearch.Search", outputs=human_output)
 
 
 def index_document(args, proxies):
@@ -1255,4 +1240,3 @@ def main():  # pragma: no cover
 
 if __name__ in ("__main__", "builtin", "builtins"):
     main()
-

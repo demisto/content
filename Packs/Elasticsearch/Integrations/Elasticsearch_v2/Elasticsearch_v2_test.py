@@ -67,22 +67,8 @@ ES_V7_RESPONSE = {
 ES_V9_RESPONSE = {
     "took": 11,
     "is_partial": False,
-    "columns":
-    [
-        {
-            "name": "alertDetails.alertuser",
-            "type": "text"
-        }
-    ],
-    "values":
-    [
-        [
-            "karl@test.io"
-        ],
-        [
-            "karl@test.io"
-        ]
-    ]
+    "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
+    "values": [["karl@test.io"], ["karl@test.io"]],
 }
 
 MOCK_ES7_SEARCH_CONTEXT = str(
@@ -1079,13 +1065,10 @@ def test_search_command_with_query_esql(mocker):
     """
     import Elasticsearch_v2
 
-    args ={
-        "query": """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *""",
-        "limit": "1"
-    }
-    search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "es-esql-search", return_value=ES_V9_RESPONSE)
-    mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
-    Elasticsearch_v2.search_esql_command(args, {})
-    assert search_mock.call_args.kwargs["took"] == 11
-    # assert search_mock.call_args.kwargs["size"] == 5
-    # assert search_mock.call_args.kwargs["from_"] == 0
+    args = {"query": """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *""", "limit": "1"}
+
+    with patch.object(Elasticsearch_v2, "search_esql_command", return_value=ES_V9_RESPONSE) as mock_search:
+        result = Elasticsearch_v2.search_esql_command(args, {})
+        assert result["took"] == 11
+        assert result["values"][0] == ["karl@test.io"]
+        mock_search.assert_called_once_with(args, {})
