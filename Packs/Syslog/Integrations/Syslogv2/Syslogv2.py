@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from tempfile import NamedTemporaryFile
-from typing import Callable
+from collections.abc import Callable
 
 import urllib3
 
@@ -14,7 +14,7 @@ from CommonServerUserPython import *  # noqa
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
 
-''' CONSTANTS '''
+""" CONSTANTS """
 MAX_SAMPLES = 10
 BUF_SIZE = 1024
 MESSAGE_REGEX: Optional[str] = None
@@ -40,7 +40,7 @@ def parse_no_length_limit(data: bytes) -> syslogmp.parser.Message:
     """
     Parse a syslog message with no length limit.
     """
-    parser = syslogmp.parser._Parser(b'')
+    parser = syslogmp.parser._Parser(b"")
     parser.stream = syslogmp.parser.Stream(data)
 
     priority_value = parser._parse_pri_part()
@@ -68,13 +68,13 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     try:
         syslog_message: syslogmp.Message = parse_no_length_limit(log_message)
     except syslogmp.parser.MessageFormatError as e:
-        demisto.debug(f'Could not parse the log message, got MessageFormatError. Error was: {e}')
+        demisto.debug(f"Could not parse the log message, got MessageFormatError. Error was: {e}")
         return None
     return SyslogMessageExtract(
         app_name=None,
         facility=syslog_message.facility.name,
         host_name=syslog_message.hostname,
-        msg=syslog_message.message.decode('utf-8'),
+        msg=syslog_message.message.decode("utf-8"),
         msg_id=None,
         process_id=None,
         sd={},
@@ -82,7 +82,7 @@ def parse_rfc_3164_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         timestamp=syslog_message.timestamp.isoformat(),
         version=None,
         # Because RF-3164 doesn't return localized date, can't determine the localized time it occurred.
-        occurred=None
+        occurred=None,
     )
 
 
@@ -96,9 +96,9 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         (Optional[SyslogMessageExtract]): Extraction data class
     """
     try:
-        syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode('utf-8'))
+        syslog_message: SyslogMessage = SyslogMessage.parse(log_message.decode("utf-8"))
     except ParseError as e:
-        demisto.debug(f'Could not parse the log message, got ParseError. Error was: {e}')
+        demisto.debug(f"Could not parse the log message, got ParseError. Error was: {e}")
         return None
     return SyslogMessageExtract(
         app_name=syslog_message.appname,
@@ -111,7 +111,7 @@ def parse_rfc_5424_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
         severity=syslog_message.severity.name,
         timestamp=syslog_message.timestamp,
         version=syslog_message.version,
-        occurred=syslog_message.timestamp
+        occurred=syslog_message.timestamp,
     )
 
 
@@ -124,12 +124,12 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
     Returns:
         (SyslogMessageExtract): Extraction data class
     """
-    log_message = log_message.decode('utf-8')
-    split_msg: List[str] = log_message.split(' ')
+    log_message = log_message.decode("utf-8")
+    split_msg: List[str] = log_message.split(" ")
     if not log_message or not log_message[0].isdigit() or not len(split_msg) > 1:
         return None
     try:
-        log_message = ' '.join(split_msg[1:])
+        log_message = " ".join(split_msg[1:])
         encoded_msg = log_message.encode()
         for format_func in format_funcs:
             # if it is RFC6587 itself, continue
@@ -139,20 +139,23 @@ def parse_rfc_6587_format(log_message: bytes) -> Optional[SyslogMessageExtract]:
             if extracted_message:
                 return extracted_message
     except ValueError as e:
-        demisto.debug(f'Could not parse the log message, got ValueError. Error was: {e}')
+        demisto.debug(f"Could not parse the log message, got ValueError. Error was: {e}")
         return None
     return None
 
 
-format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [parse_rfc_3164_format, parse_rfc_5424_format,
-                                                                         parse_rfc_6587_format]
+format_funcs: List[Callable[[bytes], Optional[SyslogMessageExtract]]] = [
+    parse_rfc_3164_format,
+    parse_rfc_5424_format,
+    parse_rfc_6587_format,
+]
 
 
 def fetch_samples() -> None:
     """
     Retrieves samples from context.
     """
-    demisto.incidents(get_integration_context().get('samples'))
+    demisto.incidents(get_integration_context().get("samples"))
 
 
 def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract, incident_type: Optional[str]) -> dict:
@@ -166,11 +169,11 @@ def create_incident_from_syslog_message(extracted_message: SyslogMessageExtract,
         (dict): Incident.
     """
     return {
-        'name': f'Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]',
-        'rawJSON': json.dumps(vars(extracted_message)),
-        'occurred': extracted_message.occurred,
-        'type': incident_type,
-        'details': '\n'.join([f'{k}: {v}' for k, v in vars(extracted_message).items() if v])
+        "name": f"Syslog from [{extracted_message.host_name}][{extracted_message.timestamp}]",
+        "rawJSON": json.dumps(vars(extracted_message)),
+        "occurred": extracted_message.occurred,
+        "type": incident_type,
+        "details": "\n".join([f"{k}: {v}" for k, v in vars(extracted_message).items() if v]),
     }
 
 
@@ -186,10 +189,10 @@ def update_integration_context_samples(incident: dict, max_samples: int = MAX_SA
         (None): Modifies the integration context samples field.
     """
     ctx = get_integration_context()
-    updated_samples_list: List[Dict] = [incident] + ctx.get('samples', [])
+    updated_samples_list: List[Dict] = [incident] + ctx.get("samples", [])
     if len(updated_samples_list) > max_samples:
         updated_samples_list.pop()
-    ctx['samples'] = updated_samples_list
+    ctx["samples"] = updated_samples_list
     set_integration_context(ctx)
 
 
@@ -209,7 +212,7 @@ def log_message_passes_filter(log_message: SyslogMessageExtract, message_regex: 
     if not message_regex:
         return True
     regexp = re.compile(message_regex)
-    return True if regexp.search(log_message.msg) else False
+    return bool(regexp.search(log_message.msg))
 
 
 def perform_long_running_loop(socket_data: bytes):
@@ -225,12 +228,12 @@ def perform_long_running_loop(socket_data: bytes):
     Returns:
         (None): Creates incident in Cortex XSOAR platform.
     """
-    incident_type: Optional[str] = demisto.params().get('incident_type', '')
+    incident_type: Optional[str] = demisto.params().get("incident_type", "")
     extracted_message: Optional[SyslogMessageExtract] = None
     for format_func in format_funcs:
         extracted_message = format_func(socket_data)
         if extracted_message:
-            demisto.debug(f'Succeeded in parsing the message with {format_func}')
+            demisto.debug(f"Succeeded in parsing the message with {format_func}")
             break
     if not extracted_message:
         raise DemistoException(f'Could not parse the following message: {socket_data.decode("utf-8")}')
@@ -252,27 +255,28 @@ def perform_long_running_execution(sock: Any, address: tuple) -> None:
     Returns:
         (None): Reads data, calls   that creates incidents from inputted data.
     """
-    demisto.debug('Starting long running execution')
-    file_obj = sock.makefile(mode='rb')
+    demisto.debug("Starting long running execution")
+    file_obj = sock.makefile(mode="rb")
     try:
         while True:
             try:
                 line = file_obj.readline()
                 if not line:
-                    demisto.info(f'Disconnected from {address}')
+                    demisto.info(f"Disconnected from {address}")
                     break
                 perform_long_running_loop(line.strip())
             except Exception as e:
                 demisto.error(traceback.format_exc())  # print the traceback
-                demisto.error(f'Error occurred during long running loop. Error was: {e}')
+                demisto.error(f"Error occurred during long running loop. Error was: {e}")
             finally:
-                demisto.debug('Finished reading message')
+                demisto.debug("Finished reading message")
     finally:
         file_obj.close()
 
 
-def prepare_globals_and_create_server(port: int, message_regex: Optional[str], certificate: Optional[str],
-                                      private_key: Optional[str]) -> StreamServer:
+def prepare_globals_and_create_server(
+    port: int, message_regex: Optional[str], certificate: Optional[str], private_key: Optional[str]
+) -> StreamServer:
     """
     Prepares global environments of LOG_FORMAT, MESSAGE_REGEX and creates the server to listen
     to Syslog messages.
@@ -290,87 +294,90 @@ def prepare_globals_and_create_server(port: int, message_regex: Optional[str], c
     if certificate and private_key:
         certificate_file = NamedTemporaryFile(delete=False)
         certificate_path = certificate_file.name
-        certificate_file.write(bytes(certificate, 'utf-8'))
+        certificate_file.write(bytes(certificate, "utf-8"))
         certificate_file.close()
 
         private_key_file = NamedTemporaryFile(delete=False)
         private_key_path = private_key_file.name
-        private_key_file.write(bytes(private_key, 'utf-8'))
+        private_key_file.write(bytes(private_key, "utf-8"))
         private_key_file.close()
-        server = StreamServer(('0.0.0.0', port), perform_long_running_execution, keyfile=private_key_path,
-                              certfile=certificate_path)
-        demisto.debug('Starting HTTPS Server')
+        server = StreamServer(
+            ("0.0.0.0", port), perform_long_running_execution, keyfile=private_key_path, certfile=certificate_path
+        )
+        demisto.debug("Starting HTTPS Server")
     else:
-        server = StreamServer(('0.0.0.0', port), perform_long_running_execution)
-        demisto.debug('Starting HTTP Server')
+        server = StreamServer(("0.0.0.0", port), perform_long_running_execution)
+        demisto.debug("Starting HTTP Server")
     return server
 
 
 def get_mapping_fields() -> Dict[str, str]:
     return {
-        'app_name': 'Application Name',
-        'facility': 'Facility',
-        'host_name': 'Host Name',
-        'msg': 'Message',
-        'msg_id': 'Message ID',
-        'process_id': 'Process ID',
-        'sd': 'Structured Data',
-        'severity': 'Severity',
-        'timestamp': 'Timestamp',
-        'version': 'Syslog Version',
-        'occurred': 'Occurred Time'
+        "app_name": "Application Name",
+        "facility": "Facility",
+        "host_name": "Host Name",
+        "msg": "Message",
+        "msg_id": "Message ID",
+        "process_id": "Process ID",
+        "sd": "Structured Data",
+        "severity": "Severity",
+        "timestamp": "Timestamp",
+        "version": "Syslog Version",
+        "occurred": "Occurred Time",
     }
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     params = demisto.params()
     command = demisto.command()
-    message_regex: Optional[str] = params.get('message_regex')
-    certificate = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('identifier'))
-                   or params.get('certificate'))
-    private_key = (replace_spaces_in_credential(params.get('creds_certificate', {}).get('password', ''))
-                   or params.get('private_key'))
-    port: Union[Optional[str], int] = params.get('longRunningPort')
+    message_regex: Optional[str] = params.get("message_regex")
+    certificate = replace_spaces_in_credential(params.get("creds_certificate", {}).get("identifier")) or params.get("certificate")
+    private_key = replace_spaces_in_credential(params.get("creds_certificate", {}).get("password", "")) or params.get(
+        "private_key"
+    )
+    port: Union[Optional[str], int] = params.get("longRunningPort")
     try:
-        port = int(params.get('longRunningPort'))
+        port = int(params.get("longRunningPort"))
     except (ValueError, TypeError):
-        raise DemistoException('Please select an engine and insert a valid listen port.')
+        raise DemistoException("Please select an engine and insert a valid listen port.")
     if port < 0 or port > MAX_PORT:
-        raise DemistoException(f'Given port: {port} is not valid and must be between 0-{MAX_PORT}')
+        raise DemistoException(f"Given port: {port} is not valid and must be between 0-{MAX_PORT}")
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        if command == 'test-module':
+        if command == "test-module":
             try:
                 prepare_globals_and_create_server(port, message_regex, certificate, private_key)
             except OSError as e:
-                if 'Address already in use' in str(e):
-                    raise DemistoException(f'Given port: {port} is already in use. Please either change port or '
-                                           f'make sure to close the connection in the server using that port.')
+                if "Address already in use" in str(e):
+                    raise DemistoException(
+                        f"Given port: {port} is already in use. Please either change port or "
+                        f"make sure to close the connection in the server using that port."
+                    )
                 raise e
-            return_results('ok')
-        elif command == 'fetch-incidents':
+            return_results("ok")
+        elif command == "fetch-incidents":
             # The integration fetches incidents in the long-running-execution command. Fetch incidents is called
             # only when "Pull From Instance" is clicked in create new classifier section in Cortex XSOAR.
             # The fetch incidents returns samples of incidents generated by the long-running-execution.
             fetch_samples()
-        elif command == 'long-running-execution':
+        elif command == "long-running-execution":
             server: StreamServer = prepare_globals_and_create_server(port, message_regex, certificate, private_key)
             server.serve_forever()
-        elif command == 'get-mapping-fields':
+        elif command == "get-mapping-fields":
             return_results(get_mapping_fields())
         else:
-            raise NotImplementedError(f'''Command '{command}' is not implemented.''')
+            raise NotImplementedError(f"""Command '{command}' is not implemented.""")
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

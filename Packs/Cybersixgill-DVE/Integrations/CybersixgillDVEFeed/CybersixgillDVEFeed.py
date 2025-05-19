@@ -1,19 +1,19 @@
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
 
 """ IMPORTS """
-from typing import Any
-from collections.abc import Callable
-from collections import OrderedDict
 import traceback
+from collections import OrderedDict
+from collections.abc import Callable
+from typing import Any
+
 import requests
-
-from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
-from sixgill.sixgill_feed_client import SixgillFeedClient
 from sixgill.sixgill_constants import FeedStream
+from sixgill.sixgill_feed_client import SixgillFeedClient
+from sixgill.sixgill_request_classes.sixgill_auth_request import SixgillAuthRequest
 from sixgill.sixgill_utils import is_indicator
-
 
 """ CONSTANTS """
 INTEGRATION_NAME = "Sixgil_DVE_Feed"
@@ -61,9 +61,7 @@ def module_command_test(*args):
     Performs basic Auth request
     """
     response = SESSION.send(
-        request=SixgillAuthRequest(
-            demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE
-        ).prepare(),
+        request=SixgillAuthRequest(demisto.params()["client_id"], demisto.params()["client_secret"], CHANNEL_CODE).prepare(),
         verify=VERIFY,
     )
     if not response.ok:
@@ -108,7 +106,7 @@ def create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id):
             "nvdvectorv31": nvd_obj.get("vector_v3", ""),
         }
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
     return fields
 
@@ -122,7 +120,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
             ext_id = ext_obj[0].get("external_id")
         event_obj = stix_obj.get("x_sixgill_info", {}).get("event", {})
         nvd_obj = stix_obj.get("x_sixgill_info", {}).get("nvd", {})
-        score_obj = stix_obj.get("x_sixgill_info", {}).get("score", {})
+        score_obj = stix_obj.get("x_sixgill_info", {}).get("rating", {})
         fields = create_fields(stix_obj, event_obj, nvd_obj, score_obj, ext_id)
         fields = get_description(fields)
         indicator["value"] = ext_id
@@ -136,7 +134,7 @@ def stix_to_indicator(stix_obj, tags: list = [], tlp_color: str | None = None):
         if tags:
             indicator["fields"]["tags"] = tags
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
     return indicator
 
@@ -157,7 +155,7 @@ def fetch_indicators_command(
         if not get_indicators_mode:
             client.commit_indicators()
     except Exception as err:
-        err_msg = f'Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}'
+        err_msg = f"Error in {INTEGRATION_NAME} Integration [{err}]\nTrace:\n{traceback.format_exc()}"
         raise DemistoException(err_msg)
     return indicators_list
 
@@ -187,7 +185,7 @@ def main():
         bulk_size=max_indicators,
         session=SESSION,
         logger=demisto,
-        verify=VERIFY
+        verify=VERIFY,
     )
     command = demisto.command()
     demisto.info(f"Command being called is {command}")

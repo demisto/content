@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The `ip` command no longer returns reputation information. Please use the `asm-get-asset-internet-exposure` command for asset information from Xpanse or the <a href='https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed'>Xpanse Feed Integration</a>.</li> <li>The `domain` command no longer returns reputation information. Please use the `asm-get-asset-internet-exposure` command for asset information from Xpanse or the <a href='https://xsoar.pan.dev/docs/reference/integrations/xpanse-feed'>Xpanse Feed Integration</a>.</li></ul>Make sure to check and update any Playbooks/Scripts that use the above commands."
+}

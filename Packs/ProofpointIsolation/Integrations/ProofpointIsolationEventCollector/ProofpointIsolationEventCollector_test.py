@@ -1,20 +1,18 @@
 import json
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MOCK_BASEURL = "https://example.com"
 MOCK_API_KEY = "API_KEY"
 
 
 def create_client():
     from ProofpointIsolationEventCollector import Client
-    return Client(
-        base_url=MOCK_BASEURL, verify=False,
-        api_key=MOCK_API_KEY
-    )
+
+    return Client(base_url=MOCK_BASEURL, verify=False, api_key=MOCK_API_KEY)
 
 
 def util_load_json(path):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -29,8 +27,9 @@ def test_get_and_reorganize_events(mocker):
 
     """
     from ProofpointIsolationEventCollector import get_and_reorganize_events, hash_user_name_and_url
-    mocked_events = util_load_json('test_data/get_events_raw_response.json')
-    mocker.patch('ProofpointIsolationEventCollector.Client.get_events', return_value=mocked_events)
+
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
+    mocker.patch("ProofpointIsolationEventCollector.Client.get_events", return_value=mocked_events)
 
     events = mocked_events["data"]
     client = create_client()
@@ -39,18 +38,15 @@ def test_get_and_reorganize_events(mocker):
 
     organized_events = get_and_reorganize_events(client, "2025-01-01T19:44:35Z", "2025-01-12", ids)
 
-    assert all(
-        organized_events[i]['date'] <= organized_events[i + 1]['date']
-        for i in range(len(organized_events) - 1)
-    )
+    assert all(organized_events[i]["date"] <= organized_events[i + 1]["date"] for i in range(len(organized_events) - 1))
 
     assert len(organized_events) == len(events) - 1
 
     organized_ids = {hash_user_name_and_url(event) for event in organized_events}
     assert hashed_id_last_event not in organized_ids
 
-    assert organized_events[0]['date'] == "2025-01-01T19:44:35.000+0000"
-    assert organized_events[-1]['date'] == "2025-01-09T19:44:35.000+0000"
+    assert organized_events[0]["date"] == "2025-01-01T19:44:35.000+0000"
+    assert organized_events[-1]["date"] == "2025-01-09T19:44:35.000+0000"
 
 
 def test_remove_duplicate_events():
@@ -60,16 +56,19 @@ def test_remove_duplicate_events():
     Then: Ensure the number of events is reduced by the expected amount,
      and verify that no event with the same ID and start date remains after duplicates are removed.
     """
-    from ProofpointIsolationEventCollector import (remove_duplicate_events, sort_events_by_date,
-                                                   hash_user_name_and_url, get_and_parse_date)
-    mocked_events = util_load_json('test_data/get_events_raw_response.json')
+    from ProofpointIsolationEventCollector import (
+        get_and_parse_date,
+        hash_user_name_and_url,
+        remove_duplicate_events,
+        sort_events_by_date,
+    )
+
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
 
     events = sort_events_by_date(mocked_events["data"])
     start_date = "2025-01-01T19:44:35Z"
 
-    ids = {
-        hash_user_name_and_url(event) for event in events if get_and_parse_date(event) == start_date
-    }
+    ids = {hash_user_name_and_url(event) for event in events if get_and_parse_date(event) == start_date}
 
     remove_duplicate_events(start_date, ids, events)
 
@@ -105,9 +104,9 @@ def test_hash_user_name_and_url():
     """
     from ProofpointIsolationEventCollector import hash_user_name_and_url
 
-    event = {'url': 'example.com', 'userName': 'testUser', 'extraField': 'extraValue'}
+    event = {"url": "example.com", "userName": "testUser", "extraField": "extraValue"}
     result = hash_user_name_and_url(event)
-    assert result == 'example.com&testUser'
+    assert result == "example.com&testUser"
 
 
 def test_sort_events_by_date():
@@ -119,14 +118,14 @@ def test_sort_events_by_date():
     from ProofpointIsolationEventCollector import sort_events_by_date
 
     events = [
-        {'date': '2025-01-14T12:00:00.000+0000', 'event_id': 1},
-        {'date': '2025-01-13T12:00:00.000+0000', 'event_id': 2},
-        {'date': '2025-01-15T12:00:00.000+0000', 'event_id': 3},
+        {"date": "2025-01-14T12:00:00.000+0000", "event_id": 1},
+        {"date": "2025-01-13T12:00:00.000+0000", "event_id": 2},
+        {"date": "2025-01-15T12:00:00.000+0000", "event_id": 3},
     ]
     sorted_events = sort_events_by_date(events)
-    assert sorted_events[0]['event_id'] == 2
-    assert sorted_events[1]['event_id'] == 1
-    assert sorted_events[2]['event_id'] == 3
+    assert sorted_events[0]["event_id"] == 2
+    assert sorted_events[1]["event_id"] == 1
+    assert sorted_events[2]["event_id"] == 3
 
     events = []
     sorted_events = sort_events_by_date(events)
@@ -143,23 +142,21 @@ def test_no_more_events_after_second_call(mocker):
     from ProofpointIsolationEventCollector import fetch_events
 
     client = create_client()
-    mocked_events = util_load_json('test_data/get_events_raw_response.json')
-    last_event = {"data": [mocked_events.get('data')[-2]]}
-    mocker.patch('ProofpointIsolationEventCollector.Client.get_events', side_effect=[mocked_events, last_event, {"data": []}])
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
+    last_event = {"data": [mocked_events.get("data")[-2]]}
+    mocker.patch("ProofpointIsolationEventCollector.Client.get_events", side_effect=[mocked_events, last_event, {"data": []}])
 
-    last_run_mock = {
-        "start_date": "2025-01-09T11:27:08"
-    }
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=last_run_mock)
+    last_run_mock = {"start_date": "2025-01-09T11:27:08"}
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=last_run_mock)
 
     limit = 10
 
     events, new_last_run = fetch_events(client, limit)
 
     assert len(events) == limit
-    assert new_last_run['ids']
+    assert new_last_run["ids"]
 
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=new_last_run)
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=new_last_run)
     events, new_last_run = fetch_events(client, limit)
     assert len(events) == 1
 
@@ -174,31 +171,28 @@ def test_fetch_events(mocker):
     from ProofpointIsolationEventCollector import fetch_events
 
     client = create_client()
-    mocked_events = util_load_json('test_data/get_events_raw_response.json')
-    return_values_events = [
-        mocked_events,
-        {'data': mocked_events.get('data')[4:]}
-    ]
+    mocked_events = util_load_json("test_data/get_events_raw_response.json")
+    return_values_events = [mocked_events, {"data": mocked_events.get("data")[4:]}]
 
-    mocker.patch('ProofpointIsolationEventCollector.Client.get_events', side_effect=return_values_events)
+    mocker.patch("ProofpointIsolationEventCollector.Client.get_events", side_effect=return_values_events)
 
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value={})
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value={})
     limit = 5
 
     events, new_last_run = fetch_events(client, limit)
     assert len(events) == limit
-    assert 'ids' in new_last_run
-    assert 'https://exmaple.k1.com/&user9@example.com' in new_last_run['ids']
-    assert 'https://exmaple.k1.com/&user10@example.com' in new_last_run['ids']
-    assert 'https://exmaple.k1.com/&user7@example.com' in new_last_run['ids']
-    assert 'https://exmaple.k10.com/&user0@example.com' in new_last_run['ids']
-    assert 'https://exmaple.k1.com/&user8@example.com' in new_last_run['ids']
-    assert new_last_run.get('start_date') == '2025-01-01T19:44:35Z'
+    assert "ids" in new_last_run
+    assert "https://exmaple.k1.com/&user9@example.com" in new_last_run["ids"]
+    assert "https://exmaple.k1.com/&user10@example.com" in new_last_run["ids"]
+    assert "https://exmaple.k1.com/&user7@example.com" in new_last_run["ids"]
+    assert "https://exmaple.k10.com/&user0@example.com" in new_last_run["ids"]
+    assert "https://exmaple.k1.com/&user8@example.com" in new_last_run["ids"]
+    assert new_last_run.get("start_date") == "2025-01-01T19:44:35Z"
 
-    mocker.patch('ProofpointIsolationEventCollector.demisto.getLastRun', return_value=new_last_run)
+    mocker.patch("ProofpointIsolationEventCollector.demisto.getLastRun", return_value=new_last_run)
 
     events, new_last_run = fetch_events(client, limit)
     assert len(events) == limit
-    assert 'ids' in new_last_run
-    assert len(new_last_run.get('ids')) == 1
-    assert new_last_run.get('start_date') == '2025-01-06T19:44:35Z'
+    assert "ids" in new_last_run
+    assert len(new_last_run.get("ids")) == 1
+    assert new_last_run.get("start_date") == "2025-01-06T19:44:35Z"

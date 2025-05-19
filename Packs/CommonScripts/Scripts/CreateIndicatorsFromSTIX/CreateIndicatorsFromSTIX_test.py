@@ -13,13 +13,13 @@ def test_create_indicators_loop_wo_args(mocker):
         - Validate the indicators extract without errors.
     """
     args = {}
-    with open('test_data/expected_result_example3.json') as json_f:
+    with open("test_data/expected_result_example3.json") as json_f:
         indicators = json.load(json_f)
-    mocker.patch.object(demisto, 'executeCommand', return_value=[None])
+    mocker.patch.object(demisto, "executeCommand", return_value=[None])
     results, errors = create_indicators_loop(args, indicators)
 
     assert errors == []
-    assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
+    assert results.readable_output == "Create Indicators From STIX: 2 indicators were created."
 
 
 def test_create_indicators_loop_w_args(mocker):
@@ -33,19 +33,16 @@ def test_create_indicators_loop_w_args(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    args = {
-        'add_context': 'true',
-        'tags': 'tag1,tag2'
-    }
+    args = {"add_context": "true", "tags": "tag1,tag2"}
 
-    with open('test_data/expected_result_example3.json') as json_f:
+    with open("test_data/expected_result_example3.json") as json_f:
         indicators = json.load(json_f)
-    mocker.patch.object(demisto, 'executeCommand', return_value=[None])
+    mocker.patch.object(demisto, "executeCommand", return_value=[None])
     results, errors = create_indicators_loop(args, indicators)
 
     assert errors == []
-    assert results.readable_output == 'Create Indicators From STIX: 2 indicators were created.'
-    assert results.outputs[0]['tags'] == ['tag1', 'tag2']
+    assert results.readable_output == "Create Indicators From STIX: 2 indicators were created."
+    assert results.outputs[0]["tags"] == ["tag1", "tag2"]
 
 
 def test_parse_indicators_using_stix_parser(mocker):
@@ -59,9 +56,9 @@ def test_parse_indicators_using_stix_parser(mocker):
     Then:
         - Validate the indicators extract without errors.
     """
-    with open('test_data/expected_result_example3.json') as json_f:
+    with open("test_data/expected_result_example3.json") as json_f:
         expected_res = json_f.read()
-    mocker.patch.object(demisto, 'executeCommand', return_value=[{'Contents': expected_res, 'Type': 1}])
-    mocker.patch('CommonServerPython.is_error', False)
-    indicators = parse_indicators_using_stix_parser('entry_id')
+    mocker.patch.object(demisto, "executeCommand", return_value=[{"Contents": expected_res, "Type": 1}])
+    mocker.patch("CommonServerPython.is_error", False)
+    indicators = parse_indicators_using_stix_parser("entry_id")
     assert json.loads(expected_res) == indicators

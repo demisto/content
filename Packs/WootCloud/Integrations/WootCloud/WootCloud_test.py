@@ -1,14 +1,10 @@
-from WootCloud import fetch_incidents, Client, fetch_single_alert
+from WootCloud import Client, fetch_incidents, fetch_single_alert
 
-MOCK_URL = 'https://api_mock.wootcloud.com'
-MOCK_START = '2019-06-25T08:00:00Z'
-MOCK_END = '2019-06-27T08:00:00Z'
+MOCK_URL = "https://api_mock.wootcloud.com"
+MOCK_START = "2019-06-25T08:00:00Z"
+MOCK_END = "2019-06-27T08:00:00Z"
 
-MOCK_HEADERS = {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-    'Host': 'api.wootuno.wootcloud.com'
-}
+MOCK_HEADERS = {"Content-Type": "application/json", "Accept": "application/json", "Host": "api.wootuno.wootcloud.com"}
 
 MOCK_PKT_ALERT = {
     "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0=",
@@ -43,10 +39,8 @@ MOCK_PKT_ALERT = {
             "total_risk": 18.188051551163394,
             "type": "smart phone",
             "username": "",
-            "managed_info": {
-                "host_name": "Shahabs-iPhone"
-            }
-        }
+            "managed_info": {"host_name": "Shahabs-iPhone"},
+        },
     },
     "destination": {
         "city": "Cambridge",
@@ -75,12 +69,10 @@ MOCK_PKT_ALERT = {
             "total_risk": 0,
             "type": "",
             "username": "",
-            "managed_info": {
-                "host_name": ""
-            }
-        }
+            "managed_info": {"host_name": ""},
+        },
     },
-    "payload": ""
+    "payload": "",
 }
 
 
@@ -114,12 +106,10 @@ ANOMALY_ALERT = {
         "total_risk": 0.008771929824570352,
         "type": "smart phone",
         "username": "",
-        "managed_info": {
-            "host_name": ""
-        },
+        "managed_info": {"host_name": ""},
         "ip": "",
-        "network": ""
-    }
+        "network": "",
+    },
 }
 
 
@@ -160,10 +150,8 @@ FETCH_ALERTS = {
                     "total_risk": 0,
                     "type": "",
                     "username": "",
-                    "managed_info": {
-                        "host_name": ""
-                    }
-                }
+                    "managed_info": {"host_name": ""},
+                },
             },
             "destination": {
                 "city": "Unknown",
@@ -192,10 +180,8 @@ FETCH_ALERTS = {
                     "total_risk": 11.9,
                     "type": "computer",
                     "username": "7c67a2377751",
-                    "managed_info": {
-                        "host_name": "DESKTOP-73OV7ML"
-                    }
-                }
+                    "managed_info": {"host_name": "DESKTOP-73OV7ML"},
+                },
             },
             "payload": """....C...?..^lH.....b.R.]...?..J..~.^....Lr1...........
             .........#.......................0...0...........1.{....d.....\rR0\r
@@ -254,10 +240,7 @@ FETCH_ALERTS = {
             "subtype": "policy-violation",
             "title": "User Activity Detected",
             "description": "ET POLICY Dropbox.com Offsite File Backup in Use",
-            "references": [
-                "www.dropbox.com",
-                "dereknewton.com/2011/04/dropbox-authentication-static-host-ids/"
-            ]
+            "references": ["www.dropbox.com", "dereknewton.com/2011/04/dropbox-authentication-static-host-ids/"],
         },
         {
             "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzEwOTAxXzAwMCIsIngiOiI1YTAwYjE3NTljNzk2NDg4MGZhMWMxYTZfY19kMjAyMDAzMTMifQ==",
@@ -293,10 +276,8 @@ FETCH_ALERTS = {
                     "total_risk": 0,
                     "type": "",
                     "username": "",
-                    "managed_info": {
-                        "host_name": ""
-                    }
-                }
+                    "managed_info": {"host_name": ""},
+                },
             },
             "destination": {
                 "city": "Unknown",
@@ -325,10 +306,8 @@ FETCH_ALERTS = {
                     "total_risk": 11.9,
                     "type": "computer",
                     "username": "7c67a2377751",
-                    "managed_info": {
-                        "host_name": "DESKTOP-73OV7ML"
-                    }
-                }
+                    "managed_info": {"host_name": "DESKTOP-73OV7ML"},
+                },
             },
             "payload": """....C...?..^l.Fy.5.7.k..t..............:..............
             .........#.......................0...0...........1.{....d.....\rR0\r
@@ -387,10 +366,7 @@ FETCH_ALERTS = {
             "subtype": "policy-violation",
             "title": "User Activity Detected",
             "description": "ET POLICY Dropbox.com Offsite File Backup in Use",
-            "references": [
-                "www.dropbox.com",
-                "dereknewton.com/2011/04/dropbox-authentication-static-host-ids/"
-            ]
+            "references": ["www.dropbox.com", "dereknewton.com/2011/04/dropbox-authentication-static-host-ids/"],
         },
         {
             "id": "eyJpIjoiU05XT09UQVBQUFJPRDAxXzk2MTlfMDAwIiwieCI6IjVhMDBiMTc1OWM3OTY0ODgwZmExYzFhNl9jX2QyMDIwMDMxMyJ9",
@@ -426,10 +402,8 @@ FETCH_ALERTS = {
                     "total_risk": 0,
                     "type": "",
                     "username": "",
-                    "managed_info": {
-                        "host_name": ""
-                    }
-                }
+                    "managed_info": {"host_name": ""},
+                },
             },
             "destination": {
                 "city": "Unknown",
@@ -458,10 +432,8 @@ FETCH_ALERTS = {
                     "total_risk": 0.11,
                     "type": "computer",
                     "username": "sakella",
-                    "managed_info": {
-                        "host_name": "DESKTOP-BEJRPN4"
-                    }
-                }
+                    "managed_info": {"host_name": "DESKTOP-BEJRPN4"},
+                },
             },
             "payload": """....L...H..^l....?B....e....I.BP...DOWNGRD...+.. .....
             ...............#.........h2...............0...0..L.............V..+$
@@ -509,29 +481,27 @@ FETCH_ALERTS = {
             "subtype": "policy-violation",
             "title": "User Activity Detected",
             "description": "ET POLICY Cloudflare DNS Over HTTPS Certificate Inbound",
-            "references": [
-                "developers.cloudflare.com/1.1.1.1/dns-over-https/request-structure/"
-            ]
-        }
-    ]
+            "references": ["developers.cloudflare.com/1.1.1.1/dns-over-https/request-structure/"],
+        },
+    ],
 }
 
 
 def test_first_fetch_incidents(requests_mock, mocker):
-    client = Client(MOCK_URL + '/v1/', verify=True, headers=MOCK_HEADERS, auth=('test_user', 'test123'))
-    requests_mock.post(MOCK_URL + '/v1/events/packetalerts', json=FETCH_ALERTS)
-    fetch_incidents(client, 'packet')
+    client = Client(MOCK_URL + "/v1/", verify=True, headers=MOCK_HEADERS, auth=("test_user", "test123"))
+    requests_mock.post(MOCK_URL + "/v1/events/packetalerts", json=FETCH_ALERTS)
+    fetch_incidents(client, "packet")
 
 
 def test_fetch_single_alert(requests_mock):
-    ID = 'eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0='
-    requests_mock.get(MOCK_URL + '/v1/events/packetalerts/' + ID, json=MOCK_PKT_ALERT)
-    client = Client(MOCK_URL + '/v1/', verify=True, headers=MOCK_HEADERS, auth=('test_user', 'test123'))
+    ID = "eyJpIjoiU05XT09UQVBQUFJPRDAxXzEzMzIxNThfMDAwIiwidCI6IjIwMTktMDYtMjZUMjA6MjQ6MjZaIn0="
+    requests_mock.get(MOCK_URL + "/v1/events/packetalerts/" + ID, json=MOCK_PKT_ALERT)
+    client = Client(MOCK_URL + "/v1/", verify=True, headers=MOCK_HEADERS, auth=("test_user", "test123"))
     alert_type = "packet"
-    assert MOCK_PKT_ALERT == fetch_single_alert(client, ID, alert_type).raw_response
+    assert fetch_single_alert(client, ID, alert_type).raw_response == MOCK_PKT_ALERT
 
 
 def test_get_woot_alerts(requests_mock):
-    client = Client(MOCK_URL + '/v1/', verify=True, headers=MOCK_HEADERS, auth=('test_user', 'test123'))
-    requests_mock.post(MOCK_URL + '/v1/events/anomalies', json=ANOMALY_ALERT)
-    assert ANOMALY_ALERT == client.get_woot_alerts('anomaly', MOCK_START, MOCK_END, limit='1').raw_response
+    client = Client(MOCK_URL + "/v1/", verify=True, headers=MOCK_HEADERS, auth=("test_user", "test123"))
+    requests_mock.post(MOCK_URL + "/v1/events/anomalies", json=ANOMALY_ALERT)
+    assert client.get_woot_alerts("anomaly", MOCK_START, MOCK_END, limit="1").raw_response == ANOMALY_ALERT

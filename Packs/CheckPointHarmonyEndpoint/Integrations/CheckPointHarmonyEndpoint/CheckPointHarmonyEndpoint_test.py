@@ -1,18 +1,16 @@
 import json
 import os
 import unittest.mock
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
+import CheckPointHarmonyEndpoint
 import CommonServerPython
 import pytest
 
-import CheckPointHarmonyEndpoint
-
 TEST_DATA = "test_data"
 BASE_URL = "https://www.example.com/"
-API_URL = CommonServerPython.urljoin(
-    BASE_URL, "app/endpoint-web-mgmt/harmony/endpoint/api/v1"
-)
+API_URL = CommonServerPython.urljoin(BASE_URL, "app/endpoint-web-mgmt/harmony/endpoint/api/v1")
 
 
 def load_mock_response(file_name: str) -> dict[str, Any] | list[dict[str, Any]]:
@@ -25,7 +23,7 @@ def load_mock_response(file_name: str) -> dict[str, Any] | list[dict[str, Any]]:
     """
     file_path = os.path.join(TEST_DATA, file_name)
 
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path, encoding="utf-8") as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -85,9 +83,7 @@ def test_job_status_get_command(
         json=mock_response,
     )
 
-    command_results = CheckPointHarmonyEndpoint.job_status_get_command(
-        command_args, mock_client
-    )
+    command_results = CheckPointHarmonyEndpoint.job_status_get_command(command_args, mock_client)
 
     assert command_results.raw_response == mock_response
     assert command_results.outputs == mock_response
@@ -138,13 +134,9 @@ def test_ioc_list_command(
         json=mock_response,
     )
 
-    command_results = CheckPointHarmonyEndpoint.ioc_list_command(
-        command_args, mock_client
-    )
-    mock_response["content"][0]["modifiedOn"] = (
-        CheckPointHarmonyEndpoint.convert_unix_to_date_string(
-            mock_response["content"][0]["modifiedOn"]
-        )
+    command_results = CheckPointHarmonyEndpoint.ioc_list_command(command_args, mock_client)
+    mock_response["content"][0]["modifiedOn"] = CheckPointHarmonyEndpoint.convert_unix_to_date_string(
+        mock_response["content"][0]["modifiedOn"]
     )
 
     assert command_results.raw_response == mock_response
@@ -195,9 +187,7 @@ def test_ioc_update_command(
         json=mock_response,
     )
 
-    command_results = CheckPointHarmonyEndpoint.ioc_update_command(
-        command_args, mock_client
-    )
+    command_results = CheckPointHarmonyEndpoint.ioc_update_command(command_args, mock_client)
 
     assert command_results.raw_response == mock_response
     assert command_results.outputs == mock_response
@@ -279,9 +269,7 @@ def test_ioc_delete_command(
         json=mock_response,
     )
 
-    command_results = CheckPointHarmonyEndpoint.ioc_delete_command(
-        command_args, mock_client
-    )
+    command_results = CheckPointHarmonyEndpoint.ioc_delete_command(command_args, mock_client)
 
     assert command_results.readable_output == readable_output
 
@@ -309,9 +297,7 @@ def test_rule_assignments_get_command(
         json=mock_response,
     )
     output = {"id": 1, "assignments": mock_response}
-    command_results = CheckPointHarmonyEndpoint.rule_assignments_get_command(
-        {"rule_id": 1}, mock_client
-    )
+    command_results = CheckPointHarmonyEndpoint.rule_assignments_get_command({"rule_id": 1}, mock_client)
 
     assert command_results.outputs_prefix == "HarmonyEP.Rule"
     assert command_results.outputs_key_field == "id"
@@ -346,10 +332,7 @@ def test_rule_assignments_add_command(
         {"rule_id": 1, "entities_ids": ["3", "4"]}, mock_client
     )
 
-    assert (
-        command_results.readable_output
-        == "Entities ['3', '4'] were assigned to rule 1 successfully."
-    )
+    assert command_results.readable_output == "Entities ['3', '4'] were assigned to rule 1 successfully."
 
 
 def test_rule_assignments_remove_command(
@@ -379,10 +362,7 @@ def test_rule_assignments_remove_command(
         {"rule_id": 1, "entities_ids": ["3", "4"]}, mock_client
     )
 
-    assert (
-        command_results.readable_output
-        == "Entities ['3', '4'] were removed from rule 1 successfully."
-    )
+    assert command_results.readable_output == "Entities ['3', '4'] were removed from rule 1 successfully."
 
 
 @pytest.mark.parametrize(
@@ -421,21 +401,13 @@ def test_rule_metadata_list_command(
     - Ensure that the CommandResults are as expected.
     """
 
-    mock_response: dict[str, Any] | list[dict[str, Any]] = load_mock_response(
-        response_file
-    )
+    mock_response: dict[str, Any] | list[dict[str, Any]] = load_mock_response(response_file)
     requests_mock.get(
         url=f"{API_URL}/{endpoint}",
         json=mock_response,
     )
-    command_results = CheckPointHarmonyEndpoint.rule_metadata_list_command(
-        command_args, mock_client
-    )
-    mock_response = (
-        mock_response[: command_args["limit"]]
-        if "limit" in command_args
-        else mock_response
-    )
+    command_results = CheckPointHarmonyEndpoint.rule_metadata_list_command(command_args, mock_client)
+    mock_response = mock_response[: command_args["limit"]] if "limit" in command_args else mock_response
 
     assert command_results.raw_response == mock_response
     assert command_results.outputs == mock_response
@@ -473,14 +445,10 @@ def test_rule_metadata_list_command(
             None,
             CommonServerPython.PollResult(
                 response=CommonServerPython.CommandResults(
-                    outputs=load_mock_response(
-                        "push_operation_status_in_progress.json"
-                    ),
+                    outputs=load_mock_response("push_operation_status_in_progress.json"),
                     outputs_prefix="HarmonyEP.Job",
                     outputs_key_field="id",
-                    raw_response=load_mock_response(
-                        "push_operation_status_in_progress.json"
-                    ),
+                    raw_response=load_mock_response("push_operation_status_in_progress.json"),
                 ),
                 continue_to_poll=True,
                 args_for_next_run={"job_id": "3"},
@@ -516,9 +484,7 @@ def test_rule_metadata_list_command(
                     outputs=load_mock_response("push_operation_remediation_data.json"),
                     outputs_prefix="HarmonyEP.Job",
                     outputs_key_field="id",
-                    raw_response=load_mock_response(
-                        "push_operation_remediation_data.json"
-                    ),
+                    raw_response=load_mock_response("push_operation_remediation_data.json"),
                 ),
                 continue_to_poll=True,
                 args_for_next_run={"job_id": "3"},
@@ -581,33 +547,21 @@ def test_schedule_command(
             "CheckPointHarmonyEndpoint.get_integration_context",
             return_value=integration_context,
         ),
-        unittest.mock.patch(
-            "CheckPointHarmonyEndpoint.set_integration_context"
-        ) as mock_set_integration_context,
+        unittest.mock.patch("CheckPointHarmonyEndpoint.set_integration_context") as mock_set_integration_context,
     ):
-        poll_result: CommonServerPython.PollResult = (
-            CheckPointHarmonyEndpoint.schedule_command(
-                client=mock_client,
-                args=args,
-                command_name=command_name,
-            )
+        poll_result: CommonServerPython.PollResult = CheckPointHarmonyEndpoint.schedule_command(
+            client=mock_client,
+            args=args,
+            command_name=command_name,
         )
 
         if expected_integration_context:
-            mock_set_integration_context.assert_called_once_with(
-                expected_integration_context
-            )
+            mock_set_integration_context.assert_called_once_with(expected_integration_context)
 
     assert poll_result.continue_to_poll == expected_poll_result.continue_to_poll
     assert poll_result.args_for_next_run == expected_poll_result.args_for_next_run
-    assert (
-        poll_result.response.outputs_prefix
-        == expected_poll_result.response.outputs_prefix
-    )
-    assert (
-        poll_result.response.outputs_key_field
-        == expected_poll_result.response.outputs_key_field
-    )
+    assert poll_result.response.outputs_prefix == expected_poll_result.response.outputs_prefix
+    assert poll_result.response.outputs_key_field == expected_poll_result.response.outputs_key_field
 
 
 @pytest.mark.parametrize(
@@ -982,23 +936,17 @@ def test_all_schedule_commands(
     )
 
     with (
-        unittest.mock.patch(
-            "CheckPointHarmonyEndpoint.schedule_command"
-        ) as mock_schedule_command,
+        unittest.mock.patch("CheckPointHarmonyEndpoint.schedule_command") as mock_schedule_command,
         unittest.mock.patch("demistomock.command", return_value=command_name),
     ):
         request_function(command_args, mock_client)
-        mock_schedule_command.assert_called_once_with(
-            command_args, mock_client, command_name
-        )
+        mock_schedule_command.assert_called_once_with(command_args, mock_client, command_name)
 
 
 # test helper commands
 
 
-@pytest.mark.parametrize(
-    "page_size, page, limit", [(-1, 0, 10), (5, -1, 5), (5, 5, -1)]
-)
+@pytest.mark.parametrize("page_size, page, limit", [(-1, 0, 10), (5, -1, 5), (5, 5, -1)])
 def test_validate_pagination_arguments(page_size, page, limit):
     """
     Given:
@@ -1012,9 +960,7 @@ def test_validate_pagination_arguments(page_size, page, limit):
     """
 
     with pytest.raises(ValueError):
-        CheckPointHarmonyEndpoint.validate_pagination_arguments(
-            page=page, page_size=page_size, limit=limit
-        )
+        CheckPointHarmonyEndpoint.validate_pagination_arguments(page=page, page_size=page_size, limit=limit)
 
 
 @pytest.mark.parametrize(
@@ -1038,21 +984,19 @@ def test_get_pagination_args(args: dict[str, str], expected):
         args (dict[str, str]): Pagination arguments.
         expected (tuple): Updated pagination arguments and pagination message.
     """
-    with unittest.mock.patch(
-        "CommonServerPython.arg_to_number",
-        side_effect=lambda x: int(x) if x is not None else None,
+    with (
+        unittest.mock.patch(
+            "CommonServerPython.arg_to_number",
+            side_effect=lambda x: int(x) if x is not None else None,
+        ),
+        unittest.mock.patch("CheckPointHarmonyEndpoint.validate_pagination_arguments") as mock_validate,
     ):
-        with unittest.mock.patch(
-            "CheckPointHarmonyEndpoint.validate_pagination_arguments"
-        ) as mock_validate:
-            assert CheckPointHarmonyEndpoint.get_pagination_args(args) == expected
-            mock_validate.assert_called()
+        assert CheckPointHarmonyEndpoint.get_pagination_args(args) == expected
+        mock_validate.assert_called()
 
 
 def test_validate_filter_arguments():
     """Test validate_filter_arguments function and ensure that ValueError is raised."""
     with pytest.raises(ValueError) as exc_info:
-        CheckPointHarmonyEndpoint.validate_filter_arguments(
-            column_name="invalid_name", filter_type="equals"
-        )
+        CheckPointHarmonyEndpoint.validate_filter_arguments(column_name="invalid_name", filter_type="equals")
     assert "'column_name' must be one of the followings" in str(exc_info.value)

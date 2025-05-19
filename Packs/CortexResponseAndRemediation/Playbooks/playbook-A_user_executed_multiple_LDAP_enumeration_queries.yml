@@ -672,8 +672,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1670,
-          "y": 3090
+          "x": 1954,
+          "y": 3174
         }
       }
     note: false
@@ -720,7 +720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 866,
           "y": 2560
         }
       }
@@ -1363,8 +1363,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1260,
-          "y": 3075
+          "x": 1532,
+          "y": 3169
         }
       }
     note: false
@@ -1432,7 +1432,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 866,
           "y": 2890
         }
       }
@@ -1480,7 +1480,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 866,
           "y": 2725
         }
       }
@@ -1532,7 +1532,7 @@ tasks:
         ---
 
         #### Related Discovery Alerts:
-        `${.=val.DiscoveryAlertsInIncident && Object.keys(val.DiscoveryAlertsInIncident).length > 0 ? "True" : "False"}`
+        `${.=val.DiscoveryAlertsInAlert && Object.keys(val.DiscoveryAlertsInAlert).length > 0 ? "True" : "False"}`
 
         ---
 
@@ -1556,7 +1556,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
+          "x": 79,
           "y": 2725
         }
       }
@@ -1605,8 +1605,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
-          "y": 3250
+          "x": 450,
+          "y": 3308
         }
       }
     note: false
@@ -1640,7 +1640,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
+          "x": 79,
           "y": 2890
         }
       }
@@ -1714,7 +1714,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 860,
+          "x": 866,
           "y": 2390
         }
       }
@@ -1772,7 +1772,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 140,
+          "x": 79,
           "y": 2390
         }
       }
@@ -1803,8 +1803,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1500,
-          "y": 1900
+          "x": 1954,
+          "y": 1875
         }
       }
     note: false
@@ -1834,7 +1834,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 470,
+          "x": 450,
           "y": 2560
         }
       }
@@ -1847,12 +1847,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "53":
     id: "53"
-    taskid: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+    taskid: 4db7afb3-3d9f-4268-bf3f-ec92f9b1fd7c
     type: regular
     task:
-      id: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+      id: 4db7afb3-3d9f-4268-bf3f-ec92f9b1fd7c
       version: -1
-      name: Check if user is logged in
+      name: Execute get user sessions
       description: Initiates code execution on the client host to check if the user is currently logged in to the host.
       script: '|||core-run-script-execute-commands'
       type: regular
@@ -1860,7 +1860,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "54"
+      - "58"
     scriptarguments:
       commands:
         simple: quser ${UsernameWithoutPrefix}
@@ -1873,8 +1873,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 2560
+          "x": 1302,
+          "y": 2561
         }
       }
     note: false
@@ -1886,12 +1886,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "54":
     id: "54"
-    taskid: f369276b-2db7-4648-8fed-32516d14d725
+    taskid: 9cdd928b-40cc-4abe-9f62-11968d3d8326
     type: regular
     task:
-      id: f369276b-2db7-4648-8fed-32516d14d725
+      id: 9cdd928b-40cc-4abe-9f62-11968d3d8326
       version: -1
-      name: Get log in check result
+      name: Get user session results
       description: Retrieves results from the "quser" command for the user - which can be used to tell if the user is currently logged in.
       script: '|||core-get-script-execution-results'
       type: regular
@@ -1908,8 +1908,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 2725
+          "x": 1532,
+          "y": 2890
         }
       }
     note: false
@@ -1972,8 +1972,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1270,
-          "y": 2890
+          "x": 1532,
+          "y": 3014
         }
       }
     note: false
@@ -2034,6 +2034,47 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 0bbd356a-5c7d-4398-bef4-4c55ee4d5f98
+    type: condition
+    task:
+      id: 0bbd356a-5c7d-4398-bef4-4c55ee4d5f98
+      version: -1
+      name: Check if execution succeeded
+      description: Checks if action_id exists to retrieve the results of the user sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "Yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.ScriptRun.action_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1302,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -2054,17 +2095,18 @@ view: |-
       "35_13_#default#": 0.32,
       "40_39_Isolate": 0.53,
       "40_42_Do not isolate": 0.27,
-      "41_42_Do not disable": 0.36,
+      "41_42_Do not disable": 0.16,
       "41_43_Disable": 0.59,
       "49_41_Remediate": 0.55,
       "49_42_#default#": 0.15,
       "55_16_#default#": 0.19,
+      "58_42_#default#": 0.2,
       "8_9_yes": 0.41
     },
     "paper": {
       "dimensions": {
-        "height": 3315,
-        "width": 3090,
+        "height": 3348,
+        "width": 3375,
         "x": -1040,
         "y": 30
       }
@@ -2072,7 +2114,9 @@ view: |-
   }
 inputs: []
 outputs: []
-marketplaces: ["marketplacev2"]
+marketplaces: ["marketplacev2", "platform"]
 tests:
 - No tests (auto formatted)
 fromversion: 6.10.0
+contentitemexportablefields:
+  contentitemfields: {}

@@ -1,4 +1,4 @@
-[INGEST:vendor="msft", product="radius", target_dataset="msft_radius_raw", no_hit=keep]
+[INGEST:vendor="msft", product="nps", target_dataset="msft_nps_raw", no_hit=keep]
 // Support only date time of format: MM/dd/yyyy hh:mm:ss.nnn. For example: 01/01/2021 10:00:00.123
 filter _raw_log ~= "\<Timestamp\sdata_type\=\"\d+\"\>\d{2}\/\d{2}\/\d{4}\s\d+\:\d+\:\d+\.\d+Z?\<"
 | alter tmp_extract_timestamp = arrayindex(regextract(_raw_log,"\<Timestamp\sdata_type\=\"\d+\"\>([^\<]+)\<"),0)

@@ -1,49 +1,49 @@
 [RULE: msft_azure_entra_id_map_common_fields]
-filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs")
+filter category in("AuditLogs", "SignInLogs", "NonInteractiveUserSignInLogs", "ManagedIdentitySignInLogs", "ADFSSignInLogs","ServicePrincipalSignInLogs")
 | alter // Extractions 
-	caller_ipv4 = arrayindex(regextract(callerIpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	caller_ipv6 = arrayindex(regextract(callerIpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)
+        caller_ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}",arrayindex(regextract(callerIpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), json_extract_scalar(properties, "$.ipAddress") ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", json_extract_scalar(properties, "$.ipAddress"), null),
+        caller_ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, json_extract_scalar(properties, "$.ipAddress") ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", json_extract_scalar(properties, "$.ipAddress"), null)
 | alter // XDM Mappings
         xdm.event.original_event_type = category,
         xdm.session_context_id = correlationId,
-	xdm.source.host.ipv4_public_addresses = if(caller_ipv4 != null and not incidr(caller_ipv4, "10.0.0.0/8") and not incidr(caller_ipv4, "172.16.0.0/12") and not incidr(caller_ipv4, "192.168.0.0/16") and not incidr(caller_ipv4, "127.0.0.0/8") and not incidr(caller_ipv4, "169.254.0.0/16") and not incidr(caller_ipv4, "100.64.0.0/10"), arraycreate(caller_ipv4)),
+        xdm.alert.description = json_extract_scalar(properties, "$.riskState"),
+        xdm.source.host.ipv4_public_addresses = if(caller_ipv4 != null and not incidr(caller_ipv4, "10.0.0.0/8") and not incidr(caller_ipv4, "172.16.0.0/12") and not incidr(caller_ipv4, "192.168.0.0/16") and not incidr(caller_ipv4, "127.0.0.0/8") and not incidr(caller_ipv4, "169.254.0.0/16") and not incidr(caller_ipv4, "100.64.0.0/10"), arraycreate(caller_ipv4)),
         xdm.source.ipv4 = caller_ipv4,
         xdm.source.ipv6 = caller_ipv6,
         xdm.source.user_agent = properties -> userAgent;
 
-
 [RULE: msft_azure_resource_logs_map_common_fields] 
 /*  This rule normalizes the top-level schema that is common to all resource logs that are sent to an event hub.  
-	Schema: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/resource-logs-schema#top-level-common-schema */
+        Schema: https://learn.microsoft.com/en-us/azure/azure-monitor/essentials/resource-logs-schema#top-level-common-schema */
 alter // Extractions 
-	caller_ipv4 = arrayindex(regextract(callerIpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-	caller_ipv6 = arrayindex(regextract(callerIpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-	http_status = if(resultSignature ~= "^\d{3}$", to_integer(resultSignature)),
+        caller_ipv4 = arrayindex(regextract(callerIpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+        caller_ipv6 = arrayindex(regextract(callerIpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+        http_status = if(resultSignature ~= "^\d{3}$", to_integer(resultSignature)),
     log_level = uppercase(to_string(Level)) // The severity level of the event. Must be one of Informational, Warning, Error, or Critical.
 | alter // XDM Mappings
-	xdm.event.duration = to_integer(durationMs),
-	xdm.event.log_level = if( 
-		log_level in ("1", "CRITICAL"), XDM_CONST.LOG_LEVEL_CRITICAL,
-		log_level in ("2", "ERROR"), XDM_CONST.LOG_LEVEL_ERROR,
-		log_level in ("3", "WARNING"), XDM_CONST.LOG_LEVEL_WARNING,
-		log_level in ("4", "INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
-	xdm.event.operation_sub_type = operationName, // The name of the operation that this event is logging, for example Microsoft.Storage/storageAccounts/blobServices/blobs/Read. The operationName is typically modeled in the form of an Azure Resource Manager operation, Microsoft.<providerName>/<resourceType>/<subtype>/<Write|Read|Delete|Action>, even if it's not a documented Resource Manager operation.
-	xdm.event.original_event_type = category, // The log category of the event being logged. 
-	xdm.event.outcome = if(
+        xdm.event.duration = to_integer(durationMs),
+        xdm.event.log_level = if( 
+                log_level in ("1", "CRITICAL"), XDM_CONST.LOG_LEVEL_CRITICAL,
+                log_level in ("2", "ERROR"), XDM_CONST.LOG_LEVEL_ERROR,
+                log_level in ("3", "WARNING"), XDM_CONST.LOG_LEVEL_WARNING,
+                log_level in ("4", "INFO*"), XDM_CONST.LOG_LEVEL_INFORMATIONAL),
+        xdm.event.operation_sub_type = operationName, // The name of the operation that this event is logging, for example Microsoft.Storage/storageAccounts/blobServices/blobs/Read. The operationName is typically modeled in the form of an Azure Resource Manager operation, Microsoft.<providerName>/<resourceType>/<subtype>/<Write|Read|Delete|Action>, even if it's not a documented Resource Manager operation.
+        xdm.event.original_event_type = category, // The log category of the event being logged. 
+        xdm.event.outcome = if(
         resultType in ("Started", "Start", "In Progress", "Active", "Skipped"), XDM_CONST.OUTCOME_UNKNOWN,
         resultType in ("Succeeded", "Success", "Resolved", "Accept"), XDM_CONST.OUTCOME_SUCCESS,
-        resultType in ("Failed", "Failure", "Cancle"), XDM_CONST.OUTCOME_FAILED),
-	xdm.event.outcome_reason = coalesce(format_string("%s: %s", resultType, resultDescription), to_json_string(properties -> statusMessage) -> error.message, resultSignature, resultDescription, resultType),
-	xdm.network.http.response_code = if(http_status = null, null, http_status = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_status = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_status = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_status = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_status = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_status = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_status = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_status = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_status = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_status = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_status = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_status = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_status = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_status = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_status = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_status = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_status = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_status = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_status = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_status = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_status = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_status = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_status = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_status = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_status = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_status = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_status = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_status = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_status = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_status = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_status = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_status = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_status = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_status = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_status = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_status = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_status = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_status = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_status = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_status = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_status = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_status = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_status = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS),
-	xdm.session_context_id = correlationId, // A GUID that's used to group together a set of related events. 
-	xdm.source.cloud.project_id = tenantId, // The tenant ID of the Active Directory tenant that this event is tied to. This property is used only for tenant-level logs. It does not appear in resource-level logs.
-	xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-	xdm.source.cloud.region = if(category not in ("Administrative", "Alert", "Policy") , location, null), // The region of the resource emitting the event; for example, East US or France South.
-	xdm.source.host.ipv4_public_addresses = if(caller_ipv4 != null and not incidr(caller_ipv4, "10.0.0.0/8") and not incidr(caller_ipv4, "172.16.0.0/12") and not incidr(caller_ipv4, "192.168.0.0/16") and not incidr(caller_ipv4, "127.0.0.0/8") and not incidr(caller_ipv4, "169.254.0.0/16") and not incidr(caller_ipv4, "100.64.0.0/10"), arraycreate(caller_ipv4)),
-	xdm.source.ipv4 = caller_ipv4,
-	xdm.source.ipv6 = caller_ipv6,
-	xdm.source.user.username = if(category not in ("Administrative", "Alert", "Policy") , to_string(identity), null), // A JSON blob that describes the identity of the user or application that performed the operation. Typically, this field includes the authorization and claims or JWT token from Active Directory.
-	xdm.target.resource.id = resourceId; // The resource ID of the resource that emitted the event. For tenant services, this is of the form /tenants/tenant-id/providers/provider-name.
+        resultType in ("Failed", "Failure", "Cancel"), XDM_CONST.OUTCOME_FAILED),
+        xdm.event.outcome_reason = coalesce(format_string("%s: %s", resultType, resultDescription), to_json_string(properties -> statusMessage) -> error.message, resultSignature, resultDescription, resultType),
+        xdm.network.http.response_code = if(http_status = null, null, http_status = 200, XDM_CONST.HTTP_RSP_CODE_OK, http_status = 201, XDM_CONST.HTTP_RSP_CODE_CREATED, http_status = 302, XDM_CONST.HTTP_RSP_CODE_FOUND, http_status = 401, XDM_CONST.HTTP_RSP_CODE_UNAUTHORIZED, http_status = 403, XDM_CONST.HTTP_RSP_CODE_FORBIDDEN, http_status = 404, XDM_CONST.HTTP_RSP_CODE_NOT_FOUND, http_status = 500, XDM_CONST.HTTP_RSP_CODE_INTERNAL_SERVER_ERROR, http_status = 501, XDM_CONST.HTTP_RSP_CODE_NOT_IMPLEMENTED, http_status = 502, XDM_CONST.HTTP_RSP_CODE_BAD_GATEWAY, http_status = 503, XDM_CONST.HTTP_RSP_CODE_SERVICE_UNAVAILABLE, http_status = 504, XDM_CONST.HTTP_RSP_CODE_GATEWAY_TIMEOUT, http_status = 505, XDM_CONST.HTTP_RSP_CODE_HTTP_VERSION_NOT_SUPPORTED, http_status = 506, XDM_CONST.HTTP_RSP_CODE_VARIANT_ALSO_NEGOTIATES, http_status = 507, XDM_CONST.HTTP_RSP_CODE_INSUFFICIENT_STORAGE, http_status = 508, XDM_CONST.HTTP_RSP_CODE_LOOP_DETECTED, http_status = 511, XDM_CONST.HTTP_RSP_CODE_NETWORK_AUTHENTICATION_REQUIRED, http_status = 100, XDM_CONST.HTTP_RSP_CODE_CONTINUE, http_status = 101, XDM_CONST.HTTP_RSP_CODE_SWITCHING_PROTOCOLS, http_status = 102, XDM_CONST.HTTP_RSP_CODE_PROCESSING, http_status = 103, XDM_CONST.HTTP_RSP_CODE_EARLY_HINTS, http_status = 202, XDM_CONST.HTTP_RSP_CODE_ACCEPTED, http_status = 203, XDM_CONST.HTTP_RSP_CODE_NON__AUTHORITATIVE_INFORMATION, http_status = 204, XDM_CONST.HTTP_RSP_CODE_NO_CONTENT, http_status = 205, XDM_CONST.HTTP_RSP_CODE_RESET_CONTENT, http_status = 206, XDM_CONST.HTTP_RSP_CODE_PARTIAL_CONTENT, http_status = 207, XDM_CONST.HTTP_RSP_CODE_MULTI__STATUS, http_status = 208, XDM_CONST.HTTP_RSP_CODE_ALREADY_REPORTED, http_status = 226, XDM_CONST.HTTP_RSP_CODE_IM_USED, http_status = 300, XDM_CONST.HTTP_RSP_CODE_MULTIPLE_CHOICES, http_status = 301, XDM_CONST.HTTP_RSP_CODE_MOVED_PERMANENTLY, http_status = 303, XDM_CONST.HTTP_RSP_CODE_SEE_OTHER, http_status = 304, XDM_CONST.HTTP_RSP_CODE_NOT_MODIFIED, http_status = 305, XDM_CONST.HTTP_RSP_CODE_USE_PROXY, http_status = 307, XDM_CONST.HTTP_RSP_CODE_TEMPORARY_REDIRECT, http_status = 308, XDM_CONST.HTTP_RSP_CODE_PERMANENT_REDIRECT, http_status = 400, XDM_CONST.HTTP_RSP_CODE_BAD_REQUEST, http_status = 402, XDM_CONST.HTTP_RSP_CODE_PAYMENT_REQUIRED, http_status = 405, XDM_CONST.HTTP_RSP_CODE_METHOD_NOT_ALLOWED, http_status = 406, XDM_CONST.HTTP_RSP_CODE_NOT_ACCEPTABLE, http_status = 407, XDM_CONST.HTTP_RSP_CODE_PROXY_AUTHENTICATION_REQUIRED, http_status = 408, XDM_CONST.HTTP_RSP_CODE_REQUEST_TIMEOUT, http_status = 409, XDM_CONST.HTTP_RSP_CODE_CONFLICT, http_status = 410, XDM_CONST.HTTP_RSP_CODE_GONE, http_status = 411, XDM_CONST.HTTP_RSP_CODE_LENGTH_REQUIRED, http_status = 412, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_FAILED, http_status = 413, XDM_CONST.HTTP_RSP_CODE_CONTENT_TOO_LARGE, http_status = 414, XDM_CONST.HTTP_RSP_CODE_URI_TOO_LONG, http_status = 415, XDM_CONST.HTTP_RSP_CODE_UNSUPPORTED_MEDIA_TYPE, http_status = 416, XDM_CONST.HTTP_RSP_CODE_RANGE_NOT_SATISFIABLE, http_status = 417, XDM_CONST.HTTP_RSP_CODE_EXPECTATION_FAILED, http_status = 421, XDM_CONST.HTTP_RSP_CODE_MISDIRECTED_REQUEST, http_status = 422, XDM_CONST.HTTP_RSP_CODE_UNPROCESSABLE_CONTENT, http_status = 423, XDM_CONST.HTTP_RSP_CODE_LOCKED, http_status = 424, XDM_CONST.HTTP_RSP_CODE_FAILED_DEPENDENCY, http_status = 425, XDM_CONST.HTTP_RSP_CODE_TOO_EARLY, http_status = 426, XDM_CONST.HTTP_RSP_CODE_UPGRADE_REQUIRED, http_status = 428, XDM_CONST.HTTP_RSP_CODE_PRECONDITION_REQUIRED, http_status = 429, XDM_CONST.HTTP_RSP_CODE_TOO_MANY_REQUESTS, http_status = 431, XDM_CONST.HTTP_RSP_CODE_REQUEST_HEADER_FIELDS_TOO_LARGE, http_status = 451, XDM_CONST.HTTP_RSP_CODE_UNAVAILABLE_FOR_LEGAL_REASONS),
+        xdm.session_context_id = correlationId, // A GUID that's used to group together a set of related events. 
+        xdm.source.cloud.project_id = tenantId, // The tenant ID of the Active Directory tenant that this event is tied to. This property is used only for tenant-level logs. It does not appear in resource-level logs.
+        xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
+        xdm.source.cloud.region = if(category not in ("Administrative", "Alert", "Policy") , location, null), // The region of the resource emitting the event; for example, East US or France South.
+        xdm.source.host.ipv4_public_addresses = if(caller_ipv4 != null and not incidr(caller_ipv4, "10.0.0.0/8") and not incidr(caller_ipv4, "172.16.0.0/12") and not incidr(caller_ipv4, "192.168.0.0/16") and not incidr(caller_ipv4, "127.0.0.0/8") and not incidr(caller_ipv4, "169.254.0.0/16") and not incidr(caller_ipv4, "100.64.0.0/10"), arraycreate(caller_ipv4)),
+        xdm.source.ipv4 = caller_ipv4,
+        xdm.source.ipv6 = caller_ipv6,
+        xdm.source.user.username = if(category not in ("Administrative", "Alert", "Policy") , to_string(identity), null), // A JSON blob that describes the identity of the user or application that performed the operation. Typically, this field includes the authorization and claims or JWT token from Active Directory.
+        xdm.target.resource.id = resourceId; // The resource ID of the resource that emitted the event. For tenant services, this is of the form /tenants/tenant-id/providers/provider-name.
 
 
 [MODEL: dataset = msft_azure_raw]
@@ -62,7 +62,8 @@ filter category = "AuditLogs"
         xdm.observer.type = json_extract_scalar(properties, "$.loggedByService"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.initiatedBy.user.id"),
-        xdm.source.user.username = json_extract_scalar(properties, "$.initiatedBy.user.displayName"),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName") != null and json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName") != "",json_extract_scalar(properties, "$.initiatedBy.user.userPrincipalName"),json_extract_scalar(properties, "$.initiatedBy.user.displayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.initiatedBy.user.displayName"),
         xdm.source.application.name = coalesce(json_extract_scalar(properties, "$.initiatedBy.app.displayName"),json_extract_scalar(properties, "$.initiatedBy.app.servicePrincipalName")),
         xdm.target.resource.sub_type = json_extract_scalar(properties, "$.category"),
         xdm.target.resource.id = arraystring(arraymap(json_extract_array(properties, "$.targetResources"), if(json_extract_scalar("@element", "$.id") != null, json_extract_scalar("@element", "$.id"), "-")), ", "),
@@ -82,7 +83,8 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.source.cloud.project_id = coalesce(json_extract_scalar(properties, "$.homeTenantId"), tenantId),
         xdm.event.outcome_reason = concat(resultDescription, " Error Code: ", resultType),
         xdm.event.outcome = if(resultType = "0", XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_FAILED),
-        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
         xdm.source.application.name = if(json_extract_scalar(properties, "$.appDisplayName") != null, json_extract_scalar(properties, "$.appDisplayName"), json_extract_scalar(properties, "$.servicePrincipalName") != null, json_extract_scalar(properties, "$.servicePrincipalName"), null),
@@ -95,6 +97,7 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
         xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
         xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
+        xdm.source.host.device_category  = if(json_extract_scalar(properties, "$.deviceDetail.trustType") != null and json_extract_scalar(properties, "$.deviceDetail.trustType") != "", json_extract_scalar(properties, "$.deviceDetail.trustType"), null),
         xdm.logon.type = if(category = "SignInLogs", XDM_CONST.LOGON_TYPE_INTERACTIVE, category = "NonInteractiveUserSignInLogs", "non-interactive", category = "ServicePrincipalSignInLogs" or category = "ManagedIdentitySignInLogs", XDM_CONST.LOGON_TYPE_SERVICE, null),
         xdm.alert.severity = if(json_extract_scalar(properties, "$.riskLevelDuringSignIn") = "none", null, json_extract_scalar(properties, "$.riskLevelDuringSignIn")),
         xdm.alert.risks = if(array_length(json_extract_scalar_array(properties, "$.riskEventTypes_v2")) > 0, json_extract_scalar_array(properties, "$.riskEventTypes_v2"), null),
@@ -103,7 +106,8 @@ filter category in ("SignInLogs", "NonInteractiveUserSignInLogs", "ServicePrinci
         xdm.auth.auth_method = if(authenticationMethodDetail != null, concat(authenticationMethod, " - ", authenticationMethodDetail), authenticationMethod),
         xdm.auth.is_mfa_needed = if(lowercase(json_extract_scalar(properties, "$.authenticationRequirement")) contains "multifactor", to_boolean("true"), to_boolean("false")),
         xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
-        xdm.source.asn.as_number = to_number(json_extract_scalar(properties, "$.autonomousSystemNumber"));
+        xdm.source.asn.as_number = to_number(json_extract_scalar(properties, "$.autonomousSystemNumber")),
+        xdm.source.host.hostname = if(json_extract_scalar(properties, "$.deviceDetail.displayName") != null and json_extract_scalar(properties, "$.deviceDetail.displayName") != "", json_extract_scalar(properties, "$.deviceDetail.displayName"), null);
 
 filter category = "ProvisioningLogs"
 | alter
@@ -135,11 +139,13 @@ filter category = "ProvisioningLogs"
 filter category in ("RiskyUsers", "RiskyServicePrincipals")
 | alter
         xdm.event.original_event_type = category,
+        xdm.alert.description = json_extract_scalar(properties, "$.riskState"),
         xdm.session_context_id = correlationId,
         xdm.source.cloud.project_id = tenantId,
         xdm.event.type = operationName,
         xdm.event.id = json_extract_scalar(properties, "$.id"),
-        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.alert.name = json_extract_scalar(properties, "$.riskDetail"),
         xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
@@ -149,13 +155,14 @@ filter category in ("RiskyUsers", "RiskyServicePrincipals")
 filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
 | alter
         xdm.event.original_event_type = category,
+        xdm.alert.description = json_extract_scalar(properties, "$.riskState"),
         xdm.event.description = json_extract_scalar(properties, "$.additionalInfo"),
         xdm.session_context_id = coalesce(json_extract_scalar(properties, "$.correlationId"), correlationId),
         xdm.source.cloud.project_id = tenantId,
         xdm.event.type = json_extract_scalar(properties, "$.activity"),
         xdm.event.id = json_extract_scalar(properties, "$.id"),
-        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, null),
-        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, null),
+        xdm.source.ipv4 = if(callerIpAddress ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", callerIpAddress, json_extract_scalar(properties, "$.ipAddress") ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", json_extract_scalar(properties, "$.ipAddress"), null),
+        xdm.source.ipv6 = if(callerIpAddress ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", callerIpAddress, json_extract_scalar(properties, "$.ipAddress") ~= "[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}[a-fA-F0-9\:]{1,5}", json_extract_scalar(properties, "$.ipAddress"), null),
         xdm.logon.logon_guid = if(json_extract_scalar(properties, "$.requestId") != "", json_extract_scalar(properties, "$.requestId"), null),
         xdm.alert.subcategory = json_extract_scalar(properties, "$.riskEventType"),
         xdm.alert.severity = json_extract_scalar(properties, "$.riskLevel"),
@@ -165,7 +172,8 @@ filter category in ("UserRiskEvents", "ServicePrincipalRiskEvents")
         xdm.source.location.city = if(json_extract_scalar(properties, "$.location.city") != null and json_extract_scalar(properties, "$.location.city") != "", json_extract_scalar(properties, "$.location.city"), null),
         xdm.source.location.latitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.latitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.latitude"), null)),
         xdm.source.location.longitude = to_float(if(json_extract_scalar(properties, "$.location.geoCoordinates.longitude") != null, json_extract_scalar(properties, "$.location.geoCoordinates.longitude"), null)),
-        xdm.source.user.username = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.first_name = json_extract_scalar(properties, "$.userDisplayName"),
+        xdm.source.user.username = if(json_extract_scalar(properties, "$.userPrincipalName") != null and json_extract_scalar(properties, "$.userPrincipalName") != "",json_extract_scalar(properties, "$.userPrincipalName"),json_extract_scalar(properties, "$.userDisplayName")),
         xdm.source.user.upn = json_extract_scalar(properties, "$.userPrincipalName"),
         xdm.source.user.identifier = json_extract_scalar(properties, "$.userId"),
         xdm.auth.privilege_level = if(lowercase(json_extract_scalar(properties, "$.userType")) = "member", XDM_CONST.PRIVILEGE_LEVEL_USER, lowercase(json_extract_scalar(properties, "$.userType")) = "guest", XDM_CONST.PRIVILEGE_LEVEL_GUEST, null),
@@ -214,7 +222,7 @@ filter CategoryValue in("Administrative", "Policy", "Alert") and (category = nul
         xdm.event.outcome =  if(
                 activitystatusvalue in ("Started", "Start", "In Progress", "Active", "Skipped", "Unknown"), XDM_CONST.OUTCOME_UNKNOWN,
                 activitystatusvalue in ("Succeeded", "Success", "Resolved", "Accept"), XDM_CONST.OUTCOME_SUCCESS,
-                activitystatusvalue in ("Failed", "Failure", "Cancle"), XDM_CONST.OUTCOME_FAILED),
+                activitystatusvalue in ("Failed", "Failure", "Cancel"), XDM_CONST.OUTCOME_FAILED),
         xdm.event.outcome_reason = if(statusMessage_error_message != null and statusMessage_error_message != "", statusMessage_error_message, properties -> errorMessage != null and properties -> errorMessage != "", properties -> errorMessage, activitysubstatusvalue != null and activitysubstatusvalue != "", activitysubstatusvalue),
         xdm.source.cloud.project_id = SubscriptionId,
         xdm.source.cloud.project_hierarchy = split(properties -> hierarchy, "/"),
@@ -233,10 +241,10 @@ alter
   get_riskLevelAggregated = if(riskLevelAggregated = "none", null, riskLevelAggregated),
   get_riskLevelDuringSignIn = if(riskLevelDuringSignIn = "none", null, riskLevelDuringSignIn)
 | alter
-  check_ipAddress_v4 = if(ipAddress ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddress),
-  check_ipAddress_v6 = if(ipAddress ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddress),
-  check_ipAddressFromResourceProvider_v4 = if(ipAddressFromResourceProvider ~= "(?:\d{1,3}\.){3}\d{1,3}", ipAddressFromResourceProvider),
-  check_ipAddressFromResourceProvider_v6 = if(ipAddressFromResourceProvider ~= "(?:[a-fA-F\d]{0,4}\:){1,7}[a-fA-F\d]{0,4}", ipAddressFromResourceProvider),
+  check_ipAddress_v4 = arrayindex(regextract(ipAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+  check_ipAddress_v6 = arrayindex(regextract(ipAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
+  check_ipAddressFromResourceProvider_v4 = arrayindex(regextract(ipAddressFromResourceProvider, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
+  check_ipAddressFromResourceProvider_v6 = arrayindex(regextract(ipAddressFromResourceProvider, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
   check_os_field = lowercase(coalesce(operatingSystem, deviceDetail -> operatingSystem)),
   check_risk_level = coalesce(get_riskLevelDuringSignIn, get_riskLevelAggregated)
 | alter
@@ -254,7 +262,7 @@ alter
                                             and not incidr("@element", "100.64.0.0/10")),
   xdm.event.outcome = if(conditionalAccessStatus = "success", XDM_CONST.OUTCOME_SUCCESS, conditionalAccessStatus = "failure", XDM_CONST.OUTCOME_FAILED, conditionalAccessStatus = "notApplied", XDM_CONST.OUTCOME_UNKNOWN),
   xdm.event.id = coalesce(id, originalRequestId),
-  xdm.source.user.username = userDisplayName,
+  xdm.source.user.username = userPrincipalName,
   xdm.source.user.upn = userPrincipalName,
   xdm.source.user.identifier = userId,
   xdm.source.application.name = coalesce(servicePrincipalName, appDisplayName),

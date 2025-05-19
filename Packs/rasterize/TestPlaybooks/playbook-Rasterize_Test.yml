@@ -844,7 +844,7 @@ tasks:
       type:
         simple: png
       url:
-        simple: https://en.wikipedia.org/wiki/Main_Page
+        simple: https://www.google.com
       wait_time:
         simple: '5'
     separatecontext: false
@@ -957,7 +957,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: wikipedia
+              simple: google
     view: |-
       {
         "position": {

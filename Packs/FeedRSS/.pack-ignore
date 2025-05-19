@@ -1,6 +1,9 @@
 [file:Extract_and_Create_Relationships.yml]
 ignore=PB105
 
+[file:RSS_Create_Indicators_From_Report.yml]
+ignore=RM116
+
 [file:FeedRSS_image.png]
 ignore=IM111
 

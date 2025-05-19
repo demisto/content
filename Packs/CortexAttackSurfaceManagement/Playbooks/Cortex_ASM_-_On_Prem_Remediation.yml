@@ -409,3 +409,8 @@ tests:
 fromversion: 6.8.0
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
