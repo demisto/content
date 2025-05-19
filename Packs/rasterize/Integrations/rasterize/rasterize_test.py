@@ -940,6 +940,10 @@ def test_retry_loading(mocker: MockerFixture):
     handler.retry_loading()
     assert mock_event.set.called
 
+    # Test getFrameTree failed to return URL
+    mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("runtime_exception")
+    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "file:///test.html"}}}
+    assert mock_event.set.called
 
 @pytest.mark.parametrize(
     "exception_class, exception_message",
