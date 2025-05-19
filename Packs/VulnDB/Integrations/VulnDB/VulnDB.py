@@ -310,7 +310,7 @@ def vulndb_get_updates_by_dates_or_hours_command(args: dict, client: Client):
         res = client.http_request(f"/vulnerabilities/find_by_time?hours_ago={hours_ago}", max_size)
     else:
         res = None  # Address pylint E0606
-        return_error('Must provide either start date or hours ago.')
+        return_error("Must provide either start date or hours ago.")
 
     vulndb_vulnerability_results_to_demisto_results(res)
 
@@ -323,7 +323,7 @@ def vulndb_get_vendor_command(args: dict, client: Client):
     res = ""
     if vendor_id is not None and vendor_name is not None:
         res = None  # Address pylint E0606
-        return_error('Provide either vendor id or vendor name or neither, not both.')
+        return_error("Provide either vendor id or vendor name or neither, not both.")
     elif vendor_id:
         res = client.http_request(f"/vendors/{vendor_id}", max_size)
     elif vendor_name:
@@ -342,7 +342,7 @@ def vulndb_get_product_command(args: dict, client: Client):
     res = ""
     if vendor_id is not None and vendor_name is not None:
         res = None  # Address pylint E0606
-        return_error('Provide either vendor id or vendor name or neither, not both.')
+        return_error("Provide either vendor id or vendor name or neither, not both.")
     elif vendor_id:
         res = client.http_request(f"/products/by_vendor_id?vendor_id={vendor_id}", max_size)
     elif vendor_name:
@@ -421,98 +421,111 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
         )
     return_results(command_results)
 
-def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datetime,
-                                   all_cvss: bool, include_cpe: bool, min_disclosure_date: datetime,
-                                   ignore_deprecated: bool, client: Client):
-    demisto.info('[VulnDB]: Running Fetch Incidents')
+
+def vulndb_fetch_incidents_command(
+    args: dict,
+    max_size: int,
+    first_fetch: datetime,
+    all_cvss: bool,
+    include_cpe: bool,
+    min_disclosure_date: datetime,
+    ignore_deprecated: bool,
+    client: Client,
+):
+    demisto.info("[VulnDB]: Running Fetch Incidents")
     last_run = demisto.getLastRun()
     hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
     # Calculate the hours difference since the last run
     last_timestamp: datetime = datetime(1, 1, 1, 0, 0, 0, 0, timezone.utc)
     last_id: int = 0
-    if last_run and 'start_time' in last_run:
-        last_id = int(last_run.get('last_id', 0))
-        start_time = datetime.fromisoformat(last_run['start_time'])
+    if last_run and "start_time" in last_run:
+        last_id = int(last_run.get("last_id", 0))
+        start_time = datetime.fromisoformat(last_run["start_time"])
         last_timestamp = start_time
         if start_time:
             delta: timedelta = datetime.now(timezone.utc) - start_time
             hours_ago = math.ceil(delta.total_seconds() / 3600)
     hours_ago = max(1, hours_ago)  # Make sure we use at least one hour
-    demisto.info(f'[VulnDB]: VulnDB fetch for last {hours_ago} hours')
-    demisto.info(f'[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}')
+    demisto.info(f"[VulnDB]: VulnDB fetch for last {hours_ago} hours")
+    demisto.info(f"[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}")
 
     incidents: list[dict] = []
     page = 1
     count = 0
 
     while True:
-        url_suffix = f'/vulnerabilities/find_by_time?page={page}&hours_ago={hours_ago}'  # noqa: E501
+        url_suffix = f"/vulnerabilities/find_by_time?page={page}&hours_ago={hours_ago}"  # noqa: E501
         if all_cvss:
-            url_suffix = f'{url_suffix}&show_cvss_v3=true&show_cvss=true'
+            url_suffix = f"{url_suffix}&show_cvss_v3=true&show_cvss=true"
         if include_cpe:
-            url_suffix = f'{url_suffix}&show_cpe_full=true'
+            url_suffix = f"{url_suffix}&show_cpe_full=true"
         try:
             res = client.http_request(url_suffix, 300)
         except Exception as e:
-            demisto.error(f'[VulnDB]: Error {str(e)}')  # Log the error
+            demisto.error(f"[VulnDB]: Error {str(e)}")  # Log the error
             # If the Web Request failed, there is no guarantee, we got all the Information required
             # So return nothing and don't set the lastFetch, so the next run can try again
             demisto.updateModuleHealth(
-                f"Encountered '{e}' when trying to fetch page {page} of vulnerability updates", is_error=True)
+                f"Encountered '{e}' when trying to fetch page {page} of vulnerability updates", is_error=True
+            )
             demisto.incidents(None)
             return
 
         page = page + 1
-        results = res.get('results', [])
+        results = res.get("results", [])
         count = count + len(results)
-        total_results = res.get('total_entries', 0)
-        demisto.info(f'[VulnDB]: Total count: {total_results}')
-        demisto.info(f'[VulnDB]: Count: {count}')
+        total_results = res.get("total_entries", 0)
+        demisto.info(f"[VulnDB]: Total count: {total_results}")
+        demisto.info(f"[VulnDB]: Count: {count}")
         for result in results:
-            disclosure_date = dateparser.parse(result.get('disclosure_date'))
+            disclosure_date = dateparser.parse(result.get("disclosure_date"))
             if disclosure_date and disclosure_date < min_disclosure_date:
                 continue
 
-            if ignore_deprecated and result.get('title', '').casefold().startswith('DEPRECATED: See ID #'.casefold()):
+            if ignore_deprecated and result.get("title", "").casefold().startswith("DEPRECATED: See ID #".casefold()):
                 continue
 
-            result_date = dateparser.parse(result.get('vulndb_last_modified'))
-            if result_date and (result_date < last_timestamp
-                                or (result_date == last_timestamp and int(result['vulndb_id']) <= last_id)):
+            result_date = dateparser.parse(result.get("vulndb_last_modified"))
+            if result_date and (
+                result_date < last_timestamp or (result_date == last_timestamp and int(result["vulndb_id"]) <= last_id)
+            ):
                 continue  # Skip entries, that are from before the last run date
             mirror_id = f'{result["vulndb_id"]}@{result.get("vulndb_last_modified", datetime.now(timezone.utc).isoformat())}'
-            incidents.append({'name': result.get('title', ''),  # name is required field, must be set
-                              'occured': result.get('vulndb_last_modified'),  # must be string of a format ISO8601
-                              'rawJSON': json.dumps(result),
-                              'dbotMirrorId': mirror_id
-                              })
+            incidents.append(
+                {
+                    "name": result.get("title", ""),  # name is required field, must be set
+                    "occured": result.get("vulndb_last_modified"),  # must be string of a format ISO8601
+                    "rawJSON": json.dumps(result),
+                    "dbotMirrorId": mirror_id,
+                }
+            )
         # Exit loop once we received the last last page
         if len(results) < 300:
             break
 
-    incidents = sorted(incidents, key=lambda x: x['occured'])
-    demisto.info(f'[VulnDB]: Total Incident Count: {len(incidents)}')
+    incidents = sorted(incidents, key=lambda x: x["occured"])
+    demisto.info(f"[VulnDB]: Total Incident Count: {len(incidents)}")
     incidents_slice = incidents[:max_size] if len(incidents) > max_size else incidents
     last_date = last_timestamp.isoformat()
     if len(incidents_slice) > 0:
-        last_date = incidents_slice[-1]['occured']
-        last_id = json.loads(incidents_slice[-1]['rawJSON']).get('vulndb_id', last_id)
-    demisto.setLastRun({'start_time': last_date, 'last_id': last_id})
+        last_date = incidents_slice[-1]["occured"]
+        last_id = json.loads(incidents_slice[-1]["rawJSON"]).get("vulndb_id", last_id)
+    demisto.setLastRun({"start_time": last_date, "last_id": last_id})
     demisto.incidents(incidents_slice)
 
 
 def main():
     params = demisto.params()
     # Remove trailing slash to prevent wrong URL path to service
-    api_url = params['api_url']
-    client_id = params.get('credentials', {}).get('identifier') or params.get('client_id')
-    client_secret = params.get('credentials', {}).get('password') or params.get('client_secret')
-    timeout = params.get('requestTimeout', 60)
+    api_url = params["api_url"]
+    client_id = params.get("credentials", {}).get("identifier") or params.get("client_id")
+    client_secret = params.get("credentials", {}).get("password") or params.get("client_secret")
+    timeout = params.get("requestTimeout", 60)
     if not (client_id and client_secret):
-        return_error('Please provide a Client ID and Secret')
-    use_ssl = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
-    dbot_score_reliability = params['integration_reliability']
+        return_error("Please provide a Client ID and Secret")
+    use_ssl = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+    dbot_score_reliability = params["integration_reliability"]
     client = Client(proxy, use_ssl, api_url, client_id, client_secret, timeout)
     args = demisto.args()
 
@@ -522,19 +535,26 @@ def main():
         if command == "test-module":
             # This is the call made when pressing the integration test button.
             test_module(client, client_id, client_secret)
-            demisto.results('ok')
-        if command == 'fetch-incidents':
-            first_fetch = dateparser.parse(params['first_fetch'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
+            demisto.results("ok")
+        if command == "fetch-incidents":
+            first_fetch = dateparser.parse(params["first_fetch"], settings={"RETURN_AS_TIMEZONE_AWARE": True})
             if not first_fetch:
                 first_fetch = datetime.now(timezone.utc) - timedelta(hours=24)
-            min_disclosure_date = dateparser.parse(params['disclosure_after'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
+            min_disclosure_date = dateparser.parse(params["disclosure_after"], settings={"RETURN_AS_TIMEZONE_AWARE": True})
             if not min_disclosure_date:
                 min_disclosure_date = datetime.min.replace(tzinfo=timezone.utc)
-            ignore_deprecated: bool = params.get('ignore_deprecated', False)
-            vulndb_fetch_incidents_command(args, int(params['max_fetch']), first_fetch,
-                                           params.get('include_all_cvss', False),
-                                           params.get('include_cpe', False), min_disclosure_date, ignore_deprecated, client)
-        elif command == 'vulndb-get-vuln-by-id':
+            ignore_deprecated: bool = params.get("ignore_deprecated", False)
+            vulndb_fetch_incidents_command(
+                args,
+                int(params["max_fetch"]),
+                first_fetch,
+                params.get("include_all_cvss", False),
+                params.get("include_cpe", False),
+                min_disclosure_date,
+                ignore_deprecated,
+                client,
+            )
+        elif command == "vulndb-get-vuln-by-id":
             vulndb_get_vuln_by_id_command(args, client)
         elif command == "vulndb-get-vuln-by-vendor-and-product-name":
             vulndb_get_vuln_by_vendor_and_product_name_command(args, client)
