@@ -45,7 +45,7 @@ configuration:
   type: 16
   advanced: true
   required: true
-  defaultvalue: 'Reports'
+  defaultvalue: Reports
   options:
   - Reports
   - Credential watchlist
