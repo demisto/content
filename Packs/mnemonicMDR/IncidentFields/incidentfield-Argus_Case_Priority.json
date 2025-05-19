@@ -11,7 +11,12 @@
     "required": false,
     "neverSetAsRequired": false,
     "isReadOnly": false,
-    "selectValues": ["low", "medium", "high", "critical"],
+    "selectValues": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+    ],
     "useAsKpi": false,
     "locked": false,
     "system": false,

@@ -17,7 +17,6 @@
     "content": true,
     "group": 0,
     "hidden": false,
-    "associatedToAll": false,
     "associatedTypes": [
         "Argus - Abusive Content",
         "Argus - Administrative",
@@ -34,6 +33,7 @@
         "Argus - Operational",
         "Argus - Poor Practice"
     ],
+    "associatedToAll": false,
     "unmapped": false,
     "unsearchable": true,
     "caseInsensitive": true,
