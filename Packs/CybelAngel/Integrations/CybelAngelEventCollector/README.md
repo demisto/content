@@ -1,7 +1,12 @@
 CybelAngel receives reports from the CybelAngel platform, which specializes in external attack surface protection and management
 
-## Configure CybelAngel in Cortex
+<~XSIAM>
+### Required modules
+- Account Takeover Protection module is required.
+- Domain Protection module is required
+</~XSIAM>
 
+## Configure CybelAngel in Cortex
 
 
 | **Parameter** | **Required** |
@@ -11,9 +16,9 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 | Client Secret | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-| Fetch events | True |
+| Fetch events | False |
 | Event Types To Fetch | True |
-| The maximum number of report event per fetch | False |
+| The maximum number of reports per fetch | False |
 | The maximum number of Credential watchlist events per fetch | False |
 | The maximum number of Domain watchlist events  per fetch | False |
 

@@ -164,7 +164,6 @@ class Client(BaseClient):
         self,
         start_date: str,
         end_date: str,
-        event_type: EventType,
         limit: int = 0,
     ) -> List[dict[str, Any]]:
         """
@@ -178,7 +177,7 @@ class Client(BaseClient):
         reports = self.get_reports_list(params)
 
         demisto.debug(f"Get reports list returned {len(reports)} reports.")
-        reports = add_fields_to_events(reports, event_type)
+        reports = add_fields_to_events(reports, EVENT_TYPE[REPORT])
         reports = sorted(
             reports,
             key=lambda _report: dateparser.parse(_report["_time"]),  # type: ignore[arg-type, return-value]
@@ -189,7 +188,6 @@ class Client(BaseClient):
         self,
         start_date: str,
         end_date: str,
-        event_type: EventType,
         limit: int,
     ) -> List[dict[str, Any]]:
         """
@@ -198,9 +196,9 @@ class Client(BaseClient):
         then tag each record with `_time` and `SOURCE_LOG_TYPE`.
 
         Args:
-            start_date (str): ISO-formatted lower bound for `last_detection_date` (e.g. "2025-05-01T00:00:00").
-            end_date   (str): ISO-formatted upper bound for `last_detection_date` (e.g. "2025-05-11T14:00:00").
-            limit      (int): Maximum number of credential entries to retrieve (default: DEFAULT_MAX_FETCH_CREDS).
+            start_date       (str): ISO-formatted lower bound for `last_detection_date` (e.g. "2025-05-01T00:00:00").
+            end_date         (str): ISO-formatted upper bound for `last_detection_date` (e.g. "2025-05-11T14:00:00").
+            limit            (int): Maximum number of credential entries to retrieve (default: DEFAULT_MAX_FETCH_CREDS).
 
         Returns:
             List[dict[str, Any]]: A list of credential-watchlist events, each containing:
@@ -217,19 +215,18 @@ class Client(BaseClient):
             "start": start_date,
             "end": end_date,
         }
-        response = self.http_request(method="GET", url_suffix=event_type.url_suffix, params=params) or []
+        response = self.http_request(method="GET", url_suffix=EVENT_TYPE[CREDENTIALS].url_suffix, params=params) or []
 
         if not isinstance(response, list):
             demisto.debug("Type return error in credentials request")
             return []
 
-        return add_fields_to_events(response, event_type)
+        return add_fields_to_events(response, EVENT_TYPE[CREDENTIALS])
 
     def get_domain_watchlist(
         self,
         start_date: str,
         end_date: str,
-        event_type: EventType,
         limit: int,
     ) -> List[dict[str, Any]]:
         """
@@ -260,7 +257,7 @@ class Client(BaseClient):
             "limit": limit,
         }
 
-        response = self.http_request(method="GET", url_suffix=event_type.url_suffix, params=params) or {}
+        response = self.http_request(method="GET", url_suffix=EVENT_TYPE[DOMAIN].url_suffix, params=params) or {}
         if not isinstance(response, dict):
             demisto.debug("Type error: expected dict from domain request")
             return []
@@ -273,7 +270,7 @@ class Client(BaseClient):
             remaining = total - len(events)
             demisto.debug(f"{remaining} more events available; fetching skip={len(events)}")
             params.update({"limit": remaining, "skip": len(events)})
-            second_response = self.http_request(method="GET", url_suffix=event_type.url_suffix, params=params) or {}
+            second_response = self.http_request(method="GET", url_suffix=EVENT_TYPE[DOMAIN].url_suffix, params=params) or {}
 
             if not isinstance(second_response, dict):
                 demisto.debug("Type error: expected dict from second domain request")
@@ -284,7 +281,7 @@ class Client(BaseClient):
 
         events.reverse()
 
-        return add_fields_to_events(events, event_type)
+        return add_fields_to_events(events, EVENT_TYPE[DOMAIN])
 
     def get_access_token(self, create_new_token: bool = False) -> str:
         """
@@ -446,11 +443,10 @@ def add_fields_to_events(events: List[Dict[str, Any]], event_type: EventType) ->
     """
     Annotate each event with:
       - `_time`: from its configured time_field (or fallback for reports)
-      - `source_log_type`: the event type name.
+      - `SOURCE_LOG_TYPE`: the event type name.
     """
     for event in events:
         event["SOURCE_LOG_TYPE"] = event_type.source_log_type
-        demisto.debug("Added SOURCE_LOG_TYPE")
         event["_time"] = event.get(event_type.time_field) or event.get("created_at")
     return events
 
@@ -519,7 +515,6 @@ def test_module(client: Client) -> str:
     client.get_reports(
         start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
         end_date=datetime.now().strftime(DATE_FORMAT),
-        event_type=EVENT_TYPE[REPORT],
         limit=100,
     )
     return "ok"
@@ -585,7 +580,6 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
         events = fetch_func(  # type: ignore
             start_date=last_time,
             end_date=now.strftime(DATE_FORMAT),
-            event_type=event_type,
             limit=max_fetch[event_type_name] + len(last_ids),
         )
 
@@ -634,7 +628,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     events = []
     fetch_func = event_fetch_function.get(event_type_name)
     if fetch_func:
-        events = fetch_func(start_date=start_date, end_date=end_date, event_type=event_type, limit=limit)  # type: ignore
+        events = fetch_func(start_date=start_date, end_date=end_date, limit=limit)  # type: ignore
     events = events[:limit]
     demisto.debug("Prepapring command result")
     if argToBoolean(args.get("is_fetch_events") or False):
