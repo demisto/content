@@ -61,8 +61,6 @@ WARNING
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
 
-HOST_LIST_DETECTIONS_RAW_RESPONSE = "<HOST_LIST_VM_DETECTION_OUTPUT> <RESPONSE> </RESPONSE> </HOST_LIST_VM_DETECTION_OUTPUT>"
-
 BASE_URL = "https://server_url.com/"
 SNAPSHOT_ID = "1737885000"
 
@@ -78,22 +76,20 @@ def util_load_json(path: str):
         return json.loads(f.read())
 
 
-def mock_client_get_host_list_detection(*args, sleep_time: int | float) -> tuple[str, bool]:
-    """Mocks `Client.get_host_list_detection` method by introducing an artificial delay using the `sleep_time` argument.
+def until_sleep(sleep_time: int | float) -> bool:
+    """Mocks a slow function by introducing an artificial delay using the `sleep_time` argument.
 
     Args:
         sleep_time (int | float): The number of seconds to sleep.
 
     Returns:
-        tuple[str, bool]: Raw API response XML string and set_new_limit boolean (indicates if to make the next API call smaller).
+       bool: True to indicate the function is finished.
     """
     if sleep_time:
         time.sleep(sleep_time)  # sleep to simulate slow API response
 
-    set_new_limit = False
-    host_list_detections = HOST_LIST_DETECTIONS_RAW_RESPONSE
-
-    return host_list_detections, set_new_limit
+    is_finished = True
+    return is_finished
 
 
 def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
@@ -1927,47 +1923,30 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
 
 # The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
 @pytest.mark.parametrize(
-    "sleep_time, expected_response, expected_set_new_limit",
+    "sleep_time, expected_is_finished",
     [
-        pytest.param(3, "", True, id="Slow response"),
-        pytest.param(0, HOST_LIST_DETECTIONS_RAW_RESPONSE, False, id="Fast response"),
+        pytest.param(3, False, id="Slow execution"),
+        pytest.param(0, True, id="Fast execution"),
     ],
 )
-def test_get_client_host_list_detection_with_timeout(
-    mocker: MockerFixture,
-    client: Client,
-    sleep_time: int | float,
-    expected_response: str,
-    expected_set_new_limit: bool,
-):
+def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
     """
     Given:
-        - A since_datetime, no next_page, and the default HOST_LIMIT.
+        - An execution timeout value of 2 seconds.
 
     When:
-        - When calling get_client_host_list_detection_with_timeout with a simulated "slow" and "fast" API responses.
+        - When calling until_sleep with a simulated "slow" and "fast" executions.
 
     Assert:
-        - Case A (Slow): Ensure empty raw API response and set_new_limit boolean is True (next API call needs to be smaller).
-        - Case B (Fast): Ensure raw API response is unchanged from the original value and set_new_limit boolean is False.
+        - Case A (Slow): Ensure is_finished is False since until_sleep timed out (sleep_time > execution_timeout).
+        - Case B (Fast): Ensure is_finished is True since util_sleep finished in time (sleep_time < execution_timeout).
     """
-    from Qualysv2 import get_client_host_list_detection_with_timeout
+    from Qualysv2 import ExecutionTimeout
 
     execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
 
-    mocker.patch.object(
-        client,
-        "get_host_list_detection",
-        side_effect=lambda *args: mock_client_get_host_list_detection(*args, sleep_time=sleep_time),
-    )
+    is_finished = False
+    with ExecutionTimeout(seconds=execution_timeout):
+        is_finished = until_sleep(sleep_time)
 
-    raw_response, set_new_limit = get_client_host_list_detection_with_timeout(
-        client=client,
-        since_datetime="2025-01-25",
-        next_page="",
-        limit=HOST_LIMIT,
-        execution_timeout=execution_timeout,
-    )
-
-    assert raw_response == expected_response
-    assert set_new_limit is expected_set_new_limit
+    assert is_finished == expected_is_finished
