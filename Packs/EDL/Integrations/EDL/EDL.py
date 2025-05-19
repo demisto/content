@@ -1637,7 +1637,7 @@ def main():
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
     
-    EXTENSIVE_LOGGING = argToBoolean(params.get("extensive_logging", False))
+    EXTENSIVE_LOGGING = params.get("extensive_logging", False)
     
     if (username and not password) or (password and not username):
         err_msg: str = "If using credentials, both username and password should be provided."
