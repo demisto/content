@@ -87,7 +87,6 @@ def parse_metadata_items(tags_str: str) -> list[dict[str, str]]:
     return tags
 
 
-
 ##########
 
 
@@ -467,7 +466,7 @@ def main():
             args["project_id"] = service_account_info.get("project_id")
             demisto.debug("Using service account credentials")
         if not creds:
-            token = COOCApiModule.get_access_token(CloudTypes.GCP.value, scopes=SCOPES)
+            token = get_access_token(CloudTypes.GCP.value, scopes=SCOPES)
             creds = Credentials(token=token)
             demisto.debug("Using token-based credentials")
 
