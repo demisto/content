@@ -423,7 +423,8 @@ def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datet
             delta: timedelta = datetime.now(timezone.utc) - start_time
             hours_ago = math.ceil(delta.total_seconds() / 3600)
     hours_ago = max(1, hours_ago)  # Make sure we use at least one hour
-    demisto.info(f'[VulnDB]: VulnDB Fetch For last {hours_ago} hours')
+    demisto.info(f'[VulnDB]: VulnDB fetch for last {hours_ago} hours')
+    demisto.info(f'[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}')
 
     incidents: list[dict] = []
     total_results = max_size + 1
@@ -463,6 +464,7 @@ def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datet
                               })
 
     incidents = sorted(incidents, key=lambda x: x['occured'])
+    demisto.info(f'[VulnDB]: Total Incident Count: {len(incidents)}')
     incidents_slice = incidents[:max_size] if len(incidents) > max_size else incidents
     last_date = last_timestamp.isoformat()
     if len(incidents_slice) > 0:
