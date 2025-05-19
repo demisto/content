@@ -1989,8 +1989,7 @@ def argToBoolean(value):
 def appendContext(key, data, dedup=False):
     """
        Append data to the investigation context.
-       Scripts can use it and integrations cannot, since it uses setContext afterwards,
-       which is a server function and does not support integrations.
+       Usable by scripts not integrations, since it uses setContext
 
        :type key: ``str``
        :param key: The context path (required)
