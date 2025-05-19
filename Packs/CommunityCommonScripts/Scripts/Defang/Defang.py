@@ -7,9 +7,7 @@ import re
 def defang(content, defang_options, mail_options, url_options):
     if "ip" in defang_options:
         ip_regex = r"(\b25[0-5]|\b2[0-4][0-9]|\b[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}"
-        content = re.sub(
-            ip_regex, lambda match: match.group(0).replace(".", "[.]"), content
-        )
+        content = re.sub(ip_regex, lambda match: match.group(0).replace(".", "[.]"), content)
 
     if "mail" in defang_options:
         mail_regex = r"[^@ \t\r\n]+@[^@ \t\r\n]+\.[^@ \t\r\n]+"
@@ -20,53 +18,38 @@ def defang(content, defang_options, mail_options, url_options):
                 content,
             )
         elif "dot" in mail_options:
-            content = re.sub(
-                mail_regex, lambda match: match.group(0).replace(".", "[.]"), content
-            )
+            content = re.sub(mail_regex, lambda match: match.group(0).replace(".", "[.]"), content)
         elif "at" in mail_options:
-            content = re.sub(
-                mail_regex, lambda match: match.group(0).replace("@", "[@]"), content
-            )
+            content = re.sub(mail_regex, lambda match: match.group(0).replace("@", "[@]"), content)
 
     if "url" in defang_options:
         url_regex = r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()!@:%_\+.~#?&\/\/=]*)"
         if "dot" in url_options and "http" in url_options and "colon" in url_options:
             content = re.sub(
                 url_regex,
-                lambda match: match.group(0)
-                .replace(".", "[.]")
-                .replace("https", "hxxps")
-                .replace("://", "[://]"),
+                lambda match: match.group(0).replace(".", "[.]").replace("https", "hxxps").replace("://", "[://]"),
                 content,
             )
         elif "dot" in url_options and "http" in url_options:
             content = re.sub(
                 url_regex,
-                lambda match: match.group(0)
-                .replace(".", "[.]")
-                .replace("https", "hxxps"),
+                lambda match: match.group(0).replace(".", "[.]").replace("https", "hxxps"),
                 content,
             )
         elif "dot" in url_options and "colon" in url_options:
             content = re.sub(
                 url_regex,
-                lambda match: match.group(0)
-                .replace(".", "[.]")
-                .replace("://", "[://]"),
+                lambda match: match.group(0).replace(".", "[.]").replace("://", "[://]"),
                 content,
             )
         elif "http" in url_options and "colon" in url_options:
             content = re.sub(
                 url_regex,
-                lambda match: match.group(0)
-                .replace("https", "hxxps")
-                .replace("://", "[://]"),
+                lambda match: match.group(0).replace("https", "hxxps").replace("://", "[://]"),
                 content,
             )
         elif "dot" in url_options:
-            content = re.sub(
-                url_regex, lambda match: match.group(0).replace(".", "[.]"), content
-            )
+            content = re.sub(url_regex, lambda match: match.group(0).replace(".", "[.]"), content)
         elif "http" in url_options:
             content = re.sub(
                 url_regex,
@@ -74,9 +57,7 @@ def defang(content, defang_options, mail_options, url_options):
                 content,
             )
         elif "colon" in url_options:
-            content = re.sub(
-                url_regex, lambda match: match.group(0).replace("://", "[://]"), content
-            )
+            content = re.sub(url_regex, lambda match: match.group(0).replace("://", "[://]"), content)
 
     outputs = {"Defang": {"output": content}}
 

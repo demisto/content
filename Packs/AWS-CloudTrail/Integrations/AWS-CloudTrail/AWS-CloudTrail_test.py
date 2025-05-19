@@ -1,8 +1,8 @@
-from CommonServerPython import *  # noqa: F401
-import demistomock as demisto  # noqa: F401
-import pytest
 import importlib
 
+import demistomock as demisto  # noqa: F401
+import pytest
+from CommonServerPython import *  # noqa: F401
 
 PARAMS = {
     "defaultRegion": "us-west-2",
@@ -100,6 +100,7 @@ class CloudTrailClient:
         class Paginator:
             def paginate(self, **kwargs):
                 return [{"Events": [{"Username": "user"}]}]
+
         return Paginator()
 
 
@@ -115,7 +116,7 @@ class STSClient:
 
 
 def mock_boto3_client(service_name, *args, **kwargs):
-    if service_name == 'sts':
+    if service_name == "sts":
         return STSClient()
     return CloudTrailClient()
 

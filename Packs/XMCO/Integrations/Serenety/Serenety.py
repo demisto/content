@@ -1,12 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 from CommonServerUserPython import *  # noqa
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-ISO_8601_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -23,46 +24,36 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
     def _post(self, url_suffix: str, params: dict[str, Any] | None = None):
-        return self._http_request(
-            method="POST", url_suffix=url_suffix, data=json.dumps(params)
-        )
+        return self._http_request(method="POST", url_suffix=url_suffix, data=json.dumps(params))
 
     def fetch_current_user(self) -> dict[str, Any]:
-        return self._get('/user/current')
+        return self._get("/user/current")
 
     def fetch_alert(self, scope_id: str = None, dry_run: bool = None) -> list[dict[str, Any]]:
         has_next = True
-        params: dict[str, Any] = {
-            "page": 1
-        }
+        params: dict[str, Any] = {"page": 1}
         if scope_id:
-            params['scope'] = scope_id
+            params["scope"] = scope_id
 
         if dry_run is not None:
-            params['to_sync'] = dry_run
+            params["to_sync"] = dry_run
 
-        res = self._get(
-            url_suffix='/ticketor/serenety',
-            params=params
-        )
-        data = res.get('items')
+        res = self._get(url_suffix="/ticketor/serenety", params=params)
+        data = res.get("items")
 
         while has_next:
-            if res and res['page'] < res['pages']:
-                params['page'] += 1
-                res = self._get(
-                    url_suffix='/ticketor/serenety',
-                    params=params
-                )
+            if res and res["page"] < res["pages"]:
+                params["page"] += 1
+                res = self._get(url_suffix="/ticketor/serenety", params=params)
 
-                data += res.get('items', [])
+                data += res.get("items", [])
             else:
                 has_next = False
 
         return data
 
 
-''' HELPER FUNCTIONS'''
+""" HELPER FUNCTIONS"""
 
 
 def convert_to_demisto_severity(severity: str) -> float:
@@ -78,15 +69,15 @@ def convert_to_demisto_severity(severity: str) -> float:
         int: Cortex XSOAR Severity (0,5 to 4)
     """
     return {
-        'none': IncidentSeverity.INFO,
-        'low': IncidentSeverity.LOW,
-        'medium': IncidentSeverity.MEDIUM,
-        'high': IncidentSeverity.HIGH,
-        'critical': IncidentSeverity.CRITICAL
+        "none": IncidentSeverity.INFO,
+        "low": IncidentSeverity.LOW,
+        "medium": IncidentSeverity.MEDIUM,
+        "high": IncidentSeverity.HIGH,
+        "critical": IncidentSeverity.CRITICAL,
     }.get(severity, IncidentSeverity.INFO)
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client) -> str:
@@ -103,26 +94,28 @@ def test_module(client: Client) -> str:
     :rtype: ``str``
     """
 
-    message: str = ''
+    message: str = ""
     try:
         result = client.fetch_current_user()
-        if result.get('_error', None):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if result.get("_error", None):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
-            message = 'ok'
+            message = "ok"
     except DemistoException as e:
-        if 'Forbidden' in str(e) or 'Authorization' in str(e):
-            message = 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e) or "Authorization" in str(e):
+            message = "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
 
     return message
 
 
-def fetch_incidents(client: Client,
-                    last_run: dict,
-                    first_fetch_time: str,
-                    scope: str = None, ) -> tuple[dict[str, str], list[dict]]:
+def fetch_incidents(
+    client: Client,
+    last_run: dict,
+    first_fetch_time: str,
+    scope: str = None,
+) -> tuple[dict[str, str], list[dict]]:
     """
     This function will execute each interval (default is 1 minute).
 
@@ -148,27 +141,27 @@ def fetch_incidents(client: Client,
     items = client.fetch_alert(scope)
     for item in items:
         try:
-            data = item.get('data', {})
+            data = item.get("data", {})
             if data:
-                created = dateparser.parse(data['_created'])
+                created = dateparser.parse(data["_created"])
                 incident = {
-                    'severity': convert_to_demisto_severity(data.get('severity', 'low')),
-                    'occurred': created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
-                    'Category': data['custom_fields']['category'],
-                    'rawJSON': json.dumps(data),
+                    "severity": convert_to_demisto_severity(data.get("severity", "low")),
+                    "occurred": created.strftime(ISO_8601_FORMAT),  # type: ignore[union-attr]
+                    "Category": data["custom_fields"]["category"],
+                    "rawJSON": json.dumps(data),
                 }
 
                 incidents.append(incident)
         except Exception as e:
-            demisto.debug(f'{e}')
+            demisto.debug(f"{e}")
             continue
 
-    next_run = {'last_fetch': last_fetch}
+    next_run = {"last_fetch": last_fetch}
 
     return next_run, incidents
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -182,50 +175,41 @@ def main() -> None:
     args = demisto.params()
     command = demisto.command()
 
-    api_key = params.get('api_key', {}).get('password', '')
+    api_key = params.get("api_key", {}).get("password", "")
 
     # get the service API url
-    base_url = urljoin(params['url'], '/api')
+    base_url = urljoin(params["url"], "/api")
 
     # if your Client class inherits from BaseClient, SSL verification is
     # handled out of the box by it, just pass ``verify_certificate`` to
     # the Client constructor
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
     # if your Client class inherits from BaseClient, system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command}')
-    demisto.debug(f'APIKEY {api_key}')
+    demisto.debug(f"Command being called is {command}")
+    demisto.debug(f"APIKEY {api_key}")
     try:
-        headers: dict = {
-            "Authorization": f'Bearer {api_key}',
-            "Content-Type": "application/json; charset=utf-8"
-        }
+        headers: dict = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json; charset=utf-8"}
 
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            headers=headers,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client)
             return_results(result)
-        elif demisto.command() == 'fetch-incidents':
-
+        elif demisto.command() == "fetch-incidents":
             first_fetch_datetime = arg_to_datetime(arg=params.get("first_fetch"), arg_name="First fetch time", required=True)
             if first_fetch_datetime:
                 first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
             else:
                 first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
 
-            next_run, incidents = fetch_incidents(client=client,
-                                                  last_run=demisto.getLastRun(),
-                                                  first_fetch_time=first_fetch_time,
-                                                  scope=args.get('scope', None))
+            next_run, incidents = fetch_incidents(
+                client=client, last_run=demisto.getLastRun(), first_fetch_time=first_fetch_time, scope=args.get("scope", None)
+            )
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         else:
@@ -233,10 +217,10 @@ def main() -> None:
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

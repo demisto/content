@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "<ul><li>The _product is now nps instead of radius</li><li>Dataset name is now msft_nps_raw</li></ul>"
+}

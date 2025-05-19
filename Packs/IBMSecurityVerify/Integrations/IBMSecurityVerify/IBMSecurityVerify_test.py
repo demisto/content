@@ -1,23 +1,13 @@
-from datetime import datetime, timedelta, UTC
-
-from freezegun import freeze_time
-from CommonServerPython import *
-
+from datetime import UTC, datetime, timedelta
 
 import pytest
-from IBMSecurityVerify import Client, get_events_command, fetch_events, max_limit_validation
+from CommonServerPython import *
+from freezegun import freeze_time
+from IBMSecurityVerify import Client, fetch_events, get_events_command, max_limit_validation
 
-EVENTS = [
-    {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
-]
+EVENTS = [{"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}]
 
-RESPONSE = {
-    "response": {
-        "events": {
-            "events": EVENTS
-        }
-    }
-}
+RESPONSE = {"response": {"events": {"events": EVENTS}}}
 
 
 @pytest.fixture()
@@ -37,21 +27,9 @@ def mock_client(mocker) -> Client:
 @pytest.mark.parametrize(
     "token_data, expected_result",
     [
-        (
-            {
-                "access_token": "valid_token",
-                "expiry_time_utc": (datetime.now(UTC) + timedelta(minutes=5)).isoformat()
-            },
-            True
-        ),
-        (
-            {
-                "access_token": "valid_token",
-                "expiry_time_utc": datetime.now(UTC).isoformat()
-            },
-            False
-        ),
-    ]
+        ({"access_token": "valid_token", "expiry_time_utc": (datetime.now(UTC) + timedelta(minutes=5)).isoformat()}, True),
+        ({"access_token": "valid_token", "expiry_time_utc": datetime.now(UTC).isoformat()}, False),
+    ],
 )
 def test_is_token_valid(mock_client, token_data, expected_result):
     result = mock_client._is_token_valid(token_data)
@@ -100,9 +78,7 @@ def test_search_events(mocker, mock_client):
 
     _, events = mock_client.search_events(limit, sort_order, last_item)
 
-    expected_events = [
-        {"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}
-    ]
+    expected_events = [{"indexed_at": "2", "tenantname": "Test Event 2", "id": "123"}]
     assert events == expected_events
 
     http_request.assert_called_with(
@@ -114,30 +90,23 @@ def test_search_events(mocker, mock_client):
             "all_events": "yes",
             "sort_order": sort_order,
             "after_time": last_item.get("last_time"),
-            "after_id": last_item.get("last_id")
+            "after_id": last_item.get("last_id"),
         },
     )
 
 
 def test_get_events_command(mocker, mock_client):
-    """
-
-    """
+    """ """
     args = {"limit": 2, "sort_order": "Desc", "last_id": "123", "last_time": "456"}
 
     search_events = mocker.patch.object(mock_client, "search_events", return_value=({}, []))
     get_events_command(mock_client, args)
 
-    search_events.assert_called_with(
-        limit=2,
-        sort_order="desc",
-        last_item={"last_id": "123", "last_time": "456"}
-    )
+    search_events.assert_called_with(limit=2, sort_order="desc", last_item={"last_id": "123", "last_time": "456"})
 
 
 def test_fetch_events(mocker, mock_client):
-    """
-    """
+    """ """
     # First fetch
     search_events = mocker.patch.object(mock_client, "search_events", return_value=({}, EVENTS))
     last_run = {}

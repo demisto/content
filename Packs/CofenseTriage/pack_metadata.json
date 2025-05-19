@@ -2,15 +2,21 @@
     "name": "Cofense Triage",
     "description": "Cofense Triage allows users to fetch reports by using the fetch incidents capability. It also provides commands to get entities like reporters, rules, categories, and more.",
     "support": "partner",
-    "currentVersion": "2.1.32",
+    "currentVersion": "2.1.34",
     "author": "Cofense",
     "url": "https://cofense.com/contact-support/",
     "email": "support@cofense.com",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Email"
     ],
-    "tags": [],
+    "tags": [
+        "Email",
+        "Security",
+        "Alerts",
+        "Incident Response"
+    ],
     "useCases": [
         "Phishing"
     ],
@@ -26,7 +32,14 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Cofense Triage v3"
+    "defaultDataSource": "Cofense Triage v3",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

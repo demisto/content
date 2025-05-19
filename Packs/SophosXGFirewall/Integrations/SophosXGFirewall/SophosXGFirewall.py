@@ -1,70 +1,59 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from collections.abc import Callable
 
+import demistomock as demisto
 import urllib3
-from typing import Callable
+from CommonServerPython import *
+
+from CommonServerUserPython import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
-API_VERSION = '1702.1'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+API_VERSION = "1702.1"
 
 RULE = {
-    'endpoint_tag': 'SecurityPolicy',
-    'table_headers': ['Name', 'Description', 'Status', 'PolicyType', 'IPFamily', 'AttachIdentity',
-                      'Action', 'LogTraffic']
+    "endpoint_tag": "SecurityPolicy",
+    "table_headers": ["Name", "Description", "Status", "PolicyType", "IPFamily", "AttachIdentity", "Action", "LogTraffic"],
 }
 
 RULE_GROUP = {
-    'endpoint_tag': 'SecurityPolicyGroup',
-    'table_headers': ['Name', 'Description', 'SecurityPolicyList', 'SourceZones',
-                      'DestinationZones', 'PolicyType']
+    "endpoint_tag": "SecurityPolicyGroup",
+    "table_headers": ["Name", "Description", "SecurityPolicyList", "SourceZones", "DestinationZones", "PolicyType"],
 }
 
-URL_GROUP = {
-    'endpoint_tag': 'WebFilterURLGroup',
-    'table_headers': ['Name', 'Description', 'URLlist']
-}
+URL_GROUP = {"endpoint_tag": "WebFilterURLGroup", "table_headers": ["Name", "Description", "URLlist"]}
 
-IP_HOST = {
-    'endpoint_tag': 'IPHost',
-    'table_headers': ['Name', 'IPFamily', 'HostType']
-}
+IP_HOST = {"endpoint_tag": "IPHost", "table_headers": ["Name", "IPFamily", "HostType"]}
 
-IP_HOST_GROUP = {
-    'endpoint_tag': 'IPHostGroup',
-    'table_headers': ['Name', 'Description', 'IPFamily', 'HostList']
-}
+IP_HOST_GROUP = {"endpoint_tag": "IPHostGroup", "table_headers": ["Name", "Description", "IPFamily", "HostList"]}
 
-SERVICE = {
-    'endpoint_tag': 'Services',
-    'table_headers': ['Name', 'Type', 'ServiceDetails']
-}
+SERVICE = {"endpoint_tag": "Services", "table_headers": ["Name", "Type", "ServiceDetails"]}
 
 APP_POLICY = {
-    'endpoint_tag': 'ApplicationFilterPolicy',
-    'table_headers': ['Name', 'Description', 'MicroAppSupport', 'DefaultAction', 'RuleList']
+    "endpoint_tag": "ApplicationFilterPolicy",
+    "table_headers": ["Name", "Description", "MicroAppSupport", "DefaultAction", "RuleList"],
 }
 
 APP_CATEGORY = {
-    'endpoint_tag': 'ApplicationFilterCategory',
-    'table_headers': ['Name', 'Description', 'QoSPolicy', 'ApplicationSettings',
-                      'BandwidthUsageType']
+    "endpoint_tag": "ApplicationFilterCategory",
+    "table_headers": ["Name", "Description", "QoSPolicy", "ApplicationSettings", "BandwidthUsageType"],
 }
 
 WEB_FILTER = {
-    'endpoint_tag': 'WebFilterPolicy',
-    'table_headers': ['Name', 'Description', 'DefaultAction', 'EnableReporting',
-                      'DownloadFileSizeRestrictionEnabled', 'DownloadFileSizeRestriction',
-                      'RuleList']
+    "endpoint_tag": "WebFilterPolicy",
+    "table_headers": [
+        "Name",
+        "Description",
+        "DefaultAction",
+        "EnableReporting",
+        "DownloadFileSizeRestrictionEnabled",
+        "DownloadFileSizeRestriction",
+        "RuleList",
+    ],
 }
 
-USER = {
-    'endpoint_tag': 'User',
-    'table_headers': ['Username', 'Name', 'Description', 'EmailList', 'Group', 'UserType', 'Status']
-}
+USER = {"endpoint_tag": "User", "table_headers": ["Username", "Name", "Description", "EmailList", "Group", "UserType", "Status"]}
 
 
 class Client(BaseClient):
@@ -73,30 +62,30 @@ class Client(BaseClient):
     def __init__(self, base_url: str, auth: tuple, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, auth=auth, verify=verify, proxy=proxy)
 
-    def request(self, data: tuple, request_method: str, xml_method: str,
-                operation: str = None) -> requests.Response:
-        response = self._http_request(method=request_method,
-                                      url_suffix='/webconsole/APIController',
-                                      params=self.request_builder(self._auth, xml_method, data,
-                                                                  operation),  # type: ignore
-                                      resp_type='Response')
+    def request(self, data: tuple, request_method: str, xml_method: str, operation: str = None) -> requests.Response:
+        response = self._http_request(
+            method=request_method,
+            url_suffix="/webconsole/APIController",
+            params=self.request_builder(self._auth, xml_method, data, operation),  # type: ignore
+            resp_type="Response",
+        )
         return response
 
     def get_request(self, data: tuple) -> requests.Response:
-        return self.request(data, 'GET', 'get')
+        return self.request(data, "GET", "get")
 
     def set_request(self, data: tuple, operation: str) -> requests.Response:
-        return self.request(data, 'POST', 'set', operation)
+        return self.request(data, "POST", "set", operation)
 
     def delete_request(self, data: tuple) -> requests.Response:
-        return self.request(data, 'POST', 'remove')
+        return self.request(data, "POST", "remove")
 
     def get_item_by_name(self, endpoint_tag: str, name: str) -> requests.Response:
         data = (endpoint_tag, self.request_one_item_builder(name))
-        return self.request(data, 'GET', 'get')
+        return self.request(data, "GET", "get")
 
     def validate(self, data: tuple = (None, None)) -> requests.Response:
-        return self.request(data, 'GET', 'get')
+        return self.request(data, "GET", "get")
 
     @staticmethod
     def request_builder(auth: tuple, method: str, data: tuple, operation: str) -> dict:
@@ -112,19 +101,13 @@ class Client(BaseClient):
             dict: returned built dictionary
         """
         request_data = {
-            'Request': {
-                '@APIVersion': API_VERSION,
-                'Login': {
-                    'Username': auth[0],
-                    'Password': auth[1]
-                },
-                f'{method.title()}': {
-                    '@operation': operation if operation else '',
-                    data[0]: data[1]
-                }
+            "Request": {
+                "@APIVersion": API_VERSION,
+                "Login": {"Username": auth[0], "Password": auth[1]},
+                f"{method.title()}": {"@operation": operation if operation else "", data[0]: data[1]},
             }
         }
-        return {'reqxml': json2xml(json.dumps(request_data))}
+        return {"reqxml": json2xml(json.dumps(request_data))}
 
     @staticmethod
     def request_one_item_builder(name: str) -> dict:
@@ -136,15 +119,7 @@ class Client(BaseClient):
         Returns:
             dict: returned built dictionary
         """
-        request_data = {
-            'Filter': {
-                'key': {
-                    '@name': 'Name',
-                    '@criteria': '=',
-                    '#text': name
-                }
-            }
-        }
+        request_data = {"Filter": {"key": {"@name": "Name", "@criteria": "=", "#text": name}}}
         return request_data
 
 
@@ -186,8 +161,13 @@ def sophos_firewall_rule_add_command(client: Client, params: dict) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE['endpoint_tag'],  # type: ignore
-                                params, rule_builder, RULE['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        RULE["endpoint_tag"],  # type: ignore
+        params,
+        rule_builder,
+        RULE["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_rule_update_command(client: Client, params: dict) -> CommandResults:
@@ -200,8 +180,14 @@ def sophos_firewall_rule_update_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE['endpoint_tag'], params, rule_builder,  # type: ignore
-                                RULE['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        RULE["endpoint_tag"],  # type: ignore
+        params,
+        rule_builder,  # type: ignore
+        RULE["table_headers"],  # type: ignore
+        True,
+    )
 
 
 def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandResults:
@@ -214,7 +200,7 @@ def sophos_firewall_rule_delete_command(client: Client, name: str) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, RULE['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, RULE["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_rule_group_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -254,8 +240,13 @@ def sophos_firewall_rule_group_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,  # type: ignore
-                                RULE_GROUP['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        RULE_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        rule_group_builder,  # type: ignore
+        RULE_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -268,8 +259,14 @@ def sophos_firewall_rule_group_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, RULE_GROUP['endpoint_tag'], params, rule_group_builder,  # type: ignore
-                                RULE_GROUP['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        RULE_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        rule_group_builder,  # type: ignore
+        RULE_GROUP["table_headers"],  # type: ignore
+        True,
+    )
 
 
 def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -282,7 +279,7 @@ def sophos_firewall_rule_group_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, RULE_GROUP['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, RULE_GROUP["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_url_group_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -322,8 +319,13 @@ def sophos_firewall_url_group_add_command(client: Client, params: dict) -> Comma
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,  # type: ignore
-                                URL_GROUP['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        URL_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        url_group_builder,  # type: ignore
+        URL_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_url_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -336,8 +338,14 @@ def sophos_firewall_url_group_update_command(client: Client, params: dict) -> Co
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, URL_GROUP['endpoint_tag'], params, url_group_builder,  # type: ignore
-                                URL_GROUP['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        URL_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        url_group_builder,  # type: ignore
+        URL_GROUP["table_headers"],  # type: ignore
+        True,
+    )  # type: ignore
 
 
 def sophos_firewall_url_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -350,7 +358,7 @@ def sophos_firewall_url_group_delete_command(client: Client, name: str) -> Comma
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, URL_GROUP['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, URL_GROUP["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_ip_host_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -390,8 +398,13 @@ def sophos_firewall_ip_host_add_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,  # type: ignore
-                                IP_HOST['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        IP_HOST["endpoint_tag"],  # type: ignore
+        params,
+        ip_host_builder,  # type: ignore
+        IP_HOST["table_headers"],  # type: ignore
+    )  # type: ignore
 
 
 def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> CommandResults:
@@ -404,8 +417,14 @@ def sophos_firewall_ip_host_update_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST['endpoint_tag'], params, ip_host_builder,  # type: ignore
-                                IP_HOST['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        IP_HOST["endpoint_tag"],  # type: ignore
+        params,
+        ip_host_builder,  # type: ignore
+        IP_HOST["table_headers"],  # type: ignore
+        True,
+    )
 
 
 def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> CommandResults:
@@ -418,11 +437,10 @@ def sophos_firewall_ip_host_delete_command(client: Client, name: str) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, IP_HOST['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, IP_HOST["endpoint_tag"])  # type: ignore
 
 
-def sophos_firewall_ip_host_group_list_command(client: Client, start: int,
-                                               end: int) -> CommandResults:
+def sophos_firewall_ip_host_group_list_command(client: Client, start: int, end: int) -> CommandResults:
     """List IP host group objects
 
     Args:
@@ -459,8 +477,13 @@ def sophos_firewall_ip_host_group_add_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,  # type: ignore
-                                IP_HOST_GROUP['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        IP_HOST_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        ip_host_group_builder,  # type: ignore
+        IP_HOST_GROUP["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -> CommandResults:
@@ -473,8 +496,14 @@ def sophos_firewall_ip_host_group_update_command(client: Client, params: dict) -
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, IP_HOST_GROUP['endpoint_tag'], params, ip_host_group_builder,  # type: ignore
-                                IP_HOST_GROUP['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        IP_HOST_GROUP["endpoint_tag"],  # type: ignore
+        params,
+        ip_host_group_builder,  # type: ignore
+        IP_HOST_GROUP["table_headers"],  # type: ignore
+        True,
+    )
 
 
 def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> CommandResults:
@@ -487,7 +516,7 @@ def sophos_firewall_ip_host_group_delete_command(client: Client, name: str) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, IP_HOST_GROUP['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, IP_HOST_GROUP["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_services_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -527,8 +556,13 @@ def sophos_firewall_services_add_command(client: Client, params: dict) -> Comman
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,  # type: ignore
-                                SERVICE['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        SERVICE["endpoint_tag"],  # type: ignore
+        params,
+        service_builder,  # type: ignore
+        SERVICE["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_services_update_command(client: Client, params: dict) -> CommandResults:
@@ -541,8 +575,14 @@ def sophos_firewall_services_update_command(client: Client, params: dict) -> Com
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, SERVICE['endpoint_tag'], params, service_builder,  # type: ignore
-                                SERVICE['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        SERVICE["endpoint_tag"],  # type: ignore
+        params,
+        service_builder,  # type: ignore
+        SERVICE["table_headers"],  # type: ignore
+        True,
+    )  # type: ignore
 
 
 def sophos_firewall_services_delete_command(client: Client, name: str) -> CommandResults:
@@ -555,7 +595,7 @@ def sophos_firewall_services_delete_command(client: Client, name: str) -> Comman
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, SERVICE['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, SERVICE["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_app_policy_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -595,8 +635,13 @@ def sophos_firewall_app_policy_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,  # type: ignore
-                                APP_POLICY['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        APP_POLICY["endpoint_tag"],  # type: ignore
+        params,
+        app_policy_builder,  # type: ignore
+        APP_POLICY["table_headers"],  # type: ignore
+    )
 
 
 def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> CommandResults:
@@ -609,8 +654,14 @@ def sophos_firewall_app_policy_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_POLICY['endpoint_tag'], params, app_policy_builder,  # type: ignore
-                                APP_POLICY['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        APP_POLICY["endpoint_tag"],  # type: ignore
+        params,
+        app_policy_builder,  # type: ignore
+        APP_POLICY["table_headers"],  # type: ignore
+        True,
+    )  # type: ignore
 
 
 def sophos_firewall_app_policy_delete_command(client: Client, name: str) -> CommandResults:
@@ -623,11 +674,10 @@ def sophos_firewall_app_policy_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, APP_POLICY['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, APP_POLICY["endpoint_tag"])  # type: ignore
 
 
-def sophos_firewall_app_category_list_command(client: Client, start: int,
-                                              end: int) -> CommandResults:
+def sophos_firewall_app_category_list_command(client: Client, start: int, end: int) -> CommandResults:
     """List app category objects
 
     Args:
@@ -664,8 +714,13 @@ def sophos_firewall_app_category_update_command(client: Client, params: dict) ->
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, APP_CATEGORY['endpoint_tag'], params, app_category_builder,  # type: ignore
-                                APP_CATEGORY['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        APP_CATEGORY["endpoint_tag"],  # type: ignore
+        params,
+        app_category_builder,  # type: ignore
+        APP_CATEGORY["table_headers"],  # type: ignore
+    )  # type: ignore
 
 
 def sophos_firewall_web_filter_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -705,8 +760,13 @@ def sophos_firewall_web_filter_add_command(client: Client, params: dict) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,  # type: ignore
-                                WEB_FILTER['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        WEB_FILTER["endpoint_tag"],  # type: ignore
+        params,
+        web_filter_builder,  # type: ignore
+        WEB_FILTER["table_headers"],  # type: ignore
+    )  # type: ignore
 
 
 def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> CommandResults:
@@ -719,8 +779,14 @@ def sophos_firewall_web_filter_update_command(client: Client, params: dict) -> C
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, WEB_FILTER['endpoint_tag'], params, web_filter_builder,  # type: ignore
-                                WEB_FILTER['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        WEB_FILTER["endpoint_tag"],  # type: ignore
+        params,
+        web_filter_builder,  # type: ignore
+        WEB_FILTER["table_headers"],  # type: ignore
+        True,
+    )  # type: ignore
 
 
 def sophos_firewall_web_filter_delete_command(client: Client, name: str) -> CommandResults:
@@ -733,7 +799,7 @@ def sophos_firewall_web_filter_delete_command(client: Client, name: str) -> Comm
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, WEB_FILTER['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, WEB_FILTER["endpoint_tag"])  # type: ignore
 
 
 def sophos_firewall_user_list_command(client: Client, start: int, end: int) -> CommandResults:
@@ -773,8 +839,13 @@ def sophos_firewall_user_add_command(client: Client, params: dict) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder,  # type: ignore
-                                USER['table_headers'])  # type: ignore
+    return generic_save_and_get(
+        client,
+        USER["endpoint_tag"],  # type: ignore
+        params,
+        user_builder,  # type: ignore
+        USER["table_headers"],  # type: ignore
+    )  # type: ignore
 
 
 def sophos_firewall_user_update_command(client: Client, params: dict) -> CommandResults:
@@ -787,8 +858,14 @@ def sophos_firewall_user_update_command(client: Client, params: dict) -> Command
     Returns:
         CommandResults: Command results object
     """
-    return generic_save_and_get(client, USER['endpoint_tag'], params, user_builder,  # type: ignore
-                                USER['table_headers'], True)  # type: ignore
+    return generic_save_and_get(
+        client,
+        USER["endpoint_tag"],  # type: ignore
+        params,
+        user_builder,  # type: ignore
+        USER["table_headers"],  # type: ignore
+        True,
+    )  # type: ignore
 
 
 def sophos_firewall_user_delete_command(client: Client, name: str) -> CommandResults:
@@ -801,7 +878,7 @@ def sophos_firewall_user_delete_command(client: Client, name: str) -> CommandRes
     Returns:
         CommandResults: Command results object
     """
-    return generic_delete(client, name, USER['endpoint_tag'])  # type: ignore
+    return generic_delete(client, name, USER["endpoint_tag"])  # type: ignore
 
 
 def test_module(client):
@@ -818,20 +895,19 @@ def test_module(client):
         result = client.validate()
         json_result = json.loads(xml2json(result.text))
 
-        status_message = retrieve_dict_item_recursively(json_result, 'status')
-        message = ''
+        status_message = retrieve_dict_item_recursively(json_result, "status")
+        message = ""
 
-        if status_message and 'Successful' in status_message:  # type: ignore
-            message = 'ok'
-        elif status_message and 'Authentication Failure' in status_message:  # type: ignore
-            message = 'Please check your credentials'
+        if status_message and "Successful" in status_message:  # type: ignore
+            message = "ok"
+        elif status_message and "Authentication Failure" in status_message:  # type: ignore
+            message = "Please check your credentials"
 
-        status_code = dict_safe_get(json_result, ['Response', 'Status', '@code'], 0)
+        status_code = dict_safe_get(json_result, ["Response", "Status", "@code"], 0)
         if status_code and int(status_code) >= 500:
-            status_message = retrieve_dict_item_recursively(json_result, '#text')
-            if status_message and 'enable the API Configuration' in status_message:  # type: ignore
-                message = 'Please enable API configuration from the webconsole ' \
-                          '(in Backup & firmware)'
+            status_message = retrieve_dict_item_recursively(json_result, "#text")
+            if status_message and "enable the API Configuration" in status_message:  # type: ignore
+                message = "Please enable API configuration from the webconsole (in Backup & firmware)"
             else:
                 message = status_message
         return message
@@ -851,47 +927,40 @@ def generic_delete(client: Client, name: str, endpoint_tag: str) -> CommandResul
     Returns:
         CommandResults: Command results object
     """
-    response = client.delete_request((endpoint_tag, {'Name': name}))
+    response = client.delete_request((endpoint_tag, {"Name": name}))
     response = json.loads(xml2json(response.text))
 
     check_error_on_response(response)  # type: ignore
 
-    delete_status = retrieve_dict_item_recursively(response, '#text')
+    delete_status = retrieve_dict_item_recursively(response, "#text")
 
-    old_context = demisto.dt(demisto.context(), f'SophosFirewall.{endpoint_tag}'
-                                                f'(val.Name == \'{name}\')')
-    if old_context:
-        if isinstance(old_context, list):
-            old_context = old_context[0]
+    old_context = demisto.dt(demisto.context(), f"SophosFirewall.{endpoint_tag}(val.Name == '{name}')")
+    if old_context and isinstance(old_context, list):
+        old_context = old_context[0]
 
-    outputs = {
-        'Name': name,
-        'IsDeleted': False
-    }
+    outputs = {"Name": name, "IsDeleted": False}
 
     # check if there is a previous data about an object that has been deleted before,
     # and if not, update the IsDeleted field by the message that returns from the API
     if delete_status:
-        if old_context and old_context.get('IsDeleted'):
-            is_deleted = old_context['IsDeleted']
+        if old_context and old_context.get("IsDeleted"):
+            is_deleted = old_context["IsDeleted"]
         else:
-            is_deleted = True if 'successfully' in delete_status else False  # type: ignore
-        outputs['IsDeleted'] = is_deleted
+            is_deleted = "successfully" in delete_status  # type: ignore
+        outputs["IsDeleted"] = is_deleted
 
-    readable_output = tableToMarkdown(f'Deleting {endpoint_tag} Objects Results', outputs,
-                                      ['Name', 'IsDeleted'])
+    readable_output = tableToMarkdown(f"Deleting {endpoint_tag} Objects Results", outputs, ["Name", "IsDeleted"])
 
     return CommandResults(
-        outputs_prefix=f'SophosFirewall.{endpoint_tag}',
-        outputs_key_field='Name',
+        outputs_prefix=f"SophosFirewall.{endpoint_tag}",
+        outputs_key_field="Name",
         outputs=outputs,
         raw_response=response,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
-def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dict,
-                     endpoint_tag: str) -> dict:
+def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dict, endpoint_tag: str) -> dict:
     """This function used when update is needed.
     The steps for updating the object is as the following:
     1. Retrieve the object from the API
@@ -934,8 +1003,9 @@ def merge_for_update(client: Client, name: str, data: dict, keys_for_update: dic
     return data
 
 
-def prepare_builder_params(client: Client, keys: dict, is_for_update: bool, name: str,
-                           endpoint_tag: str, locals_copy: dict) -> dict:
+def prepare_builder_params(
+    client: Client, keys: dict, is_for_update: bool, name: str, endpoint_tag: str, locals_copy: dict
+) -> dict:
     """prepare the list of objects for the builder - get the params for locals(),
     split it into list, and return the params after the merge with the new
     object was done (if the is_for_update flag is True)
@@ -982,34 +1052,58 @@ def update_dict_from_params_using_path(keys_to_update: dict, params: dict, data:
         path = keys_to_update[key]
         # check that there is at least 2 fields for adding the data
         if len(path) >= 2:
-            data[f'{path[0]}'] = {
-                f'{path[1]}': params.get(key)
-            }
+            data[f"{path[0]}"] = {f"{path[1]}": params.get(key)}
     return data
 
 
-def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: str,
-                 policy_type: str = None,
-                 position: str = None, description: str = None, status: str = None,
-                 ip_family: str = None, position_policy_name: str = None,
-                 source_zones: str = None, source_networks: str = None,  # pylint: disable=unused-argument
-                 destination_zones: str = None, destination_networks: str = None,  # pylint: disable=unused-argument
-                 services: str = None, members: str = None,  # pylint: disable=unused-argument
-                 log_traffic: str = None, match_identity: str = None,
-                 show_captive_portal: str = None, schedule: str = None,
-                 action: str = None, dscp_marking: str = None,
-                 application_control: str = None, application_based_qos_policy: str = None,
-                 web_filter: str = None, web_category_base_qos_policy: str = None,
-                 intrusion_prevention: str = None, traffic_shapping_policy: str = None,
-                 apply_nat: str = None, override_gateway_default_nat_policy: str = None,
-                 scan_http: str = None, scan_https: str = None, sandstorm: str = None,
-                 block_quick_quic: str = None, scan_ftp: str = None,
-                 source_security_heartbeat: str = None, minimum_source_hb_permitted: str = None,
-                 destination_security_heartbeat: str = None, rewrite_source_address: str = None,
-                 minimum_destination_hb_permitted: str = None, data_accounting: str = None,
-                 application_control_internet_scheme: str = None,
-                 web_filter_internet_scheme: str = None, outbound_address: str = None,
-                 backup_gateway: str = None, primary_gateway: str = None) -> dict:
+def rule_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    policy_type: str = None,
+    position: str = None,
+    description: str = None,
+    status: str = None,
+    ip_family: str = None,
+    position_policy_name: str = None,
+    source_zones: str = None,
+    source_networks: str = None,  # pylint: disable=unused-argument
+    destination_zones: str = None,
+    destination_networks: str = None,  # pylint: disable=unused-argument
+    services: str = None,
+    members: str = None,  # pylint: disable=unused-argument
+    log_traffic: str = None,
+    match_identity: str = None,
+    show_captive_portal: str = None,
+    schedule: str = None,
+    action: str = None,
+    dscp_marking: str = None,
+    application_control: str = None,
+    application_based_qos_policy: str = None,
+    web_filter: str = None,
+    web_category_base_qos_policy: str = None,
+    intrusion_prevention: str = None,
+    traffic_shapping_policy: str = None,
+    apply_nat: str = None,
+    override_gateway_default_nat_policy: str = None,
+    scan_http: str = None,
+    scan_https: str = None,
+    sandstorm: str = None,
+    block_quick_quic: str = None,
+    scan_ftp: str = None,
+    source_security_heartbeat: str = None,
+    minimum_source_hb_permitted: str = None,
+    destination_security_heartbeat: str = None,
+    rewrite_source_address: str = None,
+    minimum_destination_hb_permitted: str = None,
+    data_accounting: str = None,
+    application_control_internet_scheme: str = None,
+    web_filter_internet_scheme: str = None,
+    outbound_address: str = None,
+    backup_gateway: str = None,
+    primary_gateway: str = None,
+) -> dict:
     """The builder of the rule object - build the body of the request
 
     Args:
@@ -1075,77 +1169,83 @@ def rule_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: s
         dict: returned built dictionary
     """
     keys_for_update = {
-        'members': ['Identity', 'Member'],
-        'source_zones': ['SourceZones', 'Zone'],
-        'source_networks': ['SourceNetworks', 'Network'],
-        'destination_zones': ['DestinationZones', 'Zone'],
-        'destination_networks': ['DestinationNetworks', 'Network'],
-        'services': ['Services', 'Service'],
+        "members": ["Identity", "Member"],
+        "source_zones": ["SourceZones", "Zone"],
+        "source_networks": ["SourceNetworks", "Network"],
+        "destination_zones": ["DestinationZones", "Zone"],
+        "destination_networks": ["DestinationNetworks", "Network"],
+        "services": ["Services", "Service"],
     }
 
-    params = prepare_builder_params(client, keys_for_update, is_for_update, name,
-                                    endpoint_tag, locals())
+    params = prepare_builder_params(client, keys_for_update, is_for_update, name, endpoint_tag, locals())
     if is_for_update:
         response = client.get_item_by_name(endpoint_tag, name)
         response = json.loads(xml2json(response.text))
         check_error_on_response(response)  # type: ignore
-        policy_type = retrieve_dict_item_recursively(response, 'PolicyType')
+        policy_type = retrieve_dict_item_recursively(response, "PolicyType")
 
     json_data = {
-        'Name': name,
-        'Description': description,
-        'Status': status,
-        'IPFamily': ip_family,
-        'PolicyType': policy_type,
-        'Position': position,
-        'Schedule': schedule,
-        'MatchIdentity': match_identity,
-        'ShowCaptivePortal': show_captive_portal,
-        'Action': action,
-        'DSCPMarking': dscp_marking,
-        'LogTraffic': log_traffic,
-        'ApplyNAT': apply_nat,
-        'ScanHTTP': scan_http,
-        'ScanHTTPS': scan_https,
-        'Sandstorm': sandstorm,
-        'BlockQuickQuic': block_quick_quic,
-        'ScanFTP': scan_ftp,
-        'DataAccounting': data_accounting,
-        'PrimaryGateway': primary_gateway,
-        'RewriteSourceAddress': rewrite_source_address,
-        'ApplicationControl': application_control,
-        'ApplicationControlInternetScheme': application_control_internet_scheme,
-        'ApplicationBaseQoSPolicy': application_based_qos_policy,
-        'WebFilter': web_filter,
-        'WebFilterInternetScheme': web_filter_internet_scheme,
-        'WebCategoryBaseQoSPolicy': web_category_base_qos_policy,
-        'IntrusionPrevention': intrusion_prevention,
-        'TrafficShappingPolicy': traffic_shapping_policy,
-        'OverrideGatewayDefaultNATPolicy': override_gateway_default_nat_policy,
-        'SourceSecurityHeartbeat': source_security_heartbeat,
-        'MinimumSourceHBPermitted': minimum_source_hb_permitted,
-        'DestSecurityHeartbeat': destination_security_heartbeat,
-        'MinimumDestinationHBPermitted': minimum_destination_hb_permitted,
-        'OutboundAddress': outbound_address,
-        'BackupGateway': backup_gateway
+        "Name": name,
+        "Description": description,
+        "Status": status,
+        "IPFamily": ip_family,
+        "PolicyType": policy_type,
+        "Position": position,
+        "Schedule": schedule,
+        "MatchIdentity": match_identity,
+        "ShowCaptivePortal": show_captive_portal,
+        "Action": action,
+        "DSCPMarking": dscp_marking,
+        "LogTraffic": log_traffic,
+        "ApplyNAT": apply_nat,
+        "ScanHTTP": scan_http,
+        "ScanHTTPS": scan_https,
+        "Sandstorm": sandstorm,
+        "BlockQuickQuic": block_quick_quic,
+        "ScanFTP": scan_ftp,
+        "DataAccounting": data_accounting,
+        "PrimaryGateway": primary_gateway,
+        "RewriteSourceAddress": rewrite_source_address,
+        "ApplicationControl": application_control,
+        "ApplicationControlInternetScheme": application_control_internet_scheme,
+        "ApplicationBaseQoSPolicy": application_based_qos_policy,
+        "WebFilter": web_filter,
+        "WebFilterInternetScheme": web_filter_internet_scheme,
+        "WebCategoryBaseQoSPolicy": web_category_base_qos_policy,
+        "IntrusionPrevention": intrusion_prevention,
+        "TrafficShappingPolicy": traffic_shapping_policy,
+        "OverrideGatewayDefaultNATPolicy": override_gateway_default_nat_policy,
+        "SourceSecurityHeartbeat": source_security_heartbeat,
+        "MinimumSourceHBPermitted": minimum_source_hb_permitted,
+        "DestSecurityHeartbeat": destination_security_heartbeat,
+        "MinimumDestinationHBPermitted": minimum_destination_hb_permitted,
+        "OutboundAddress": outbound_address,
+        "BackupGateway": backup_gateway,
     }
-    if (position == 'after' or position == 'before') and not position_policy_name:
-        raise Exception('please provide position_policy_name')
+    if (position == "after" or position == "before") and not position_policy_name:
+        raise Exception("please provide position_policy_name")
 
-    if position == 'after':
-        json_data['After'] = {'Name': position_policy_name}  # type: ignore
+    if position == "after":
+        json_data["After"] = {"Name": position_policy_name}  # type: ignore
 
-    elif position == 'before':
-        json_data['Before'] = {'Name': position_policy_name}  # type: ignore
+    elif position == "before":
+        json_data["Before"] = {"Name": position_policy_name}  # type: ignore
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
-def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: str,
-                       destination_zones: str = None, source_zones: str = None,
-                       rules: str = None,  # pylint: disable=unused-argument
-                       policy_type: str = None, description: str = None) -> dict:
+def rule_group_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    destination_zones: str = None,
+    source_zones: str = None,
+    rules: str = None,  # pylint: disable=unused-argument
+    policy_type: str = None,
+    description: str = None,
+) -> dict:
     """Rule group object builder.
 
     Args:
@@ -1163,28 +1263,33 @@ def rule_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, n
         dict: returned built dictionary
     """
     keys_for_update = {
-        'rules': ['SecurityPolicyList', 'SecurityPolicy'],
-        'source_zones': ['SourceZones', 'Zone'],
-        'destination_zones': ['DestinationZones', 'Zone'],
+        "rules": ["SecurityPolicyList", "SecurityPolicy"],
+        "source_zones": ["SourceZones", "Zone"],
+        "destination_zones": ["DestinationZones", "Zone"],
     }
 
-    params = prepare_builder_params(client, keys_for_update, is_for_update, name,
-                                    endpoint_tag, locals())
+    params = prepare_builder_params(client, keys_for_update, is_for_update, name, endpoint_tag, locals())
 
-    json_data = {
-        'Name': name,
-        'Description': description,
-        'PolicyType': policy_type
-    }
+    json_data = {"Name": name, "Description": description, "PolicyType": policy_type}
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
-def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                    name: str, host_type: str = None, ip_address: str = None, start_ip: str = None,
-                    end_ip: str = None, ip_addresses: str = None, subnet_mask: str = None,
-                    ip_family: str = None, host_group: str = None) -> dict:  # pylint: disable=unused-argument
+def ip_host_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    host_type: str = None,
+    ip_address: str = None,
+    start_ip: str = None,
+    end_ip: str = None,
+    ip_addresses: str = None,
+    subnet_mask: str = None,
+    ip_family: str = None,
+    host_group: str = None,
+) -> dict:  # pylint: disable=unused-argument
     """Builder for the IP host object - build the body of the request
 
     Args:
@@ -1211,51 +1316,51 @@ def ip_host_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         dict: returned built dictionary
     """
     keys_for_update = {
-        'host_group': ['HostGroupList', 'HostGroup'],
+        "host_group": ["HostGroupList", "HostGroup"],
     }
 
-    params = prepare_builder_params(client, keys_for_update, is_for_update, name,
-                                    endpoint_tag, locals())
+    params = prepare_builder_params(client, keys_for_update, is_for_update, name, endpoint_tag, locals())
     if is_for_update:
         response = client.get_item_by_name(endpoint_tag, name)
         response = json.loads(xml2json(response.text))
         check_error_on_response(response)  # type: ignore
-        host_type = retrieve_dict_item_recursively(response, 'HostType')
+        host_type = retrieve_dict_item_recursively(response, "HostType")
 
     json_data = {
-        'Name': name,
-        'IPFamily': ip_family,
-        'HostType': host_type,
+        "Name": name,
+        "IPFamily": ip_family,
+        "HostType": host_type,
     }
 
-    if host_type == 'IP':
+    if host_type == "IP":
         if not ip_address:
-            raise Exception('Please provide an IP address')
-        json_data['IPAddress'] = ip_address
+            raise Exception("Please provide an IP address")
+        json_data["IPAddress"] = ip_address
 
-    elif host_type == 'Network':
+    elif host_type == "Network":
         if not (ip_address and subnet_mask):
-            raise Exception('Please provide an IP address and subnet mask')
-        json_data['IPAddress'] = ip_address
-        json_data['Subnet'] = subnet_mask
+            raise Exception("Please provide an IP address and subnet mask")
+        json_data["IPAddress"] = ip_address
+        json_data["Subnet"] = subnet_mask
 
-    elif host_type == 'IPRange':
+    elif host_type == "IPRange":
         if not (start_ip and end_ip):
-            raise Exception('Please provide start IP and end ip')
-        json_data['StartIPAddress'] = start_ip
-        json_data['EndIPAddress'] = end_ip
+            raise Exception("Please provide start IP and end ip")
+        json_data["StartIPAddress"] = start_ip
+        json_data["EndIPAddress"] = end_ip
 
     else:  # host_type == 'IPList'
         if not ip_addresses:
-            raise Exception('Please provide an ip_addresses')
-        json_data['ListOfIPAddresses'] = ip_addresses
+            raise Exception("Please provide an ip_addresses")
+        json_data["ListOfIPAddresses"] = ip_addresses
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
-def url_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, name: str,
-                      description: str = None, urls: str = None) -> dict:  # pylint: disable=unused-argument
+def url_group_builder(
+    client: Client, is_for_update: bool, endpoint_tag: str, name: str, description: str = None, urls: str = None
+) -> dict:  # pylint: disable=unused-argument
     """Builder for the URL group object - build the body of the request
 
     Args:
@@ -1270,24 +1375,29 @@ def url_group_builder(client: Client, is_for_update: bool, endpoint_tag: str, na
         dict: returned built dictionary
     """
     keys_for_update = {
-        'urls': ['URLlist', 'URL'],
+        "urls": ["URLlist", "URL"],
     }
 
-    params = prepare_builder_params(client, keys_for_update, is_for_update, name,
-                                    endpoint_tag, locals())
+    params = prepare_builder_params(client, keys_for_update, is_for_update, name, endpoint_tag, locals())
 
     json_data = {
-        'Name': name,
-        'Description': description,
+        "Name": name,
+        "Description": description,
     }
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
-def ip_host_group_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                          name: str, description: str = None, ip_family: str = None,
-                          hosts: str = None) -> dict:  # pylint: disable=unused-argument
+def ip_host_group_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    description: str = None,
+    ip_family: str = None,
+    hosts: str = None,
+) -> dict:  # pylint: disable=unused-argument
     """Builder for the IP host group - build the body of the request
 
     Args:
@@ -1303,27 +1413,36 @@ def ip_host_group_builder(client: Client, is_for_update: bool, endpoint_tag: str
         dict: returned built dictionary
     """
     keys_for_update = {
-        'hosts': ['HostList', 'Host'],
+        "hosts": ["HostList", "Host"],
     }
 
-    params = prepare_builder_params(client, keys_for_update, is_for_update, name,
-                                    endpoint_tag, locals())
+    params = prepare_builder_params(client, keys_for_update, is_for_update, name, endpoint_tag, locals())
 
     json_data = {
-        'Name': name,
-        'IPFamily': ip_family,
-        'Description': description,
+        "Name": name,
+        "IPFamily": ip_family,
+        "Description": description,
     }
 
     json_data = update_dict_from_params_using_path(keys_for_update, params, json_data)
     return remove_empty_elements(json_data)
 
 
-def service_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                    name: str, service_type: str, protocol: str = None, source_port: int = None,
-                    destination_port: int = None, protocol_name: str = None,
-                    icmp_type: str = None, icmp_code: str = None,
-                    icmp_v6_type: str = None, icmp_v6_code: str = None) -> dict:
+def service_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    service_type: str,
+    protocol: str = None,
+    source_port: int = None,
+    destination_port: int = None,
+    protocol_name: str = None,
+    icmp_type: str = None,
+    icmp_code: str = None,
+    icmp_v6_type: str = None,
+    icmp_v6_code: str = None,
+) -> dict:
     """Builder for the service object - build the body of the request
 
     Args:
@@ -1357,72 +1476,76 @@ def service_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         previous_object = json.loads(xml2json(previous_object.text))
 
         check_error_on_response(previous_object)  # type: ignore
-        service_type = retrieve_dict_item_recursively(previous_object, 'Type')
+        service_type = retrieve_dict_item_recursively(previous_object, "Type")
 
-        previous_service_details = retrieve_dict_item_recursively(previous_object, 'ServiceDetail')
+        previous_service_details = retrieve_dict_item_recursively(previous_object, "ServiceDetail")
         if not previous_service_details:
             previous_service_details = []
         elif not isinstance(previous_service_details, list):
             previous_service_details = [previous_service_details]
 
     json_data = {
-        'Name': name,
-        'Type': service_type,
+        "Name": name,
+        "Type": service_type,
     }
 
-    if service_type == 'TCPorUDP':
+    if service_type == "TCPorUDP":
         if not (protocol and source_port and destination_port):
-            raise Exception('Please provide protocol, source_port and destination_port')
-        service_details = {
-            'Protocol': protocol,
-            'SourcePort': source_port,
-            'DestinationPort': destination_port
-        }
+            raise Exception("Please provide protocol, source_port and destination_port")
+        service_details = {"Protocol": protocol, "SourcePort": source_port, "DestinationPort": destination_port}
 
-    elif service_type == 'IP':
+    elif service_type == "IP":
         if not protocol_name:
-            raise Exception('Please provide protocol_name')
-        service_details = {
-            'ProtocolName': protocol_name
-        }
+            raise Exception("Please provide protocol_name")
+        service_details = {"ProtocolName": protocol_name}
 
-    elif service_type == 'ICMP':
+    elif service_type == "ICMP":
         if not (icmp_type and icmp_code):
-            raise Exception('Please provide icmp_type and icmp_code')
-        service_details = {
-            'ICMPType': icmp_type,
-            'ICMPCode': icmp_code
-        }
+            raise Exception("Please provide icmp_type and icmp_code")
+        service_details = {"ICMPType": icmp_type, "ICMPCode": icmp_code}
 
     else:  # type == 'ICMPv6'
         if not (icmp_v6_type and icmp_v6_code):
-            raise Exception('Please provide icmp_v6_type and icmp_v6_code')
-        service_details = {
-            'ICMPv6Type': icmp_v6_type,
-            'ICMPv6Code': icmp_v6_code
-        }
+            raise Exception("Please provide icmp_v6_type and icmp_v6_code")
+        service_details = {"ICMPv6Type": icmp_v6_type, "ICMPv6Code": icmp_v6_code}
 
     previous_service_details.append(service_details)
-    json_data.update({
-        'ServiceDetails': {  # type: ignore
-            'ServiceDetail': previous_service_details
+    json_data.update(
+        {
+            "ServiceDetails": {  # type: ignore
+                "ServiceDetail": previous_service_details
+            }
         }
-    })
+    )
     return remove_empty_elements(json_data)
 
 
-def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                       name: str, default_action: str = None, description: str = None,
-                       download_file_size_restriction_enabled: str = None,
-                       download_file_size_restriction: int = None, enable_reporting: str = None,
-                       goog_app_domain_list_enabled: str = None, goog_app_domain_list: str = None,
-                       youtube_filter_enabled: str = None, youtube_filter_is_strict: str = None,
-                       enforce_safe_search: str = None, enforce_image_licensing: str = None,
-                       url_group_names: str = None, http_action: str = None,
-                       https_action: str = None, schedule: str = None,
-                       policy_rule_enabled: str = None, user_names: str = None,
-                       ccl_names: str = None, ccl_rule_enabled: str = None,
-                       follow_http_action: str = None) -> dict:
+def web_filter_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    default_action: str = None,
+    description: str = None,
+    download_file_size_restriction_enabled: str = None,
+    download_file_size_restriction: int = None,
+    enable_reporting: str = None,
+    goog_app_domain_list_enabled: str = None,
+    goog_app_domain_list: str = None,
+    youtube_filter_enabled: str = None,
+    youtube_filter_is_strict: str = None,
+    enforce_safe_search: str = None,
+    enforce_image_licensing: str = None,
+    url_group_names: str = None,
+    http_action: str = None,
+    https_action: str = None,
+    schedule: str = None,
+    policy_rule_enabled: str = None,
+    user_names: str = None,
+    ccl_names: str = None,
+    ccl_rule_enabled: str = None,
+    follow_http_action: str = None,
+) -> dict:
     """Builder for web filter object
 
     Args:
@@ -1466,51 +1589,47 @@ def web_filter_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         previous_object = json.loads(xml2json(previous_object.text))
         check_error_on_response(previous_object)  # type: ignore
 
-        previous_rules_details = retrieve_dict_item_recursively(previous_object, 'Rule')
+        previous_rules_details = retrieve_dict_item_recursively(previous_object, "Rule")
         if not previous_rules_details:
             previous_rules_details = []
         elif not isinstance(previous_rules_details, list):
             previous_rules_details = [previous_rules_details]
     json_data = {
-        'Name': name,
-        'Description': description,
-        'DefaultAction': default_action,
-        'EnableReporting': enable_reporting,
-        'DownloadFileSizeRestriction': download_file_size_restriction,
-        'DownloadFileSizeRestrictionEnabled': download_file_size_restriction_enabled,
-        'GoogAppDomainListEnabled': goog_app_domain_list_enabled,
-        'GoogAppDomainList': argToList(goog_app_domain_list),
-        'YoutubeFilterEnabled': youtube_filter_enabled,
-        'YoutubeFilterIsStrict': youtube_filter_is_strict,
-        'EnforceSafeSearch': enforce_safe_search,
-        'EnforceImageLicensing': enforce_image_licensing,
+        "Name": name,
+        "Description": description,
+        "DefaultAction": default_action,
+        "EnableReporting": enable_reporting,
+        "DownloadFileSizeRestriction": download_file_size_restriction,
+        "DownloadFileSizeRestrictionEnabled": download_file_size_restriction_enabled,
+        "GoogAppDomainListEnabled": goog_app_domain_list_enabled,
+        "GoogAppDomainList": argToList(goog_app_domain_list),
+        "YoutubeFilterEnabled": youtube_filter_enabled,
+        "YoutubeFilterIsStrict": youtube_filter_is_strict,
+        "EnforceSafeSearch": enforce_safe_search,
+        "EnforceImageLicensing": enforce_image_licensing,
     }
 
-    categories = [{'ID': name, 'type': 'URLGroup'} for name in argToList(url_group_names)]
+    categories = [{"ID": name, "type": "URLGroup"} for name in argToList(url_group_names)]
     rule_details = {
-        'PolicyRuleEnabled': policy_rule_enabled,
-        'CCLRuleEnabled': ccl_rule_enabled,
-        'FollowHTTPAction': follow_http_action,
-        'CategoryList': {
-            'Category': categories
-        },
-        'HTTPAction': http_action,
-        'HTTPSAction': https_action,
-        'Schedule': schedule,
-        'UserList': {
-            'User': argToList(user_names)
-        },
-        'CCLList': {
-            'CCL': argToList(ccl_names)
-        }
+        "PolicyRuleEnabled": policy_rule_enabled,
+        "CCLRuleEnabled": ccl_rule_enabled,
+        "FollowHTTPAction": follow_http_action,
+        "CategoryList": {"Category": categories},
+        "HTTPAction": http_action,
+        "HTTPSAction": https_action,
+        "Schedule": schedule,
+        "UserList": {"User": argToList(user_names)},
+        "CCLList": {"CCL": argToList(ccl_names)},
     }
 
     previous_rules_details.append(rule_details)
-    json_data.update({
-        'RuleList': {  # type: ignore
-            'Rule': previous_rules_details
+    json_data.update(
+        {
+            "RuleList": {  # type: ignore
+                "Rule": previous_rules_details
+            }
         }
-    })
+    )
     return remove_empty_elements(json_data)
 
 
@@ -1526,19 +1645,31 @@ def app_category_builder(name: str, description: str = None, qos_policy: str = N
         dict: returned built dictionary
     """
     json_data = {
-        'Name': name,
-        'Description': description,
-        'QoSPolicy': qos_policy,
+        "Name": name,
+        "Description": description,
+        "QoSPolicy": qos_policy,
     }
     return remove_empty_elements(json_data)
 
 
-def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
-                       name: str, description: str = None, micro_app_support: str = None,
-                       default_action: str = None, select_all: str = None, categories: str = None,
-                       risks: str = None, applications: str = None, characteristics: str = None,
-                       technologies: str = None, classifications: str = None,
-                       action: str = None, schedule: str = None) -> dict:
+def app_policy_builder(
+    client: Client,
+    is_for_update: bool,
+    endpoint_tag: str,
+    name: str,
+    description: str = None,
+    micro_app_support: str = None,
+    default_action: str = None,
+    select_all: str = None,
+    categories: str = None,
+    risks: str = None,
+    applications: str = None,
+    characteristics: str = None,
+    technologies: str = None,
+    classifications: str = None,
+    action: str = None,
+    schedule: str = None,
+) -> dict:
     """Builder for the app policy object - build the body of the request
 
     Args:
@@ -1569,58 +1700,60 @@ def app_policy_builder(client: Client, is_for_update: bool, endpoint_tag: str,
         previous_object = json.loads(xml2json(previous_object.text))
         check_error_on_response(previous_object)  # type: ignore
 
-        previous_rules_details = retrieve_dict_item_recursively(previous_object, 'Rule')
+        previous_rules_details = retrieve_dict_item_recursively(previous_object, "Rule")
         if not previous_rules_details:
             previous_rules_details = []
         elif not isinstance(previous_rules_details, list):
             previous_rules_details = [previous_rules_details]
     json_data = {
-        'Name': name,
-        'Description': description,
-        'MicroAppSupport': micro_app_support,
-        'DefaultAction': default_action,
+        "Name": name,
+        "Description": description,
+        "MicroAppSupport": micro_app_support,
+        "DefaultAction": default_action,
     }
 
     rule_details = {
-        'SelectAllRule': select_all,
-        'CategoryList': {
-            'Category': argToList(categories)
-        },
-        'RiskList': {
-            'Risk': argToList(risks)
-        },
-        'CharacteristicsList': {
-            'Characteristics': argToList(characteristics)
-        },
-        'TechnologyList': {
-            'Technology': argToList(technologies)
-        },
-        'ClassificationList': {
-            'Classification': argToList(classifications)
-        },
-        'ApplicationList': {
-            'Application': argToList(applications)
-        },
-        'Action': action,
-        'Schedule': schedule,
+        "SelectAllRule": select_all,
+        "CategoryList": {"Category": argToList(categories)},
+        "RiskList": {"Risk": argToList(risks)},
+        "CharacteristicsList": {"Characteristics": argToList(characteristics)},
+        "TechnologyList": {"Technology": argToList(technologies)},
+        "ClassificationList": {"Classification": argToList(classifications)},
+        "ApplicationList": {"Application": argToList(applications)},
+        "Action": action,
+        "Schedule": schedule,
     }
 
     previous_rules_details.append(rule_details)
-    json_data.update({
-        'RuleList': {  # type: ignore
-            'Rule': previous_rules_details
+    json_data.update(
+        {
+            "RuleList": {  # type: ignore
+                "Rule": previous_rules_details
+            }
         }
-    })
+    )
     return remove_empty_elements(json_data)
 
 
-def user_builder(name: str, username: str, email: str = None, password: str = None,
-                 description: str = None, group: str = None, user_type: str = None,
-                 profile: str = None, surfing_quota_policy: str = None,
-                 access_time_policy: str = None, ssl_vpn_policy: str = None,
-                 clientless_policy: str = None, data_transfer_policy: str = None,
-                 simultaneous_logins_global: str = None, schedule_for_appliance_access: str = None,
-                 qos_policy: str = None, login_restriction: str = None) -> dict:
+def user_builder(
+    name: str,
+    username: str,
+    email: str = None,
+    password: str = None,
+    description: str = None,
+    group: str = None,
+    user_type: str = None,
+    profile: str = None,
+    surfing_quota_policy: str = None,
+    access_time_policy: str = None,
+    ssl_vpn_policy: str = None,
+    clientless_policy: str = None,
+    data_transfer_policy: str = None,
+    simultaneous_logins_global: str = None,
+    schedule_for_appliance_access: str = None,
+    qos_policy: str = None,
+    login_restriction: str = None,
+) -> dict:
     """Builder for the user object - build the body of the request
 
     Args:
@@ -1650,28 +1783,26 @@ def user_builder(name: str, username: str, email: str = None, password: str = No
     Returns:
         dict: returned built dictionary
     """
-    if user_type == 'Administrator' and not profile:
-        raise Exception('Administrator type was selected. Please provide profile.')
+    if user_type == "Administrator" and not profile:
+        raise Exception("Administrator type was selected. Please provide profile.")
     json_data = {
-        'Username': username,
-        'Name': name,
-        'Password': password,
-        'UserType': user_type,
-        'Profile': profile,
-        'EmailList': {
-            'EmailID': email
-        },
-        'Group': group,
-        'Description': description,
-        'SurfingQuotaPolicy': surfing_quota_policy,
-        'AccessTimePolicy': access_time_policy,
-        'SSLVPNPolicy': ssl_vpn_policy,
-        'ClientlessPolicy': clientless_policy,
-        'DataTransferPolicy': data_transfer_policy,
-        'SimultaneousLoginsGlobal': simultaneous_logins_global,
-        'ScheduleForApplianceAccess': schedule_for_appliance_access,
-        'QoSPolicy': qos_policy,
-        'LoginRestriction': login_restriction,
+        "Username": username,
+        "Name": name,
+        "Password": password,
+        "UserType": user_type,
+        "Profile": profile,
+        "EmailList": {"EmailID": email},
+        "Group": group,
+        "Description": description,
+        "SurfingQuotaPolicy": surfing_quota_policy,
+        "AccessTimePolicy": access_time_policy,
+        "SSLVPNPolicy": ssl_vpn_policy,
+        "ClientlessPolicy": clientless_policy,
+        "DataTransferPolicy": data_transfer_policy,
+        "SimultaneousLoginsGlobal": simultaneous_logins_global,
+        "ScheduleForApplianceAccess": schedule_for_appliance_access,
+        "QoSPolicy": qos_policy,
+        "LoginRestriction": login_restriction,
     }
     return remove_empty_elements(json_data)
 
@@ -1686,19 +1817,19 @@ def check_error_on_response(response: dict) -> None:
         Exception: if there if an error in the response
         Exception: if there are no records on list or get
     """
-    response_message = retrieve_dict_item_recursively(response, '#text')
-    response_code = retrieve_dict_item_recursively(response, '@code')
-    response_status = retrieve_dict_item_recursively(response, 'Status')
+    response_message = retrieve_dict_item_recursively(response, "#text")
+    response_code = retrieve_dict_item_recursively(response, "@code")
+    response_status = retrieve_dict_item_recursively(response, "Status")
 
-    if response_message and 'successful' not in response_message:  # type: ignore
-        if response_code and int(response_code) > 299:
-            raise Exception(f'{response_message} (error code: {response_code})')
-    if response_status and 'No. of records Zero.' in response_status:  # type: ignore
+    if response_message and "successful" not in response_message and response_code and int(response_code) > 299:  # type: ignore
+        raise Exception(f"{response_message} (error code: {response_code})")
+    if response_status and "No. of records Zero." in response_status:  # type: ignore
         raise Exception(response_status)
 
 
-def generic_save_and_get(client: Client, endpoint_tag: str, params: dict, builder: Callable,
-                         table_headers: list, to_update: bool = False) -> CommandResults:
+def generic_save_and_get(
+    client: Client, endpoint_tag: str, params: dict, builder: Callable, table_headers: list, to_update: bool = False
+) -> CommandResults:
     """Generic function for add/update
 
     Args:
@@ -1717,16 +1848,15 @@ def generic_save_and_get(client: Client, endpoint_tag: str, params: dict, builde
         data = builder(**params)
     else:
         data = builder(client, to_update, endpoint_tag, **params)
-    operation = 'update' if to_update else 'add'
+    operation = "update" if to_update else "add"
     response = client.set_request((endpoint_tag, data), operation)
     response = json.loads(xml2json(response.text))
 
     check_error_on_response(response)  # type: ignore
-    return generic_get(client, params.get('name'), endpoint_tag, table_headers)  # type: ignore
+    return generic_get(client, params.get("name"), endpoint_tag, table_headers)  # type: ignore
 
 
-def generic_get(client: Client, name: str, endpoint_tag: str,
-                table_headers: list) -> CommandResults:
+def generic_get(client: Client, name: str, endpoint_tag: str, table_headers: list) -> CommandResults:
     """Generic get, returns an object based on the endpoint tag and the name
 
     Args:
@@ -1745,23 +1875,22 @@ def generic_get(client: Client, name: str, endpoint_tag: str,
 
     outputs = retrieve_dict_item_recursively(response, endpoint_tag)
     if outputs:
-        outputs.pop('@transactionid')  # type: ignore
-        outputs['IsDeleted'] = False  # type: ignore
+        outputs.pop("@transactionid")  # type: ignore
+        outputs["IsDeleted"] = False  # type: ignore
 
-    table_title = f'{endpoint_tag} Object details'
+    table_title = f"{endpoint_tag} Object details"
 
     readable_output = tableToMarkdown(table_title, outputs, table_headers, removeNull=True)
     return CommandResults(
-        outputs_prefix=f'SophosFirewall.{endpoint_tag}',
-        outputs_key_field='Name',
+        outputs_prefix=f"SophosFirewall.{endpoint_tag}",
+        outputs_key_field="Name",
         raw_response=outputs,
         outputs=outputs,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
-def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
-                 table_headers: str) -> CommandResults:
+def generic_list(client: Client, start: int, end: int, endpoint_tag: str, table_headers: str) -> CommandResults:
     """Generic function for listing objects
 
     Args:
@@ -1777,14 +1906,14 @@ def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
     response = client.get_request((endpoint_tag, None))
     response = json.loads(xml2json(response.text))
 
-    outputs = dict_safe_get(response, ['Response', endpoint_tag])
+    outputs = dict_safe_get(response, ["Response", endpoint_tag])
 
     check_error_on_response(response)  # type: ignore
 
     outputs = outputs if isinstance(outputs, list) else [outputs]
     for output in outputs:
-        output.pop('@transactionid')
-        output['IsDeleted'] = False
+        output.pop("@transactionid")
+        output["IsDeleted"] = False
 
     start, end = int(start), int(end)
     len_outputs = len(outputs)
@@ -1792,15 +1921,15 @@ def generic_list(client: Client, start: int, end: int, endpoint_tag: str,
         end = len_outputs
     outputs = outputs[start:end]
 
-    table_title = f'Showing {start} to {end} {endpoint_tag} objects out of {len_outputs}'
+    table_title = f"Showing {start} to {end} {endpoint_tag} objects out of {len_outputs}"
 
     readable_output = tableToMarkdown(table_title, outputs, table_headers, removeNull=True)
     return CommandResults(
-        outputs_prefix=f'SophosFirewall.{endpoint_tag}',
-        outputs_key_field='Name',
+        outputs_prefix=f"SophosFirewall.{endpoint_tag}",
+        outputs_key_field="Name",
         raw_response=outputs,
         outputs=outputs,
-        readable_output=readable_output
+        readable_output=readable_output,
     )
 
 
@@ -1826,184 +1955,178 @@ def retrieve_dict_item_recursively(obj, key) -> any:  # type: ignore
 
 def main():
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
     params = demisto.params()
     command = demisto.command()
     args = demisto.args()
 
-    username = params.get('credentials').get('identifier')
-    password = params.get('credentials').get('password')
+    username = params.get("credentials").get("identifier")
+    password = params.get("credentials").get("password")
 
-    server_url = params.get('server_url')
+    server_url = params.get("server_url")
 
-    verify_certificate = not params.get('insecure', False)
+    verify_certificate = not params.get("insecure", False)
 
-    proxy = params.get('proxy', False)
+    proxy = params.get("proxy", False)
 
-    demisto.debug(f'Command being called is {command}')
+    demisto.debug(f"Command being called is {command}")
     try:
-        client = Client(
-            base_url=server_url,
-            verify=verify_certificate,
-            auth=(username, password),
-            proxy=proxy
-        )
+        client = Client(base_url=server_url, verify=verify_certificate, auth=(username, password), proxy=proxy)
 
-        if command == 'test-module':
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client))
 
-        elif command == 'sophos-firewall-rule-list':
+        elif command == "sophos-firewall-rule-list":
             return_results(sophos_firewall_rule_list_command(client, **args))
 
-        elif command == 'sophos-firewall-rule-get':
+        elif command == "sophos-firewall-rule-get":
             return_results(sophos_firewall_rule_get_command(client, **args))
 
-        elif command == 'sophos-firewall-rule-add':
+        elif command == "sophos-firewall-rule-add":
             return_results(sophos_firewall_rule_add_command(client, args))
 
-        elif command == 'sophos-firewall-rule-update':
+        elif command == "sophos-firewall-rule-update":
             return_results(sophos_firewall_rule_update_command(client, args))
 
-        elif command == 'sophos-firewall-rule-delete':
+        elif command == "sophos-firewall-rule-delete":
             return_results(sophos_firewall_rule_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-rule-group-list':
+        elif command == "sophos-firewall-rule-group-list":
             return_results(sophos_firewall_rule_group_list_command(client, **args))
 
-        elif command == 'sophos-firewall-rule-group-get':
+        elif command == "sophos-firewall-rule-group-get":
             return_results(sophos_firewall_rule_group_get_command(client, **args))
 
-        elif command == 'sophos-firewall-rule-group-add':
+        elif command == "sophos-firewall-rule-group-add":
             return_results(sophos_firewall_rule_group_add_command(client, args))
 
-        elif command == 'sophos-firewall-rule-group-update':
+        elif command == "sophos-firewall-rule-group-update":
             return_results(sophos_firewall_rule_group_update_command(client, args))
 
-        elif command == 'sophos-firewall-rule-group-delete':
+        elif command == "sophos-firewall-rule-group-delete":
             return_results(sophos_firewall_rule_group_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-url-group-list':
+        elif command == "sophos-firewall-url-group-list":
             return_results(sophos_firewall_url_group_list_command(client, **args))
 
-        elif command == 'sophos-firewall-url-group-get':
+        elif command == "sophos-firewall-url-group-get":
             return_results(sophos_firewall_url_group_get_command(client, **args))
 
-        elif command == 'sophos-firewall-url-group-add':
+        elif command == "sophos-firewall-url-group-add":
             return_results(sophos_firewall_url_group_add_command(client, args))
 
-        elif command == 'sophos-firewall-url-group-update':
+        elif command == "sophos-firewall-url-group-update":
             return_results(sophos_firewall_url_group_update_command(client, args))
 
-        elif command == 'sophos-firewall-url-group-delete':
+        elif command == "sophos-firewall-url-group-delete":
             return_results(sophos_firewall_url_group_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-list':
+        elif command == "sophos-firewall-ip-host-list":
             return_results(sophos_firewall_ip_host_list_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-get':
+        elif command == "sophos-firewall-ip-host-get":
             return_results(sophos_firewall_ip_host_get_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-add':
+        elif command == "sophos-firewall-ip-host-add":
             return_results(sophos_firewall_ip_host_add_command(client, args))
 
-        elif command == 'sophos-firewall-ip-host-update':
+        elif command == "sophos-firewall-ip-host-update":
             return_results(sophos_firewall_ip_host_update_command(client, args))
 
-        elif command == 'sophos-firewall-ip-host-delete':
+        elif command == "sophos-firewall-ip-host-delete":
             return_results(sophos_firewall_ip_host_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-group-list':
+        elif command == "sophos-firewall-ip-host-group-list":
             return_results(sophos_firewall_ip_host_group_list_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-group-get':
+        elif command == "sophos-firewall-ip-host-group-get":
             return_results(sophos_firewall_ip_host_group_get_command(client, **args))
 
-        elif command == 'sophos-firewall-ip-host-group-add':
+        elif command == "sophos-firewall-ip-host-group-add":
             return_results(sophos_firewall_ip_host_group_add_command(client, args))
 
-        elif command == 'sophos-firewall-ip-host-group-update':
+        elif command == "sophos-firewall-ip-host-group-update":
             return_results(sophos_firewall_ip_host_group_update_command(client, args))
 
-        elif command == 'sophos-firewall-ip-host-group-delete':
+        elif command == "sophos-firewall-ip-host-group-delete":
             return_results(sophos_firewall_ip_host_group_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-services-list':
+        elif command == "sophos-firewall-services-list":
             return_results(sophos_firewall_services_list_command(client, **args))
 
-        elif command == 'sophos-firewall-services-get':
+        elif command == "sophos-firewall-services-get":
             return_results(sophos_firewall_services_get_command(client, **args))
 
-        elif command == 'sophos-firewall-services-add':
+        elif command == "sophos-firewall-services-add":
             return_results(sophos_firewall_services_add_command(client, args))
 
-        elif command == 'sophos-firewall-services-update':
+        elif command == "sophos-firewall-services-update":
             return_results(sophos_firewall_services_update_command(client, args))
 
-        elif command == 'sophos-firewall-services-delete':
+        elif command == "sophos-firewall-services-delete":
             return_results(sophos_firewall_services_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-app-policy-list':
+        elif command == "sophos-firewall-app-policy-list":
             return_results(sophos_firewall_app_policy_list_command(client, **args))
 
-        elif command == 'sophos-firewall-app-policy-get':
+        elif command == "sophos-firewall-app-policy-get":
             return_results(sophos_firewall_app_policy_get_command(client, **args))
 
-        elif command == 'sophos-firewall-app-policy-add':
+        elif command == "sophos-firewall-app-policy-add":
             return_results(sophos_firewall_app_policy_add_command(client, args))
 
-        elif command == 'sophos-firewall-app-policy-update':
+        elif command == "sophos-firewall-app-policy-update":
             return_results(sophos_firewall_app_policy_update_command(client, args))
 
-        elif command == 'sophos-firewall-app-policy-delete':
+        elif command == "sophos-firewall-app-policy-delete":
             return_results(sophos_firewall_app_policy_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-app-category-list':
+        elif command == "sophos-firewall-app-category-list":
             return_results(sophos_firewall_app_category_list_command(client, **args))
 
-        elif command == 'sophos-firewall-app-category-get':
+        elif command == "sophos-firewall-app-category-get":
             return_results(sophos_firewall_app_category_get_command(client, **args))
 
-        elif command == 'sophos-firewall-app-category-update':
-            return_results(
-                sophos_firewall_app_category_update_command(client, args))
+        elif command == "sophos-firewall-app-category-update":
+            return_results(sophos_firewall_app_category_update_command(client, args))
 
-        elif command == 'sophos-firewall-web-filter-list':
+        elif command == "sophos-firewall-web-filter-list":
             return_results(sophos_firewall_web_filter_list_command(client, **args))
 
-        elif command == 'sophos-firewall-web-filter-get':
+        elif command == "sophos-firewall-web-filter-get":
             return_results(sophos_firewall_web_filter_get_command(client, **args))
 
-        elif command == 'sophos-firewall-web-filter-add':
+        elif command == "sophos-firewall-web-filter-add":
             return_results(sophos_firewall_web_filter_add_command(client, args))
 
-        elif command == 'sophos-firewall-web-filter-update':
+        elif command == "sophos-firewall-web-filter-update":
             return_results(sophos_firewall_web_filter_update_command(client, args))
 
-        elif command == 'sophos-firewall-web-filter-delete':
+        elif command == "sophos-firewall-web-filter-delete":
             return_results(sophos_firewall_web_filter_delete_command(client, **args))
 
-        elif command == 'sophos-firewall-user-list':
+        elif command == "sophos-firewall-user-list":
             return_results(sophos_firewall_user_list_command(client, **args))
 
-        elif command == 'sophos-firewall-user-get':
+        elif command == "sophos-firewall-user-get":
             return_results(sophos_firewall_user_get_command(client, **args))
 
-        elif command == 'sophos-firewall-user-add':
+        elif command == "sophos-firewall-user-add":
             return_results(sophos_firewall_user_add_command(client, args))
 
-        elif command == 'sophos-firewall-user-update':
+        elif command == "sophos-firewall-user-update":
             return_results(sophos_firewall_user_update_command(client, args))
 
-        elif command == 'sophos-firewall-user-delete':
+        elif command == "sophos-firewall-user-delete":
             return_results(sophos_firewall_user_delete_command(client, **args))
 
     # Log exceptions
     except Exception as error:
-        message = f'Failed to execute {command} command. Error: {str(error)}'
+        message = f"Failed to execute {command} command. Error: {error!s}"
         return_error(message)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

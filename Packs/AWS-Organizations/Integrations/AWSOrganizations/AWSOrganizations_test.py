@@ -1,11 +1,11 @@
-import pytest
-from test_data.data import *  # noqa
-from CommonServerPython import *  # noqa
 from random import randint
+
+import pytest
+from CommonServerPython import *  # noqa
+from test_data.data import *  # noqa
 
 
 class MockOrganizationsClient:  # (OrganizationsClient):
-
     list_roots = None
     list_children = None
     list_parents = None
@@ -72,15 +72,7 @@ class MockOrganizationsClient:  # (OrganizationsClient):
 
 
 def get_mock_paginate(kwargs: dict, return_obj):
-
-    def mock_paginate(
-        paginator,
-        key_to_pages,
-        limit=None,
-        page_size=None,
-        next_token=None,
-        **paginator_kwargs
-    ):
+    def mock_paginate(paginator, key_to_pages, limit=None, page_size=None, next_token=None, **paginator_kwargs):
         assert kwargs == paginator_kwargs
         return return_obj
 
@@ -88,37 +80,33 @@ def get_mock_paginate(kwargs: dict, return_obj):
 
 
 def mock_client_func(MaxResults, **kwargs):
-    from_number = kwargs['NextToken'] if 'NextToken' in kwargs else 0
+    from_number = kwargs.get("NextToken", 0)
     to_number = from_number + randint(0, MaxResults)
-    return {
-        'Pages': list(range(from_number, to_number)),
-        'NextToken': to_number
-    }
+    return {"Pages": list(range(from_number, to_number)), "NextToken": to_number}
 
 
 def test_create_client(mocker):
+    from AWSOrganizations import AWSClient, create_client
 
-    from AWSOrganizations import create_client, AWSClient
-
-    mock_session = mocker.patch.object(AWSClient, 'aws_session')
+    mock_session = mocker.patch.object(AWSClient, "aws_session")
 
     create_client(
         {
-            'roleArn': 'arn:aws:iam::123456789012:role/test-role-args',
-            'roleSessionName': 'test-session-args',
-            'roleSessionDuration': 1000,
+            "roleArn": "arn:aws:iam::123456789012:role/test-role-args",
+            "roleSessionName": "test-session-args",
+            "roleSessionDuration": 1000,
         },
         {
-            'retries': 2,
-        }
+            "retries": 2,
+        },
     )
 
     mock_session.assert_called_once_with(
-        service='organizations',
-        region='us-east-1',
-        role_arn='arn:aws:iam::123456789012:role/test-role-args',
-        role_session_name='test-session-args',
-        role_session_duration=1000
+        service="organizations",
+        region="us-east-1",
+        role_arn="arn:aws:iam::123456789012:role/test-role-args",
+        role_session_name="test-session-args",
+        role_session_duration=1000,
     )
 
 
@@ -134,8 +122,8 @@ def test_create_client(mocker):
             {"key_to_pages": "Pages", "limit": "10", "page_size": "11", "next_token": 11},
             ([11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21], 22),
             "Test case: When provided, use page_size and next_token correctly.",
-        )
-    ]
+        ),
+    ],
 )
 def test_paginate(kwargs, expected_output, test_case):
     """
@@ -169,7 +157,7 @@ def test_build_tags_error():
     from AWSOrganizations import build_tags
 
     with pytest.raises(DemistoException, match='Tags must be provided in the format "key=value".'):
-        build_tags('invalid_tag,key=value')
+        build_tags("invalid_tag,key=value")
 
 
 def test_root_list_command(mocker):
@@ -177,10 +165,7 @@ def test_root_list_command(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            root_list.client_func_kwargs,
-            root_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(root_list.client_func_kwargs, root_list.client_func_return),
     )
 
     result = root_list_command(root_list.command_args, MockOrganizationsClient())
@@ -194,15 +179,10 @@ def test_children_list_command(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            children_list.client_func_kwargs,
-            children_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(children_list.client_func_kwargs, children_list.client_func_return),
     )
 
-    result = children_list_command(
-        children_list.command_args, MockOrganizationsClient()
-    )
+    result = children_list_command(children_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == children_list.context_outputs
     assert result.readable_output == children_list.readable_output
@@ -213,10 +193,7 @@ def test_parent_list_command(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            parent_list.client_func_kwargs,
-            parent_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(parent_list.client_func_kwargs, parent_list.client_func_return),
     )
 
     result = parent_list_command(parent_list.command_args, MockOrganizationsClient())
@@ -228,9 +205,7 @@ def test_parent_list_command(mocker):
 def test_organization_unit_get():
     from AWSOrganizations import organization_unit_get_command
 
-    result = organization_unit_get_command(
-        organization_unit_get.command_args, MockOrganizationsClient()
-    )
+    result = organization_unit_get_command(organization_unit_get.command_args, MockOrganizationsClient())
 
     assert result.outputs == organization_unit_get.context_outputs
     assert result.readable_output == organization_unit_get.readable_output
@@ -241,9 +216,7 @@ def test_account_list_command(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            account_list.client_func_kwargs, account_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(account_list.client_func_kwargs, account_list.client_func_return),
     )
 
     result = account_list_command(account_list.command_args, MockOrganizationsClient())
@@ -273,9 +246,7 @@ def test_organization_get():
 def test_account_remove():
     from AWSOrganizations import account_remove_command
 
-    result = account_remove_command(
-        account_remove.command_args, MockOrganizationsClient()
-    )
+    result = account_remove_command(account_remove.command_args, MockOrganizationsClient())
 
     assert result.readable_output == account_remove.readable_output
 
@@ -290,26 +261,22 @@ def test_account_move():
 
 def test_account_create_initial_call(mocker):
     from AWSOrganizations import account_create_command
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
 
-    account_create_command(
-        account_create_initial_call.command_args,
-        MockOrganizationsClient()
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(ScheduledCommand, "__init__", return_value=None)
 
-    assert account_create_initial_call.command_args['request_id'] == 'id'
+    account_create_command(account_create_initial_call.command_args, MockOrganizationsClient())
+
+    assert account_create_initial_call.command_args["request_id"] == "id"
 
 
 def test_account_create_final_call(mocker):
     from AWSOrganizations import account_create_command
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
 
-    result = account_create_command(
-        account_create_final_call.command_args,
-        MockOrganizationsClient()
-    )
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(ScheduledCommand, "__init__", return_value=None)
+
+    result = account_create_command(account_create_final_call.command_args, MockOrganizationsClient())
 
     assert result.outputs == account_create_final_call.context_outputs
     assert result.readable_output == account_create_final_call.readable_output
@@ -317,8 +284,9 @@ def test_account_create_final_call(mocker):
 
 def test_account_close(mocker):
     from AWSOrganizations import account_close_command
-    mocker.patch.object(ScheduledCommand, 'raise_error_if_not_supported')
-    mocker.patch.object(ScheduledCommand, '__init__', return_value=None)
+
+    mocker.patch.object(ScheduledCommand, "raise_error_if_not_supported")
+    mocker.patch.object(ScheduledCommand, "__init__", return_value=None)
 
     result: CommandResults = account_close_command(account_close.command_args, MockOrganizationsClient())
 
@@ -329,9 +297,7 @@ def test_account_close(mocker):
 def test_organization_unit_create():
     from AWSOrganizations import organization_unit_create_command
 
-    result = organization_unit_create_command(
-        organization_unit_create.command_args, MockOrganizationsClient()
-    )
+    result = organization_unit_create_command(organization_unit_create.command_args, MockOrganizationsClient())
 
     assert result.outputs == organization_unit_create.context_outputs
     assert result.readable_output == organization_unit_create.readable_output
@@ -340,9 +306,7 @@ def test_organization_unit_create():
 def test_organization_unit_delete():
     from AWSOrganizations import organization_unit_delete_command
 
-    result = organization_unit_delete_command(
-        organization_unit_delete.command_args, MockOrganizationsClient()
-    )
+    result = organization_unit_delete_command(organization_unit_delete.command_args, MockOrganizationsClient())
 
     assert result.outputs == organization_unit_delete.context_outputs
     assert result.readable_output == organization_unit_delete.readable_output
@@ -351,9 +315,7 @@ def test_organization_unit_delete():
 def test_organization_unit_rename():
     from AWSOrganizations import organization_unit_rename_command
 
-    result = organization_unit_rename_command(
-        organization_unit_rename.command_args, MockOrganizationsClient()
-    )
+    result = organization_unit_rename_command(organization_unit_rename.command_args, MockOrganizationsClient())
 
     assert result.outputs == organization_unit_rename.context_outputs
     assert result.readable_output == organization_unit_rename.readable_output
@@ -364,10 +326,7 @@ def test_policy_list(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            policy_list.client_func_kwargs,
-            policy_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(policy_list.client_func_kwargs, policy_list.client_func_return),
     )
 
     result = policy_list_command(policy_list.command_args, MockOrganizationsClient())
@@ -381,15 +340,10 @@ def test_target_policy_list(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            target_policy_list.client_func_kwargs,
-            target_policy_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(target_policy_list.client_func_kwargs, target_policy_list.client_func_return),
     )
 
-    result = target_policy_list_command(
-        target_policy_list.command_args, MockOrganizationsClient()
-    )
+    result = target_policy_list_command(target_policy_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == target_policy_list.context_outputs
     assert result.readable_output == target_policy_list.readable_output
@@ -407,9 +361,7 @@ def test_policy_get():
 def test_policy_delete():
     from AWSOrganizations import policy_delete_command
 
-    result = policy_delete_command(
-        policy_delete.command_args, MockOrganizationsClient()
-    )
+    result = policy_delete_command(policy_delete.command_args, MockOrganizationsClient())
 
     assert result.outputs == policy_delete.context_outputs
     assert result.readable_output == policy_delete.readable_output
@@ -418,9 +370,7 @@ def test_policy_delete():
 def test_policy_attach():
     from AWSOrganizations import policy_attach_command
 
-    result = policy_attach_command(
-        policy_attach.command_args, MockOrganizationsClient()
-    )
+    result = policy_attach_command(policy_attach.command_args, MockOrganizationsClient())
 
     assert result.outputs == policy_attach.context_outputs
     assert result.readable_output == policy_attach.readable_output
@@ -431,15 +381,10 @@ def test_policy_target_list(mocker):
 
     mocker.patch(
         "AWSOrganizations.paginate",
-        side_effect=get_mock_paginate(
-            policy_target_list.client_func_kwargs,
-            policy_target_list.client_func_return
-        ),
+        side_effect=get_mock_paginate(policy_target_list.client_func_kwargs, policy_target_list.client_func_return),
     )
 
-    result = policy_target_list_command(
-        policy_target_list.command_args, MockOrganizationsClient()
-    )
+    result = policy_target_list_command(policy_target_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == policy_target_list.context_outputs
     assert result.readable_output == policy_target_list.readable_output
@@ -448,9 +393,7 @@ def test_policy_target_list(mocker):
 def test_resource_tag_add():
     from AWSOrganizations import resource_tag_add_command
 
-    result = resource_tag_add_command(
-        resource_tag_add.command_args, MockOrganizationsClient()
-    )
+    result = resource_tag_add_command(resource_tag_add.command_args, MockOrganizationsClient())
 
     assert result.outputs == resource_tag_add.context_outputs
     assert result.readable_output == resource_tag_add.readable_output
@@ -459,9 +402,7 @@ def test_resource_tag_add():
 def test_resource_tag_list(mocker):
     from AWSOrganizations import resource_tag_list_command
 
-    result = resource_tag_list_command(
-        resource_tag_list.command_args, MockOrganizationsClient()
-    )
+    result = resource_tag_list_command(resource_tag_list.command_args, MockOrganizationsClient())
 
     assert list(result.outputs.values()) == resource_tag_list.context_outputs
     assert result.readable_output == resource_tag_list.readable_output

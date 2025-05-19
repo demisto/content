@@ -53,14 +53,11 @@ https://xsoar.pan.dev/docs/integrations/unit-testing
 """
 
 import pytest
-from SpurContextAPI import Client, SpurIP, enrich_command, ip_command, test_module, main, Common, DBotScoreType
+from SpurContextAPI import Client, Common, DBotScoreType, SpurIP, enrich_command, ip_command, main, test_module
 
 # Sample API response for testing
 MOCK_HTTP_RESPONSE = {
-    "as": {
-        "number": 30083,
-        "organization": "AS-30083-GO-DADDY-COM-LLC"
-    },
+    "as": {"number": 30083, "organization": "AS-30083-GO-DADDY-COM-LLC"},
     "client": {
         "behaviors": ["TOR_PROXY_USER"],
         "concentration": {
@@ -69,73 +66,55 @@ MOCK_HTTP_RESPONSE = {
             "density": 0.202,
             "geohash": "9yz",
             "skew": 45,
-            "state": "Missouri"
+            "state": "Missouri",
         },
         "count": 14,
         "countries": 1,
         "proxies": ["LUMINATI_PROXY", "SHIFTER_PROXY"],
         "spread": 4941431,
-        "types": ["MOBILE", "DESKTOP"]
+        "types": ["MOBILE", "DESKTOP"],
     },
     "infrastructure": "DATACENTER",
     "ip": "1.1.1.1",
-    "location": {
-        "city": "St Louis",
-        "country": "US",
-        "state": "Missouri"
-    },
+    "location": {"city": "St Louis", "country": "US", "state": "Missouri"},
     "risks": ["WEB_SCRAPING", "TUNNEL"],
     "services": ["IPSEC", "OPENVPN"],
-    "tunnels": [
-        {
-            "anonymous": True,
-            "entries": ["1.1.1.1"],
-            "exits": ["1.1.1.1"],
-            "operator": "NORD_VPN",
-            "type": "VPN"
-        }
-    ]
+    "tunnels": [{"anonymous": True, "entries": ["1.1.1.1"], "exits": ["1.1.1.1"], "operator": "NORD_VPN", "type": "VPN"}],
 }
 
 
 @pytest.fixture()
 def client(mocker):
     client = Client(base_url="https://api.spur.us/", verify=False, headers={"Authorization": "Bearer test"})
-    mocker.patch.object(Client, '_http_request', return_value=MOCK_HTTP_RESPONSE)
+    mocker.patch.object(Client, "_http_request", return_value=MOCK_HTTP_RESPONSE)
     return client
 
 
 def test_enrich_command(client):
-    args = {'ip': '1.1.1.1'}
+    args = {"ip": "1.1.1.1"}
     result = enrich_command(client, args)
-    assert result.outputs['ip'] == MOCK_HTTP_RESPONSE['ip']
+    assert result.outputs["ip"] == MOCK_HTTP_RESPONSE["ip"]
 
 
 def test_ip_command(client):
-    args = {'ip': '1.1.1.1'}
+    args = {"ip": "1.1.1.1"}
     results = ip_command(client, args)[0]
     assert isinstance(results.indicator, SpurIP)
-    assert results.indicator.risks == MOCK_HTTP_RESPONSE['risks']
+    assert results.indicator.risks == MOCK_HTTP_RESPONSE["risks"]
 
 
 def test_test_module(client):
     result = test_module(client)
-    assert result == 'ok'
+    assert result == "ok"
 
 
 def test_spur_ip_to_context():
-    ip = '1.1.1.1'
-    asn = 'AS12345'
-    as_owner = 'Test AS'
-    client_types = ['MOBILE', 'DESKTOP']
-    risks = ['WEB_SCRAPING', 'TUNNEL']
-    tunnels = {
-        'type': 'VPN',
-        'operator': 'NORD_VPN',
-        'anonymous': True,
-        'entries': ['1.1.1.1'],
-        'exits': ['1.1.1.1']
-    }
+    ip = "1.1.1.1"
+    asn = "AS12345"
+    as_owner = "Test AS"
+    client_types = ["MOBILE", "DESKTOP"]
+    risks = ["WEB_SCRAPING", "TUNNEL"]
+    tunnels = {"type": "VPN", "operator": "NORD_VPN", "anonymous": True, "entries": ["1.1.1.1"], "exits": ["1.1.1.1"]}
     ip_indicator = SpurIP(
         ip=ip,
         asn=asn,
@@ -148,25 +127,25 @@ def test_spur_ip_to_context():
             score=Common.DBotScore.NONE,
         ),
         risks=risks,
-        tunnels=tunnels
+        tunnels=tunnels,
     )
 
     context = ip_indicator.to_context()
     context_path = context[Common.IP.CONTEXT_PATH]
 
-    assert context_path['Address'] == ip
-    assert context_path['ASN'] == asn
-    assert context_path['ASOwner'] == as_owner
-    assert context_path['Risks'] == risks
-    assert context_path['ClientTypes'] == client_types
-    assert context_path['Tunnels'] == tunnels
+    assert context_path["Address"] == ip
+    assert context_path["ASN"] == asn
+    assert context_path["ASOwner"] == as_owner
+    assert context_path["Risks"] == risks
+    assert context_path["ClientTypes"] == client_types
+    assert context_path["Tunnels"] == tunnels
 
 
 def test_main_enrich_command(mocker):
-    mocker.patch('SpurContextAPI.demisto.command', return_value='spur-context-api-enrich')
-    mocker.patch('SpurContextAPI.demisto.args', return_value={'ip': '1.1.1.1'})
-    mock_enrich = mocker.patch('SpurContextAPI.enrich_command')
-    mocker.patch('SpurContextAPI.return_results')
+    mocker.patch("SpurContextAPI.demisto.command", return_value="spur-context-api-enrich")
+    mocker.patch("SpurContextAPI.demisto.args", return_value={"ip": "1.1.1.1"})
+    mock_enrich = mocker.patch("SpurContextAPI.enrich_command")
+    mocker.patch("SpurContextAPI.return_results")
     main()
 
-    mock_enrich.assert_called_once_with(mocker.ANY, {'ip': '1.1.1.1'})
+    mock_enrich.assert_called_once_with(mocker.ANY, {"ip": "1.1.1.1"})

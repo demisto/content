@@ -62,6 +62,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- defaultvalue: 'true'
+  additionalinfo: The AlienVault OTX API raise an error when an item is not found. Disable this parameter in order to return a warning instead.
+  display: Should Error When Not Found
+  name: should_error
+  type: 8
+  section: Connect
+  advanced: true
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -106,7 +114,7 @@ script:
       description: The reputation of the IP address.
       type: String
     - contextPath: AlienVaultOTX.IP.IP
-      description: IP address
+      description: IP address.
       type: String
     - contextPath: DBotScore.Score
       description: The actual score.
@@ -505,7 +513,7 @@ script:
       description: The domain data for the Alexa URL.
       type: String
     - contextPath: AlienVaultOTX.URL.Url
-      description: Url
+      description: Url.
       type: String
     - contextPath: AlienVaultOTX.URL.Whois
       description: The Whois URL for domain data.
@@ -537,7 +545,7 @@ script:
     - contextPath: URL.Relationships.EntityBType
       description: The type of the destination of the relationship.
       type: string
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   type: python

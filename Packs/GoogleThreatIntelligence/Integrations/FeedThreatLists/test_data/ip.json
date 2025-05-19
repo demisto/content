@@ -1,0 +1,113 @@
+{
+    "data": {
+        "id": "X.X.X.X",
+        "type": "ip_address",
+        "attributes": {
+            "last_modification_date": 1726781178,
+            "total_votes": {
+                "harmless": 203,
+                "malicious": 32
+            },
+            "last_analysis_stats": {
+                "malicious": 1,
+                "suspicious": 0,
+                "undetected": 31,
+                "harmless": 62,
+                "timeout": 0
+            },
+            "last_analysis_date": 1726758865,
+            "first_seen_itw_date": 1409607591,
+            "reputation": 535,
+            "tags": [],
+            "whois": "NetRange: X.X.X.0 - X.X.X.255\nCIDR: X.X.X.0/24\n",
+            "continent": "NA",
+            "network": "X.X.X.0/24",
+            "threat_verdict": "VERDICT_UNDETECTED",
+            "country": "US",
+            "regional_internet_registry": "ARIN",
+            "asn": 15169,
+            "whois_date": 1726150884,
+            "as_owner": "GOOGLE",
+            "last_https_certificate_date": 1726758877,
+            "mandiant_ic_score": 0,
+            "attribution": {
+                "detailed_threat_actors": [
+                    {
+                        "source": "<TA_source_1>",
+                        "name": "<TA_name_1>",
+                        "id": "<TA_id_1>"
+                    },
+                    {
+                        "source": "<TA_source_2>",
+                        "name": "<TA_name_2>",
+                        "id": "<TA_id_2>"
+                    }
+                ],
+                "malware_families": [
+                    {
+                        "source": "<MF_source_1>",
+                        "family": "<MF_family_1>"
+                    },
+                    {
+                        "source": "<MF_source_2>",
+                        "family": "<MF_family_2>"
+                    }
+                ],
+                "threat_actors": [
+                    "<TA_name_1>",
+                    "<TA_name_2>"
+                ],
+                "family": "<MF_family_1>",
+                "family_pivot": "collection:None"
+            },
+            "last_seen_itw_date": 1726766855,
+            "jarm": "<jarm>",
+            "gti_assessment": {
+                "contributing_factors": {
+                    "normalised_categories": [
+                        "infostealer",
+                        "malware",
+                        "control-server",
+                        "phishing",
+                        "malware",
+                        "phishing"
+                    ],
+                    "pervasive_indicator": true,
+                    "mandiant_confidence_score": 0,
+                    "mandiant_analyst_benign": true,
+                    "google_malware_analysis": true
+                },
+                "severity": {
+                    "value": "SEVERITY_NONE"
+                },
+                "threat_score": {
+                    "value": 0
+                },
+                "verdict": {
+                    "value": "VERDICT_BENIGN"
+                },
+                "description": "This indicator was determined as benign by a Mandiant analyst and likely poses no threat."
+            }
+        },
+        "context_attributes": {
+            "notification_id": "19104706970",
+            "origin": "hunting",
+            "notification_date": 1726761663,
+            "sources": [
+                {
+                    "id": "19072418300",
+                    "type": "hunting_ruleset",
+                    "label": "Malware Families YARA ruleset"
+                }
+            ],
+            "tags": [
+                "malware_families_yara_ruleset",
+                "malwarefamilyagenttesla"
+            ],
+            "hunting_info": {
+                "rule_name": "MalwareFamilyAgentTesla",
+                "match_source": "ORIGINAL_FILE"
+            }
+        }
+    }
+}
