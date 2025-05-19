@@ -309,7 +309,7 @@ def vulndb_get_updates_by_dates_or_hours_command(args: dict, client: Client):
     elif hours_ago is not None:
         res = client.http_request(f"/vulnerabilities/find_by_time?hours_ago={hours_ago}", max_size)
     else:
-        res = None  # Address pylint E0606
+        res = ""  # Address pylint E0606
         return_error("Must provide either start date or hours ago.")
 
     vulndb_vulnerability_results_to_demisto_results(res)
@@ -322,7 +322,7 @@ def vulndb_get_vendor_command(args: dict, client: Client):
 
     res = ""
     if vendor_id is not None and vendor_name is not None:
-        res = None  # Address pylint E0606
+        res = ""  # Address pylint E0606
         return_error("Provide either vendor id or vendor name or neither, not both.")
     elif vendor_id:
         res = client.http_request(f"/vendors/{vendor_id}", max_size)
@@ -341,7 +341,7 @@ def vulndb_get_product_command(args: dict, client: Client):
 
     res = ""
     if vendor_id is not None and vendor_name is not None:
-        res = None  # Address pylint E0606
+        res = ""  # Address pylint E0606
         return_error("Provide either vendor id or vendor name or neither, not both.")
     elif vendor_id:
         res = client.http_request(f"/products/by_vendor_id?vendor_id={vendor_id}", max_size)
