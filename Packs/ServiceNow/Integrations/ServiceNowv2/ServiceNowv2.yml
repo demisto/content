@@ -1441,7 +1441,7 @@ script:
     - description: Tag system ID. Can be retrieved using the "!servicenow-query-table table_name=label fields=name,active,sys_id" command.
       name: tag_id
       required: true
-    - description: 'Tag title. For example: "Incident - INC000001".'
+    - description: 'Tag title. For example: "Incident - INC000001". t'
       name: title
       required: true
     - auto: PREDEFINED
@@ -1918,7 +1918,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: devdemisto/auth-utils:1.0.0.3453480
+  dockerimage: demisto/auth-utils:1.0.0.3050025
   isfetch: true
   ismappable: true
   isremotesyncin: true
