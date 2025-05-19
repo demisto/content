@@ -20,6 +20,7 @@ configuration:
   displaypassword: API Key
   hiddenusername: true
   required: false
+  display: ''
 - additionalinfo: TIM customers that upgraded to version 6.2 or above, can have this value pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
   display: API Key
   name: api_key
@@ -131,10 +132,10 @@ script:
       name: offset
     description: Gets the indicators from AutoFocus.
     name: autofocus-get-indicators
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 fromversion: 5.5.0

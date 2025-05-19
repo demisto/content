@@ -1,12 +1,13 @@
-import demistomock as demisto
-from CommonServerPython import *
-from CommonServerUserPython import *
+from datetime import datetime
+import urllib3
+import requests
+import re
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+demisto.debug('pack name = AutoFocus by Palo Alto Networks, pack version = 2.2.12')
+
 
 # IMPORTS
-import re
-import requests
-import urllib3
-from datetime import datetime
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -19,6 +20,7 @@ SAMPLE_FEED_REQUEST_BASE_URL = f"{SAMPLE_FEED_BASE_URL}search"
 SAMPLE_FEED_RESPONSE_BASE_URL = f"{SAMPLE_FEED_BASE_URL}results/"
 
 EPOCH_BASE = datetime.utcfromtimestamp(0)
+# test
 
 af_indicator_type_to_demisto = {"Domain": FeedIndicatorType.Domain, "Url": FeedIndicatorType.URL, "IPv4": FeedIndicatorType.IP}
 

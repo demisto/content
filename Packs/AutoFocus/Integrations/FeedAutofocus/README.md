@@ -8,24 +8,26 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 ## Configure AutoFocus Feed in Cortex
 
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| feed | The fetch indicators. | False |
-| indicator_feeds | The indicator feed. Choose the requested indicator feeds. The Custom Feeds and Samples Feed. | True |
-| api_key | API Key. | False |
-| custom_feed_urls | The URL for the custom feed to fetch. This applies only in cases where a Custom Feed is requested. | False |
-| scope_type | The scope of the samples to be fetched. | False |
-| sample_query | The query that will be used to fetch the samples. | False |
-| feedReputation | The indicator reputation. | False |
-| feedReliability | The source's reliability. | True |
-| tlp_color | The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. More information about the protocol can be found at https://us-cert.cisa.gov/tlp | False |
-| feedExpirationPolicy | The feed's expiration policy. | False |
-| feedExpirationInterval | The interval after which the feed expires. | False |
-| feedFetchInterval | The feed fetch interval. | False |
-| feedBypassExclusionList | Whether to bypass exclusion list. | False |
-| override_default_credentials | Override default credentials | False |
-| insecure | Whether to trust any certificate (not secure). | False |
-| proxy | Whether to use the system proxy settings. | False |
+| Fetch indicators |  | False |
+| Indicator Feed |  | True |
+| API Key |  | False |
+| The URL for the custom feed to fetch | Only necessary in case a Custom Feed is fetched. Can also support a CSV of Custom feed URLs. | False |
+| Samples Feed Scope Type | Only necessary in case a Samples Feed is fetched. | False |
+| Samples Feed Query | Relevant only for sample feeds. JSON styled AutoFocus query, an example can be found in the description \(?\) section. mandatory for Samples Feed. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
+|  |  | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Tags | Supports CSV values. | False |
+
 
 
 #### Custom Feed info:
