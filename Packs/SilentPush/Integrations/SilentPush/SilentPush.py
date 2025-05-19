@@ -2239,7 +2239,7 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Response containing future attack indicators.
         """
-        params = {"source_uuids": source_uuids, "page": page_no, "size": page_size}
+        params = {"source_uuids": source_uuids, "page": page_no, "limit": page_size}
 
         query_string = urlencode(params)
         url = self._base_url.replace("/api/v1/merge-api", "") + f"/api/v2/iocs/threat-ranking/?{query_string}"
