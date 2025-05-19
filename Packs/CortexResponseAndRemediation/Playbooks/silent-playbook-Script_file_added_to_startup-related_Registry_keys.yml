@@ -3414,15 +3414,9 @@ view: |-
       }
     }
   }
-inputs:
-- key: tags
-  value: {}
-  required: false
-  description: related_alerts,malicious_actor_process,malicious_causality_process,commnad_line_analysis,prevalence_check,analyst_decision,remediation,false_positive,true_positive
-  playbookInputQuery:
+inputs: []
 inputSections:
-- inputs:
-  - tags
+- inputs: []
   name: General (Inputs group)
   description: Generic group for inputs
 outputSections:
