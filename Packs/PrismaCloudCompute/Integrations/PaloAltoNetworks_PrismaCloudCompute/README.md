@@ -2628,12 +2628,20 @@ vulnerabilityManager
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PrismaCloudCompute.VulnerabilitiesImpactedResource._id | String | The CVE ID. \(The index for the impacted resources\). |
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.functions | Unknown | The mapping between the function ID and its details. |
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts | String | The list of impacted hosts. |
-| PrismaCloudCompute.VulnerabilitiesImpactedResource.riskTree | Unknown | The risk tree associated with the CVE ID. |
+
+| **Path**                                                         | **Type**  | **Description**                                                |
+|------------------------------------------------------------------|-----------|---------------------------------------------------------------|
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource._id`          | String    | The CVE ID. (The index for the impacted resources.)           |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.functions`    | Array     | The mapping between the function ID and its details.           |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.hosts`       | Array     | The list of impacted hosts.                                    |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.codeRepos`   | Array     | A list of impacted code repositories.                           |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.codeReposCount` | Integer  | The total impacted code repositories count.                    |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.functionsCount` | Integer | The total impacted functions count.                            |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.hostsCount`  | Integer   | The total impacted hosts count.                                |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.images`      | Array     | The list of impacted images.                                   |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.imagesCount` | Integer   | The total impacted images count.                               |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImages` | Array   | A list of impacted registry images.                             |
+| `PrismaCloudCompute.VulnerabilitiesImpactedResource.registryImagesCount` | Integer | The total impacted registry images count.                      |
 
 #### Command Example
 
