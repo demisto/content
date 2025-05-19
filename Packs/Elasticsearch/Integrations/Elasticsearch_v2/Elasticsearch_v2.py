@@ -35,9 +35,8 @@ elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
 elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V9:
     from elastic_transport import RequestsHttpNode
     from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
-    # As of May 2025 elasticsearch_dsl not fully supported for Elasticsearch 9.x yet
-    # from elasticsearch_dsl import Search
-    # from elasticsearch_dsl.query import QueryString
+    from elasticsearch_dsl import Search
+    from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
     from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment,misc]
     from elasticsearch_dsl import Search
