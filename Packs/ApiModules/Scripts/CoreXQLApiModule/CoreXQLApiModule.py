@@ -434,7 +434,7 @@ def add_playbook_metadata(data: dict, command: str):
     playbook_name = entry_task.get("playbookName", "")
     task_name = entry_task.get("taskName", "")
     task_id = entry_task.get("taskId", "")
-    brand = ctx_output.get("context", {}).get("IntegrationBrand")
+    brand = ctx_output.get("context", {}).get("IntegrationBrand", "")
     playbook_metadata = {
         "playbook_name": playbook_name,
         "playbook_id": playbook_id,
