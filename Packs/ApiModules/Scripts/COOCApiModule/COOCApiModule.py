@@ -40,32 +40,27 @@ def get_access_token(cloud_type: str, scopes: list = None) -> str:
         "account_id": context.get("account_id"),
         "outpost_id": context.get("outpost_id"),
         "cloud_type": cloud_type,
-        "scopes": scopes or []
+        "scopes": scopes or [],
     }
 
     if cloud_type == CloudTypes.AWS.value and context.get("region_name"):
         request_data["region_name"] = context["region_name"]
 
     response = demisto._platformAPICall(
-        path=GET_CTS_ACCOUNTS_TOKEN,
-        method="POST",
-        data=json.dumps({"request_data": request_data})
+        path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data=json.dumps({"request_data": request_data})
     )
 
     status_code = response.get("status_code")
     if status_code != 200:
         error_detail = response.get("data") or "No error message provided"
         raise DemistoException(
-            f"Failed to get token from CTS for {cloud_type}. "
-            f"Status code: {status_code}. Detail: {error_detail}"
+            f"Failed to get token from CTS for {cloud_type}. Status code: {status_code}. Detail: {error_detail}"
         )
 
     try:
         return json.loads(response["data"])["access_token"]
     except (json.JSONDecodeError, KeyError) as e:
-        raise DemistoException(
-            f"Failed to parse access token from CTS response for {cloud_type}."
-        ) from e
+        raise DemistoException(f"Failed to parse access token from CTS response for {cloud_type}.") from e
 
 
 def get_cloud_entities(connector_id: str = None, account_id: str = None) -> dict:
@@ -94,21 +89,13 @@ def get_cloud_entities(connector_id: str = None, account_id: str = None) -> dict
         else ("connector", account_id, GET_ONBOARDING_CONNECTORS)
     )
 
-    response = demisto._platformAPICall(
-        path=path,
-        method="GET",
-        params={
-            "entity_type": entity_type,
-            "entity_id": entity_id
-        }
-    )
+    response = demisto._platformAPICall(path=path, method="GET", params={"entity_type": entity_type, "entity_id": entity_id})
 
     status_code = response.get("status_code")
     if status_code != 200:
         error_detail = response.get("data") or "No error message provided"
         raise DemistoException(
-            f"Failed to get {entity_type}s for ID '{entity_id}'. "
-            f"Status code: {status_code}. Detail: {error_detail}"
+            f"Failed to get {entity_type}s for ID '{entity_id}'. Status code: {status_code}. Detail: {error_detail}"
         )
 
     return response
