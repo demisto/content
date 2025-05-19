@@ -57,26 +57,18 @@
                 "occurred": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "createdTimestamp",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "priority",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
@@ -88,39 +80,27 @@
                 "category": {
                     "complex": {
                         "accessor": "name",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "category",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "occurred": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "createdTimestamp",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 },
                 "severity": {
                     "complex": {
                         "accessor": "",
-                        "filters": [
-
-                        ],
+                        "filters": [],
                         "root": "priority",
-                        "transformers": [
-
-                        ]
+                        "transformers": []
                     },
                     "simple": ""
                 }
