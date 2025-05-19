@@ -678,14 +678,13 @@ def test_fetch_incidents_duplicates_len_is_limit(mocker):
             "rawJSON": json.dumps(expected_unfiltered_alert),
         }
     ]
-    
+
     res, last_run = fetch_incidents(
         CLIENT,
         fetch_time="3 days",
         fetch_limit=limit,
         last_run=last_run,
     )
-
 
     mocked_func.assert_called_with(
         sort_field=mocker.ANY,
