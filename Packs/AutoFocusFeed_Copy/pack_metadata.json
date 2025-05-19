@@ -1,0 +1,21 @@
+{
+    "name": "AutoFocus Feed_copy",
+    "description": "testing the pack description",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "RotemAmit",
+    "url": "",
+    "email": "",
+    "created": "2025-05-19T12:27:04Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "RotemAmit"
+    ]
+}
