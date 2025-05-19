@@ -928,7 +928,7 @@ def test_retry_loading(mocker: MockerFixture):
     handler = PychromeEventHandler(None, mock_tab, mock_event, "file:///test.html", 30)
 
     mocker.patch("time.sleep")
-
+    # Test retry attempts failed
     handler.retry_loading()
 
     assert mock_tab.Page.navigate.call_count == 4
@@ -942,7 +942,7 @@ def test_retry_loading(mocker: MockerFixture):
 
     # Test getFrameTree failed to return URL
     mock_tab.Page.getFrameTree.side_effect = pychrome.exceptions.RuntimeException("runtime_exception")
-    mock_tab.Page.getFrameTree.return_value = {"frameTree": {"frame": {"url": "file:///test.html"}}}
+    handler.retry_loading()
     assert mock_event.set.called
 
 @pytest.mark.parametrize(
