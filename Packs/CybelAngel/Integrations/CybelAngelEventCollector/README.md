@@ -460,6 +460,9 @@ There is no context output for this command.
 ```!cybelangel-report-comment-create report_id=1234 content="Test Comment"```
 
 #### Human Readable Output
+
+>Comment added to Report ID 1234.
+
 ### cybelangel-report-list
 
 ***
@@ -473,8 +476,8 @@ Retrieve reports from CybelAngel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date formatted with ISO 8601, Example: "2025-01-14T10:22:45". | Optional | 
-| end_date | Get reports until a specific end date formatted with ISO 8601, Example: "2025-01-14T10:22:45. | Optional | 
+| start_date | Get reports from a specific start date formatted with ISO 8601. | Optional | 
+| end_date | Get reports until a specific end date formatted with ISO 8601. | Optional | 
 
 #### Context Output
 
@@ -482,6 +485,248 @@ Retrieve reports from CybelAngel.
 | --- | --- | --- |
 | CybelAngel.Report | unknown | The retrieved reports. | 
 
+#### Command example
+```!cybelangel-report-list start_date="19 hours ago" end_date="now"```
+#### Context Example
+```json
+{
+    "CybelAngel": {
+        "Report": {
+            "reports": [
+                {
+            "abstract": "Example Output.",
+            "abuse_email": "",
+            "analysis": "Example Output.",
+            "asset_urls": [],
+            "attachments": [
+                {
+                    "attached_to": "report_id",
+                    "id": "1234",
+                    "name": "Example Output.csv"
+                }
+            ],
+            "board": "",
+            "category": "leak",
+            "city": "",
+            "country_code": "",
+            "created_at": "2000-11-26T13:25:16.116453",
+            "detected_at": "2000-11-26T10:45:05+00:00",
+            "domain_registered_at": null,
+            "hostnames": [],
+            "id": "1234",
+            "incident_id": "1234",
+            "incident_type": "Test",
+            "investigation_id": "1234:1234",
+            "ip": "",
+            "keywords": [
+                {
+                    "id": "1234",
+                    "name": "aa.net"
+                }
+            ],
+            "liveness": {
+                "last_checked_at": "2000-11-26T13:25:15.716702+00:00",
+                "online": true
+            },
+            "location": "",
+            "machine_name": null,
+            "malware_location": null,
+            "malware_name": null,
+            "module": "account_Test",
+            "mx_servers": [],
+            "ns_servers": [],
+            "origins": [
+                {
+                    "type": "malicious_actor",
+                    "value": ""
+                }
+            ],
+            "port": null,
+            "registrant_email": "",
+            "registrar_name": "",
+            "report_content": "Example Output.",
+            "report_type": "incident_detection",
+            "risks": [
+                {
+                    "message": "Example Output.",
+                    "type": "account_takeover"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "spear_phishing"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "social_engineering"
+                }
+            ],
+            "samples": [
+                {
+                    "sample": "See attachment",
+                    "type": "other"
+                }
+            ],
+            "screenshots": [],
+            "sender": "Example Output@cybelangel.com",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "20200-11-26T13:25:57+00:00",
+            "severity": 1,
+            "source": "Example platform",
+            "status": "resolved",
+            "stream": "1234",
+            "suggestions": [
+                {
+                    "message": "Example Output.",
+                    "type": "other"
+                }
+            ],
+            "tags": [],
+            "threat": null,
+            "title": "Example Output. platform",
+            "updated_at": "2000-02-23T13:07:17.214040",
+            "url": "https://platform.cybelangel.com/reports/1234",
+            "user_session": null,
+            "usergroups": [
+                "Example Output.",
+                "TVMExample Output.SOC"
+            ],
+            "volume": {
+                "bins": null,
+                "documents": null,
+                "domain": null,
+                "emails": 1,
+                "ips": null,
+                "passwords": 1
+            },
+            "whois": ""
+        },
+        {
+            "abstract": "Example Output.",
+            "abuse_email": "",
+            "analysis": "Example Output.",
+            "asset_urls": [],
+            "attachments": [
+                {
+                    "attached_to": "report_id",
+                    "id": "1234",
+                    "name": "Example Output.csv"
+                }
+            ],
+            "board": "",
+            "category": "leak",
+            "city": "",
+            "country_code": "",
+            "created_at": "2000-11-26T13:25:16.116453",
+            "detected_at": "2000-11-26T10:45:05+00:00",
+            "domain_registered_at": null,
+            "hostnames": [],
+            "id": "1234",
+            "incident_id": "1234",
+            "incident_type": "Test",
+            "investigation_id": "1234:1234",
+            "ip": "",
+            "keywords": [
+                {
+                    "id": "1234",
+                    "name": "aa.net"
+                }
+            ],
+            "liveness": {
+                "last_checked_at": "2000-11-26T13:25:15.716702+00:00",
+                "online": true
+            },
+            "location": "",
+            "machine_name": null,
+            "malware_location": null,
+            "malware_name": null,
+            "module": "account_Test",
+            "mx_servers": [],
+            "ns_servers": [],
+            "origins": [
+                {
+                    "type": "malicious_actor",
+                    "value": ""
+                }
+            ],
+            "port": null,
+            "registrant_email": "",
+            "registrar_name": "",
+            "report_content": "Example Output.",
+            "report_type": "incident_detection",
+            "risks": [
+                {
+                    "message": "Example Output.",
+                    "type": "account_takeover"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "spear_phishing"
+                },
+                {
+                    "message": "Example Output.",
+                    "type": "social_engineering"
+                }
+            ],
+            "samples": [
+                {
+                    "sample": "See attachment",
+                    "type": "other"
+                }
+            ],
+            "screenshots": [],
+            "sender": "Example Output@cybelangel.com",
+            "sender_tenant_id": "cybelangel",
+            "sent_at": "20200-11-26T13:25:57+00:00",
+            "severity": 1,
+            "source": "Example platform",
+            "status": "resolved",
+            "stream": "1234",
+            "suggestions": [
+                {
+                    "message": "Example Output.",
+                    "type": "other"
+                }
+            ],
+            "tags": [],
+            "threat": null,
+            "title": "Example Output. platform",
+            "updated_at": "2000-02-23T13:07:17.214040",
+            "url": "https://platform.cybelangel.com/reports/1234",
+            "user_session": null,
+            "usergroups": [
+                "Example Output.",
+                "TVMExample Output.SOC"
+            ],
+            "volume": {
+                "bins": null,
+                "documents": null,
+                "domain": null,
+                "emails": 1,
+                "ips": null,
+                "passwords": 1
+            },
+            "whois": ""
+        }
+            ]
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+### Reports list
+|id|url|report_type|sender|severity|status|updated_at|report_content|
+|---|---|---|---|---|---|---|---|
+| example-id-1 | https://platform.example.com/reports/example-id-1 | incident_detection | example@example.com | 1 | open | 2025-02-25T13:06:06.821922 | ### Sample content… Example |
+| example-id-2 | https://platform.example.com/reports/example-id-2 | incident_detection | example@example.com | 1 | resolved | 2025-02-26T18:58:50.303598 | ### Sample content… Example |
+| example-id-3 | https://platform.example.com/reports/example-id-3 | incident_detection | example@example.com | 1 | in_progress | 2025-02-26T12:17:42.241832 | ### Sample content… Example |
+| example-id-4 | https://platform.example.com/reports/example-id-4 | incident_detection | example@example.com | 1 | open | 2025-02-26T13:29:54.520708 | ### Sample content… Example |
+| example-id-5 | https://platform.example.com/reports/example-id-5 | incident_detection | example@example.com | 2 | open | 2025-02-25T16:29:32.696281 | ### Sample content… Example |
+| example-id-6 | https://platform.example.com/reports/example-id-6 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 | ### Sample content… Example |
+| example-id-7 | https://platform.example.com/reports/example-id-7 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 | ### Sample content… Example |
+| example-id-8 | https://platform.example.com/reports/example-id-8 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:26:11.424002 | ### Sample content… Example |
+| example-id-9 | https://platform.example.com/reports/example-id-9 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:22:14.184243 | ### Sample content… Example |
 | example-id-10 | https://platform.example.com/reports/example-id-10 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:28:22.089922 | ### Sample content… Example |
 
 

@@ -57,7 +57,7 @@ configuration:
   defaultvalue: "5000"
   advanced: true
   type: 0
-  required: false
+  required: true
   section: Collect
   hidden:
   - xsoar
