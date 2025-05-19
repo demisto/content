@@ -1369,10 +1369,11 @@ def isTimeSensitive():
     return False
 
 
+
+
 def _platformAPICall(path=None, method=None, params=None, data=None, timeout=None):
     """
     Special platform API call to interact with the platform's backend services. Only available to OOB content.
-
     Args:
         path: path to append to the base url
         method: HTTP method to use (GET, POST, PUT, DELETE, etc.)
@@ -1380,7 +1381,6 @@ def _platformAPICall(path=None, method=None, params=None, data=None, timeout=Non
         data: POST data as a string. Make sure to json.dumps.
         timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted
         *Note if data is empty then a GET request is performed instead of a POST.
-
     Returns:
         dict: The response of the api call
     """
