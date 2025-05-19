@@ -1477,7 +1477,7 @@ Replies to an email using EWS.
 | attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
 | attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
-| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an inline attachment object. Note that in some cases, attaching the image as an object may cause the image to disappear when replying to the email. Additionally, sending the image in the html body as base64 data (inline image) may cause the image to disappear if the image is too large or recognized as malicious and subsequently deleted. Possible values are: True, False. Default is True. | Optional |
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML and attached to the email as inline attachment objects. Possible values are: True, False. Default is True. NOTE: Sometimes inline images sent in emails may not appear for recipients, either because their email system blocks the image (for example, due to image size or the email is flagged as malicious) or for other reasons. | Optional |
 
 #### Context Output
 
