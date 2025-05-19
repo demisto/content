@@ -1,0 +1,48 @@
+In the initialization code or the odl CSP:
+------------------------------------------- 
+
+We will add the following decorator: 
+
+import importlib
+import sys
+
+def override_cortex_function(func):
+    """
+    Decorator to override a function in the cortex_module_test module.
+    """
+    cortex_module = importlib.import_module("cortex_module_test")
+    setattr(cortex_module, func.__name__, func)
+    sys.modules["cortex_module_test"] = cortex_module
+    
+    return func
+
+
+In CSUP: 
+--------
+
+We will instruct customer on our docs to use the decorator on functions aimed to override CSP functions (cortex-module functions).
+
+@override_cortex_function
+def argToBoolean(value):
+
+    return "In argToBoolean from CSUP!"
+
+
+In system scripts: 
+-------------------
+
+def main():
+    try:
+        args = demisto.args()
+        my_bool = args.get('my_arg')
+        res = argToBoolean(my_bool)
+        return_results(res)
+    except Exception as ex:
+        demisto.error(traceback.format_exc())  # print the traceback
+        return_error(f'Failed to execute BaseScript. Error: {str(ex)}')
+
+
+argToBoolean() from the CSUP will be executed on run time thanks to the decorator. 
+
+
+## Example on my XSOAR6 permanent machine. 

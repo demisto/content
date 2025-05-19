@@ -12474,18 +12474,69 @@ def parse_json_string(json_string):
         demisto.error("Error decoding JSON: {error}".format(error=error))
         return {}
 
+# import importlib
+# import sys
 
-def get_server_config():
-    """
-    Retrieves XSOAR server configuration.
+# def override_cortex_function(func):
+#     """
+#     Decorator to override a function in the cortex_module_test module.
+#     """
+#     cortex_module = importlib.import_module("cortex_module_test")
+#     setattr(cortex_module, func.__name__, func)
+#     sys.modules["cortex_module_test"] = cortex_module
+    
+#     return func
 
-    :rtype: ``dict``
-    :return: The XSOAR server configuration.
+import importlib.util
+import sys
+class ModuleSwitcher:
+    
+    def __init__(self):
+        self.internal_map = {}
+    
+    def override_function(self, module_name, function_name, function):
+        """
+        Overrides a function from a python module with a another function with same name.
+        """
+        spec_module = importlib.util.find_spec(module_name)
+        if spec_module:
+            
+            if module_name not in self.internal_map:
+                # store the original module reference (to restore when needed)
+                orig_module = importlib.util.module_from_spec(spec_module)
+                spec_module.loader.exec_module(orig_module)
+                self.internal_map[module_name] = orig_module
+            
+            
+            module_to_change = importlib.util.module_from_spec(spec_module)
+            spec_module.loader.exec_module(module_to_change)
+            setattr(module_to_change, function_name, function)
+            sys.modules[module_name] = module_to_change
+        
+        del spec_module
+        
+
+    def restore(self):
+        """
+        Restore the original module when the script ends.
+        """
+        import sys
+        for key, val in self.internal_map.items():
+            sys.modules[key] = val
+        self.internal_map.clear()
+
+    def __del__(self):
+        self.restore()
+
+
+module_switcher = ModuleSwitcher()
+
+def override_cortex_module_function(func):
     """
-    response = demisto.internalHttpRequest(method='GET', uri='/system/config')
-    body = parse_json_string(response.get('body'))
-    server_config = body.get('sysConf', {})
-    return server_config
+    Decorator to override a function in the cortex_module_test module.
+    """
+    module_switcher.override_function("cortex_module_test", func.__name__, func)
+    return func
 
 
 def content_profiler(func):

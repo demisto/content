@@ -1,0 +1,20 @@
+args:
+- description: The boolean to test.
+  name: my_arg
+  required: true
+comment: Test.
+commonfields:
+  id: TestOverrideCSUP
+  version: -1
+dockerimage: demisto/python3:3.11.10.113941
+enabled: true
+name: TestOverrideCSUP
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)

@@ -11,6 +11,8 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 
 from CommonServerUserPython import *  # noqa
 
+from cortex_module_test import *
+
 # Disable insecure warnings #
 urllib3.disable_warnings()
 
@@ -969,6 +971,7 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
+    print(argToBoolean("True"))
     app_id_obj = params.get("app_id")
     app_id = app_id_obj["identifier"]
     app_secret = app_id_obj["password"]

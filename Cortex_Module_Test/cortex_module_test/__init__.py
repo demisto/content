@@ -5,6 +5,6 @@ def hello():
 
 # Exposed imports:
 
-from .test_override_csp import arg_to_number
+from .test_override_csp import arg_to_number, argToBoolean
 
-__all__ = ["arg_to_number"]
+__all__ = ["arg_to_number", "argToBoolean"]

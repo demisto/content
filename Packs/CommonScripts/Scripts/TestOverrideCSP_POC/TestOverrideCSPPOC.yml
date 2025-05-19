@@ -1,0 +1,20 @@
+args:
+- description: The boolean to test.
+  name: number_to_test
+  required: true
+comment: Test.
+commonfields:
+  id: TestOverrideCSP_POC
+  version: -1
+dockerimage: devdemisto/python3:3.12.8.3383313
+enabled: true
+name: TestOverrideCSP_POC
+runas: DBotWeakRole
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
