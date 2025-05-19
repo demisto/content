@@ -1,17 +1,7 @@
 import random
 
 from unittest.mock import MagicMock
-from CybelAngelEventCollector import (
-    Client,
-    URL,
-    DATE_FORMAT,
-    ID_KEYS,
-    REPORT,
-    DOMAIN,
-    CREDENTIALS,
-    LATEST_TIME,
-    LATEST_FETCHED_IDS,
-)
+from CybelAngelEventCollector import Client, DATE_FORMAT, REPORT, DOMAIN, CREDENTIALS, LATEST_TIME, LATEST_FETCHED_IDS, EVENT_TYPE
 from CommonServerPython import *
 import pytest
 
@@ -44,13 +34,13 @@ class HttpRequestsMocker:
 
     def valid_http_request_side_effect(self, method: str, url_suffix: str = "", params: Dict | None = None, **kwargs):
         if method == "GET":
-            if url_suffix == URL[REPORT]:
+            if url_suffix == EVENT_TYPE[REPORT].url_suffix:
                 start_date = params.get("start-date")
                 events = create_report_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-            elif url_suffix == URL[DOMAIN]:
+            elif url_suffix == EVENT_TYPE[DOMAIN].url_suffix:
                 start_date = params.get("min-date")
                 events = create_domain_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-            elif url_suffix == URL[CREDENTIALS]:
+            elif url_suffix == EVENT_TYPE[CREDENTIALS].url_suffix:
                 start_date = params.get("start")
                 events = create_creds_events(1, amount_of_events=self.num_of_events, start_date=start_date)
             return create_mocked_response(events)
@@ -76,7 +66,7 @@ def create_report_events(start_id: int, amount_of_events: int, start_date: str) 
     """Return {"reports": [...]} with shuffled `_time` and `id` fields."""
     events = [
         {
-            ID_KEYS[REPORT]: i,
+            EVENT_TYPE[REPORT].id_key: str(i),
             "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -89,7 +79,7 @@ def create_domain_events(start_id: int, amount_of_events: int, start_date: str, 
     """Return {"results": [...]} with reversed chronological order."""
     events = [
         {
-            ID_KEYS[DOMAIN]: i,
+            **{k: str(i) for k in EVENT_TYPE[DOMAIN].id_key},
             "detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id + amount_of_events - 1, start_id - 1, -1)
@@ -101,11 +91,22 @@ def create_creds_events(start_id: int, amount_of_events: int, start_date: str) -
     """Return a plain list of credential-watchlist events in ascending order."""
     return [
         {
-            ID_KEYS[CREDENTIALS]: i,
+            EVENT_TYPE[CREDENTIALS].id_key: str(i),
             "last_detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
     ]
+
+
+@pytest.fixture(autouse=True)
+def mock_get_id(monkeypatch):
+    def mock_get_id(self, event):
+        # Use the first key in id_key list, or id_key itself if it's a string
+        if isinstance(self.id_key, list):
+            return str(event.get(self.id_key[-1], ""))
+        return str(event.get(self.id_key, ""))
+
+    monkeypatch.setattr("CybelAngelEventCollector.EventType.get_id", mock_get_id)
 
 
 def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
@@ -126,7 +127,7 @@ def test_get_last_run_no_previous(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={})
     now = datetime(2025, 5, 15, 12, 0, 0)
     result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
-    expected_time = (now - timedelta(days=60)).strftime(DATE_FORMAT)  # TODO
+    expected_time = (now - timedelta(days=180)).strftime(DATE_FORMAT)  # TODO
 
     for etype in (REPORT, DOMAIN, CREDENTIALS):
         assert etype in result
@@ -298,8 +299,8 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
-    id_key = ID_KEYS[event_type]
-    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[-1][id_key]
+    last_id = EVENT_TYPE[event_type].get_id(fetched_events[-1])
+    assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
 
 
 def test_fetch_events_token_expired(mocker):
@@ -393,7 +394,7 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
         return_value={
             event_type: {
                 LATEST_TIME: "2024-02-29T13:48:32",
-                LATEST_FETCHED_IDS: [1, 2],
+                LATEST_FETCHED_IDS: ["1", "2"],
             }
         },
     )
@@ -423,10 +424,14 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
     assert len(fetched_events) == 98
 
     assert set_last_run_mocker.called
+
     last_run = set_last_run_mocker.call_args[0][0]
     assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
-    id_key = ID_KEYS[event_type]
-    assert last_run[event_type][LATEST_FETCHED_IDS][0] == fetched_events[-1][id_key]
+
+    last_id = EVENT_TYPE[event_type].get_id(fetched_events[-1])
+    assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
+
+    assert all(event["SOURCE_LOG_TYPE"] == EVENT_TYPE[event_type].source_log_type for event in fetched_events)
 
 
 def test_fetch_events_with_last_run_no_events(mocker):
@@ -583,7 +588,7 @@ def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_ke
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun")
 
     num_events = 5
-    last_ids = list(range(1, num_events + 1))
+    last_ids = [str(i) for i in range(1, 6)]
     initial_time = "2025-01-01T00:00:00"
     mocker.patch.object(
         demisto,
@@ -1022,14 +1027,14 @@ def test_fetch_events_domain_two_call_paging(mocker):
       - lastRun is set to the time & ID of event 95
     """
     import CybelAngelEventCollector
-    from CybelAngelEventCollector import Client, DOMAIN, ID_KEYS, LATEST_TIME, LATEST_FETCHED_IDS
+    from CybelAngelEventCollector import Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS
 
     send_events = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
     mocker.patch.object(
         demisto,
         "getLastRun",
-        return_value={DOMAIN: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: list(range(1, 26))}},
+        return_value={DOMAIN: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: [str(i) for i in range(1, 26)]}},
     )
     mocker.patch.object(
         demisto,
@@ -1053,13 +1058,15 @@ def test_fetch_events_domain_two_call_paging(mocker):
     fetched = send_events.call_args[0][0]
 
     assert len(fetched) == 70
+    assert fetched[0]["SOURCE_LOG_TYPE"] == EVENT_TYPE[DOMAIN].source_log_type
 
-    returend_ids = [event[ID_KEYS[DOMAIN]] for event in fetched]
-    assert returend_ids == list(range(26, 96))
+    returend_ids = [EVENT_TYPE[DOMAIN].get_id(event) for event in fetched]
+    assert returend_ids == [str(i) for i in range(26, 96)]
 
     lr = set_last_run.call_args[0][0]
     assert lr[DOMAIN][LATEST_TIME] == fetched[-1]["_time"]
-    assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == fetched[-1][ID_KEYS[DOMAIN]]
+    last_id = EVENT_TYPE[DOMAIN].get_id(fetched[-1])
+    assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == last_id
 
 
 def test_get_latest_event_time_and_ids():
@@ -1081,14 +1088,14 @@ def test_get_latest_event_time_and_ids():
     last_run_time = "2024-02-29T13:48:32"
     events = [
         {
-            ID_KEYS[REPORT]: f"{i}",
+            EVENT_TYPE[REPORT].id_key: f"{i}",
             "_time": last_run_time,
         }
         for i in range(4, 7)
     ]
     last_run_ids = ["1", "2", "3"]
     last_time, last_ids = get_latest_event_time_and_ids(
-        events=events, event_type=REPORT, last_run_time=last_run_time, last_run_ids=last_run_ids
+        events=events, event_type=EVENT_TYPE[REPORT], last_run_time=last_run_time, last_run_ids=last_run_ids
     )
     assert last_time == last_run_time
     assert len(last_ids) == 6
@@ -1106,35 +1113,46 @@ def test_fetch_events_same_timestamp(mocker):
 
     Then:
       - get_domain_watchlist called with limit = 6.
-      - Only events 4,5,6 are send back from the function.
+      - Only events 4,5,6 are sent back from the function.
       - lastRun is set to the same time with all 6 ids.
     """
-    from CybelAngelEventCollector import fetch_events
+    from CybelAngelEventCollector import fetch_events, Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS, EVENT_TYPE
 
     last_run_time = "2024-02-29T13:48:32"
     last_run_ids = ["1", "2", "3"]
+
+    # Mock LastRun so fetch_events sees 1,2,3 already fetched at that timestamp
     mocker.patch.object(
         demisto, "getLastRun", return_value={DOMAIN: {LATEST_TIME: last_run_time, LATEST_FETCHED_IDS: last_run_ids}}
     )
 
+    # DummyClient must match the real signature: (start_date, end_date, event_type, limit)
     class DummyClient(Client):
         def __init__(self):
+            super().__init__(base_url="", client_id="", client_secret="", verify=False, proxy=False)
             self.called = {}
 
-        def get_domain_watchlist(self, start_date, end_date, limit):
+        def get_domain_watchlist(self, start_date, end_date, event_type, limit):
+            # record the limit we were asked for
             self.called["limit"] = limit
-            return [{ID_KEYS[DOMAIN]: str(i), "_time": last_run_time} for i in range(1, limit + 1)]
+            # return events 1..limit, all stamped with the same timestamp
+            return [{"domain": str(i), "_time": last_run_time} for i in range(1, limit + 1)]
 
     client = DummyClient()
     max_fetch = {DOMAIN: 3}
 
+    # Run the orchestration
     events, new_last_run = fetch_events(client, max_fetch, [DOMAIN])
+
+    # 1) We should have fetched limit = previous_ids(3) + max_fetch(3) = 6
     assert client.called["limit"] == 6
 
+    # 2) Of those 6, only IDs 4,5,6 remain after dedup + truncation to max_fetch=3
     assert len(events) == 3
-    returned_ids = [e[ID_KEYS[DOMAIN]] for e in events]
+    returned_ids = [EVENT_TYPE[DOMAIN].get_id(e) for e in events]
     assert returned_ids == ["4", "5", "6"]
 
+    # 3) last_run should still have that same timestamp, but now include all six IDs
     assert DOMAIN in new_last_run
     assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
-    assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {"1", "2", "3", "4", "5", "6"}
+    assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
