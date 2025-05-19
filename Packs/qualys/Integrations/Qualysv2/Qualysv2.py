@@ -1606,23 +1606,47 @@ inner_args_values: dict[str, Any] = {}
 """ TIMEOUT HANDLING """
 
 
-class SignalTimeoutError(BaseException):
-    pass
+class SignalTimeoutError(Exception):
+    """Custom exception raised when the execution timeout is reached."""
 
 
 class ExecutionTimeout:
+    """Context manager to limit the execution time of a code block.
+
+    Example:
+        >>> with ExecutionTimeout(5):
+        ...     time.sleep(10)
+    """
+
     def __init__(self, seconds: int | float):
+        """Initializes the ExecutionTimeout context manager.
+
+        Args:
+            seconds: The maximum execution time in seconds.
+        """
         self.seconds = int(seconds)
 
     def _timeout_handler(self, signum, frame):
+        """Signal handler that raises a `SignalTimeoutError`."""
         raise SignalTimeoutError
 
-    def __enter__(self):
+    def __enter__(self) -> None:
+        """Enters the context manager by setting up the signal handler for SIGALRM and starts the timer."""
         demisto.debug(f"Running with execution timeout: {self.seconds}")
         signal.signal(signal.SIGALRM, self._timeout_handler)  # Set handler for SIGALRM
         signal.alarm(self.seconds)  # start countdown for SIGALRM to be raised
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, exc_val, exc_tb) -> bool:
+        """Exits the context manager by cancelling the SIGALARM and suppressing the `SignalTimeoutError`.
+
+        Args:
+            exc_type: The type of the exception that occurred, if any.
+            exc_val: The instance of the exception that occurred, if any.
+            exc_tb: A traceback object showing where the exception occurred, if any.
+
+        Returns:
+            True if the `SignalTimeoutError` was raised and suppressed, False otherwise.
+        """
         demisto.debug("Resetting timed signal")
         signal.alarm(0)  # Cancel SIGALRM if it's scheduled
         return exc_type is SignalTimeoutError  # Suppress SignalTimeoutError
@@ -3383,6 +3407,7 @@ def fetch_assets_and_vulnerabilities_by_date(client: Client, last_run: dict[str,
         # Initialize to True, could be changed to False via internal functions
         set_new_limit = True
         with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
+            # Exits code block below if it takes longer to execute than the specified timeout
             assets, new_last_run, total_assets_to_report, snapshot_id, set_new_limit = fetch_assets(client, last_run)
             demisto.debug("Finished fetch for assets.")
 
@@ -3436,6 +3461,7 @@ def fetch_assets_and_vulnerabilities_by_qids(client: Client, last_run: dict[str,
     # Initialize to True, could be changed to False via internal functions
     set_new_limit = True
     with ExecutionTimeout(FETCH_ASSETS_COMMAND_TIME_OUT):
+        # Exits code block below if it takes longer to execute than the specified timeout
         assets, new_last_run, _, snapshot_id, set_new_limit = fetch_assets(client, last_run)
         detection_qids: list = list({asset.get("DETECTION", {}).get("QID") for asset in assets})
         vulnerabilities, _ = fetch_vulnerabilities(client, last_run, detection_qids) if detection_qids else ([], {})

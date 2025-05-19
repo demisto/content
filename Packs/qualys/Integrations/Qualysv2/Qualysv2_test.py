@@ -76,7 +76,7 @@ def util_load_json(path: str):
         return json.loads(f.read())
 
 
-def until_sleep(sleep_time: int | float) -> bool:
+def sleep_delay(sleep_time: int | float) -> bool:
     """Mocks a slow function by introducing an artificial delay using the `sleep_time` argument.
 
     Args:
@@ -1935,11 +1935,11 @@ def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
         - An execution timeout value of 2 seconds.
 
     When:
-        - When calling until_sleep with a simulated "slow" and "fast" executions.
+        - When calling sleep_delay with a simulated "slow" and "fast" executions.
 
     Assert:
-        - Case A (Slow): Ensure is_finished is False since until_sleep timed out (sleep_time > execution_timeout).
-        - Case B (Fast): Ensure is_finished is True since util_sleep finished in time (sleep_time < execution_timeout).
+        - Case A (Slow): Ensure is_finished is False since sleep_delay timed out (sleep_time > execution_timeout).
+        - Case B (Fast): Ensure is_finished is True since sleep_delay finished in time (sleep_time < execution_timeout).
     """
     from Qualysv2 import ExecutionTimeout
 
@@ -1947,6 +1947,6 @@ def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
 
     is_finished = False
     with ExecutionTimeout(seconds=execution_timeout):
-        is_finished = until_sleep(sleep_time)
+        is_finished = sleep_delay(sleep_time)
 
     assert is_finished == expected_is_finished
