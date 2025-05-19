@@ -1,5 +1,5 @@
 {
-  "trigger_id": "d5e971c73b50814fe11917c5100bb71b",
+  "trigger_id": "e1733a9838886a7a14a2100efac7e9f3",
   "playbook_id": "silent-Script file added to startup-related Registry keys",
   "suggestion_reason": "Recommended for 'Script file added to startup-related Registry keys' alerts",
   "description": "This trigger is responsible for handling the 'Script file added to startup-related Registry keys' alerts",
