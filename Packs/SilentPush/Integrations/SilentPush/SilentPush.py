@@ -234,7 +234,7 @@ LIVE_SCAN_URL_INPUTS = [
     InputArgument(name="region", description="Region to scan the URL in."),
 ]
 FUTURE_ATTACK_INDICATOR_INPUTS = [
-    InputArgument(name="feed_uuid", description="Unique ID for the feed.", required=True),
+    InputArgument(name="source_uuids", description="Unique ID for the feed.", required=True),
     InputArgument(name="page_no", description="The page number to fetch results from."),
     InputArgument(name="page_size", description="The number of indicators to fetch per page."),
 ]
@@ -1263,7 +1263,7 @@ LIVE_SCAN_URL_OUTPUTS = [
     ),
 ]
 FUTURE_ATTACK_INDICATOR_OUTPUTS = [
-    OutputArgument(name="feed_uuid", output_type=str, description="Unique identifier for the feed."),
+    OutputArgument(name="source_uuids", output_type=str, description="Unique identifier for the feed."),
     OutputArgument(name="page_no", output_type=int, description="Current page number for pagination."),
     OutputArgument(name="page_size", output_type=int, description="Number of items to be retrieved per page."),
     OutputArgument(
@@ -2227,19 +2227,19 @@ class Client(BaseClient):
 
         return self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-    def get_future_attack_indicators(self, feed_uuid: str, page_no: int = 1, page_size: int = 10000) -> dict[str, Any]:
+    def get_future_attack_indicators(self, source_uuids: str, page_no: int = 1, page_size: int = 10000) -> dict[str, Any]:
         """
         Retrieve indicators of future attack feed from SilentPush.
 
         Args:
-            feed_uuid (str): Feed unique identifier to fetch records for.
+            source_uuids (str): Feed unique identifier to fetch records for.
             page_no (int, optional): Page number for pagination. Defaults to 1.
             page_size (int, optional): Number of records per page. Defaults to 10000.
 
         Returns:
             Dict[str, Any]: Response containing future attack indicators.
         """
-        params = {"feed_uuids": feed_uuid, "page": page_no, "size": page_size}
+        params = {"source_uuids": source_uuids, "page": page_no, "size": page_size}
 
         query_string = urlencode(params)
         url = self._base_url.replace("/api/v1/merge-api", "") + f"/api/v2/iocs/threat-ranking/?{query_string}"
@@ -3588,7 +3588,7 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
 
     Args:
         client (Client): SilentPush API client instance.
-        args (dict): Command arguments, should include 'feed_uuid' and may include 'page_no', and 'page_size'.
+        args (dict): Command arguments, should include 'source_uuids' and may include 'page_no', and 'page_size'.
 
     Returns:
         CommandResults: Results for XSOAR containing future attack indicators or error message.
@@ -3596,14 +3596,14 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
     Raises:
         ValueError: If required parameters are missing.
     """
-    feed_uuid = args.get("feed_uuid")
+    source_uuids = args.get("source_uuids")
     page_no = int(args.get("page_no", 1))
     page_size = int(args.get("page_size", 10000))
 
-    if not feed_uuid:
-        raise ValueError("feed_uuid is a required parameter")
+    if not source_uuids:
+        raise ValueError("source_uuids is a required parameter")
 
-    raw_response = client.get_future_attack_indicators(feed_uuid, page_no, page_size)
+    raw_response = client.get_future_attack_indicators(source_uuids, page_no, page_size)
 
     # Handle list or dict gracefully
     if isinstance(raw_response, list):
@@ -3614,7 +3614,7 @@ def get_future_attack_indicators_command(client: Client, args: dict[str, Any]) -
     return CommandResults(
         readable_output=tableToMarkdown("SilentPush Future Attack Indicators", indicators),
         outputs_prefix="SilentPush.FutureAttackIndicators",
-        outputs_key_field="feed_uuid",  # replace with appropriate key like "uuid" if needed
+        outputs_key_field="source_uuids",  # replace with appropriate key like "uuid" if needed
         outputs=indicators,
         raw_response=raw_response,
     )

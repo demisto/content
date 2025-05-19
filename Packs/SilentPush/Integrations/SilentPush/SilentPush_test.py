@@ -395,7 +395,7 @@ def test_get_ipv4_reputation_command_no_ipv4(mock_client):
 
 def test_get_future_attack_indicators_command_success(mock_client, mocker):
     # Mock arguments
-    args = {"feed_uuid": "test-feed-uuid", "page_no": "1", "page_size": "10"}
+    args = {"source_uuids": "test-source-uuids", "page_no": "1", "page_size": "10"}
 
     # Mock response from client
     mock_response = [
@@ -413,7 +413,7 @@ def test_get_future_attack_indicators_command_success(mock_client, mocker):
     # Assertions
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.FutureAttackIndicators"
-    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs_key_field == "source_uuids"
     assert result.outputs == mock_response
     assert result.readable_output == "Mocked Markdown Table"
 
@@ -423,13 +423,13 @@ def test_get_future_attack_indicators_command_no_feed_uuid(mock_client):
     args = {}
 
     # Call the function and expect ValueError
-    with pytest.raises(ValueError, match="feed_uuid is a required parameter"):
+    with pytest.raises(ValueError, match="source_uuids is a required parameter"):
         get_future_attack_indicators_command(mock_client, args)
 
 
 def test_get_future_attack_indicators_command_no_data(mock_client, mocker):
     # Mock arguments
-    args = {"feed_uuid": "test-feed-uuid", "page_no": "1", "page_size": "10"}
+    args = {"source_uuids": "test-source-uuids", "page_no": "1", "page_size": "10"}
 
     # Mock response from client
     mock_response = []
