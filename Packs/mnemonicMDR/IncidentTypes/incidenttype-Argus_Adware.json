@@ -1,10 +1,10 @@
 {
-    "id": "Operational",
+    "id": "Argus - Adware",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Operational",
-    "prevName": "Operational",
+    "name": "Argus - Adware",
+    "prevName": "Adware",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

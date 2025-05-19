@@ -1,10 +1,10 @@
 {
-    "id": "Anomaly",
+    "id": "Argus - Denial of Service",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Anomaly",
-    "prevName": "Anomaly",
+    "name": "Argus - Denial of Service",
+    "prevName": "Denial of service",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

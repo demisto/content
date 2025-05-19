@@ -1,10 +1,10 @@
 {
-    "id": "Misconfigured",
+    "id": "Argus - Attempted Compromise",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Misconfigured",
-    "prevName": "Misconfigured",
+    "name": "Argus - Attempted Compromise",
+    "prevName": "Attempted compromise",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

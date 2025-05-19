@@ -1,10 +1,10 @@
 {
-    "id": "Poor practice",
+    "id": "Argus - Operational",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Poor practice",
-    "prevName": "Poor practice",
+    "name": "Argus - Operational",
+    "prevName": "Operational",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

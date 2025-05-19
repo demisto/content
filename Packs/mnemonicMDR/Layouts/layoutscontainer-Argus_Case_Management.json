@@ -281,7 +281,7 @@
                             },
                             {
                                 "endCol": 2,
-                                "fieldId": "arguscasestatus",
+                                "fieldId": "arguscasestatusv2",
                                 "height": 22,
                                 "id": "14361410-964d-11ed-9e59-bb40c935a44c",
                                 "index": 3,

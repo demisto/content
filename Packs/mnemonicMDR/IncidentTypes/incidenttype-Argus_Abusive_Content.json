@@ -1,10 +1,10 @@
 {
-    "id": "Compromise",
+    "id": "Argus - Abusive Content",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Compromise",
-    "prevName": "Compromise",
+    "name": "Argus - Abusive Content",
+    "prevName": "Abusive content",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

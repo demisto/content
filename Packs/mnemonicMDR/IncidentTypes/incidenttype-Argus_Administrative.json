@@ -1,9 +1,9 @@
 {
-    "id": "Administrative",
+    "id": "Argus - Administrative",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Administrative",
+    "name": "Argus - Administrative",
     "prevName": "Administrative",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",

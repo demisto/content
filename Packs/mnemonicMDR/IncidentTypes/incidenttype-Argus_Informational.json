@@ -1,10 +1,10 @@
 {
-    "id": "Fraud",
+    "id": "Argus - Informational",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Fraud",
-    "prevName": "Fraud",
+    "name": "Argus - Informational",
+    "prevName": "Informational",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,

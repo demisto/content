@@ -1,10 +1,10 @@
 {
-    "id": "Informational",
+    "id": "Argus - Change",
     "version": -1,
     "vcShouldIgnore": false,
     "locked": false,
-    "name": "Informational",
-    "prevName": "Informational",
+    "name": "Argus - Change",
+    "prevName": "Change",
     "color": "#F27718",
     "playbookId": "Argus - Generic Case Handling",
     "hours": 0,
