@@ -112,9 +112,7 @@ class CommvaultClientMock(Client):
                 ]
             }
         elif endpoint.startswith("/User?level=10"):
-            return {
-                "users": [{"email": "dummy@email.com", "userEntity": {"userId": 1}}]
-            }
+            return {"users": [{"email": "dummy@email.com", "userEntity": {"userId": 1}}]}
         elif endpoint.startswith("/ApiToken/User"):
             return {"token": "keyvaulturl"}
         elif endpoint.startswith("/recoverygroups"):
@@ -202,9 +200,7 @@ class CommvaultClientMock(Client):
                         demisto.info(f"Disconnected from {address}")
                         break
                 except Exception as error:
-                    demisto.error(
-                        f"Error occurred during long running loop. Error was: {error}"
-                    )
+                    demisto.error(f"Error occurred during long running loop. Error was: {error}")
                 finally:
                     demisto.debug("Finished reading message")
         finally:
@@ -219,13 +215,8 @@ def test_disable_data_aging():
         proxy=False,  # disable-secrets-detection
     )
     response = disable_data_aging(client)
-    expected_resp = {
-        "DisableDataAgingResponse": "Error disabling data aging on the client"
-    }
-    assert (
-        response.raw_response["DisableDataAgingResponse"]
-        == expected_resp["DisableDataAgingResponse"]
-    )
+    expected_resp = {"DisableDataAgingResponse": "Error disabling data aging on the client"}
+    assert response.raw_response["DisableDataAgingResponse"] == expected_resp["DisableDataAgingResponse"]
 
 
 def test_copy_files_to_war_room():
@@ -243,10 +234,7 @@ def test_generate_access_token():
     )
     resp = generate_access_token(client, "")
     expected_resp = {"GenerateTokenResponse": "Successfully generated access token"}
-    assert (
-        resp.raw_response["GenerateTokenResponse"]
-        == expected_resp["GenerateTokenResponse"]
-    )
+    assert resp.raw_response["GenerateTokenResponse"] == expected_resp["GenerateTokenResponse"]
 
 
 def test_fetch_and_disable_saml_identity_provider():
@@ -257,12 +245,8 @@ def test_fetch_and_disable_saml_identity_provider():
         proxy=False,  # disable-secrets-detection
     )
     resp = fetch_and_disable_saml_identity_provider(client)
-    expected_resp = {
-        "DisableSamlResponse": "Successfully disabled SAML identity provider"
-    }
-    assert (
-        resp.raw_response["DisableSamlResponse"] == expected_resp["DisableSamlResponse"]
-    )
+    expected_resp = {"DisableSamlResponse": "Successfully disabled SAML identity provider"}
+    assert resp.raw_response["DisableSamlResponse"] == expected_resp["DisableSamlResponse"]
 
 
 def test_disable_user():
@@ -274,22 +258,15 @@ def test_disable_user():
     )
     resp = disable_user(client, "dummy@email.com")
     expected_resp = {"DisableUserResponse": "Successfully disabled user"}
-    assert (
-        resp.raw_response["DisableUserResponse"] == expected_resp["DisableUserResponse"]
-    )
+    assert resp.raw_response["DisableUserResponse"] == expected_resp["DisableUserResponse"]
 
 
 def test_get_access_token_from_keyvault():
     """Unit test function"""
-    client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
-    )
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
     resp = get_secret_from_key_vault(client)
     expected_resp = {"GetAccessTokenResponse": "secret"}
-    assert (
-        resp.raw_response["GetAccessTokenResponse"]
-        == expected_resp["GetAccessTokenResponse"]
-    )
+    assert resp.raw_response["GetAccessTokenResponse"] == expected_resp["GetAccessTokenResponse"]
 
 
 def test_fetch_incidents():
@@ -359,18 +336,12 @@ def test_add_vm_to_cleanroom(capfd):
             proxy=False,  # disable-secrets-detection
         )
         resp = add_vm_to_cleanroom(client, "vm_name", "02:12:2024 21:00:00")
-        assert (
-            resp.raw_response["AddEntityToCleanroomResponse"]
-            == "Successfully added entity to clean room."
-        )
+        assert resp.raw_response["AddEntityToCleanroomResponse"] == "Successfully added entity to clean room."
 
         try:
             _ = client.get_point_in_time_timestamp("invalid date")
         except Exception as e:
-            assert (
-                str(e)
-                == "Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss"
-            )
+            assert str(e) == "Invalid recovery point format. Use format dd:mm:yyyy hh:mm:ss"
 
 
 def test_webhook():
@@ -393,23 +364,17 @@ def test_webhook():
             "BackupSetId:[0];SubclientId:[0];JobId:[79037346]</span></html>"
         ),
     }
-    client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
-    )
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
     incident_body = handle_post_helper(client, req, None)
     client.create_incident(
         incident_body,
-        datetime.fromtimestamp(
-            (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
-        ),
+        datetime.fromtimestamp((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()),
         "Commvault Suspicious File Activity",
         False,
     )
     client.create_incident(
         incident_body,
-        datetime.fromtimestamp(
-            (datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()
-        ),
+        datetime.fromtimestamp((datetime.utcnow() - datetime(1970, 1, 1)).total_seconds()),
         "Commvault Suspicious File Activity",
         True,
     )
@@ -435,9 +400,7 @@ def test_misc_functions():
         "SubclientId:[0];JobId:[185348]</span></html>     #011}"
     )
     string = bytes(string, "utf-8")
-    client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
-    )
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
     client.set_props({"AzureKeyVaultUrl": {"password": "password"}})
     key = client.get_key_vault_access_token()
 
@@ -478,7 +441,5 @@ def test_misc_functions():
 
 
 def test_validate_inputs():
-    client = CommvaultClientMock(
-        base_url="https://webservice_url:81", verify=False, proxy=False
-    )
+    client = CommvaultClientMock(base_url="https://webservice_url:81", verify=False, proxy=False)
     validate_inputs(0, client, True, True, False, "")

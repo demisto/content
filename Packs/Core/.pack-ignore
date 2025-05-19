@@ -16,14 +16,6 @@ ignore=BA101
 [file:playbook-XCloud_Cryptomining.yml]
 ignore=BA101
 
-# See CIAC-7711, CIAC-11954
-[file:playbook-Suspicious_Hidden_User_Created.yml]
-ignore=GR103
-
-# See CIAC-7711, CIAC-11954
-[file:playbook-Excessive_User_Account_Lockouts.yml]
-ignore=GR103
-
 # GR103 is temporary, see CIAC-11705
 [file:layoutscontainer-Default.json]
 ignore=GR103,LO107
@@ -33,10 +25,6 @@ ignore=LO107
 
 [file:layoutscontainer-Identity_Analytics_Alerts.json]
 ignore=LO107
-
-# GR103 is temporary, see CIAC-11954
-[file:playbook-Scheduled_task_created_with_HTTP_or_FTP_reference.yml]
-ignore=GR103
 
 [known_words]
 xsiam

@@ -1,0 +1,84 @@
+category: Analytics & SIEM
+sectionorder:
+- Connect
+- Collect
+commonfields:
+  id: ExtrahopRevealXEventCollector
+  version: -1
+configuration:
+- display: Server URL
+  name: server_url
+  required: true
+  type: 0
+  section: Connect
+- additionalinfo: The Client Credentials (ID, Secret) generated on your ExtraHop system that is required for authentication if connecting to ExtraHop Reveal(x) 360.
+  displaypassword: Client Secret
+  display: Client ID
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+  hidden:
+  - xsoar
+  defaultvalue: "true"
+- additionalinfo: 'Defines the maximum number of audits events per fetch cycle. Default value: 25000.'
+  defaultvalue: "25000"
+  display: Maximum number of events per fetch
+  name: max_events_per_fetch
+  required: true
+  type: 0
+  section: Collect
+  advanced: true
+description: ExtraHop Reveal(x) is a network detection and response solution that provides complete visibility of network communications at enterprise scale, real-time threat detections backed by machine learning, and guided investigation workflows that simplify response.
+display: ExtraHop Reveal(x) Event Collector
+name: ExtrahopRevealXEventCollector
+supportlevelheader: xsoar
+script:
+  commands:
+  - name: revealx-get-events
+    description: Retrieves a list of audit logs events from the Extrahop RevealX instance.
+    arguments:
+      - auto: PREDEFINED
+        defaultValue: 'false'
+        description: Set this argument to true in order to create events, otherwise it will only display them.
+        name: should_push_events
+        predefined:
+          - 'true'
+          - 'false'
+        required: true
+      - description: Returns no more than the specified number of detections.
+        name: limit
+        required: false
+      - description: "The UTC date or relative timestamp from where to start fetching incidents
+                      Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ."
+        name: first_fetch
+        required: false
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  isfetchevents: true
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+marketplaces:
+- marketplacev2
+tests:
+- No tests (auto formatted)

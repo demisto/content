@@ -1,7 +1,8 @@
 import json
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 from CommonServerPython import *
 
 """MOCK PARAMETERS """
@@ -59,19 +60,13 @@ def mock_client():
         ),
         (
             "list_users.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "Qmasters",
         ),
         (
             "list_users_filter.json",
-            {
-                "limit": "2",
-                "first_name": "Allen"
-            },
+            {"limit": "2", "first_name": "Allen"},
             1,
             "Allen",
         ),
@@ -125,19 +120,13 @@ def test_user_list_command(
         ),
         (
             "list_company.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "Best IT, Inc.",
         ),
         (
             "list_company_filter.json",
-            {
-                "limit": "2",
-                "company": "BMC Software, Inc."
-            },
+            {"limit": "2", "company": "BMC Software, Inc."},
             1,
             "BMC Software, Inc.",
         ),
@@ -183,21 +172,14 @@ def test_company_list_command(
     [
         (
             "list_tickets.json",
-            {
-                "limit": "2",
-                "ticket_type": "service request"
-            },
+            {"limit": "2", "ticket_type": "service request"},
             "SRM:Request",
             2,
             "000000000000402",
         ),
         (
             "list_tickets.json",
-            {
-                "page": "2",
-                "page_size": "1",
-                "ticket_type": "service request"
-            },
+            {"page": "2", "page_size": "1", "ticket_type": "service request"},
             "SRM:Request",
             1,
             "000000000000403",
@@ -264,19 +246,13 @@ def test_ticket_list_command(
         ),
         (
             "list_srd.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "To request new  Corporate Wireless Plan or mobile Device",
         ),
         (
             "list_srd_filter.json",
-            {
-                "limit": "2",
-                "description": "mobile device"
-            },
+            {"limit": "2", "description": "mobile device"},
             1,
             "Submit the Access and Waiver form to request for your mobile device.",
         ),
@@ -330,19 +306,13 @@ def test_service_request_definition_list_command(
         ),
         (
             "list_change_template.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "ID005056B51438UcCcSgrxGYGQ5QwI",
         ),
         (
             "list_change_template_filter.json",
-            {
-                "limit": "2",
-                "description": "Provision"
-            },
+            {"limit": "2", "description": "Provision"},
             1,
             "AG00123F73CF5EK3sTSQnL3rAAd_QA",
         ),
@@ -396,10 +366,7 @@ def test_change_request_template_list_command(
         ),
         (
             "list_incident_template.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "AG00123F73CF5EKnsTSQ5rvrAAZfQA",
         ),
@@ -453,19 +420,13 @@ def test_incident_template_list_command(
         ),
         (
             "list_task_template.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "TM001143D417CBD_bDQwojSFAA9qQA",
         ),
         (
             "list_task_template_filter.json",
-            {
-                "limit": "2",
-                "description": "mobile device"
-            },
+            {"limit": "2", "description": "mobile device"},
             1,
             "TM001143D417CBESuBQwqsp9BAMtkA",
         ),
@@ -508,14 +469,16 @@ def test_task_template_list_command(
 
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_id",
-    [(
-        "service_request_create.json",
-        {
-            "srd_instance_id": "SRGAA5V0GENAWAO6ZQWYO6EBWDOUAU",
-        },
-        3,
-        "000000000000118",
-    )],
+    [
+        (
+            "service_request_create.json",
+            {
+                "srd_instance_id": "SRGAA5V0GENAWAO6ZQWYO6EBWDOUAU",
+            },
+            3,
+            "000000000000118",
+        )
+    ],
 )
 def test_service_request_create_command(
     response_file_name,
@@ -554,17 +517,19 @@ def test_service_request_create_command(
 
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_id",
-    [(
-        "create_change_request.json",
-        {
-            "template_id": "AG00123F73CF5EK3sTSQTb3rAAbfQA",
-            "first_name": "Allen",
-            "last_name": "Allbrook",
-            "summary": "test",
-        },
-        3,
-        "CRQ000000000109",
-    )],
+    [
+        (
+            "create_change_request.json",
+            {
+                "template_id": "AG00123F73CF5EK3sTSQTb3rAAbfQA",
+                "first_name": "Allen",
+                "last_name": "Allbrook",
+                "summary": "test",
+            },
+            3,
+            "CRQ000000000109",
+        )
+    ],
 )
 def test_change_request_create_command(
     response_file_name,
@@ -604,21 +569,23 @@ def test_change_request_create_command(
 
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_id",
-    [(
-        "incident_create.json",
-        {
-            "template_instance_id": "AG00123F73CF5EKnsTSQ5rvrAAZfQA",
-            "first_name": "Allen",
-            "last_name": "Allbrook",
-            "summary": "test",
-            "impact": "1-Extensive/Widespread",
-            "status": "Assigned",
-            "urgency": "1-Critical",
-            "details": "details",
-        },
-        3,
-        "INC000000000527",
-    )],
+    [
+        (
+            "incident_create.json",
+            {
+                "template_instance_id": "AG00123F73CF5EKnsTSQ5rvrAAZfQA",
+                "first_name": "Allen",
+                "last_name": "Allbrook",
+                "summary": "test",
+                "impact": "1-Extensive/Widespread",
+                "status": "Assigned",
+                "urgency": "1-Critical",
+                "details": "details",
+            },
+            3,
+            "INC000000000527",
+        )
+    ],
 )
 def test_incident_create_command(
     response_file_name,
@@ -661,20 +628,22 @@ def test_incident_create_command(
 
 @pytest.mark.parametrize(
     "response_file_name,command_arguments,expected_outputs_len,expected_id",
-    [(
-        "create_task.json",
-        {
-            "location_company": "Calbro Services",
-            "priority": "Critical",
-            "root_request_id": "PKE000000000227",
-            "root_ticket_type": "known error",
-            "summary": "test",
-            "status": "Assigned",
-            "details": "details",
-        },
-        3,
-        "TAS000000000409",
-    )],
+    [
+        (
+            "create_task.json",
+            {
+                "location_company": "Calbro Services",
+                "priority": "Critical",
+                "root_request_id": "PKE000000000227",
+                "root_ticket_type": "known error",
+                "summary": "test",
+                "status": "Assigned",
+                "details": "details",
+            },
+            3,
+            "TAS000000000409",
+        )
+    ],
 )
 def test_task_create_command(
     response_file_name,
@@ -851,8 +820,7 @@ def test_known_error_create_command(
         ),
     ],
 )
-def test_known_error_update_command(ticket_request_id, command_arguments, expected_msg,
-                                    requests_mock, mock_client):
+def test_known_error_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update Known error.
     Given:
@@ -891,8 +859,7 @@ def test_known_error_update_command(ticket_request_id, command_arguments, expect
         ),
     ],
 )
-def test_problem_investigation_update_command(ticket_request_id, command_arguments, expected_msg,
-                                              requests_mock, mock_client):
+def test_problem_investigation_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update problem investigation.
     Given:
@@ -930,8 +897,7 @@ def test_problem_investigation_update_command(ticket_request_id, command_argumen
         ),
     ],
 )
-def test_task_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock,
-                             mock_client):
+def test_task_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update task.
     Given:
@@ -969,8 +935,7 @@ def test_task_update_command(ticket_request_id, command_arguments, expected_msg,
         ),
     ],
 )
-def test_incident_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock,
-                                 mock_client):
+def test_incident_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update incident.
     Given:
@@ -1008,8 +973,7 @@ def test_incident_update_command(ticket_request_id, command_arguments, expected_
         ),
     ],
 )
-def test_change_request_update_command(ticket_request_id, command_arguments, expected_msg,
-                                       requests_mock, mock_client):
+def test_change_request_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update change request.
     Given:
@@ -1047,8 +1011,7 @@ def test_change_request_update_command(ticket_request_id, command_arguments, exp
         ),
     ],
 )
-def test_service_request_update_command(ticket_request_id, command_arguments, expected_msg,
-                                        requests_mock, mock_client):
+def test_service_request_update_command(ticket_request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update service request.
     Given:
@@ -1078,10 +1041,7 @@ def test_service_request_update_command(ticket_request_id, command_arguments, ex
         (
             "INC000000000532",
             "HPD:Help Desk",
-            {
-                "ticket_type": "incident",
-                "ticket_ids": "INC000000000532"
-            },
+            {"ticket_type": "incident", "ticket_ids": "INC000000000532"},
             "incident INC000000000532 was deleted successfully.",
         ),
     ],
@@ -1135,8 +1095,8 @@ def test_format_command_output():
     """
     from BmcITSM import (
         SERVICE_REQUEST_CONTEXT_MAPPER,
-        format_command_output,
         arrange_ticket_context_data,
+        format_command_output,
     )
 
     mapper = SERVICE_REQUEST_CONTEXT_MAPPER
@@ -1198,19 +1158,13 @@ def test_gen_fetch_incidents_query():
         ),
         (
             "list_support_group.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "SGP000000000110",
         ),
         (
             "list_support_group_filter.json",
-            {
-                "limit": "2",
-                "company": "Apex"
-            },
+            {"limit": "2", "company": "Apex"},
             1,
             "APX990000000029",
         ),
@@ -1265,39 +1219,27 @@ def test_list_support_group_command(
         ),
         (
             "list_work_order_template.json",
-            {
-                "page": "2",
-                "page_size": "1"
-            },
+            {"page": "2", "page_size": "1"},
             1,
             "IDGCWH5RDMNSBARVRNNGRVRNNGKY0X",
         ),
         (
             "list_work_order_template_filter.json",
-            {
-                "limit": "2",
-                "template_name": "UNIX User"
-            },
+            {"limit": "2", "template_name": "UNIX User"},
             1,
             "IDGCWH5RDMNSBARWFDYBRWFDYBB8NV",
         ),
         (
             "list_work_order_template.json",
-            {
-                "limit": 2,
-                "template_ids": "IDGCWH5RDMNSBARVRM5ERVRM5EKP11,IDGCWH5RDMNSBARVRNNGRVRNNGKY0X"
-            },
+            {"limit": 2, "template_ids": "IDGCWH5RDMNSBARVRM5ERVRM5EKP11,IDGCWH5RDMNSBARVRNNGRVRNNGKY0X"},
             2,
-            "IDGCWH5RDMNSBARVRM5ERVRM5EKP11"
+            "IDGCWH5RDMNSBARVRM5ERVRM5EKP11",
         ),
         (
             "list_work_order_template_filter.json",
-            {
-                "limit": 2,
-                "query": "Summary like \"%UNIX%\""
-            },
+            {"limit": 2, "query": 'Summary like "%UNIX%"'},
             1,
-            "IDGCWH5RDMNSBARWFDYBRWFDYBB8NV"
+            "IDGCWH5RDMNSBARWFDYBRWFDYBB8NV",
         ),
     ],
 )
@@ -1400,18 +1342,12 @@ def test_work_order_create_command(
     [
         (
             "WO0000000000701",
-            {
-                "request_id": "WO0000000000701",
-                "status": "In Progress",
-                "summary": "Updated Summary"
-
-            },
+            {"request_id": "WO0000000000701", "status": "In Progress", "summary": "Updated Summary"},
             "Work Order: WO0000000000701 was successfully updated.",
         ),
     ],
 )
-def test_work_order_update_command(request_id, command_arguments, expected_msg,
-                                   requests_mock, mock_client):
+def test_work_order_update_command(request_id, command_arguments, expected_msg, requests_mock, mock_client):
     """
     Scenario: Update Work error.
     Given:
@@ -1484,9 +1420,7 @@ def test_ticket_list_work_order_command(
     assert outputs[0]["DisplayID"] == expected_name
 
 
-def test_fetch_command(
-    mocker
-):
+def test_fetch_command(mocker):
     """
     Given:
      - List tickets.
@@ -1496,21 +1430,21 @@ def test_fetch_command(
      - Ensure that the *last_create_time* in *last_run_result* is the last between all incidents.
     """
     import BmcITSM
+
     mock_response = load_mock_response("list_tickets_not_sorted.json")
     expected_result = 1719671916
-    mocker.patch.object(demisto, 'getLastRun', return_value={"SRM:Request": {"last_create_time": '2021-06-29T14:38:36.000+0000'}})
+    mocker.patch.object(demisto, "getLastRun", return_value={"SRM:Request": {"last_create_time": "2021-06-29T14:38:36.000+0000"}})
     mocker.patch.object(BmcITSM, "fetch_relevant_tickets_by_ticket_type", return_value=mock_response)
-    incidents_result, last_run_result = BmcITSM.fetch_incidents(mock_client,
-                                                                max_fetch=2,
-                                                                first_fetch="2022-06-29T14:38:36.000+0000",
-                                                                last_run={"SRM:Request": {
-                                                                    "last_create_time": '2021-06-29T14:38:36.000+0000'}},
-                                                                ticket_type_filter=["SRM:Request"],
-                                                                status_filter=[],
-                                                                impact_filter=[],
-                                                                urgency_filter=[],
-                                                                custom_query=("('Submit Date' <= \"1657032797\" AND 'Submit Date'"
-                                                                              ">\"1657032797\") AND ('Urgency' = \"4-Low\")"),
-                                                                mirror_direction="both",
-                                                                )
+    incidents_result, last_run_result = BmcITSM.fetch_incidents(
+        mock_client,
+        max_fetch=2,
+        first_fetch="2022-06-29T14:38:36.000+0000",
+        last_run={"SRM:Request": {"last_create_time": "2021-06-29T14:38:36.000+0000"}},
+        ticket_type_filter=["SRM:Request"],
+        status_filter=[],
+        impact_filter=[],
+        urgency_filter=[],
+        custom_query=("('Submit Date' <= \"1657032797\" AND 'Submit Date'" '>"1657032797") AND (\'Urgency\' = "4-Low")'),  # noqa: ISC001
+        mirror_direction="both",
+    )
     assert last_run_result["SRM:Request"]["last_create_time"] == expected_result

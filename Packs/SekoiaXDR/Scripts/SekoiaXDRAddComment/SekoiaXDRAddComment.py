@@ -15,9 +15,7 @@ def post_comment(alert_short_id: str, comment: Optional[str], author: str):
             {"id": alert_short_id, "comment": comment, "author": author},
         )
     except Exception as e:
-        return_error(
-            f"Failed to post comment for alert with id {alert_short_id} : {str(e)}"
-        )
+        return_error(f"Failed to post comment for alert with id {alert_short_id} : {str(e)}")
 
 
 def main():

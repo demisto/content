@@ -14,15 +14,13 @@ def test_language_detect_english(mocker):
         - Verify the that english is returned.
 
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'text': 'This is some text'
-    })
+    mocker.patch.object(demisto, "args", return_value={"text": "This is some text"})
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     main()
     results = demisto.results.call_args
     # Didn't test probability cause it changes every run.
-    assert results[0][0]['Contents'][0].get('lang') == 'en'
+    assert results[0][0]["Contents"][0].get("lang") == "en"
 
 
 def test_language_detect_hebrew(mocker):
@@ -37,12 +35,10 @@ def test_language_detect_hebrew(mocker):
         - Verify the that Hebrew is returned.
 
     """
-    mocker.patch.object(demisto, 'args', return_value={
-        'text': 'טקסט לבדיקה'
-    })
+    mocker.patch.object(demisto, "args", return_value={"text": "טקסט לבדיקה"})
 
-    mocker.patch.object(demisto, 'results')
+    mocker.patch.object(demisto, "results")
     main()
     results = demisto.results.call_args
     # Didn't test probability cause it changes every run.
-    assert results[0][0]['Contents'][0].get('lang') == 'he'
+    assert results[0][0]["Contents"][0].get("lang") == "he"

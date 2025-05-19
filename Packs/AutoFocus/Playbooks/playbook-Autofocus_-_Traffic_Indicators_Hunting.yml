@@ -1831,3 +1831,8 @@ outputs:
 tests:
 - No tests (auto formatted)
 fromversion: 6.5.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

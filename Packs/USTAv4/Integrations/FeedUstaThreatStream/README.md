@@ -44,21 +44,21 @@ Search malware hash indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| hash | The hash to search for. It can be a SHA-1, SHA-256, or MD5 hash. | Required | 
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| hash | The hash to search for. It can be a SHA-1, SHA-256, or MD5 hash. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| USTA.ThreatStreamMalwareHashes.id | String | The ID of the alert | 
-| USTA.ThreatStreamMalwareHashes.hashes[0].sha256 | String | The SHA-256 hash of the malware | 
-| USTA.ThreatStreamMalwareHashes.hashes[0].md5 | String | The MD5 hash of the malware | 
-| USTA.ThreatStreamMalwareHashes.hashes[0].sha1 | String | The SHA-1 hash of the malware | 
-| USTA.ThreatStreamMalwareHashes.tags | Array | The tags of the malware | 
-| USTA.ThreatStreamMalwareHashes.created | Date | The creation date of the malware | 
-| USTA.ThreatStreamMalwareHashes.valid_from | Date | The valid from date of the malware | 
-| USTA.ThreatStreamMalwareHashes.valid_until | Date | The valid until date of the malware | 
+| USTA.ThreatStreamMalwareHashes.id | String | The ID of the alert |
+| USTA.ThreatStreamMalwareHashes.hashes[0].sha256 | String | The SHA-256 hash of the malware |
+| USTA.ThreatStreamMalwareHashes.hashes[0].md5 | String | The MD5 hash of the malware |
+| USTA.ThreatStreamMalwareHashes.hashes[0].sha1 | String | The SHA-1 hash of the malware |
+| USTA.ThreatStreamMalwareHashes.tags | Array | The tags of the malware |
+| USTA.ThreatStreamMalwareHashes.created | Date | The creation date of the malware |
+| USTA.ThreatStreamMalwareHashes.valid_from | Date | The valid from date of the malware |
+| USTA.ThreatStreamMalwareHashes.valid_until | Date | The valid until date of the malware |
 
 ### Command Example
 
@@ -102,21 +102,21 @@ Search malicious URL indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| url | The URL to search for. | Required | 
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| url | The URL to search for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| USTA.ThreatStreamMaliciousUrls.id | String | The ID of the alert | 
-| USTA.ThreatStreamMaliciousUrls.url | String | The URL of the malicious site | 
-| USTA.ThreatStreamMaliciousUrls.is_domain | Boolean | Whether the malicious site is a domain | 
-| USTA.ThreatStreamMaliciousUrls.ip_addresses | Array | The IP addresses of the malicious site | 
-| USTA.ThreatStreamMaliciousUrls.tags | Array | The tags of the malicious site | 
-| USTA.ThreatStreamMaliciousUrls.created | Date | The creation date of the malicious site | 
-| USTA.ThreatStreamMaliciousUrls.valid_from | Date | The valid from date of the malicious site | 
-| USTA.ThreatStreamMaliciousUrls.valid_until | Date | The valid until date of the malicious site | 
+| USTA.ThreatStreamMaliciousUrls.id | String | The ID of the alert |
+| USTA.ThreatStreamMaliciousUrls.url | String | The URL of the malicious site |
+| USTA.ThreatStreamMaliciousUrls.is_domain | Boolean | Whether the malicious site is a domain |
+| USTA.ThreatStreamMaliciousUrls.ip_addresses | Array | The IP addresses of the malicious site |
+| USTA.ThreatStreamMaliciousUrls.tags | Array | The tags of the malicious site |
+| USTA.ThreatStreamMaliciousUrls.created | Date | The creation date of the malicious site |
+| USTA.ThreatStreamMaliciousUrls.valid_from | Date | The valid from date of the malicious site |
+| USTA.ThreatStreamMaliciousUrls.valid_until | Date | The valid until date of the malicious site |
 
 ### Command Example
 
@@ -162,18 +162,18 @@ Search malicious URL indicators from the feed.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| url | The URL to search for. | Required | 
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| url | The URL to search for. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| USTA.ThreatStreamPhishingSites.id | String | The ID of the alert | 
-| USTA.ThreatStreamPhishingSites.url | String | The URL of the phishing site | 
-| USTA.ThreatStreamPhishingSites.is_domain | Boolean | Whether the phishing site is a domain | 
-| USTA.ThreatStreamPhishingSites.ip_addresses | Array | The IP addresses of the phishing site | 
-| USTA.ThreatStreamPhishingSites.created | Date | The creation date of the phishing site | 
+| USTA.ThreatStreamPhishingSites.id | String | The ID of the alert |
+| USTA.ThreatStreamPhishingSites.url | String | The URL of the phishing site |
+| USTA.ThreatStreamPhishingSites.is_domain | Boolean | Whether the phishing site is a domain |
+| USTA.ThreatStreamPhishingSites.ip_addresses | Array | The IP addresses of the phishing site |
+| USTA.ThreatStreamPhishingSites.created | Date | The creation date of the phishing site |
 
 ### Command Example
 

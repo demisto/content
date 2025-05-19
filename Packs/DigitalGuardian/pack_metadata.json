@@ -2,7 +2,7 @@
     "name": "Digital Guardian",
     "description": "Digital Guardian ARC Watchlist Integration",
     "support": "partner",
-    "currentVersion": "2.0.2",
+    "currentVersion": "2.0.3",
     "author": "Digital Guardian",
     "url": "https://digitalguardian.com",
     "email": "support@digitalguardian.com",
@@ -19,7 +19,14 @@
     "certification": "certified",
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "DigitalGuardianARCEventCollector"
+    "defaultDataSource": "DigitalGuardianARCEventCollector",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

@@ -1,0 +1,35 @@
+{
+	"associatedToAll": false,
+	"associatedTypes": [
+		"CybelAngel"
+	],
+	"caseInsensitive": true,
+	"cliName": "cybelangeltags",
+	"closeForm": false,
+	"content": true,
+	"description": "Tags on the report",
+	"editForm": true,
+	"hidden": false,
+	"id": "incident_cybelangeltags",
+	"isReadOnly": false,
+	"locked": false,
+	"name": "CybelAngel Tags",
+	"neverSetAsRequired": false,
+	"openEnded": false,
+	"ownerOnly": false,
+	"propagationLabels": [
+		"all"
+	],
+	"required": false,
+	"selectValues": [],
+	"sla": 0,
+	"system": false,
+	"threshold": 72,
+	"type": "shortText",
+	"unmapped": false,
+	"unsearchable": true,
+	"useAsKpi": false,
+	"version": -1,
+	"group": 0,
+	"fromVersion": "6.2.0"
+}

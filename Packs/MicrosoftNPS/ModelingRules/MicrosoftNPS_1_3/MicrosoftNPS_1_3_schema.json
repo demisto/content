@@ -1,5 +1,5 @@
 {
-  "msft_radius_raw": {
+  "msft_nps_raw": {
     "_raw_log": {
       "type": "string",
       "is_array": false

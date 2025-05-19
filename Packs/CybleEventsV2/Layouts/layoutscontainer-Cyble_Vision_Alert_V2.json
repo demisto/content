@@ -834,5 +834,6 @@
             }
         ]
     },
-    "description": ""
+    "description": "",
+    "marketplaces": ["xsoar"]
 }

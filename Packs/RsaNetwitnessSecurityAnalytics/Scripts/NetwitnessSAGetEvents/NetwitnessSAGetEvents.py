@@ -11,13 +11,13 @@ def netwitness_im_get_events():
         data = demisto.get(resp[0], "Contents.events")
         if data:
             data = data if isinstance(data, list) else [data]
-            formatTimeColumns(data, ['time'])
+            formatTimeColumns(data, ["time"])
             for row in data:
                 newMeta = {}
-                for var in row['meta']:
-                    newMeta['meta.' + var['name']] = var['value']
-                row['meta'] = newMeta
-                raiseTable(row, 'meta')
+                for var in row["meta"]:
+                    newMeta["meta." + var["name"]] = var["value"]
+                row["meta"] = newMeta
+                raiseTable(row, "meta")
             data = [{k: formatCell(row[k]) for k in row} for row in data]
             result = {"ContentsFormat": formats["table"], "Type": entryTypes["note"], "Contents": data}
         else:
@@ -29,9 +29,9 @@ def main():  # pragma: no cover
     try:
         netwitness_im_get_events()
     except Exception as e:
-        err_msg = f'Encountered an error while running the script: [{e}]'
+        err_msg = f"Encountered an error while running the script: [{e}]"
         return_error(err_msg, error=e)
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

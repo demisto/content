@@ -1,7 +1,8 @@
+from pathlib import Path
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from pathlib import Path
-from VectraDetectDisplayDetections import get_detections_list_hr, trim_api_version, convert_to_string
+from VectraDetectDisplayDetections import convert_to_string, get_detections_list_hr, trim_api_version
 
 
 def test_trim_api_version():
@@ -17,8 +18,7 @@ def test_trim_api_version():
     """
     url_with_version = "/api/v2.5/some/endpoint"
     trimmed_url = trim_api_version(url_with_version)
-    assert trimmed_url == "/some/endpoint?pivot=Vectra_AI-XSOAR-"\
-        f"{get_pack_version(pack_name='Vectra AI') or '2.0.0'}"
+    assert trimmed_url == f"/some/endpoint?pivot=Vectra_AI-XSOAR-{get_pack_version(pack_name='Vectra AI') or '2.0.0'}"
 
     url_without_version = "/some/endpoint"
     trimmed_url = trim_api_version(url_without_version)
@@ -88,9 +88,9 @@ def test_get_detections_list_hr_with_detection_details():
         '"privilege_category": null,"privilege_level": null, "id": 2}], "services_accessed": [{"name": "http/dummy_url.com",'
         '"privilege_category": null,"privilege_level": null,"id": null}, '
         '{"name": "http/test_url.com","privilege_category": null,"privilege_level": null,"id": null}] '
-        '},"assigned_to":"test_user","assigned_date":"2024-07-12T05:50:48Z"}'
+        '},"assigned_to":"test_user","assigned_date":"2024-07-12T05:50:48Z"}',
     ]
-    test_data_path = Path(__file__).parent / 'test_data'
+    test_data_path = Path(__file__).parent / "test_data"
     with open(f"{test_data_path}/vectra_detect_detections_hr.md") as f:
         result_hr = f.read()
 

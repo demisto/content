@@ -813,3 +813,8 @@ outputs: []
 sourceplaybookid: PAN-OS - Block IP and URL - External Dynamic List
 tests:
 - No test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

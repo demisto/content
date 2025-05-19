@@ -1,9 +1,9 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *
 from urllib.parse import urlparse
 
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *
 
-QUOTED_STRINGS_PATTERN = r'\"[^\"]*\"'
+QUOTED_STRINGS_PATTERN = r"\"[^\"]*\""
 KEYWORDS_PATTERN = " (AND|OR|NOT) "
 NON_WORD_PATTERN = "\W+"
 
@@ -35,20 +35,20 @@ def extract_terms(args: Dict[str, Any]) -> Set[str]:
     :return: set of string terms
     """
     terms: Set[str] = set()
-    if 'sha1' in args:
-        append_arg(terms, args['sha1'])
-    if 'md5' in args:
-        append_arg(terms, args['md5'])
-    if 'sha256' in args:
-        append_arg(terms, args['sha256'])
-    if 'domain' in args:
-        append_arg(terms, args['domain'], filter_fn=check_domain_name)
-    if 'ip' in args:
-        append_arg(terms, args['ip'], filter_fn=check_ip)
-    if 'url' in args:
-        append_arg(terms, args['url'], filter_fn=check_url)
-    if 'cve' in args:
-        append_arg(terms, args['cve'])
+    if "sha1" in args:
+        append_arg(terms, args["sha1"])
+    if "md5" in args:
+        append_arg(terms, args["md5"])
+    if "sha256" in args:
+        append_arg(terms, args["sha256"])
+    if "domain" in args:
+        append_arg(terms, args["domain"], filter_fn=check_domain_name)
+    if "ip" in args:
+        append_arg(terms, args["ip"], filter_fn=check_ip)
+    if "url" in args:
+        append_arg(terms, args["url"], filter_fn=check_url)
+    if "cve" in args:
+        append_arg(terms, args["cve"])
     return terms
 
 
@@ -64,9 +64,9 @@ def convert_to_ds_query_array(args: Dict[str, Any]):
     """
     terms = extract_terms(args)
 
-    res = list()
+    res = []
     query = sorted(terms, key=lambda x: count_terms(x))
-    init = list()  # type: List[str]
+    init = []  # type: List[str]
     term_count = 0
 
     for q in query:
@@ -86,7 +86,7 @@ def check_ip(ip):
     """
     Filter function that excludes the inet any address (0.0.0.0).
     """
-    return "0.0.0.0" != ip
+    return ip != "0.0.0.0"
 
 
 def check_domain_name(domain):
@@ -123,8 +123,8 @@ def main():
         return_results(convert_to_ds_query_array(demisto.args()))
     except Exception as exception:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute BaseScript. Error: {str(exception)}')
+        return_error(f"Failed to execute BaseScript. Error: {exception!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

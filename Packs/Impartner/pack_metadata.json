@@ -2,7 +2,7 @@
     "name": "Impartner",
     "description": "Pack for integrating Impartner - a company that specializes in providing Partner Relationship Management (PRM) solutions ",
     "support": "community",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Edi Katsenelson",
     "url": "",
     "email": "",
@@ -14,9 +14,16 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "edik24"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

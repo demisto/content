@@ -25,5 +25,11 @@
     "useAsKpi": false,
     "version": -1,
     "fromVersion": "6.5.0",
-    "x2_fields": "xpanse_primary_asset_id"
+    "x2_fields": "xpanse_primary_asset_id",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

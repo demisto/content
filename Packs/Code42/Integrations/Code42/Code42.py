@@ -98,13 +98,7 @@ SECURITY_EVENT_HEADERS = [
 
 SECURITY_ALERT_HEADERS = ["Occurred", "Username", "Name", "Description", "State", "ID"]
 
-SESSION_SEVERITY_LIST = [
-    "NO RISK",
-    "LOW",
-    "MODERATE",
-    "HIGH",
-    "CRITICAL"
-]
+SESSION_SEVERITY_LIST = ["NO RISK", "LOW", "MODERATE", "HIGH", "CRITICAL"]
 
 
 def _format_list(_list):
@@ -205,11 +199,10 @@ class Code42Client(BaseClient):
     @property
     def sdk(self):
         if self._sdk is None:
+
             def api_client_provider():
                 r = requests.post(
-                    f"https://{self._base_url}/api/v3/oauth/token",
-                    params={"grant_type": "client_credentials"},
-                    auth=self._auth
+                    f"https://{self._base_url}/api/v3/oauth/token", params={"grant_type": "client_credentials"}, auth=self._auth
                 )
                 r.raise_for_status()
                 return r.json()["access_token"]
@@ -221,9 +214,7 @@ class Code42Client(BaseClient):
     def incydr_sdk(self):
         if self._incydr_sdk is None:
             self._incydr_sdk = incydr.Client(
-                url=f"https://{self._api_url}",
-                api_client_id=self._auth[0],
-                api_client_secret=self._auth[1]
+                url=f"https://{self._api_url}", api_client_id=self._auth[0], api_client_secret=self._auth[1]
             )
             self._incydr_sdk.settings.user_agent_prefix = "Cortex XSOAR"
         return self._incydr_sdk
@@ -232,8 +223,7 @@ class Code42Client(BaseClient):
 
     def fetch_alerts(self, start_time, event_severity_filter):
         all_sessions = self.incydr_sdk.sessions.v1.iter_all(
-            start_time=start_time,
-            severities=_get_severity_filter_value(event_severity_filter)
+            start_time=start_time, severities=_get_severity_filter_value(event_severity_filter)
         )
         res = []
         for page in all_sessions:
@@ -388,61 +378,43 @@ class Code42Client(BaseClient):
 
 class Code42AlertNotFoundError(Exception):
     def __init__(self, alert_id):
-        super().__init__(
-            f"No alert found with ID {alert_id}."
-        )
+        super().__init__(f"No alert found with ID {alert_id}.")
 
 
 class Code42UserNotFoundError(Exception):
     def __init__(self, username):
-        super().__init__(
-            f"No user found with username {username}."
-        )
+        super().__init__(f"No user found with username {username}.")
 
 
 class Code42OrgNotFoundError(Exception):
     def __init__(self, org_name):
-        super().__init__(
-            f"No organization found with name {org_name}."
-        )
+        super().__init__(f"No organization found with name {org_name}.")
 
 
 class Code42InvalidWatchlistTypeError(Exception):
     def __init__(self, watchlist):
-        msg = "Invalid Watchlist type: {}, run !code42-watchlists-list to get a list of available Watchlists.".format(
-            watchlist
-        )
+        msg = f"Invalid Watchlist type: {watchlist}, run !code42-watchlists-list to get a list of available Watchlists."
         super().__init__(msg)
 
 
 class Code42UnsupportedHashError(Exception):
     def __init__(self):
-        super().__init__(
-            "Unsupported hash. Must be SHA256 or MD5."
-        )
+        super().__init__("Unsupported hash. Must be SHA256 or MD5.")
 
 
 class Code42MissingSearchArgumentsError(Exception):
     def __init__(self):
-        super().__init__(
-            "No query args provided for searching Code42 security events."
-        )
+        super().__init__("No query args provided for searching Code42 security events.")
 
 
 class Code42LegalHoldMatterNotFoundError(Exception):
     def __init__(self, matter_name):
-        super().__init__(
-            f"No legal hold matter found with name {matter_name}."
-        )
+        super().__init__(f"No legal hold matter found with name {matter_name}.")
 
 
 class Code42InvalidLegalHoldMembershipError(Exception):
     def __init__(self, username, matter_name):
-        super().__init__(
-            "User '{}' is not an active member of legal hold matter '{}'".format(
-                username, matter_name
-            )
-        )
+        super().__init__(f"User '{username}' is not an active member of legal hold matter '{matter_name}'")
 
 
 class Code42SearchFilters:
@@ -637,11 +609,7 @@ def file_events_search_command(client, args):
             if "Code42" in context and "FileEvents" in context["Code42"]:
                 context_events = context["Code42"]["FileEvents"]
                 file_events = deduplicate_v2_file_events(file_events + context_events)
-            return CommandResults(
-                outputs_prefix="Code42.FileEvents",
-                outputs=file_events,
-                readable_output=markdown_table
-            )
+            return CommandResults(outputs_prefix="Code42.FileEvents", outputs=file_events, readable_output=markdown_table)
         else:
             return CommandResults(readable_output=markdown_table)
     except Py42HTTPError as err:
@@ -748,7 +716,7 @@ def legal_hold_add_user_command(client, args):
         outputs_key_field="MatterID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=response
+        raw_response=response,
     )
 
 
@@ -757,19 +725,14 @@ def legal_hold_remove_user_command(client, args):
     username = args.get("username")
     matter_name = args.get("mattername")
     user_uid, matter_id = client.remove_user_from_legal_hold_matter(username, matter_name)
-    outputs = {
-        "MatterID": matter_id,
-        "MatterName": matter_name,
-        "UserID": user_uid,
-        "Username": username
-    }
+    outputs = {"MatterID": matter_id, "MatterName": matter_name, "UserID": user_uid, "Username": username}
     readable_outputs = tableToMarkdown("Code42 User Removed from Legal Hold Matter", outputs)
     return CommandResults(
         outputs_prefix="Code42.LegalHold",
         outputs_key_field="MatterID",
         outputs=outputs,
         readable_output=readable_outputs,
-        raw_response=user_uid
+        raw_response=user_uid,
     )
 
 
@@ -791,7 +754,7 @@ def list_watchlists_command(client, args):
                 {
                     "WatchlistID": watchlist["watchlistId"],
                     "WatchlistType": watchlist["listType"],
-                    "IncludedUsersCount": watchlist["stats"].get("includedUsersCount", 0)
+                    "IncludedUsersCount": watchlist["stats"].get("includedUsersCount", 0),
                 }
             )
 
@@ -866,12 +829,7 @@ def update_user_risk_profile(client, args):
     actor = client.get_actor(username)
     actor_id = actor.actor_id
 
-    resp = client.incydr_sdk.actors.v1.update_actor(
-        actor_id,
-        start_date=start_date,
-        end_date=end_date,
-        notes=notes
-    )
+    resp = client.incydr_sdk.actors.v1.update_actor(actor_id, start_date=start_date, end_date=end_date, notes=notes)
     if (
         (resp.start_date == start_date if start_date else True)
         and (resp.end_date == end_date if end_date else True)
@@ -991,7 +949,7 @@ class Code42SecurityIncidentFetcher:
             if remaining_incidents:
                 return (
                     self._last_run,
-                    remaining_incidents[:self._fetch_limit],
+                    remaining_incidents[: self._fetch_limit],
                     remaining_incidents[self._fetch_limit:],
                 )
             return None
@@ -1002,9 +960,7 @@ class Code42SecurityIncidentFetcher:
 
         # Handle first time fetch, fetch incidents retroactively
         if not start_query_time:
-            start_query_time, _ = parse_date_range(
-                self._first_fetch_time, to_timestamp=True, utc=True
-            )
+            start_query_time, _ = parse_date_range(self._first_fetch_time, to_timestamp=True, utc=True)
             start_query_time /= 1000
 
         return start_query_time * 1000
@@ -1019,19 +975,13 @@ class Code42SecurityIncidentFetcher:
         details = alert.dict()
         if self._include_files:
             details = self._relate_files_to_alert(details)
-        incident = {
-            "name": "Code42 - {}".format(details.get("exfiltrationSummary")),
-            "occurred": alert.beginTimeIso
-        }
+        incident = {"name": "Code42 - {}".format(details.get("exfiltrationSummary")), "occurred": alert.beginTimeIso}
         incident["rawJSON"] = json.dumps(details)
         return incident
 
     def _relate_files_to_alert(self, alert_details):
         observations = self._client.get_alert_file_events(alert_details["sessionId"])
-        alert_details["exfiltrationSummary"] = "{} {}".format(
-            observations.total_count,
-            alert_details["exfiltrationSummary"]
-        )
+        alert_details["exfiltrationSummary"] = "{} {}".format(observations.total_count, alert_details["exfiltrationSummary"])
         # it is necessary to dump to/load from json here because otherwise we will get "datetime" string representations
         # instead of isoformat timestamps.
         alert_details["fileevents"] = [json.loads(e.json()) for e in observations.file_events]

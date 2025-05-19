@@ -1,9 +1,9 @@
+import csv
+import io
+import sys
+
 import demistomock as demisto
 from CommonServerPython import *
-
-import io
-import csv
-import sys
 
 
 def main():
