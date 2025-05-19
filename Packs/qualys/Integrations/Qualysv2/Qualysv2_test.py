@@ -1782,7 +1782,7 @@ def test_fetch_assets_and_vulnerabilities_by_date_set_new_limit(mocker: MockerFi
 
     Assert:
         - Ensure no data is sent to XSIAM and module health is not updated.
-        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 10.
+        - Ensure assets next run is correctly set with the half of the original host limit, same snapshot ID, and next trigger 0.
     """
     last_total_assets = 10
     last_run = {"stage": "assets", "total_assets": last_total_assets, "snapshot_id": SNAPSHOT_ID}
