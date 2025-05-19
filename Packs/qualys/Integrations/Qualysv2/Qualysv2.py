@@ -3166,7 +3166,7 @@ def fetch_assets(client: Client, assets_last_run):
         "total_assets": total_assets,
         "since_datetime": since_datetime,
         "snapshot_id": snapshot_id,
-        "nextTrigger": "10",
+        "nextTrigger": "0",
         "type": FETCH_COMMAND.get("assets"),
     }
 
@@ -3193,8 +3193,8 @@ def check_fetch_assets_duration_time_exceeded(start_time: float) -> bool:
 
 
 def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
-    """Updates last assets run by setting `limit` to half, `nextTrigger` to 10, and `type` to 1 (assets).
-    This instructs the server to trigger the next assets fetch iteration with a delay of 10 seconds.
+    """Updates last assets run by setting `limit` to half, `nextTrigger` to 0, and `type` to 1 (assets).
+    This instructs the server to immediately trigger the next assets fetch iteration.
 
     Args:
         last_run (dict): Last assets run dictionary.
@@ -3206,7 +3206,7 @@ def set_assets_last_run_with_new_limit(last_run: dict, limit: int) -> dict:
     new_limit = int(limit / 2) if limit > 1 else 1
     demisto.debug(f"Starting setting host limit to: {new_limit}.")
     last_run["limit"] = new_limit
-    last_run["nextTrigger"] = "10"  # Trigger next fetch after 10 seconds to reduce the chance of server-side race conditions
+    last_run["nextTrigger"] = "0"  # Trigger next fetch iteration immediately
     last_run["type"] = FETCH_COMMAND["assets"]  # Set next fetch iteration to type 'assets'
     demisto.debug(f"Finished setting host limit to: {new_limit}.")
     return last_run
