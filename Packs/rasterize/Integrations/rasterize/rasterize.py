@@ -258,7 +258,7 @@ class PychromeEventHandler:
             try:
                 # Check if the loaded page is a Chrome error page, which indicates a failed load
                 # Only retry loading when the URL is a direct file path
-                # This helps handle cases where local files fail to load on the first attempt
+                # This helps handle cases where temporary files fail to load on the first attempt
                 if self.path.lower().startswith("file://"):
                     frame_url = self.get_frame_tree_url()
                     if frame_url and frame_url.lower().startswith(CHROME_ERROR_URL):
@@ -323,7 +323,8 @@ class PychromeEventHandler:
             # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
             if not frame_url:
                 demisto.debug(
-                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. Stopping retry attempts."
+                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
+                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts."
                 )
                 self.tab_ready_event.set()
                 return
@@ -335,7 +336,7 @@ class PychromeEventHandler:
 
             demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error.")
 
-        demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page.")
         # Ensure we always set the event to prevent hanging
         self.tab_ready_event.set()
 
