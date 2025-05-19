@@ -18,6 +18,14 @@
 </li>
 <li>Click<span> </span><strong>Test</strong><span> </span>to validate the URLs, token, and connection.</li>
 </ol>
+
+<h2>Fetching Incidents and Container Timeout</h2>
+Fetching incidents allows to request the latest updates on Vulnerabilities and create Incidents for them.
+This can take quite a while, depending on how far back you are fetching incidents for.
+By default, the fetch-incidents command will timeout after 5 minutes. You can extend that by adding a Integration Server Configurations like:
+<pre>vulndb.fetch-incidents.timeout = &lt;Number of Minutes for Timeout&gt;</pre>
+
+
 <h2>
 <a id="Commands_15"></a>Commands</h2>
 <p>You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.</p>
