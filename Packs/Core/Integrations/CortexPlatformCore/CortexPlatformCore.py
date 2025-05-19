@@ -15,7 +15,11 @@ class Client(CoreClient):
         Performs basic get request to get item samples
         """
         try:
-            self.get_endpoints(limit=1)
+            self._http_request(
+                method="POST",
+                headers=self._headers,
+                url_suffix="/unified-asset-inventory/get_asset_counts/"
+            )
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
@@ -69,7 +73,7 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    url_suffix = "/public_api/v1"
+    url_suffix = "/data-platform"
     url = "/api/webapp/"
     base_url = urljoin(url, url_suffix)
     proxy = demisto.params().get("proxy", False)
