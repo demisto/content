@@ -491,9 +491,7 @@ def main():
     dbot_score_reliability = params['integration_reliability']
     client = Client(proxy, use_ssl, api_url, client_id, client_secret, timeout)
     args = demisto.args()
-    first_fetch = dateparser.parse(params['first_fetch'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
-    if not first_fetch:
-        first_fetch = datetime.now(timezone.utc) - timedelta(hours=24)
+
     command = demisto.command()
     LOG(f'Command being called is {command}')
     try:
@@ -502,9 +500,16 @@ def main():
             test_module(client, client_id, client_secret)
             demisto.results('ok')
         if command == 'fetch-incidents':
+            first_fetch = dateparser.parse(params['first_fetch'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
+            if not first_fetch:
+                first_fetch = datetime.now(timezone.utc) - timedelta(hours=24)
+            min_disclosure_date = dateparser.parse(params['disclosure_after'], settings={'RETURN_AS_TIMEZONE_AWARE': True})
+            if not min_disclosure_date:
+                min_disclosure_date = datetime.min.replace(tzinfo=timezone.utc)
+            ignore_deprecated: bool = params.get('ignore_deprecated', False)
             vulndb_fetch_incidents_command(args, int(params['max_fetch']), first_fetch,
                                            params.get('include_all_cvss', False),
-                                           params.get('include_cpe', False), client)
+                                           params.get('include_cpe', False), min_disclosure_date, ignore_deprecated, client)
         elif command == 'vulndb-get-vuln-by-id':
             vulndb_get_vuln_by_id_command(args, client)
         elif command == 'vulndb-get-vuln-by-vendor-and-product-name':
