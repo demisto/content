@@ -8,6 +8,8 @@ import sys
 import urllib
 import uuid
 import warnings
+from typing import Optional, List, Any, Dict
+from unittest.mock import MagicMock
 
 import dateparser
 from freezegun import freeze_time
@@ -32,7 +34,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine
+                                get_engine_base_url, is_integration_instance_running_on_engine, MirrorObject
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -10010,3 +10012,177 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
+
+
+class TestMirrorObjectInitialization:
+    """
+    Tests for the MirrorObject dataclass initialization and __post_init__ logic.
+    """
+
+    def test_initialization_with_all_fields(self, mocker) -> None:
+        """
+        Given: Valid ticket_url and ticket_id.
+        When:  MirrorObject is initialized.
+        Then:  The object is created with the correct attributes, and no debug message is logged.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        ticket_url: Optional[str] = "http://example.com/ticket/123"
+        ticket_id: Optional[str] = "JIRA-123"
+
+        # When
+        mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_id)
+
+        # Then
+        assert mirror_obj.ticket_url == ticket_url, "ticket_url should be initialized correctly."
+        assert mirror_obj.ticket_id == ticket_id, "ticket_id should be initialized correctly."
+        mock_demisto_debug.assert_not_called()
+
+    def test_initialization_with_no_fields(self, mocker: MagicMock) -> None:
+        """
+        Given: No ticket_url and no ticket_id (both None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created with None attributes, and a debug message is logged for both missing fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        expected_log_message = "Missing fields: ticket_url, ticket_id"
+
+        # When
+        mirror_obj = MirrorObject(ticket_url=None, ticket_id=None)
+
+        # Then
+        assert mirror_obj.ticket_url is None, "ticket_url should be None."
+        assert mirror_obj.ticket_id is None, "ticket_id should be None."
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_only_ticket_url(self, mocker: MagicMock) -> None:
+        """
+        Given: Only ticket_url is provided (ticket_id is None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created, and a debug message is logged for the missing ticket_id.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        ticket_url: Optional[str] = "http://example.com/ticket/123"
+        expected_log_message = "Missing fields: ticket_id"
+
+        # When
+        mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=None)
+
+        # Then
+        assert mirror_obj.ticket_url == ticket_url
+        assert mirror_obj.ticket_id is None
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_only_ticket_id(self, mocker: MagicMock) -> None:
+        """
+        Given: Only ticket_id is provided (ticket_url is None).
+        When:  MirrorObject is initialized.
+        Then:  The object is created, and a debug message is logged for the missing ticket_url.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        ticket_id: Optional[str] = "JIRA-123"
+        expected_log_message = "Missing fields: ticket_url"
+
+        # When
+        mirror_obj = MirrorObject(ticket_url=None, ticket_id=ticket_id)
+
+        # Then
+        assert mirror_obj.ticket_url is None
+        assert mirror_obj.ticket_id == ticket_id
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    @pytest.mark.parametrize(
+        "ticket_url_in, ticket_id_in, expected_missing_fields, should_log",
+        [
+            ("http://url.com", "ID-1", [], False),
+            (None, "ID-1", ["ticket_url"], True),
+            ("http://url.com", None, ["ticket_id"], True),
+            (None, None, ["ticket_url", "ticket_id"], True),
+        ],
+    )
+    def test_post_init_logging_parametrized(
+        self,
+        mocker: MagicMock,
+        ticket_url_in: Optional[str],
+        ticket_id_in: Optional[str],
+        expected_missing_fields: List[str],
+        should_log: bool,
+    ) -> None:
+        """
+        Given: Various combinations of ticket_url and ticket_id.
+        When:  MirrorObject is initialized.
+        Then:  demisto.debug is called (or not) with the expected message based on missing fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+
+        # When
+        MirrorObject(ticket_url=ticket_url_in, ticket_id=ticket_id_in)
+
+        # Then
+        if should_log:
+            assert mock_demisto_debug.call_count == 1, "demisto.debug should have been called once."
+            logged_message: str = mock_demisto_debug.call_args[0][0]
+            assert f"Missing fields: {', '.join(expected_missing_fields)}" == logged_message, \
+                "The debug log message was not as expected."
+        else:
+            mock_demisto_debug.assert_not_called()
+
+
+class TestMirrorObjectToContext:
+    """
+    Tests for the MirrorObject.to_context() method.
+    """
+
+    @pytest.mark.parametrize(
+        "ticket_url_in, ticket_id_in, expected_dict",
+        [
+            (
+                "http://example.com/ticket/123",
+                "JIRA-123",
+                {"ticket_url": "http://example.com/ticket/123", "ticket_id": "JIRA-123"},
+            ),
+            (None, "JIRA-123", {"ticket_url": None, "ticket_id": "JIRA-123"}),
+            ("http://example.com/ticket/123", None, {"ticket_url": "http://example.com/ticket/123", "ticket_id": None}),
+            (None, None, {"ticket_url": None, "ticket_id": None}),
+            ("", "", {"ticket_url": "", "ticket_id": ""}), # Testing with empty strings
+        ],
+    )
+    def test_to_context_various_inputs(
+        self,
+        mocker: MagicMock, # Add mocker to patch demisto.debug even if not directly testing its call
+        ticket_url_in: Optional[str],
+        ticket_id_in: Optional[str],
+        expected_dict: Dict[str, Any],
+    ) -> None:
+        """
+        Given: A MirrorObject initialized with various combinations of ticket_url and ticket_id.
+        When:  The to_context() method is called.
+        Then:  A dictionary representation of the object is returned with the correct key-value pairs.
+        """
+        # Given
+        mirror_obj = MirrorObject(ticket_url=ticket_url_in, ticket_id=ticket_id_in)
+
+        # When
+        context_dict: Dict[str, Any] = mirror_obj.to_context()
+
+        # Then
+        assert context_dict == expected_dict, "The context dictionary does not match the expected output."
+
+    def test_to_context_returns_dict(self, mocker: MagicMock) -> None:
+        """
+        Given: A MirrorObject.
+        When:  to_context() is called.
+        Then:  The return type is a dict.
+        """
+        # Given
+        mirror_obj = CommonServerPython.MirrorObject()
+
+        # When
+        result = mirror_obj.to_context()
+
+        # Then
+        assert isinstance(result, dict), "to_context() should return a dictionary."

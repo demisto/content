@@ -26,6 +26,8 @@ import xml.etree.cElementTree as ET
 from collections import OrderedDict
 from datetime import datetime, timedelta
 from abc import abstractmethod
+
+from dataclasses import asdict, dataclass
 from distutils.version import LooseVersion
 from threading import Lock
 from functools import wraps
@@ -42,7 +44,7 @@ def __line__():
 
 # The number is the line offset from the beginning of the file. If you added an import, update this number accordingly.
 _MODULES_LINE_MAPPING = {
-    'CommonServerPython': {'start': __line__() - 45, 'end': float('inf')},
+    'CommonServerPython': {'start': __line__() - 47, 'end': float('inf')},
 }
 
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
@@ -333,6 +335,80 @@ class FileAttachmentType(object):
     :rtype: ``str``
     """
     ATTACHED = "attached_file"
+
+
+@dataclass
+class QuickActionPreview:
+    """
+        A container class for storing quick action data previews.
+        This class is intended to be populated by commands like `!get-remote-data-preview`
+        and placed directly into the root context under `QuickActionPreview`.
+
+        Fields:
+            id (Optional[str]): The ID of the ticket.
+            title (Optional[str]): The title or summary of the ticket or action.
+            description (Optional[str]): A brief description or details about the action.
+            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+            assignee (Optional[str]): The user or entity assigned to the action.
+            creation_date (Optional[str]): The date and time when the item was created.
+            severity (Optional[str]): Indicates the priority or severity level.
+        """
+    id: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    assignee: Optional[str] = None
+    creation_date: Optional[str] = None
+    severity: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+        Returns:
+            dict: Dictionary representation of the QuickActionPreview.
+        """
+        return asdict(self)
+
+
+@dataclass
+class MirrorObject:
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    Fields:
+        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        ticket_id (Optional[str]): Unique identifier of the created ticket.
+    """
+    ticket_url: Optional[str] = None
+    ticket_id: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = []
+        if not self.ticket_url:
+            missing_fields.append('ticket_url')
+        if not self.ticket_id:
+            missing_fields.append('ticket_id')
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+
+        Returns:
+            dict: Dictionary representation of the MirrorObject.
+        """
+        return asdict(self)
 
 
 brands = {
