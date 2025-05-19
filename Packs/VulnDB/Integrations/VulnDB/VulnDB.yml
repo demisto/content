@@ -28,6 +28,10 @@ configuration:
   name: include_cpe
   type: 8
   required: false
+- display: Ignore Deprecated
+  name: ignore_deprecated
+  type: 8
+  required: false
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
@@ -45,6 +49,11 @@ configuration:
   display: Max incidents per fetch
   name: max_fetch
   type: 0
+- display: Ignore Vulnerabilities disclosed before (<number> <time unit>, e.g., 12 hours, 7 days)
+  name: disclosure_after
+  type: 0
+  required: false
+  defaultvalue: '30 days'
 - display: Use system proxy settings
   name: proxy
   type: 8

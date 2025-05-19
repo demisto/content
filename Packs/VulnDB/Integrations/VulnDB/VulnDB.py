@@ -407,7 +407,8 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
 
 
 def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datetime,
-                                   all_cvss: bool, include_cpe: bool, client: Client):
+                                   all_cvss: bool, include_cpe: bool, min_disclosure_date: datetime,
+                                   ignore_deprecated: bool, client: Client):
     demisto.info('[VulnDB]: Running Fetch Incidents')
     last_run = demisto.getLastRun()
     hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
@@ -443,6 +444,13 @@ def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datet
         demisto.info(f'[VulnDB]: Total count: {total_results}')
         demisto.info(f'[VulnDB]: Count: {count}')
         for result in results:
+            disclosure_date = dateparser.parse(result.get('disclosure_date'))
+            if disclosure_date and disclosure_date < min_disclosure_date:
+                continue
+
+            if ignore_deprecated and result.get('title', '').casefold().startswith('DEPRECATED: See ID #'.casefold()):
+                continue
+
             result_date = dateparser.parse(result.get('vulndb_last_modified'))
             if result_date and (result_date < last_timestamp
                                 or (result_date == last_timestamp and int(result['vulndb_id']) <= last_id)):
