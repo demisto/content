@@ -1479,7 +1479,6 @@ Replies to an email using EWS.
 | attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
 | handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images will be extracted from the HTML and attached to the email as an inline attachment object. Note that in some cases, attaching the image as an object may cause the image to disappear when replying to the email. Additionally, sending the image in the html body as base64 data (inline image) may cause the image to disappear if the image is too large or recognized as malicious and subsequently deleted. Possible values are: True, False. Default is True. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
