@@ -1,3 +1,4 @@
+from COOCApiModule import *
 
 def test_get_cloud_entities_with_connector_id(mocker):
     """
