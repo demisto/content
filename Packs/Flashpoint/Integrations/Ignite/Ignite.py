@@ -35,7 +35,7 @@ READABLE_DATE_FORMAT = "%b %d, %Y  %H:%M"
 TOTAL_RETRIES = 4
 TOTAL_RETRIES_ON_ENRICHMENT = 0
 DEFAULT_TIMEOUT = 60
-TIMEOUT_ON_ENRICHMENT = 10
+TIMEOUT_ON_ENRICHMENT = 15
 STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
 OK_CODES = (
     400,
