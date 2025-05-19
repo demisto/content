@@ -427,17 +427,26 @@ def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datet
     demisto.info(f'[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}')
 
     incidents: list[dict] = []
-    total_results = max_size + 1
-    count = 0
     page = 1
-    while count < total_results:
+    count = 0
+
+    while True:
         url_suffix = f'/vulnerabilities/find_by_time?page={page}&hours_ago={hours_ago}'  # noqa: E501
         if all_cvss:
             url_suffix = f'{url_suffix}&show_cvss_v3=true&show_cvss=true'
         if include_cpe:
             url_suffix = f'{url_suffix}&show_cpe_full=true'
+        try:
+            res = client.http_request(url_suffix, 300)
+        except Exception as e:
+            demisto.error(f'[VulnDB]: Error {str(e)}')  # Log the error
+            # If the Web Request failed, there is no guarantee, we got all the Information required
+            # So return nothing and don't set the lastFetch, so the next run can try again
+            demisto.updateModuleHealth(
+                f"Encountered '{e}' when trying to fetch page {page} of vulnerability updates", is_error=True)
+            demisto.incidents(None)
+            return
 
-        res = client.http_request(url_suffix, 100)
         page = page + 1
         results = res.get('results', [])
         count = count + len(results)
@@ -462,6 +471,9 @@ def vulndb_fetch_incidents_command(args: dict, max_size: int, first_fetch: datet
                               'rawJSON': json.dumps(result),
                               'dbotMirrorId': mirror_id
                               })
+        # Exit loop once we received the last last page
+        if len(results) < 300:
+            break
 
     incidents = sorted(incidents, key=lambda x: x['occured'])
     demisto.info(f'[VulnDB]: Total Incident Count: {len(incidents)}')
