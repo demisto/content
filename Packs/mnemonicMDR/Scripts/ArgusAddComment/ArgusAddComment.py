@@ -1,6 +1,7 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+
 def main():
     args = demisto.args()
     tags = args.get("tags", [])
@@ -24,21 +25,20 @@ def main():
 
     #  create tagged war room entry
     entry = {
-        'Type' : entryTypes["note"],
+        'Type': entryTypes["note"],
         'Contents': html,
-        'ContentsFormat' : formats["html"],
+        'ContentsFormat': formats["html"],
         'HumanReadable': html,
-        'ReadableContentsFormat' : formats["html"],
-        'Tags' : tags,
+        'ReadableContentsFormat': formats["html"],
+        'Tags': tags,
         'Note': True
     }
 
     # wipe editing field
-    demisto.executeCommand("setIncident", {field:""})
+    demisto.executeCommand("setIncident", {field: ""})
 
     return_results(entry)
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
-

@@ -5,12 +5,12 @@ name: ArgusSetNonSecMonCategories
 script: ''
 type: python
 tags: []
-comment: Sets correct incident types for Argus case types that are not a security incident
+comment: Sets correct incident types for Argus case types that are not a security incident.
 enabled: true
 scripttarget: 0
 subtype: python3
 runonce: false
-dockerimage: demisto/python3:3.10.9.43882
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 fromversion: 6.5.0
 tests:
