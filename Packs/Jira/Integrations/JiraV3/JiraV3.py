@@ -66,48 +66,6 @@ V2_ARGS_TO_V3: Dict[str, str] = {
 
 
 @dataclass
-class QuickActionPreview:
-    """
-        A container class for storing quick action data previews.
-        This class is intended to be populated by commands like `!get-remote-data-preview`
-        and placed directly into the root context under `QuickActionPreview`.
-
-        Fields:
-            id (Optional[str]): The ID of the ticket.
-            title (Optional[str]): The title or summary of the ticket or action.
-            description (Optional[str]): A brief description or details about the action.
-            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
-            assignee (Optional[str]): The user or entity assigned to the action.
-            creation_date (Optional[str]): The date and time when the item was created.
-            severity (Optional[str]): Indicates the priority or severity level.
-
-        TODO: We will need this class in common server python,
-        but due to temporary restrictions in extending it, we are keeping it here for now.
-        """
-    id: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[str] = None
-    assignee: Optional[str] = None
-    creation_date: Optional[str] = None
-    severity: Optional[str] = None
-
-    def __post_init__(self):
-        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
-
-        if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
-
-    def to_context(self) -> Dict[str, Any]:
-        """
-        Converts the dataclass to a dict for placing into context.
-        Returns:
-            dict: Dictionary representation of the QuickActionPreview.
-        """
-        return asdict(self)
-
-
-@dataclass
 class MirrorObject:
     """
     A container class for storing ticket metadata used in mirroring integrations.

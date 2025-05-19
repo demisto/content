@@ -8,6 +8,7 @@ import sys
 import urllib
 import uuid
 import warnings
+from typing import Dict, Optional, Any, List
 
 import dateparser
 from freezegun import freeze_time
@@ -32,7 +33,7 @@ from CommonServerPython import (xml2json, json2xml, entryTypes, formats, tableTo
                                 response_to_context, is_integration_command_execution, is_xsiam_or_xsoar_saas, is_xsoar,
                                 is_xsoar_on_prem, is_xsoar_hosted, is_xsoar_saas, is_xsiam, send_data_to_xsiam,
                                 censor_request_logs, censor_request_logs, safe_sleep, get_server_config, b64_decode,
-                                get_engine_base_url, is_integration_instance_running_on_engine
+                                get_engine_base_url, is_integration_instance_running_on_engine, QuickActionPreview
                                 )
 
 EVENTS_LOG_ERROR = \
@@ -10010,3 +10011,254 @@ def test_get_engine_base_url(mocker):
     mocker.patch.object(demisto, 'internalHttpRequest', return_value=mock_response)
     res = get_engine_base_url('1111')
     assert res == '11.111.111.33:443'
+
+
+class TestQuickActionPreviewInitialization:
+    """
+    Test suite for the initialization and __post_init__ logic of the QuickActionPreview class.
+    """
+    ALL_QA_PREVIEW_FIELD_NAMES: List[str] = [
+        'id', 'title', 'description', 'status', 'assignee', 'creation_date', 'severity'
+    ]
+
+    def test_initialization_with_all_fields_provided_non_none(self, mocker) -> None:
+        """
+        Given: All fields are provided with non-None string values.
+        When:  A QuickActionPreview instance is created.
+        Then:  The instance's attributes are set correctly, and demisto.debug is not called.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "ID123",
+            "title": "Sample Title",
+            "description": "Detailed description.",
+            "status": "Open",
+            "assignee": "John Doe",
+            "creation_date": "2023-01-01T12:00:00Z",
+            "severity": "High"
+        }
+
+        # When
+        preview = QuickActionPreview(**field_values) # type: ignore
+
+        # Then
+        for field_name, expected_value in field_values.items():
+            assert getattr(preview, field_name) == expected_value, f"{field_name} was not initialized correctly."
+        mock_demisto_debug.assert_not_called()
+
+    def test_initialization_with_all_fields_none(self, mocker) -> None:
+        """
+        Given: All fields are explicitly set to None or default to None.
+        When:  A QuickActionPreview instance is created.
+        Then:  All attributes are None, and demisto.debug is called with a message listing all fields.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        expected_log_message = f"Missing fields: {', '.join(self.ALL_QA_PREVIEW_FIELD_NAMES)}"
+
+        # When
+        preview = QuickActionPreview() # All fields default to None
+
+        # Then
+        for field_name in self.ALL_QA_PREVIEW_FIELD_NAMES:
+            assert getattr(preview, field_name) is None, f"{field_name} should be None."
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_some_fields_none(self, mocker) -> None:
+        """
+        Given: Some fields are provided, and others are None.
+        When:  A QuickActionPreview instance is created.
+        Then:  Attributes are set correctly, and demisto.debug is called with a message listing only the None fields
+               in the order of their definition.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "ID456",
+            "title": None, # Missing
+            "description": "Another description.",
+            "status": None, # Missing
+            "assignee": "Jane Roe",
+            "creation_date": None, # Missing
+            "severity": "Medium"
+        }
+        # Expected missing fields in definition order
+        expected_missing = ["title", "status", "creation_date"]
+        expected_log_message = f"Missing fields: {', '.join(expected_missing)}"
+
+        # When
+        preview = QuickActionPreview(**field_values) # type: ignore
+
+        # Then
+        assert preview.id == "ID456"
+        assert preview.title is None
+        assert preview.description == "Another description."
+        assert preview.status is None
+        assert preview.assignee == "Jane Roe"
+        assert preview.creation_date is None
+        assert preview.severity == "Medium"
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    def test_initialization_with_empty_strings_not_logged_as_missing(self, mocker) -> None:
+        """
+        Given: Some fields are empty strings, others are provided or None.
+        When:  A QuickActionPreview instance is created.
+        Then:  Empty strings are not logged as missing by __post_init__; only None fields are.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        field_values = {
+            "id": "",             # Empty string, not None
+            "title": "A Title",
+            "description": None,  # This one is None
+            "status": "",         # Empty string, not None
+            "assignee": "User",
+            "creation_date": "2023-02-02",
+            "severity": None      # This one is None
+        }
+        # Expected missing fields in definition order (only None values)
+        expected_missing = ["description", "severity"]
+        expected_log_message = f"Missing fields: {', '.join(expected_missing)}"
+
+        # When
+        preview = QuickActionPreview(**field_values) # type: ignore
+
+        # Then
+        assert preview.id == ""
+        assert preview.title == "A Title"
+        assert preview.description is None
+        assert preview.status == ""
+        mock_demisto_debug.assert_called_once_with(expected_log_message)
+
+    @pytest.mark.parametrize(
+        "init_kwargs, expected_logged_missing_fields",
+        [
+            (
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                [] # No missing fields
+            ),
+            (
+                {"id": None, "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                ["id"]
+            ),
+            (
+                {"id": "1", "title": None, "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": None},
+                ["title", "severity"] # Order matters
+            ),
+            (
+                {"title": "Present", "status": "Also Present"}, # Others are None by default
+                ["id", "description", "assignee", "creation_date", "severity"]
+            ),
+            (
+                {}, # All fields are None by default
+                ALL_QA_PREVIEW_FIELD_NAMES
+            ),
+        ],
+        ids=[
+            "all_present",
+            "id_missing",
+            "title_and_severity_missing",
+            "only_title_and_status_present",
+            "all_missing_default_init",
+        ]
+    )
+    def test_post_init_logging_parametrized(
+        self,
+        mocker,
+        init_kwargs: Dict[str, Optional[str]],
+        expected_logged_missing_fields: List[str]
+    ) -> None:
+        """
+        Given: Various combinations of field initializations for QuickActionPreview.
+        When:  A QuickActionPreview instance is created.
+        Then:  demisto.debug is called (or not called) with the correctly formatted message,
+               listing None fields in their definition order.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+
+        # When
+        QuickActionPreview(**init_kwargs) # type: ignore
+
+        # Then
+        if expected_logged_missing_fields:
+            # Ensure the order of fields in the log message matches definition order
+            # The __post_init__ iterates self.__dict__.items(), which for dataclasses
+            # maintains insertion order (field definition order).
+            expected_log_message = f"Missing fields: {', '.join(expected_logged_missing_fields)}"
+            mock_demisto_debug.assert_called_once_with(expected_log_message)
+        else:
+            mock_demisto_debug.assert_not_called()
+
+
+class TestQuickActionPreviewToContext:
+    """
+    Test suite for the to_context method of the QuickActionPreview class.
+    """
+
+    @pytest.mark.parametrize(
+        "init_kwargs, expected_dict",
+        [
+            ( # All fields present
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"},
+                {"id": "1", "title": "t", "description": "d", "status": "s", "assignee": "a", "creation_date": "cd", "severity": "sev"}
+            ),
+            ( # Some fields None
+                {"id": "2", "title": None, "description": "desc", "status": "Open", "assignee": None, "creation_date": "date", "severity": "High"},
+                {"id": "2", "title": None, "description": "desc", "status": "Open", "assignee": None, "creation_date": "date", "severity": "High"}
+            ),
+            ( # All fields None (default initialization)
+                {},
+                {"id": None, "title": None, "description": None, "status": None, "assignee": None, "creation_date": None, "severity": None}
+            ),
+            ( # Fields with empty strings
+                {"id": "", "title": "A Title", "description": "", "status": "Done", "assignee": "", "creation_date": "Never", "severity": ""},
+                {"id": "", "title": "A Title", "description": "", "status": "Done", "assignee": "", "creation_date": "Never", "severity": ""}
+            ),
+        ],
+        ids=[
+            "all_values_present",
+            "some_values_none",
+            "all_values_none_default_init",
+            "empty_string_values",
+        ]
+    )
+    def test_to_context_returns_correct_dictionary(
+        self,
+        mocker,
+        init_kwargs: Dict[str, Optional[str]],
+        expected_dict: Dict[str, Any]
+    ) -> None:
+        """
+        Given: A QuickActionPreview initialized with various field values.
+        When:  The to_context() method is called.
+        Then:  A dictionary is returned that accurately represents the QuickActionPreview's attributes,
+               including None values and empty strings.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        preview = QuickActionPreview(**init_kwargs) # type: ignore
+
+        # When
+        actual_context_dict: Dict[str, Any] = preview.to_context()
+
+        # Then
+        assert actual_context_dict == expected_dict, \
+            "The dictionary from to_context() does not match the expected output."
+
+    def test_to_context_return_type_is_dict(self, mocker) -> None:
+        """
+        Given: Any QuickActionPreview instance.
+        When:  The to_context() method is called.
+        Then:  The returned type is a dictionary.
+        """
+        # Given
+        mock_demisto_debug = mocker.patch.object(demisto, 'debug')
+        preview = QuickActionPreview()
+
+        # When
+        result: Any = preview.to_context()
+
+        # Then
+        assert isinstance(result, dict), "The to_context() method should always return a dict."
