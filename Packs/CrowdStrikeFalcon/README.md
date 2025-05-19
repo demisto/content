@@ -6,6 +6,7 @@ This pack is designed to quickly detect, analyze, block, and contain malicious a
 ## What Does This Pack Do?
 
 <~XSOAR>
+
 - Mirrors incidents between Cortex XSOAR and CrowdStrike Falcon incidents or detections.
 </~XSOAR>
 
@@ -14,6 +15,7 @@ This pack is designed to quickly detect, analyze, block, and contain malicious a
 - Contains endpoints (isolation/unisolation)
 
 <~XSOAR>
+
 - Removes duplicate incidents
 - Eliminates false positive incidents
 - Enriches incidents
