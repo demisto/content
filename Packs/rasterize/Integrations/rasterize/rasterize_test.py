@@ -945,6 +945,7 @@ def test_retry_loading(mocker: MockerFixture):
     handler.retry_loading()
     assert mock_event.set.called
 
+
 @pytest.mark.parametrize(
     "exception_class, exception_message",
     [
