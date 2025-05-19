@@ -7,13 +7,13 @@ This integration was integrated and tested with version 12 of Kaspersky Security
 ## Prerequisites
 
 The user should be assigned to a role with the relevant devices in scope, and the following access rights:
+
 - Basic functionality - Read
 - Management of administration groups - Modify
 
     <img height="350" width="700" src="./../../doc_imgs/role.png" />
 
 ## Configure Kaspersky Security Center in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -24,16 +24,19 @@ The user should be assigned to a role with the relevant devices in scope, and th
 | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ksc-hosts-list
+
 ***
 Returns a list of hosts.
-
 
 #### Base Command
 
 `ksc-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -46,18 +49,19 @@ Returns a list of hosts.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | KasperskySecurityCenter.Host.KLHST_WKS_DN | String | Host display name. |
-| KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_FQDN | String | Host FQDN name. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_GROUPID | String | ID of administration group where host is located. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_HOSTNAME | String | Host name ID. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OS_NAME | String | Operating system name. | 
-
+| KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. |
+| KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. |
+| KasperskySecurityCenter.Host.KLHST_WKS_FQDN | String | Host FQDN name. |
+| KasperskySecurityCenter.Host.KLHST_WKS_GROUPID | String | ID of administration group where host is located. |
+| KasperskySecurityCenter.Host.KLHST_WKS_HOSTNAME | String | Host name ID. |
+| KasperskySecurityCenter.Host.KLHST_WKS_OS_NAME | String | Operating system name. |
 
 #### Command Example
+
 ```!ksc-hosts-list filter=KLHST_WKS_OS_NAME = "Microsoft Windows Server 2016"```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -77,25 +81,25 @@ Returns a list of hosts.
 #### Human Readable Output
 
 >### Hosts List
+>
 >|KLHST_WKS_HOSTNAME|KLHST_WKS_DN|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|
 >|---|---|---|---|
->| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | EC2AMAZ-U66K3JK |	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal |
-
+>| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | EC2AMAZ-U66K3JK | Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal |
 
 ### ksc-host-get
+
 ***
 Returns details of a host
-
 
 #### Base Command
 
 `ksc-host-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The unique hostname GUID to retrieve the details of. Can be retrieved using the ksc-hosts-list command. | Required | 
-
+| hostname | The unique hostname GUID to retrieve the details of. Can be retrieved using the ksc-hosts-list command. | Required |
 
 #### Context Output
 
@@ -106,40 +110,41 @@ Returns details of a host
 | Endpoint.Hostname | String | The hostname that is mapped to this endpoint. |
 | Endpoint.Domain | String | The domain of the endpoint. |
 | KasperskySecurityCenter.Host.KLHST_WKS_DN | String | Host display name. |
-| KasperskySecurityCenter.Host.KLHST_INSTANCEID | String | Network agent ID. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_FQDN | String | Host FQDN name. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_GROUPID | String | ID of administration group where host is located. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_HOSTNAME | String | Host name ID. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OS_NAME | String | Operating system name. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_ANTI_SPAM_STATUS | Number | Product component status. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_COLLAB_SRVS_STATUS | Number | Collaboration servers protection status. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_CPU_ARCH | Number | CPU architecture from the operating system point of view \(since KSC 10 SP1\). | 
-| KasperskySecurityCenter.Host.KLHST_WKS_CREATED.value | Date | Time of host record creation. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_CTYPE | Number | Computer type. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_DLP_STATUS | Number | DLP status. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_EDR_STATUS | Number | EDR component status. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_LAST_VISIBLE.value | Date | Last host visibility time. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_NAG_VERSION | String | Network agent build number in format A.B.C\[.D\]. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_NAG_VER_ID | Number | Network Agent version ID. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OSSP_VER_MAJOR | Number | Service Pack version major part \(since KSC 10 SP1\). | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OSSP_VER_MINOR | Number | Service Pack version minor part \(since KSC 10 SP1\). | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OS_BUILD_NUMBER | Number | Operating system version build number. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OS_RELEASE_ID | Number | Operating system version release ID \(for Windows 10\). | 
-| KasperskySecurityCenter.Host.KLHST_WKS_OWNER_IS_CUSTOM | Boolean | If owner was changed via UpdateHostwith KLHST_WKS_CUSTOM_OWNER_ID. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_PTYPE | Number | Platform type. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_RBT_REQUEST_REASON | Number | Reboot request reasons mask. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_RBT_REQUIRED | Boolean | If reboot is required. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_RTP_AV_BASES_TIME.value | Date | Anti-virus bases time. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_RTP_AV_VERSION | String | Protection build number in format A.B.C\[.D\]. | 
-| KasperskySecurityCenter.Host.KLHST_WKS_STATUS | Number | Host status. | 
-
+| KasperskySecurityCenter.Host.KLHST_INSTANCEID | String | Network agent ID. |
+| KasperskySecurityCenter.Host.KLHST_WKS_DNSDOMAIN | String | DNS suffix. |
+| KasperskySecurityCenter.Host.KLHST_WKS_DNSNAME | String | DNS name without DNS suffix. |
+| KasperskySecurityCenter.Host.KLHST_WKS_FQDN | String | Host FQDN name. |
+| KasperskySecurityCenter.Host.KLHST_WKS_GROUPID | String | ID of administration group where host is located. |
+| KasperskySecurityCenter.Host.KLHST_WKS_HOSTNAME | String | Host name ID. |
+| KasperskySecurityCenter.Host.KLHST_WKS_OS_NAME | String | Operating system name. |
+| KasperskySecurityCenter.Host.KLHST_WKS_ANTI_SPAM_STATUS | Number | Product component status. |
+| KasperskySecurityCenter.Host.KLHST_WKS_COLLAB_SRVS_STATUS | Number | Collaboration servers protection status. |
+| KasperskySecurityCenter.Host.KLHST_WKS_CPU_ARCH | Number | CPU architecture from the operating system point of view \(since KSC 10 SP1\). |
+| KasperskySecurityCenter.Host.KLHST_WKS_CREATED.value | Date | Time of host record creation. |
+| KasperskySecurityCenter.Host.KLHST_WKS_CTYPE | Number | Computer type. |
+| KasperskySecurityCenter.Host.KLHST_WKS_DLP_STATUS | Number | DLP status. |
+| KasperskySecurityCenter.Host.KLHST_WKS_EDR_STATUS | Number | EDR component status. |
+| KasperskySecurityCenter.Host.KLHST_WKS_LAST_VISIBLE.value | Date | Last host visibility time. |
+| KasperskySecurityCenter.Host.KLHST_WKS_NAG_VERSION | String | Network agent build number in format A.B.C\[.D\]. |
+| KasperskySecurityCenter.Host.KLHST_WKS_NAG_VER_ID | Number | Network Agent version ID. |
+| KasperskySecurityCenter.Host.KLHST_WKS_OSSP_VER_MAJOR | Number | Service Pack version major part \(since KSC 10 SP1\). |
+| KasperskySecurityCenter.Host.KLHST_WKS_OSSP_VER_MINOR | Number | Service Pack version minor part \(since KSC 10 SP1\). |
+| KasperskySecurityCenter.Host.KLHST_WKS_OS_BUILD_NUMBER | Number | Operating system version build number. |
+| KasperskySecurityCenter.Host.KLHST_WKS_OS_RELEASE_ID | Number | Operating system version release ID \(for Windows 10\). |
+| KasperskySecurityCenter.Host.KLHST_WKS_OWNER_IS_CUSTOM | Boolean | If owner was changed via UpdateHostwith KLHST_WKS_CUSTOM_OWNER_ID. |
+| KasperskySecurityCenter.Host.KLHST_WKS_PTYPE | Number | Platform type. |
+| KasperskySecurityCenter.Host.KLHST_WKS_RBT_REQUEST_REASON | Number | Reboot request reasons mask. |
+| KasperskySecurityCenter.Host.KLHST_WKS_RBT_REQUIRED | Boolean | If reboot is required. |
+| KasperskySecurityCenter.Host.KLHST_WKS_RTP_AV_BASES_TIME.value | Date | Anti-virus bases time. |
+| KasperskySecurityCenter.Host.KLHST_WKS_RTP_AV_VERSION | String | Protection build number in format A.B.C\[.D\]. |
+| KasperskySecurityCenter.Host.KLHST_WKS_STATUS | Number | Host status. |
 
 #### Command Example
+
 ```!ksc-host-get hostname="4328e16f-bf83-47c3-8d0b-0fdf79f9d673"```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -197,39 +202,40 @@ Returns details of a host
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673
+>
 >|KLHST_WKS_HOSTNAME|KLHST_WKS_OS_NAME|KLHST_WKS_FQDN|KLHST_WKS_DN|KLHST_WKS_NAG_VERSION|
 >|---|---|---|---|---|
->| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 | 	Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal | EC2AMAZ-U66K3L | 12.2.0.4376 |
-
+>| 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 |  Microsoft Windows Server 2016 | ip-172-32-34-237.eu-west-2.compute.internal | EC2AMAZ-U66K3L | 12.2.0.4376 |
 
 ### ksc-groups-list
+
 ***
 Returns a list of groups.
-
 
 #### Base Command
 
 `ksc-groups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter which contains a condition over group attributes, e.g., name = "Managed devices". See the integration documentation for the search filter syntax. | Optional | 
-| limit | The maximum number of groups to return. Default is 50. | Optional | 
-
+| filter | Filter which contains a condition over group attributes, e.g., name = "Managed devices". See the integration documentation for the search filter syntax. | Optional |
+| limit | The maximum number of groups to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Group.id | Number | Group ID. | 
-| KasperskySecurityCenter.Group.name | String | Group name. | 
-
+| KasperskySecurityCenter.Group.id | Number | Group ID. |
+| KasperskySecurityCenter.Group.name | String | Group name. |
 
 #### Command Example
+
 ```!ksc-groups-list filter=name = "Managed devices"```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -244,39 +250,40 @@ Returns a list of groups.
 #### Human Readable Output
 
 >### Groups List
+>
 >|id|name|
 >|---|---|
 >| 0 | Managed devices |
 
-
 ### ksc-group-add
+
 ***
 Create new administration group.
-
 
 #### Base Command
 
 `ksc-group-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the group to add. | Required | 
-| parent_id | ID of group under which to create the group. Can be retrieved using the ksc-groups-list command. | Required | 
-
+| name | The name of the group to add. | Required |
+| parent_id | ID of group under which to create the group. Can be retrieved using the ksc-groups-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Group.id | Number | Group ID. | 
-| KasperskySecurityCenter.Group.name | String | Group name. | 
-
+| KasperskySecurityCenter.Group.id | Number | Group ID. |
+| KasperskySecurityCenter.Group.name | String | Group name. |
 
 #### Command Example
+
 ```!ksc-group-add name="Assigned Devices" parent_id=1```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -291,32 +298,33 @@ Create new administration group.
 #### Human Readable Output
 
 >### Group was added successfully
+>
 >|id|name|
 >|---|---|
 >| 10 | Assigned Devices |
 
-
 ### ksc-group-delete
+
 ***
 Deletes an administrative group.
-
 
 #### Base Command
 
 `ksc-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | ID of group to delete. Can be retrieved using the ksc-groups-list command. | Required | 
-| flags | 1 = Delete group only if it is empty, 2 = delete group with subgroups, policies and tasks 3 = delete group with subgroups, hosts, policies and tasks. Possible values are: 1, 2, 3. Default is 1. | Optional | 
-
+| group_id | ID of group to delete. Can be retrieved using the ksc-groups-list command. | Required |
+| flags | 1 = Delete group only if it is empty, 2 = delete group with subgroups, policies and tasks 3 = delete group with subgroups, hosts, policies and tasks. Possible values are: 1, 2, 3. Default is 1. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!ksc-group-delete group_id=10 flags=1```
 
 #### Human Readable Output
@@ -324,13 +332,14 @@ There is no context output for this command.
 >Delete group action was submitted
 
 ### ksc-software-applications-list
+
 ***
 Returns limited attributes for all software applications.
-
 
 #### Base Command
 
 `ksc-software-applications-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -339,18 +348,19 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Inventory.Software.ARPRegKey | String | Subkey for application under registry key for list of add-remove progamms. | 
-| KasperskySecurityCenter.Inventory.Software.Comments | String | Software application comments. | 
-| KasperskySecurityCenter.Inventory.Software.DisplayName | String | Software application display name. | 
-| KasperskySecurityCenter.Inventory.Software.DisplayVersion | String | Software application display version. | 
-| KasperskySecurityCenter.Inventory.Software.ProductID | String | Software application product ID. | 
-| KasperskySecurityCenter.Inventory.Software.Publisher | String | Software application publisher. | 
-
+| KasperskySecurityCenter.Inventory.Software.ARPRegKey | String | Subkey for application under registry key for list of add-remove progamms. |
+| KasperskySecurityCenter.Inventory.Software.Comments | String | Software application comments. |
+| KasperskySecurityCenter.Inventory.Software.DisplayName | String | Software application display name. |
+| KasperskySecurityCenter.Inventory.Software.DisplayVersion | String | Software application display version. |
+| KasperskySecurityCenter.Inventory.Software.ProductID | String | Software application product ID. |
+| KasperskySecurityCenter.Inventory.Software.Publisher | String | Software application publisher. |
 
 #### Command Example
+
 ```!ksc-software-applications-list```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -409,20 +419,21 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Inventory Software Applications
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Microsoft SQL Server 2014 Transact-SQL ScriptDom  | Microsoft Corporation | 12.2.5000.0 |
 >| Plug-in for Microsoft Exchange ActiveSync | Kaspersky | 12.0.0.7734 |
 
-
 ### ksc-software-patches-list
+
 ***
 Returns limited attributes for all software application updates.
-
 
 #### Base Command
 
 `ksc-software-patches-list`
+
 #### Input
 
 There are no input arguments for this command.
@@ -431,18 +442,19 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Inventory.Patch.Classification | String | Classification of the update. | 
-| KasperskySecurityCenter.Inventory.Patch.Comments | String | Software application patch comments. | 
-| KasperskySecurityCenter.Inventory.Patch.DisplayName | String | Software application patch display name. | 
-| KasperskySecurityCenter.Inventory.Patch.DisplayVersion | String | Software application patch display version. | 
-| KasperskySecurityCenter.Inventory.Patch.PatchID | String | Software application patch ID. | 
-| KasperskySecurityCenter.Inventory.Patch.Publisher | String | Software application patch publisher. | 
-
+| KasperskySecurityCenter.Inventory.Patch.Classification | String | Classification of the update. |
+| KasperskySecurityCenter.Inventory.Patch.Comments | String | Software application patch comments. |
+| KasperskySecurityCenter.Inventory.Patch.DisplayName | String | Software application patch display name. |
+| KasperskySecurityCenter.Inventory.Patch.DisplayVersion | String | Software application patch display version. |
+| KasperskySecurityCenter.Inventory.Patch.PatchID | String | Software application patch ID. |
+| KasperskySecurityCenter.Inventory.Patch.Publisher | String | Software application patch publisher. |
 
 #### Command Example
+
 ```!ksc-software-patches-list```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -489,43 +501,44 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Inventory Software Patches
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Service Pack 2 for SQL Server 2014 (KB3171021) (64-bit) | Microsoft Corporation | 12.2.5000.0 |
 >| Update (KB3176936) | Microsoft Windows |  |
 
-
 ### ksc-host-software-applications-list
+
 ***
 Retrieve software applications for a host.
-
 
 #### Base Command
 
 `ksc-host-software-applications-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The unique hostname GUID to retrieve the software applications of. Can be retrieved using the ksc-hosts-list command. | Required | 
-
+| hostname | The unique hostname GUID to retrieve the software applications of. Can be retrieved using the ksc-hosts-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Host.Software.ARPRegKey | String | Subkey for application under registry key for list of add-remove progamms. | 
-| KasperskySecurityCenter.Host.Software.Comments | String | Software application comments. | 
-| KasperskySecurityCenter.Host.Software.DisplayName | String | Software application display name. | 
-| KasperskySecurityCenter.Host.Software.DisplayVersion | String | Software application display version. | 
-| KasperskySecurityCenter.Host.Software.ProductID | String | Software application product ID. | 
-| KasperskySecurityCenter.Host.Software.Publisher | String | Software application publisher. | 
-
+| KasperskySecurityCenter.Host.Software.ARPRegKey | String | Subkey for application under registry key for list of add-remove progamms. |
+| KasperskySecurityCenter.Host.Software.Comments | String | Software application comments. |
+| KasperskySecurityCenter.Host.Software.DisplayName | String | Software application display name. |
+| KasperskySecurityCenter.Host.Software.DisplayVersion | String | Software application display version. |
+| KasperskySecurityCenter.Host.Software.ProductID | String | Software application product ID. |
+| KasperskySecurityCenter.Host.Software.Publisher | String | Software application publisher. |
 
 #### Command Example
+
 ```!ksc-host-software-applications-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -592,43 +605,44 @@ Retrieve software applications for a host.
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 Software Applications
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Microsoft SQL Server 2014 Transact-SQL ScriptDom  | Microsoft Corporation | 12.2.5000.0 |
 >| Plug-in for Microsoft Exchange ActiveSync | Kaspersky | 12.0.0.7734 |
 
-
 ### ksc-host-software-patches-list
+
 ***
 Retrieves patches for a host.
-
 
 #### Base Command
 
 `ksc-host-software-patches-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | The unique hostname GUID to retrieve the software patches of. Can be retrieved using the ksc-hosts-list command. | Required | 
-
+| hostname | The unique hostname GUID to retrieve the software patches of. Can be retrieved using the ksc-hosts-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Host.Patch.Classification | String | Classification of the update. | 
-| KasperskySecurityCenter.Host.Patch.Comments | String | Software application patch comments. | 
-| KasperskySecurityCenter.Host.Patch.DisplayName | String | Software application patch display name. | 
-| KasperskySecurityCenter.Host.Patch.DisplayVersion | String | Software application patch display version. | 
-| KasperskySecurityCenter.Host.Patch.PatchID | String | Software application patch ID. | 
-| KasperskySecurityCenter.Host.Patch.Publisher | String | Software application patch publisher. | 
-
+| KasperskySecurityCenter.Host.Patch.Classification | String | Classification of the update. |
+| KasperskySecurityCenter.Host.Patch.Comments | String | Software application patch comments. |
+| KasperskySecurityCenter.Host.Patch.DisplayName | String | Software application patch display name. |
+| KasperskySecurityCenter.Host.Patch.DisplayVersion | String | Software application patch display version. |
+| KasperskySecurityCenter.Host.Patch.PatchID | String | Software application patch ID. |
+| KasperskySecurityCenter.Host.Patch.Publisher | String | Software application patch publisher. |
 
 #### Command Example
+
 ```!ksc-host-software-patches-list hostname=4328e16f-bf83-47c3-8d0b-0fdf79f9d673```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -675,45 +689,46 @@ Retrieves patches for a host.
 #### Human Readable Output
 
 >### Host 4328e16f-bf83-47c3-8d0b-0fdf79f9d673 Software Patches
+>
 >|DisplayName|Publisher|DisplayVersion|
 >|---|---|---|
 >| Service Pack 2 for SQL Server 2014 (KB3171021) (64-bit) | Microsoft Corporation | 12.2.5000.0 |
 >| Update (KB3176936) | Microsoft Windows |  |
 
-
 ### ksc-policies-list
+
 ***
 Returns policies located in specified group.
-
 
 #### Base Command
 
 `ksc-policies-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | ID of group to retrieve the policies of. Can be retrieved using the ksc-groups-list command. Set to -1 to retrieve policies of all groups. Default is -1. | Required | 
-
+| group_id | ID of group to retrieve the policies of. Can be retrieved using the ksc-groups-list command. Set to -1 to retrieve policies of all groups. Default is -1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Policy.KLPOL_ACTIVE | Boolean | Whether the policy is active. | 
-| KasperskySecurityCenter.Policy.KLPOL_CREATED.value | Date | Policy creation date. | 
-| KasperskySecurityCenter.Policy.KLPOL_MODIFIED.value | Date | Policy modification date. | 
-| KasperskySecurityCenter.Policy.KLPOL_DN | String | Policy display name. | 
-| KasperskySecurityCenter.Policy.KLPOL_PRODUCT | String | Policy product name. | 
-| KasperskySecurityCenter.Policy.KLPOL_VERSION | String | Policy product version. | 
-| KasperskySecurityCenter.Policy.KLPOL_GROUP_ID | Number | Policy group ID. | 
-| KasperskySecurityCenter.Policy.KLPOL_ID | Number | Policy ID. | 
-
+| KasperskySecurityCenter.Policy.KLPOL_ACTIVE | Boolean | Whether the policy is active. |
+| KasperskySecurityCenter.Policy.KLPOL_CREATED.value | Date | Policy creation date. |
+| KasperskySecurityCenter.Policy.KLPOL_MODIFIED.value | Date | Policy modification date. |
+| KasperskySecurityCenter.Policy.KLPOL_DN | String | Policy display name. |
+| KasperskySecurityCenter.Policy.KLPOL_PRODUCT | String | Policy product name. |
+| KasperskySecurityCenter.Policy.KLPOL_VERSION | String | Policy product version. |
+| KasperskySecurityCenter.Policy.KLPOL_GROUP_ID | Number | Policy group ID. |
+| KasperskySecurityCenter.Policy.KLPOL_ID | Number | Policy ID. |
 
 #### Command Example
+
 ```!ksc-policies-list group_id=0```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -776,45 +791,46 @@ Returns policies located in specified group.
 #### Human Readable Output
 
 >### Policies List
+>
 >|KLPOL_ID|KLPOL_DN|KLPOL_PRODUCT|KLPOL_VERSION|
 >|---|---|---|---|
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
 >| 2 | Kaspersky Security Center Network Agent | 1103 | 1.0.0.0 |
 
-
 ### ksc-policy-get
+
 ***
 Retrieves data for specified policy.
-
 
 #### Base Command
 
 `ksc-policy-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_id | ID of policy to retrieve details of. Can be retrieved using the ksc-policies-list command. | Required | 
-
+| policy_id | ID of policy to retrieve details of. Can be retrieved using the ksc-policies-list command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| KasperskySecurityCenter.Policy.KLPOL_ACTIVE | Boolean | Whether the policy is active. | 
-| KasperskySecurityCenter.Policy.KLPOL_CREATED.value | Date | Policy creation date. | 
-| KasperskySecurityCenter.Policy.KLPOL_MODIFIED.value | Date | Policy modification date. | 
-| KasperskySecurityCenter.Policy.KLPOL_DN | String | Policy display name. | 
-| KasperskySecurityCenter.Policy.KLPOL_PRODUCT | String | Policy product name. | 
-| KasperskySecurityCenter.Policy.KLPOL_VERSION | String | Policy product version. | 
-| KasperskySecurityCenter.Policy.KLPOL_GROUP_ID | Number | Policy group ID. | 
-| KasperskySecurityCenter.Policy.KLPOL_ID | Number | Policy ID. | 
-
+| KasperskySecurityCenter.Policy.KLPOL_ACTIVE | Boolean | Whether the policy is active. |
+| KasperskySecurityCenter.Policy.KLPOL_CREATED.value | Date | Policy creation date. |
+| KasperskySecurityCenter.Policy.KLPOL_MODIFIED.value | Date | Policy modification date. |
+| KasperskySecurityCenter.Policy.KLPOL_DN | String | Policy display name. |
+| KasperskySecurityCenter.Policy.KLPOL_PRODUCT | String | Policy product name. |
+| KasperskySecurityCenter.Policy.KLPOL_VERSION | String | Policy product version. |
+| KasperskySecurityCenter.Policy.KLPOL_GROUP_ID | Number | Policy group ID. |
+| KasperskySecurityCenter.Policy.KLPOL_ID | Number | Policy ID. |
 
 #### Command Example
+
 ```!ksc-policy-get policy_id=1```
 
 #### Context Example
+
 ```json
 {
     "KasperskySecurityCenter": {
@@ -849,11 +865,13 @@ Retrieves data for specified policy.
 #### Human Readable Output
 
 >### Policy 1
+>
 >|KLPOL_ID|KLPOL_DN|KLPOL_PRODUCT|KLPOL_VERSION|
 >|---|---|---|---|
 >| 1 | Kaspersky Endpoint Security for Windows (11.5.0) | KES | 11.0.0.0 |
 
 ## Search Filter Syntax
+
 A number of commands are using a search filter that has syntax resembling one from RFC 2254.
 
 ```
