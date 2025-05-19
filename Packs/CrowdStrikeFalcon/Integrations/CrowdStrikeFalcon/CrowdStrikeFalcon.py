@@ -3281,10 +3281,10 @@ def fetch_items(command="fetch-incidents"):
     mobile_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.MOBILE_DETECTIONS)
     on_demand_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.ON_DEMAND_DETECTIONS)
     ofp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.OFP_DETECTION)
-    
+
     # last_run objects - fetch types only for fetch-incidents
-    iom_last_run = {}
-    ioa_last_run = {}
+    iom_last_run: dict[str, Any] = {}
+    ioa_last_run: dict[str, Any] = {}
 
     if is_fetch_events:
         fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
@@ -3294,8 +3294,8 @@ def fetch_items(command="fetch-incidents"):
         look_back = int(params.get("look_back") or 2)
 
         # last_run object - Only for fetch_incident
-        iom_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.IOM)
-        ioa_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.IOA)
+        iom_last_run = get_last_run_per_type(last_run, LastRunIndex.IOM)
+        ioa_last_run = get_last_run_per_type(last_run, LastRunIndex.IOA)
 
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
