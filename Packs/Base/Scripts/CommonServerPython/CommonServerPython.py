@@ -12474,18 +12474,6 @@ def parse_json_string(json_string):
         demisto.error("Error decoding JSON: {error}".format(error=error))
         return {}
 
-# import importlib
-# import sys
-
-# def override_cortex_function(func):
-#     """
-#     Decorator to override a function in the cortex_module_test module.
-#     """
-#     cortex_module = importlib.import_module("cortex_module_test")
-#     setattr(cortex_module, func.__name__, func)
-#     sys.modules["cortex_module_test"] = cortex_module
-    
-#     return func
 
 import importlib.util
 import sys
@@ -12496,7 +12484,7 @@ class ModuleSwitcher:
     
     def override_function(self, module_name, function_name, function):
         """
-        Overrides a function from a python module with a another function with same name.
+        Overrides a function from a python module with a another function with same name using 'Monkey Patching' technique. 
         """
         spec_module = importlib.util.find_spec(module_name)
         if spec_module:
