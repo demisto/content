@@ -3274,13 +3274,17 @@ def fetch_items(command="fetch-incidents"):
         last_run = [{} for _ in range(last_run_length)]
     last_run = migrate_last_run(last_run, is_fetch_events)
 
-    # last_run object - Common for fetch_incident and fetch_events
+    # last_run objects - common for fetch_incident and fetch_events
     detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.DETECTIONS)
     incidents_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.INCIDENTS)
     idp_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.IDP_DETECTIONS)
     mobile_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.MOBILE_DETECTIONS)
     on_demand_detections_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.ON_DEMAND_DETECTIONS)
     ofp_detection_last_run: dict = get_last_run_per_type(last_run, LastRunIndex.OFP_DETECTION)
+    
+    # last_run objects - fetch types only for fetch-incidents
+    iom_last_run = {}
+    ioa_last_run = {}
 
     if is_fetch_events:
         fetch_incidents_or_detections = params.get("fetch_events_or_detections", "")
