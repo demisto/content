@@ -1779,6 +1779,24 @@ script:
     - contextPath: Azure.CosmosDB.properties.writeLocations
       description: An array that contains the write locations enabled for the Cosmos DB account.
       type: List
+  - arguments:
+    - name: role_id
+      description: ID of the role from which to remove the user. 
+      required: true
+    - name: user_id
+      description: ID of the user to remove from the role. 
+      required: true
+    description: Removes a user from a role.
+    name: azure-remove-member-from-role
+  - arguments:
+    - description: The group ID.
+      name: group_id
+      required: true
+    - description: The user ID.
+      name: user_id
+      required: true
+    description: Removes a member from a group.
+    name: azure-remove-member-from-group
   isfetch: false
   runonce: false
   script: '-'

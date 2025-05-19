@@ -754,6 +754,42 @@ and resource group "{resource_group_name}" was not found.')
         return self.ms_client.http_request("PATCH", full_url=full_url, json_data=data, params=params)
     
     
+    def remove_member_from_role(self, role_object_id: str, user_id: str):
+        """Removing a member from a specific role.
+
+        Args:
+            role_object_id: A role to remove the user from.
+            user_id: The user to remove from the role.
+
+        Return:
+            True if succeeded.
+
+        Raises:
+            Error on failed removal (as long with requests errors).
+
+        Docs:
+            https://docs.microsoft.com/en-us/graph/api/directoryrole-delete-member?view=graph-rest-1.0&tabs=http
+        """
+        full_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref"
+        params = {"api-version": COSMOS_DB_API_VERSION}
+        response = self.ms_client.http_request(
+            "DELETE", full_url=full_url, params=params
+        )
+        print(response)
+        
+    
+    def remove_member_from_group(self, group_id: str, user_id: str):
+        """Remove a single member to a group by sending a DELETE request.
+        Args:
+            group_id: the group id to add the member to.
+            user_id: the user id to remove.
+        """
+        #  If successful, this method returns 204 No Content response code.
+        #  It does not return anything in the response body.
+        #  Using resp_type="text" to avoid parsing error in the calling method.
+        params = {"api-version": COSMOS_DB_API_VERSION}
+        self.ms_client.http_request(method="DELETE", full_url=f"https://management.azure.com/v1.0/groups/{group_id}/members/{user_id}/$ref", params=params, resp_type="text")
+    
         
 """ HELPER FUNCTIONS """
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -1584,7 +1620,40 @@ def cosmosdb_update_command(
         raw_response=response,
     )
     
+def remove_member_from_role(client: AzureClient, args: dict) -> CommandResults:
+    """Remove a member from a group by group id and user id.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    role_object_id = args.get("role_id")
+    user_id = args.get("user_id")
+    client.remove_member_from_role(role_object_id, user_id)  # type: ignore
+    return CommandResults(readable_output=f"User ID {user_id} has been removed from role {role_object_id}")
     
+    
+def remove_member_from_group_command(client: AzureClient, args: dict) -> CommandResults:
+    """Remove a member from a group by group id and user id.
+
+    Args:
+        client: Client object with request
+        args: Usually demisto.args()
+
+    Returns:
+        Outputs.
+    """
+    group_id = str(args.get("group_id"))
+    user_id = str(args.get("user_id"))
+    client.remove_member_from_group(group_id, user_id)
+
+    human_readable = f'User {user_id} was removed from the Group "{group_id}" successfully.'
+    return CommandResults(readable_output=human_readable)
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1655,13 +1724,19 @@ def main():
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             # "azure-logicapp-update": logicapp_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
-            "azure-cosmos-db-update": cosmosdb_update_command
+            "azure-cosmos-db-update": cosmosdb_update_command,
+        }
+        commands_with_args = {
+            "azure-remove-member-from-role": remove_member_from_role,
+            "azure-remove-member-from-group": remove_member_from_group_command
         }
        
         if command == "test-module":
             return_results(test_module(client))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
+        elif command in commands_with_args:
+            return_results(commands_with_args[command](client=client, args=args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
         
