@@ -205,7 +205,7 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser: pychrome.Browser, tab: pychrome.Tab, tab_ready_event, path: str, navigation_timeout: int):
+    def __init__(self, browser: pychrome.Browser, tab: pychrome.Tab, tab_ready_event: Event, path: str, navigation_timeout: int):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
