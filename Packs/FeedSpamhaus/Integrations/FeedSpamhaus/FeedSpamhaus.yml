@@ -69,6 +69,13 @@ configuration:
   type: 17
   required: false
   section: Collect
+- additionalinfo: When enabled, each /32 CIDR will also be returned as an IP indicator. Only relevant if the integration fetches /32 CIDR indicators.
+  display: Set /32 CIDRs as IP Indicators
+  name: cidr_32_to_ip
+  required: false
+  type: 8
+  section: Collect
+  advanced: true
 - defaultvalue: '20160'
   display: ''
   name: feedExpirationInterval
@@ -123,7 +130,7 @@ script:
       name: indicator_type
     description: Gets the feed indicators.
     name: spamhaus-get-indicators
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: true
   runonce: false
   script: '-'
