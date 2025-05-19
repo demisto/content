@@ -418,8 +418,8 @@ def test_get_future_attack_indicators_command_success(mock_client, mocker):
     assert result.readable_output == "Mocked Markdown Table"
 
 
-def test_get_future_attack_indicators_command_no_feed_uuid(mock_client):
-    # Mock arguments without feed_uuid
+def test_get_future_attack_indicators_command_no_source_uuids(mock_client):
+    # Mock arguments without source_uuids
     args = {}
 
     # Call the function and expect ValueError
@@ -441,7 +441,7 @@ def test_get_future_attack_indicators_command_no_data(mock_client, mocker):
     # Assertions
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.FutureAttackIndicators"
-    assert result.outputs_key_field == "feed_uuid"
+    assert result.outputs_key_field == "source_uuids"
     assert result.outputs == []
     assert result.readable_output.strip() == "### SilentPush Future Attack Indicators\n**No entries.**"
 
