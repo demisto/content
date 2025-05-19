@@ -645,7 +645,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log(f"demisto results: {json.dumps(results, indent=4, sort_keys=True)}")
+    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))    # noqa: UP032
 
 
 def credentials(credentials):
@@ -659,7 +659,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log(f"credentials: {credentials}")
+    log("credentials: {}".format(credentials))  # noqa: UP032
 
 
 def getFilePath(id):

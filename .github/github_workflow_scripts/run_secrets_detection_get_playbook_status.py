@@ -24,7 +24,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
                                                                          path='/inv-playbook/' + inv_id)
         investigation_playbook = ast.literal_eval(investigation_playbook_raw[0])
     except ApiException:
-        print('Failed to get investigation playbook state, error trying to communicate with demisto server')
+        print('Failed to get investigation playbook state, error trying to communicate with demisto server')    # noqa: T201
         return PB_Status.FAILED
 
     return investigation_playbook.get('state', PB_Status.NOT_SUPPORTED_VERSION)
@@ -32,7 +32,7 @@ def get_playbook_state(client: demisto_client, inv_id: str):
 
 def wait_for_playbook_to_complete(investigation_id, client):
     investigation_url = f'<Content Gold URL>/Custom/caseinfoid/{investigation_id}'
-    print(f'Investigation URL: {investigation_url}')
+    print(f'Investigation URL: {investigation_url}')    # noqa: T201
 
     timeout = time.time() + DEFAULT_TIMEOUT
 
@@ -50,15 +50,15 @@ def wait_for_playbook_to_complete(investigation_id, client):
                                               verify_ssl=False)
 
         if playbook_state == PB_Status.COMPLETED:
-            print("Secrets playbook finished successfully, no secrets were found.")
+            print("Secrets playbook finished successfully, no secrets were found.") # noqa: T201
             break
 
         if playbook_state == PB_Status.FAILED:
-            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}')
+            print(f'Secrets playbook was failed as secrets were found. To investigate go to: {investigation_url}')  # noqa: T201
             sys.exit(1)
 
         if time.time() > timeout:
-            print(f'Secrets playbook timeout reached. To investigate go to: {investigation_url}')
+            print(f'Secrets playbook timeout reached. To investigate go to: {investigation_url}')   # noqa: T201
             sys.exit(1)
 
 
@@ -87,7 +87,7 @@ def main():
         client = demisto_client.configure(base_url=gold_server_url, api_key=api_key, auth_id=auth_id, verify_ssl=False)
         wait_for_playbook_to_complete(investigation_id, client)
     else:
-        print("Secrets detection step failed - API key or investigation ID were not supplied.")
+        print("Secrets detection step failed - API key or investigation ID were not supplied.") # noqa: T201
         sys.exit(1)
 
 
