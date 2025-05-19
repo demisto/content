@@ -1,31 +1,27 @@
 Exabeam Security Operations Platform offers a centralized and scalable platform for log management.
 This integration was integrated and tested with version v1.0 of ExabeamSecOpsPlatform.
 
-## Configure Exabeam Security Operations Platform on Cortex XSOAR
+## Configure Exabeam Security Operations Platform in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Exabeam Security Operations Platform.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Client ID | True |
-    | Client Secret | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
-    | Maximum Incidents Per Fetch |  |
-    | Fetch query |  |
-    | Fetch incidents |  |
-    | Incident type |  |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  |
+| Maximum Incidents Per Fetch |  |
+| Fetch query |  |
+| Fetch incidents |  |
+| Incident type |  |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### exabeam-platform-event-search
@@ -43,7 +39,7 @@ Get events from Exabeam Security Operations Platform.
 | --- | --- | --- |
 | start_time | The starting date for the search range. | Required | 
 | end_time | The ending date for the search range. | Required | 
-| query | Query, using Lucene syntax, filters log data for precise analysis. | Optional | 
+| query | Query, using Lucene syntax, filters log data for precise analysis, without escaping and with values unquoted. e.g., query="product: Correlation Rule AND rule_severity: High". | Optional | 
 | fields | Comma-separated list of fields to be returned from the search. | Optional | 
 | group_by | Comma-separated list of fields by which to group the results. | Optional | 
 | limit | The maximal number of results to return. Maximum value is 3000. | Optional | 
@@ -59,7 +55,7 @@ Get events from Exabeam Security Operations Platform.
 | ExabeamPlatform.Event.rawLogs | String | The raw logs associated with the event. | 
 
 #### Command example
-```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2```
+```!exabeam-platform-event-search end_time="today" start_time="7 days ago" limit=2 query="product: Correlation Rule AND rule_severity: High"```
 #### Context Example
 ```json
 {
@@ -341,4 +337,3 @@ Search for cases that match one or more search criteria. For example, you can se
 | ExabeamPlatform.Case.mitres.tacticKey | String | Key of the MITRE tactic associated with the case. | 
 | ExabeamPlatform.Case.mitres.technique | String | MITRE technique associated with the case. | 
 | ExabeamPlatform.Case.mitres.techniqueKey | String | Key of the MITRE technique associated with the case. | 
-

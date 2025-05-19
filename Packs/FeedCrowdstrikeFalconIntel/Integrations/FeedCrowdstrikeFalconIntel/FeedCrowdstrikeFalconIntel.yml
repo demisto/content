@@ -147,7 +147,7 @@ script:
       name: custom_filter
     description: Gets indicators from CrowdStrike Falcon Intel Feed.
     name: crowdstrike-falcon-intel-get-indicators
-  dockerimage: demisto/python3:3.11.9.106403
+  dockerimage: demisto/python3:3.11.10.115186
   feed: true
   runonce: false
   script: '-'

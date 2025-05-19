@@ -14,4 +14,4 @@ So as much time as well spend on our UI/UX, we recognize how important it is to 
 
 When Rubrik [Polaris Radar](https://www.rubrik.com/en/products/polaris-overview/polaris-radar) detects a new anomaly event, a Cortex XSOAR incident will automatically be created for the event. Once created, the incident will also utilize the [Rubrik Sonar](https://www.rubrik.com/en/solutions/sonar-data-governance) capabilities to determine if any sensitive data was potentially exposed to data exfiltration.
 
-![Cortex XSOAR Integration](https://user-images.githubusercontent.com/8610203/116754427-563b0e00-a9ce-11eb-9210-f82d412f0c05.png)
+![Cortex XSOAR Integration](doc_files/116754427-563b0e00-a9ce-11eb-9210-f82d412f0c05.png)

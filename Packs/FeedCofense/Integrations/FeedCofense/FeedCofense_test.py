@@ -8,7 +8,7 @@ with open("test_data/search_output.json") as f:
 
 data = raw["data"]
 threats = data["threats"]
-client = Client("https://www.threathq.com", ("username", "password"), tags=['tag1', 'tag2'], tlp_color='RED')
+client = Client("https://www.threathq.com", ("username", "password"), tags=["tag1", "tag2"], tlp_color="RED")
 
 
 class TestFetchIndicators:
@@ -36,8 +36,8 @@ class TestFetchIndicators:
             assert len(ans) == length
             assert first_obj["value"] == value
             assert first_obj["type"] == _type
-            assert first_obj['fields']['tags'] == client.tags
-            assert first_obj['fields']['trafficlightprotocol'] == client.tlp_color
+            assert first_obj["fields"]["tags"] == client.tags
+            assert first_obj["fields"]["trafficlightprotocol"] == client.tlp_color
         else:
             assert not ans
 
@@ -56,7 +56,7 @@ class TestFetchIndicators:
                 "6ad00a19ab3e47e4b54b2792a7b47a13",
                 "d2c65700c107b637eafe34b203b6f712",
                 "user@example.com",
-                "random md5"
+                "random md5",
             ],
             [
                 FeedIndicatorType.URL,
@@ -80,9 +80,7 @@ class TestFetchIndicators:
         "iterator_value, expected_value, expected_type, limit",
         fetch_items_params,
     )
-    def test_fetch_indicators_command(
-            self, mocker, iterator_value, expected_value, expected_type, limit
-    ):
+    def test_fetch_indicators_command(self, mocker, iterator_value, expected_value, expected_type, limit):
         """
         Test fetch_indicators_command for success cases.
         Given
@@ -98,12 +96,12 @@ class TestFetchIndicators:
             for i, res in enumerate(results):
                 assert expected_value[i] in res["value"]
                 assert expected_type[i] in res["type"]
-                assert res['fields']['tags'] == client.tags
-                assert res['fields']['trafficlightprotocol'] == client.tlp_color
+                assert res["fields"]["tags"] == client.tags
+                assert res["fields"]["trafficlightprotocol"] == client.tlp_color
         else:
             assert not results
 
-    process_items_params = [
+    process_items_params = [      # noqa: PIE794
         (threats[0], "randommd5", FeedIndicatorType.File, 0, 4),
         (threats[0], "6ad00a19ab3e47e4b54b2792a7b47a13", FeedIndicatorType.File, 2, 4),
         ({}, "", "", 0, 0),
@@ -126,8 +124,8 @@ class TestFetchIndicators:
             assert len(ans) == length
             assert first_obj["value"] == value
             assert first_obj["type"] == _type
-            assert first_obj['fields']['tags'] == client.tags
-            assert first_obj['fields']['trafficlightprotocol'] == client.tlp_color
+            assert first_obj["fields"]["tags"] == client.tags
+            assert first_obj["fields"]["trafficlightprotocol"] == client.tlp_color
         else:
             assert not ans
 
@@ -147,4 +145,4 @@ class TestFetchIndicators:
         mocker.patch.object(Client, "build_iterator", return_value=[threats[1]])
         results = fetch_indicators_command(client)
 
-        assert results == indicators['indicators']
+        assert results == indicators["indicators"]

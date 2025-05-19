@@ -4,59 +4,58 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
 MISP Feed integration allows you to ingest feeds into TIM via an MISP instance.
 To ingest feeds via MISP, you must first configure a MISP instance and have the proper credentials.
 
-To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace. 
+To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace.
 
 To ingest feeds via a URL, you could use one of the following content packs:
+
 - CSV Feed
 - JSON Feed
 - Plain Text Feed
 - RSS Feed
-## Configure MISP Feed on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for MISP Feed.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure MISP Feed in Cortex
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Your server URL |  | True |
-    | API Key | The API Key to use for the connection. | True |
-    | Timeout | The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.| False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Fetch indicators |  | False |
-    | Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
-    | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
-    | MISP Attribute Tags | Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1,tag2,tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
-    | MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1,type2,type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
-    | Query | JSON query to filter MISP attributes. When the query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi\#operation/restSearchAttributes | False |
-    | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
-    | Tags | Supports CSV values. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL |  | True |
+| API Key | The API Key to use for the connection. | True |
+| Timeout | The timeout of the HTTP requests sent to the MISP API (in seconds). If no value is provided, the timeout will be set to 60 seconds.| False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch indicators |  | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| Max. indicators per fetch | Limit the number of indicators retrieved in a fetch run. | False |
+| MISP Attribute Tags | Attributes having one of the tags, or being an attribute of an event having one of the tags, will be returned. You can enter a comma-separated list of tags, for example <tag1,tag2,tag3>. The list of MISP tags can be found in your MISP instance under 'Event Actions'>'List Tags' | False |
+| MISP Attribute Types | Attributes of one of these types will be returned. You can enter a comma-separated list of types, for example <type1,type2,type3>. The list of MISP types can be found in your MISP instance then 'Event Actions'>'Search Attributes'>'Type dropdown list' | False |
+| Query | JSON query to filter MISP attributes. When the query parameter is used, Attribute Types and Attribute Tags parameters are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi\#operation/restSearchAttributes | False |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Tags | Supports CSV values. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### misp-feed-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `misp-feed-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| tags | Tags of the attributes to search for. | Optional | 
-| attribute_type | Types of the attributes to search for. | Optional | 
-| query | JSON query to filter MISP attributes. When a query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional | 
-
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| tags | Tags of the attributes to search for. | Optional |
+| attribute_type | Types of the attributes to search for. | Optional |
+| query | JSON query to filter MISP attributes. When a query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional |
 
 #### Context Output
 
@@ -113,15 +112,19 @@ Gets indicators from the feed.
 ```
 
 #### Command Example
+
 ``` !misp-feed-get-indicators tags=tlp:% attribute_type=ip-src ```
 
 #### Human Readable Output
+
 Retrieved 7 indicators.
 
 ## Additional Information
+
 If you experience a timeout error while fetching indicators, the following query configuration may be helpful for you.
 
 You can configure the feed to return results from the last 24 hours as shown below:
+
 ```json
 {
     "returnFormat": "json",

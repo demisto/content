@@ -7,23 +7,19 @@ This integration was integrated and tested with version >10.0.0 of FileOrbis (Yo
 3. Click **Save** button.
 4. Copy created **Client Id** and **Client Secret**.
 
-## Configure FileOrbis on Cortex XSOAR
+## Configure FileOrbis in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FileOrbis.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Url | FileOrbis Url. | True |
-    | Client Id | Client id from FileOrbis XSOAR settings. | True |
-    | Client Secret | Client secret from FileOrbis XSOAR settings. | True |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
-    | Use system proxy settings | Use system proxy settings. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Url | FileOrbis Url. | True |
+| Client Id | Client id from FileOrbis XSOAR settings. | True |
+| Client Secret | Client secret from FileOrbis XSOAR settings. | True |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False |
+| Use system proxy settings | Use system proxy settings. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fileorbis-change-user-status
 ***
@@ -72,4 +68,3 @@ Changes user status
 | **Success** | **Status** | **Message** | **UserID** |
 | --- | --- | --- | --- |
 | true | 0 | Your Operation is Completed Successfully | 69a0e65c-54d7-4210-9cc4-08c40d1a0b9d |
-

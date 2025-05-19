@@ -35,4 +35,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Modify EDL](https://user-images.githubusercontent.com/91506078/159843984-16859c01-eb4e-4ebc-93a4-bed625b793e1.png)
+![Modify EDL](../doc_files/159843984-16859c01-eb4e-4ebc-93a4-bed625b793e1.png)

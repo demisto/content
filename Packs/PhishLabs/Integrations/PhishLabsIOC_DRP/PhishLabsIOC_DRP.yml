@@ -856,7 +856,7 @@ script:
     - contextPath: PhishlabsIOC.DRP.AssociatedURLs.WhoIs.NameServers
       description: The name servers of the URL.
       type: String
-  dockerimage: demisto/python3:3.10.13.78623
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

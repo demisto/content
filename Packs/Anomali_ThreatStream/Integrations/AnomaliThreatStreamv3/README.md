@@ -3,31 +3,27 @@ Use Anomali ThreatStream to query and submit threats.
 Some changes have been made that might affect your existing content. 
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-anomali-threatstream-v3).
 
-## Configure Anomali ThreatStream v3 on Cortex XSOAR
+## Configure Anomali ThreatStream v3 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Anomali ThreatStream v3.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Server URL (e.g., https://www.test.com) |  | True |
-    | Username |  | True |
-    | API Key |  | True |
-    | URL threshold |  | False |
-    | IP threshold |  | False |
-    | Domain threshold |  | False |
-    | File threshold |  | False |
-    | Email threshold | Email indicators with confidence value above this threshold are considered malicious. | False |
-    | Include inactive results | Whether to include inactive indicators in reputation commands. | False |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Create relationships | Create relationships between indicators as part of enrichment. | False |
-    | Remote API | Gather additional information about the threat model from remote APIs. | False |
-    | Default DBOT score for indicators with low confidence |  | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://www.test.com) |  | True |
+| Username |  | True |
+| API Key |  | True |
+| URL threshold |  | False |
+| IP threshold |  | False |
+| Domain threshold |  | False |
+| File threshold |  | False |
+| Email threshold | Email indicators with confidence value above this threshold are considered malicious. | False |
+| Include inactive results | Whether to include inactive indicators in reputation commands. | False |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Create relationships | Create relationships between indicators as part of enrichment. | False |
+| Remote API | Gather additional information about the threat model from remote APIs. | False |
+| Default DBOT score for indicators with low confidence |  | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Configure Indicator Threshold Parameters
 Each indicator has a threshold parameter and an integer `confidence` value that impacts the indicator's DBotScore calculation.  
@@ -44,7 +40,7 @@ If the indicator `confidence` value is above the threshold parameter value, the 
 For example, if in the instance configuration you set **File threshold** to 10 and the `confidence` value  is 15, the DBotScore is set to 3 (Malicious).
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### ip
 ***

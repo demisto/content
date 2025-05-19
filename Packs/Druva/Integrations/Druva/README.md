@@ -1,29 +1,25 @@
 Druva Ransomware Response Integration provides ransomware protection for endpoints, SaaS applications and data center workloads for Druva Ransomware Recovery customers.
 
-## Configure Druva Ransomware Response on Cortex XSOAR
+## Configure Druva Ransomware Response in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Druva Ransomware Response.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Druva API URL |  | True |
-    | Client ID |  | True |
-    | Secret Key |  | True |
-    | Fetch indicators |  | False |
-    | Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
-    | Source Reliability | Reliability of the source providing the intelligence data | True |
-    |  |  | False |
-    |  |  | False |
-    | Feed Fetch Interval |  | False |
-    | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Druva API URL |  | True |
+| Client ID |  | True |
+| Secret Key |  | True |
+| Fetch indicators |  | False |
+| Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+|  |  | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### druva-find-device
@@ -1172,4 +1168,3 @@ Finds shared drives resources specific to share drive name
 >|resourceID|resourceName|resourceParentName|resourceStatus|resourceType|
 >|---|---|---|---|---|
 >| 104 | rahul_drive | https:<span>//</span>drive.google.com/drive/folders/0AIL1ax7fcxDKUk9PVA | Enabled | Shared Drive |
-

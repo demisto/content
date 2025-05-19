@@ -4,11 +4,8 @@ Unit42 feed of published IOCs, which contains known malicious indicators.
 
 Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK indicators in your environment from the the STIX reports.
 
-## Configure Unit42 Feed on Cortex XSOAR
+## Configure Unit42 Feed in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Unit42 Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -25,9 +22,8 @@ Note: Install the MITRE ATT&CK pack if you want the feed to create MITRE ATT&CK 
 | proxy | Use system proxy settings | False |
 | insecure | Trust any certificate \(not secure\) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### unit42-get-indicators
 ***
@@ -57,4 +53,3 @@ There is no context output for this command.
 | c1ec28bc82500bd70f95edcbdf9306746198bbc04a09793ca69bb87f2abdb839 | File |
 | e6ecb146f469d243945ad8a5451ba1129c5b190f7d50c64580dbad4b8246f88e | File |
 | 2014\[.\]zzux\[.\]com | Domain |
-

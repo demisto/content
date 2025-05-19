@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Prisma Access Whitelist Egress IPs on SaaS Services](https://raw.githubusercontent.com/demisto/content/859f073f59aabaef8e36ec39eed63778cd2b9856/Packs/PrismaAccess/doc_files/Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.png)
+![Prisma Access Whitelist Egress IPs on SaaS Services](../doc_files/Prisma_Access_Whitelist_Egress_IPs_on_SaaS_Services.png)

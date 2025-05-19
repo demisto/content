@@ -2,21 +2,35 @@
     "name": "AlienVault OTX",
     "description": "Query Indicators of Compromise in AlienVault OTX.",
     "support": "xsoar",
-    "currentVersion": "1.1.43",
+    "currentVersion": "1.1.46",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
     "created": "2020-04-14T00:00:00Z",
     "categories": [
-        "Data Enrichment & Threat Intelligence"
+        "Data Enrichment & Threat Intelligence",
+        "Forensics & Malware Analysis"
     ],
     "tags": [
-        "Free Enricher"
+        "Free Enricher",
+        "Threat Intelligence",
+        "Incident Response"
     ],
     "useCases": [],
-    "keywords": [],
+    "keywords": [
+        "Threat Hunting",
+        "IOC",
+        "Open Threat Exchange"
+    ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

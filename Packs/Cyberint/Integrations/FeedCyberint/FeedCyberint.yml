@@ -1,0 +1,373 @@
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Cyberint Feed
+  version: -1
+fromversion: 6.9.0
+name: Cyberint Feed
+display: Cyberint Feed
+category: Data Enrichment & Threat Intelligence
+description: Use the Cyberint Feed integration to get indicators from the feed.
+configuration:
+- display: Cyberint API URL
+  additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Company Name
+  additionalinfo: Company (client) name associated with Cyberint instance.
+  name: client_name
+  required: true
+  type: 0
+  section: Connect
+- display: API Key (Leave empty. Fill in the API Key in the password field.)
+  displaypassword: API access token
+  name: access_token
+  hiddenusername: true
+  type: 9
+  required: true
+  section: Connect
+- display: Fetch indicators
+  name: feed
+  defaultvalue: "true"
+  type: 8
+  required: false
+  section: Collect
+- display: Indicator Reputation
+  name: feedReputation
+  defaultvalue: Good
+  type: 18
+  options:
+  - None
+  - Good
+  - Suspicious
+  - Bad
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  required: false
+  section: Collect
+- display: Source Reliability
+  name: feedReliability
+  defaultvalue: F - Reliability cannot be judged
+  type: 15
+  required: true
+  options:
+  - A - Completely reliable
+  - B - Usually reliable
+  - C - Fairly reliable
+  - D - Not usually reliable
+  - E - Unreliable
+  - F - Reliability cannot be judged
+  additionalinfo: Reliability of the source providing the intelligence data
+  section: Collect
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed
+  display: Traffic Light Protocol Color
+  name: tlp_color
+  options:
+  - RED
+  - AMBER
+  - GREEN
+  - WHITE
+  type: 15
+  required: false
+  section: Collect
+- additionalinfo: Which indicator types to fetch
+  defaultvalue: All
+  display: Indicator Type
+  name: indicator_type
+  options:
+  - All
+  - IP
+  - Domain
+  - URL
+  - File
+  required: true
+  type: 16
+  section: Collect
+- display: Feed Name
+  name: feed_name
+  defaultvalue: All
+  options:
+  - All
+  - malware_payload
+  - cnc_server
+  - infected_machine
+  - phishing_website
+  - payload_delivery
+  - cc_skimming
+  - botnet
+  - anonymization
+  required: true
+  type: 16
+  section: Collect
+- additionalinfo: Confidence about the indicator details. The value of confidence to fetch indicators from. The value between 0-100.
+  display: Confidence
+  name: confidence_from
+  defaultvalue: "0"
+  type: 0
+  required: false
+  section: Collect
+- additionalinfo: Severity about the indicator details. The value of severity to fetch indicators from. The value between 0-100.
+  display: Severity
+  name: severity_from
+  defaultvalue: "0"
+  type: 0
+  required: false
+  section: Collect
+- display: ""
+  name: feedExpirationPolicy
+  defaultvalue: suddenDeath
+  type: 17
+  options:
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  required: false
+  section: Collect
+- display: ""
+  name: feedExpirationInterval
+  defaultvalue: "20160"
+  type: 1
+  required: false
+  section: Collect
+- display: Feed Fetch Interval
+  name: feedFetchInterval
+  defaultvalue: "240"
+  type: 19
+  required: false
+  section: Collect
+- additionalinfo: Supports CSV values.
+  display: Tags
+  name: feedTags
+  type: 0
+  required: false
+  section: Collect
+- display: Bypass exclusion list
+  name: feedBypassExclusionList
+  defaultvalue: "true"
+  type: 8
+  additionalinfo: When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system.
+  required: false
+  section: Collect
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+script:
+  script: ''
+  type: python
+  commands:
+  - name: cyberint-get-indicators
+    arguments:
+    - name: date
+      description: Date of data feed for retrieval (e.g. 2024-12-31). The default value is today.
+    - name: limit
+      description: The maximum number of results to return. The default value is 50.
+      defaultValue: "50"
+    - name: offset
+      description: Specifies the starting point or position from which data retrieval or processing should begin.
+      defaultValue: "0"
+    outputs:
+    - contextPath: Cyberint.indicator.detected_activity
+      description: Detected activity.
+      type: String
+    - contextPath: Cyberint.indicator.ioc_type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.indicator.ioc_value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.indicator.observation_date
+      description: Observation date.
+      type: String
+    - contextPath: Cyberint.indicator.severity_score
+      description: Severity score.
+      type: String
+    - contextPath: Cyberint.indicator.confidence
+      description: Confidence.
+      type: String
+    - contextPath: Cyberint.indicator.description
+      description: Description.
+      type: String
+    description: Gets indicators from the feed.
+  - name: cyberint-get-file-sha256
+    arguments:
+    - name: value
+      description: SHA256 string.
+    outputs:
+    - contextPath: Cyberint.file_sha256.entity.type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.file_sha256.entity.value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.file_sha256.risk.malicious_score
+      description: Malicious score.
+      type: String
+    - contextPath: Cyberint.file_sha256.risk.occurrences_count
+      description: Occurences count.
+      type: String
+    - contextPath: Cyberint.file_sha256.enrichment.filenames
+      description: Filenames.
+      type: String
+    - contextPath: Cyberint.file_sha256.enrichment.first_seen
+      description: First seen.
+      type: String
+    - contextPath: Cyberint.file_sha256.enrichment.download_urls
+      description: Download URLs.
+      type: String
+    - contextPath: Cyberint.file_sha256.benign
+      description: Benign.
+      type: String
+    description: Gets File SHA256 enrichment from the feed.
+  - name: cyberint-get-domain
+    arguments:
+    - name: value
+      description: Domain string.
+    outputs:
+    - contextPath: Cyberint.domain.entity.type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.domain.entity.value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.domain.risk.malicious_score
+      description: Malicious score.
+      type: String
+    - contextPath: Cyberint.domain.risk.occurrences_count
+      description: Occurences count.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.ips
+      description: IPs.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.created_date
+      description: Created date.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.updated_date
+      description: Updated date.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.expiration_date
+      description: Expiration date.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrant_name
+      description: Registrant name.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrant_email
+      description: Registrant email.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrant_organization
+      description: Registrant organization.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrant_country
+      description: Registrant country.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrant_telephone
+      description: Registrant telephone.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.technical_contact_email
+      description: Technical contact email.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.technical_contact_name
+      description: Technical contact name.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.technical_contact_organization
+      description: Technical contact organization.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.registrar_name
+      description: Registrar name.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.admin_contact_name
+      description: Admin contact name.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.admin_contact_organization
+      description: Admin contact organization.
+      type: String
+    - contextPath: Cyberint.domain.enrichment.whois.admin_contact_email
+      description: Admin contact email.
+      type: String
+    - contextPath: Cyberint.domain.benign
+      description: Benign.
+      type: String
+    description: Gets Domain enrichment from the feed.
+  - name: cyberint-get-ipv4
+    arguments:
+    - name: value
+      description: IPv4 string.
+    outputs:
+    - contextPath: Cyberint.ipv4.entity.type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.ipv4.entity.value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.ipv4.risk.malicious_score
+      description: Malicious score.
+      type: String
+    - contextPath: Cyberint.ipv4.risk.occurrences_count
+      description: Occurences count.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.geo.country
+      description: Country.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.geo.city
+      description: City.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.asn.number
+      description: ASN number.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.asn.organization
+      description: ASN organization.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.suspicious_urls
+      description: Suspicious URLs.
+      type: String
+    - contextPath: Cyberint.ipv4.enrichment.suspicious_domains
+      description: Suspicious domains.
+      type: String
+    - contextPath: Cyberint.ipv4.benign
+      description: Benign.
+      type: String
+    description: Gets IPv4 enrichment from the feed.
+  - name: cyberint-get-url
+    arguments:
+    - name: value
+      description: URL string (starts with schema, e.g. https://).
+    outputs:
+    - contextPath: Cyberint.url.entity.type
+      description: The indicator type.
+      type: String
+    - contextPath: Cyberint.url.entity.value
+      description: The indicator value.
+      type: String
+    - contextPath: Cyberint.url.risk.malicious_score
+      description: Malicious score.
+      type: String
+    - contextPath: Cyberint.url.risk.occurrences_count
+      description: Occurences count.
+      type: String
+    - contextPath: Cyberint.url.enrichment.ips
+      description: IPs.
+      type: String
+    - contextPath: Cyberint.url.enrichment.hostname
+      description: Hostname.
+      type: String
+    - contextPath: Cyberint.url.enrichment.domain
+      description: Domain.
+      type: String
+    - contextPath: Cyberint.url.benign
+      description: Benign.
+      type: String
+    description: Gets URL enrichment from the feed.
+  dockerimage: demisto/python3:3.11.11.1940698
+  feed: true
+  subtype: python3
+tests:
+- No tests

@@ -14,7 +14,7 @@ name: redactindicator
 script: ''
 subtype: python3
 type: python
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

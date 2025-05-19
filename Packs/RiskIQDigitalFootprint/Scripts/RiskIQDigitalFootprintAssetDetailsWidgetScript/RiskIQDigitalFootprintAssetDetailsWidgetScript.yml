@@ -13,7 +13,7 @@ dependson:
   must:
   - '|||df-get-asset'
 timeout: 300ns
-dockerimage: demisto/python3:3.10.13.83255
+dockerimage: demisto/python3:3.11.10.115186
 runas: DBotWeakRole
 fromversion: 6.0.0
 tests:

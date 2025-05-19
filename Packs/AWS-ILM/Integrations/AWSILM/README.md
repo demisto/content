@@ -1,29 +1,25 @@
 Integrate with AWS-ILM Identity Access Management service to execute CRUD (create, read, update, and delete) and group (create, get, update, and delete) operations for employee lifecycle processes.
 For more information, refer to the [Identity Lifecycle Management article](https://xsoar.pan.dev/docs/reference/articles/identity-lifecycle-management).
-## Configure AWS-ILM on Cortex XSOAR
+## Configure AWS-ILM in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AWS-ILM.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Base URL | True |
-    | Tenant ID | True |
-    | Authentication Token | True |
-    | Allow creating users | False |
-    | Allow updating users | False |
-    | Allow enabling users | False |
-    | Allow disabling users | False |
-    | Automatically create user if not found in update command | False |
-    | Incoming Mapper | True |
-    | Outgoing Mapper | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Base URL | True |
+| Tenant ID | True |
+| Authentication Token | True |
+| Allow creating users | False |
+| Allow updating users | False |
+| Allow enabling users | False |
+| Allow disabling users | False |
+| Automatically create user if not found in update command | False |
+| Incoming Mapper | True |
+| Outgoing Mapper | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### iam-create-user
 ***
@@ -656,4 +652,3 @@ Permanently removes a group.
 >|brand|details|id|instanceName|success|
 >|---|---|---|---|---|
 >| AWS-ILM | {'Date': 'Mon, 23 Aug 2021 12:54:11 GMT', 'Content-Type': 'application/json', 'Connection': 'keep-alive', 'x-amzn-RequestId': '123456'} | 121212 | AWS-ILM_instance_1 | true |
-

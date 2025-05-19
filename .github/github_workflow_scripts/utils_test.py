@@ -141,7 +141,14 @@ class TestGetEnvVar:
             TIM_REVIEWER_KEY: "tr1",
             "CONTRIBUTION_TL": "tl1",
             "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1"], "tr1")
+        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1"], "tr1"),
+        ({
+            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+            CONTRIBUTION_SECURITY_REVIEWER_KEY: [""],
+            TIM_REVIEWER_KEY: "tr1",
+            "CONTRIBUTION_TL": "tl1",
+            "ON_CALL_DEVS": ["ocd1", "ocd2"]
+        }, ["cr1", "cr2", "cr3", "cr4"], [""], "tr1")
     ]
 )
 def test_get_content_reviewers(
@@ -262,7 +269,7 @@ def test_exit_get_content_reviewers(
 
     with pytest.raises(SystemExit) as e:
         get_content_reviewers(content_roles)
-        assert e.type == SystemExit
+        assert e.type is SystemExit
         assert e.value.code == 1
 
 
@@ -337,7 +344,7 @@ def test_exit_get_doc_reviewer(
 
     with pytest.raises(ValueError) as e:
         get_doc_reviewer(content_roles)
-        assert e.type == ValueError
+        assert e.type is ValueError
 
 
 class TestGetContentRoles:

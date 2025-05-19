@@ -9,20 +9,16 @@ ___
 * To manage permissions in the Microsoft Defender XDR portal, go to `Permissions & roles` or https://security.microsoft.com/securitypermissions. You need to be a global administrator or a member of the Organization Management role group in the Microsoft Defender XDR portal. Specifically, the Role Management role allows users to view, create, and modify role groups in the Microsoft Defender XDR portal, and by default, that role is assigned only to the Organization Management role group. See [Permissions in the Microsoft Defender XDR portal](https://docs.microsoft.com/en-us/microsoft-365/security/office-365-security/permissions-microsoft-365-security-center?view=o365-worldwide)
 
 
-## Configure O365 Defender SafeLinks - Single User on Cortex XSOAR
+## Configure O365 Defender SafeLinks - Single User in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for O365 Defender SafeLinks - Single User.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Exchange Online URL | True |
-    | Email / User Principal Name (Required) | False |
-    | Password (Required for Basic authentication only) | False |
-    | Trust any certificate (not secure) | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Exchange Online URL | True |
+| Email / User Principal Name (Required) | False |
+| Password (Required for Basic authentication only) | False |
+| Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ### Safe Links Rule and Policy
 ___
@@ -38,7 +34,7 @@ When you remove a Safe Links policy, the safe links rule and the associated safe
 In Exchange Online PowerShell or standalone EOP PowerShell, you manage the policy and the rule separately.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### o365-defender-safelinks-auth-start
 ***

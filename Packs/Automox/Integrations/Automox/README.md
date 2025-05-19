@@ -1,31 +1,29 @@
 Use the Automox integration to create device groups, update devices, run policies, and remediate vulnerabilities of devices through the Automox platform.
 This integration was integrated and tested as of 2022-03-21 with the Automox API
 
-## Configure Automox on Cortex XSOAR
+## Configure Automox in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Automox.
-3. Click **Add instance** to create and configure a new integration instance.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used. | False |
+| API Key | The API Key to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Organization ID | A comma-separated list of organization ids. When specified, data pulled from Automox will only belong to this organization; otherwise, the default permissions for this API key will be used. | False |
-    | API Key | The API Key to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### automox-devices-list
+
 ***
 List all devices in Automox based on group and organization permissions.
-
 
 #### Base Command
 
 `automox-devices-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -34,7 +32,6 @@ List all devices in Automox based on group and organization permissions.
 | group_id | Group ID. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -99,11 +96,13 @@ List all devices in Automox based on group and organization permissions.
 | Automox.Devices.last_logged_in_user | String | The last logged in user of a device |
 
 #### Command Example
+
 ```
 !automox-devices-list limit=1
 ```
 
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -195,26 +194,28 @@ List all devices in Automox based on group and organization permissions.
 ```
 
 #### Human Readable Output
+>
 >### Devices
+>
 >| agent_version | commands                                                                                                | compliant | connected | create_time          | custom_name | deleted | display_name | exception | id  | ip_addrs | ip_addrs_private | is_compatible | is_delayed_by_notification | is_delayed_by_user | last_disconnect_time | last_logged_in_user | last_process_time | last_refresh_time | last_scan_failed | last_update_time | name   | needs_attention | needs_reboot | next_patch_time | notification_count | organization_id | os_family | os_name | os_version | patch_deferral_count | patches | pending | pending_patches | policy_status                                                                                                                                                           | reboot_is_delayed_by_notification | reboot_is_delayed_by_user | reboot_notification_count | refresh_interval | serial_number | server_group_id | status                                                                                                                          | tags   | timezone | total_count | uptime | uuid                                 |
 >| ------------- | ------------------------------------------------------------------------------------------------------- | --------- | --------- | -------------------- | ----------- | ------- | ------------ | --------- | --- | -------- | ---------------- | ------------- | -------------------------- | ------------------ | -------------------- | ------------------- | ----------------- | ----------------- | ---------------- | ---------------- | ------ | --------------- | ------------ | --------------- | ------------------ | --------------- | --------- | ------- | ---------- | -------------------- | ------- | ------- | --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------- | ------------------------- | ------------------------- | ---------------- | ------------- | --------------- | ------------------------------------------------------------------------------------------------------------------------------- | ------ | -------- | ----------- | ------ | ------------------------------------ |
 >| string        | command_type_name: InstallUpdate<br>args: KB12345 KB67890<br>exec_time: 2017-06-29T16:39:50.951Z | true      | true      | 2019-08-24T14:15:22Z | string      | true    | string       | true      | 0   | 1.1.1.1  | 1.1.1.1          | true          | true                       | true               | 2019-08-24T14:15:22Z | string              | string            | string            | true             | string           | string | true            | true         | string          | 0                  | 0               | string    | string  | string     | 0                    | 0       | true    | 0               | id: 0<br>organization_id: 0<br>policy_id: 0<br>server_id: 0<br>policy_name: string<br>policy_type_name: patch<br>status: 0<br>result: string<br>create_time: string | true                              | true                      | 0                         | 0                | string        | 0               | {"device_status": "string","agent_status": "string","policy_status": "string","policy_statuses": [{"id": 0,"compliant": true}]} | string | string   | 0           | 0      | 095be615-a8ad-4c33-8e9c-c7612fbf6c9f |
 
 ### automox-organizations-list
+
 ***
 List all Automox organizations based on user permissions.
-
 
 #### Base Command
 
 `automox-organizations-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -229,8 +230,11 @@ List all Automox organizations based on user permissions.
 | Automox.Organizations.device_count | Number | The organization device count |
 
 #### Command example
+
 ```!automox-organizations-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -248,18 +252,22 @@ List all Automox organizations based on user permissions.
 ```
 
 #### Human Readable Output
+>
 >### Organizations
+>
 >| create_time              | device_count | device_limit | id   | name   | parent_id | server_limit |
 >| ------------------------ | ------------ | ------------ | ---- | ------ | --------- | ------------ |
 >| 2019-08-27T21:59:19+0000 | 26           |              | 9237 | string | 65        | 0            |
+>
 ### automox-organization-users-list
+
 ***
 List all Automox users within an organization.
-
 
 #### Base Command
 
 `automox-organization-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -267,7 +275,6 @@ List all Automox users within an organization.
 | org_id | Organization identifier. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -286,8 +293,11 @@ List all Automox users within an organization.
 | Automox.Users.rbac_roles.organization_id | Number | Identifier of organization |
 
 #### Command example
+
 ```!automox-organization-users-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -319,18 +329,22 @@ List all Automox users within an organization.
 ```
 
 #### Human Readable Output
+
 ##### Organization Users
+
 | id  | firstname | lastname | email  | orgs                         | tags   | saml_enabled | rbac_roles                                        |
 | --- | --------- | -------- | ------ | ---------------------------- | ------ | ------------ | ------------------------------------------------- |
 | 0   | string    | string   | string | id: 0<br>name: string | string | true         | id: 0<br>name: string<br>organization_id: 0 |
+
 ### automox-vulnerability-sync-batch-action
+
 ***
 Perform an action on an Automox Vulnerability Sync batch.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-batch-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -339,18 +353,19 @@ Perform an action on an Automox Vulnerability Sync batch.
 | batch_id | Batch identifier. | Required |
 | action | Action to perform on the batch specified. Options are "accept" or "reject". Possible values are: accept, reject. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### automox-vulnerability-sync-task-action
+
 ***
 Perform an action on an Automox task.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-task-action`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -359,25 +374,25 @@ Perform an action on an Automox task.
 | batch_id | Batch identifier. | Required |
 | action | Action to perform on the batch specified. Options are "accept" or "reject". Possible values are: accept, reject. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### automox-vulnerability-sync-batch-get
+
 ***
 Get details about a Vulnerability Sync batch.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-batch-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | org_id | Organization identifier. | Optional |
 | batch_id | Batch identifier. | Required |
-
 
 #### Context Output
 
@@ -402,13 +417,14 @@ Get details about a Vulnerability Sync batch.
 | Automox.VulnSyncBatch.issue_count | Number | Number of issues identified with batch |
 | Automox.VulnSyncBatch.cve_count | Number | Number of CVEs impacted by batch |
 
-
 #### Command Example
+
 ```
 !automox-vulnerability-sync-batch-get batch_id=1
 ```
 
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -441,19 +457,22 @@ Get details about a Vulnerability Sync batch.
 ```
 
 #### Human Readable Output
+>
 >### Batch
+>
 >| created_by                                                          | cve_count | id  | impacted_device_count | issue_count | organization_id | source | status     | task_count | unknown_host_count | updated_by                                                          | uploaded_at          |
 >| ------------------------------------------------------------------- | --------- | --- | --------------------- | ----------- | --------------- | ------ | ---------- | ---------- | ------------------ | ------------------------------------------------------------------- | -------------------- |
 >| id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 0         | 1   | 0                     | 0           | 1               | string | processing | 0          | 0                  | id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 2019-08-24T14:15:22Z |
 
 ### automox-vulnerability-sync-batches-list
+
 ***
 Get a list of Vulnerability Sync batches.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-batches-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -461,7 +480,6 @@ Get a list of Vulnerability Sync batches.
 | org_id | Organization identifier. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -485,9 +503,13 @@ Get a list of Vulnerability Sync batches.
 | Automox.VulnSyncBatches.impacted_device_count | Number | Number of devices that are impacted by batch |
 | Automox.VulnSyncBatches.issue_count | Number | Number of issues identified with batch |
 | Automox.VulnSyncBatches.cve_count | Number | Number of CVEs that are impacted by batch |
+
 #### Command example
+
 ```!automox-vulnerability-sync-batches-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -520,19 +542,22 @@ Get a list of Vulnerability Sync batches.
 ```
 
 #### Human Readable Output
+>
 >### Batches
+>
 >| created_by                                                          | cve_count | id  | impacted_device_count | issue_count | organization_id | source | status     | task_count | unknown_host_count | updated_by                                                          | uploaded_at          |
 >| ------------------------------------------------------------------- | --------- | --- | --------------------- | ----------- | --------------- | ------ | ---------- | ---------- | ------------------ | ------------------------------------------------------------------- | -------------------- |
 >| id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 0         | 1   | 0                     | 0           | 1               | string | processing | 0          | 0                  | id: 0<br>firstname: string<br>lastname: string<br>email: string<br> | 2019-08-24T14:15:22Z |
 
 ### automox-vulnerability-sync-tasks-list
+
 ***
 Get a list of Automox tasks.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-tasks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -542,7 +567,6 @@ Get a list of Automox tasks.
 | status | Filter by status of tasks. Possible values are: pending, in_progress, completed, canceled. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -574,8 +598,11 @@ Get a list of Automox tasks.
 | Automox.VulnSyncTasks.completed_at | Date | Datetime the task was completed |
 
 #### Command example
+
 ```!automox-vulnerability-sync-tasks-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -621,18 +648,22 @@ Get a list of Automox tasks.
 ```
 
 #### Human Readable Output
+>
 >### Tasks
+>
 >|completed_at|created_at|created_by_user|cves|id|last_updated_by_user|notes|organization_id|payload|source|status|task_type|updated_at|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2022-03-30 20:00:03 | 2022-03-29T19:46:12+0000 | id: 19017<br/>email: string<br/>firstname: string<br/>lastname: string |  | 1221 | id: 19017<br/>email: string<br/>firstname: string<br/>lastname: string |  | 9237 | patch_id: CVE-2018-0886<br/>severity: critical<br/>package_versions: {'id': '223683225', 'name': '3f646594-9a4f-4b7a-bb7b-1932a5b490a6', 'version': '1', 'display_name': '2020-05 Cumulative Update for Windows 10 Version 1809 for x64-based Systems (KB4551853)', 'requires_reboot': False} | Automox | executed | patch-now | 2022-03-30T20:00:03+0000 |
+>
 ### automox-vulnerability-sync-file-upload
+
 ***
 Upload a vulnerability report to Automox Vulnerability Sync.
-
 
 #### Base Command
 
 `automox-vulnerability-sync-file-upload`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -643,7 +674,6 @@ Upload a vulnerability report to Automox Vulnerability Sync.
 | reports_source | The third-party source of the vulnerability report. Default is Generic Report. | Optional |
 | type | The type of task to create | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
@@ -651,8 +681,11 @@ Upload a vulnerability report to Automox Vulnerability Sync.
 | Automox.VulnUpload.batch_id | Number | Identifier of batch |
 
 #### Command example
+
 ```!automox-vulnerability-sync-file-upload entry_id="1075@1a203850-514b-4ba5-848e-f944bd9ab460"```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -664,18 +697,22 @@ Upload a vulnerability report to Automox Vulnerability Sync.
 ```
 
 #### Human Readable Output
+
 ### Upload
+
 | batch_id |
 | -------- |
 | 1241     |
+
 ### automox-policies-list
+
 ***
 Retrieve a list of Automox policies belonging to an organization.
-
 
 #### Base Command
 
 `automox-policies-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -683,7 +720,6 @@ Retrieve a list of Automox policies belonging to an organization.
 | org_id | Organization identifier. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -696,8 +732,11 @@ Retrieve a list of Automox policies belonging to an organization.
 | Automox.Policies.server_groups | Number | List of identifiers for device groups assigned to the policy |
 
 #### Command example
+
 ```!automox-policies-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -719,17 +758,22 @@ Retrieve a list of Automox policies belonging to an organization.
 ```
 
 #### Human Readable Output
+>
 >### Policies
+>
 >| create_time              | id     | name             | notes | organization_id | policy_type_name | server_count | server_groups
 >| ------------------------ | ------ | ---------------- | ----- | --------------- | ---------------- | ------------ | ---------------
 >| 2021-03-03T21:29:09+0000 | 112411 | string |       | 9237            | patch            | 1            | 85579,<br>86754
+>
 ### automox-command-run
+
 ***
 Run a command on a device in Automox
 
 #### Base Command
 
 `automox-command-run`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -739,22 +783,27 @@ Run a command on a device in Automox
 | patches | List of patches to be installed by name. (Note: this only works with the InstallUpdate command). | Optional |
 | command | Command to run on device. Possible values are: GetOS, InstallUpdate, InstallAllUpdates, Reboot. | Required |
 
-
 #### Context Output
+
 There is no context output for this command.
+
 #### Command example
+
 ```!automox-command-run command=GetOS device_id=1375363```
+
 #### Human Readable Output
 
 >Command: GetOS successfully sent to Automox device ID: 1375363
+>
 ### automox-device-delete
+
 ***
 Delete a device from Automox
-
 
 #### Base Command
 
 `automox-device-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -762,18 +811,19 @@ Delete a device from Automox
 | org_id | Organization identifier. | Optional |
 | device_id | Device identifier. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### automox-device-update
+
 ***
 Update a device's information in Automox
-
 
 #### Base Command
 
 `automox-device-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -786,18 +836,19 @@ Update a device's information in Automox
 | tags | List of tags to associate with the device. | Optional |
 | ip_addrs | IP address of the device. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### automox-groups-list
+
 ***
 List all groups in Automox based on organization permissions.
-
 
 #### Base Command
 
 `automox-groups-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -805,7 +856,6 @@ List all groups in Automox based on organization permissions.
 | org_id | Organization identifier. | Optional |
 | limit | The maximum number of results to return per page. Default is 50. | Optional |
 | page | The page of results to return. | Optional |
-
 
 #### Context Output
 
@@ -824,8 +874,11 @@ List all groups in Automox based on organization permissions.
 | Automox.Groups.deleted | Boolean | Whether a group is deleted |
 
 #### Command example
+
 ```!automox-groups-list limit=1```
+
 #### Context Example
+
 ```json
 {
     "Automox": {
@@ -854,18 +907,22 @@ List all groups in Automox based on organization permissions.
 ```
 
 #### Human Readable Output
+
 ##### Groups
+
 | id  | organization_id | name   | refresh_interval | parent_server_group_id | ui_color | notes  | enable_os_auto_update | server_count | policies | deleted |
 | --- | --------------- | ------ | ---------------- | ---------------------- | -------- | ------ | --------------------- | ------------ | -------- | ------- |
 | 0   | 0               | string | 0                | 0                      | string   | string | true                  | 0            | 0        | false   |
+
 ### automox-group-create
+
 ***
 Create a group in Automox
-
 
 #### Base Command
 
 `automox-group-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -877,7 +934,6 @@ Create a group in Automox
 | policies | List of policy identifiers to assign to group. | Optional |
 | refresh_interval | Frequency of device refreshes in minutes. (Must be between 360 and 1440). | Required |
 | color | Automox console highlight color for the group. Value should be a valid Hex color code | Optional |
-
 
 #### Context Output
 
@@ -895,23 +951,28 @@ Create a group in Automox
 | Automox.CreatedGroups.policies | Number | List of policies assigned to group |
 
 #### Command Example
+
 ```
 !automox-group-create
 ```
 
 #### Human Readable Output
+
 ##### Group
+
 | id  | organization_id | name   | refresh_interval | parent_server_group_id | ui_color | notes  | enable_os_auto_update | server_count | policies |
 | --- | --------------- | ------ | ---------------- | ---------------------- | -------- | ------ | --------------------- | ------------ | -------- |
 | 0   | 0               | string | 0                | 0                      | string   | string | true                  | 0            | 0        |
+
 ### automox-group-update
+
 ***
 Update a group's information in Automox
-
 
 #### Base Command
 
 `automox-group-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -925,25 +986,25 @@ Update a group's information in Automox
 | refresh_interval | Frequency of device refreshes in minutes. | Optional |
 | color | Automox console highlight color for the group. Value should be a valid Hex color code | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 ### automox-group-delete
+
 ***
 Delete a group from Automox
-
 
 #### Base Command
 
 `automox-group-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | org_id | Organization identifier. | Optional |
 | group_id | Group identifier. | Required |
-
 
 #### Context Output
 

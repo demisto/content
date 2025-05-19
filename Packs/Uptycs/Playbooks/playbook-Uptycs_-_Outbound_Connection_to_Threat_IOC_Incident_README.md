@@ -42,4 +42,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Uptycs_Outbound_Connection_to_Threat_IOC_Incident.png)
+![Uptycs_Outbound_Connection_to_Threat_IOC_Incident](../doc_files/Uptycs_-_Outbound_Connection_to_Threat_IOC_Incident.png)

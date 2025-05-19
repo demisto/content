@@ -2,7 +2,7 @@
     "name": "Stairwell",
     "description": "Inception is a security intelligence engine that automates the continuous capture, storage, and analysis of executable files.",
     "support": "partner",
-    "currentVersion": "1.0.16",
+    "currentVersion": "1.0.18",
     "author": "Stairwell",
     "url": "https://www.stairwell.com",
     "email": "support@stairwell.com",
@@ -28,7 +28,16 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "githubUser": ["mikewilusz-stairwell"]
+    "githubUser": [
+        "mikewilusz-stairwell"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

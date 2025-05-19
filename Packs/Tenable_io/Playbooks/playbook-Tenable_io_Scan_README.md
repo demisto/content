@@ -31,4 +31,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Tenable_io_Scan](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/Tenable_io_Scan.png)
+![Tenable_io_Scan](../doc_files/Tenable_io_Scan.png)

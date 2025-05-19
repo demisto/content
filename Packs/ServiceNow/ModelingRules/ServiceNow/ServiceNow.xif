@@ -1,5 +1,64 @@
-[MODEL: dataset = servicenow_servicenow_raw]
-alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
+[MODEL:dataset="servicenow_servicenow_raw"]
+
+// Transaction Logs
+filter source_log_type = "syslog transactions"
+
+|alter 
+        // Event
+        event_type = source_log_type ,
+        event_original_type = type ,
+        event_id = sys_id ,
+        event_duration_1 = to_integer(total_wait_time),
+        event_duration_2 = to_integer(transaction_processing_time) ,
+        event_description = object_create(
+        "Interaction ID", interaction_id ,  "Transaction Number", transaction_number , "Output Length", output_length , "Database Category", db_category, 
+        "Additional Information", additional_info , "Debug Information", additional_debug_info  ),
+        // IP Extraction
+        remote_ip_ipv4 = arrayindex(regextract(remote_ip , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0) ,
+        remote_ip_ipv6 = arrayindex(regextract(remote_ip  , "(\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+\:\w+)"), 0),
+        created_by = sys_created_by ,
+        system_identifier = system_id ,
+        source_user_agent = user_agent ,
+        target_url = url ,
+        session_con_id = session ,
+        protocol_layer = protocol ,
+        is_truncated = to_boolean(gzip) ,
+        tmp_origin_scope_val = origin_scope ->value,
+        tmp_trim_url = arrayindex(regextract(url,"table\/(\w+)\?"),0),
+
+        //database
+        db_name = db_pool ,
+        response_time = to_integer(multiply(to_integer(sql_time),1000)) // Convert from ms to s
+|alter 
+        table_name = to_string(if(len(`table`) >=1, `table` , tmp_trim_url ))     
+| alter event_duration = to_integer(add(event_duration_1 , event_duration_2 )),
+        application_name = if(tmp_origin_scope_val="global", "Display Name: Global", concat("Display Name: ",app_scope ," ,ID: ",tmp_origin_scope_val ))
+
+// XDM Mapping
+| alter
+        xdm.event.id = event_id ,
+        xdm.event.type = event_type, 
+        xdm.event.original_event_type = event_original_type ,
+        xdm.event.duration = event_duration ,
+        xdm.event.description = to_string(event_description) ,
+        xdm.source.application.name = application_name ,
+        xdm.source.user.username = created_by ,
+        xdm.source.user.identifier = system_identifier , 
+        xdm.source.user_agent = source_user_agent ,
+        xdm.source.ipv4 = remote_ip_ipv4 ,
+        xdm.source.ipv6 = remote_ip_ipv6, 
+        xdm.target.url = target_url ,
+        xdm.database.tables = arraycreate(table_name), 
+        xdm.database.response_time = response_time  , 
+        xdm.database.name = db_name , 
+        xdm.network.dns.is_truncated = is_truncated , 
+        xdm.network.application_protocol = protocol_layer , 
+        xdm.session_context_id = session_con_id ;
+
+// Audit Logs
+filter source_log_type != "syslog transactions"
+
+|alter // sys_audit: https://docs.servicenow.com/bundle/vancouver-platform-security/page/administer/time/concept/exploring-auditing.html#d227507e148
     xdm.database.tables = arraycreate(tablename), // Table that the audit record is for (for example, "incident")
     xdm.event.type = "AUDIT", 
     xdm.event.id = sys_id, // the record id of the audit record in sys_audit

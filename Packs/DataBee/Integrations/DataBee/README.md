@@ -1,32 +1,26 @@
 DataBee, from Comcast Technology Solutions, is a cloud-native security and compliance data fabric that ingests data from multiple disparate feeds and then aggregates, compresses, standardizes, enriches, correlates, and normalizes the data before transferring a full time-series dataset to your data lake of choice.
 This integration was integrated and tested with version 1.0 of DataBee.
 
-## Configure DataBee on Cortex XSOAR
+## Configure DataBee in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for DataBee.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Base URL |  | True |
-    | Incident type |  | False |
-    | Username |  | True |
-    | Password |  | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | Additional findings context outputs | Choose additional context data to retrieve from the API. Be aware that requesting extensive context data may impact your server's performance. | False |
-    | Fetch incidents |  | False |
-    | Maximum incidents per fetch |  | True |
-    | First fetch timestamp | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | True |
-    | Severity Filter | Filter findings based on their severity level. For example, a level such as "High" is acceptable. | False |
-    | Impact Filter | Filter findings based on their impact level. For example, a level such as "High" is acceptable. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Base URL |  | True |
+| Incident type |  | False |
+| Username |  | True |
+| Password |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Additional findings context outputs | Choose additional context data to retrieve from the API. Be aware that requesting extensive context data may impact your server's performance. | False |
+| Fetch incidents |  | False |
+| Maximum incidents per fetch |  | True |
+| First fetch timestamp | Timestamp in ISO format or &lt;number&gt; &lt;time unit&gt;, e.g., 2022-01-01T00:00:00.000Z, 12 hours, 7 days, 3 months, now. | True |
+| Severity Filter | Filter findings based on their severity level. For example, a level such as "High" is acceptable. | False |
+| Impact Filter | Filter findings based on their impact level. For example, a level such as "High" is acceptable. | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### databee-device-search
@@ -76,8 +70,11 @@ Search for devices based on filters.
 | DataBee.Device.modified_time | String | The time when the device was modified. |
 
 #### Command example
+
 ```!databee-device-search hostname=a limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -239,10 +236,10 @@ Search for devices based on filters.
 #### Human Readable Output
 
 >### Device List
+>
 >|Uid|Type|Name|Ip|Interface Uid|Interface Name|Instance Uid|Hostname|Start Time|Modified Time|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 143795e5-741a-4914-b29c-186a060d430f | Browser | GDFE654-FAKE | test | skin | follow | especially | secret | 2024-06-09T14:39:18.801072 | 2024-06-11T19:08:41.429310 |
-
 
 ### databee-user-search
 
@@ -281,8 +278,11 @@ Search for users based on filters.
 | DataBee.User.modified_time | String | The time when the user was modified. |
 
 #### Command example
+
 ```!databee-user-search full_name=a limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -300,10 +300,10 @@ Search for users based on filters.
 #### Human Readable Output
 
 >### User List
+>
 >|Uid|Type|Name|Start Time|Modified Time|
 >|---|---|---|---|---|
 >| 4c12656e73b90df215e63ca7e3317ace78b8e21540961831b207e69313d7dc5a | User | bradley459 | 2024-06-10T06:58:37.202327 | 2024-06-13T13:17:51.025057 |
-
 
 ### databee-finding-search
 
@@ -431,8 +431,11 @@ Search for security findings based on filters.
 | DataBee.Finding.User | Unkonwn | Information about the user associated with the finding, if applicable. |
 
 #### Command example
+
 ```!databee-finding-search impact=High limit=1```
+
 #### Context Example
+
 ```json
 {
     "DataBee": {
@@ -844,10 +847,10 @@ Search for security findings based on filters.
 #### Human Readable Output
 
 >### Finding List
+>
 >|Time|Activity Name|Impact|State|Severity|Confidence|
 >|---|---|---|---|---|---|
 >| 2024-06-16T06:24:02.639735 | Create | High | Completed | High | Medium |
-
 
 ### endpoint
 
@@ -879,8 +882,11 @@ Returns information about an endpoint.
 | Endpoint.OSVersion | String | The endpoint's operation system version. |
 
 #### Command example
+
 ```!endpoint ip=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -898,6 +904,7 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### DataBee Endpoint
+>
 >|Hostname|ID|IPAddress|MACAddress|OS|OSVersion|Vendor|
 >|---|---|---|---|---|---|---|
 >| test.com | ed3437c2-a938-419e-95ea-15c04e8bdb98 | 8.8.8.8 | aa-fa-fd-37-0a-de | Linux | 1.4 | DataBee |

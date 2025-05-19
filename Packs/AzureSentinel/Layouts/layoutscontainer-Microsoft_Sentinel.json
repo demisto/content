@@ -11,7 +11,31 @@
                     {
                         "fieldId": "incident_closenotes",
                         "isVisible": true
-                    }
+                    },
+					{
+						"fieldId": "incident_microsoftsentinelclassificationreason",
+						"filters": [
+							[
+								{
+									"left": {
+										"isContext": true,
+										"value": {
+											"simple": "closeReason"
+										}
+									},
+									"operator": "isEqualString",
+									"right": {
+										"isContext": false,
+										"value": {
+											"simple": "False Positive"
+										}
+									},
+									"type": "singleSelect"
+								}
+							]
+						],
+						"isVisible": true
+					}
                 ],
                 "isVisible": true,
                 "name": "Basic Information",
@@ -82,6 +106,19 @@
                                 "id": "075cb850-b1d9-11ed-9645-79c9f8316c01",
                                 "index": 3,
                                 "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "args": {},
+                                "buttonClass": "primary",
+                                "endCol": 2,
+                                "fieldId": "",
+                                "height": 44,
+                                "id": "9f6a7320-53be-11ef-9bcc-b913c4688c53",
+                                "index": 4,
+                                "name": "Set Remote Owner",
+                                "scriptId": "MicrosoftSentinelSetOwner",
+                                "sectionItemType": "button",
                                 "startCol": 0
                             },
                             {
@@ -189,6 +226,38 @@
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "microsoftsentinelclassificationreason",
+								"filters": [
+									[
+										{
+											"ignoreCase": false,
+											"left": {
+												"isContext": true,
+												"value": {
+													"simple": "closeReason"
+												}
+											},
+											"operator": "isEqualString",
+											"right": {
+												"isContext": false,
+												"value": {
+													"simple": "False Positive"
+												}
+											},
+											"type": "singleSelect"
+										}
+									]
+								],
+								"height": 22,
+								"id": "1363f890-9c45-11ef-936c-a197ce0ad8d7",
+								"index": 3,
+								"listId": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
                             {
                                 "endCol": 2,
                                 "fieldId": "closenotes",
@@ -314,21 +383,51 @@
                         "y": 0
                     },
                     {
-                        "h": 3,
-                        "i": "caseinfoid-79f1a100-b73d-11ed-9ec7-a1ea2fc05cd7",
-                        "items": [],
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Microsoft Sentinel Comments",
-                        "query": "MicrosoftSentinelConvertCommentsToTable",
-                        "queryType": "script",
-                        "static": false,
-                        "type": "dynamic",
-                        "w": 2,
-                        "x": 1,
-                        "y": 4
-                    }
+						"displayType": "ROW",
+						"h": 1,
+						"hideName": true,
+						"i": "caseinfoid-8c5ef130-5331-11ef-90d3-736eac4b13d9",
+						"items": [
+							{
+								"args": {},
+								"buttonClass": "primary",
+								"endCol": 4,
+								"fieldId": "",
+								"height": 44,
+								"id": "92aae170-5331-11ef-90d3-736eac4b13d9",
+								"index": 0,
+								"name": "Add Comment",
+								"scriptId": "MicrosoftSentinelSubmitNewComment",
+								"sectionItemType": "button",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Microsoft Sentinel Comments",
+						"static": false,
+						"w": 2,
+						"x": 1,
+						"y": 4
+					},
+                    {
+						"h": 3,
+                        "hideName": false,
+						"i": "caseinfoid-79f1a100-b73d-11ed-9ec7-a1ea2fc05cd7",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Microsoft Sentinel Comments",
+						"query": "MicrosoftSentinelConvertCommentsToTable",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 2,
+						"x": 1,
+						"y": 4
+					}
                 ],
                 "type": "custom"
                     },

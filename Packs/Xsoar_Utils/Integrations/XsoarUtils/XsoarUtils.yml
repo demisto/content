@@ -44,7 +44,7 @@ script:
       name: inv_id
     description: Creates an entry into an investigation warroom or  by default on the playground.
     name: xsoar-create-entry
-  dockerimage: demisto/python3:3.10.14.100715
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: ''
   subtype: python3

@@ -1,9 +1,11 @@
+import csv
+import io
+import json
+
 import demistomock as demisto
 from CommonServerPython import *
+
 from CommonServerUserPython import *
-import json
-import io
-import csv
 
 
 def json_to_csv(data, delimiter):
@@ -30,12 +32,12 @@ def main(entry_id, out_filename, delimiter):
         file_info = demisto.getFilePath(entry_id)
 
     except Exception as e:
-        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {str(e)}")
+        return_error(f"Failed to get the file path for entry: {entry_id} the error message was {e!s}")
 
     file_path = file_info.get("path")
 
     # Open file and read data
-    with open(file_path, "r") as f:  # type: ignore
+    with open(file_path) as f:  # type: ignore
         dict_list = json.load(f)
 
     csv_string = json_to_csv(dict_list, delimiter)

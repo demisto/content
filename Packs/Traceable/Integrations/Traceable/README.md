@@ -47,7 +47,7 @@ The integration generates _Exploit_ type of incidents.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### list_incident_cache
@@ -68,8 +68,8 @@ List the entries present in the Traceable instance cache.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Traceable.Instancecache.id | string | Cache entry ID. | 
-| Traceable.Instancecache.expiry | date | Cache entry expiration date. | 
+| Traceable.Instancecache.id | string | Cache entry ID. |
+| Traceable.Instancecache.expiry | date | Cache entry expiration date. |
 
 ### purge_incident_cache
 
@@ -89,9 +89,9 @@ Delete all entries in the incident cache.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Traceable.Instancecache.id | string | Cache entry ID. | 
-| Traceable.Instancecache.expiry | date | Cache entry expiration date. | 
-| Traceable.Instancecache.deletion_status | string | Cache entry deletion status. | 
+| Traceable.Instancecache.id | string | Cache entry ID. |
+| Traceable.Instancecache.expiry | date | Cache entry expiration date. |
+| Traceable.Instancecache.deletion_status | string | Cache entry deletion status. |
 
 ## Official Traceable Documentation
 

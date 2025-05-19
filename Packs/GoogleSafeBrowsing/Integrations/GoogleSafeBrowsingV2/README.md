@@ -1,26 +1,20 @@
 Search Safe Browsing v4
 
-## Configure GoogleSafeBrowsing on Cortex XSOAR
+## Configure GoogleSafeBrowsing in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for GoogleSafeBrowsing.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | API Key |  | True |
-    | Client ID |  | True |
-    | Client Version |  | True |
-    | Base URL |  | True |
-    | Source Reliability | Reliability of the source providing the intelligence data. | True |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| API Key |  | True |
+| Client ID |  | True |
+| Client Version |  | True |
+| Base URL |  | True |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### url
@@ -30,7 +24,6 @@ Check URL Reputation
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
 
-
 #### Base Command
 
 `url`
@@ -39,26 +32,24 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | URL to check. | Required | 
-
+| url | URL to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | string | The indicator that was tested.| 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | int | The actual score. | 
+| DBotScore.Indicator | string | The indicator that was tested.|
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | int | The actual score. |
 | DBotScore.Reliability | string | Reliability of the source providing the intelligence data. |
 | GoogleSafeBrowsing.URL.cacheDuration | string | The URL cache duration time. |
 | GoogleSafeBrowsing.URL.threatType | string | The URL threat type. |
 | GoogleSafeBrowsing.URL.threatEntryType | string | The URL threat entry type. |
 | GoogleSafeBrowsing.URL.platformType | string | The URL platform type. |
-| URL.Data | string | Bad URLs found | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision | 
-| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision | 
-
+| URL.Data | string | Bad URLs found |
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision |
+| URL.Malicious.Description | string | For malicious URLs, the reason for the vendor to make the decision |
 
 #### Command Example
 

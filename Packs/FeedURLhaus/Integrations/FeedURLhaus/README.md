@@ -1,15 +1,11 @@
 ## URLhaus
+
 ---
 
-Fetch indicators from URLhaus api.
+Fetch indicators from URLhaus api
 =======
 
 Fetch indicators from the URLhaus API.
-
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for URLhaus Feed.
-3. Click **Add instance** to create and configure a new integration instance.
 
 | **Parameter**        | **Description**                                                                            | **Required** |
 |----------------------|--------------------------------------------------------------------------------------------|--------------|
@@ -23,12 +19,11 @@ Fetch indicators from the URLhaus API.
 | Trust any certificate    | Weather or not to trust any certificate                                                    | True         |
 | Use system proxy settings   | If you want to use proxy for the integration                                               | True         |
 
-
-4. Click **Test** to validate the URLs, token, and connection.
-
 ## Commands
+
 You can execute these commands in a playbook.
 
 ### urlhaus-get-indicators
+
 ***
 Manual command to fetch events and display them.

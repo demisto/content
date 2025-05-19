@@ -1,0 +1,43 @@
+{
+    "details": {
+        "headers": {
+            "authentication-results": "xxx",
+            "content-type": "multipart/alternative;",
+            "date": "Wed, 02 Oct 2024 04:37:01 +0000",
+            "dkim-signature": "v=1; a=rsa-sha256;",
+            "feedback-id": "xxx",
+            "from": "xxx",
+            "mailfrom": "example@example.com",
+            "message-id": "123",
+            "mime-version": "1.0",
+            "received": "xxx",
+            "reply-to": "xxx",
+            "subject": "xxx",
+            "to": "xxx",
+            "x-atlassian-mail-message-id": "xxx",
+            "x-atlassian-mail-transaction-id": "xxx",
+            "x-brightmail-tracker": "xxx",
+            "x-msfbl": "xxx",
+            "x-originating-ip": "[0.0.0.0]",
+            "x-spamquarantineinfo": "spam detected heuristically",
+            "x-spamquarantinereason": "Yes, hits=1.2 required=7.0 tests=newsletters: ,  newsletters: Newsletter detected: 5.12 >"
+        },
+        "attachments": [
+            {
+                "name": "hello",
+                "type": "world"
+            }
+        ],
+        "bodypart": [
+            {
+                "type": "text/plain; charset=\"UTF-8\"",
+                "content": "xxx"
+            },
+            {
+                "type": "text/html; charset=\"UTF-8\"",
+                "content": "xxx"
+            }
+        ]
+    },
+    "status": "SUCCESS"
+}

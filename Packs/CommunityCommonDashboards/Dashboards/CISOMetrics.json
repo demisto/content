@@ -1497,6 +1497,6 @@
     "description": "",
     "isPredefined": true,
     "marketplaces": [
-        "xsoar"
+        "xsoar_on_prem"
     ]
 }

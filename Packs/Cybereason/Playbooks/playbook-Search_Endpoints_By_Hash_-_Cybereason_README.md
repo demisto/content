@@ -33,6 +33,6 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Search Endpoints By Hash - Cybereason](https://raw.githubusercontent.com/demisto/content/master/docs/images/playbooks/Search_Endpoints_By_Hash_-_Cybereason.png)
+![Search Endpoints By Hash - Cybereason](../doc_files/Search_Endpoints_By_Hash_-_Cybereason.png)
 
 

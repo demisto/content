@@ -405,5 +405,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/polyswarm:1.0.0.96224
+  dockerimage: demisto/polyswarm:1.0.0.102568
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

@@ -12,7 +12,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-- additionalinfo: If true, will not raise an error if the image is corrupted and could not be processed.
+- additionalinfo: If true, will not raise an error if the image is corrupt and could not be processed.
   display: Skip on corrupted images
   name: skip_corrupted
   section: Connect
@@ -36,13 +36,17 @@ script:
     - description: A CSV of language codes of the language to use for OCR. Overrides the default configured language list.
       isArray: true
       name: langs
-    description: Extracts text from an image.
+    - description: Turn on verbose flag to display tesseract and other used libraries versions.
+      required: false
+      defaultValue: False
+      name: verbose
     name: image-ocr-extract-text
+    description: Extract text from images.
     outputs:
     - contextPath: File.Text
       description: Extracted text from the passed image file.
       type: String
-  dockerimage: demisto/tesseract:1.0.0.112709
+  dockerimage: demisto/tesseract:1.0.0.2038079
   runonce: false
   script: '-'
   type: python

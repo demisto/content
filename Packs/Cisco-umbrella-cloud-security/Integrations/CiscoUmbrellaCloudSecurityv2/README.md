@@ -1,24 +1,18 @@
 Cisco Umbrella is a cloud security platform providing the first line of defense against internet threats. It uses DNS-layer security to block malicious requests before a connection is established, offering protection against malware, ransomware, phishing, and more. It offers real-time reporting, integrates with other Cisco solutions for layered security, and uses machine learning to uncover and predict threats.
 This integration was tested with version 2 of Cisco Umbrella Cloud Security
 
-## Configure Cisco Umbrella Cloud Security v2 on Cortex XSOAR
+## Configure Cisco Umbrella Cloud Security v2 in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cisco Umbrella Cloud Security v2.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | API Key | True |
-    | API Secret | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| API Key | True |
+| API Secret | True |
+| Use system proxy settings | False |
+| Trust any certificate (not secure) | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### umbrella-destinations-list
@@ -89,7 +83,7 @@ Get destinations within a destination list. A destination is a URL, IP or fully 
 
 #### Human Readable Output
 
->### Destination(s):
+>### Destination(s)
 
 >|Id|Destination|Type|Comment|Created At|
 >|---|---|---|---|---|
@@ -325,7 +319,7 @@ Get destination lists. A list of destinations (for example, domain name or URL) 
 
 #### Human Readable Output
 
->### Destination List:
+>### Destination List
 
 >|Id|Name|Access|Is Global|Destination Count|
 >|---|---|---|---|---|
@@ -401,7 +395,7 @@ Create a destination list. A list of destinations (for example, domain name or U
 
 #### Human Readable Output
 
->### Destination List:
+>### Destination List
 
 >|Id|Name|Access|Is Global|Destination Count|
 >|---|---|---|---|---|
@@ -471,7 +465,7 @@ Edit a destination list. A list of destinations (for example, domain name or URL
 
 #### Human Readable Output
 
->### Destination List:
+>### Destination List
 
 >|Id|Name|Access|Is Global|Destination Count|
 >|---|---|---|---|---|
@@ -504,12 +498,14 @@ There is no context output for this command.
 
 >The destination list "17463733" was successfully deleted
 
-
 ## Breaking changes from the previous version of this integration - Cisco Umbrella Cloud Security v2
+
 The following sections list the changes in this version.
 
 ### Commands
-#### The following commands were removed in this version:
+
+#### The following commands were removed in this version
+
 * *umbrella-get-destination-lists* - this command was replaced by *umbrella-destination-lists-list*.
 * *umbrella-add-domain* - this command was replaced by *umbrella-destination-add*.
 * *umbrella-remove-domain* - this command was replaced by *umbrella-destination-delete*.
@@ -518,9 +514,11 @@ The following sections list the changes in this version.
 * *umbrella-search-destination-domains* - this command was replaced by *umbrella-destinations-list*.
 
 ### Arguments
-#### The following arguments were removed in this version:
+
+#### The following arguments were removed in this version
 
 In the *umbrella-get-destination-lists* command:
+
 * *orgId* - this argument was removed.
 In the *umbrella-add-domain* command:
 * *orgId* - this argument was removed.
@@ -533,10 +531,10 @@ In the *umbrella-get-destination-domains* command:
 In the *umbrella-search-destination-domains* command:
 * *orgId* - this argument was removed.
 
-
-#### The behavior of the following arguments was changed:
+#### The behavior of the following arguments was changed
 
 In the *umbrella-add-domain* command:
+
 * *destId* - this argument was replaced by *destination_list_id*.
 * *domains* - this argument was replaced by *destinations*.
 In the *umbrella-remove-domain* command:

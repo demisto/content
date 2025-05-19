@@ -1,11 +1,7 @@
 BMC Discovery is a SaaS-based, cloud-native discovery and dependency modeling system that provides instant visibility into hardware, software, and service dependencies across multi-cloud, hybrid, and on-premises environments.
 This integration was integrated and tested with BMC Discovery v.22.1.
 
-## Configure BMC Discovery Integration on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for BMC Discovery.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure BMC Discovery Integration in Cortex
 
 | **Parameter**                      | **Description**               | **Required** |
 | ---------------------------------- | ----------------------------- | ------------ |
@@ -16,10 +12,9 @@ This integration was integrated and tested with BMC Discovery v.22.1.
 
 * The BMC Discovery user must have the following permissions: **admin, api-access, discovery, system**
 
-4. Click **Test** to validate the URL and token.
-
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 #### bmc-discovery-scan-status-list
@@ -72,6 +67,7 @@ Base Command
 | BmcDiscovery.Scan.Status.consolidation_source                 | String   | Consolidation source                      |
 
 ***
+
 #### bmc-discovery-scan-create
 
 Create a new snapshot scan (run)
@@ -87,10 +83,10 @@ Base Command
 | label             | Scan (run) name | Yes          |
 | ranges            | IP range        | Yes          |
 
-**Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+**Note**: The following run parameters are predefined:
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -100,6 +96,7 @@ Base Command
 | BmcDiscovery.Scan.Create.uuid | String   | New scan UUID   |
 
 ***
+
 #### bmc-discovery-scan-summary
 
 Retrieve scan (run) results summary
@@ -114,10 +111,10 @@ Base Command
 | ----------------- | ----------------- | ------------ |
 | run_id            | An ID of the scan | Yes          |
 
-**Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+**Note**: The following run parameters are predefined:
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -131,6 +128,7 @@ Base Command
 | BmcDiscovery.Scan.Summary.Dropped    | Number   | Number of dropped entities              |
 
 ***
+
 #### bmc-discovery-scan-stop
 
 Cancel a currently running scan
@@ -145,10 +143,10 @@ Base Command
 | ----------------- | ----------------- | ------------ |
 | run_id            | An ID of the scan | Yes          |
 
-**Note**: The following run parameters are predefined: 
-- Kind = IP
-- Level = Full Discovery
-- Type = Snapshot
+**Note**: The following run parameters are predefined:
+* Kind = IP
+* Level = Full Discovery
+* Type = Snapshot
 
 #### Context Output
 
@@ -157,6 +155,7 @@ Base Command
 | BmcDiscovery.Scan.Stop.cancelled    | Boolean  | Scan cancel status |
 
 ***
+
 #### bmc-discovery-scan-results-list
 
 Get a list of hosts by specific result type
@@ -187,6 +186,7 @@ Base Command
 | BmcDiscovery.Scan.Result.results     | Unknown  | The actual scan result data        |
 
 ***
+
 #### bmc-discovery-search
 
 Search for a node by IP address or hostname
@@ -199,7 +199,7 @@ Base Command
 
 | **Argument name** | **Description**                                      | **Required**  |
 |-------------------|------------------------------------------------------|---------------|
-| ip                | IP address                                           | Optional      | 
+| ip                | IP address                                           | Optional      |
 | hostname          | Hostname                                             | Optional      |
 | kind              | "Node kind (Host, NetWorkDevice, SNMPManagedDevice)" | Single Select |
 | name              | Search name                                          | Optional      |
@@ -213,6 +213,7 @@ Base Command
 | BmcDiscovery.Search.name  | String   | Name of the search         |
 
 ***
+
 #### bmc-discovery-search-custom
 
 Run a user defined query
@@ -225,7 +226,7 @@ Base Command
 
 | **Argument name** | **Description**       | **Required**  |
 |-------------------|-----------------------|---------------|
-| query             | Full search query*    | Yes           | 
+| query             | Full search query*    | Yes           |
 | offset            | Search results offset | Optional      |
 | limit             | Search resuluts limit | Optional      |
 | results_id        | Search results id     | Optional      |

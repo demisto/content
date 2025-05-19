@@ -1,0 +1,5 @@
+[INGEST:vendor = "f5", product = "apm", target_dataset = "f5_apm_raw", no_hit = keep]
+// Timestamp ingestion in ISO format: YYYY-MM-DDThh:mm:ssTZ
+filter _raw_log ~= "\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}"
+| alter
+    _time = parse_timestamp("%FT%T%Ez", arrayindex(regextract(_raw_log, "\d{4}\-\d{1,2}\-\d{1,2}T\d{2}:\d{2}:\d{2}[+-]\d{2}:\d{2}"), 0));

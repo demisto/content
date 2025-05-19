@@ -1,22 +1,22 @@
 Octox Labs Cyber Security Asset Management platform
-This integration was integrated and tested with version 3.3.0 of OctoxLabs
+This integration was integrated and tested with version 4.5.0 of OctoxLabs
 
-## Configure OctoxLabs on Cortex XSOAR
+## Configure OctoxLabs in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for OctoxLabs.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | IP | Your Octox Labs Platform IP | True |
-    | API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| IP | Your Octox Labs Platform IP | True |
+| API Key | Your Octox Labs API Key. \(https://github.com/octoxlabs/py-octoxlabs\#getting-started\) | True |
+| HTTPS Proxy | Your HTTPS Proxy URL | False |
+| No Verify | Don't Verify SSL | False |
+
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### octoxlabs-get-adapters
@@ -558,4 +558,232 @@ Fetch your User by id
 | OctoxLabs.User.results.is_active | Boolean | User is active | 
 | OctoxLabs.User.results.is_ldap | Boolean | User is ldap | 
 | OctoxLabs.User.results.groups | Unknown | List&lt;Dict&gt; User groups | 
+### octoxlabs-search-scroll-users
+
+***
+Search in your users.
+
+#### Base Command
+
+`octoxlabs-search-scroll-users`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledUsers.count | Number | Total users count. | 
+| OctoxLabs.ScrolledUsers.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledUsers.results | Unknown | List Users information. | 
+
+### octoxlabs-get-application-detail
+
+***
+Fetch your application.
+
+#### Base Command
+
+`octoxlabs-get-application-detail`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| application_id | Your application id. | Required | 
+| discovery_id | Your device at specific discovery. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Application | Unknown | &lt;Dict&gt; Octoxlabs Application. | 
+
+### octoxlabs-search-scroll-avm
+
+***
+Search in your AVM.
+
+#### Base Command
+
+`octoxlabs-search-scroll-avm`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| size | Size. | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledAVM.count | Number | Total vulnerabilities count. | 
+| OctoxLabs.ScrolledAVM.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledAVM.results | Unknown | List Vulnerability information. | 
+
+### octoxlabs-search-scroll-devices
+
+***
+Search in your devices.
+
+#### Base Command
+
+`octoxlabs-search-scroll-devices`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledDevices.count | Number | Total devices count. | 
+| OctoxLabs.ScrolledDevices.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledDevices.results | Unknown | List Device information. | 
+
+### octoxlabs-search-applications
+
+***
+Search in your Applications
+
+#### Base Command
+
+`octoxlabs-search-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.Applications.count | Number | Total applications count. | 
+| OctoxLabs.Applications.results | Unknown | List Application information. | 
+
+### octoxlabs-search-avm
+
+***
+Search in your AVM
+
+#### Base Command
+
+`octoxlabs-search-avm`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.AVM.count | Number | Total vulnerabilities count. | 
+| OctoxLabs.AVM.results | Unknown | List Vulnerability information. | 
+
+### octoxlabs-search-scroll-applications
+
+***
+Search in your applications.
+
+#### Base Command
+
+`octoxlabs-search-scroll-applications`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+| scroll_id | Specific Scroll Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.ScrolledApplications.count | Number | Total applications count. | 
+| OctoxLabs.ScrolledApplications.scroll_id | String | Specific Scroll Id | 
+| OctoxLabs.ScrolledApplications.results | Unknown | List Application information. | 
+
+### octoxlabs-get-user-inventory-detail
+
+***
+Fetch your user.
+
+#### Base Command
+
+`octoxlabs-get-user-inventory-detail`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| username | Your user username. | Required | 
+| discovery_id | Your device at specific discovery. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.UserInv | Unknown | &lt;Dict&gt; Octoxlabs User. | 
+
+### octoxlabs-search-users-inventory
+
+***
+Search in your User Inventory.
+
+#### Base Command
+
+`octoxlabs-search-users-inventory`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| query | Query. | Optional | 
+| fields | Fields. | Optional | 
+| page | Page. (Default: 1). | Optional | 
+| size | Size. (Default: 50). | Optional | 
+| discovery_id | Specific Discovery Id. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| OctoxLabs.UserInventory.count | Number | Total users count. | 
+| OctoxLabs.UserInventory.results | Unknown | List User information. | 
 

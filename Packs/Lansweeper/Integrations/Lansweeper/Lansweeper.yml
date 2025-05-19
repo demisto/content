@@ -2,20 +2,26 @@ category: IT Services
 commonfields:
   id: Lansweeper
   version: -1
+sectionOrder:
+  - Connect
+  - Collect
 configuration:
 - additionalinfo: Identity code generated for the specific application.
   display: Application Identity Code
   name: identity_code
   required: true
   type: 4
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 description: The Lansweeper integration allows users to retrieve the asset details.
 display: Lansweeper
 name: Lansweeper
@@ -242,7 +248,7 @@ script:
     - contextPath: Lansweeper.Mac.siteName
       description: The name of the site to which the asset belongs.
       type: String
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.12.8.1983910
   runonce: false
   script: '-'
   subtype: python3

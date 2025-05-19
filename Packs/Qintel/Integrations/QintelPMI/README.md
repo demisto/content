@@ -1,32 +1,25 @@
 Qintel’s Patch Management Intelligence (PMI) product simplifies the vulnerability management process by providing vital context around reported Common Vulnerabilities and Exposures. With this integration, users can query PMI to surface CVEs that are known by Qintel to be leveraged by eCrime and Nation State adversaries.
 This integration was integrated and tested with version 0.16.0 of PMI
 
-## Configure QintelPMI on Cortex XSOAR
+## Configure QintelPMI in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for QintelPMI.
-3. Click **Add instance** to create and configure a new integration instance.
-
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | PMI API URL (optional) | False |
-    | Qintel Credentials | True |
-    | Password | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Required** |
+| --- | --- |
+| PMI API URL (optional) | False |
+| Qintel Credentials | True |
+| Password | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cve
 
 ***
 Queries Qintel for CVE intelligence
-
 
 #### Base Command
 
@@ -36,28 +29,26 @@ Queries Qintel for CVE intelligence
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve | List of CVEs. | Required | 
-
+| cve | List of CVEs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CVE.ID | String | The ID of the CVE, for example: CVE-2015-1653 | 
-| CVE.CVSS | String | The CVSS of the CVE, for example: 10.0 | 
-| CVE.Published | Date | The timestamp of when the CVE was published. | 
-| CVE.Modified | Date | The timestamp of when the CVE was last modified. | 
-| CVE.Description | String | A description of the CVE. | 
-| Qintel.CVE.ID | string | The ID of the CVE | 
-| Qintel.CVE.AffectedSystem | string | Systems affected by the CVE | 
-| Qintel.CVE.AffectedVersions | string | Systems affected by the CVE | 
-| Qintel.CVE.LastObserved | string | Last threat actor observation time | 
-| Qintel.CVE.Observations | array | List of observations | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-
+| CVE.ID | String | The ID of the CVE, for example: CVE-2015-1653 |
+| CVE.CVSS | String | The CVSS of the CVE, for example: 10.0 |
+| CVE.Published | Date | The timestamp of when the CVE was published. |
+| CVE.Modified | Date | The timestamp of when the CVE was last modified. |
+| CVE.Description | String | A description of the CVE. |
+| Qintel.CVE.ID | string | The ID of the CVE |
+| Qintel.CVE.AffectedSystem | string | Systems affected by the CVE |
+| Qintel.CVE.AffectedVersions | string | Systems affected by the CVE |
+| Qintel.CVE.LastObserved | string | Last threat actor observation time |
+| Qintel.CVE.Observations | array | List of observations |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
 
@@ -106,7 +97,7 @@ Queries Qintel for CVE intelligence
 
 >**Vulnerability in Example System affecting versions: 1.0, 1.1**
 >**Last observed: 2021-04-20 04:00:00**
+>
 >|actor|actor_type|exploit_type|exploit_notes|date_observed|
 >|---|---|---|---|---|
 >| Unattributed Threat Actor | other | cve |  | 2021-04-20 04:00:00 |
-

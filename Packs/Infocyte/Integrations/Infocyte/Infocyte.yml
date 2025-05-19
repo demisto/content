@@ -459,7 +459,7 @@ script:
     - contextPath: Infocyte.Alert.managed
       description: Whether the file has been hash validated as part of a Linux package manager.
       type: boolean
-  dockerimage: demisto/pwsh-infocyte:1.1.0.55529
+  dockerimage: demisto/pwsh-infocyte:1.1.0.117365
   isfetch: true
 fromversion: 5.5.0
 tests:

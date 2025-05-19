@@ -17,7 +17,7 @@ configuration:
   name: integrationReliability
   type: 15
   additionalinfo: Reliability of the source providing the intelligence data.
-  defaultvalue: D - Not usually reliable
+  defaultvalue: C - Fairly reliable
   options:
   - A+ - 3rd party enrichment
   - A - Completely reliable
@@ -56,11 +56,62 @@ configuration:
   required: false
 description: |-
   Use the Palo Alto Networks Threat Vault to research the latest threats (vulnerabilities/exploits, viruses, and spyware) that Palo Alto Networks next-generation firewalls can detect and prevent.
-  Query the Advanced Threat Protection (ATP) API endpoint for Analysis reports and PCAPs
+  Query the Advanced Threat Protection (ATP) API endpoint for Analysis reports and PCAPs.
 display: Palo Alto Networks Threat Vault v2
 name: Palo Alto Networks Threat Vault v2
 script:
   commands:
+  - arguments:
+    - default: true
+      description: A comma-separated list of IPs.
+      isArray: true
+      name: ip
+      required: true
+    description: Returns information about IPs.
+    name: ip
+    outputs:
+    - contextPath: DBotScore.Vendor
+      description: The vendor used to calculate the score.
+      type: String
+    - contextPath: DBotScore.Score
+      description: The actual score.
+      type: Number
+    - contextPath: DBotScore.Type
+      description: The indicator type.
+      type: String
+    - contextPath: DBotScore.Indicator
+      description: The indicator that was tested.
+      type: String
+    - contextPath: IP.Address
+      description: The IP address.
+      type: String
+    - contextPath: IP.ASN
+      description: The IP ASN.
+      type: String
+    - contextPath: IP.GeoCountry
+      description: The IP country.
+      type: String
+    - contextPath: ThreatVault.IP.ipaddr
+      description: The IP address.
+      type: String
+    - contextPath: ThreatVault.IP.asn
+      description: The IP ASN.
+      type: String
+    - contextPath: ThreatVault.IP.geo
+      description: The country where the IP is located.
+      type: String
+    - contextPath: ThreatVault.IP.release.first_release_version
+      description: The release version when the IP feed was released.
+      type: String
+    - contextPath: ThreatVault.IP.release.first_release_time
+      description: The release time when the IP feed was released.
+      type: String
+    - contextPath: ThreatVault.IP.name
+      description: The name of the IP feed entry.
+      type: String
+    - contextPath: ThreatVault.IP.status
+      description: The status of the IP feed entry.
+      type: String
   - arguments:
     - default: true
       description: A comma-separated list of SHA256 or MD5 hashes of the antivirus signature.
@@ -1140,96 +1191,96 @@ script:
       description: The status of the threat (e.g., inactive, active, or released).
       type: String
   - arguments:
-    - description: 'Provides the ATP report by matching the report id '
+    - description: Provides the ATP report by matching the report ID.
       isArray: true
       name: report_id
       required: true
-    description: Retrieve the Advanced Threat Prevention (ATP) report by report id in batch mode. Batch limit is 100 entries. Get one or more ATP reports. Must provide one or more report IDs
+    description: Retrieve the Advanced Threat Prevention (ATP) report by report ID in batch mode. Batch limit is 100 entries. Get one or more ATP reports. Must provide one or more report IDs.
     name: threatvault-atp-batch-report-get
     outputs:
     - contextPath: ThreatVault.ATP.Report
-      description: ThreatVault ATP Report ID
+      description: ThreatVault ATP Report ID.
       type: string
     - contextPath: ThreatVault.ATP.Report.err_msg
-      description: ThreatVault error message
+      description: ThreatVault error message.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.csp_id
-      description: ATP Report CSP
+      description: ATP Report CSP.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.fw_addr_v4
-      description: ATP Report firewall IP
+      description: ATP Report firewall IP.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.fw_app_version
-      description: ATP Report content version
+      description: ATP Report content version.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.fw_hostname
-      description: ATP Report firewall name
+      description: ATP Report firewall name.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.fw_model
-      description: ATP Report firewall model
+      description: ATP Report firewall model.
       type: string
     - contextPath: ThreatVault.ATP.Report.panos_info.fw_sw_version
-      description: ATP Report firewall PAN-OS
+      description: ATP Report firewall PAN-OS.
       type: string
     - contextPath: ThreatVault.ATP.Report.report_id
-      description: ATP Report ID
+      description: ATP Report ID.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.flow_info.daddr
-      description: ATP Report Session Flow destination IP
+      description: ATP Report Session Flow destination IP.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.flow_info.dport
-      description: ATP Report Session Flow destination Port
+      description: ATP Report Session Flow destination Port.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.flow_info.saddr
-      description: ATP Report Session Flow source IP
+      description: ATP Report Session Flow source IP.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.flow_info.sport
-      description: ATP Report Session Flow source Port
+      description: ATP Report Session Flow source Port.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.session_id
-      description: ATP Report session ID
+      description: ATP Report session ID.
       type: string
     - contextPath: ThreatVault.ATP.Report.session_info.session_timestamp
-      description: ATP Report session timestamp
+      description: ATP Report session timestamp.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.payload_sha256
-      description: ATP Report transaction payload sha256
+      description: ATP Report transaction payload sha256.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.transaction_id
-      description: ATP Report transaction payload ID
+      description: ATP Report transaction payload ID.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.verdict
-      description: ATP Report transaction verdict
+      description: ATP Report transaction verdict.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.detection_service
-      description: ATP Report transaction detection service
+      description: ATP Report transaction detection service.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Method
-      description: ATP Report transaction payload method
+      description: ATP Report transaction payload method.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.User-Agent
-      description: ATP Report transaction payload user-agent
+      description: ATP Report transaction payload user-agent.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Cookie
-      description: ATP Report transaction payload cookie
+      description: ATP Report transaction payload cookie.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Accept
-      description: ATP Report transaction payload accept
+      description: ATP Report transaction payload accept.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Host
-      description: ATP Report transaction payload host
+      description: ATP Report transaction payload host.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.URI
-      description: ATP Report transaction payload URI
+      description: ATP Report transaction payload URI.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Cache-Control
-      description: ATP Report transaction payload cache-control
+      description: ATP Report transaction payload cache-control.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Version
-      description: ATP Report transaction payload version
+      description: ATP Report transaction payload version.
       type: string
     - contextPath: ThreatVault.ATP.Report.transaction_data.detection_results.details.payload_info.Connection
-      description: ATP Report transaction payload connection
+      description: ATP Report transaction payload connection.
       type: string
   - arguments:
     - description: Retrieve the ATP report sample (packet capture) by report id.
@@ -1239,12 +1290,12 @@ script:
     name: threatvault-atp-report-pcap-get
     outputs:
     - contextPath: ThreatVault.ATP.PCAP.ID
-      description: Threatvault ATP PCAP ID
+      description: Threatvault ATP PCAP ID.
       type: string
     - contextPath: ThreatVault.ATP.PCAP.Name
-      description: Threatvault ATP PCAP Name
+      description: Threatvault ATP PCAP name.
       type: string
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.117163
   isfetch: true
   script: ''
   subtype: python3

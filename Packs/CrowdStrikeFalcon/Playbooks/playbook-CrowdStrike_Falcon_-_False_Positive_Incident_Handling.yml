@@ -854,3 +854,5 @@ inputs:
 outputs: []
 tests:
 - No tests
+marketplaces:
+- xsoar

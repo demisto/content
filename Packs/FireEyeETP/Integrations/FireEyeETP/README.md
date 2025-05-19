@@ -13,30 +13,27 @@ Make sure you obtain the following information.
 * Configure an API key on the ETP Web portal. Select the product as both *Email Threat Prevention* and *Identity Access Management*. Select all entitlements.
 * Upon Authentication errors, contact FireEye Technical Support to let them know the IP address of your Cortex XSOAR Server and the URL you are accessing , e.g. https://etp.us.fireeye.com. FireEye will add these details to their Firewall rules so that the bidirectional traffic can be allowed between Cortex XSOAR and FireEye ETP.
 
-## Configure FireEye ETP on Cortex XSOAR
-1. Navigate to *Settings > Integrations > Servers & Services*.
-2. Search for FireEye ETP.
-3. Click *Add instance* to create and configure a new integration instance.
-    * *Name*: a textual name for the integration instance.
-    * *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
-        * US instance: https://etp.us.fireeye.com
-        * EMEA instance: https://etp.eu.fireeye.com
-        * US GOV instance: https://etp.us.fireeyegov.com
-    * *API key*: The API key configured in the ETP Web Portal.
-    * *Messages status*: All status specified messages will be imported as incidents. Valid values are:
-        * accepted
-        * deleted
-        * delivered
-        * delivered (retroactive)
-        * dropped
-        * dropped oob
-        * dropped (oob retroactive)
-        * permanent failure
-        * processing
-        * quarantined
-        * rejected
-        * temporary failure
-4. Click Test to validate the URLs and connection.
+## Configure FireEye ETP in Cortex
+
+* *Name*: a textual name for the integration instance.
+* *Server URL*: ETP server URL. Use the endpoint in the region that hosts your ETP service:
+    * US instance: https://etp.us.fireeye.com
+    * EMEA instance: https://etp.eu.fireeye.com
+    * US GOV instance: https://etp.us.fireeyegov.com
+* *API key*: The API key configured in the ETP Web Portal.
+* *Messages status*: All status specified messages will be imported as incidents. Valid values are:
+    * accepted
+    * deleted
+    * delivered
+    * delivered (retroactive)
+    * dropped
+    * dropped oob
+    * dropped (oob retroactive)
+    * permanent failure
+    * processing
+    * quarantined
+    * rejected
+    * temporary failure
 
 ## Fetched Incidents Data
 To use Fetch incidents:
@@ -47,7 +44,7 @@ To use Fetch incidents:
 The integration will fetch alerts as incidents. It is possible to filter alerts using the specified message status.
 
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
+You can execute these commands from the CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 1. [Search for messages: fireeye-etp-search-messages](#search-for-messages)
 2. [Get metadata of a specified message: fireeye-etp-get-message](#get-metadata-of-a-specified-message)

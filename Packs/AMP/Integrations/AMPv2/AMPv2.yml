@@ -1,4 +1,7 @@
 category: Endpoint
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: AMPv2
   version: -1
@@ -8,16 +11,19 @@ configuration:
   name: server_url
   required: true
   type: 0
+  section: Connect
 - display: Third Party API Client ID
   name: credentials
   required: true
   displaypassword: API Key
   type: 9
+  section: Connect
 - defaultvalue: 'false'
   display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -32,22 +38,26 @@ configuration:
   - F - Reliability cannot be judged
   required: true
   type: 15
+  section: Collect
 - defaultvalue: 'false'
   display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - additionalinfo: Maximum number of incidents per fetch. The maximum is 200.
   defaultvalue: 50
   display: Maximum incidents to fetch.
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - defaultvalue: 'false'
   display: Fetch incidents with severity = null
   name: include_null_severities
   type: 8
   required: false
+  section: Collect
 - display: Incident severity to fetch.
   name: incident_severities
   options:
@@ -57,31 +67,37 @@ configuration:
   - Critical
   type: 16
   required: false
+  section: Collect
 - defaultvalue: 3 days
   display: First fetch time
   additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
   name: first_fetch
   type: 0
   required: false
+  section: Collect
 - display: Event types
   name: event_types
   additionalinfo: Comma-separated list of event type IDs. The IDs can be retrieved from the cisco-amp-event-type-list command.
   type: 0
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - defaultvalue: 'true'
   additionalinfo: Create relationships between indicators as part of Enrichment.
   display: Create relationships
   name: create_relationships
   type: 8
   required: false
+  section: Collect
 description: Cisco Advanced Malware Protection software is designed to prevent, detect, and help remove threats in an efficient manner from computer systems. Threats can take the form of software viruses and other malware such as ransomware, worms, Trojans, spyware, adware, and fileless malware.
 display: Cisco AMP v2
 name: AMPv2
@@ -1711,7 +1727,7 @@ script:
     - name: file
       required: true
       default: true
-      description: Hash of the file to query. Supports MD5, SHA1, and SHA256.
+      description: Hash of the file to query. Supports only SHA256.
       isArray: true
     outputs:
     - contextPath: File.MD5
@@ -1753,7 +1769,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: Number
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

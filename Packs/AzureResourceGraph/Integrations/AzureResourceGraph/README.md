@@ -32,28 +32,23 @@ Follow these steps for [client-credentials configuration:](https://xsoar.pan.dev
 
 To use The Azure Resource Graph, you must have appropriate rights in Azure role-based access control (Azure RBAC) with at least read access to the resources you want to query. No results are returned if you don't have at least read permissions to the Azure object or object group.
 
-## Configure Azure Resource Graph on Cortex XSOAR
+## Configure Azure Resource Graph in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Azure Resource Graph.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | Token / Tenant ID | Received from the authorization process or from the self-deployed configuration process \(find the tenant ID in your app overview page in the Azure portal\) | False |
-    | Token / Tenant ID |  | False |
-    | ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
-    | Key / Client Secret |  | False |
-    | Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
-    | Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Token / Tenant ID | Received from the authorization process or from the self-deployed configuration process \(find the tenant ID in your app overview page in the Azure portal\) | False |
+| Token / Tenant ID |  | False |
+| ID / Client ID | Received from the authorization process or from the self-deployed configuration process. | False |
+| Key / Client Secret |  | False |
+| Certificate Thumbprint | Used for certificate authentication. As appears in the "Certificates &amp;amp; secrets" page of the app. | False |
+| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### azure-rg-list-operations

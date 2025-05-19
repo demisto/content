@@ -1,22 +1,23 @@
 # import demistomock as demisto
-from CommonServerPython import *
-from datetime import datetime
-
-import urllib3
-import dateparser
 import traceback
-from typing import Any, Dict, List, Optional, Tuple, cast, Iterable
+from collections.abc import Iterable
+from datetime import datetime
+from typing import Any, cast
+
+import dateparser
+import urllib3
+from CommonServerPython import *
 
 urllib3.disable_warnings()
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MAX_EVENTS_TO_FETCH = 50
-COGNNI_SEVERITIES = ['Low', 'Medium', 'High', 'Critical']
+COGNNI_SEVERITIES = ["Low", "Medium", "High", "Critical"]
 SUNDAY_ISO_WEEKDAY = 7
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -28,37 +29,26 @@ class Client(BaseClient):
     Most calls use _http_request() that handles proxy, SSL verification, etc.
     """
 
-    def fetch_key(self, api_key: str) -> Dict[str, Any]:
-        return self._http_request(
-            method='GET',
-            url_suffix=f"/api/v1/login/key/{api_key}"
-        )
+    def fetch_key(self, api_key: str) -> dict[str, Any]:
+        return self._http_request(method="GET", url_suffix=f"/api/v1/login/key/{api_key}")
 
-    def graphql(self, query: str, variables: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
+    def graphql(self, query: str, variables: dict[str, Any] | None = None) -> dict[str, Any]:
         if not variables:
             variables = {}
 
-        graphql_operation = {
-            "query": query,
-            "variables": variables
-        }
+        graphql_operation = {"query": query, "variables": variables}
 
-        res = self._http_request(
-            method='POST',
-            url_suffix='/intelligence/data/graphql',
-            json_data=graphql_operation
-        )
-        return res['data']
+        res = self._http_request(method="POST", url_suffix="/intelligence/data/graphql", json_data=graphql_operation)
+        return res["data"]
 
-    def ping(self) -> Dict[str, Any]:
+    def ping(self) -> dict[str, Any]:
         query = "{ping}"
 
-        return self.graphql(
-            query=query
-        )
+        return self.graphql(query=query)
 
-    def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> List[Dict[str, Any]]:
-        query = """
+    def fetch_events(self, min_severity: int, start_time: str, events_limit: int, offset: int) -> list[dict[str, Any]]:
+        query = (
+            """
             query($severityValue:String!, $pagination:Pagination) {
               events(
                 filter: {
@@ -74,7 +64,9 @@ class Client(BaseClient):
                       },
                       z: {
                         type:Week,
-                        values:[\"""" + start_time + """\"]
+                        values:[\""""
+            + start_time
+            + """\"]
                       }
                     }
                 ]
@@ -104,22 +96,16 @@ class Client(BaseClient):
             }
         }
         """
+        )
 
         variables = {
-            "pagination": {
-                "limit": events_limit,
-                "offset": offset,
-                "direction": "Ascend"
-            },
+            "pagination": {"limit": events_limit, "offset": offset, "direction": "Ascend"},
             "severityValue": str(min_severity),
         }
-        res = self.graphql(
-            query=query,
-            variables=variables
-        )
-        return res['events']
+        res = self.graphql(query=query, variables=variables)
+        return res["events"]
 
-    def get_event(self, event_id: str) -> Dict[str, Any]:
+    def get_event(self, event_id: str) -> dict[str, Any]:
         query = """
             query ($event_id: ID!) {
                 event(id: $event_id){
@@ -131,17 +117,12 @@ class Client(BaseClient):
             }
         """
 
-        variables = {
-            "event_id": event_id
-        }
+        variables = {"event_id": event_id}
 
-        res = self.graphql(
-            query=query,
-            variables=variables
-        )
-        return res['event']
+        res = self.graphql(query=query, variables=variables)
+        return res["event"]
 
-    def fetch_insights(self, min_severity: int) -> List[Dict[str, Any]]:
+    def fetch_insights(self, min_severity: int) -> list[dict[str, Any]]:
         query = """
              query ($min_severity: Int) {
                  insights(minSeverity: $min_severity){
@@ -153,17 +134,12 @@ class Client(BaseClient):
              }
          """
 
-        variables = {
-            "min_severity": int(min_severity)
-        }
+        variables = {"min_severity": int(min_severity)}
 
-        res = self.graphql(
-            query=query,
-            variables=variables
-        )
-        return res['insights']
+        res = self.graphql(query=query, variables=variables)
+        return res["insights"]
 
-    def get_insight(self, insight_id: str) -> Dict[str, Any]:
+    def get_insight(self, insight_id: str) -> dict[str, Any]:
         query = """
             query ($insight_id: ID!) {
               insight(id: $insight_id) {
@@ -175,18 +151,13 @@ class Client(BaseClient):
             }
         """
 
-        variables = {
-            "insight_id": insight_id
-        }
+        variables = {"insight_id": insight_id}
 
-        res = self.graphql(
-            query=query,
-            variables=variables
-        )
-        return res['insight']
+        res = self.graphql(query=query, variables=variables)
+        return res["insight"]
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def convert_to_demisto_severity(severity: str) -> int:
@@ -203,10 +174,10 @@ def convert_to_demisto_severity(severity: str) -> int:
     :rtype: ``int``
     """
     return {
-        'Low': 1,  # low severity
-        'Medium': 2,  # medium severity
-        'High': 3,  # high severity
-        'Critical': 4  # critical severity
+        "Low": 1,  # low severity
+        "Medium": 2,  # medium severity
+        "High": 3,  # high severity
+        "Critical": 4,  # critical severity
     }[severity]
 
 
@@ -227,7 +198,7 @@ def convert_to_demisto_severity_int(severity: int) -> int:
     return severity
 
 
-def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a Python int
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -265,7 +236,7 @@ def arg_to_int(arg: Any, arg_name: str, required: bool = False) -> Optional[int]
     raise ValueError(f'Invalid number: "{arg_name}"')
 
 
-def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optional[int]:
+def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int | None:
     """Converts an XSOAR argument to a timestamp (seconds from epoch)
 
     This function is used to quickly validate an argument provided to XSOAR
@@ -299,62 +270,62 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> Optiona
     if isinstance(arg, str) and arg.isdigit():
         return int(arg)
     if isinstance(arg, str):
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
         if date is None:
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp())
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return int(arg)
     raise ValueError(f'Invalid date: "{arg_name}"')
 
 
-def flatten_event_file_items(event: Dict[str, Any]):
-    if not event or not event['items']:
+def flatten_event_file_items(event: dict[str, Any]):
+    if not event or not event["items"]:
         return []
+    return [
+        {
+            "eventId": event.get("eventId"),
+            "fileName": item.get("name"),
+            "fileId": item.get("itemId"),
+            "name": item.get("name"),
+            "eventType": item.get("type"),
+            "description": event.get("description"),
+            "date": event.get("date"),
+            "severity": event.get("severity"),
+            "sourceApplication": event.get("sourceApplication"),
+        }
+        for item in event["items"]
+    ]
 
-    return list(map(lambda item: {
-        "eventId": event.get('eventId'),
-        "fileName": item.get('name'),
-        "fileId": item.get('itemId'),
-        "name": item.get('name'),
-        "eventType": item.get('type'),
-        "description": event.get('description'),
-        "date": event.get('date'),
-        "severity": event.get('severity'),
-        "sourceApplication": event.get('sourceApplication')
-    }, event['items']))
 
-
-def convert_file_event_to_incident(file_event: Dict[str, Any]):
+def convert_file_event_to_incident(file_event: dict[str, Any]):
     return {
-        'name': file_event.get('name'),
-        'details': file_event['description'],
-        'occurred': file_event.get('date'),
-        'rawJSON': json.dumps(file_event),
-        'severity': convert_to_demisto_severity_int(file_event.get('severity', 1)),
+        "name": file_event.get("name"),
+        "details": file_event["description"],
+        "occurred": file_event.get("date"),
+        "rawJSON": json.dumps(file_event),
+        "severity": convert_to_demisto_severity_int(file_event.get("severity", 1)),
     }
 
 
-def convert_events_to_incidents(events: Iterable[Dict[str, Any]]) -> List[Dict[str, Any]]:
+def convert_events_to_incidents(events: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     if not events:
         return []
 
-    file_events: List[Dict[str, Any]] = sum(map(flatten_event_file_items, events), [])
+    file_events: list[dict[str, Any]] = sum(map(flatten_event_file_items, events), [])
 
     incidents = list(map(convert_file_event_to_incident, file_events))
 
     return incidents
 
 
-def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
+def find_latest_event(events: Iterable[dict[str, Any]]) -> dict[str, Any] | None:
     last_date = 0
     latest_event = None
 
     for event in events:
-        event_date = date_to_timestamp(
-            date_str_or_dt=event.get('date', ''),
-            date_format='%Y-%m-%dT%H:%M:%S.000Z')
+        event_date = date_to_timestamp(date_str_or_dt=event.get("date", ""), date_format="%Y-%m-%dT%H:%M:%S.000Z")
         if last_date < event_date:
             last_date = event_date
             latest_event = event
@@ -362,7 +333,7 @@ def find_latest_event(events: Iterable[Dict[str, Any]]) -> Optional[Dict[str, An
     return latest_event
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client: Client, api_key: str, first_fetch: int) -> str:
@@ -378,27 +349,25 @@ def test_module(client: Client, api_key: str, first_fetch: int) -> str:
     :return: 'ok' if test passed, anything else will fail the test.
     :rtype: ``str``
     """
-    answer = ''
+    answer = ""
     try:
         client.fetch_key(api_key)
     except ValueError:
-        answer += 'The api key is invalid'
+        answer += "The api key is invalid"
     try:
         timestamp_to_datestring(timestamp=first_fetch * 1000, date_format="%Y-%m-%d")
     except ValueError:
-        answer += 'Incorrect first fetch time format, should be YYYY-MM-DD'
+        answer += "Incorrect first fetch time format, should be YYYY-MM-DD"
 
     if not answer:
-        return 'ok'
+        return "ok"
     else:
         return answer
 
 
-def fetch_incidents(client: Client, last_run: Dict[str, int],
-                    first_fetch_time: Optional[int],
-                    events_limit: int,
-                    min_severity: int
-                    ) -> Tuple[Dict[str, int], List[dict]]:
+def fetch_incidents(
+    client: Client, last_run: dict[str, int], first_fetch_time: int | None, events_limit: int, min_severity: int
+) -> tuple[dict[str, int], list[dict]]:
     """This function retrieves new alerts every interval (default is 1 minute).
 
     This function has to implement the logic of making sure that incidents are
@@ -436,9 +405,9 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
     :rtype: ``Tuple[Dict[str, int], List[dict]]``
     """
 
-    last_fetch = last_run.get('last_fetch', None)
-    is_initial_run = last_run.get('is_initial_run', True)
-    offset = last_run.get('offset')
+    last_fetch = last_run.get("last_fetch", None)
+    is_initial_run = last_run.get("is_initial_run", True)
+    offset = last_run.get("offset")
     if last_fetch is None:
         last_fetch = first_fetch_time
     else:
@@ -448,38 +417,37 @@ def fetch_incidents(client: Client, last_run: Dict[str, int],
 
     if offset is None or (
         not is_initial_run
-            and datetime.utcnow().isoweekday() == SUNDAY_ISO_WEEKDAY
-            and datetime.utcfromtimestamp(latest_created_time).isoweekday() != SUNDAY_ISO_WEEKDAY):
+        and datetime.utcnow().isoweekday() == SUNDAY_ISO_WEEKDAY
+        and datetime.utcfromtimestamp(latest_created_time).isoweekday() != SUNDAY_ISO_WEEKDAY
+    ):
         offset = 0
 
     events = client.fetch_events(
         events_limit=events_limit,
         offset=offset,
         start_time=timestamp_to_datestring(timestamp=latest_created_time * 1000, is_utc=True),
-        min_severity=min_severity
+        min_severity=min_severity,
     )
 
     if not events:
-        next_run = {'last_fetch': latest_created_time, 'offset': offset, 'is_initial_run': False}
-        return next_run, list()
+        next_run = {"last_fetch": latest_created_time, "offset": offset, "is_initial_run": False}
+        return next_run, []
 
     latest_event = find_latest_event(events)
     if latest_event:
-        latest_created_time = int(date_to_timestamp(
-            date_str_or_dt=latest_event.get('date', latest_created_time),
-            date_format='%Y-%m-%dT%H:%M:%S.000Z'
-        ) / 1000)
+        latest_created_time = int(
+            date_to_timestamp(date_str_or_dt=latest_event.get("date", latest_created_time), date_format="%Y-%m-%dT%H:%M:%S.000Z")
+            / 1000
+        )
 
     incidents = convert_events_to_incidents(events)
 
-    next_run = {'last_fetch': latest_created_time,
-                'offset': offset + len(events),
-                'is_initial_run': is_initial_run}
+    next_run = {"last_fetch": latest_created_time, "offset": offset + len(events), "is_initial_run": is_initial_run}
 
     return next_run, incidents
 
 
-def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_event_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cognni-get-event command: Returns a Cognni event
 
     :type client: ``Client``
@@ -497,37 +465,29 @@ def get_event_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    event_id = args.get('event_id', None)
+    event_id = args.get("event_id", None)
     if not event_id:
-        raise ValueError('event_id not specified')
+        raise ValueError("event_id not specified")
 
     event = client.get_event(event_id=event_id)
-    readable_output = tableToMarkdown(f'Cognni event {event_id}', event)
+    readable_output = tableToMarkdown(f"Cognni event {event_id}", event)
 
-    return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.event',
-        outputs_key_field='id',
-        outputs=event
-    )
+    return CommandResults(readable_output=readable_output, outputs_prefix="Cognni.event", outputs_key_field="id", outputs=event)
 
 
-def fetch_insights_command(client: Client, args: Dict[str, Any]) -> CommandResults:
-    min_severity = int(args.get('min_severity', 2))
+def fetch_insights_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    min_severity = int(args.get("min_severity", 2))
 
     insights = client.fetch_insights(min_severity=min_severity)
 
-    readable_output = tableToMarkdown(f'Cognni {len(insights)} insights', insights)
+    readable_output = tableToMarkdown(f"Cognni {len(insights)} insights", insights)
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.insights',
-        outputs_key_field='id',
-        outputs=insights
+        readable_output=readable_output, outputs_prefix="Cognni.insights", outputs_key_field="id", outputs=insights
     )
 
 
-def get_insight_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+def get_insight_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """cognni-get-insight command: Returns a Cognni event
 
     :type client: ``Client``
@@ -545,23 +505,20 @@ def get_insight_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     :rtype: ``CommandResults``
     """
 
-    insight_id = args.get('insight_id', None)
+    insight_id = args.get("insight_id", None)
     if not insight_id:
-        raise ValueError('insight_id not specified')
+        raise ValueError("insight_id not specified")
 
     insight = client.get_insight(insight_id=insight_id)
 
-    readable_output = tableToMarkdown(f'Cognni event {insight_id}', insight)
+    readable_output = tableToMarkdown(f"Cognni event {insight_id}", insight)
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Cognni.insight',
-        outputs_key_field='id',
-        outputs=insight
+        readable_output=readable_output, outputs_prefix="Cognni.insight", outputs_key_field="id", outputs=insight
     )
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -571,55 +528,42 @@ def main() -> None:
     :rtype:
     """
 
-    api_key = demisto.params().get('apikey')
+    api_key = demisto.params().get("apikey")
 
     # get the service API url
-    base_url = demisto.params()['url']
+    base_url = demisto.params()["url"]
 
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
 
     first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '3 days'),
-        arg_name='First fetch time',
-        required=True
+        arg=demisto.params().get("first_fetch", "3 days"), arg_name="First fetch time", required=True
     )
     assert isinstance(first_fetch_time, int)
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             result = test_module(client, api_key, first_fetch_time)
             return_results(result)
 
         else:
             fetch_key_res = client.fetch_key(api_key)
-            access_token = fetch_key_res['token']
+            access_token = fetch_key_res["token"]
 
             headers = {
-                'Authorization': f'Bearer {access_token}',
-                'Content-Type': 'application/json',
+                "Authorization": f"Bearer {access_token}",
+                "Content-Type": "application/json",
             }
-            client = Client(
-                base_url=base_url,
-                verify=verify_certificate,
-                headers=headers,
-                proxy=proxy)
+            client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-            if demisto.command() == 'fetch-incidents':
-                min_severity = demisto.params().get('min_severity', None)
+            if demisto.command() == "fetch-incidents":
+                min_severity = demisto.params().get("min_severity", None)
 
-                max_fetch = arg_to_int(
-                    arg=demisto.params().get('max_fetch'),
-                    arg_name='max_fetch',
-                    required=False
-                )
+                max_fetch = arg_to_int(arg=demisto.params().get("max_fetch"), arg_name="max_fetch", required=False)
                 if not max_fetch or max_fetch > MAX_EVENTS_TO_FETCH:
                     max_fetch = MAX_EVENTS_TO_FETCH
 
@@ -628,27 +572,27 @@ def main() -> None:
                     events_limit=max_fetch,
                     last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
                     first_fetch_time=first_fetch_time,
-                    min_severity=convert_to_demisto_severity(min_severity)
+                    min_severity=convert_to_demisto_severity(min_severity),
                 )
                 demisto.setLastRun(next_run)
                 demisto.incidents(incidents)
 
-            elif demisto.command() == 'cognni-get-event':
+            elif demisto.command() == "cognni-get-event":
                 return_results(get_event_command(client, demisto.args()))
 
-            elif demisto.command() == 'cognni-fetch-insights':
+            elif demisto.command() == "cognni-fetch-insights":
                 return_results(fetch_insights_command(client, demisto.args()))
 
-            elif demisto.command() == 'cognni-get-insight':
+            elif demisto.command() == "cognni-get-insight":
                 return_results(get_insight_command(client, demisto.args()))
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

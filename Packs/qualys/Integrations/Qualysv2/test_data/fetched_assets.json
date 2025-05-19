@@ -1,0 +1,73 @@
+[
+    {
+        "ID": "143111841",
+        "IP": "1.1.1.1",
+        "TRACKING_METHOD": "DNS",
+        "OS": "Linux 3.13",
+        "DNS": "one.one.one.one",
+        "DNS_DATA": {
+            "HOSTNAME": "one",
+            "DOMAIN": "one.one.one",
+            "FQDN": "one.one.one.one"
+        },
+        "LAST_SCAN_DATETIME": "2023-05-16T15:26:53Z",
+        "LAST_VM_SCANNED_DATE": "2023-05-16T15:26:01Z",
+        "LAST_VM_SCANNED_DURATION": "2130",
+        "LAST_PC_SCANNED_DATE": "2022-12-06T12:03:46Z",
+        "DETECTION": {
+            "QID": "QIDa",
+            "TYPE": "Confirmed",
+            "SEVERITY": "2",
+            "PORT": "443",
+            "PROTOCOL": "tcp",
+            "SSL": "0",
+            "RESULTS": "X-Content-Type-Options HTTP Header missing on port 443.\n\nGET / HTTP/1.0\nHost: one.one.one.one\nUser-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:93.0) Gecko/20100101 Firefox/93.0\n\n\n\nHTTP/1.1 200 OK\nDate: Tue, 16 May 2023 15:11:34 GMT\nContent-Type: text/html\nConnection: close\nReport-To: {&quot;endpoints&quot;:[{&quot;url&quot;:&quot;https:\\/\\/a.nel.cloudflare.com\\/report\\/v3?s=G1K17EgKYghRTdBHT6zGm3yL3ZP77IDDLV8p7Fmtr91XH%2BgGy3XYHQNuNrzUYzJNLJU%2BWP%2BFuwUK5hsjkszWOANNxqfhvDvZcDcmhHZr%2B6lXteZc5HDO1JzXf%2FQWurVEng%3D%3D&quot;}],&quot;group&quot;:&quot;cf-nel&quot;,&quot;max_age&quot;:604800}\nNEL: {&quot;report_to&quot;:&quot;cf-nel&quot;,&quot;max_age&quot;:604800}\nLast-Modified: Thu, 04 Aug 2022 19:10:01 GMT\nStrict-Transport-Security: max-age=31536000\nServed-In-Seconds: 0.002\nCache-Control: public, max-age=14400\nCF-Cache-Status: HIT\nAge: 570\nExpires: Tue, 16 May 2023 19:11:34 GMT\nSet-Cookie: __cf_bm=tqFXNaNgLM6gNYEdlFxhl7kZ8Tjd_6.dK_Kq1aHiFIo-1684249894-0-AU00kBYBvnBSdB6Um+4i7e1vw8ka/BoepE/c9CLgvQpKiPk3EhXPoXqsYTpbK4Jl+E5+bQH64thqJl5hDUGHOBM=; path=/; expires=Tue, 16-May-23 15:41:34 GMT; domain=.one.one.one; HttpOnly; Secure; SameSite=None\nServer: cloudflare\nCF-RAY: 7c848dcf2ef67fea-SAN\nalt-svc: h3=&quot;:443&quot;; ma=86400, h3-29=&quot;:443&quot;; ma=86400",
+            "STATUS": "Active",
+            "FIRST_FOUND_DATETIME": "2023-05-16T15:26:53Z",
+            "LAST_FOUND_DATETIME": "2023-05-16T15:26:01Z",
+            "TIMES_FOUND": "216",
+            "LAST_TEST_DATETIME": "2023-05-16T15:26:01Z",
+            "LAST_UPDATE_DATETIME": "2023-05-16T15:26:53Z",
+            "LAST_FIXED_DATETIME": "2022-12-07T10:06:40Z",
+            "IS_IGNORED": "0",
+            "IS_DISABLED": "0",
+            "LAST_PROCESSED_DATETIME": "2023-05-16T15:26:53Z"
+        },
+        "_time": "2023-05-16T15:26:53Z",
+        "event_type": "host_list_detection"
+    },
+    {
+        "ID": "10112200",
+        "IP": "1.2.2.2",
+        "TRACKING_METHOD": "IP",
+        "DNS": "ec2-11-111-111-111.compute-1.amazonaws.com",
+        "DNS_DATA": {
+            "HOSTNAME": "ec2-11-111-111-111",
+            "DOMAIN": "compute-1.amazonaws.com",
+            "FQDN": "ec2-11-111-111-111.compute-1.amazonaws.com"
+        },
+        "LAST_SCAN_DATETIME": "2023-03-21T03:43:11Z",
+        "LAST_VM_SCANNED_DATE": "2023-03-21T03:42:05Z",
+        "LAST_VM_SCANNED_DURATION": "404",
+        "DETECTION": {
+            "QID": "QIDb",
+            "TYPE": "Confirmed",
+            "SEVERITY": "3",
+            "PORT": "22",
+            "PROTOCOL": "tcp",
+            "SSL": "0",
+            "RESULTS": "Type\tName\nkey exchange\tdiffie-hellman-group1-sha1\ncipher\tblowfish-cbc\ncipher\tcast128-cbc\ncipher\t3des-cbc",
+            "STATUS": "New",
+            "FIRST_FOUND_DATETIME": "2023-03-21T03:42:05Z",
+            "LAST_FOUND_DATETIME": "2023-03-21T03:42:05Z",
+            "TIMES_FOUND": "1",
+            "LAST_TEST_DATETIME": "2023-03-21T03:42:05Z",
+            "LAST_UPDATE_DATETIME": "2023-03-21T03:43:11Z",
+            "IS_IGNORED": "0",
+            "IS_DISABLED": "0",
+            "LAST_PROCESSED_DATETIME": "2023-03-21T03:43:11Z"
+        },
+        "_time": "2023-03-21T03:42:05Z",
+        "event_type": "host_list_detection"
+    }
+]

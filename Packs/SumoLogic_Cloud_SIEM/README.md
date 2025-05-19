@@ -1,7 +1,9 @@
 The integration in this pack enables interactions with Sumo Logic Cloud SIEM. It can be used to fetch Incidents via Insights, update status of an Insight, add items to match list, search Entities/Signals/Insights/Threat Intel indicators, and more.
 
 ## What does this pack do?
+
 This pack enables you to run commands that:
+
 - Fetch Incidents via Insights
 - Search Entities, Signals, Insights and Threat Intel indicators
 - Change status of Insight

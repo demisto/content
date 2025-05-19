@@ -1,9 +1,9 @@
 args:
-- description: Test Case Name
+- description: Test Case Name.
   name: testName
-- description: List to Read Test Case From
+- description: List to Read Test Case From.
   name: listName
-- description: Task in Playbook to Add Test Case After
+- description: Task in Playbook to Add Test Case After.
   name: addAfter
 commonfields:
   id: UnitTestCase
@@ -11,10 +11,9 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ""
-dockerimage: demisto/python3:3.10.13.72123
+dockerimage: demisto/python3:3.12.8.1983910
 enabled: true
 name: UnitTestCase
-comment: ""
 runas: DBotWeakRole
 script: ''
 scripttarget: 0
@@ -25,3 +24,4 @@ fromversion: 6.0.0
 tests:
 - No tests (auto formatted)
 runonce: false
+engineinfo: {}

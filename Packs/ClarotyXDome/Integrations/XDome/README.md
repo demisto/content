@@ -1,27 +1,23 @@
 Use the xDome integration to manage assets and alerts.
 This integration was integrated and tested with version 1.0.0 of XDome.
 
-## Configure xDome on Cortex XSOAR
+## Configure xDome in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for xDome.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | XDome public API base URL |  | True |
-    | API Token | The API token to use for connection | True |
-    | Trust any certificate (not secure) |  | False |
-    | Use system proxy settings |  | False |
-    | The initial time to fetch from |  | True |
-    | Fetch Only Unresolved Device-Alert Pairs |  | False |
-    | Alert Types Selection | If no alert types are selected, all types will be fetched | False |
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| XDome public API base URL |  | True |
+| API Token | The API token to use for connection | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| The initial time to fetch from |  | True |
+| Fetch Only Unresolved Device-Alert Pairs |  | False |
+| Alert Types Selection | If no alert types are selected, all types will be fetched | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### xdome-get-device-alert-relations

@@ -2,43 +2,54 @@ category: Messaging and Conferencing
 commonfields:
   id: McAfee DXL
   version: -1
+sectionOrder:
+  - Connect
+  - Collect
 configuration:
 - display: Broker CA certificates content (see `brokercerts.crt` in the instructions).
   name: broker_ca_bundle
   required: true
   type: 12
+  section: Connect
 - display: Client certificates content (see `client.crt` in the instructions).
   name: cert_file
   required: true
   type: 12
+  section: Connect
 - display: Client private key content (e.g. `client.key`)
   name: private_key
   required: true
   type: 14
+  section: Connect
 - display: Brokers URLs (comma separated list in the form of [ssl://]<hostname>[:port]). Get the hostname & port from the `brokerlist.properties` file in the instructions. Note that the broker should be reachable from the Demisto server.
   name: broker_urls
   required: true
   type: 0
+  section: Connect
 - defaultvalue: DXL_PUSH_IP
   display: The topic for which to publish the 'dxl-push-ip'.
   name: push_ip_topic
   type: 0
   required: false
+  section: Connect
 - defaultvalue: DXL_PUSH_URL
   display: The topic for which to publish the 'dxl-push-url'.
   name: push_url_topic
   type: 0
   required: false
+  section: Connect
 - defaultvalue: DXL_PUSH_DOMAIN
   display: The topic for which to publish the 'dxl-push-domain'.
   name: push_domain_topic
   type: 0
   required: false
+  section: Connect
 - defaultvalue: DXL_PUSH_HASH
   display: The topic for which to publish the 'dxl-push-hash'.
   name: push_hash_topic
   type: 0
   required: false
+  section: Connect
 description: McAfee DXL client.
 display: McAfee DXL
 name: McAfee DXL
@@ -141,7 +152,7 @@ script:
       name: topic
     description: The push hash to the DXL fabric.
     name: dxl-push-hash
-  dockerimage: demisto/dxl:1.0.0.111528
+  dockerimage: demisto/dxl:1.0.0.116949
   runonce: false
   script: '-'
   subtype: python3

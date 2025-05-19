@@ -1,4 +1,4 @@
-This script changes the status of the Sekoia alert in XSOAR.
+This script changes the status of the Sekoia alert.
 
 ## Script Data
 
@@ -18,6 +18,7 @@ This script changes the status of the Sekoia alert in XSOAR.
 | --- | --- |
 | short_id | The short ID of the alert. |
 | status | Status to change on the Sekoia alert. |
+| comment | The comment to add to the alert on the status change. |
 
 ## Outputs
 

@@ -120,7 +120,7 @@ script:
       description: The log's timestamp.
       type: date
     description: Fetches the logs that triggered a security event in Logz.io Cloud SIEM.
-  dockerimage: demisto/python3:3.10.13.84405
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   subtype: python3
 fromversion: 5.0.0

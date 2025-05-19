@@ -2,11 +2,7 @@ Use the AlienVault OTX integration to fetch indicators using a TAXII client.
 
 This integration can only fetch indicators from **active** collections. Active collections are those which contain at least one indicator.
 
-## Configure AlienVault OTX TAXII Feed on Cortex XSOAR
-
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for AlienVault OTX TAXII Feed.
-3. Click **Add instance** to create and configure a new integration instance.
+## Configure AlienVault OTX TAXII Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -24,44 +20,42 @@ This integration can only fetch indicators from **active** collections. Active c
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
-
 If you do not know which collections are available - do not set the `Collections` and `All Collections` parameters. The resulting error message will list all the accessible collections.
 
 **Note**: not all listed collections are **active**.
 
-4. Click **Test** to validate the URLs, token, and connection.
-
-
-
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get indicators
+
 ***
 Gets the indicators from AlienVault OTX.
-
 
 ##### Base Command
 
 `alienvaultotx-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Required | 
-
+| limit | The maximum number of indicators to return. The default value is 10. | Required |
 
 ##### Context Output
 
 There is no context output for this command.
 
 ##### Command Example
+
 ```!alienvaultotx-get-indicators limit=3```
 
-
 ##### Human Readable Output
-### Indicators from AlienVault OTX TAXII:
+
+### Indicators from AlienVault OTX TAXII
+
 |value|type|
 |---|---|
 | 1.2.3.4 | IP |
@@ -69,6 +63,7 @@ There is no context output for this command.
 | demisto\<span\>.com | Domain |
 
 ## Video Demo
+
 <video controls>
     <source src="https://github.com/demisto/content-assets/raw/7982404664dc68c2035b7c701d093ec026628802/Assets/FeedAlienVault/AlienVault_OTX_Feed_Demo.mp4"
             type="video/mp4"/>

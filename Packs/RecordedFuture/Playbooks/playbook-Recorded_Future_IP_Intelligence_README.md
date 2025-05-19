@@ -127,4 +127,4 @@ This playbook does not use any scripts.
 
 ## Playbook Image
 ---
-![Recorded Future IP Intelligence](https://github.com/demisto/content/raw/master/Packs/RecordedFuture/doc_files/ip_enrich.png)
+![Recorded Future IP Intelligence](../doc_files/ip_enrich.png)

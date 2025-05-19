@@ -400,7 +400,7 @@ script:
     - contextPath: DBotScore.Score
       description: The actual score.
       type: String
-  dockerimage: demisto/python3:3.10.14.99865
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

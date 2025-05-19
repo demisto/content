@@ -983,7 +983,7 @@ script:
     execution: false
     name: msgraph-device-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.111961
+  dockerimage: demisto/crypto:1.0.0.114611
   script: ''
   subtype: python3
   type: python

@@ -1,17 +1,17 @@
 args:
-- description: YAML formatted string
+- description: YAML formatted string.
   name: string
   required: true
-comment: Parses a YAML string into context
+comment: Parses a YAML string into context.
 commonfields:
   id: ParseYAML
   version: -1
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.11.10.116949
 enabled: true
 name: ParseYAML
 outputs:
 - contextPath: ParseYAML
-  description: JSON data loaded from YAML string
+  description: JSON data loaded from YAML string.
 runas: DBotWeakRole
 script: ''
 scripttarget: 0

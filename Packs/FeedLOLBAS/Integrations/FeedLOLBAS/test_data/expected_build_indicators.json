@@ -34,7 +34,8 @@
         "Test Mitre Name 1",
         "T1113",
         "Download"
-      ]
+      ],
+      "url": "https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/"
     },
     "rawJSON": {
       "Name": "AppInstaller.exe",
@@ -121,6 +122,7 @@
       ],
       "description": "ASP.NET Compilation Tool",
       "trafficlightprotocol": "TEST",
+      "url": "https://lolbas-project.github.io/lolbas/Binaries/Aspnet_Compiler/",
       "tags": [
         "tag1",
         "tag2",

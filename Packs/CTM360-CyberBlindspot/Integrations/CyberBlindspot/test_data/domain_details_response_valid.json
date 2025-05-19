@@ -1,0 +1,19 @@
+{
+    "first_seen": "29-10-2024 09:58:25 PM",
+    "last_seen": "31-12-2024 03:51:58 AM",
+    "id": "RD-0285ED4LA",
+    "subject": "trybackme.xyz",
+    "severity": "High",
+    "type": "Domain Infringement",
+    "risks": [
+        "Has A Record",
+        "Has MX Record",
+        "Newly registered when detected",
+        "Has NS Record",
+        "Has DNS Record"
+    ],
+    "status": "monitoring",
+    "incident_status": "member_feedback",
+    "brand": "RiskAssess Demo",
+    "timestamp": 1730239105000
+}

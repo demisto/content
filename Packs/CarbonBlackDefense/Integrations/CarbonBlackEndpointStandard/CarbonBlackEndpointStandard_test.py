@@ -1,13 +1,16 @@
 def create_client():
     from CarbonBlackEndpointStandard import Client
-    client = Client(base_url='example.com',
-                    verify=False,
-                    proxies=1234,
-                    api_secret_key="api_secret_key",
-                    api_key="api_key",
-                    policy_api_key="policy_api_key",
-                    policy_api_secret_key="policy_api_secret_key",
-                    organization_key="organization_key")
+
+    client = Client(
+        base_url="example.com",
+        verify=False,
+        proxies=1234,
+        api_secret_key="api_secret_key",
+        api_key="api_key",
+        policy_api_key="policy_api_key",
+        policy_api_secret_key="policy_api_secret_key",
+        organization_key="organization_key",
+    )
     return client
 
 
@@ -20,18 +23,21 @@ def test_get_alert_details_command(mocker):
     Then:
         Assert that the output is we are expected
     """
-    mocker_result = {'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'}
+    mocker_result = {"id": "1234", "severity": 7, "category": "THREAT", "device_username": "demo"}
     expected_result = {
-        'CarbonBlackDefense.Alert(val.id && val.id == obj.id)': {
-            'id': '1234', 'severity': 7, 'category': 'THREAT', 'device_username': 'demo'
+        "CarbonBlackDefense.Alert(val.id && val.id == obj.id)": {
+            "id": "1234",
+            "severity": 7,
+            "category": "THREAT",
+            "device_username": "demo",
         }
     }
     client = create_client()
-    mocker.patch.object(client, 'get_alert_by_id', return_value=mocker_result)
+    mocker.patch.object(client, "get_alert_by_id", return_value=mocker_result)
     from CarbonBlackEndpointStandard import get_alert_details_command
 
-    command_results = get_alert_details_command(client, {'alertId': 1234})
-    output = command_results.to_context().get('EntryContext', {})
+    command_results = get_alert_details_command(client, {"alertId": 1234})
+    output = command_results.to_context().get("EntryContext", {})
 
     assert output == expected_result
 
@@ -46,27 +52,24 @@ def test_device_search_command(mocker):
         - make sure that the output is what we expect
         - make sure the body request is sent properly
     """
-    mocker_result = {
-        "results": [
-            {'id': 1234, 'name': 'carbon-black-integration-endpoint', 'os': 'MAC'}
-        ]
-    }
+    mocker_result = {"results": [{"id": 1234, "name": "carbon-black-integration-endpoint", "os": "MAC"}]}
     expected_result = {
-        'CarbonBlackDefense.Device(val.id && val.id == obj.id)': [
-            {'id': 1234, 'name': 'carbon-black-integration-endpoint', 'os': 'MAC'}
+        "CarbonBlackDefense.Device(val.id && val.id == obj.id)": [
+            {"id": 1234, "name": "carbon-black-integration-endpoint", "os": "MAC"}
         ]
     }
     client = create_client()
-    http_request_mocker = mocker.patch.object(client, '_http_request', return_value=mocker_result)
+    http_request_mocker = mocker.patch.object(client, "_http_request", return_value=mocker_result)
 
     from CarbonBlackEndpointStandard import device_search_command
 
-    command_results = device_search_command(client, {'device_id': '1234', 'os': 'MAC', 'status': 'sleep', 'rows': '20'})
-    output = command_results.to_context().get('EntryContext', {})
+    command_results = device_search_command(client, {"device_id": "1234", "os": "MAC", "status": "sleep", "rows": "20"})
+    output = command_results.to_context().get("EntryContext", {})
 
     assert output == expected_result
     assert http_request_mocker.call_args.kwargs["json_data"] == {
-        'criteria': {'id': ['1234'], 'status': ['sleep'], 'os': ['MAC']}, 'rows': 20
+        "criteria": {"id": ["1234"], "status": ["sleep"], "os": ["MAC"]},
+        "rows": 20,
     }
 
 
@@ -79,16 +82,14 @@ def test_find_events_command(mocker):
     Then:
         Assert that the output is we are expected
     """
-    mocker_result = {'job_id': '123456'}
-    expected_result = {
-        'CarbonBlackDefense.Events.Search(val.job_id && val.job_id == obj.job_id)': {'job_id': '123456'}
-    }
+    mocker_result = {"job_id": "123456"}
+    expected_result = {"CarbonBlackDefense.Events.Search(val.job_id && val.job_id == obj.job_id)": {"job_id": "123456"}}
     client = create_client()
-    mocker.patch.object(client, 'get_events', return_value=mocker_result)
+    mocker.patch.object(client, "get_events", return_value=mocker_result)
     from CarbonBlackEndpointStandard import find_events_command
 
     command_results = find_events_command(client, {})
-    output = command_results.to_context().get('EntryContext', {})
+    output = command_results.to_context().get("EntryContext", {})
 
     assert output == expected_result
 
@@ -102,15 +103,13 @@ def test_find_processes_command(mocker):
     Then:
         Assert that the output is we are expected
     """
-    mocker_result = {'job_id': '123456'}
-    expected_result = {
-        'CarbonBlackDefense.Process.Search(val.job_id && val.job_id == obj.job_id)': {'job_id': '123456'}
-    }
+    mocker_result = {"job_id": "123456"}
+    expected_result = {"CarbonBlackDefense.Process.Search(val.job_id && val.job_id == obj.job_id)": {"job_id": "123456"}}
     client = create_client()
-    mocker.patch.object(client, 'get_processes', return_value=mocker_result)
+    mocker.patch.object(client, "get_processes", return_value=mocker_result)
     from CarbonBlackEndpointStandard import find_processes_command
 
     command_results = find_processes_command(client, {})
-    output = command_results.to_context().get('EntryContext', {})
+    output = command_results.to_context().get("EntryContext", {})
 
     assert output == expected_result

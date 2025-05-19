@@ -49,7 +49,7 @@ switch (command) {
         var lockTimeout = args.timeout || params.timeout || 600;
         var lockInfo = 'Locked by incident #' + incidents[0].id + '.';
         lockInfo += (args.info) ? ' Additional info: ' + args.info : '';
-        var pollingInterval = args.polling_interval || '20';
+        var pollingInterval = args.polling_interval || params.polling_interval || '20';
 
         var guid = args.guid || guid();
         var time = 0;

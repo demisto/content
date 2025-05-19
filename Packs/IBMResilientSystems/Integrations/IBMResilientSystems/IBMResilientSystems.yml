@@ -1094,7 +1094,7 @@ script:
       description: Task instructions.
       type: Dictionary
 
-  dockerimage: demisto/resilient:2.0.0.112034
+  dockerimage: demisto/resilient:2.0.0.1825395
   isfetch: true
   runonce: false
   script: '-'

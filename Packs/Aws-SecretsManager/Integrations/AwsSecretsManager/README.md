@@ -1,33 +1,27 @@
 AWS Secrets Manager helps you to securely encrypt, store, and retrieve credentials for your databases and other services.
 This integration was integrated and tested with version 1.0 of AwsSecretsManager
 
-## Configure Aws Secrets Manager on Cortex XSOAR
+## Configure Aws Secrets Manager in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Aws Secrets Manager.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- | --- | --- |
-    | AWS Default Region |  | True |
-    | Role Arn |  | False |
-    | Role Session Name |  | False |
-    | Role Session Duration |  | False |
-    | Access Key |  | False |
-    | Secret Key |  | False |
-    | Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout separated from the read timeout with a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
-    | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
-    | Fetches credentials |  | False |
-    | AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
-    | Use system proxy settings |  | False |
-    | Trust any certificate (not secure) |  | False |
-    | Disable sensitive commands | Disables the following sensitive commands from running: aws-secrets-manager-secret–value-get. | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| AWS Default Region |  | True |
+| Role Arn |  | False |
+| Role Session Name |  | False |
+| Role Session Duration |  | False |
+| Access Key |  | False |
+| Secret Key |  | False |
+| Timeout | The time in seconds until a timeout exception is reached. You can specify just the read timeout \(for example 60\) or also the connect timeout separated from the read timeout with a comma \(for example 60,10\). If a connect timeout is not specified, a default of 10 second will be used. | False |
+| Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
+| Fetches credentials |  | False |
+| AWS STS Regional Endpoints | Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration. | False |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+| Disable sensitive commands | Disables the following sensitive commands from running: aws-secrets-manager-secret–value-get. | False |
 
 ## Commands
-
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### aws-secrets-manager-secret-list

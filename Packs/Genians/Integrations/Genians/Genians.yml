@@ -59,7 +59,7 @@ script:
       description: Tag name.
       type: string
     description: Removes the tag(s) from the Node specified.
-  dockerimage: demisto/python3:3.10.14.95956
+  dockerimage: demisto/python3:3.11.10.115186
   runonce: false
   script: '-'
   subtype: python3

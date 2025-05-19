@@ -3,23 +3,21 @@ from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-impor
 from freezegun import freeze_time
 from TrendMicroEmailSecurityEventCollector import (
     Client,
-    parse_start_time,
+    Deduplicate,
+    EventType,
+    NoContentException,
+    add_missing_fields_to_event,
     calculate_last_run,
     fetch_by_event_type,
     fetch_events_command,
+    parse_start_time,
     remove_sensitive_from_events,
-    add_missing_fields_to_event,
-    NoContentException,
-    EventType,
-    Deduplicate,
 )
 
 
 @pytest.fixture()
 def mock_client() -> Client:
-    return Client(
-        base_url="test", username="test", api_key="test", verify=False, proxy=False
-    )
+    return Client(base_url="test", username="test", api_key="test", verify=False, proxy=False)
 
 
 def load_event_for_test(test_name: str) -> list[dict]:
@@ -163,17 +161,13 @@ def test__encode_authorization(mock_client: Client):
             "NO_EVENTS",
             {
                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-14T10:00:18Z",
-                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-                    "<33333.33333.33333.3333@mx.test.com>"
-                ],
+                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": ["<33333.33333.33333.3333@mx.test.com>"],
             },
             "2023-07-14T11:00:18Z",
             EventType.ACCEPTED_TRAFFIC,
             {
                 f"time_{EventType.ACCEPTED_TRAFFIC.value}_from": "2023-07-14T10:00:18Z",
-                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": [
-                    "<33333.33333.33333.3333@mx.test.com>"
-                ],
+                f"fetched_event_ids_of_{EventType.ACCEPTED_TRAFFIC.value}": ["<33333.33333.33333.3333@mx.test.com>"],
             },
             id="No events",
         )
@@ -214,9 +208,7 @@ def test_calculate_last_run_no_events(
             "CALCULATE_LAST_RUN",
             {
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
-                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
-                    "<22222.22222.22222.2222@mx.test.com>"
-                ],
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": ["<22222.22222.22222.2222@mx.test.com>"],
             },
             "2023-07-14T11:00:18Z",
             EventType.POLICY_LOGS,
@@ -235,9 +227,7 @@ def test_calculate_last_run_no_events(
             "CALCULATE_LAST_RUN",
             {
                 f"time_{EventType.POLICY_LOGS.value}_from": "2023-07-14T10:00:18Z",
-                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": [
-                    "<22222.22222.22222.2222@mx.test.com>"
-                ],
+                f"fetched_event_ids_of_{EventType.POLICY_LOGS.value}": ["<22222.22222.22222.2222@mx.test.com>"],
             },
             "2023-07-14T11:00:18Z",
             EventType.POLICY_LOGS,
@@ -311,9 +301,7 @@ def test_calculate_last_run(
         )
     ],
 )
-def test_fetch_by_event_type_token_unquote(
-    mocker, mock_client: Client, event_mock: tuple[dict], limit: int
-):
+def test_fetch_by_event_type_token_unquote(mocker, mock_client: Client, event_mock: tuple[dict], limit: int):
     """
     Given:
         - next_token with quote character
@@ -323,9 +311,7 @@ def test_fetch_by_event_type_token_unquote(
         - Ensure that the next_token argument sent to the API request is unquoted
     """
     mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
-    fetch_by_event_type(
-        mock_client, "", "", limit, [], EventType.ACCEPTED_TRAFFIC, False
-    )
+    fetch_by_event_type(mock_client, "", "", limit, [], EventType.ACCEPTED_TRAFFIC, False)
     assert mock_api.call_args[0][1]["token"] == "abc abc"
 
 
@@ -414,9 +400,7 @@ def test_fetch_by_event_type(
           it exits the while loop and returns events as expected.
     """
     mock_api = mocker.patch.object(mock_client, "get_logs", side_effect=event_mock)
-    events, _ = fetch_by_event_type(
-        mock_client, "", "", limit, [], EventType.ACCEPTED_TRAFFIC, False
-    )
+    events, _ = fetch_by_event_type(mock_client, "", "", limit, [], EventType.ACCEPTED_TRAFFIC, False)
 
     assert len(events) == expected_results["len_events"]
     assert mock_api.call_count == expected_results["call_count"]
@@ -487,9 +471,7 @@ def test_fetch_events_command(
         "TrendMicroEmailSecurityEventCollector.fetch_by_event_type",
         return_value=([{"_time": "test", "logType": "test"}], "test"),
     )
-    mocker.patch(
-        "TrendMicroEmailSecurityEventCollector.calculate_last_run", return_value={}
-    )
+    mocker.patch("TrendMicroEmailSecurityEventCollector.calculate_last_run", return_value={})
     fetch_events_command(mock_client, args, first_fetch, last_run)
 
     assert mock_func.call_count == 3
@@ -513,9 +495,7 @@ def test_fetch_events_command(
         ),
     ],
 )
-def test_generate_id_for_event(
-    event_key: str, event_type: EventType, expected_results: str
-):
+def test_generate_id_for_event(event_key: str, event_type: EventType, expected_results: str):
     """
     Given:
         - event
@@ -546,9 +526,7 @@ def test_generate_id_for_event(
         )
     ],
 )
-def test_get_event_ids_with_duplication_risk(
-    event_key: str, latest_time: str, expected_results: list[str]
-):
+def test_get_event_ids_with_duplication_risk(event_key: str, latest_time: str, expected_results: list[str]):
     """
     Given:
         - The events

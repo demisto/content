@@ -1,24 +1,20 @@
 Deprecated. Use Core REST API instead.
 
-## Configure Demisto REST API on Cortex XSOAR
+## Configure Demisto REST API in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Demisto REST API.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Description** | **Required** |
-    | --- |--------------| --- |
-    | Demisto Server URL |  | True         |
-    | Demisto Server API Key |  | False        |
-    | Base marketplace url |  | False           |
-    | Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
-    | Demisto Server API Key |  | False        |
-    | Use system proxy settings | Use system proxy settings. | False        |
-    | Use tenant | Whether API calls should be made to the current tenant instead of the master tenant. | False |
+| **Parameter** | **Description** | **Required** |
+| --- |--------------| --- |
+| Demisto Server URL |  | True         |
+| Demisto Server API Key |  | False        |
+| Base marketplace url |  | False           |
+| Trust any certificate (not secure) | Trust any certificate \(not secure\). | False        |
+| Demisto Server API Key |  | False        |
+| Use system proxy settings | Use system proxy settings. | False        |
+| Use tenant | Whether API calls should be made to the current tenant instead of the master tenant. | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ***Please Note:*** When updating or making changes to a custom content item (integration, script, list, etc.), it may be necessary to increment the version of the item. To do so, first fetch the current version (usually via a GET command) and then increment the version by 1. Lastly, when updating an item, please use this incremented value for the `version` field.

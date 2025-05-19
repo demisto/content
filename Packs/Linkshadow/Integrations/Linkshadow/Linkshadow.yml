@@ -124,7 +124,7 @@ script:
       description: Time of Anomaly seen
       type: date
     description: Return the full entity details for all devices referenced  by data in an API response. Use of this command will return the JSON structure of the API response .
-  dockerimage: demisto/python3:3.10.14.90585
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   script: '-'
   subtype: python3

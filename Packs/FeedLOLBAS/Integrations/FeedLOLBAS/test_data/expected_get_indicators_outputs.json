@@ -25,6 +25,7 @@
       }
     ],
     "Name": "AppInstaller.exe",
-    "Description": "Tool used for installation of AppX/MSIX applications on Windows 10"
+    "Description": "Tool used for installation of AppX/MSIX applications on Windows 10",
+    "URL": "https://lolbas-project.github.io/lolbas/Binaries/AppInstaller/"
   }
 ]

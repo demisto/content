@@ -156,7 +156,7 @@ script:
     - contextPath: CommvaultSecurityIQ.AddEntityToCleanroom
       description: Response indicating whether successfully added the VM to the recovery point or not.
       type: string
-  dockerimage: demisto/commvault:1.0.0.101101
+  dockerimage: demisto/commvault:1.0.0.117880
   feed: false
   isfetch: true
   longRunning: true

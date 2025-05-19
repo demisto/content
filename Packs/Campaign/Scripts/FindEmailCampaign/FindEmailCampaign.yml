@@ -126,7 +126,7 @@ tags:
 - phishing
 timeout: '0'
 type: python
-dockerimage: demisto/sklearn:1.0.0.108551
+dockerimage: demisto/sklearn:1.0.0.2013408
 tests:
 - Detect & Manage Phishing Campaigns - Test
 fromversion: 5.0.0

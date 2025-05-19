@@ -1,27 +1,27 @@
 Searches for CVE information using [circl.lu](https://www.circl.lu/services/cve-search/).
 
-## Configure CIRCL CVE Search on Cortex XSOAR
+## Configure CIRCL CVE Search in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Data Enrichment & Threat Intelligence**.
-2. Search for CIRCL.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL | True |
-    | Use system proxy settings | False |
-    | Trust any certificate (not secure) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Source Reliability | Reliability of the source providing the intelligence data. | True |
+| Server URL |  | True |
+| Use system proxy settings |  | False |
+| Trust any certificate (not secure) |  | False |
+
+
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### cve-latest
 
 ***
+Deprecated. use NVD feed 2.0 instead.
 Returns the latest updated CVEs.
 
 #### Base Command

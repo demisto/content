@@ -654,7 +654,7 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
   script: '-'

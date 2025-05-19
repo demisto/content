@@ -6,7 +6,7 @@ full_report = {
             "Last_Hire_Date": "10/05/2020",
             "Emp_ID": "100123",
             "Display_Name": "Rony Rahardjo",
-            "Email_Address": "rarahardjo@paloaltonetworks.com"
+            "Email_Address": "rarahardjo@paloaltonetworks.com",
         }
     ]
 }
@@ -22,7 +22,7 @@ employee_id_to_user_profile = {
         "email": "rrahardjo@paloaltonetworks.com",
         "sourcepriority": 1,
         "sourceoftruth": "Workday IAM",
-        "isprocessed": False
+        "isprocessed": False,
     }
 }
 
@@ -37,23 +37,25 @@ email_to_user_profile = {
         "email": "rrahardjo@paloaltonetworks.com",
         "sourcepriority": 1,
         "sourceoftruth": "Workday IAM",
-        "isprocessed": False
+        "isprocessed": False,
     }
 }
 
 display_name_to_user_profile = {
-    "Rony Rahardjo": [{
-        "employmentstatus": "Active",
-        "lastdayofwork": "10/05/2035",
-        "hiredate": "10/05/2020",
-        "employeeid": "100122",
-        "displayname": "Rony Rahardjo",
-        "username": "rrahardjo@paloaltonetworks.com",
-        "email": "rrahardjo@paloaltonetworks.com",
-        "sourcepriority": 1,
-        "sourceoftruth": "Workday IAM",
-        "isprocessed": False
-    }]
+    "Rony Rahardjo": [
+        {
+            "employmentstatus": "Active",
+            "lastdayofwork": "10/05/2035",
+            "hiredate": "10/05/2020",
+            "employeeid": "100122",
+            "displayname": "Rony Rahardjo",
+            "username": "rrahardjo@paloaltonetworks.com",
+            "email": "rrahardjo@paloaltonetworks.com",
+            "sourcepriority": 1,
+            "sourceoftruth": "Workday IAM",
+            "isprocessed": False,
+        }
+    ]
 }
 
 mapped_workday_user = {
@@ -65,14 +67,14 @@ mapped_workday_user = {
     "Username": "rarahardjo@paloaltonetworks.com",
     "Email": "rarahardjo@paloaltonetworks.com",
     "Source Priority": 1,
-    "Source of Truth": "Workday IAM"
+    "Source of Truth": "Workday IAM",
 }
 
 event_data = [
     {
         "name": "rarahardjo@paloaltonetworks.com",
         "type": "IAM - Sync User",
-        "rawJSON": "{\"Employment_Status\": \"Active\", \"Last_Day_Of_Work\": \"10/05/2035\", \"Last_Hire_Date\": \"10/05/2020\", \"Emp_ID\": \"100123\", \"Display_Name\": \"Rony Rahardjo\", \"Email_Address\": \"rarahardjo@paloaltonetworks.com\", \"UserProfile\": {\"employmentstatus\": \"Active\", \"lastdayofwork\": \"10/05/2035\", \"hiredate\": \"10/05/2020\", \"employeeid\": \"100123\", \"displayname\": \"Rony Rahardjo\", \"username\": \"rarahardjo@paloaltonetworks.com\", \"email\": \"rarahardjo@paloaltonetworks.com\", \"sourcepriority\": 1, \"sourceoftruth\": \"Workday IAM\"}}",
-        "details": "Detected an \"IAM - New Hire\" event, but display name already exists. Please review."
+        "rawJSON": '{"Employment_Status": "Active", "Last_Day_Of_Work": "10/05/2035", "Last_Hire_Date": "10/05/2020", "Emp_ID": "100123", "Display_Name": "Rony Rahardjo", "Email_Address": "rarahardjo@paloaltonetworks.com", "UserProfile": {"employmentstatus": "Active", "lastdayofwork": "10/05/2035", "hiredate": "10/05/2020", "employeeid": "100123", "displayname": "Rony Rahardjo", "username": "rarahardjo@paloaltonetworks.com", "email": "rarahardjo@paloaltonetworks.com", "sourcepriority": 1, "sourceoftruth": "Workday IAM"}}',
+        "details": 'Detected an "IAM - New Hire" event, but display name already exists. Please review.',
     }
 ]

@@ -3,7 +3,7 @@
 <h2>Supported Authentication</h2>
 <p>This integration does not support NTLM authentication. If you are using Exchange as the SMTP server for sending mail and receive the error message: <code>No suitable authentication method found.</code> make sure that you enable <strong>Basic Authentication</strong> for SMTP authentication in your Exchange environment.</p>
 <p><span> This example shows </span>Basic Authentication on Exchange 2010:</p>
-<p><a href="https://user-images.githubusercontent.com/1395797/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/1395797/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" alt="image"></a></p>
+<p><a href="../../doc_files/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/58482464-14ace300-8167-11e9-86c5-fa389b49a99c.png" alt="image"></a></p>
 <h2>Configure Mail Sender on Cortex XSOAR</h2>
 <ol>
 <li>Navigate to <strong>Settings</strong> &gt; <strong>Integrations</strong> &gt; <strong>Servers &amp; Services</strong>.</li>

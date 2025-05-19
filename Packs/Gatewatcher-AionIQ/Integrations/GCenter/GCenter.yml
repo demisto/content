@@ -1,4 +1,7 @@
 category: Network Security
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: GCenter
   version: -1
@@ -7,25 +10,30 @@ configuration:
   name: ip
   type: 0
   required: true
+  section: Connect
 - display: GCenter Version
   name: version
   type: 0
   defaultvalue: 2.5.3.102
   required: false
+  section: Connect
 - display: GCenter API token
   name: token
   type: 4
   additionalinfo: You must provide either an API token or a username and a password.
   required: false
+  section: Connect
 - display: GCenter username
   displaypassword: GCenter password
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: Check the TLS certificate
   name: check_cert
   type: 8
   required: false
+  section: Connect
 description: This integration allows, via about twenty commands, to interact with the GCenter appliance via its API.
 display: GCenter
 name: GCenter
@@ -1312,7 +1320,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.14.91134
+  dockerimage: demisto/python3:3.11.10.115186
 fromversion: 6.2.0
 tests:
 - Gcenter Test Playbook

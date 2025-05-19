@@ -1,30 +1,24 @@
 Integrate with Mandiant Advantage Attack Surface Management to import "issues" as Incidents.
 This integration was integrated and tested with version 1 of AttackSurfaceManagement
 
-## Configure Mandiant Attack Surface Management on Cortex XSOAR
+## Configure Mandiant Attack Surface Management in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Mandiant Attack Surface Management.
-3. Click **Add instance** to create and configure a new integration instance.
-
-   | **Parameter** | **Description** | **Required** |
-       | --- | --- | --- |
-   | Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
-   | Access Key | The Access and Secret Keys used for authentication | True |
-   | Secret Key |  | True |
-   | Project ID | The ASM Project ID to retrieve issues from | False |
-   | Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
-   | Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
-   | Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
-   | Trust any certificate (not secure) |  | False |
-   | Use system proxy settings |  | False |
-   | Mirror incoming incidents |  | False |
-
-4. Click **Test** to validate the URLs, token, and connection.
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Your server URL | The ASM API URL.  Leave as \`https://asm-api.advantage.mandiant.com/\` if you're unsure | True |
+| Access Key | The Access and Secret Keys used for authentication | True |
+| Secret Key |  | True |
+| Project ID | The ASM Project ID to retrieve issues from | False |
+| Collection IDs | A list of Collection IDs, separated by commas \(\`,\`\) | False |
+| Initial Lookback Days | The number of days to look back when first retrieving issues. | True |
+| Maximum Issues To Fetch | The maximum number of issues to pull during a single fetch-incidents command. | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Mirror incoming incidents |  | False |
 
 ## Commands
 
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### attacksurfacemanagement-get-projects
@@ -44,9 +38,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MandiantAdvantageASM.Projects.Name | String | The name of the project | 
-| MandiantAdvantageASM.Projects.ID | Number | The ID of the project | 
-| MandiantAdvantageASM.Projects.Owner | unknown | The E-Mail of the project owner | 
+| MandiantAdvantageASM.Projects.Name | String | The name of the project |
+| MandiantAdvantageASM.Projects.ID | Number | The ID of the project |
+| MandiantAdvantageASM.Projects.Owner | unknown | The E-Mail of the project owner |
 
 #### Command example
 
@@ -76,7 +70,6 @@ There are no input arguments for this command.
 >|---|---|---|
 >| 6797 | ASMQA_AttackSurfaceAPP | name@attacksurface.app |
 
-
 ### attacksurfacemanagement-get-collections
 
 ***
@@ -90,15 +83,15 @@ Retrieve a list of collections for a specified project
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| project_id | The ID of the project to query collections for. | Optional | 
+| project_id | The ID of the project to query collections for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MandiantAdvantageASM.Collections.Name | String | The name of the collection | 
-| MandiantAdvantageASM.Collections.ID | String | The ID of the collection | 
-| MandiantAdvantageASM.Collections.Owner | unknown | The owner of the collection | 
+| MandiantAdvantageASM.Collections.Name | String | The name of the collection |
+| MandiantAdvantageASM.Collections.ID | String | The ID of the collection |
+| MandiantAdvantageASM.Collections.Owner | unknown | The owner of the collection |
 
 #### Command example
 
@@ -127,7 +120,6 @@ Retrieve a list of collections for a specified project
 >|ID|Name|Owner|
 >|---|---|---|
 >| attacksurface_mw3tdwq | Attacksurface_APP_QA | ASMQA_AttackSurfaceAPP |
-
 
 ### fetch-incidents
 
@@ -159,8 +151,8 @@ Update a specific incident
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ASM Incident ID. | Required | 
-| lastUpdate | Retrieve entries that were created after lastUpdate. Default is 0. | Optional | 
+| id | The ASM Incident ID. | Required |
+| lastUpdate | Retrieve entries that were created after lastUpdate. Default is 0. | Optional |
 
 #### Context Output
 

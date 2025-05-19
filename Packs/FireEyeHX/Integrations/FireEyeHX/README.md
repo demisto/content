@@ -1,27 +1,23 @@
 FireEye Endpoint Security is an integrated solution that detects what others miss and protects endpoint against known and unknown threats. The HX Demisto integration provides access to information about endpoints, acquisitions, alerts, indicators, and containment. Customers can extract critical data and effectively operate security operations automated playbook.
 
-## Configure FireEye HX on Cortex XSOAR
+## Configure FireEye HX in Cortex
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for FireEye HX.
-3. Click **Add instance** to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
-    | --- | --- |
-    | Server URL (e.g. https://192.168.0.1:3000) | True |
-    | Credentials | True |
-    | Password | True |
-    | Version | True |
-    | Trust any certificate (not secure) | False |
-    | Use system proxy settings | False |
-    | Fetch incidents | False |
-    | Incident type | False |
-    | Fetch limit | False |
-    | Incidents Fetch Interval | False |
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL (e.g. https://192.168.0.1:3000) | True |
+| Credentials | True |
+| Password | True |
+| Version | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+| Incident type | False |
+| Fetch limit | False |
+| Incidents Fetch Interval | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
 ## Commands
-You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
+You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 ### fireeye-hx-host-containment
 ***
@@ -1356,9 +1352,9 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
   
 
   2. Navigate to **Settings** > **About** > **Troubleshooting** > **Server Configuration**.
- 4. click **Add Server Configuration**.
- 6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
- 8. Set the **value** field to the desired time limit for the command to run (in minutes).
+  4. click **Add Server Configuration**.
+  6. Set the **key** field using this format: FireEye HX.<*command-name*>.timeout.
+  8. Set the **value** field to the desired time limit for the command to run (in minutes).
   ![](../../doc_files/FireEyeHX_mceclip0.png)
 
   
@@ -1369,13 +1365,13 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  ### Acquisitions limitations
 
   * Acquisitions are stored for 14 days or until the aggregate size of all acquisitions exceeds the acquisition space limit, which is from 30 GB to 9 TB, depending on the HX Series appliance**.** 
- * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
- * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
+  * When the acquisition space is completely full and automatic triages fill 10 percent of the acquisition space, the HX Series appliance reclaims disk space by removing automatic triage collections.
+  * When the acquisition space is 90 percent full, no new acquisitions can be created, and bulk acquisitions that are running might be canceled**.** 
   ### Containment Limitations
 
   * Some hosts cannot be contained.
- * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
- * You can only contain a host if the agent package for that host is available on the HX Series appliance.
+  * The time it takes to contain a host varies, based on factors such as agent connectivity, network traffic, and other jobs running in your environment.
+  * You can only contain a host if the agent package for that host is available on the HX Series appliance.
    
 
  Command Timeout
@@ -1384,8 +1380,8 @@ Gather artifacts from the system disk and memory for the given acquisition id. T
  The following commands have high potential to exceed the default time limit for a running command. To avoid command timeout, change the command timeout settings.
 
   * fireeye-hx-search
- * fireeye-hx-data-acquisition
- * fireeye-hx-file-acquisition
+  * fireeye-hx-data-acquisition
+  * fireeye-hx-file-acquisition
   ### Configure Command Timeout
 
 1. Navigate to **Settings** > **About** > **Troubleshooting**. 

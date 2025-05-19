@@ -2,7 +2,7 @@
     "name": "UBIRCH",
     "description": "Integration to handle Ubirch incidents.",
     "support": "partner",
-    "currentVersion": "1.0.3",
+    "currentVersion": "1.0.4",
     "author": "Ubirch GmbH",
     "url": "https://ubirch.com/helpdesk",
     "email": "support@ubirch.com",
@@ -19,6 +19,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

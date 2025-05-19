@@ -1,2 +1,5 @@
 [file:AnythingLLM.yml]
 ignore=IN153
+
+[file:layoutscontainer-AI_Playground.json]
+ignore=LO107

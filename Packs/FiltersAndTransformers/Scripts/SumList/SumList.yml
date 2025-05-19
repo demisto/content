@@ -19,7 +19,7 @@ timeout: '0'
 type: python
 runas: DBotWeakRole
 subtype: python3
-dockerimage: demisto/python3:3.10.13.86272
+dockerimage: demisto/python3:3.11.10.115186
 tests:
 - sumList - Test
 fromversion: 5.0.0

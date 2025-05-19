@@ -7,13 +7,6 @@
         "Code42 Security Alert": {
             "dontMapEventToLabels": true,
             "internalMapping": {
-                "Code42 Alert Type": {
-                    "complex": {
-                        "filters": [],
-                        "root": "type",
-                        "transformers": []
-                    }
-                },
                 "Code42 File Events": {
                     "complex": {
                         "filters": [],
@@ -35,21 +28,21 @@
                 "Code42 SecurityAlert Description": {
                     "complex": {
                         "filters": [],
-                        "root": "description",
+                        "root": "rule_names",
                         "transformers": []
                     }
                 },
                 "Code42 Alert ID": {
                     "complex": {
                         "filters": [],
-                        "root": "id",
+                        "root": "sessionId",
                         "transformers": []
                     }
                 },
                 "Code42 SecurityAlert Name": {
                     "complex": {
                         "filters": [],
-                        "root": "name",
+                        "root": "exfiltrationSummary",
                         "transformers": []
                     }
                 },
@@ -63,7 +56,7 @@
                 "Code42 SecurityAlert Timestamp": {
                     "complex": {
                         "filters": [],
-                        "root": "createdAt",
+                        "root": "beginTimeIso",
                         "transformers": []
                     }
                 },
@@ -114,7 +107,7 @@
                 "Code42 Alert Risk Severity Summary": {
                     "complex": {
                         "filters": [],
-                        "root": "risksummary",
+                        "root": "exfiltrationSummary",
                         "transformers": []
                     }
                 },
@@ -136,5 +129,6 @@
         }
     },
     "version": -1,
-    "fromVersion": "6.5.0"
+    "fromVersion": "6.5.0",
+    "feed": false
 }
