@@ -871,7 +871,7 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     if isinstance(size, int):
         body["size"] = size
     if isinstance(page, int):
-        body["page"] = page
+        body["from"] = page
 
     search = Search(using=es, index=requested_index).update_from_dict(body)
 
