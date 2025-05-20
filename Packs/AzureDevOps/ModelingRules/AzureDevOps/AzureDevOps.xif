@@ -1,160 +1,199 @@
 [RULE: generic_devops_rule]
 alter
-    IpAddressv4 = arrayindex(regextract(IpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0),
-    IpAddressv6 = arrayindex(regextract(IpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0),
-    IsUser = if(ActorCUID = "00000000-0000-0000-0000-000000000000", to_boolean("False"), to_boolean("True"))
+    get_data = _raw_log ->[0].data{}
 | alter
-    xdm.source.user.upn = if(ActorUPN = "", null, ActorUPN),
-    xdm.source.user.identifier = if(IsUser = False, null, ActorCUID),
+    get_data_IpAddress = get_data -> IpAddress,
+    get_data_ActorCUID = get_data -> ActorCUID,
+    get_data_ProjectId = get_data -> ProjectId
+| alter
+    IpAddressv4 = if(get_data_IpAddress != null, arrayindex(regextract(get_data_IpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0), arrayindex(regextract(IpAddress, "((?:\d{1,3}\.){3}\d{1,3})"), 0)),
+    IpAddressv6 = if(get_data_IpAddress != null, arrayindex(regextract(get_data_IpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0), arrayindex(regextract(IpAddress, "((?:[a-fA-F\d]{0,4}\:){2,7}[a-fA-F\d]{0,4})"), 0)),
+    IsUser = if(ActorCUID = "00000000-0000-0000-0000-000000000000" OR get_data_ActorCUID ="00000000-0000-0000-0000-000000000000", to_boolean("False"), to_boolean("True"))
+| alter
+    xdm.source.user.upn = coalesce(ActorUPN, get_data -> ActorUPN),
+    xdm.source.user.identifier = if(IsUser = False, null, get_data_ActorCUID != null, get_data_ActorCUID, ActorCUID),
     xdm.source.user.identity_type = if(IsUser = True, XDM_CONST.IDENTITY_TYPE_USER, XDM_CONST.IDENTITY_TYPE_MACHINE),
-    xdm.auth.auth_method = if(AuthenticationMechanism = "", null, AuthenticationMechanism),
-    xdm.session_context_id = CorrelationId,
-    xdm.event.description = Details,
+    xdm.auth.auth_method = coalesce(AuthenticationMechanism, get_data -> AuthenticationMechanism),
+    xdm.session_context_id = coalesce(CorrelationId, get_data -> CorrelationId),
+    xdm.event.description = coalesce(Details, get_data -> Details),
     xdm.source.user.scope = XDM_CONST.SCOPE_TYPE_AZURE,
-    xdm.event.operation_sub_type = Category,
-    xdm.source.cloud.project_id = if(ProjectId = "00000000-0000-0000-0000-000000000000", null, ProjectId),
-    xdm.source.cloud.project = if(ProjectName = "",null, ProjectName),
-    xdm.source.user_agent = if(UserAgent = "", null, UserAgent),
+    xdm.event.operation_sub_type = coalesce(Category, get_data -> CategoryDisplayName),
+    xdm.source.cloud.project_id = if(ProjectId = "00000000-0000-0000-0000-000000000000" OR get_data_ProjectId = "00000000-0000-0000-0000-000000000000", null, get_data_ProjectId != null, get_data_ProjectId, ProjectId),
+    xdm.source.cloud.project = coalesce(ProjectName, get_data -> ProjectName),
+    xdm.source.user_agent = coalesce(UserAgent, get_data -> UserAgent),
     xdm.source.ipv4 = IpAddressv4,
     xdm.source.ipv6 = IpAddressv6,
-    xdm.event.type = OperationName,
+    xdm.event.type = coalesce(OperationName, get_data -> OperationName, get_data -> ActionId),
+    xdm.event.id = coalesce(Id, get_data -> Id),
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-    xdm.event.original_event_type = Type,
+    xdm.event.original_event_type = coalesce(Type, get_data -> eventType),
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_SAAS);
 
 [MODEL: dataset = msft_azure_devops_raw]
 // Licensing events
-filter Area = "Licensing"
+filter Area = "Licensing" OR _raw_log ->[0].data.Area = "Licensing"
 | call generic_devops_rule
 | alter
-    DetailsUsernameOrGroupName = arrayindex(regextract(Details,"\"(.+)\""),0)
+    get_data_Details = get_data -> Details,
+    get_data_Data = get_data -> Data
 | alter
-    xdm.target.user.identifier = Data -> UserIdentifier,
-    xdm.target.user.username = if(Data -> UserIdentifier != null AND Data -> UserIdentifier != "", DetailsUsernameOrGroupName),
-    xdm.target.user.groups = if(Data -> GroupIdentifier != null AND Data -> GroupIdentifier != "", arraycreate(DetailsUsernameOrGroupName)),
-    xdm.event.outcome_reason = Data -> Reason,
+    DetailsUsernameOrGroupName = if(get_data != null, arrayindex(regextract(get_data_Details, "\"(.+)\""),0), arrayindex(regextract(Details,"\"(.+)\""),0))
+| alter
+    xdm.target.user.identifier = coalesce(Data -> UserIdentifier, get_data_Data -> UserIdentifier),
+    xdm.target.user.username = if(Data -> UserIdentifier != null OR get_data_Data -> UserIdentifier != null, DetailsUsernameOrGroupName),
+    xdm.target.user.groups = if(Data -> GroupIdentifier != null OR get_data_Data -> GroupIdentifier != null, arraycreate(DetailsUsernameOrGroupName)),
+    xdm.event.outcome_reason = coalesce(Data -> Reason, get_data_Data -> Reason),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Extension events
-filter Area = "Extension"
+filter Area = "Extension" OR _raw_log ->[0].data.Area = "Extension"
 | call generic_devops_rule
 | alter
-    xdm.target.application.publisher = Data -> PublisherName,
-    xdm.target.application.name = Data -> ExtensionName,
-    xdm.target.application.version = Data -> Version,
+    get_data_Data = get_data -> Data
+| alter
+    xdm.target.application.publisher = coalesce(Data -> PublisherName, get_data_Data -> PublisherName),
+    xdm.target.application.name = coalesce(Data -> ExtensionName, get_data_Data -> ExtensionName),
+    xdm.target.application.version = coalesce(Data -> Version, get_data_Data -> Version),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Git events
-filter Area = "Git"
+filter Area = "Git" OR _raw_log ->[0].data.Area = "Git"
 | call generic_devops_rule
+| alter
+    get_data_Data = get_data -> Data
 | alter //xdm mapping
     xdm.target.resource.type = "Git Repository",
-    xdm.target.resource.id = Data -> RepoId,
-    xdm.target.resource.name = Data -> RepoName,
+    xdm.target.resource.id = coalesce(Data -> RepoId, get_data_Data -> RepoId),
+    xdm.target.resource.name = coalesce(Data -> RepoName, get_data_Data -> RepoName),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Group events
-filter Area = "Group"
+filter Area = "Group" OR _raw_log ->[0].data.Area = "Group"
 | call generic_devops_rule
 | alter
-    xdm.source.process.name = Data -> CallerProcedure,
-    xdm.target.user.groups = arraycreate(concat("Id: ",Data -> GroupId), concat("Name: ", Data -> GroupName)),
-    xdm.target.user.identifier = Data -> MemberId,
-    xdm.target.user.username = Data -> MemberDisplayName,
+    get_data_Data = get_data -> Data
+| alter
+    xdm.source.process.name = coalesce(Data -> CallerProcedure, get_data_Data -> CallerProcedure),
+    xdm.target.user.groups = if(get_data != null, arraycreate(concat("Id: ", get_data_Data -> GroupId), concat("Name: ", get_data_Data -> GroupName)), arraycreate(concat("Id: ",Data -> GroupId), concat("Name: ", Data -> GroupName))),
+    xdm.target.user.identifier = coalesce(Data -> MemberId, get_data_Data -> MemberId),
+    xdm.target.user.username = coalesce(Data -> MemberDisplayName, get_data_Data -> MemberDisplayName),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Library events
-filter Area = "Library"
+filter Area = "Library" OR _raw_log ->[0].data.Area = "Library"
 | call generic_devops_rule
 | alter
-    AgentPoolId = if(Data -> AgentPoolId = "", null, Data -> AgentPoolId),
-    AgentPoolName = if(Data -> AgentPoolName = "", null, Data -> AgentPoolName),
-    ConnectionId = if(Data -> ConnectionId = "", null, Data -> ConnectionId),
-    ConnectionName = if(Data -> ConnectionName = "", null, Data -> ConnectionName),
-    VariableGroupId = if(Data -> VariableGroupId = "", null, Data -> VariableGroupId),
-    VariableGroupName = if(Data -> VariableGroupName = "", null, Data -> VariableGroupName)
+    get_data_Data = get_data -> Data
+| alter
+    AgentPoolId = coalesce(Data -> AgentPoolId, get_data_Data -> AgentPoolId),
+    AgentPoolName = coalesce(Data -> AgentPoolName, get_data_Data -> AgentPoolName),
+    ConnectionId = coalesce(Data -> ConnectionId, get_data_Data -> ConnectionId),
+    ConnectionName = coalesce(Data -> ConnectionName, get_data_Data -> ConnectionName),
+    VariableGroupId = coalesce(Data -> VariableGroupId, get_data_Data -> VariableGroupId),
+    VariableGroupName = coalesce(Data -> VariableGroupName, get_data_Data -> VariableGroupName)
 | alter
     ResourceType = if(AgentPoolId != null, to_string("Agent Pool"), ConnectionId != null, to_string("Service Connection"), VariableGroupId != null, to_string("Variable Group"))
 | alter
-    xdm.target.agent.identifier = Data -> AgentName,
-    xdm.network.session_id = Data -> ConnectionId,
+    xdm.target.agent.identifier = coalesce(Data -> AgentName, get_data_Data -> AgentName),
+    xdm.network.session_id = ConnectionId,
     xdm.target.resource.id = coalesce(AgentPoolId, ConnectionId, VariableGroupId),
     xdm.target.resource.name = coalesce(AgentPoolName, ConnectionName, VariableGroupName),
     xdm.target.resource.type = ResourceType,
-    xdm.target.resource.sub_type = coalesce(Data -> ConnectionType, Data -> VariableGroupType, Data -> Type),
-    xdm.source.process.name = Data -> CallerProcedure,
-    xdm.target.agent.type = if(Data -> AgentId != null OR Data -> AgentId != "", XDM_CONST.AGENT_TYPE_CLOUD),
+    xdm.target.resource.sub_type = coalesce(Data -> ConnectionType, get_data_Data -> ConnectionType, Data -> VariableGroupType, get_data_Data -> VariableGroupType, Data -> Type, get_data_Data -> Type),
+    xdm.source.process.name = coalesce(Data -> CallerProcedure, get_data_Data -> CallerProcedure),
+    xdm.target.agent.type = if(Data -> AgentId != null OR get_data_Data -> AgentId != null, XDM_CONST.AGENT_TYPE_CLOUD),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Token events
-filter Area = "Token"
+filter Area = "Token" OR _raw_log ->[0].data.Area = "Token"
 | call generic_devops_rule
 | alter
-    OwnerName = arrayindex(regextract(Data -> OwnerName, "user\s\"(.+)\""),0),
-    TokenType = if(OperationName CONTAINS "Ssh", "SSH Key", "Personal Access Token")
+    get_data_Data = get_data -> Data
+| alter
+    OwnerName = if(get_data_Data -> OwnerName != null, arrayindex(regextract(get_data_Data -> OwnerName, "user\s\"(.+)\""),0), Data -> OwnerName != null ,arrayindex(regextract(Data -> OwnerName, "user\s\"(.+)\""),0)),
+    TokenType = if(OperationName CONTAINS "Ssh", "SSH Key", get_data -> OperationName CONTAINS "Ssh", "SSH Key", "Personal Access Token")
 | alter //xdm mapping
     xdm.target.resource.type = TokenType,
-    xdm.target.resource.sub_type = Data -> TokenType,
-    xdm.target.resource.name = Data -> DisplayName,
-    xdm.target.user.identifier = Data -> TargetUser,
-    xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
+    xdm.target.resource.sub_type = coalesce(Data -> TokenType, get_data_Data -> TokenType),
+    xdm.target.resource.name = coalesce(Data -> DisplayName, get_data_Data -> DisplayName),
+    xdm.target.user.identifier = coalesce(Data -> TargetUser, get_data_Data -> TargetUser),
+     xdm.target.user.username = OwnerName,
+     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Policy events
-filter Area = "Policy"
+filter Area = "Policy" OR _raw_log ->[0].data.Area = "Policy"
 | call generic_devops_rule
+| alter
+    get_data_Data = get_data -> Data
 | alter //xdm mapping
-    xdm.target.resource.id = Data -> PolicyTypeId,
-    xdm.target.resource.name = Data -> PolicyTypeDisplayName,
+    xdm.target.resource.id = coalesce(Data -> PolicyTypeId, get_data_Data -> PolicyTypeId),
+    xdm.target.resource.name = coalesce(Data -> PolicyTypeDisplayName, get_data_Data -> PolicyTypeDisplayName),
     xdm.target.resource.type = to_string("Policy"),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Project events
-filter Area = "Project"
+filter Area = "Project" OR _raw_log ->[0].data.Area = "Project"
 | call generic_devops_rule
 | alter
-    ResourceType = if(OperationName IN ("*Area*"), to_string("Area Path"), OperationName IN ("*IterationPath*"), to_string("Iteration Path"))
+    get_data_Data = get_data -> Data,
+    ResourceType = if(OperationName IN ("*Area*"), to_string("Area Path"), get_data -> OperationName IN ("*Area*"), to_string("Area Path"), OperationName IN ("*IterationPath*"), to_string("Iteration Path"), get_data -> OperationName IN ("*IterationPath*"), to_string("Iteration Path"))
 | alter //xdm mapping
-    xdm.target.process.name = Data -> ProcessName,
-    xdm.target.resource.name = Data -> Path,
+    xdm.target.process.name = coalesce(Data -> ProcessName, get_data_Data -> processName),
+    xdm.target.resource.name = coalesce(Data -> Path, get_data_Data -> Path),
     xdm.target.resource.type = ResourceType,
-    xdm.event.outcome = if(OperationName IN ("*Failed"),XDM_CONST.OUTCOME_FAILED, OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, XDM_CONST.OUTCOME_SUCCESS);
+    xdm.event.outcome = if(OperationName IN ("*Failed"),XDM_CONST.OUTCOME_FAILED, get_data -> OperationName IN ("*Failed"), XDM_CONST.OUTCOME_FAILED, OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, get_data -> OperationName IN("*Queued"), XDM_CONST.OUTCOME_PARTIAL, OperationName IN ("*Completed","Project.AreaPath.Create", "Project.AreaPath.Delete", "Project.AreaPath.Update", "Project.IterationPath.Create", "Project.IterationPath.Update", "Project.IterationPath.Delete", "Project.Process.Modify", "Project.Process.ModifyWithoutOldProcess") ,XDM_CONST.OUTCOME_SUCCESS, get_data -> OperationName IN ("*Completed","Project.AreaPath.Create", "Project.AreaPath.Delete", "Project.AreaPath.Update", "Project.IterationPath.Create", "Project.IterationPath.Update", "Project.IterationPath.Delete", "Project.Process.Modify", "Project.Process.ModifyWithoutOldProcess") ,XDM_CONST.OUTCOME_SUCCESS, XDM_CONST.OUTCOME_UNKNOWN);
 
 //Release events
-filter Area = "Release"
+filter Area = "Release" OR _raw_log ->[0].data.Area = "Release"
 | call generic_devops_rule
 | alter
-    ResourceType = if(OperationName IN ("*Pipeline*"), to_string("Release Pipeline"), to_string("Release")),
-    ReleaseId = Data -> ReleaseId
+    get_data_Data = get_data -> Data
+| alter
+    ResourceType = if(OperationName IN ("*Pipeline*"), to_string("Release Pipeline"), get_data -> OperationName IN ("*Pipeline*"), to_string("Release Pipeline"), to_string("Release")),
+    ReleaseId = coalesce(Data -> ReleaseId, get_data_Data -> ReleaseId)
 | alter //xdm mapping
-    xdm.source.process.name = Data -> CallerProcedure,
-    xdm.target.resource.id = if(ResourceType = "Release Pipeline", Data -> PipelineId, ReleaseId != null AND ReleaseId != "", ReleaseId, Data -> ReleaseEnvironmentSteps[0].ReleaseId),
-    xdm.target.resource.name = if(ResourceType = "Release Pipeline", Data -> PipeLineName, Data -> ReleaseName),
+    xdm.source.process.name = coalesce(Data -> CallerProcedure, get_data_Data -> CallerProcedure),
+    xdm.target.resource.id = if(ResourceType = "Release Pipeline" AND get_data = null, Data -> PipelineId, ResourceType = "Release Pipeline", get_data_Data -> PipeLineId, ReleaseId != null, ReleaseId, get_data_Data = null, Data -> ReleaseEnvironmentSteps[0].ReleaseId, get_data_Data -> ReleaseEnvironmentSteps[0].ReleaseId),
+    xdm.target.resource.name = if(ResourceType = "Release Pipeline" AND get_data = null, Data -> PipeLineName, ResourceType = "Release Pipeline", get_data_Data -> PipeLineName, get_data_Data = null, Data -> ReleaseName, get_data_Data -> ReleaseName),
     xdm.target.resource.type = ResourceType,
-    xdm.event.outcome_reason = coalesce(Data -> ApprovalType, Data -> Reason),
+    xdm.event.outcome_reason = coalesce(Data -> ApprovalType, get_data_Data -> ApprovalType, Data -> Reason, get_data_Data -> Reason),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Security events
-filter Area = "Permissions"
+filter Area = "Permissions" OR _raw_log ->[0].data.Area = "Permissions"
 | call generic_devops_rule
+| alter
+    get_data_Data = get_data -> Data
+| alter
+    SubjectDisplayName = coalesce(Data -> SubjectDisplayName, get_data_Data -> SubjectDisplayName),
+    SubjectDescriptor = coalesce(Data -> SubjectDescriptor, get_data_Data -> SubjectDescriptor),
+    ChangedPermission = coalesce(Data -> ChangedPermission, get_data_Data -> ChangedPermission)
+
 | alter //xdm mapping
-    xdm.target.resource.name = Data -> NamespaceName,
-    xdm.target.resource.id = Data -> NamespaceId,
-    xdm.target.resource.type = if(Data -> NamespaceId != null AND Data -> NamespaceId != "", to_string("Namespace")),
-    xdm.target.agent.identifier = Data -> Tokens,
+    xdm.target.zone = coalesce(Data -> NamespaceName, get_data_Data -> NamespaceName),
+    xdm.target.agent.identifier = coalesce(Data -> Token, get_data_Data -> Token),
+    xdm.target.resource.type = if(Data -> SubjectDisplayName != null OR get_data_Data -> SubjectDisplayName != null, "Permission"),
+    xdm.target.resource.value = coalesce(Data -> PermissionModifiedTo, get_data_Data -> PermissionModifiedTo),
+    xdm.target.resource.name = if(ChangedPermission != null, ChangedPermission, get_data_Data = null, to_string(arraymap(Data -> EventSummary[], "@element" -> PermissionNames)), to_string(arraymap(get_data_Data -> eventSummary[], "@element" -> permissionNames))),
+    xdm.target.user.groups = if(SubjectDescriptor = null, arraycreate(SubjectDisplayName)),
+    xdm.target.user.upn = if(SubjectDescriptor != null, arrayindex(regextract(SubjectDescriptor, ".+\\+(.+)"),0)),
+    xdm.target.user.username = if(SubjectDescriptor != null, SubjectDisplayName),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Pipelines events
-filter Area = "Pipelines"
+filter Area = "Pipelines" OR _raw_log ->[0].data.Area = "Pipelines"
 | call generic_devops_rule
 | alter
-    isResource = if(Data -> ResourceId != null AND Data -> ResourceId != "", to_boolean("True"), to_boolean("False"))
+    get_data_Data = get_data -> Data
+| alter
+    isResource = if(Data -> ResourceId != null OR get_data_Data -> ResourceId != null, to_boolean("True"), to_boolean("False"))
 | alter //xdm mapping
-    xdm.target.zone = Data -> EnvironmentName,
-    xdm.target.resource.type = if(isResource = True, Data -> ResourceType, to_string("Pipeline")),
-    xdm.target.resource.id = if(isResource = True, Data -> ResourceId, Data -> PipelineId),
-    xdm.source.process.name = Data -> CallerProcedure,
+    xdm.target.zone = coalesce(Data -> EnvironmentName, get_data_Data -> EnvironmentName),
+    xdm.target.resource.type = if(isResource = True AND get_data_Data = null, Data -> ResourceType, isResource = True, get_data_Data -> ResourceType, to_string("Pipeline")),
+    xdm.target.resource.id = if(isResource = True AND get_data_Data = null, Data -> ResourceId, isResource = True, get_data_Data -> ResourceId, get_data_Data = null, Data -> PipelineId, get_data_Data -> PipelineId),
+    xdm.source.process.name = coalesce(Data -> CallerProcedure, get_data_Data -> callerProcedure),
     xdm.event.outcome = XDM_CONST.OUTCOME_SUCCESS;
 
 //Fallback to whats not in the event types we are mapping
-filter Area NOT IN ("Licensing", "Extension", "Git", "Group", "Library", "Token", "Policy", "Project", "Release", "Permissions", "Pipelines")
+filter Area NOT IN ("Licensing", "Extension", "Git", "Group", "Library", "Token", "Policy", "Project", "Release", "Permissions", "Pipelines") AND _raw_log ->[0].data.Area NOT IN ("Licensing", "Extension", "Git", "Group", "Library", "Token", "Policy", "Project", "Release", "Permissions", "Pipelines")
 | call generic_devops_rule;
