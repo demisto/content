@@ -1049,8 +1049,7 @@ def get_edl_on_demand() -> tuple[str, int]:
         except Exception as e:
             demisto.debug(f"edl: Error reading cache file: {e!s}")
             raise e
-        if EXTENSIVE_LOGGING:
-            demisto.debug("edl: Finished reading EDL data from cache")
+        demisto.debug("edl: Finished reading EDL data from cache")
 
     return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
