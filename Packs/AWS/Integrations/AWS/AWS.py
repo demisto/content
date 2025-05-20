@@ -210,6 +210,14 @@ class S3:
         self.client_session: BotoBaseClient = get_client_session(aws_client, "s3", args)
 
     def put_public_access_block_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         try:
             response = self.client_session.get_public_access_block(Bucket=args.get("bucket"))
             public_access_block_configuration = response.get("PublicAccessBlockConfiguration")
@@ -246,6 +254,14 @@ class S3:
         )
 
     def put_bucket_acl_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         acl, bucket = args.get("acl"), args.get("bucket")
         response = self.client_session.put_bucket_acl(Bucket=bucket, ACL=acl)
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
@@ -347,13 +363,21 @@ class S3:
             )
 
     def put_bucket_policy_command(self, args: Dict[str, Any]) -> CommandResults:
-        kwargs = {"Bucket": args.get("bucket", "").lower(), "Policy": args.get("policy")}
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
+        kwargs = {"Bucket": args.get("bucket", "").lower(), "Policy": json.dumps(args.get("policy"))}
         if args.get("confirmRemoveSelfBucketAccess") is not None:
             kwargs.update({"ConfirmRemoveSelfBucketAccess": args.get("confirmRemoveSelfBucketAccess") == "True"})
 
         try:
             response = self.client_session.put_bucket_policy(**kwargs)
-            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            if response["ResponseMetadata"]["HTTPStatusCode"] in [HTTPStatus.OK, HTTPStatus.NO_CONTENT]:
                 return CommandResults(readable_output=f"Successfully applied bucket policy to {args.get('bucket')} bucket")
             return CommandResults(
                 entry_type=EntryType.ERROR,
@@ -375,6 +399,14 @@ class IAM:
         self.client_session: BotoBaseClient = get_client_session(aws_client, "iam", args)
 
     def get_account_password_policy_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         response = self.client_session.get_account_password_policy()
         data = json.loads(json.dumps(response["PasswordPolicy"], cls=DatetimeEncoder))
 
@@ -385,6 +417,14 @@ class IAM:
         )
 
     def update_account_password_policy_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         try:
             response = self.client_session.get_account_password_policy()
             kwargs = response["PasswordPolicy"]
@@ -435,6 +475,14 @@ class EC2:
         self.client_session: BotoBaseClient = get_client_session(aws_client, "ec2", args)
 
     def instance_metadata_options_modify_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         kwargs = {
             "InstanceId": args.get("instance_id"),
             "HttpTokens": args.get("http_tokens"),
@@ -727,6 +775,14 @@ class RDS:
             return CommandResults(readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}")
 
     def modify_db_instance_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         try:
             kwargs = {
                 "DBInstanceIdentifier": args.get("db-instance-identifier"),
@@ -773,6 +829,14 @@ class RDS:
             return CommandResults(readable_output=f"Error modifying DB instance: {str(e)}")
 
     def modify_db_snapshot_attribute_command(self, args: Dict[str, Any]) -> CommandResults:
+        """_summary_
+
+        Args:
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
         kwargs = {
             "DBSnapshotIdentifier": args.get("db_snapshot_identifier"),
             "AttributeName": args.get("attribute_name"),
