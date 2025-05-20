@@ -377,11 +377,11 @@ def get_user_dn_by_email(default_base_dn, email):
     return dn
 
 
-def modify_user_ou(dn, new_ou, include_user_cn=False):
+def modify_user_ou(dn, new_ou, exclude_user_cn=False):
     assert connection is not None
     demisto.info(f'[test] in modify_user_ou, {dn=}')
     cn = dn.split(",OU=", 1)[0]
-    if include_user_cn:
+    if exclude_user_cn:
         cn = cn.split(",DC=", 1)[-1]
     else:
         cn = cn.split(",DC=", 1)[0]
@@ -1276,10 +1276,10 @@ def modify_user_ou_command(default_base_dn):
     args = demisto.args()
 
     user_name = args.get("user-name")
-    include_user_cn = argToBoolean(args.get("include_user_cn", False))
+    exclude_user_cn = argToBoolean(args.get("exclude_user_cn", False))
     dn = user_dn(user_name, args.get("base-dn") or default_base_dn)
-    demisto.info(f"[test] in modify_user_ou_command, preparing to call modify_user_ou with {dn=}, {include_user_cn=}")
-    success = modify_user_ou(dn, new_ou=args.get("full-superior-dn"), include_user_cn=include_user_cn)
+    demisto.info(f"[test] in modify_user_ou_command, preparing to call modify_user_ou with {dn=}, {exclude_user_cn=}")
+    success = modify_user_ou(dn, new_ou=args.get("full-superior-dn"), exclude_user_cn=exclude_user_cn)
     if not success:
         raise Exception("Failed to modify user OU")
 

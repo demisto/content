@@ -306,7 +306,7 @@ script:
     - name: user-name
       required: true
       description: "The name of the user to modify."
-    - name: include_user_cn
+    - name: exclude_user_cn
       auto: PREDEFINED
       predefined:
       - "true"
