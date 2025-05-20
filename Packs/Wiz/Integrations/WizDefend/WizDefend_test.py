@@ -1,43 +1,11 @@
-import copy
-import random
-import re
-import uuid
-from datetime import datetime, timedelta
-
 import pytest
 from unittest.mock import patch, MagicMock
 import demistomock as demisto
+import yaml
+import os
 
 from CommonServerPython import DemistoException
-from Packs.Wiz.Integrations.WizDefend.WizDefend import (
-    # Constants
-    WIZ_VERSION, WIZ_DEFEND_INCIDENT_TYPE, INTEGRATION_GUID,
-    MAX_DAYS_FIRST_FETCH_DETECTIONS, FETCH_INTERVAL_MINIMUM_MIN, FETCH_INTERVAL_MAXIMUM_MIN,
-    # Classes
-    ValidationResponse, DetectionType, CloudPlatform, WizApiVariables, DurationUnit,
-    WizInputParam, WizApiResponse, WizSeverity, DetectionOrigin,
-    # Core functions
-    get_token, get_entries, query_api,
-    # Validation functions
-    validate_detection_type, validate_detection_platform, validate_detection_origin,
-    validate_detection_cloud_account_or_cloud_organization, validate_creation_time_back, validate_severity,
-    validate_resource_id, validate_rule_match_id, validate_rule_match_name,
-    validate_project, validate_all_detection_parameters, validate_incident_type, validate_first_fetch,
-    validate_fetch_interval, validate_first_fetch_timestamp,
-    # Filter functions
-    apply_creation_in_last_filter, apply_creation_after_time_filter,
-    apply_detection_type_filter, apply_platform_filter, apply_origin_filter,
-    apply_resource_id_filter, apply_cloud_account_or_cloud_organization_filter, apply_severity_filter,
-    apply_matched_rule_filter, apply_matched_rule_name_filter, apply_project_id_filter,
-    apply_detection_id_filter, apply_issue_id_filter, apply_all_detection_filters,
-    # Utility functions
-    get_integration_user_agent, translate_severity, build_incidents, is_valid_uuid,
-    is_valid_param_id, get_error_output, get_detection_url,
-    # Integration functions
-    set_authentication_endpoint, set_api_endpoint, get_filtered_detections,
-    get_last_run_time, get_fetch_timestamp, extract_params_from_integration_settings,
-    check_advanced_params, test_module, fetch_incidents, main, WIZ_DEFEND, update_wiz_domain_url,
-)
+from Packs.Wiz.Integrations.WizDefend.WizDefend import *
 
 
 # ===== TEST FIXTURES =====
@@ -212,6 +180,58 @@ def sample_detection_no_rule():
         }
     }
 
+@pytest.fixture
+def sample_threat():
+    """Return a sample threat object for testing"""
+    return {
+        "id": "98765432-4321-4321-4321-ff5fa2ff7f78",
+        "sourceRule": {
+            "id": "12345678-4321-4321-4321-3792e8a03318",
+            "name": "suspicious activity detected",
+            "type": "THREAT_DETECTION",
+            "cloudEventRuleDescription": "Suspicious activity detected"
+        },
+        "type": "THREAT_DETECTION",
+        "createdAt": "2022-01-02T15:46:34Z",
+        "updatedAt": "2022-01-02T16:46:34Z",
+        "dueAt": "2022-01-09T15:46:34Z",
+        "projects": [
+            {
+                "id": "project-123",
+                "name": "Production Project"
+            }
+        ],
+        "status": "OPEN",
+        "severity": "CRITICAL",
+        "entitySnapshot": {
+            "id": "entity-123",
+            "type": "VM",
+            "name": "test-instance",
+            "cloudPlatform": "AWS"
+        },
+        "notes": [
+            {
+                "id": "note-123",
+                "text": "Investigating this threat",
+                "createdAt": "2022-01-02T16:00:00Z"
+            }
+        ]
+    }
+
+@pytest.fixture
+def mock_threat_api_response(sample_threat):
+    """Return a complete threat API response structure"""
+    return {
+        "data": {
+            "issues": {
+                "nodes": [sample_threat],
+                "pageInfo": {
+                    "hasNextPage": False,
+                    "endCursor": ""
+                }
+            }
+        }
+    }
 
 @pytest.fixture
 def mock_api_response(sample_detection):
@@ -672,6 +692,89 @@ def test_validate_all_detection_parameters():
     assert "must be a valid integer between" in error_message
 
 
+@pytest.mark.parametrize("status,expected_valid,expected_list", [
+    ("OPEN", True, ["OPEN"]),
+    ("IN_PROGRESS", True, ["IN_PROGRESS"]),
+    ("REJECTED", True, ["REJECTED"]),
+    ("RESOLVED", True, ["RESOLVED"]),
+    ("open", True, ["OPEN"]),  # Case insensitive
+    ("OPEN,IN_PROGRESS", True, ["OPEN", "IN_PROGRESS"]),  # Comma-separated
+    ("INVALID", False, None),
+    (None, True, None),  # None is valid (no filter)
+])
+def test_validate_status(status, expected_valid, expected_list):
+    """Test validate_status with various inputs"""
+    result = validate_status(status)
+    assert result.is_valid == expected_valid
+    if expected_valid:
+        assert result.status_list == expected_list
+
+
+@pytest.mark.parametrize("days_back,expected_valid,expected_value", [
+    ("1", True, 1),  # Minimum value
+    ("30", True, 30),  # Maximum value
+    ("15", True, 15),  # Middle value
+    ("0", False, None),  # Below minimum
+    ("31", False, None),  # Above maximum
+    ("not_a_number", False, None),  # Non-numeric
+    (None, True, THREATS_DAYS_DEFAULT),  # None defaults to default
+])
+def test_validate_creation_days_back(days_back, expected_valid, expected_value):
+    """Test validate_creation_time_back with 'days' time unit"""
+    result = validate_creation_time_back(days_back, time_unit='days')
+    assert result.is_valid == expected_valid
+    if expected_valid:
+        assert result.days_value == expected_value
+
+
+def test_validate_all_threat_parameters():
+    """Test validate_all_threat_parameters with various parameter combinations"""
+    # Test with all valid parameters
+    valid_params = {
+        'issue_id': str(uuid.uuid4()),
+        'platform': 'AWS',
+        'origin': 'WIZ_SENSOR',
+        'cloud_account_or_cloud_organization': '12345678-1234-1234-1234-d25e16359c19',
+        'resource_id': 'test-resource',
+        'severity': 'CRITICAL',
+        'status': 'OPEN',
+        'creation_days_back': '15',
+        'project_id': 'test-project'
+    }
+
+    success, error_message, validated_values = validate_all_threat_parameters(valid_params)
+    assert success is True
+    assert error_message is None
+    assert validated_values['platform'] == ['AWS']
+    assert validated_values['origin'] == ['WIZ_SENSOR']
+    assert validated_values['severity'] == ['CRITICAL']
+    assert validated_values['status'] == ['OPEN']
+    assert validated_values['creation_days_back'] == 15
+
+    # Test with no parameters (should fail)
+    empty_params = {}
+    success, error_message, validated_values = validate_all_threat_parameters(empty_params)
+    assert success is False
+    assert "You should pass at least one of the following parameters" in error_message
+
+    # Test with invalid issue_id
+    invalid_id_params = {
+        'issue_id': 'invalid-uuid',
+        'severity': 'CRITICAL'
+    }
+    success, error_message, validated_values = validate_all_threat_parameters(invalid_id_params)
+    assert success is False
+    assert "should be in UUID format" in error_message
+
+    # Test with invalid status
+    invalid_status_params = {
+        'status': 'INVALID_STATUS',
+        'severity': 'CRITICAL'
+    }
+    success, error_message, validated_values = validate_all_threat_parameters(invalid_status_params)
+    assert success is False
+    assert "Invalid status" in error_message
+
 # ===== FILTER APPLICATION TESTS =====
 
 def test_apply_detection_type_filter():
@@ -954,6 +1057,86 @@ def test_apply_all_filters():
 
     variables = {}
     result = apply_all_detection_filters(variables, minimal_values)
+
+    # Check that only severity filter was applied
+    assert "severity" in result["filterBy"]
+    assert len(result["filterBy"]) == 1
+
+
+def test_apply_status_filter():
+    """Test apply_status_filter function"""
+    # Test with single value
+    variables = {}
+    result = apply_status_filter(variables, ["OPEN"])
+    assert "filterBy" in result
+    assert "status" in result["filterBy"]
+    assert result["filterBy"]["status"] == ["OPEN"]
+
+    # Test with multiple values
+    variables = {}
+    result = apply_status_filter(variables, ["OPEN", "IN_PROGRESS"])
+    assert result["filterBy"]["status"] == ["OPEN", "IN_PROGRESS"]
+
+    # Test with None (should not add filter)
+    variables = {}
+    result = apply_status_filter(variables, None)
+    assert result == {}
+
+
+def test_apply_creation_days_back_filter():
+    """Test apply_creation_in_last_filter with 'days' time unit"""
+    # Test with value
+    variables = {}
+    result = apply_creation_in_last_filter(variables, 15, time_unit='days')
+    assert "filterBy" in result
+    assert "createdAt" in result["filterBy"]
+    assert result["filterBy"]["createdAt"]["inLast"]["amount"] == 15
+    assert result["filterBy"]["createdAt"]["inLast"]["unit"] == DurationUnit.DAYS
+
+    # Test with None (should not add filter)
+    variables = {}
+    result = apply_creation_in_last_filter(variables, None, time_unit='days')
+    assert result == {}
+
+
+def test_apply_all_threat_filters():
+    """Test that apply_all_threat_filters correctly applies all filters"""
+    validated_values = {
+        'issue_id': str(uuid.uuid4()),
+        'platform': ['AWS', 'Azure'],
+        'origin': ['WIZ_SENSOR'],
+        'cloud_account_or_cloud_organization': 'test-subscription',
+        'resource_id': 'test-id',
+        'severity': ['CRITICAL'],
+        'status': ['OPEN', 'IN_PROGRESS'],
+        'creation_days_back': 15,
+        'project_id': 'project-id'
+    }
+
+    variables = {}
+    result = apply_all_threat_filters(variables, validated_values)
+
+    # Check that all filters were applied
+    assert result["filterBy"]["id"] == validated_values['issue_id']
+    assert "relatedEntity" in result["filterBy"]
+    assert result["filterBy"]["relatedEntity"]["cloudPlatform"] == validated_values['platform']
+    assert result["filterBy"]["eventOrigin"]["equals"] == validated_values['origin']
+    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"] == [validated_values['cloud_account_or_cloud_organization']]
+    assert "threatResource" in result["filterBy"]
+    assert result["filterBy"]["threatResource"]["ids"] == [validated_values['resource_id']]
+    assert result["filterBy"]["severity"] == validated_values['severity']
+    assert result["filterBy"]["status"] == validated_values['status']
+    assert result["filterBy"]["createdAt"]["inLast"]["amount"] == validated_values['creation_days_back']
+    assert result["filterBy"]["createdAt"]["inLast"]["unit"] == DurationUnit.DAYS
+    assert result["filterBy"]["project"] == validated_values['project_id']
+
+    # Test with minimal filters
+    minimal_values = {
+        'severity': ['CRITICAL']
+    }
+
+    variables = {}
+    result = apply_all_threat_filters(variables, minimal_values)
 
     # Check that only severity filter was applied
     assert "severity" in result["filterBy"]
@@ -1280,6 +1463,67 @@ def test_query_api_with_pagination_disabled(mock_get_entries, mock_api_paginated
     assert len(result) == 1
     assert result[0]["id"] == first_page["data"]["detections"]["nodes"][0]["id"]
 
+
+def test_query_threats(mocker, sample_threat):
+    """Test query_threats with simple response"""
+    # Import the module locally
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
+
+    # Set required module variables directly
+    WizDefend.TOKEN = 'test-token'
+    WizDefend.URL = 'https://api.wiz.io/graphql'  # Set a valid URL
+
+    # Mock the get_entries function at module level
+    orig_get_entries = WizDefend.get_entries
+    WizDefend.get_entries = lambda q, v, w: ([sample_threat], {"hasNextPage": False, "endCursor": ""})
+
+    try:
+        # Call the function
+        result = WizDefend.query_threats("test_query", {}, WizApiResponse.ISSUES)
+
+        # Verify result
+        assert result == [sample_threat]
+    finally:
+        # Restore original function
+        WizDefend.get_entries = orig_get_entries
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries')
+def test_query_threats_with_pagination(mock_get_entries, sample_threat):
+    """Test query_threats with pagination"""
+    # Create a second threat for pagination
+    second_threat = copy.deepcopy(sample_threat)
+    second_threat["id"] = "second-threat-id"
+
+    # Set up the mock with pagination
+    mock_get_entries.side_effect = [
+        ([sample_threat], {"hasNextPage": True, "endCursor": "cursor1"}),
+        ([second_threat], {"hasNextPage": False, "endCursor": ""})
+    ]
+
+    # Call the function
+    result = query_threats("test_query", {}, paginate=True)
+
+    # Verify result contains both threats
+    assert len(result) == 2
+    assert result[0]["id"] == sample_threat["id"]
+    assert result[1]["id"] == "second-threat-id"
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries')
+def test_query_threats_with_pagination_disabled(mock_get_entries, sample_threat):
+    """Test query_threats with pagination disabled"""
+    # Setup first page response
+    mock_get_entries.return_value = ([sample_threat], {"hasNextPage": True, "endCursor": "cursor1"})
+
+    # Call the function with paginate=False
+    result = query_threats("test_query", {}, paginate=False)
+
+    # Verify result only contains first page
+    assert len(result) == 1
+    assert result[0]["id"] == sample_threat["id"]
+    # Verify get_entries was only called once
+    assert mock_get_entries.call_count == 1
 
 # ===== UTILITY FUNCTION TESTS =====
 
@@ -1652,7 +1896,7 @@ def test_get_fetch_timestamp_invalid(mocker):
     assert "Invalid date format" in str(e.value)
 
 
-# ===== MAIN FUNCTION TESTS =====
+# ===== DETECTION FUNCTION TESTS =====
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 def test_get_filtered_detections_success(mock_query_api, mock_validate, sample_detection):
@@ -2063,6 +2307,217 @@ def test_validation_response_class():
     assert response_dict["value"] == "test_value"
 
 
+# ===== THREAT FUNCTION TESTS =====
+
+def test_get_threat_url(mocker, sample_threat):
+    """Test get_threat_url constructs the correct URL for threats with different domains"""
+    # Import here to set the domain
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
+
+    # Set the domain directly
+    domain = 'app.wiz.io'
+    WizDefend.WIZ_DOMAIN_URL = domain
+
+    # Call the function
+    url = get_threat_url(sample_threat)
+
+    # Expected URL pattern
+    expected_pattern = f"https://{domain}/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))~issue~'{sample_threat['id']})"
+
+    # Verify URL was correctly constructed
+    assert url == expected_pattern
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters',
+       return_value=(True, None, {'severity': ['CRITICAL'], 'platform': ['AWS'], 'status': ['OPEN']}))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats', return_value=[{"id": "test-threat"}])
+def test_get_filtered_threats_success(mock_query_threats, mock_validate, sample_threat):
+    """Test get_filtered_threats with successful validation and API call"""
+    # Replace the API call with our mock threat
+    mock_query_threats.return_value = [sample_threat]
+
+    # Call the function
+    result = get_filtered_threats(
+        platform=["AWS"],
+        severity="CRITICAL",
+        status=["OPEN"]
+    )
+
+    # Verify result
+    assert result == [sample_threat]
+    assert mock_query_threats.called
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters',
+       return_value=(False, "Validation error message", None))
+def test_get_filtered_threats_validation_error(mock_validate):
+    """Test get_filtered_threats with validation error"""
+    # Call the function
+    result = get_filtered_threats(status="INVALID")
+
+    # Verify result is the error message
+    assert result == "Validation error message"
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_threat_url',
+       return_value="https://app.wiz.io/threats/123")
+def test_get_filtered_threats_with_all_params(mock_url, mock_query_threats,
+                                              mock_validate, sample_threat):
+    """Test get_filtered_threats with all parameters specified"""
+    # Set up validated values
+    validated_values = {
+        'issue_id': str(uuid.uuid4()),
+        'platform': ['AWS'],
+        'origin': ['WIZ_SENSOR'],
+        'cloud_account_or_cloud_organization': 'test-subscription',
+        'resource_id': 'test-id',
+        'severity': ['CRITICAL'],
+        'status': ['OPEN'],
+        'creation_days_back': 15,
+        'project_id': 'project-id'
+    }
+
+    # Configure the mocks
+    mock_validate.return_value = (True, None, validated_values)
+    mock_query_threats.return_value = [sample_threat]
+
+    # Call the function with all parameters
+    result = get_filtered_threats(
+        issue_id=validated_values['issue_id'],
+        platform=validated_values['platform'],
+        origin=validated_values['origin'],
+        cloud_account_or_cloud_organization=validated_values['cloud_account_or_cloud_organization'],
+        resource_id=validated_values['resource_id'],
+        severity="CRITICAL",
+        status=validated_values['status'],
+        creation_days_back="15",
+        project_id=validated_values['project_id']
+    )
+
+    # Verify result
+    assert result == [sample_threat]
+    assert result[0].get("url") == "https://app.wiz.io/threats/123"
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats')
+def test_get_filtered_threats_with_no_url(mock_query_threats, mock_validate, sample_threat):
+    """Test get_filtered_threats with add_threat_url=False"""
+    # Set up validated values
+    validated_values = {
+        'severity': ['CRITICAL'],
+    }
+
+    # Configure the mocks
+    mock_validate.return_value = (True, None, validated_values)
+    mock_query_threats.return_value = [sample_threat]
+
+    # Call the function with add_threat_url=False
+    result = get_filtered_threats(
+        severity="CRITICAL",
+        add_threat_url=False
+    )
+
+    # Verify result (should not have url)
+    assert result == [sample_threat]
+    assert "url" not in result[0]
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_results')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats',
+       return_value=[{"id": "test-threat"}])
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint')
+@patch.object(demisto, 'args')
+@patch.object(demisto, 'command', return_value='wiz-get-threats')
+def test_main_get_threats(mock_command, mock_args, mock_set_auth, mock_set_api,
+                          mock_filtered_threats, mock_return_results):
+    """Test main function handling wiz-get-threats command"""
+    # Set up mock args
+    mock_args.return_value = {
+        'severity': 'CRITICAL',
+        'platform': 'AWS',
+        'status': 'OPEN'
+    }
+
+    # Call the function
+    main()
+
+    # Verify endpoints were set
+    assert mock_set_auth.called
+    assert mock_set_api.called
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_results')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats',
+       return_value=[{"id": "test-threat"}])
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint')
+@patch.object(demisto, 'args')
+@patch.object(demisto, 'command', return_value='wiz-get-threat')
+def test_main_get_threat(mock_command, mock_args, mock_set_auth, mock_set_api,
+                         mock_filtered_threats, mock_return_results):
+    """Test main function handling wiz-get-threat command"""
+    # Set up mock args
+    issue_id = str(uuid.uuid4())
+    mock_args.return_value = {
+        'issue_id': issue_id
+    }
+
+    # Call the function
+    main()
+
+    # Verify endpoints were set
+    assert mock_set_auth.called
+    assert mock_set_api.called
+
+    # Verify return_results was called
+    assert mock_return_results.called
+
+
+@patch.object(demisto, 'args', return_value={'issue_id': str(uuid.uuid4())})
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats', return_value=[{"id": "test-threat"}])
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.CommandResults')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_error')  # Add return_error patch
+def test_get_single_threat(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
+    """Test get_single_threat function"""
+    # Configure mock CommandResults to return a testable object
+    mock_instance = mock_command_results.return_value
+
+    # Import here because we need the patched versions
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import get_single_threat
+    get_single_threat()
+
+    # Since we're returning a valid threat list, return_error should not be called
+    assert not mock_return_error.called
+    # Check that CommandResults was called with correct parameters
+    mock_command_results.assert_called_once()
+    assert mock_command_results.call_args[1]['outputs_prefix'] == OutputPrefix.THREAT
+
+
+@patch.object(demisto, 'args', return_value={'severity': 'CRITICAL', 'platform': 'AWS', 'status': 'OPEN'})
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats', return_value=[{"id": "test-threat"}])
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.CommandResults')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_error')  # Add return_error patch
+def test_get_threats(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
+    """Test get_threats function"""
+    # Configure mock CommandResults to return a testable object
+    mock_instance = mock_command_results.return_value
+
+    # Import here because we need the patched versions
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import get_threats
+    get_threats()
+
+    # Since we're returning a valid threat list, return_error should not be called
+    assert not mock_return_error.called
+    # Check that CommandResults was called with correct parameters
+    mock_command_results.assert_called_once()
+    assert mock_command_results.call_args[1]['outputs_prefix'] == OutputPrefix.THREATS
+
 # ===== CLASS TESTS =====
 
 def test_detection_type_class():
@@ -2123,11 +2578,6 @@ def test_duration_unit_class():
     assert DurationUnit.DAYS == "DurationFilterValueUnitDays"
     assert DurationUnit.HOURS == "DurationFilterValueUnitHours"
     assert DurationUnit.MINUTES == "DurationFilterValueUnitMinutes"
-
-
-import os
-import yaml
-from Packs.Wiz.Integrations.WizDefend.WizDefend import DetectionOrigin
 
 
 def test_origin_values_consistency():
