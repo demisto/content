@@ -1,10 +1,9 @@
+import re
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-CONSTANT_PACK_VERSION = "1.3.32"
-demisto.debug("pack id = Elasticsearch, pack version = 1.3.32")
-import re
-
+from CommonServerUserPython import *
 
 """IMPORTS"""
 import json

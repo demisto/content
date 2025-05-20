@@ -1,4 +1,7 @@
 category: Database
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Elasticsearch v2
   version: -1
