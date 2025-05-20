@@ -125,6 +125,17 @@ async def handle_post(
     return return_incidents
 
 
+@app.get('/50170')
+def handle_get_request():
+    """handle a regular get response.
+    Args:
+    Returns:
+        Response:response object.
+    """
+    events = "bla bla bla"
+    return Response(status_code=status.HTTP_200_OK, content=events, media_type="application/json")
+
+
 def setup_credentials():
     if credentials_param := demisto.params().get("credentials"):
         username = credentials_param.get("identifier")
