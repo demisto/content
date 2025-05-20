@@ -659,22 +659,31 @@ def horizontal_to_vertical_md_table(horizontal_md_table: str) -> str:
     Returns: md string with rotated table
     """
     lines = horizontal_md_table.split("\n")
+    demisto.info(f"[test] in horizontal_to_vertical_md_table, {lines=}")
     headers_list = lines[1][1:-1].split("|")
+    demisto.info(f"[test] in horizontal_to_vertical_md_table, {headers_list=}")
     content_list = lines[3][1:-1].split("|")
+    demisto.info(f"[test] in horizontal_to_vertical_md_table, {content_list=}")
 
     new_table = "\n| | |"
     new_table += "\n|---|---|"
     for header, content in zip(headers_list, content_list):
+        demisto.info(f"[test] in horizontal_to_vertical_md_table, in for loop with {header=} and {content=}")
         new_table += f"\n|**{header}**|{content}|"
+    demisto.info(f"[test] in horizontal_to_vertical_md_table, {new_table=}")
 
     return new_table
 
 
 def return_campaign_details_entry(incidents_df, fields_to_display):
     hr_campaign_details = calculate_campaign_details_table(incidents_df, fields_to_display)
+    demisto.info(f"[test] in return_campaign_details_entry, {hr_campaign_details=}")
     context, hr_email_summary = create_email_summary_hr(incidents_df, fields_to_display)
+    demisto.info(f"[test] in return_campaign_details_entry, {hr_email_summary=}, {context=}")
     hr = "\n".join([hr_campaign_details, hr_email_summary])
+    demisto.info(f"[test] in return_campaign_details_entry, {hr=}")
     vertical_hr_campaign_details = horizontal_to_vertical_md_table(hr_campaign_details)
+    demisto.info(f"[test] in return_campaign_details_entry, {vertical_hr_campaign_details=}")
     demisto.executeCommand(
         "setIncident", {"emailcampaignsummary": f"{vertical_hr_campaign_details}", "emailcampaignsnippets": hr_email_summary}
     )
@@ -796,6 +805,7 @@ def draw_canvas(incidents, indicators):
 def analyze_incidents_campaign(incidents, fields_to_display):
     global TO_PLOT_CANVAS, MAX_INCIDENTS_FOR_CANVAS_PLOTTING, MAX_INDICATORS_FOR_CANVAS_PLOTTING
     incidents_df = pd.DataFrame(incidents)
+    demisto.info(f"[test] in analyze_incidents_campaign, going to call return_campaign_details_entry with {incidents_df=} {fields_to_display=}")
     return_campaign_details_entry(incidents_df, fields_to_display)
     indicators_df = return_indicator_entry(incidents_df)
     return_involved_incidents_entry(incidents_df, indicators_df, fields_to_display)
