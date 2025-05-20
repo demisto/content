@@ -176,7 +176,7 @@ class RequestArguments:
 
             if len(category_attribute_list) != 1 or "" not in category_attribute_list:
                 self.category_attribute = category_attribute_list
-        
+
     def to_context_json(self):
         return {
             self.CTX_QUERY_KEY: self.query,
@@ -323,9 +323,8 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
             elif line not in iocs_set:
                 iocs_set.add(line)
                 formatted_indicators += line
-        
-        demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
 
+        demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
 
     else:
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
@@ -397,7 +396,6 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
                     headers_was_written = True
                 if ioc_counter >= indicator_searcher.limit:
                     break
-                
 
     except Exception as e:
         demisto.error(f"Error in parsing the indicators, error: {e!s}")
@@ -769,7 +767,6 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
         with open(EDL_FULL_LOG_PATH_WIP, "w+") as log_file_data:
             # Empty WIP log file after finalization.
             log_file_data.seek(0)
-        
 
 
 @debug_function
@@ -793,7 +790,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
         tuple:
             - A temporary file-like object containing the formatted indicators, one per line.
             - A dictionary with statistics about dropped, added, and modified indicators.
-    
+
     Behavior:
         - Skips indicators missing a value or non-ASCII (if configured).
         - For URLs/domains: applies cleaning (strip protocol/port, truncate) and filtering (length, invalid chars).
@@ -1024,7 +1021,6 @@ def get_edl_on_demand() -> tuple[str, int]:
         store_log_data(request_args, created_time, edl_data_stats)
 
         try:
-            
             demisto.debug("edl: Writing EDL data to cache")
 
             with open(EDL_ON_DEMAND_CACHE_PATH, "w") as file:
@@ -1039,7 +1035,6 @@ def get_edl_on_demand() -> tuple[str, int]:
         set_integration_context(ctx)
 
     else:
-        
         demisto.debug("edl: Reading EDL data from cache")
 
         try:
@@ -1174,7 +1169,7 @@ def route_edl() -> Response:
     on_demand = params.get("on_demand")
     if EXTENSIVE_LOGGING:
         demisto.debug(f"{'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
-        
+
     created = datetime.now(timezone.utc)
     if on_demand:
         edl_data, original_indicators_count = get_edl_on_demand()
@@ -1182,7 +1177,6 @@ def route_edl() -> Response:
         edl_data, original_indicators_count, edl_data_stats = create_new_edl(request_args)
         store_log_data(request_args, created, edl_data_stats)
 
-    
     query_time = (datetime.now(timezone.utc) - created).total_seconds()
     etag = f'"{hashlib.sha1(edl_data.encode()).hexdigest()}"'  # nosec
     edl_size = 0
@@ -1200,7 +1194,7 @@ def route_edl() -> Response:
         )
     if EXTENSIVE_LOGGING:
         demisto.debug(f"Final EDL size: {len(edl_data)} characters, {edl_size} lines")
-        
+
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
 
@@ -1226,7 +1220,7 @@ def route_edl() -> Response:
 def log_download() -> Response:
     """Flask route to download the full EDL log file as a zip.
     The log file zipped is located at EDL_FULL_LOG_PATH.
-    
+
     Return:
         Response: A Flask Response object that sends a ZIP file containing the full log.
     """
@@ -1270,8 +1264,6 @@ def route_edl_log() -> Response:
         demisto.debug("edl: authentication successful")
     if auth_resp:
         return auth_resp
-
-    
 
     edl_data_log = get_edl_log_file() or "# Empty"
     request_args = get_request_args(request.args, params)
@@ -1410,13 +1402,12 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         fields_to_present = "use_legacy_query"
 
     if query and request_args.get("q"):
-        
         demisto.debug(
             "Adjusting the number of exported indicators if above 100,000, due to using the q URL inline parameter."
             "For more information, review the documentation."
         )
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
-        
+
     demisto.debug(
         f"RequestArguments resolved:\n"
         f"limit={limit}, offset={offset}, format={out_format}, query='{query}', "
@@ -1426,7 +1417,7 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         f"fields_to_present={fields_to_present}, category_default={category_default}, "
         f"category_attribute={category_attribute}, csv_text={csv_text}, comment_if_empty={add_comment_if_empty}"
     )
-    
+
     return RequestArguments(
         query,
         out_format,
@@ -1567,7 +1558,7 @@ def initialize_edl_context(params: dict):
     url_truncate = params.get("url_truncate", False)
     maximum_cidr_size = try_parse_integer(params.get("maximum_cidr_size", MAXIMUM_CIDR_SIZE_DEFAULT), EDL_CIDR_SIZR_MSG)
     no_wildcard_tld = argToBoolean(params.get("no_wildcard_tld", False))
-        
+
     if params.get("use_legacy_query"):
         # workaround for "msgpack: invalid code" error
         demisto.info(
@@ -1615,7 +1606,7 @@ def check_platform_and_version(params: dict) -> bool:
     return platform in ["xsoar", "xsoar_hosted"] and not is_demisto_version_ge("8.0.0") and not params.get("longRunningPort")
 
 
-def main():
+def main():  # pragma: no cover
     """
     Main
     """
@@ -1628,9 +1619,9 @@ def main():
     credentials = params.get("credentials") if params.get("credentials") else {}
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
-    
+
     EXTENSIVE_LOGGING = params.get("extensive_logging", False)
-    
+
     if (username and not password) or (password and not username):
         err_msg: str = "If using credentials, both username and password should be provided."
         demisto.debug(err_msg)
