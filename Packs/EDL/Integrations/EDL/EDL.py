@@ -177,13 +177,6 @@ class RequestArguments:
             if len(category_attribute_list) != 1 or "" not in category_attribute_list:
                 self.category_attribute = category_attribute_list
         
-        if EXTENSIVE_LOGGING:
-            demisto.debug(
-            f"RequestArguments initialized with query={query}, format={out_format}, "
-            f"limit={self.limit}, offset={self.offset}"
-        )
-
-
     def to_context_json(self):
         return {
             self.CTX_QUERY_KEY: self.query,
@@ -1425,16 +1418,16 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         )
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
         
-    if EXTENSIVE_LOGGING:
-        demisto.debug(
-            f"RequestArguments resolved:\n"
-            f"limit={limit}, offset={offset}, format={out_format}, query='{query}', "
-            f"mwg_type={mwg_type}, collapse_ips={collapse_ips}, drop_invalids={drop_invalids}, "
-            f"strip_port={strip_port}, strip_protocol={strip_protocol}, "
-            f"url_truncate={url_truncate}, maximum_cidr_size={maximum_cidr_size}, no_wildcard_tld={no_wildcard_tld}, "
-            f"fields_to_present={fields_to_present}, category_default={category_default}, "
-            f"category_attribute={category_attribute}, csv_text={csv_text}, comment_if_empty={add_comment_if_empty}"
-        )
+    demisto.debug(
+        f"RequestArguments resolved:\n"
+        f"limit={limit}, offset={offset}, format={out_format}, query='{query}', "
+        f"mwg_type={mwg_type}, collapse_ips={collapse_ips}, drop_invalids={drop_invalids}, "
+        f"strip_port={strip_port}, strip_protocol={strip_protocol}, "
+        f"url_truncate={url_truncate}, maximum_cidr_size={maximum_cidr_size}, no_wildcard_tld={no_wildcard_tld}, "
+        f"fields_to_present={fields_to_present}, category_default={category_default}, "
+        f"category_attribute={category_attribute}, csv_text={csv_text}, comment_if_empty={add_comment_if_empty}"
+    )
+    
     return RequestArguments(
         query,
         out_format,
