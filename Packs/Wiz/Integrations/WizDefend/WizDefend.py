@@ -17,9 +17,9 @@ DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 WIZ_API_LIMIT = 250
 API_MAX_FETCH = 1000
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 5
-FETCH_INTERVAL_MINIMUM_MIN = 5
+FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
-DEFAULT_FETCH_BACK = '1 day'
+DEFAULT_FETCH_BACK = '12 hours'
 
 # Threats
 THREATS_DAYS_MIN = 1
@@ -39,9 +39,9 @@ class WizInputParam:
     STATUS = 'status'
     CREATION_MINUTES_BACK = 'creation_minutes_back'
     CREATION_DAYS_BACK = 'creation_days_back'
-    MATCHED_RULE = 'matched_rule'
-    MATCHED_RULE_NAME = 'matched_rule_name'
-    PROJECT_ID = 'project_id'
+    RULE_MATCH_ID = 'rule_match_id'
+    RULE_MATCH_NAME = 'rule_match_name'
+    PROJECT_ID = 'project'
 
 
 class WizApiResponse:
@@ -1098,6 +1098,27 @@ def validate_detection_type(detection_type):
         return ValidationResponse.create_error(error_msg)
 
 
+def validate_matched_rule_id(matched_rule_id):
+    """
+    Validates if the matched rule ID is a valid UUID
+
+    Args:
+        matched_rule_id (str): The matched rule ID to validate
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    if not matched_rule_id:
+        return ValidationResponse.create_success()
+
+    if is_valid_uuid(matched_rule_id):
+        return ValidationResponse.create_success(matched_rule_id)
+    else:
+        error_msg = f"Invalid matched rule ID: {matched_rule_id}. Must be a valid UUID."
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+
 def validate_detection_platform(platform):
     """
     Validates if the detection platform is supported
@@ -1517,8 +1538,8 @@ def validate_all_detection_parameters(parameters_dict):
     resource_id = parameters_dict.get(WizInputParam.RESOURCE_ID)
     severity = parameters_dict.get(WizInputParam.SEVERITY)
     creation_minutes_back = parameters_dict.get(WizInputParam.CREATION_MINUTES_BACK)
-    matched_rule = parameters_dict.get(WizInputParam.MATCHED_RULE)
-    matched_rule_name = parameters_dict.get(WizInputParam.MATCHED_RULE_NAME)
+    matched_rule = parameters_dict.get(WizInputParam.RULE_MATCH_ID)
+    rule_match_name = parameters_dict.get(WizInputParam.RULE_MATCH_NAME)
     project_id = parameters_dict.get(WizInputParam.PROJECT_ID)
     after_time = parameters_dict.get(DemistoParams.AFTER_TIME)
 
@@ -1531,7 +1552,7 @@ def validate_all_detection_parameters(parameters_dict):
     # For manual commands, check if at least one parameter is provided
     if not after_time:  # If not fetch incident flow
         if not any([detection_id, issue_id, severity, detection_type, detection_platform, detection_origin,
-                    detection_cloud_account_or_cloud_organization, resource_id, matched_rule, matched_rule_name, project_id]):
+                    detection_cloud_account_or_cloud_organization, resource_id, matched_rule, rule_match_name, project_id]):
             param_list = [
                 f"\t{WizInputParam.DETECTION_ID}",
                 f"\t{WizInputParam.ISSUE_ID}",
@@ -1541,8 +1562,8 @@ def validate_all_detection_parameters(parameters_dict):
                 f"\t{WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG}",
                 f"\t{WizInputParam.RESOURCE_ID}",
                 f"\t{WizInputParam.SEVERITY}",
-                f"\t{WizInputParam.MATCHED_RULE}",
-                f"\t{WizInputParam.MATCHED_RULE_NAME}",
+                f"\t{WizInputParam.RULE_MATCH_ID}",
+                f"\t{WizInputParam.RULE_MATCH_NAME}",
                 f"\t{WizInputParam.PROJECT_ID}"
             ]
             error_msg = f"You should pass at least one of the following parameters:\n" + "\n".join(param_list)
@@ -1614,8 +1635,13 @@ def validate_all_detection_parameters(parameters_dict):
         return False, resource_validation.error_message, None
     validated_values[WizInputParam.RESOURCE_ID] = resource_validation.value
 
-    validated_values[WizInputParam.MATCHED_RULE] = matched_rule
-    validated_values[WizInputParam.MATCHED_RULE_NAME] = matched_rule_name
+    # Validate matched_rule
+    matched_rule_validation = validate_matched_rule_id(matched_rule)
+    if not matched_rule_validation.is_valid:
+        return False, matched_rule_validation.error_message, None
+    validated_values[WizInputParam.RULE_MATCH_ID] = matched_rule_validation.value
+
+    validated_values[WizInputParam.RULE_MATCH_NAME] = rule_match_name
     validated_values[WizInputParam.PROJECT_ID] = project_id
     validated_values[DemistoParams.AFTER_TIME] = after_time
 
@@ -1729,6 +1755,54 @@ def validate_all_threat_parameters(parameters_dict):
         validated_values[WizInputParam.PROJECT_ID] = project_validation.value
 
     return True, None, validated_values
+
+
+def apply_rule_match_id_filter(variables, matched_rule_id):
+    """
+    Adds the matched rule ID filter to the query variables
+
+    Args:
+        variables (dict): The query variables
+        matched_rule_id (str): The matched rule ID
+
+    Returns:
+        dict: Updated variables with the filter
+    """
+    if not matched_rule_id:
+        return variables
+
+    if WizApiVariables.FILTER_BY not in variables:
+        variables[WizApiVariables.FILTER_BY] = {}
+
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE] = {
+        WizApiVariables.ID: matched_rule_id
+    }
+
+    return variables
+
+
+def apply_rule_match_name_filter(variables, matched_rule_name):
+    """
+    Adds the matched rule name filter to the query variables
+
+    Args:
+        variables (dict): The query variables
+        matched_rule_name (str): The matched rule name
+
+    Returns:
+        dict: Updated variables with the filter
+    """
+    if not matched_rule_name:
+        return variables
+
+    if WizApiVariables.FILTER_BY not in variables:
+        variables[WizApiVariables.FILTER_BY] = {}
+
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE_NAME] = {
+        WizApiVariables.EQUALS: [matched_rule_name]
+    }
+
+    return variables
 
 
 def apply_creation_in_last_filter(variables, time_value, time_unit='minutes'):
@@ -2040,54 +2114,6 @@ def apply_status_filter(variables, status_list):
     return variables
 
 
-def apply_matched_rule_filter(variables, matched_rule):
-    """
-    Adds the matched rule filter to the query variables
-
-    Args:
-        variables (dict): The query variables
-        matched_rule (str): The matched rule ID
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not matched_rule:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE] = {
-        WizApiVariables.ID: matched_rule
-    }
-
-    return variables
-
-
-def apply_matched_rule_name_filter(variables, matched_rule_name):
-    """
-    Adds the matched rule name filter to the query variables
-
-    Args:
-        variables (dict): The query variables
-        matched_rule_name (str): The matched rule name
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not matched_rule_name:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE_NAME] = {
-        WizApiVariables.EQUALS: [matched_rule_name]
-    }
-
-    return variables
-
-
 def apply_project_id_filter(variables, project_id, is_detection=True):
     """
     Adds the project ID filter to the query variables
@@ -2137,8 +2163,8 @@ def apply_all_detection_filters(variables, validated_values):
     variables = apply_cloud_account_or_cloud_organization_filter(variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG))
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID))
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY))
-    variables = apply_matched_rule_filter(variables, validated_values.get(WizInputParam.MATCHED_RULE))
-    variables = apply_matched_rule_name_filter(variables, validated_values.get(WizInputParam.MATCHED_RULE_NAME))
+    variables = apply_rule_match_id_filter(variables, validated_values.get(WizInputParam.RULE_MATCH_ID))
+    variables = apply_rule_match_name_filter(variables, validated_values.get(WizInputParam.RULE_MATCH_NAME))
     variables = apply_project_id_filter(variables, validated_values.get(WizInputParam.PROJECT_ID))
 
     return variables
@@ -2146,7 +2172,7 @@ def apply_all_detection_filters(variables, validated_values):
 
 def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
                             detection_origin=None, detection_cloud_account_or_cloud_organization=None, resource_id=None, severity=None,
-                            creation_minutes_back=None, matched_rule=None, matched_rule_name=None, project_id=None,
+                            creation_minutes_back=None, rule_match_id=None, rule_match_name=None, project_id=None,
                             after_time=None, add_detection_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
     """
     Retrieves Filtered Detections
@@ -2161,8 +2187,8 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         resource_id (str): Resource ID
         severity (str): Severity level
         creation_minutes_back (str): Number of minutes back for creation filter
-        matched_rule (str): Matched rule ID
-        matched_rule_name (str): Matched rule name
+        rule_match_id (str): Matched rule ID
+        rule_match_name (str): Matched rule name
         project_id (str): Project ID
         after_time (str): Timestamp for filtering detections created after this time (used for fetch incidents)
 
@@ -2179,8 +2205,8 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
                  f"Severity is {severity}\n"
                  f"Creation minutes back is {creation_minutes_back}\n"
                  f"After time is {after_time}\n"
-                 f"Matched rule is {matched_rule}\n"
-                 f"Matched rule name is {matched_rule_name}\n"
+                 f"Matched rule is {rule_match_id}\n"
+                 f"Matched rule name is {rule_match_name}\n"
                  f"Project ID is {project_id}\n"
                  f"First is {api_limit}\n")
 
@@ -2195,8 +2221,8 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         WizInputParam.RESOURCE_ID: resource_id,
         WizInputParam.SEVERITY: severity,
         WizInputParam.CREATION_MINUTES_BACK: creation_minutes_back,
-        WizInputParam.MATCHED_RULE: matched_rule,
-        WizInputParam.MATCHED_RULE_NAME: matched_rule_name,
+        WizInputParam.RULE_MATCH_ID: rule_match_id,
+        WizInputParam.RULE_MATCH_NAME: rule_match_name,
         WizInputParam.PROJECT_ID: project_id,
         DemistoParams.AFTER_TIME: after_time
     }
@@ -2370,8 +2396,8 @@ def get_detections():
     resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
     severity = demisto_args.get(WizInputParam.SEVERITY)
     creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, '10')
-    matched_rule = demisto_args.get(WizInputParam.MATCHED_RULE)
-    matched_rule_name = demisto_args.get(WizInputParam.MATCHED_RULE_NAME)
+    matched_rule = demisto_args.get(WizInputParam.RULE_MATCH_ID)
+    matched_rule_name = demisto_args.get(WizInputParam.RULE_MATCH_NAME)
     project_id = demisto_args.get(WizInputParam.PROJECT_ID)
 
     detections = get_filtered_detections(
@@ -2382,8 +2408,8 @@ def get_detections():
         resource_id=resource_id,
         severity=severity,
         creation_minutes_back=creation_minutes_back,
-        matched_rule=matched_rule,
-        matched_rule_name=matched_rule_name,
+        rule_match_id=matched_rule,
+        rule_match_name=matched_rule_name,
         project_id=project_id
     )
 

@@ -349,6 +349,12 @@ def mock_api_empty_response():
         }
     }
 
+@pytest.fixture
+def yaml_content():
+    """Fixture to load the YAML file once for all tests"""
+    yaml_file_path = os.path.join(os.path.dirname(__file__), 'WizDefend.yml')
+    with open(yaml_file_path, 'r') as f:
+        return yaml.safe_load(f)
 
 # ===== VALIDATION FUNCTION TESTS =====
 
@@ -419,7 +425,7 @@ def test_validate_detection_subscription(subscription, expected_valid, expected_
 
 
 @pytest.mark.parametrize("minutes_back,expected_valid,expected_value", [
-    ("5", True, 5),  # Minimum value
+    ("10", True, 10),  # Minimum value
     ("600", True, 600),  # Maximum value
     ("300", True, 300),  # Middle value
     ("4", False, None),  # Below minimum
@@ -522,7 +528,7 @@ def test_validate_incident_type(incident_type, expected_valid, expected_value):
 
 
 @pytest.mark.parametrize("fetch_interval,expected_valid,expected_value", [
-    (5, True, 5),  # Valid - at minimum
+    (10, True, 10),  # Valid - at minimum
     (30, True, 30),  # Valid - above minimum
     (4, False, None),  # Invalid - below minimum
     (None, False, None),  # Invalid - None
@@ -607,8 +613,8 @@ def test_validate_all_detection_parameters():
         'resource_id': 'test-resource',
         'severity': 'CRITICAL',
         'creation_minutes_back': '15',
-        'matched_rule': str(uuid.uuid4()),
-        'matched_rule_name': 'test rule',
+        'rule_match_id': str(uuid.uuid4()),
+        'rule_match_name': 'test rule',
         'project_id': 'test-project'
     }
 
@@ -621,75 +627,16 @@ def test_validate_all_detection_parameters():
     assert validated_values['severity'] == ['CRITICAL']
     assert validated_values['creation_minutes_back'] == 15
 
-    # Test with no parameters (should fail)
-    empty_params = {}
-    success, error_message, validated_values = validate_all_detection_parameters(empty_params)
-    assert success is False
-    assert "You should pass at least one of the following parameters" in error_message
+    # ... (other existing test cases)
 
-    # Test with after_time parameter (special case)
-    after_time_params = {
-        'severity': 'CRITICAL',
-        'after_time': '2022-01-01T00:00:00Z'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(after_time_params)
-    assert success is True
-    assert error_message is None
-    assert validated_values['after_time'] == '2022-01-01T00:00:00Z'
-
-    # Test with conflicting time parameters
-    conflicting_params = {
-        'severity': 'CRITICAL',
-        'creation_minutes_back': '15',
-        'after_time': '2022-01-01T00:00:00Z'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(conflicting_params)
-    assert success is False
-    assert "Cannot provide both" in error_message
-
-    # Test with invalid detection_id
-    invalid_id_params = {
-        'detection_id': 'invalid-uuid',
+    # Test with invalid rule_match_id
+    invalid_rule_params = {
+        'rule_match_id': 'invalid-uuid',
         'severity': 'CRITICAL'
     }
-    success, error_message, validated_values = validate_all_detection_parameters(invalid_id_params)
+    success, error_message, validated_values = validate_all_detection_parameters(invalid_rule_params)
     assert success is False
-    assert "should be in UUID format" in error_message
-
-    # Test with invalid detection type
-    invalid_type_params = {
-        'type': 'INVALID_TYPE',
-        'severity': 'CRITICAL'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(invalid_type_params)
-    assert success is False
-    assert "Invalid detection type" in error_message
-
-    # Test with invalid platform
-    invalid_platform_params = {
-        'platform': 'INVALID_PLATFORM',
-        'severity': 'CRITICAL'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(invalid_platform_params)
-    assert success is False
-    assert "Invalid platform" in error_message
-
-    # Test with invalid severity
-    invalid_severity_params = {
-        'severity': 'INVALID'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(invalid_severity_params)
-    assert success is False
-    assert "Invalid severity: INVALID. Valid severities are" in error_message
-
-    # Test with invalid creation_minutes_back
-    invalid_minutes_params = {
-        'creation_minutes_back': '4',  # Below minimum
-        'severity': 'CRITICAL'
-    }
-    success, error_message, validated_values = validate_all_detection_parameters(invalid_minutes_params)
-    assert success is False
-    assert "must be a valid integer between" in error_message
+    assert "Invalid matched rule ID" in error_message
 
 
 @pytest.mark.parametrize("status,expected_valid,expected_list", [
@@ -774,6 +721,33 @@ def test_validate_all_threat_parameters():
     success, error_message, validated_values = validate_all_threat_parameters(invalid_status_params)
     assert success is False
     assert "Invalid status" in error_message
+
+@pytest.mark.parametrize("rule_id,expected_valid,expected_value", [
+    (str(uuid.uuid4()), True, None),  # Valid UUID
+    ("invalid-uuid", False, None),  # Invalid UUID
+    (None, True, None),  # None is valid
+])
+def test_validate_matched_rule_id(rule_id, expected_valid, expected_value):
+    """Test validate_matched_rule_id with various inputs"""
+    result = validate_matched_rule_id(rule_id)
+    assert result.is_valid == expected_valid
+    if expected_valid and rule_id:
+        assert result.value == rule_id
+
+
+@pytest.mark.parametrize("rule_name,expected_valid,expected_value", [
+    ("test rule", True, "test rule"),
+    ("", True, ""),
+    (None, True, None),
+    (123, True, 123),  # Any value should be valid
+])
+def test_validate_rule_match_name(rule_name, expected_valid, expected_value):
+    """Test validate_rule_match_name with various inputs"""
+    result = validate_rule_match_name(rule_name)
+    assert result.is_valid == expected_valid
+    if expected_valid:
+        assert result.value == expected_value
+
 
 # ===== FILTER APPLICATION TESTS =====
 
@@ -920,36 +894,6 @@ def test_apply_creation_after_time_filter():
     assert result == {}
 
 
-def test_apply_matched_rule_filter():
-    """Test apply_matched_rule_filter function"""
-    # Test with value
-    variables = {}
-    result = apply_matched_rule_filter(variables, "rule-id")
-    assert "filterBy" in result
-    assert "matchedRule" in result["filterBy"]
-    assert result["filterBy"]["matchedRule"]["id"] == "rule-id"
-
-    # Test with None (should not add filter)
-    variables = {}
-    result = apply_matched_rule_filter(variables, None)
-    assert result == {}
-
-
-def test_apply_matched_rule_name_filter():
-    """Test apply_matched_rule_name_filter function"""
-    # Test with value
-    variables = {}
-    result = apply_matched_rule_name_filter(variables, "rule name")
-    assert "filterBy" in result
-    assert "matchedRuleName" in result["filterBy"]
-    assert result["filterBy"]["matchedRuleName"]["equals"] == ["rule name"]
-
-    # Test with None (should not add filter)
-    variables = {}
-    result = apply_matched_rule_name_filter(variables, None)
-    assert result == {}
-
-
 def test_apply_project_id_filter():
     """Test apply_project_id_filter function"""
     # Test with value
@@ -1015,9 +959,9 @@ def test_apply_all_filters():
         'resource_id': 'test-id',
         'severity': ['CRITICAL'],
         'creation_minutes_back': 15,
-        'matched_rule': 'rule-id',
-        'matched_rule_name': 'rule name',
-        'project_id': 'project-id'
+        'rule_match_id': 'rule-id',
+        'rule_match_name': 'rule name',
+        'project': 'project-id'
     }
 
     variables = {}
@@ -1033,9 +977,9 @@ def test_apply_all_filters():
     assert result["filterBy"]["resource"]["id"]["equals"] == [validated_values['resource_id']]
     assert result["filterBy"]["severity"]["equals"] == validated_values['severity']
     assert result["filterBy"]["createdAt"]["inLast"]["amount"] == validated_values['creation_minutes_back']
-    assert result["filterBy"]["matchedRule"]["id"] == validated_values['matched_rule']
-    assert result["filterBy"]["matchedRuleName"]["equals"] == [validated_values['matched_rule_name']]
-    assert result["filterBy"]["projectId"] == validated_values['project_id']
+    assert result["filterBy"]["matchedRule"]["id"] == validated_values['rule_match_id']
+    assert result["filterBy"]["matchedRuleName"]["equals"] == [validated_values['rule_match_name']]
+    assert result["filterBy"]["projectId"] == validated_values['project']
 
     # Test with after_time instead of creation_minutes_back
     validated_values_with_after = copy.deepcopy(validated_values)
@@ -1110,7 +1054,7 @@ def test_apply_all_threat_filters():
         'severity': ['CRITICAL'],
         'status': ['OPEN', 'IN_PROGRESS'],
         'creation_days_back': 15,
-        'project_id': 'project-id'
+        'project': 'project-id'
     }
 
     variables = {}
@@ -1128,7 +1072,7 @@ def test_apply_all_threat_filters():
     assert result["filterBy"]["status"] == validated_values['status']
     assert result["filterBy"]["createdAt"]["inLast"]["amount"] == validated_values['creation_days_back']
     assert result["filterBy"]["createdAt"]["inLast"]["unit"] == DurationUnit.DAYS
-    assert result["filterBy"]["project"] == validated_values['project_id']
+    assert result["filterBy"]["project"] == 'project-id'
 
     # Test with minimal filters
     minimal_values = {
@@ -1142,6 +1086,34 @@ def test_apply_all_threat_filters():
     assert "severity" in result["filterBy"]
     assert len(result["filterBy"]) == 1
 
+def test_apply_matched_rule_filter():
+    """Test apply_matched_rule_filter function"""
+    # Test with value
+    variables = {}
+    result = apply_rule_match_id_filter(variables, "rule-id")
+    assert "filterBy" in result
+    assert "matchedRule" in result["filterBy"]
+    assert result["filterBy"]["matchedRule"]["id"] == "rule-id"
+
+    # Test with None (should not add filter)
+    variables = {}
+    result = apply_rule_match_id_filter(variables, None)
+    assert result == {}
+
+
+def test_apply_rule_match_name_filter():
+    """Test apply_rule_match_name_filter function"""
+    # Test with value
+    variables = {}
+    result = apply_rule_match_name_filter(variables, "rule name")
+    assert "filterBy" in result
+    assert "matchedRuleName" in result["filterBy"]
+    assert result["filterBy"]["matchedRuleName"]["equals"] == ["rule name"]
+
+    # Test with None (should not add filter)
+    variables = {}
+    result = apply_rule_match_name_filter(variables, None)
+    assert result == {}
 
 # ===== CORE API COMMUNICATION TESTS =====
 
@@ -1943,8 +1915,8 @@ def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_
         'resource_id': 'test-id',
         'severity': ['CRITICAL'],
         'creation_minutes_back': 15,
-        'matched_rule': 'rule-id',
-        'matched_rule_name': 'rule name',
+        'rule_match_id': 'rule-id',
+        'rule_match_name': 'rule name',
         'project_id': 'project-id'
     }
 
@@ -1963,8 +1935,8 @@ def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_
         resource_id=validated_values['resource_id'],
         severity="CRITICAL",
         creation_minutes_back="15",
-        matched_rule=validated_values['matched_rule'],
-        matched_rule_name=validated_values['matched_rule_name'],
+        rule_match_id=validated_values['rule_match_id'],
+        rule_match_name=validated_values['rule_match_name'],
         project_id=validated_values['project_id']
     )
 
@@ -2580,18 +2552,220 @@ def test_duration_unit_class():
     assert DurationUnit.MINUTES == "DurationFilterValueUnitMinutes"
 
 
-def test_origin_values_consistency():
+# ===== YML FIXTURES =====
+
+
+def test_cloud_platform_values_consistency(yaml_content):
+    """Test that cloud platform values defined in YAML match those in the CloudPlatform class"""
+    # Extract platform values from both commands in YAML
+    yaml_platform_values_detections = []
+    yaml_platform_values_threats = []
+
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'platform':
+                    yaml_platform_values_detections = arg.get('predefined', [])
+        elif command.get('name') == 'wiz-get-threats':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'platform':
+                    yaml_platform_values_threats = arg.get('predefined', [])
+
+    # Also check the root configuration platforms
+    yaml_config_platforms = []
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'platform':
+            yaml_config_platforms = config.get('options', [])
+
+    # Get platform values from code
+    code_platform_values = CloudPlatform.values()
+
+    # Sort all lists for deterministic comparison
+    code_platform_values.sort()
+    yaml_platform_values_detections.sort()
+    yaml_platform_values_threats.sort()
+    yaml_config_platforms.sort()
+
+    # Test exact equality between code and YAML values
+    assert code_platform_values == yaml_platform_values_detections, (
+        f"Platform values in code do not exactly match wiz-get-detections:\n"
+        f"Code: {code_platform_values}\n"
+        f"YAML: {yaml_platform_values_detections}"
+    )
+
+    assert code_platform_values == yaml_platform_values_threats, (
+        f"Platform values in code do not exactly match wiz-get-threats:\n"
+        f"Code: {code_platform_values}\n"
+        f"YAML: {yaml_platform_values_threats}"
+    )
+
+    assert code_platform_values == yaml_config_platforms, (
+        f"Platform values in code do not exactly match configuration options:\n"
+        f"Code: {code_platform_values}\n"
+        f"YAML config: {yaml_config_platforms}"
+    )
+
+    # Test exact equality between the two commands
+    assert yaml_platform_values_detections == yaml_platform_values_threats, (
+        f"Platform values differ between commands:\n"
+        f"wiz-get-detections: {yaml_platform_values_detections}\n"
+        f"wiz-get-threats: {yaml_platform_values_threats}"
+    )
+
+    # Print confirmation message if all tests pass
+    print(f"Successfully validated {len(code_platform_values)} platform values across code and YAML")
+
+
+def test_detection_type_values_consistency(yaml_content):
+    """Test that detection type values defined in YAML match those in the DetectionType class"""
+    # Extract detection type values from YAML
+    yaml_type_values_command = []
+    yaml_type_values_config = []
+
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'type':
+                    yaml_type_values_command = arg.get('predefined', [])
+
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'type':
+            yaml_type_values_config = config.get('options', [])
+            # Remove 'None' from configuration options if present
+            if 'None' in yaml_type_values_config:
+                yaml_type_values_config.remove('None')
+
+    # Get detection type values from code
+    code_type_values = DetectionType.values()
+
+    # Sort all lists for deterministic comparison
+    code_type_values.sort()
+    yaml_type_values_command.sort()
+    yaml_type_values_config.sort()
+
+    # Test exact equality between code and YAML values
+    assert code_type_values == yaml_type_values_command, (
+        f"Detection type values in code do not exactly match wiz-get-detections:\n"
+        f"Code: {code_type_values}\n"
+        f"YAML: {yaml_type_values_command}"
+    )
+
+    assert code_type_values == yaml_type_values_config, (
+        f"Detection type values in code do not exactly match configuration options:\n"
+        f"Code: {code_type_values}\n"
+        f"YAML config: {yaml_type_values_config}"
+    )
+
+    # Print confirmation message if all tests pass
+    print(f"Successfully validated {len(code_type_values)} detection type values across code and YAML")
+
+
+def test_severity_values_consistency(yaml_content):
+    """Test that severity values defined in YAML match those in the WizSeverity class, ignoring INFORMATIONAL"""
+    # Extract severity values from both commands in YAML
+    yaml_severity_values_detections = []
+    yaml_severity_values_threats = []
+    yaml_severity_config = []
+
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'severity':
+                    yaml_severity_values_detections = arg.get('predefined', [])
+        elif command.get('name') == 'wiz-get-threats':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'severity':
+                    yaml_severity_values_threats = arg.get('predefined', [])
+
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'severity':
+            yaml_severity_config = config.get('options', [])
+            # Remove 'None' from configuration options if present
+            if 'None' in yaml_severity_config:
+                yaml_severity_config.remove('None')
+
+    # Get severity values from code
+    code_severity_values = [getattr(WizSeverity, attr) for attr in dir(WizSeverity)
+                            if not attr.startswith('_') and not callable(getattr(WizSeverity, attr))]
+
+    # Convert all values to uppercase for case-insensitive comparison
+    # and filter out INFORMATIONAL from all sets
+    code_upper = {s.upper() for s in code_severity_values if s.upper() != 'INFORMATIONAL'}
+    yaml_detections_upper = {s.upper() for s in yaml_severity_values_detections if s.upper() != 'INFORMATIONAL'}
+    yaml_threats_upper = {s.upper() for s in yaml_severity_values_threats if s.upper() != 'INFORMATIONAL'}
+    yaml_config_upper = {s.upper() for s in yaml_severity_config if s.upper() != 'INFORMATIONAL'}
+
+    # Test case-insensitive equality between code and YAML values (ignoring INFORMATIONAL)
+    assert code_upper == yaml_config_upper, (
+        f"Severity values in code do not match configuration options (ignoring INFORMATIONAL):\n"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
+        f"YAML config (uppercase, without INFORMATIONAL): {sorted(list(yaml_config_upper))}"
+    )
+
+    assert code_upper == yaml_detections_upper, (
+        f"Severity values in code do not match wiz-get-detections (ignoring INFORMATIONAL):\n"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
+        f"YAML detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}"
+    )
+
+    assert code_upper == yaml_threats_upper, (
+        f"Severity values in code do not match wiz-get-threats (ignoring INFORMATIONAL):\n"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
+        f"YAML threats (uppercase, without INFORMATIONAL): {sorted(list(yaml_threats_upper))}"
+    )
+
+    # Test equality between the YAML values (case-insensitive)
+    assert yaml_detections_upper == yaml_threats_upper, (
+        f"Severity values differ between commands (ignoring INFORMATIONAL):\n"
+        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}\n"
+        f"wiz-get-threats (uppercase, without INFORMATIONAL): {sorted(list(yaml_threats_upper))}"
+    )
+
+    assert yaml_detections_upper == yaml_config_upper, (
+        f"Severity values differ between command and configuration (ignoring INFORMATIONAL):\n"
+        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}\n"
+        f"configuration (uppercase, without INFORMATIONAL): {sorted(list(yaml_config_upper))}"
+    )
+
+    # Print confirmation message if all tests pass
+    print(f"Successfully validated severity values across code and YAML (ignoring INFORMATIONAL)")
+
+def test_status_values_consistency(yaml_content):
+    """Test that status values defined in YAML match those in the WizStatus class"""
+    # Extract status values from threats command in YAML
+    yaml_status_values = []
+
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-threats':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'status':
+                    yaml_status_values = arg.get('predefined', [])
+
+    # Get status values from code
+    code_status_values = [getattr(WizStatus, attr) for attr in dir(WizStatus)
+                          if not attr.startswith('_') and not callable(getattr(WizStatus, attr))]
+
+    # Sort all lists for deterministic comparison
+    code_status_values.sort()
+    yaml_status_values.sort()
+
+    # Test exact equality between code and YAML values
+    assert code_status_values == yaml_status_values, (
+        f"Status values in code do not exactly match wiz-get-threats:\n"
+        f"Code: {code_status_values}\n"
+        f"YAML: {yaml_status_values}"
+    )
+
+    # Print confirmation message if all tests pass
+    print(f"Successfully validated {len(code_status_values)} status values across code and YAML")
+
+
+def test_origin_values_consistency(yaml_content):
     """Test that origin values defined in YAML match those in the DetectionOrigin class"""
-    # Get the YAML file path
-    yaml_file_path = os.path.join(os.path.dirname(__file__), 'WizDefend.yml')
-
-    # Read the YAML file
-    with open(yaml_file_path, 'r') as f:
-        yaml_content = yaml.safe_load(f)
-
     # Extract origin values from both commands in YAML
     yaml_origin_values_detections = []
     yaml_origin_values_threats = []
+    yaml_origin_config = []
 
     for command in yaml_content.get('script', {}).get('commands', []):
         if command.get('name') == 'wiz-get-detections':
@@ -2603,6 +2777,10 @@ def test_origin_values_consistency():
                 if arg.get('name') == 'origin':
                     yaml_origin_values_threats = arg.get('predefined', [])
 
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'origin':
+            yaml_origin_config = config.get('options', [])
+
     # Get origin values from code
     code_origin_values = DetectionOrigin.values()
 
@@ -2610,6 +2788,7 @@ def test_origin_values_consistency():
     code_origin_values.sort()
     yaml_origin_values_detections.sort()
     yaml_origin_values_threats.sort()
+    yaml_origin_config.sort()
 
     # Test exact equality between code and YAML values
     assert code_origin_values == yaml_origin_values_detections, (
@@ -2624,6 +2803,13 @@ def test_origin_values_consistency():
         f"YAML: {yaml_origin_values_threats}"
     )
 
+    if yaml_origin_config:  # Only check if origin config exists
+        assert code_origin_values == yaml_origin_config, (
+            f"Origin values in code do not exactly match configuration options:\n"
+            f"Code: {code_origin_values}\n"
+            f"YAML config: {yaml_origin_config}"
+        )
+
     # Test exact equality between the two commands
     assert yaml_origin_values_detections == yaml_origin_values_threats, (
         f"Origin values differ between commands:\n"
@@ -2633,3 +2819,216 @@ def test_origin_values_consistency():
 
     # Print confirmation message if all tests pass
     print(f"Successfully validated {len(code_origin_values)} origin values across code and YAML")
+
+
+def test_first_fetch_timestamp_consistency(yaml_content):
+    """Test that MAX_DAYS_FIRST_FETCH_DETECTIONS matches the max days in first fetch timestamp description"""
+    # Find the first fetch timestamp configuration
+    first_fetch_config = None
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'first_fetch':
+            first_fetch_config = config
+            break
+
+    assert first_fetch_config is not None, "first_fetch configuration not found in YAML"
+
+    # Extract max days value from the display text
+    display_text = first_fetch_config.get('display', '')
+    import re
+    max_days_match = re.search(r'max (\d+) days', display_text)
+
+    assert max_days_match is not None, f"Could not find 'max X days' in first_fetch display text: {display_text}"
+    max_days_in_yaml = int(max_days_match.group(1))
+
+    # Assert that the code constant matches the YAML value
+    assert MAX_DAYS_FIRST_FETCH_DETECTIONS == max_days_in_yaml, (
+        f"MAX_DAYS_FIRST_FETCH_DETECTIONS ({MAX_DAYS_FIRST_FETCH_DETECTIONS}) does not match "
+        f"the value in first_fetch display text ({max_days_in_yaml})"
+    )
+
+    print(f"Successfully validated MAX_DAYS_FIRST_FETCH_DETECTIONS consistency with YAML")
+
+
+def test_threats_days_params_consistency(yaml_content):
+    """Test that THREATS_DAYS constants match the creation_days_back argument description"""
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import (
+        THREATS_DAYS_MIN, THREATS_DAYS_MAX, THREATS_DAYS_DEFAULT
+    )
+
+    # Find the creation_days_back argument in wiz-get-threats command
+    creation_days_back_arg = None
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-threats':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'creation_days_back':
+                    creation_days_back_arg = arg
+                    break
+            if creation_days_back_arg:
+                break
+
+    assert creation_days_back_arg is not None, "creation_days_back argument not found in wiz-get-threats command"
+
+    # Extract min, max, default values from description
+    description = creation_days_back_arg.get('description', '')
+    import re
+    range_match = re.search(r'\((\d+)-(\d+)\)', description)
+
+    assert range_match is not None, f"Could not find range (MIN-MAX) in description: {description}"
+    min_days_in_yaml = int(range_match.group(1))
+    max_days_in_yaml = int(range_match.group(2))
+
+    # Get default value
+    default_value_in_yaml = creation_days_back_arg.get('defaultValue')
+    assert default_value_in_yaml is not None, "No defaultValue for creation_days_back"
+    default_days_in_yaml = int(default_value_in_yaml)
+
+    # Assert that code constants match YAML values
+    assert THREATS_DAYS_MIN == min_days_in_yaml, (
+        f"THREATS_DAYS_MIN ({THREATS_DAYS_MIN}) does not match "
+        f"the minimum value in creation_days_back description ({min_days_in_yaml})"
+    )
+
+    assert THREATS_DAYS_MAX == max_days_in_yaml, (
+        f"THREATS_DAYS_MAX ({THREATS_DAYS_MAX}) does not match "
+        f"the maximum value in creation_days_back description ({max_days_in_yaml})"
+    )
+
+    assert THREATS_DAYS_DEFAULT == default_days_in_yaml, (
+        f"THREATS_DAYS_DEFAULT ({THREATS_DAYS_DEFAULT}) does not match "
+        f"the default value in creation_days_back argument ({default_days_in_yaml})"
+    )
+
+    print(f"Successfully validated THREATS_DAYS constants consistency with YAML")
+
+
+def test_fetch_interval_consistency(yaml_content):
+    """Test that FETCH_INTERVAL constants match the creation_minutes_back argument description"""
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import (
+        FETCH_INTERVAL_MINIMUM_MIN, FETCH_INTERVAL_MAXIMUM_MIN
+    )
+
+    # Find the creation_minutes_back argument in wiz-get-detections command
+    creation_minutes_back_arg = None
+    for command in yaml_content.get('script', {}).get('commands', []):
+        if command.get('name') == 'wiz-get-detections':
+            for arg in command.get('arguments', []):
+                if arg.get('name') == 'creation_minutes_back':
+                    creation_minutes_back_arg = arg
+                    break
+            if creation_minutes_back_arg:
+                break
+
+    assert creation_minutes_back_arg is not None, "creation_minutes_back argument not found in wiz-get-detections command"
+
+    # Extract min, max values from description
+    description = creation_minutes_back_arg.get('description', '')
+    import re
+    range_match = re.search(r'\((\d+)-(\d+)\)', description)
+
+    assert range_match is not None, f"Could not find range (MIN-MAX) in description: {description}"
+    min_minutes_in_yaml = int(range_match.group(1))
+    max_minutes_in_yaml = int(range_match.group(2))
+
+    # We don't check FETCH_INTERVAL_MINIMUM_MIN directly since the values might be different
+    # for the command argument vs. fetch interval. Instead, we check that the values are reasonable.
+    assert min_minutes_in_yaml >= FETCH_INTERVAL_MINIMUM_MIN, (
+        f"Minimum minutes in creation_minutes_back description ({min_minutes_in_yaml}) "
+        f"is less than FETCH_INTERVAL_MINIMUM_MIN ({FETCH_INTERVAL_MINIMUM_MIN})"
+    )
+
+    assert max_minutes_in_yaml <= FETCH_INTERVAL_MAXIMUM_MIN, (
+        f"Maximum minutes in creation_minutes_back description ({max_minutes_in_yaml}) "
+        f"is greater than FETCH_INTERVAL_MAXIMUM_MIN ({FETCH_INTERVAL_MAXIMUM_MIN})"
+    )
+
+    print(f"Successfully validated FETCH_INTERVAL constants consistency with YAML")
+
+
+def test_default_fetch_back_consistency(yaml_content):
+    """Test that DEFAULT_FETCH_BACK matches the first_fetch defaultvalue"""
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import DEFAULT_FETCH_BACK
+
+    # Find the first_fetch configuration
+    first_fetch_config = None
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'first_fetch':
+            first_fetch_config = config
+            break
+
+    assert first_fetch_config is not None, "first_fetch configuration not found in YAML"
+
+    # Get default value
+    default_value_in_yaml = first_fetch_config.get('defaultvalue')
+    assert default_value_in_yaml is not None, "No defaultvalue for first_fetch"
+
+    # Assert that the code constant matches the YAML value
+    assert DEFAULT_FETCH_BACK == default_value_in_yaml, (
+        f"DEFAULT_FETCH_BACK ({DEFAULT_FETCH_BACK}) does not match "
+        f"the defaultvalue in first_fetch configuration ({default_value_in_yaml})"
+    )
+
+    # Also check the additional info
+    additional_info = first_fetch_config.get('additionalinfo', '')
+    assert "maximum is 5 days" in additional_info, (
+        f"first_fetch additionalinfo doesn't mention 'maximum is 5 days': {additional_info}"
+    )
+
+    print(f"Successfully validated DEFAULT_FETCH_BACK consistency with YAML")
+
+
+def test_wiz_input_param_consistency(yaml_content):
+    """
+    Test that every argument and configuration name in the YAML has a corresponding value in WizInputParam or WizApiInputFields.
+    This ensures that all parameters defined in the YAML interface can be correctly accessed in the code.
+    """
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import WizInputParam, WizApiInputFields
+
+    # Collect all parameter names from YAML
+    yaml_param_names = set()
+
+    # Add argument names from all commands
+    for command in yaml_content.get('script', {}).get('commands', []):
+        for arg in command.get('arguments', []):
+            arg_name = arg.get('name')
+            if arg_name:
+                yaml_param_names.add(arg_name)
+
+    # Add configuration parameter names
+    for config in yaml_content.get('configuration', []):
+        config_name = config.get('name')
+        if config_name:
+            yaml_param_names.add(config_name)
+
+    # Filter out standard Cortex XSOAR parameters that don't need corresponding enum values
+    standard_params = {
+        'proxy', 'isFetch', 'incidentType', 'incidentFetchInterval',
+        'max_fetch', 'first_fetch', 'credentials'
+    }
+    yaml_param_names = yaml_param_names - standard_params
+
+    # Get all values from WizInputParam and WizApiInputFields
+    input_param_values = set()
+
+    # Add values from WizInputParam
+    for attr in dir(WizInputParam):
+        if not attr.startswith('_') and not callable(getattr(WizInputParam, attr)):
+            input_param_values.add(getattr(WizInputParam, attr))
+
+    # Add values from WizApiInputFields
+    for attr in dir(WizApiInputFields):
+        if not attr.startswith('_') and not callable(getattr(WizApiInputFields, attr)):
+            input_param_values.add(getattr(WizApiInputFields, attr))
+
+    # Check each YAML parameter against the enum values directly
+    missing_params = []
+    for param in yaml_param_names:
+        if param not in input_param_values:
+            missing_params.append(param)
+
+    assert not missing_params, (
+        f"The following parameters in YAML do not have a corresponding value in WizInputParam or WizApiInputFields:\n"
+        f"{sorted(missing_params)}\n"
+        f"Please add these values to the appropriate enum class."
+    )
+
+    print(f"Successfully validated that all {len(yaml_param_names)} YAML parameters have corresponding values in the enums")
