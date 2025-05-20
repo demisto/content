@@ -377,13 +377,18 @@ def get_user_dn_by_email(default_base_dn, email):
     return dn
 
 
-def modify_user_ou(dn, new_ou):
+def modify_user_ou(dn, new_ou, include_user_cn=False):
     assert connection is not None
+    demisto.info(f'[test] in modify_user_ou, {dn=}')
     cn = dn.split(",OU=", 1)[0]
-    cn = cn.split(",DC=", 1)[0]
+    if include_user_cn:
+        cn = cn.split(",DC=", 1)[-1]
+    else:
+        cn = cn.split(",DC=", 1)[0]
     # removing // to fix customers bug
     cn = cn.replace("\\", "")
     dn = dn.replace("\\", "")
+    demisto.info(f'[test] in modify_user_ou, preparing to modify_dn {dn=}, {cn=}, {new_ou=}')
 
     success = connection.modify_dn(dn, cn, new_superior=new_ou)
     return success
@@ -480,10 +485,12 @@ def search_with_paging(search_filter, search_base, attributes=None, page_size=10
 
 def user_dn(sam_account_name, search_base):
     search_filter = f"(&(objectClass=user)(sAMAccountName={sam_account_name}))"
+    demisto.info(f"[test] in user_dn, preparing to search with {search_filter=}, {search_base}")
     entries = search(search_filter, search_base)
     if not entries:
         raise Exception(f"Could not get full DN for user with sAMAccountName '{sam_account_name}'")
     entry = json.loads(entries[0].entry_to_json())
+    demisto.info(f'[test] in user_dn, got {entry=}')
     return entry["dn"]
 
 
@@ -1269,8 +1276,10 @@ def modify_user_ou_command(default_base_dn):
     args = demisto.args()
 
     user_name = args.get("user-name")
+    include_user_cn = argToBoolean(args.get("include_user_cn", False))
     dn = user_dn(user_name, args.get("base-dn") or default_base_dn)
-    success = modify_user_ou(dn, new_ou=args.get("full-superior-dn"))
+    demisto.info(f"[test] in modify_user_ou_command, preparing to call modify_user_ou with {dn=}, {include_user_cn=}")
+    success = modify_user_ou(dn, new_ou=args.get("full-superior-dn"), include_user_cn=include_user_cn)
     if not success:
         raise Exception("Failed to modify user OU")
 

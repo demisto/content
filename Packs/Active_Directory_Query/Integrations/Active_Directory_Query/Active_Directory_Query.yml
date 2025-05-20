@@ -306,6 +306,13 @@ script:
     - name: user-name
       required: true
       description: "The name of the user to modify."
+    - name: include_user_cn
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: Whether to include User CN in the request or not.
+      defaultValue: "false"
     - name: full-superior-dn
       description: Superior DN. For example, OU=users,DC=domain,DC=com (the specified domain must be the same as the current user domain).
     description: Modifies the user organizational unit within a domain.
