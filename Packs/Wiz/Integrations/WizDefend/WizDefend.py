@@ -733,7 +733,7 @@ def get_entries(query, variables, wiz_type):
         response_json = response.json()
 
         demisto.info(f"Response status code is {response.status_code}")
-        demisto.debug(f"The response is {response_json}")
+        demisto.info(f"The response is {response_json}")
 
         if response.status_code != requests.codes.ok:
             raise Exception('Got an error querying Wiz API [{}] - {}'.format(response.status_code, response.text))
@@ -1026,7 +1026,7 @@ def get_detection_url(detection):
     if not WIZ_DOMAIN_URL:
         update_wiz_domain_url()
 
-    detection_url = f"https://{WIZ_DOMAIN_URL}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
+    detection_url = f"https://{WIZ_DOMAIN_URL}/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}~streamCols~(~'event~'principal~'principalIp~'resource))"
     return detection_url
 
 
@@ -1034,7 +1034,7 @@ def get_threat_url(threat):
     if not WIZ_DOMAIN_URL:
         update_wiz_domain_url()
 
-    detection_url = f"https://{WIZ_DOMAIN_URL}.wiz.io/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))~issue~'{threat.get('id')})"
+    detection_url = f"https://{WIZ_DOMAIN_URL}/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))~issue~'{threat.get('id')})"
     return detection_url
 
 

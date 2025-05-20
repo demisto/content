@@ -1428,7 +1428,7 @@ def test_get_detection_url(mocker, sample_detection, domain):
     url = get_detection_url(sample_detection)
 
     # Expected URL pattern
-    expected_pattern = f"https://{domain}.wiz.io/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{sample_detection['id']}~streamCols~(~'event~'principal~'principalIp~'resource))"
+    expected_pattern = f"https://{domain}/findings/detections#~(filters~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{sample_detection['id']}~streamCols~(~'event~'principal~'principalIp~'resource))"
 
     # Verify URL was correctly constructed
     assert url == expected_pattern, \
