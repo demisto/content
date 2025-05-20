@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  
 VENDOR = "NetBox"
 PRODUCT = "IRM"
 
