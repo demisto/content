@@ -382,7 +382,7 @@ class Client:  # pragma: no cover
             else:
                 return [res]
         except Exception as e:
-            raise DemistoException(f"Error occurred while fetching policies:\n {str(e)}")
+            raise DemistoException(f"Error occurred while fetching policies:\n{str(e)}")
 
     def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
         """
@@ -479,9 +479,9 @@ class Client:  # pragma: no cover
                 raise DemistoException(f"An error occurred while updating Conditional Access policy '{policy_id}':\n{res}")
 
         except Exception as e:
-            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
+            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{str(e)}")
             raise DemistoException(
-                f"Error updating Conditional Access policy:\n{str(e)}",
+                f"Conditional Access policy {policy_id} could not be updated:\n{str(e)}",
             )
 
 
@@ -704,6 +704,7 @@ def merge_policy_section(
             # ── dive deeper
             if isinstance(val, dict):
                 demisto.debug(f"merge_policy_section - walk: Found dictionary at {'/'.join(current_path_to_key)}, diving deeper")
+
                 walk(val, current_path_to_key)
                 continue
 
@@ -721,6 +722,7 @@ def merge_policy_section(
 
             if isinstance(existing_val, list):
                 demisto.debug(f"merge_policy_section - walk: Merging lists for {'/'.join(current_path_to_key)}")
+
                 merged = resolve_merge_value(key, existing_val, val, messages)
                 demisto.debug(f"merge_policy_section - walk: Merged result for {'/'.join(current_path_to_key)}: {merged}")
                 deep_set(new, current_path_to_key, merged)
@@ -731,7 +733,6 @@ def merge_policy_section(
                     demisto.debug(f"merge_policy_section - walk: No existing value at {'/'.join(current_path_to_key)}")
                     messages.append(f"Field `{'/'.join(current_path_to_key)}` was empty - new list left untouched.")
                     demisto.debug(f"merge_policy_section - walk: new value at {'/'.join(current_path_to_key)} is {val}")
-
                 else:
                     demisto.debug(f"merge_policy_section - walk: Existing value at {'/'.join(current_path_to_key)} is not a list")
                     messages.append(
@@ -1411,10 +1412,6 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     """
     Update an existing Conditional Access policy using either full override or append logic.
 
-    Required Microsoft Graph API Permissions:
-        - Policy.Read.All (Delegated or Application)
-        - Policy.ReadWrite.ConditionalAccess (Delegated or Application)
-
     Args:
         client (Client): An authenticated Microsoft Graph API client.
         args (Dict[str, Any]): Command arguments including:
@@ -1432,6 +1429,7 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     messages: list[str] = []
 
     policy = args.get("policy")
+
     if policy:
         try:
             policy = json.loads(policy)
