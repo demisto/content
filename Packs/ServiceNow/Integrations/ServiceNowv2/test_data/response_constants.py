@@ -325,7 +325,7 @@ RESPONSE_CLOSING_TICKET_MIRROR_CLOSED = {
             "work_start": "",
             "assignment_group": {},
             "additional_assignee_list": "",
-            "business_stc": "",
+            'business_stc': '',
             "description": "Unable to access Oregon mail server. Is it down?",
             "calendar_duration": "",
             "close_notes": "Test",
