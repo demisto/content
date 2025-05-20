@@ -4987,6 +4987,7 @@ Remove tags from the indicators
 
 There is no context output for this command.
 
+### threatstream-clone-imported-indicator
 ***
 Clones already imported indicators (observables), used with the edit classification to move to a trusted circle
 
