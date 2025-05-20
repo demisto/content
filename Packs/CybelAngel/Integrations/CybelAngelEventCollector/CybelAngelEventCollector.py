@@ -984,7 +984,6 @@ def main() -> None:
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", [REPORT]))
     event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
     demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
-    demisto.debug(f"Event types to fetch: {event_types_to_fetch}")
     max_fetch_reports = int(params.get("max_fetch", EVENT_TYPE[REPORT].default_limit))
     max_fetch_creds = int(params.get("max_fetch_creds", EVENT_TYPE[CREDENTIALS].default_limit))
     max_fetch_domain = int(params.get("max_fetch_domain", EVENT_TYPE[DOMAIN].default_limit))

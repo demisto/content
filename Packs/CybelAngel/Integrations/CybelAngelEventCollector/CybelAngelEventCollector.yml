@@ -100,7 +100,7 @@ script:
       predefined:
       - 'True'
       - 'False'
-      required: true
+      required: false
     - description: 'Get events from a specific start date formatted with ISO 8601.'
       name: start_date
       required: false

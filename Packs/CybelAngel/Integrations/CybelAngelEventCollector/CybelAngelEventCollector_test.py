@@ -279,7 +279,7 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
                 "password": "1234",
             },
             max_fetch_key: 100,
-            "events_type_to_fetch": event_type,
+            "event_types_to_fetch": event_type,
             "is_fetch_events": True,
         },
     )
@@ -335,7 +335,7 @@ def test_fetch_events_token_expired(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "events_type_to_fetch": REPORT,
+            "event_types_to_fetch": REPORT,
             "is_fetch_events": True,
         },
     )
@@ -408,7 +408,7 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
                 "password": "1234",
             },
             max_fetch_key: 100,
-            "events_type_to_fetch": event_type,
+            "event_types_to_fetch": [event_type],
             "is_fetch_events": True,
         },
     )
@@ -473,7 +473,7 @@ def test_fetch_events_with_last_run_no_events(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "events_type_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
+            "event_types_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
             "is_fetch_events": True,
         },
     )
@@ -532,7 +532,7 @@ def test_fetch_events_without_last_run_no_events(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "events_type_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
+            "event_types_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
             "is_fetch_events": True,
         },
     )
@@ -610,7 +610,7 @@ def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_ke
                 "identifier": "1234",
                 "password": "1234",
             },
-            "events_type_to_fetch": event_type,
+            "event_types_to_fetch": [event_type],
             "is_fetch_events": True,
             max_fetch_key: num_events,
         },
@@ -1043,7 +1043,7 @@ def test_fetch_events_domain_two_call_paging(mocker):
             "url": TEST_URL,
             "credentials": {"identifier": "1234", "password": "1234"},
             "max_fetch_domain": 70,
-            "events_type_to_fetch": DOMAIN,
+            "event_types_to_fetch": [DOMAIN],
             "is_fetch_events": True,
         },
     )
@@ -1132,7 +1132,7 @@ def test_fetch_events_same_timestamp(mocker):
             super().__init__(base_url="", client_id="", client_secret="", verify=False, proxy=False)
             self.called = {}
 
-        def get_domain_watchlist(self, start_date, end_date, event_type, limit):
+        def get_domain_watchlist(self, start_date, end_date, limit, event_type=None):
             # record the limit we were asked for
             self.called["limit"] = limit
             # return events 1..limit, all stamped with the same timestamp
