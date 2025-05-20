@@ -1156,3 +1156,91 @@ def test_fetch_events_same_timestamp(mocker):
     assert DOMAIN in new_last_run
     assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
     assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
+
+
+def test_add_fields_to_events_sets_time_and_source():
+    """
+    Given:
+      - A list of two events:
+        • one has only the configured time_field
+        • one has only a created_at timestamp
+
+    When:
+      - Calling add_fields_to_events with the Reports event type
+
+    Then:
+      - The first event’s `_time` is taken from its updated_at field
+      - The second event’s `_time` falls back to created_at
+      - Each event’s SOURCE_LOG_TYPE equals the Reports source_log_type
+    """
+    from CybelAngelEventCollector import add_fields_to_events
+
+    ev_type = EVENT_TYPE["Reports"]
+    events = [
+        {"id": "1", "updated_at": "2025-01-01T00:00:00"},
+        {"id": "2", "created_at": "2025-02-02T02:02:02"},
+    ]
+
+    out = add_fields_to_events(events.copy(), ev_type)
+
+    assert out[0]["_time"] == "2025-01-01T00:00:00"
+    assert out[0]["SOURCE_LOG_TYPE"] == ev_type.source_log_type
+    assert out[1]["_time"] == "2025-02-02T02:02:02"
+    assert out[1]["SOURCE_LOG_TYPE"] == ev_type.source_log_type
+
+
+def test_dedup_fetched_events_filters_old_ids(monkeypatch):
+    """
+    Given:
+      - A Domain watchlist event type
+      - Two events, one with ID “a”, one with ID “b”
+      - A last-run ID set containing only “a”
+
+    When:
+      - Calling dedup_fetched_events
+
+    Then:
+      - Only the event with ID “b” is returned
+    """
+    from CybelAngelEventCollector import dedup_fetched_events
+
+    ev_type = EVENT_TYPE["Domain watchlist"]
+    events = [
+        {"domain": "a", "detection_date": "t1"},
+        {"domain": "b", "detection_date": "t2"},
+    ]
+    result = dedup_fetched_events(events, {"a"}, ev_type)
+    assert len(result) == 1
+    assert result[0]["domain"] == "b"
+
+
+def test_get_latest_event_time_and_ids_new_timestamp():
+    """
+    Given:
+      - Three Reports events, two share the newest timestamp “2025-01-02T00:00:00”
+      - A last_run_time far in the past
+
+    When:
+      - Calling get_latest_event_time_and_ids
+
+    Then:
+      - latest_time == "2025-01-02T00:00:00"
+      - latest_ids contains only the two IDs at that timestamp
+      - old last_run_ids are not merged in
+    """
+    from CybelAngelEventCollector import get_latest_event_time_and_ids
+
+    ev_type = EVENT_TYPE["Reports"]
+    events = [
+        {"id": "1", "_time": "2025-01-01T00:00:00"},
+        {"id": "2", "_time": "2025-01-02T00:00:00"},
+        {"id": "3", "_time": "2025-01-02T00:00:00"},
+    ]
+    latest_time, latest_ids = get_latest_event_time_and_ids(
+        events,
+        ev_type,
+        last_run_time="2024-01-01T00:00:00",
+        last_run_ids=["x"],
+    )
+    assert latest_time == "2025-01-02T00:00:00"
+    assert set(latest_ids) == {"2", "3"}
