@@ -814,23 +814,34 @@ def test_search_command_with_query_dsl(mocker):
 
     Then
      - make sure that the index is being taken from the command arguments and not from integration parameters
-     - make sure that the size / page arguments are getting called when using query_dsl
+     - make sure that the size / page arguments are getting applied when using query_dsl
     """
     import Elasticsearch_v2
 
     Elasticsearch_v2.FETCH_INDEX = "index from parameter"
     index_from_arg = "index from arg"
-    mock_args = {"index": index_from_arg, "query_dsl": json.dumps({"match_all": {}}), "size": "5", "page": "0"}
-    mocker.patch.object(demisto, "args", return_value=mock_args)
+    mocker.patch.object(
+        demisto,
+        "args",
+        return_value={"index": index_from_arg, "query_dsl": '{"query": {"match": {"name": "test"}}}', "size": "5", "page": "0"},
+    )
     search_mock = mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     Elasticsearch_v2.search_command({})
     assert search_mock.call_args.kwargs["index"] == [index_from_arg]
-    assert search_mock.call_args.kwargs["size"] == 5
-    assert search_mock.call_args.kwargs["from_"] == 0
+    assert search_mock.call_args.kwargs["body"] == {"query": {"match": {"name": "test"}}, "size": 5, "from": 0}
 
 
-def test_execute_raw_query(mocker):
+@pytest.mark.parametrize(
+    "raw_query_body",
+    [
+        ({"query": {"match": {"name": "test"}}, "size": 2, "from": 1}),
+        ({"query": {"match": {"name": "test"}}, "size": 2}),
+        ({"query": {"match": {"name": "test"}}, "from": 3}),
+        ({"query": {"match": {"name": "test"}}}),
+    ],
+)
+def test_execute_raw_query(mocker, raw_query_body):
     """
     Given
       - index and elastic search objects
@@ -848,11 +859,20 @@ def test_execute_raw_query(mocker):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
     es = Elasticsearch_v2.elasticsearch_builder({})
-    assert Elasticsearch_v2.execute_raw_query(es, "dsadf") == ES_V7_RESPONSE
+    assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V7_RESPONSE
 
 
 @patch.dict("os.environ", {"DEMISTO_PARAMS": str(PARAMS_V8)})
-def test_execute_raw_query_v8(mocker):
+@pytest.mark.parametrize(
+    "raw_query_body",
+    [
+        ({"query": {"match": {"name": "test"}}, "size": 2, "from": 1}),
+        ({"query": {"match": {"name": "test"}}, "size": 2}),
+        ({"query": {"match": {"name": "test"}}, "from": 3}),
+        ({"query": {"match": {"name": "test"}}}),
+    ],
+)
+def test_execute_raw_query_v8(mocker, raw_query_body):
     """
     Given
       - index and elastic search objects
@@ -880,7 +900,6 @@ def test_execute_raw_query_v8(mocker):
     mocker.patch.object(elastic_transport.RequestsHttpNode, "__init__", return_value=None)
 
     es = Elasticsearch_v2.elasticsearch_builder({})
-    raw_query_body = {"query": {"match": {"name": "test"}}, "size": 2}
     assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V8_RESPONSE
 
 
