@@ -10,27 +10,28 @@ description: |-
   Playbook Stages:
 
   Analysis:
+
   - Extract the script path from the registry key value.
   - Check the reputation of the associated processes.
 
   Investigation:
 
   - Searches for related XSIAM alerts to identify potential attack patterns.
-  - Retrieve the script file and relevant details for investigation.
-  - Analyze the script for malicious or suspicious parameters:
+  - Retrieves the script file and relevant details for investigation.
+  - Analyzes the script for malicious or suspicious parameters:
     - If malicious parameters are found, proceed to remediation.
     - If suspicious parameters are found, detonate and analyze the script using WildFire Sandbox.
   - Checks the script file reputation.
-  - Detonate and analyze the script using WildFire Sandbox.
+  - Detonates and analyzes the script using WildFire Sandbox.
 
   Remediation:
 
-  - Terminate the malicious process.
-  - Quarantine the malicious process.
-  - Add the malicious process hash to the blocklist.
-  - Calculate the script file’s SHA256 hash if not already available.
-  - Delete the Registry key value (Requires analyst approval).
-  - Add the script file hash to the blocklist (Requires analyst approval).
+  - Terminates the malicious process.
+  - Quarantines the malicious process.
+  - Adds the malicious process hash to the blocklist.
+  - Calculates the script file’s SHA256 hash if not already available.
+  - Deletes the Registry key value (Requires analyst approval).
+  - Adds the script file hash to the blocklist (Requires analyst approval).
   - Automatically Close the alert.
 tags:
 - TA0003 - Persistence
@@ -478,7 +479,7 @@ tasks:
       {
         "position": {
           "x": 433,
-          "y": 75
+          "y": 77
         }
       }
     note: false
@@ -1377,7 +1378,7 @@ tasks:
       id: 8996323f-70fe-450a-9ba2-2124d49ab33e
       version: -1
       name: Set commands to get Script SHA256
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.9 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1786,7 +1787,7 @@ tasks:
       {
         "position": {
           "x": 1128,
-          "y": 1846
+          "y": 1847
         }
       }
     note: false
@@ -2255,7 +2256,7 @@ tasks:
       id: 687933c2-6a9c-4ac2-9ebb-38b89cf4b75e
       version: -1
       name: Set Script SHA256
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.9 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2789,7 +2790,7 @@ tasks:
       id: 20233f1f-4489-4457-a140-b470e4ec1554
       version: -1
       name: Is the WildFire verdict malicious for the script?
-      description: Check if the WildFire verdict malicious for the script.
+      description: Checks if the WildFire verdict is malicious for the script.
       type: condition
       iscommand: false
       brand: ""
@@ -2887,7 +2888,7 @@ tasks:
       id: 03646e6b-52af-40ae-a427-5375666c4528
       version: -1
       name: Is the hash known by WildFire Sandbox?
-      description: Checks if the hash known by WildFire Sandbox
+      description: Checks if the hash is known by WildFire Sandbox.
       type: condition
       iscommand: false
       brand: ""
