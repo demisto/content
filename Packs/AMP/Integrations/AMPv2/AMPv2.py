@@ -2979,7 +2979,7 @@ def endpoint_command(client: Client, args: dict[str, Any]) -> List[CommandResult
         for endpoint_ip in endpoint_ips:
             response = client.computer_list_request(internal_ip=endpoint_ip)
 
-        responses.append(response)
+            responses.append(response)
 
     else:
         responses.append(client.computer_list_request(hostnames=endpoint_hostnames))
