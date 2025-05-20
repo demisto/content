@@ -19,7 +19,7 @@
 
 !wiz-get-detections project_id="production-project"
 
-!wiz-get-detections detection_subscription="subscription-123"
+!wiz-get-detections cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
 
 !wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
 !wiz-get-detections detection_type="GENERATED THREAT" detection_platform="Azure" severity=HIGH
@@ -28,3 +28,29 @@
 !wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
 !wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" creation_minutes_back="600"
 !wiz-get-detections detection_origin="AWS_GUARD_DUTY" severity=HIGH
+
+!wiz-get-threat issue_id="12345678-1234-1234-1234-d25e16359c19"
+
+!wiz-get-threats severity=CRITICAL
+
+!wiz-get-threats status="OPEN"
+!wiz-get-threats status="OPEN,IN_PROGRESS"
+
+!wiz-get-threats platform="AWS"
+!wiz-get-threats platform="AWS,Azure,GCP"
+
+!wiz-get-threats origin="WIZ_SENSOR"
+!wiz-get-threats origin="WIZ_SENSOR,AWS_GUARD_DUTY"
+
+!wiz-get-threats resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
+
+!wiz-get-threats creation_days_back="30"
+
+!wiz-get-threats project_id="production-project"
+
+!wiz-get-threats cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
+
+!wiz-get-threats severity=CRITICAL platform="AWS" creation_days_back="30"
+!wiz-get-threats severity=HIGH status="OPEN,IN_PROGRESS" platform="Azure"
+!wiz-get-threats origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_days_back="15"
+!wiz-get-threats platform="AWS,Azure,GCP" cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
