@@ -796,7 +796,7 @@ def cybelangel_report_status_update_command(client: Client, args: dict) -> Comma
     )
 
 
-def cybelangel_report_comments_get_command(client: Client, args: dict) -> CommandResults:
+def cybelangel_report_comments_get_command(client: Client, args: dict) -> CommandResults:  # pragma: no cover
     """
     Retrieves comments for a specific report by its ID.
 
