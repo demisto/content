@@ -619,6 +619,7 @@ def debug(msg, *args):
       None: No data returned
 
     """
+    print(msg)
     logging.getLogger().info(msg, *args)
 
 

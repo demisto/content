@@ -12379,7 +12379,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
-    def send_events(data_chunk):
+    def send_events_old(data_chunk):
         chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
@@ -12388,6 +12388,14 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
         return chunk_size
+    
+    def send_events(zipped_data):
+        
+        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+                                    error_msg=header_msg, headers=headers,
+                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+        return len(zipped_data)
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
@@ -12404,6 +12412,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return futures
     else:
         demisto.info("Sending events to xsiam with a single thread.")
+        data_chunks = CompressedChunkSupplier(data).get_compressed_chunks()
         for chunk in data_chunks:
             data_size += send_events(chunk)
 
@@ -12633,6 +12642,340 @@ def content_profiler(func):
         return results.get("function_results")
 
     return profiler_wrapper
+
+class CompressedChunkSupplier:
+    MAX_ALLOWED = 2 ** 20  # 1 MB
+    MAX_COMPRESSED_SIZE = MAX_ALLOWED
+    THRESHOLD = 80 # % of the global compress ratio
+    EXPECTED_REDUCTION_FROM_IDEAL = 0.95 # % of the global compress ratio
+
+    def __init__(self, data, step_up_in_case_of_exceed_limit=20) -> None:
+        # self.stroe_in_integration_context(17)
+        self.reduction_ratio_from_ideal = self.EXPECTED_REDUCTION_FROM_IDEAL
+        self.global_data = data
+        self.step_up_in_case_of_exceed_limit = step_up_in_case_of_exceed_limit
+        self.chunk_size = self.get_chunk_size(data)
+        
+    def debug(self, msg):
+        demisto.debug('[CompressedChunkSupplier] \n{}'.format(msg))
+
+    def compress_chunk(self, chunk: bytes) -> bytes:
+        compressed = gzip.compress(chunk)
+        # self.debug("[compress_chunk] Original: %d bytes, Compressed: %d bytes" % (len(chunk), len(compressed)))
+        return compressed
+
+    def get_compression_ratio(self, original: bytes, compressed: bytes) -> int:
+        ratio = len(original) // len(compressed)
+        self.debug("[get_compression_ratio] Ratio: {} (Original: {:,}, Compressed: {:,})".format(ratio, len(original), len(compressed)))
+        return ratio
+
+    def calculate_global_compression_ratio(self, data) -> float:
+        if not isinstance(data, bytes):
+            data = self.convert_to_bytes(data)
+        self.debug("[calculate_global_compression_ratio] Calculating...")
+        return self.get_compression_ratio(data, self.compress_chunk(data))
+
+    # def split_chunks(self, data: bytes, chunk_size: int) -> List[bytes]:
+    #     chunks = [data[i:i + chunk_size] for i in range(0, len(data), chunk_size)]
+    #     self.debug(f"[split_chunks] Split into {len(chunks)} chunks of size up to {chunk_size} bytes")
+    #     return chunks
+
+    def is_valid_chunk_size(self, data, chunk_size: int, verbose=False) -> tuple[bool, List[Dict]]:
+        if verbose:
+            self.debug("[is_valid_chunk_size] Checking chunk size: {:,} bytes".format(chunk_size))
+        failures = []
+        for i, chunk in enumerate(self.split_to_chunks(data, chunk_size)):
+            chunk_bytes = '\n'.join(chunk).encode('utf-8')
+            compressed = self.compress_chunk(chunk_bytes)
+            if len(compressed) > self.MAX_ALLOWED:
+                actual_ratio = self.get_compression_ratio(chunk_bytes, compressed)
+                max_possible = int(self.MAX_ALLOWED * actual_ratio)
+                failure_info = {
+                    "index": i,
+                    "compressed": len(compressed),
+                    "actual_ratio": actual_ratio,
+                    "max_safe_chunk": max_possible
+                }
+                failures.append(failure_info)
+                if verbose:
+                    self.debug("❌ Chunk %d too large: %.5f MB (Ratio: %d), Max safe size: %.2f MB" % (i, len(compressed) / 2.0**20, actual_ratio, max_possible / 2.0**20))
+                return False, failures
+            else:
+                if verbose:
+                    self.debug("✅ Chunk {} OK: {:,} compressed bytes".format(i, len(compressed)))
+        return True, failures
+
+    def reduce_ratio_best_chunk(self, data, global_factor: float, ideal_chunk_size: int, verbose=False) -> (float, int, float, float):
+        start = time.time()
+        factor = global_factor * self.reduction_ratio_from_ideal  # Start slightly below the global factor
+        best_valid_chunk = 0
+
+        while factor > 0:
+            chunk_size = int(self.MAX_ALLOWED * factor)
+            if verbose:
+                self.debug("🔍 Trying factor: {:.2f} ({}%) from Global Factor → Chunk size: {:,} bytes".format(factor, self.reduction_ratio_from_ideal*100, chunk_size))
+
+            valid, failures = self.is_valid_chunk_size(data, chunk_size, verbose=verbose)
+
+            if valid:
+                if verbose:
+                    self.debug("\n ✅ → → Chunk size {:,} is valid. Using it. ← ←".format(chunk_size))
+                best_valid_chunk = chunk_size
+                break
+
+            elif failures:
+                fail = failures[0]
+                max_safe = fail["max_safe_chunk"]
+
+                new_factor = max_safe / self.MAX_ALLOWED
+                factor = min(factor, new_factor * 0.9)
+                if verbose:
+                    self.debug("❌ Failed. Max safe chunk = {:,} bytes".format(max_safe))
+                    self.debug("↘ Adjusting factor downward to {:.4f} based on max_safe {:,}".format(factor, max_safe))
+
+            else:
+                factor *= 0.9
+                if verbose:
+                    self.debug("No specific failure data. Reducing factor to {:.4f}".format(factor))
+
+        end = time.time()
+        ratio_to_ideal = (best_valid_chunk / ideal_chunk_size * 100) if ideal_chunk_size else 0
+
+        return factor, best_valid_chunk, ratio_to_ideal, end - start
+
+    def step_up_if_below_threshold(
+        self,
+        data,
+        current_factor: int,
+        threshold: int = THRESHOLD,
+        verbose=True
+    ) -> int:
+        """
+        Try to step back up toward the ideal chunk size if current factor is too low.
+
+        Returns:
+            factor (int): The best factor for chunks of data / comressed(data)
+        """
+        global_ratio = self.calculate_global_compression_ratio(data)
+        ideal_factor = global_ratio
+        ideal_chunk_size = int(self.MAX_ALLOWED * ideal_factor)
+        current_chunk_size = int(self.MAX_ALLOWED * current_factor)
+        percent_of_ideal = (current_factor / ideal_factor) * 100 if ideal_factor else 0
+
+
+        if percent_of_ideal >= threshold:
+            if verbose:
+                self.debug("[step_up_if_below_threshold] ✅ Current factor {} ratio (current_factor / ideal_factor) {} is above threshold ({}%). No need to step up.".format(current_factor, percent_of_ideal, threshold))
+            return current_factor
+
+        if verbose:
+            self.debug("📊 Ideal Factor: {}".format(ideal_factor))
+            self.debug("📉 Current Factor: {} ({:.2f}﹪ of ideal) below threshold of: {}﹪".format(current_factor, percent_of_ideal, threshold))
+            self.debug("🎯 Ideal Chunk Size: {:,} bytes".format(ideal_chunk_size))
+            self.debug("🔁 Stepping up from {:,} to {:,}".format(current_chunk_size, ideal_chunk_size))
+
+        step = max(1, (ideal_chunk_size - current_chunk_size) // self.step_up_in_case_of_exceed_limit)
+        best_valid = 0
+
+        for test_chunk in range(current_chunk_size, ideal_chunk_size + 1, step):
+            valid, _ = self.is_valid_chunk_size(data, test_chunk, verbose=verbose)
+            if valid:
+                if verbose:
+                    self.debug("✅ Valid chunk at step: {:,} bytes".format(test_chunk))
+                best_valid = test_chunk
+            else:
+                if verbose:
+                    self.debug("❌ Failed at chunk: {:,} bytes. Stopping.".format(test_chunk))
+                break
+
+        new_factor = best_valid // self.MAX_ALLOWED
+        self.debug("new factor that above threshold: {}".format(new_factor))
+        return new_factor
+    
+    def convert_to_bytes(self, data):
+        if isinstance(data, bytes):
+            return data
+        if isinstance(data, str):
+            return data.encode('utf-8')
+        elif isinstance(data, list):
+            if isinstance(data[0], str):
+                return '\n'.join(data).encode('utf-8')
+            elif isinstance(data[0], dict):
+                return '\n'.join([json.dumps(entry) for entry in data]).encode('utf-8')
+        self.debug("Unexpected data type: {}, return empty bytes".format(type(data)))
+        return b''
+
+    def get_chunk_size(self, data):
+        start = time.time()
+        factor = self.get_factor_from_context()
+        if factor is not None:
+            factor = int(factor)
+            # need to check if the current factor / global factor  is below the threshold
+            new_facotr = self.step_up_if_below_threshold(data, factor)
+            if new_facotr != factor:
+                self.stroe_in_integration_context(new_facotr)
+                factor = new_facotr
+            return int(self.MAX_ALLOWED * factor)
+
+        calc_res = self.calc_best_chunk_size(data)
+        self.stroe_in_integration_context(calc_res.get('factor'))
+        end = time.time()
+        self.debug("[get_chunk_size] ⏱ Time Taken = {:.2f} sec".format(end - start))
+        return calc_res.get('best_chunk_size')
+    
+    def calc_best_chunk_size(self, data, max_allowed=MAX_ALLOWED, verbose=True):
+        self.MAX_ALLOWED = max_allowed
+        data_bytes = self.convert_to_bytes(data)
+        data_size = len(data_bytes) / 2**20
+        if verbose:
+            self.debug("[run_test] Starting test...")
+            self.debug("📦 Data size: {:.2f} MB".format(data_size))
+
+        global_ratio = self.calculate_global_compression_ratio(data_bytes)
+        ideal_chunk_size = int(self.MAX_ALLOWED * global_ratio)
+
+        self.debug("""
+🔍 Summary:
+   📐 Global compression ratio: {:.2f}
+   🎯 Ideal max chunk size (based on full ratio): {:,} bytes ({:.2f} MB)
+""".format(global_ratio, ideal_chunk_size, ideal_chunk_size / 2**20))
+
+        factor, best_chunk_size, ratio_to_ideal, calc_time = self.reduce_ratio_best_chunk(
+            data, global_ratio, ideal_chunk_size, verbose=verbose
+        )
+
+        self.debug("""
+🔧 Ratio Reduction Strategy:
+   ✅ Best Ratio = {:.2f}
+   ✅ Best Chunk Size = {:,} bytes ({:.2f} MB)
+   📊 Ratio to Ideal = {:.2f}%
+   ⏱ Time Taken = {:.2f} sec
+""".format(factor, best_chunk_size, best_chunk_size / 2**20, ratio_to_ideal, calc_time))
+        
+        return {
+            'data_size': data_size,
+            'factor': factor,
+            'best_chunk_size': best_chunk_size,
+            'ratio_to_ideal': ratio_to_ideal,
+            'calc_time': calc_time
+        }
+
+    def split_to_chunks(self, data, target_chunk_size):
+        """
+        Splits a string of data into chunks of an approximately specified size.
+        The actual size can be lower.
+
+        :type data: ``list`` or a ``string``
+        :param data: A list of data or a string delimited with \n  to split to chunks.
+        :type target_chunk_size: ``int``
+        :param target_chunk_size: The maximum size of each chunk. The maximal size allowed is 9MB.
+
+        :return: An iterable of lists where each list contains events with approx size of chunk size.
+        :rtype: ``collections.Iterable[list]``
+        """
+        current_chunk = []
+        current_size = 0
+        if isinstance(data, str):
+            data = data.split('\n')
+        for entry in data:
+            entry_bytes = entry.encode('utf-8')
+            entry_size = len(entry_bytes)
+            # If a single entry exceeds the limit, write error and continue
+            if entry_size >= MAX_ALLOWED_ENTRY_SIZE:
+                demisto.error(
+                    "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(entry_size, MAX_ALLOWED_ENTRY_SIZE)
+                )
+                continue
+
+            if current_size + entry_size <= target_chunk_size:
+                current_chunk.append(entry)
+                current_size += entry_size
+            else:
+                # Finalize current chunk and start a new one
+                # self.debug("[split_to_chunks] reached max chunk size, sending chunk with size: {:,}".format(current_size))
+                yield current_chunk
+                current_chunk = [entry]
+                current_size = entry_size
+
+        # the case of last chunk or the a small data
+        if current_chunk:
+            # self.debug("[split_to_chunks] small or last chunk, sending chunk with size: {:,}".format(current_size))
+            yield current_chunk
+
+    def split_if_compressed_exceeds_max(self, chunk: list[str], compressed_chunk: bytes, max_allowed: int=MAX_COMPRESSED_SIZE) -> list[bytes]:
+        """
+        Recursively splits a chunk of data if its compressed size exceeds the allowed limit.
+
+        This function is used to enforce a maximum size constraint on compressed event chunks.
+        It receives a list of string events (`chunk`) and the corresponding compressed data.
+        If the compressed size is within the allowed maximum (`max_allowed`), it returns the
+        compressed chunk as a single-item list. Otherwise, it splits the chunk in half and
+        recursively applies the same logic to each half.
+
+        Args:
+            chunk (list[str]): A list of event strings.
+            compressed_chunk (bytes): The gzip-compressed representation of the chunk.
+            max_allowed (int): Maximum allowed size in bytes for a compressed chunk.
+
+        Returns:
+            list[bytes]: A list of compressed chunks, each not exceeding `max_allowed` bytes.
+        """
+        if len(compressed_chunk) <= max_allowed:
+            return [compressed_chunk]
+        
+        compressed_chunks = []
+        mid = len(chunk) // 2
+        left_chunk = chunk[:mid]
+        left_bytes = '\n'.join(left_chunk).encode('utf-8')
+
+        right_chunk = chunk[mid:]
+        right_bytes = '\n'.join(right_chunk).encode('utf-8')
+
+        left_compressed = self.compress_chunk(left_bytes)
+        right_compressed = self.compress_chunk(right_bytes)
+        compressed_chunks.extend(self.split_if_compressed_exceeds_max(left_chunk, left_compressed))
+        compressed_chunks.extend(self.split_if_compressed_exceeds_max(right_chunk, right_compressed))
+        return compressed_chunks
+
+    def get_compressed_chunks(self):
+        chunks = self.split_to_chunks(self.global_data, self.chunk_size) # a generator
+        for chunk in chunks:
+            chunk_bytes = '\n'.join(chunk).encode('utf-8')
+            compressed_chunk = self.compress_chunk(chunk_bytes)
+
+            if self.handle_max_exceeded(chunk_bytes, compressed_chunk):
+                
+                small_chunks = self.split_if_compressed_exceeds_max(chunk, compressed_chunk)
+                self.debug(
+                    "[get_compressed_chunks] spliting the compressed chunk with size of {} to {} small parts of avg size {}".format(
+                        len(compressed_chunk), len(small_chunks), len(compressed_chunk)// len(small_chunks)))
+                for compressed_chunk in small_chunks:
+                    yield compressed_chunk
+            else:
+                yield compressed_chunk
+
+    def handle_max_exceeded(self, chunk_bytes, compressed_chunk):
+        if len(compressed_chunk) > self.MAX_COMPRESSED_SIZE:
+            actual_factor = self.get_compression_ratio(chunk_bytes, compressed_chunk)
+            self.debug(
+                "➡➡➡[handle_max_exceeded] compressed chunk size {:,} exceeds the limit {:,}, need to store a new factor {}". format(
+                    len(compressed_chunk), self.MAX_COMPRESSED_SIZE, actual_factor)
+                )
+            self.stroe_in_integration_context(actual_factor)
+            return True
+        return False
+    
+    def stroe_in_integration_context(self, factor):
+        context = get_integration_context()
+        context['compressed_chunk_size_factor'] = factor
+        set_integration_context(context)
+    
+    def get_factor_from_context(self):
+        context: dict[str, Any] = get_integration_context()
+        if context and 'compressed_chunk_size_factor' in context:
+            self.debug('[get_factor_from_context] take the factor from context')
+            return context.get('compressed_chunk_size_factor')
+        return None
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
