@@ -33,7 +33,7 @@ class WizInputParam:
     TYPE = 'type'
     PLATFORM = 'platform'
     ORIGIN = 'origin'
-    SUBSCRIPTION = 'subscription'
+    CLOUD_ACCOUNT_OR_CLOUD_ORG = 'cloud_account_or_cloud_organization'
     RESOURCE_ID = 'resource_id'
     SEVERITY = 'severity'
     STATUS = 'status'
@@ -564,19 +564,17 @@ PULL_DETECTIONS_VARIABLES = {
 }
 
 PULL_ISSUE_QUERY = """
-query IssuesTable(
-  $filterBy: IssueFilters
-  $first: Int
-  $after: String
-  $orderBy: IssueOrder
-) {
-  issues:issuesV2(filterBy: $filterBy
+query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $first: Int, $after: String, $orderBy: IssueOrder) {
+  issues: issuesV2(
+    filterBy: $filterBy
     first: $first
     after: $after
-    orderBy: $orderBy) {
+    orderBy: $orderBy
+    filterScope: $filterScope
+  ) {
     nodes {
       id
-      sourceRule{
+      sourceRule {
         __typename
         ... on Control {
           id
@@ -593,14 +591,14 @@ query IssuesTable(
             }
           }
         }
-        ... on CloudEventRule{
+        ... on CloudEventRule {
           id
           name
           cloudEventRuleDescription: description
           sourceType
           type
         }
-        ... on CloudConfigurationRule{
+        ... on CloudConfigurationRule {
           id
           name
           cloudConfigurationRuleDescription: description
@@ -870,7 +868,7 @@ def extract_params_from_integration_settings(advanced_params=False):
         WizInputParam.TYPE: demisto_params.get(WizInputParam.TYPE),
         WizInputParam.PLATFORM: demisto_params.get(WizInputParam.PLATFORM),
         WizInputParam.ORIGIN: demisto_params.get(WizInputParam.ORIGIN),
-        WizInputParam.SUBSCRIPTION: demisto_params.get(WizInputParam.SUBSCRIPTION)
+        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: demisto_params.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
     }
 
     if advanced_params:
@@ -927,7 +925,7 @@ def test_module():
         detection_platform=integration_settings_params[WizInputParam.PLATFORM],
         severity=integration_settings_params[WizInputParam.SEVERITY],
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
-        detection_subscription=integration_settings_params[WizInputParam.SUBSCRIPTION],
+        detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
         api_limit=1,
         paginate=False
     )
@@ -952,7 +950,7 @@ def fetch_incidents():
         detection_platform=integration_settings_params[WizInputParam.PLATFORM],
         severity=integration_settings_params[WizInputParam.SEVERITY],
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
-        detection_subscription=integration_settings_params[WizInputParam.SUBSCRIPTION],
+        detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
         after_time=last_run
     )
 
@@ -1134,26 +1132,41 @@ def validate_detection_platform(platform):
     return ValidationResponse.create_success(platforms)
 
 
-def validate_detection_subscription(subscription):
+def validate_detection_cloud_account_or_cloud_organization(cloud_account_or_cloud_organization):
     """
-    Validates the detection subscription parameter
+    Validates the detection cloud_account_or_cloud_organization parameter(s) are valid UUIDs
 
     Args:
-        subscription (str): The subscription text to validate
+        cloud_account_or_cloud_organization (str or list): The cloud_account_or_cloud_organization ID(s) to validate
 
     Returns:
         ValidationResponse: Response with validation results
     """
-    if not subscription and not isinstance(subscription, str):
+    if not cloud_account_or_cloud_organization:
         return ValidationResponse.create_success()
 
-    # For subscription, we just validate that it's a string
-    if isinstance(subscription, str):
-        return ValidationResponse.create_success(subscription)
+    # Handle case where cloud_account_or_cloud_organization is a comma-separated string
+    if isinstance(cloud_account_or_cloud_organization, str) and ',' in cloud_account_or_cloud_organization:
+        cloud_account_or_cloud_organizations = [s.strip() for s in cloud_account_or_cloud_organization.split(',')]
+    elif isinstance(cloud_account_or_cloud_organization, str):
+        cloud_account_or_cloud_organizations = [cloud_account_or_cloud_organization]
+    elif isinstance(cloud_account_or_cloud_organization, list):
+        cloud_account_or_cloud_organizations = cloud_account_or_cloud_organization
     else:
-        error_msg = "Subscription must be a text value"
+        error_msg = f"{WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} must be a text value or list of text values"
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
+
+    # Validate each cloud_account_or_cloud_organization is a UUID
+    invalid_cloud_account_or_cloud_organizations = [s for s in cloud_account_or_cloud_organizations if not is_valid_uuid(s)]
+    if invalid_cloud_account_or_cloud_organizations:
+        error_msg = f"Invalid {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} ID(s): " \
+                    f"{', '.join(invalid_cloud_account_or_cloud_organizations)}. " \
+                    f"All {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} must be in valid UUID format."
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+    return ValidationResponse.create_success(cloud_account_or_cloud_organizations)
 
 
 def validate_detection_origin(origin):
@@ -1206,8 +1219,8 @@ def validate_creation_time_back(time_value, time_unit='minutes'):
     # Set default values and limits based on the time unit
     if time_unit == 'minutes':
         param_name = WizInputParam.CREATION_MINUTES_BACK
-        min_value = FETCH_INTERVAL_MINIMUM_MIN  # e.g., 5
-        max_value = FETCH_INTERVAL_MAXIMUM_MIN  # e.g., 600
+        min_value = FETCH_INTERVAL_MINIMUM_MIN
+        max_value = FETCH_INTERVAL_MAXIMUM_MIN
         default_value = FETCH_INTERVAL_MINIMUM_MIN
         response.minutes_value = default_value
     elif time_unit == 'days':
@@ -1500,7 +1513,7 @@ def validate_all_detection_parameters(parameters_dict):
     detection_type = parameters_dict.get(WizInputParam.TYPE)
     detection_platform = parameters_dict.get(WizInputParam.PLATFORM)
     detection_origin = parameters_dict.get(WizInputParam.ORIGIN)
-    detection_subscription = parameters_dict.get(WizInputParam.SUBSCRIPTION)
+    detection_cloud_account_or_cloud_organization = parameters_dict.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
     resource_id = parameters_dict.get(WizInputParam.RESOURCE_ID)
     severity = parameters_dict.get(WizInputParam.SEVERITY)
     creation_minutes_back = parameters_dict.get(WizInputParam.CREATION_MINUTES_BACK)
@@ -1518,14 +1531,14 @@ def validate_all_detection_parameters(parameters_dict):
     # For manual commands, check if at least one parameter is provided
     if not after_time:  # If not fetch incident flow
         if not any([detection_id, issue_id, severity, detection_type, detection_platform, detection_origin,
-                    detection_subscription, resource_id, matched_rule, matched_rule_name, project_id]):
+                    detection_cloud_account_or_cloud_organization, resource_id, matched_rule, matched_rule_name, project_id]):
             param_list = [
                 f"\t{WizInputParam.DETECTION_ID}",
                 f"\t{WizInputParam.ISSUE_ID}",
                 f"\t{WizInputParam.TYPE}",
                 f"\t{WizInputParam.PLATFORM}",
                 f"\t{WizInputParam.ORIGIN}",
-                f"\t{WizInputParam.SUBSCRIPTION}",
+                f"\t{WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG}",
                 f"\t{WizInputParam.RESOURCE_ID}",
                 f"\t{WizInputParam.SEVERITY}",
                 f"\t{WizInputParam.MATCHED_RULE}",
@@ -1575,11 +1588,12 @@ def validate_all_detection_parameters(parameters_dict):
         return False, origin_validation.error_message, None
     validated_values[WizInputParam.ORIGIN] = origin_validation.value
 
-    # Validate subscription
-    subscription_validation = validate_detection_subscription(detection_subscription)
-    if not subscription_validation.is_valid:
-        return False, subscription_validation.error_message, None
-    validated_values[WizInputParam.SUBSCRIPTION] = subscription_validation.value
+    # Validate cloud_account_or_cloud_organization
+    cloud_account_or_cloud_organization_validation = \
+        validate_detection_cloud_account_or_cloud_organization(detection_cloud_account_or_cloud_organization)
+    if not cloud_account_or_cloud_organization_validation.is_valid:
+        return False, cloud_account_or_cloud_organization_validation.error_message, None
+    validated_values[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG] = cloud_account_or_cloud_organization_validation.value
 
     # Validate creation_minutes_back (only if provided)
     if creation_minutes_back:
@@ -1627,7 +1641,7 @@ def validate_all_threat_parameters(parameters_dict):
     issue_id = parameters_dict.get(WizInputParam.ISSUE_ID)
     platform = parameters_dict.get(WizInputParam.PLATFORM)
     origin = parameters_dict.get(WizInputParam.ORIGIN)
-    subscription = parameters_dict.get(WizInputParam.SUBSCRIPTION)
+    cloud_account_or_cloud_organization = parameters_dict.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
     resource_id = parameters_dict.get(WizInputParam.RESOURCE_ID)
     severity = parameters_dict.get(WizInputParam.SEVERITY)
     status = parameters_dict.get(WizInputParam.STATUS)
@@ -1635,12 +1649,12 @@ def validate_all_threat_parameters(parameters_dict):
     project_id = parameters_dict.get(WizInputParam.PROJECT_ID)
 
     # Check if at least one parameter is provided
-    if not any([issue_id, platform, subscription, resource_id, severity, status, project_id, creation_days_back]):
+    if not any([issue_id, platform, cloud_account_or_cloud_organization, resource_id, severity, status, project_id, creation_days_back]):
         param_list = [
             f"\t{WizInputParam.ISSUE_ID}",
             f"\t{WizInputParam.PLATFORM}",
             f"\t{WizInputParam.ORIGIN}",
-            f"\t{WizInputParam.SUBSCRIPTION}",
+            f"\t{WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG}",
             f"\t{WizInputParam.RESOURCE_ID}",
             f"\t{WizInputParam.SEVERITY}",
             f"\t{WizInputParam.STATUS}",
@@ -1671,16 +1685,17 @@ def validate_all_threat_parameters(parameters_dict):
         return False, origin_validation.error_message, None
     validated_values[WizInputParam.ORIGIN] = origin_validation.value
 
-    # Validate subscription
-    if subscription:
-        subscription_validation = validate_detection_subscription(subscription)
-        if not subscription_validation.is_valid:
-            return False, subscription_validation.error_message, None
-        validated_values[WizInputParam.SUBSCRIPTION] = subscription_validation.value
+    # Validate cloud_account_or_cloud_organization
+    if cloud_account_or_cloud_organization:
+        cloud_account_or_cloud_organization_validation = \
+            validate_detection_cloud_account_or_cloud_organization(cloud_account_or_cloud_organization)
+        if not cloud_account_or_cloud_organization_validation.is_valid:
+            return False, cloud_account_or_cloud_organization_validation.error_message, None
+        validated_values[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG] = cloud_account_or_cloud_organization_validation.value
 
     # Validate creation_days_back
     if creation_days_back:
-        days_validation = validate_creation_time_back(creation_days_back)
+        days_validation = validate_creation_time_back(creation_days_back, time_unit='days')
         if not days_validation.is_valid:
             return False, days_validation.error_message, None
         validated_values[WizInputParam.CREATION_DAYS_BACK] = days_validation.days_value
@@ -1942,32 +1957,39 @@ def apply_resource_id_filter(variables, resource_id, is_detection=True):
     return variables
 
 
-def apply_subscription_filter(variables, subscription_id, is_detection=True):
+def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_or_cloud_organization_id_list, is_detection=True):
     """
-    Adds the subscription filter to the query variables
+    Adds the cloud_account_or_cloud_organization filter to the query variables
 
     Args:
         variables (dict): The query variables
-        subscription_id (str): The subscription ID
+        cloud_account_or_cloud_organization_id_list (str or list): The cloud_account_or_cloud_organization ID(s)
+        is_detection (bool): Whether this is for a detection query (True) or other query (False)
 
     Returns:
         dict: Updated variables with the filter
     """
-    if not subscription_id:
+    if not cloud_account_or_cloud_organization_id_list:
         return variables
 
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
+    # Handle both single cloud_account_or_cloud_organization (str) and multiple cloud_account_or_cloud_organization (list)
+    if isinstance(cloud_account_or_cloud_organization_id_list, str):
+        cloud_account_or_cloud_organization_list = [cloud_account_or_cloud_organization_id_list]
+    else:
+        cloud_account_or_cloud_organization_list = cloud_account_or_cloud_organization_id_list
+
     if is_detection:
         variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = {
-            WizApiVariables.EQUALS: [subscription_id]
+            WizApiVariables.EQUALS: cloud_account_or_cloud_organization_list
         }
     else:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = [subscription_id]
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = \
+            cloud_account_or_cloud_organization_list
 
     return variables
-
 
 def apply_severity_filter(variables, severity_list, is_detection=True):
     """
@@ -2112,7 +2134,7 @@ def apply_all_detection_filters(variables, validated_values):
     variables = apply_detection_type_filter(variables, validated_values.get(WizInputParam.TYPE))
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM))
     variables = apply_origin_filter(variables, validated_values.get(WizInputParam.ORIGIN))
-    variables = apply_subscription_filter(variables, validated_values.get(WizInputParam.SUBSCRIPTION))
+    variables = apply_cloud_account_or_cloud_organization_filter(variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG))
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID))
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY))
     variables = apply_matched_rule_filter(variables, validated_values.get(WizInputParam.MATCHED_RULE))
@@ -2123,7 +2145,7 @@ def apply_all_detection_filters(variables, validated_values):
 
 
 def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
-                            detection_origin=None, detection_subscription=None, resource_id=None, severity=None,
+                            detection_origin=None, detection_cloud_account_or_cloud_organization=None, resource_id=None, severity=None,
                             creation_minutes_back=None, matched_rule=None, matched_rule_name=None, project_id=None,
                             after_time=None, add_detection_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
     """
@@ -2135,7 +2157,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         detection_type (str): Type of detections
         detection_platform (list): Cloud platforms
         detection_origin (list): Detection origins
-        detection_subscription (str): Detection subscription
+        detection_cloud_account_or_cloud_organization (str): Detection cloud_account_or_cloud_organization
         resource_id (str): Resource ID
         severity (str): Severity level
         creation_minutes_back (str): Number of minutes back for creation filter
@@ -2152,7 +2174,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
                  f"Detection type is {detection_type}\n"
                  f"Detection platform is {detection_platform}\n"
                  f"Detection origin is {detection_origin}\n"
-                 f"Detection subscription is {detection_subscription}\n"
+                 f"Detection cloud_account_or_cloud_organization is {detection_cloud_account_or_cloud_organization}\n"
                  f"Resource ID is {resource_id}\n"
                  f"Severity is {severity}\n"
                  f"Creation minutes back is {creation_minutes_back}\n"
@@ -2169,7 +2191,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         WizInputParam.TYPE: detection_type,
         WizInputParam.PLATFORM: detection_platform,
         WizInputParam.ORIGIN: detection_origin,
-        WizInputParam.SUBSCRIPTION: detection_subscription,
+        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: detection_cloud_account_or_cloud_organization,
         WizInputParam.RESOURCE_ID: resource_id,
         WizInputParam.SEVERITY: severity,
         WizInputParam.CREATION_MINUTES_BACK: creation_minutes_back,
@@ -2212,7 +2234,7 @@ def apply_all_threat_filters(variables, validated_values):
     variables = apply_issue_id_filter(variables, validated_values.get(WizInputParam.ISSUE_ID), is_detection=False)
     variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK), 'days')
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM), is_detection=False)
-    variables = apply_subscription_filter(variables, validated_values.get(WizInputParam.SUBSCRIPTION), is_detection=False)
+    variables = apply_cloud_account_or_cloud_organization_filter(variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG), is_detection=False)
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID), is_detection=False)
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY), is_detection=False)
     variables = apply_status_filter(variables, validated_values.get(WizInputParam.STATUS))
@@ -2222,7 +2244,7 @@ def apply_all_threat_filters(variables, validated_values):
     return variables
 
 
-def get_filtered_threats(issue_id=None, platform=None, subscription=None, resource_id=None, origin=None,
+def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_organization=None, resource_id=None, origin=None,
                          severity=None, status=None, creation_days_back=None, project_id=None,
                          add_threat_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
     """
@@ -2232,7 +2254,7 @@ def get_filtered_threats(issue_id=None, platform=None, subscription=None, resour
         issue_id (str): Issue ID
         platform (list): Cloud platforms
         origin (list): Cloud origin
-        subscription (str): Cloud subscription
+        cloud_account_or_cloud_organization (str): Cloud account or cloud organization
         resource_id (str): Resource ID
         severity (str): Severity level
         status (list): Threat status
@@ -2248,7 +2270,7 @@ def get_filtered_threats(issue_id=None, platform=None, subscription=None, resour
     demisto.info(f"Issue ID is {issue_id}\n"
                  f"Platform is {platform}\n"
                  f"Origin is {origin}\n"
-                 f"Subscription is {subscription}\n"
+                 f"Cloud account or cloud organization is {cloud_account_or_cloud_organization}\n"
                  f"Resource ID is {resource_id}\n"
                  f"Severity is {severity}\n"
                  f"Status is {status}\n"
@@ -2260,7 +2282,7 @@ def get_filtered_threats(issue_id=None, platform=None, subscription=None, resour
         WizInputParam.ISSUE_ID: issue_id,
         WizInputParam.PLATFORM: platform,
         WizInputParam.ORIGIN: origin,
-        WizInputParam.SUBSCRIPTION: subscription,
+        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: cloud_account_or_cloud_organization,
         WizInputParam.RESOURCE_ID: resource_id,
         WizInputParam.SEVERITY: severity,
         WizInputParam.STATUS: status,
@@ -2344,7 +2366,7 @@ def get_detections():
     detection_type = demisto_args.get(WizInputParam.TYPE)
     detection_platform = demisto_args.get(WizInputParam.PLATFORM)
     detection_origin = demisto_args.get(WizInputParam.ORIGIN)
-    detection_subscription = demisto_args.get(WizInputParam.SUBSCRIPTION)
+    detection_cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
     resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
     severity = demisto_args.get(WizInputParam.SEVERITY)
     creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, '10')
@@ -2356,7 +2378,7 @@ def get_detections():
         detection_type=detection_type,
         detection_platform=detection_platform,
         detection_origin=detection_origin,
-        detection_subscription=detection_subscription,
+        detection_cloud_account_or_cloud_organization=detection_cloud_account_or_cloud_organization,
         resource_id=resource_id,
         severity=severity,
         creation_minutes_back=creation_minutes_back,
@@ -2433,11 +2455,11 @@ def get_threats():
     resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
     severity = demisto_args.get(WizInputParam.SEVERITY)
     status = demisto_args.get(WizInputParam.STATUS)
-    subscription = demisto_args.get(WizInputParam.SUBSCRIPTION)
+    cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
 
     threats = get_filtered_threats(
         platform=platform,
-        subscription=subscription,
+        cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
         resource_id=resource_id,
         severity=severity,
         status=status,

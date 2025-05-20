@@ -49,8 +49,8 @@ configuration:
   defaultvalue: GENERATED THREAT
   type: 15
   required: false
-- name: subscription
-  display: Detection subscription to fetch
+- name: cloud_account_or_cloud_organization
+  display: Detection cloud account or cloud organization to fetch
   type: 0
   required: false
 - name: platform
@@ -162,8 +162,8 @@ script:
     - name: issue_id
       description: The internal Wiz Issue ID of the Detections.
       required: false
-    - name: subscription
-      description: The cloud subscription of the Detections.
+    - name: cloud_account_or_cloud_organization
+      description: The cloud account or cloud organizations of the Detections.
       required: false
     - name: origin
       description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
@@ -323,8 +323,8 @@ script:
         description: Number of days back to retrieve threats (1-30).
         defaultValue: 5
         required: false
-      - name: subscription
-        description: The cloud subscription of the Threats.
+      - name: cloud_account_or_cloud_organization
+        description: The cloud account or cloud organizations of the Threats.
         required: false
       - name: platform
         description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
@@ -380,7 +380,7 @@ script:
           - RESOLVED
           - REJECTED
         isArray: true
-        defaultValue: Open, In Progress
+        defaultValue: OPEN, IN_PROGRESS
         description: Get Threats of a specific status.
       - name: origin
         description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...

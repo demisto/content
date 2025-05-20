@@ -20,14 +20,14 @@ from Packs.Wiz.Integrations.WizDefend.WizDefend import (
     get_token, get_entries, query_api,
     # Validation functions
     validate_detection_type, validate_detection_platform, validate_detection_origin,
-    validate_detection_subscription, validate_creation_time_back, validate_severity,
+    validate_detection_cloud_account_or_cloud_organization, validate_creation_time_back, validate_severity,
     validate_resource_id, validate_rule_match_id, validate_rule_match_name,
     validate_project, validate_all_detection_parameters, validate_incident_type, validate_first_fetch,
     validate_fetch_interval, validate_first_fetch_timestamp,
     # Filter functions
     apply_creation_in_last_filter, apply_creation_after_time_filter,
     apply_detection_type_filter, apply_platform_filter, apply_origin_filter,
-    apply_resource_id_filter, apply_subscription_filter, apply_severity_filter,
+    apply_resource_id_filter, apply_cloud_account_or_cloud_organization_filter, apply_severity_filter,
     apply_matched_rule_filter, apply_matched_rule_name_filter, apply_project_id_filter,
     apply_detection_id_filter, apply_issue_id_filter, apply_all_detection_filters,
     # Utility functions
@@ -383,14 +383,16 @@ def test_validate_detection_origin(origin, expected_valid, expected_value):
 
 
 @pytest.mark.parametrize("subscription,expected_valid,expected_value", [
-    ("test-subscription", True, "test-subscription"),
-    ("", True, ""),
+    (["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"], True, ["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"]),
+    ("12345678-1234-1234-1234-d25e16359c19", True, ["12345678-1234-1234-1234-d25e16359c19"]),
+    ("test-subscription", False, "test-subscription"),
+    ("", True, None),
     (None, True, None),
     (123, False, None),  # Non-string should be invalid
 ])
 def test_validate_detection_subscription(subscription, expected_valid, expected_value):
     """Test validate_detection_subscription with various inputs"""
-    result = validate_detection_subscription(subscription)
+    result = validate_detection_cloud_account_or_cloud_organization(subscription)
     assert result.is_valid == expected_valid
     if expected_valid:
         assert result.value == expected_value
@@ -581,7 +583,7 @@ def test_validate_all_detection_parameters():
         'type': 'GENERATED THREAT',
         'platform': 'AWS',
         'origin': 'WIZ_SENSOR',
-        'subscription': 'test-subscription',
+        'subscription': '12345678-1234-1234-1234-d25e16359c19',
         'resource_id': 'test-resource',
         'severity': 'CRITICAL',
         'creation_minutes_back': '15',
@@ -737,14 +739,14 @@ def test_apply_subscription_filter():
     """Test apply_subscription_filter function"""
     # Test with value
     variables = {}
-    result = apply_subscription_filter(variables, "test-subscription")
+    result = apply_cloud_account_or_cloud_organization_filter(variables, "12345678-1234-1234-1234-d25e16359c19")
     assert "filterBy" in result
     assert "cloudAccountOrCloudOrganizationId" in result["filterBy"]
-    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == ["test-subscription"]
+    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == ["12345678-1234-1234-1234-d25e16359c19"]
 
     # Test with None (should not add filter)
     variables = {}
-    result = apply_subscription_filter(variables, None)
+    result = apply_cloud_account_or_cloud_organization_filter(variables, None)
     assert result == {}
 
 
@@ -906,7 +908,7 @@ def test_apply_all_filters():
         'type': 'GENERATED_THREAT',
         'platform': ['AWS', 'Azure'],
         'origin': ['WIZ_SENSOR'],
-        'subscription': 'test-subscription',
+        'cloud_account_or_cloud_organization': 'test-subscription',
         'resource_id': 'test-id',
         'severity': ['CRITICAL'],
         'creation_minutes_back': 15,
@@ -924,7 +926,7 @@ def test_apply_all_filters():
     assert result["filterBy"]["type"]["equals"] == [validated_values['type']]
     assert result["filterBy"]["cloudPlatform"]["equals"] == validated_values['platform']
     assert result["filterBy"]["origin"]["equals"] == validated_values['origin']
-    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == [validated_values['subscription']]
+    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == [validated_values['cloud_account_or_cloud_organization']]
     assert result["filterBy"]["resource"]["id"]["equals"] == [validated_values['resource_id']]
     assert result["filterBy"]["severity"]["equals"] == validated_values['severity']
     assert result["filterBy"]["createdAt"]["inLast"]["amount"] == validated_values['creation_minutes_back']
@@ -1481,7 +1483,7 @@ def test_extract_params_from_integration_settings(mocker):
         'platform': 'AWS',
         'severity': 'CRITICAL',
         'origin': 'WIZ_SENSOR',
-        'subscription': 'sub-123',
+        'cloud_account_or_cloud_organization': 'sub-123',
         'first_fetch': '2 days',
         'incidentFetchInterval': 10,
         'incidentType': 'WizDefend Detection',
@@ -1495,7 +1497,7 @@ def test_extract_params_from_integration_settings(mocker):
     assert result['platform'] == 'AWS'
     assert result['severity'] == 'CRITICAL'
     assert result['origin'] == 'WIZ_SENSOR'
-    assert result['subscription'] == 'sub-123'
+    assert result['cloud_account_or_cloud_organization'] == 'sub-123'
     assert 'first_fetch' not in result
 
     # Test with advanced params
@@ -1713,7 +1715,7 @@ def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_
         detection_type="GENERATED THREAT",
         detection_platform=validated_values['platform'],
         detection_origin=validated_values['origin'],
-        detection_subscription=validated_values['subscription'],
+        detection_cloud_account_or_cloud_organization=validated_values['subscription'],
         resource_id=validated_values['resource_id'],
         severity="CRITICAL",
         creation_minutes_back="15",
