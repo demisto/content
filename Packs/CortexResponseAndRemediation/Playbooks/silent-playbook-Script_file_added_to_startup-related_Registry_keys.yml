@@ -459,7 +459,7 @@ tasks:
       id: ef3721b8-94c4-4bec-9f66-056906400434
       version: -1
       name: Get registry data
-      description: Returns information about each alert ID.
+      description: Returns additional alert data, including registry keys and values that reference the script file.
       script: '|||core-get-cloud-original-alerts'
       type: regular
       iscommand: true
@@ -541,10 +541,10 @@ tasks:
         labelarg:
           simple: |-
             #### Dear Analyst,
-            Please note that during the investigation process, The playbook could not retrieve all the script file that found in the startup-related registry keys.
+            Please note that during the investigation, the playbook was unable to retrieve all script files found in the startup-related registry keys.
 
-            This is due to one of the following reasons:
-            - The device disconnected.
+            This may be due to one of the following reasons:
+            - The device is disconnected.
             - The script file was modified, moved, or deleted.
 
             ####The script path:
@@ -553,7 +553,7 @@ tasks:
             ---
 
             ### Decision Required:
-            Please check the script that the playbook could not retrieve and choose the action you want to perform:
+            Please investigate the script file that the playbook was unable to retrieve and choose the action you would like to perform:
 
             - **False Positive** - Close the alert as a false positive.
             - **True Positive** - Handle the alert as a true positive. This will initiate remediation actions such as terminating malicious processes, blocking related files, and deleting the associated registry key entries.
@@ -747,7 +747,7 @@ tasks:
       {
         "position": {
           "x": 443,
-          "y": 5196
+          "y": 5194
         }
       }
     note: false
@@ -1160,7 +1160,7 @@ tasks:
       - "13"
     scriptarguments:
       comment:
-        simple: The hash was added to the block list by the playbook "Execution of an uncommon process at an early startup stage"
+        simple: 'The hash was added to the block list by the playbook ''Script file added to startup-related Registry keys'' as part of handling alert ID: ${alert.id}'
       hash_list:
         complex:
           root: MaliciousCGOProcess
@@ -1563,167 +1563,14 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: File.Info
                 iscontext: true
               right:
                 value:
-                  simple: vb
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vbe
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vbs
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: js
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jse
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: ps1
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: bat
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jar
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cpl
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsf
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsh
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: asp
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cmd
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: py
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: rb
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pyc
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: sh
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: hta
+                  simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
               ignorecase: true
           accessor: EntryID
     separatecontext: false
@@ -1770,7 +1617,7 @@ tasks:
       command_line:
         simple: ${FileData}
       custom_patterns:
-        simple: (?i)(Invoke-WebRequest|\$payload|mshta|Base64Decode|CreateObject\(\"Wscript\.Shell\"\)|objShell\.Run|ctypes\.windll\.kernel32|base64\.b64decode|ActiveXObject\(\"WScript\.Shell\"\)|ActiveXObject\(\"MSXML2\.XMLHTTP\"\)|addEventListener\(\))
+        simple: (?i)(DownloadFile|\$payload|regsvr32|subprocess|chr|urlopen|socket\.socket|addEventListener|unescape|WinHttpRequest|bitsadmin|beval\(|atob\(|WScript\.Sleep|String\.fromCharCode|binascii\.a2b_base64|Base64Decode|CreateObject\(\"Wscript\.Shell\"\)|objShell\.Run|requests\.get|os\.system|os\.popen|urllib\.request|ctypes\.windll\.kernel32|Base64\.decode64|base64\.b64decode|ActiveXObject\(\"WScript\.Shell\"\)|ActiveXObject\(\"MSXML2\.XMLHTTP\"\)|ActiveXObject\(\"MSXML2\.ServerXMLHTTP\"\)|addEventListener\(\)|ADODB\.Stream|Scripting\.FileSystemObject|Shell\.Application|GetObject\(\"winmgmts\:|-ExecutionPolicy\s+Unrestricted)
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1977,6 +1824,15 @@ tasks:
             iscontext: true
           right:
             value: {}
+      - - operator: inList
+          left:
+            value:
+              simple: File.Info
+            iscontext: true
+          right:
+            value:
+              simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
+          ignorecase: true
     continueonerrortype: ""
     view: |-
       {
@@ -2151,7 +2007,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 5929
         }
       }
@@ -2195,7 +2051,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 6062
         }
       }
@@ -2226,8 +2082,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1364,
-          "y": 6492
+          "x": 1383,
+          "y": 6500
         }
       }
     note: false
@@ -2262,7 +2118,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1363,
+          "x": 1383,
           "y": 6617
         }
       }
@@ -2341,7 +2197,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 5525
         }
       }
@@ -2414,166 +2270,15 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: File.Info
                 iscontext: true
               right:
                 value:
-                  simple: vbs
+                  simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
               ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vbe
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vb
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: js
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jse
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: ps1
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: bat
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jar
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cpl
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsf
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsh
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: asp
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cmd
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: hta
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pyc
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: rb
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: py
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: sh
           accessor: SHA256
     separatecontext: false
     continueonerror: true
@@ -2610,7 +2315,7 @@ tasks:
       - "121"
     scriptarguments:
       comment:
-        simple: The hash was added to the block list by the playbook "Execution of an uncommon process at an early startup stage"
+        simple: 'The hash was added to the block list by the playbook ''Script file added to startup-related Registry keys'' as part of handling alert ID: ${alert.id}'
       hash_list:
         complex:
           root: ExtractedIndicators
@@ -2645,8 +2350,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 918,
-          "y": 5657
+          "x": 443,
+          "y": 5658
         }
       }
     note: false
@@ -2719,8 +2424,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 918,
-          "y": 5525
+          "x": 443,
+          "y": 5526
         }
       }
     note: false
@@ -2786,7 +2491,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 443,
+          "x": 866,
           "y": 5525
         }
       }
@@ -2853,7 +2558,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 5805
         }
       }
@@ -2902,7 +2607,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 6206
         }
       }
@@ -2933,7 +2638,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -359,
+          "x": -283,
           "y": 6359
         }
       }
@@ -2978,7 +2683,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -51,
+          "x": 25,
           "y": 5657
         }
       }
@@ -3011,167 +2716,14 @@ tasks:
         complex:
           root: File
           filters:
-          - - operator: isEqualString
+          - - operator: inList
               left:
                 value:
                   simple: File.Info
                 iscontext: true
               right:
                 value:
-                  simple: vbs
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vbe
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: vbs
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: js
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jse
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: ps1
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: bat
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: jar
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cpl
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsf
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: wsh
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: asp
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: cmd
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: hta
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pyc
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: py
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: rb
-              ignorecase: true
-            - operator: isEqualString
-              left:
-                value:
-                  simple: File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: sh
+                  simple: vbs,vbe,vb,js,jse,ps1,bat,jar,cpl,wsf,wsh,asp,cmd,hta,pyc,rb,py,sh
               ignorecase: true
     separatecontext: false
     continueonerrortype: ""
@@ -3399,17 +2951,16 @@ view: |-
       "84_86_#default#": 0.51,
       "8_3_yes": 0.1,
       "8_50_#default#": 0.4,
-      "91_121_No Action": 0.56,
+      "91_121_No Action": 0.64,
       "91_124_Delete registry value": 0.72,
-      "91_132_Add to Block List": 0.7,
-      "91_135_Add to Block List \u0026 Delete registry value": 0.44,
+      "91_135_Add to Block List \u0026 Delete registry value": 0.9,
       "98_138_#error#": 0.15
     },
     "paper": {
       "dimensions": {
         "height": 6851,
-        "width": 2802,
-        "x": -359,
+        "width": 2762,
+        "x": -319,
         "y": -164
       }
     }
