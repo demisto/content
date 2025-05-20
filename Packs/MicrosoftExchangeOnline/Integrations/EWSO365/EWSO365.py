@@ -234,7 +234,7 @@ def get_attachment_name(attachment_name, eml_extension=False, content_id="", is_
     return attachment_name
 
 
-def prepare_args(args):
+def prepare_args(args: dict[str, str]) -> dict:
     """
     Prepare arguments to be used as the API expects it
     :param args: demisto args
@@ -242,7 +242,7 @@ def prepare_args(args):
     """
     args = {k.replace("-", "_"): v for k, v in list(args.items())}
     if "is_public" in args:
-        args["is_public"] = args["is_public"] == "True"
+        args["is_public"] = args["is_public"] == "True"  # type: ignore[assignment]
     if "from" in args:
         args["from_address"] = args.pop("from")
     return args
@@ -1191,15 +1191,26 @@ def reply_mail(
     attachCIDs="",
     attachNames="",
     manualAttachObj=None,
+    handle_inline_image=True,
 ):  # pragma: no cover
     to = argToList(to)
     cc = argToList(cc)
     bcc = argToList(bcc)
-
+    handle_inline_image: bool = argToBoolean(handle_inline_image)
     # collect all types of attachments
     attachments = collect_attachments(attachIDs, attachCIDs, attachNames)
     attachments.extend(collect_manual_attachments(manualAttachObj))
-    client.reply_email(inReplyTo, to, body, subject, bcc, cc, htmlBody, attachments)
+    client.reply_email(
+        in_reply_to=inReplyTo,
+        to=to,
+        body=body,
+        subject=subject,
+        bcc=bcc,
+        cc=cc,
+        html_body=htmlBody,
+        attachments=attachments,
+        handle_inline_image=handle_inline_image,
+    )
 
 
 def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma: no cover
@@ -1867,7 +1878,7 @@ def sub_main():  # pragma: no cover
                     destination_folder_path=args.get("destination_folder_path", ""),
                     dest_client=dest_client,
                     source_mailbox=args.get("source_mailbox", None),
-                    is_public=args.get("is_public", None),
+                    is_public=args.get("is_public", None),  # type: ignore[assignment]
                 )
             )
 
