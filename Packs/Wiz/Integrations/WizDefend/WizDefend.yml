@@ -23,14 +23,14 @@ configuration:
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
 - name: first_fetch
-  display: First fetch timestamp (max 5 days)
-  additionalinfo: 'How many detections to pull the first time. The format is <number> <time unit>, e.g., 12 hours, 1 day. The maximum is 5 days.'
+  display: First fetch timestamp (maximum 5 days)
+  additionalinfo: 'Specifies how far back to retrieve detections during the first fetch. Format: <number> <time unit>, e.g., "12 hours", "1 day". Maximum allowed is 5 days.'
   type: 0
   required: false
   defaultvalue: 12 hours
 - name: severity
-  additionalinfo: 'The chosen severity and above will be fetched.'
-  display: Detection severities to fetch
+  additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
+  display: Minimum detection severity to fetch
   options:
   - None
   - Critical
@@ -41,7 +41,7 @@ configuration:
   type: 15
   required: false
 - name: type
-  display: Detection type to fetch
+  display: Type of detections to fetch.
   options:
   - None
   - GENERATED THREAT
@@ -50,7 +50,7 @@ configuration:
   type: 15
   required: false
 - name: cloud_account_or_cloud_organization
-  display: Detection cloud account or cloud organization to fetch
+  display: Detection cloud account or cloud organization to fetch.
   type: 0
   required: false
 - name: platform
@@ -140,20 +140,20 @@ configuration:
   name: isFetch
   type: 8
   required: false
-description: Agentless cloud security.
+description: Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
 display: WizDefend
 name: WizDefend
 script:
   commands:
   - name: wiz-get-detections
-    description: Get Wiz Detections for a specific type.
+    description: Retrieve Wiz security detections based on specified filters.
     arguments:
     - name: creation_minutes_back
-      description: Number of minutes back to retrieve Detections (10-600).
+      description: Time window in minutes to retrieve detections (range 10-600).
       defaultValue: 10
       required: false
     - name: type
-      description: Detections type.
+      description: Type of detections to fetch.
       predefined:
       - GENERATED THREAT
       - DID NOT GENERATE THREAT
@@ -163,7 +163,8 @@ script:
       description: The internal Wiz Issue ID of the Detections.
       required: false
     - name: cloud_account_or_cloud_organization
-      description: The cloud account or cloud organizations of the Detections.
+      display: Detection cloud account or cloud organization to fetch.
+      type: 0
       required: false
     - name: origin
       description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
@@ -245,7 +246,7 @@ script:
       auto: PREDEFINED
       isArray: true
     - name: resource_id
-      description: Get Detections of a specific resource.
+      description: Filter detections by specific resource ID.
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -256,10 +257,10 @@ script:
       - INFORMATIONAL
       description: Get Detections of a specific severity and above.
     - name: rule_match_id
-      description: Filter Detections by rule match ID (must be a valid UUID).
+      description: Filter detections by rule match ID (requires valid UUID format).
       required: false
     - name: rule_match_name
-      description: Filter Detections by rule match name.
+      description: Filter detections by matching rule name.
       required: false
     - name: project
       description: Filter Detections by project.
@@ -284,7 +285,7 @@ script:
       description: Wiz Detection status.
       type: String
   - name: wiz-get-detection
-    description: Get the details of a Wiz Detection.
+    description: Retrieve detailed information about a specific Wiz detection by ID.
     arguments:
     - description: Wiz internal detection ID to retrieve.
       name: detection_id
@@ -310,21 +311,21 @@ script:
       description: URL to the Wiz Detection in the Wiz console.
       type: String
   - name: wiz-get-threat
-    description: Get the details of a Wiz Threat.
+    description: Retrieve detailed information about a specific Wiz threat by issue ID.
     arguments:
       - description: Wiz internal issue ID to retrieve.
         name: issue_id
         isArray: true
         required: false
   - name: wiz-get-threats
-    description: Get Wiz Threats for a specific type.
+    description: Retrieve Wiz threats based on specified filters.
     arguments:
       - name: creation_days_back
-        description: Number of days back to retrieve threats (1-30).
+        description: Time window in days to retrieve threats (range 1-30).
         defaultValue: 5
         required: false
       - name: cloud_account_or_cloud_organization
-        description: The cloud account or cloud organizations of the Threats.
+        description: Threat cloud account or cloud organization to fetch.
         required: false
       - name: platform
         description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
@@ -362,7 +363,7 @@ script:
         auto: PREDEFINED
         isArray: true
       - name: resource_id
-        description: Get Threats for a specific resource.
+        description: Filter threats by specific resource ID..
       - name: severity
         auto: PREDEFINED
         predefined:
@@ -371,7 +372,8 @@ script:
           - MEDIUM
           - LOW
           - INFORMATIONAL
-        description: Get Threats of a specific severity and above.
+        additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
+        description: Minimum threat severity to fetch
       - name: status
         auto: PREDEFINED
         predefined:
@@ -381,7 +383,7 @@ script:
           - REJECTED
         isArray: true
         defaultValue: OPEN, IN_PROGRESS
-        description: Get Threats of a specific status.
+        description: Filter threats by status (e.g., OPEN, IN_PROGRESS).
       - name: origin
         description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
         predefined:
