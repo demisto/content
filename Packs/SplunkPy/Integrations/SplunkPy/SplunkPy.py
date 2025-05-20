@@ -1796,24 +1796,6 @@ def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_sta
             f'"status_label" key could not be found on the returned data, skipping closure mirror for notable {notable_id}.'
         )
 
-def deduplicate_by_unique_key(results: list[dict]) -> list[dict]:
-    seen_keys = set()
-    deduped_results = []
-
-    for result in results:
-        unique_key = (
-            str(result.get('_cd'))
-            if result.get('_cd') is not None
-            else f"{result.get('_time')}-{result.get('event_id')}"
-        )
-
-        if unique_key not in seen_keys:
-            seen_keys.add(unique_key)
-            deduped_results.append(result)
-
-    return deduped_results
-
-
 
 def get_modified_remote_data_command(
     service: client.Service,
@@ -1849,23 +1831,16 @@ def get_modified_remote_data_command(
     incident_review_search = (
         "|`incident_review` "
         "| eval last_modified_timestamp=_time "
-        f"| where last_modified_timestamp>={last_update_splunk_timestamp} "
-        "| eval unique_key=coalesce(tostring(_cd), tostring(_time) . \"-\" . event_id) "
-        "| sort 0 last_modified_timestamp desc "
-        "| dedup unique_key sortby -last_modified_timestamp "
+        f"| where last_modified_timestamp>{last_update_splunk_timestamp} "
         "| fields - _time,time "
         "| expandtoken"
     )
     demisto.debug(f"mirror-in: performing `incident_review` search with query: {incident_review_search}.")
-    raw_results = list(results.JSONResultsReader(
+    for item in results.JSONResultsReader(
         service.jobs.oneshot(query=incident_review_search, count=MIRROR_LIMIT, output_mode=OUTPUT_MODE_JSON)
-    ))
-    deduped_results = deduplicate_by_unique_key(raw_results)
-
-    for item in deduped_results:
+    ):
         if handle_message(item):
             continue
-
         updated_notable = parse_notable(item, to_dict=True)
         notable_id = updated_notable["rule_id"]  # in the `incident_review` macro - the ID are in the rule_id key
         if notable_id in already_processed_ids:
@@ -1889,7 +1864,6 @@ def get_modified_remote_data_command(
                     "Note": True,
                 }
             )
-
         if close_incident:
             handle_closed_notable(updated_notable, notable_id, close_extra_labels, close_end_statuses, entries)
 
