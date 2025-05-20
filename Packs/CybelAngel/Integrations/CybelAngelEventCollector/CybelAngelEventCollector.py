@@ -968,7 +968,7 @@ def get_last_run(now: datetime, events_type_to_fetch: list[str]) -> dict[str, di
 """ MAIN FUNCTION """
 
 
-def main() -> None:
+def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     client_id: str = params.get("credentials", {}).get("identifier", "")
