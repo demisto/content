@@ -45,10 +45,8 @@ OK_CODES = (
     521,
     *(
         status_code
-        for status_code in requests.status_codes._codes # type: ignore[attr-defined]
-        if status_code
-        >= 200
-        and status_code < 300
+        for status_code in requests.status_codes._codes  # type: ignore[attr-defined]
+        if status_code >= 200 and status_code < 300
     ),  # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
@@ -849,7 +847,7 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
         # type: ignore
         date_query = (
             f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"  # type: ignore[union-attr]
-            f" {end_date.strftime(DATE_FORMAT)}]" # type: ignore[union-attr]
+            f" {end_date.strftime(DATE_FORMAT)}]"  # type: ignore[union-attr]
         )
         params["query"] += date_query
     elif start_date or end_date:
