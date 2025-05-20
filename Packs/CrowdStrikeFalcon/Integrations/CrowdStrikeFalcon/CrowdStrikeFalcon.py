@@ -26,8 +26,12 @@ INTEGRATION_NAME = "CrowdStrike Falcon"
 IDP_DETECTION = "IDP detection"
 MOBILE_DETECTION = "MOBILE detection"
 ENDPOINT_DETECTION = "detection"
+DETECTION_FETCH_TYPES = ["Detections", "Endpoint Detection"]
+INCIDENT_FETCH_TYPES = ["Incidents", "Endpoint Incident"]
 IDP_DETECTION_FETCH_TYPE = "IDP Detection"
 MOBILE_DETECTION_FETCH_TYPE = "Mobile Detection"
+IOA_FETCH_TYPE = "Indicator of Attack"
+IOM_FETCH_TYPE = "Indicator of Misconfiguration"
 ON_DEMAND_SCANS_DETECTION_TYPE = "On-Demand Scans Detection"
 ON_DEMAND_SCANS_DETECTION = "On-Demand Scans detection"
 OFP_DETECTION_TYPE = "OFP Detection"
@@ -393,6 +397,11 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 """ HELPER FUNCTIONS """
+def is_detection_fetch_type_selected(selected_types:list):
+    return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
+    
+def is_incident_fetch_type_selected(selected_types:list):
+    return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
 
 def disable_for_xsiam():
@@ -2942,7 +2951,8 @@ def migrate_last_run(last_run: dict[str, str] | list[dict], is_fetch_events: boo
 
         last_run_length = TOTAL_FETCH_TYPE_XSIAM if is_fetch_events else TOTAL_FETCH_TYPE_XSOAR
         result = [updated_last_run_detections, updated_last_run_incidents]
-        result.extend([{} for _ in range(last_run_length - 2)])
+        current_length = len(result)
+        result.extend([{} for _ in range(last_run_length - current_length)])
         return result
 
 
@@ -3300,7 +3310,9 @@ def fetch_items(command="fetch-incidents"):
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
     # Fetch Endpoint Detections
-    if "Detections" in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
+    
+    if is_detection_fetch_type_selected(selected_types=fetch_incidents_or_detections):
+    # if "Detections" in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Detections")
         demisto.debug(f"CrowdStrikeFalconMsg: Current detections_last_run object: {detections_last_run}")
 
@@ -3308,7 +3320,8 @@ def fetch_items(command="fetch-incidents"):
         items.extend(fetched_detections)
 
     # Fetch Endpoint Incidents
-    if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
+    if is_incident_fetch_type_selected(selected_types=fetch_incidents_or_detections):
+    # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Incidents")
         demisto.debug(f"CrowdStrikeFalconMsg: Current Incidents last_run object: {incidents_last_run}")
         fetched_incidents, incidents_last_run = fetch_endpoint_incidents(incidents_last_run, look_back, is_fetch_events)
@@ -3349,7 +3362,7 @@ def fetch_items(command="fetch-incidents"):
         items.extend(fetched_mobile_detections)
 
     # Fetch Indicators of Misconfiguration (IOM) - supported for fetch-incidents command only.
-    if not is_fetch_events and "Indicator of Misconfiguration" in fetch_incidents_or_detections:
+    if not is_fetch_events and IOM_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOM")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOM last_run object: {iom_last_run}")
 
@@ -3357,7 +3370,7 @@ def fetch_items(command="fetch-incidents"):
         items.extend(fetched_iom_incidents)
 
     # Fetch Indicators of Attack (IOA) - supported for fetch-incidents command only.
-    if "Indicator of Attack" in fetch_incidents_or_detections:
+    if IOA_FETCH_TYPE in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch IOA")
         demisto.debug(f"CrowdStrikeFalconMsg: Current IOA last_run object: {ioa_last_run}")
 
