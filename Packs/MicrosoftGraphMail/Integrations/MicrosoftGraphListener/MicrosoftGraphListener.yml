@@ -1,7 +1,4 @@
 category: Email
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft Graph Mail Single User
   version: -1
@@ -12,19 +9,21 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - name: creds_refresh_token
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
-  advanced: false
   required: false
+  display: ''
 - name: creds_enc_key
   type: 9
   displaypassword: Key or Client Secret
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - display: ID or Client ID
   name: auth_id
   type: 4
@@ -70,8 +69,8 @@ configuration:
   displaypassword: Authorization code (required for self-deployed Azure app)
   hiddenusername: true
   section: Connect
-  advanced: false
   required: false
+  display: ''
 - display: Authorization code (required for self-deployed Azure app)
   name: auth_code
   type: 4
@@ -83,14 +82,12 @@ configuration:
   name: redirect_uri
   type: 0
   section: Connect
-  advanced: false
   required: false
 - additionalinfo: Select this checkbox if you are using a self-deployed Azure application.
   display: Use a self-deployed Azure application
   name: self_deployed
   type: 8
   section: Connect
-  advanced: false
   required: false
 - additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   name: use_managed_identities
@@ -107,6 +104,7 @@ configuration:
   displaypassword: Azure Managed Identities Client ID
   hiddenusername: true
   advanced: true
+  display: ''
 - display: Fetch incidents
   name: isFetch
   required: false
@@ -156,7 +154,6 @@ configuration:
   required: false
   additionalinfo: Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities.
   defaultvalue: 'false'
-  advanced: false
 - display: Mark fetched emails as read
   name: mark_fetched_read
   defaultvalue: 'false'
@@ -190,6 +187,7 @@ configuration:
   type: 8
   advanced: true
   defaultvalue: 'false'
+  required: false
 description: Microsoft Graph grants Cortex XSOAR authorized access to a user's Microsoft Outlook mail data in a personal account or organization account.
 display: Microsoft Graph Mail Single User
 name: Microsoft Graph Mail Single User
@@ -859,7 +857,7 @@ script:
     - description: Maximum number of results to return.
       name: limit
       required: true
-      defaultValue: 50
+      defaultValue: '50'
     description: List email rules for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-list-rules
     outputs:
@@ -930,13 +928,12 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-  dockerimage: demisto/crypto:1.0.0.2787132
+  dockerimage: demisto/crypto:1.0.0.3174650
   isfetch: true
   script: ''
   type: python
   subtype: python3
+  runonce: false
 tests:
 - No test - manual test playbook-Microsoft_Graph_Mail_Sender_test is available in NonCircleTests folder
-defaultclassifier: Microsoft Graph Mail Single User
-defaultmapperin: Microsoft Graph Mail Single User-mapper
 fromversion: 5.0.0
