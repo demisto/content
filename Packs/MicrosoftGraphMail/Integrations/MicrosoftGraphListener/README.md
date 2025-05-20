@@ -47,35 +47,33 @@ The following permissions are required for Shared Mailbox:
 
 ## Configure Microsoft Graph Mail Single User in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| ID or Client ID |  | False |
+| Application ID or Client ID |  | False |
 | Token or Tenant ID |  | False |
 | Key or Client Secret |  | False |
-| ID or Client ID - see Detailed Instructions (?) |  | False |
-| Token or Tenant ID - see Detailed Instructions (?) |  | False |
-| Key or Client Secret - see Detailed Instructions (?) |  | False |
 | Certificate Thumbprint (optional for self-deployed Azure app) |  | False |
 | Private Key |  | False |
-| Certificate Thumbprint (optional for self-deployed Azure app) | Used for certificate authentication. As appears in the "Certificates &amp; secrets" page of the app. | False |
-| Private Key | Used for certificate authentication. The private key of the registered certificate. | False |
 | Authorization code (required for self-deployed Azure app) |  | False |
 | Application redirect URI (required for self-deployed Azure app) |  | False |
+| Use a self-deployed Azure application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Use Azure Managed Identities | Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab. | False |
 | Azure Managed Identities Client ID | The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM. | False |
 | Fetch incidents |  | False |
-| Email address from which to fetch incidents (e.g., "example@demisto.com") | During authentication, ensure you are logged in to this email address. | True |
+| Email address from which to fetch incidents (e.g., "example@mail.com") | During authentication, ensure you are logged in to this email address. | True |
 | Name of the folder from which to fetch incidents (supports Folder ID and sub-folders e.g., Inbox/Phishing) |  | True |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) |  | False |
 | Maximum number of emails to pull per fetch |  | False |
-| Trust any certificate (not secure) |  | False |
-| Use system proxy settings |  | False |
-| Use a self-deployed Azure application | Select this checkbox if you are using a self-deployed Azure application. | False |
 | Incident type |  | False |
 | Display full email body | If not active, only a preview of the email will be fetched. | False |
-| Fetch emails in HTML format | Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs (e.g., email previews in the Email Communication pack) may not provide their full capabilities. | False |
+| Fetch emails in HTML format | Select this checkbox to retrieve the body of an email in HTML format. If this checkbox is not selected, a psuedo-text representation of HTML emails will be returned and some functionality in other packs \(e.g., email previews in the Email Communication pack\) may not provide their full capabilities. | False |
 | Mark fetched emails as read | Relevant only if fetch incidents is active. | False |
 | Incidents Fetch Interval |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Use legacy attachment name |  | False |
+
 
 ## Commands
 
@@ -626,21 +624,21 @@ List email rules for a user's mailbox using Microsoft Graph API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of results to return. Default is 50. | Required |
+| limit | Maximum number of results to return. Default is 50. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. |
-| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. |
-| MSGraphMail.Rule.displayName | String | The display name of the rule. |
-| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. |
-| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. |
-| MSGraphMail.Rule.id | String | The ID of the rule. |
-| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. |
-| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. |
-| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. |
+| MSGraphMail.Rule.conditions | Unknown | Conditions that when fulfilled, will trigger the corresponding actions for that rule. | 
+| MSGraphMail.Rule.actions | Unknown | Actions to be taken on a message when the corresponding conditions are fulfilled. | 
+| MSGraphMail.Rule.displayName | String | The display name of the rule. | 
+| MSGraphMail.Rule.exceptions | Unknown | Exception conditions for the rule. | 
+| MSGraphMail.Rule.hasError | Boolean | Indicates whether the rule is in an error condition. | 
+| MSGraphMail.Rule.id | String | The ID of the rule. | 
+| MSGraphMail.Rule.isEnabled | Boolean | Indicates whether the rule is enabled to be applied to messages. | 
+| MSGraphMail.Rule.isReadOnly | Boolean | Indicates if the rule is read-only and cannot be modified or deleted by the rules REST API. | 
+| MSGraphMail.Rule.sequence | Number | Indicates the order in which the rule is executed, among other rules. | 
 
 ### msgraph-mail-get-rule
 
