@@ -13,7 +13,7 @@ Sends a message (question) to either a user (in a direct message) or to a channe
 ## Use Case
 
 ---
-This automation allows you to ask users in Zoom (including users who are external to Cortex XSOAR) questions, have them respond and 
+This automation allows you to ask users in Zoom (including users who are external to Cortex XSOAR) questions, have them respond and
 reflect the answer back to Cortex XSOAR.
 
 ## Dependencies
@@ -55,11 +55,12 @@ The automation is most useful in a playbook to determine the outcome of a condit
 It uses a mechanism that allows external users to respond in Cortex XSOAR (per investigation) with entitlement strings embedded within the message contents.
 ![SlackAsk](../../doc_files/66044107-7de39f00-e529-11e9-8099-049502b4d62f.png)
 
-The automation can utilize the interactive capabilities of Zoom to send a form with buttons. 
+The automation can utilize the interactive capabilities of Zoom to send a form with buttons.
 This requires the external endpoint for interactive responses to be available for connection. (See the [Zoom integration documentation](https://xsoar.pan.dev/docs/reference/integrations/zoom)).
 You can also utilize a dropdown list instead, by specifying the `responseType` argument.
 
 To use `ZoomAsk` via playbook:
+
 1. Add the `ZoomAsk` script to a playbook as a task.
 2. In the `message` argument, specify the message to be sent.
 3. Configure the response options by filling out the `option1` and `option2` arguments (default values are 'Yes' and 'No').

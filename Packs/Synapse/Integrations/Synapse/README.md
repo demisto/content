@@ -3,7 +3,6 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 
 ## Configure Synapse in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://synapse.vertex.link\) | True |
@@ -16,7 +15,6 @@ This integration was integrated and tested with version `2.7.0` of Synapse
 | good_tag | Benign Tag | False |
 | use_optic | Synapse is running Optic | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -27,7 +25,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Returns IP information and reputation.
 
-
 #### Base Command
 
 `ip`
@@ -36,23 +33,21 @@ Returns IP information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | List of IPs. | Required | 
-
+| ip | List of IPs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.IP.ip | String | The IP address of the indicator. | 
-| Synapse.IP.tags | String | The tags applied to the IP address. | 
-| DBotScore.Indicator | String | The value assigned by DBot for the indicator. | 
-| DBotScore.Type | String | The type assigned by DBot for the indicator. | 
-| DBotScore.Score | Number | The score assigned by DBot for the indicator. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| IP.Address | string | The IP address of the indicator. | 
-| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. | 
-| IP.Malicious.Description | string | For malicious IP addresses, the full description. | 
-
+| Synapse.IP.ip | String | The IP address of the indicator. |
+| Synapse.IP.tags | String | The tags applied to the IP address. |
+| DBotScore.Indicator | String | The value assigned by DBot for the indicator. |
+| DBotScore.Type | String | The type assigned by DBot for the indicator. |
+| DBotScore.Score | Number | The score assigned by DBot for the indicator. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| IP.Address | string | The IP address of the indicator. |
+| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that made the decision. |
+| IP.Malicious.Description | string | For malicious IP addresses, the full description. |
 
 #### Command Example
 
@@ -95,14 +90,12 @@ Returns IP information and reputation.
 >|---|---|
 >| 1.2.3.4 | mal,<br/>test |
 
-
 ### url
 
 ***
 Returns URL information and reputation.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -112,23 +105,21 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | List of URLs. | Required | 
-
+| url | List of URLs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.URL.url | String | The data of the URL indicator. | 
-| Synapse.URL.tags | String | The tags applied to the url. | 
-| DBotScore.Indicator | String | The value assigned by DBot for the indicator. | 
-| DBotScore.Type | String | The type assigned by DBot for the indicator. | 
-| DBotScore.Score | Number | The score assigned by DBot for the indicator. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| URL.Data | string | The data of the URL indicator. | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. | 
-| URL.Malicious.Description | string | For malicious URLs, the full description. | 
-
+| Synapse.URL.url | String | The data of the URL indicator. |
+| Synapse.URL.tags | String | The tags applied to the url. |
+| DBotScore.Indicator | String | The value assigned by DBot for the indicator. |
+| DBotScore.Type | String | The type assigned by DBot for the indicator. |
+| DBotScore.Score | Number | The score assigned by DBot for the indicator. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| URL.Data | string | The data of the URL indicator. |
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that made the decision. |
+| URL.Malicious.Description | string | For malicious URLs, the full description. |
 
 #### Command Example
 
@@ -164,14 +155,12 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|---|---|
 >|  | <https://google.com> |
 
-
 ### domain
 
 ***
 Returns Domain information and reputation.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 #### Base Command
 
@@ -181,23 +170,21 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | List of Domains. | Required | 
-
+| domain | List of Domains. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Domain.domain | String | The fully qualified domain name. | 
-| Synapse.Domain.tags | String | The tags applied to the domain. | 
-| DBotScore.Indicator | String | The value assigned by DBot for the indicator. | 
-| DBotScore.Type | String | The type assigned by DBot for the indicator. | 
-| DBotScore.Score | Number | The score assigned by DBot for the indicator. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Domain.Name | string | The name of the domain. | 
-| Domain.Malicious.Vendor | string | For malicious domains, the vendor that made the decision. | 
-| Domain.Malicious.Description | string | For malicious domains, the full description. | 
-
+| Synapse.Domain.domain | String | The fully qualified domain name. |
+| Synapse.Domain.tags | String | The tags applied to the domain. |
+| DBotScore.Indicator | String | The value assigned by DBot for the indicator. |
+| DBotScore.Type | String | The type assigned by DBot for the indicator. |
+| DBotScore.Score | Number | The score assigned by DBot for the indicator. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Domain.Name | string | The name of the domain. |
+| Domain.Malicious.Vendor | string | For malicious domains, the vendor that made the decision. |
+| Domain.Malicious.Description | string | For malicious domains, the full description. |
 
 #### Command Example
 
@@ -239,12 +226,10 @@ Notice: Submitting indicators using this command might make the indicator data p
 >|---|---|
 >| foobar.com | mal |
 
-
 ### file
 
 ***
 Returns File information and reputation.
-
 
 #### Base Command
 
@@ -254,30 +239,28 @@ Returns File information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | List of File Hashes (accepts MD5, SHA1, SHA256, SHA512). | Required | 
-
+| file | List of File Hashes (accepts MD5, SHA1, SHA256, SHA512). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.File.hash | String | The queried file hash. | 
-| Synapse.File.MD5 | String | The MD5 hash of the file. | 
-| Synapse.File.SHA1 | String | The SHA1 hash of the file. | 
-| Synapse.File.SHA256 | String | The SHA256 hash of the file. | 
-| Synapse.File.SHA512 | String | The SHA256 hash of the file. | 
-| Synapse.File.query | String | The formatted query in storm syntax. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-| File.Malicious.Description | String | For malicious files, the full description. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-
+| Synapse.File.hash | String | The queried file hash. |
+| Synapse.File.MD5 | String | The MD5 hash of the file. |
+| Synapse.File.SHA1 | String | The SHA1 hash of the file. |
+| Synapse.File.SHA256 | String | The SHA256 hash of the file. |
+| Synapse.File.SHA512 | String | The SHA256 hash of the file. |
+| Synapse.File.query | String | The formatted query in storm syntax. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
+| File.Malicious.Description | String | For malicious files, the full description. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 
 #### Command Example
 
@@ -327,12 +310,10 @@ Returns File information and reputation.
 >|---|---|---|---|---|---|---|
 >| 9e0c442ee3157d3f3aa2be30a1d24d81 | e7b03ed4dbdfb79477c49942d5796d3dfc78ac7e | 290f64a315850c5bccc907f79cbeabd79345719df738ee5d02dc3447d04675b3 | 53e6baa124f54462786f1122e98e38ff1be3de82fe2a96b1849a8637043fd847eec7e0f53307bddf7a066565292d500c36c941f1f3bb9dcac807b2f4a0bfce1b | 9e0c442ee3157d3f3aa2be30a1d24d81 | file:bytes:md5=9e0c442ee3157d3f3aa2be30a1d24d81 | mal |
 
-
 ### synapse-storm-query
 
 ***
 Execute a Synapse Storm query.
-
 
 #### Base Command
 
@@ -342,19 +323,17 @@ Execute a Synapse Storm query.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Synapse storm query (i.e. "inet:ipv4=1.2.3.4") | Required | 
-| limit | Limit the number of results returned. Default is 100. | Optional | 
-
+| query | Synapse storm query (i.e. "inet:ipv4=1.2.3.4") | Required |
+| limit | Limit the number of results returned. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Nodes.created | String | Timestamp when the node was first created in the Synapse Cortex. | 
-| Synapse.Nodes.form | String | The type of node \(i.e. "inet:ipv4" for an IP address\). | 
-| Synapse.Nodes.tags | String | The tags associated with the resulting node. | 
-| Synapse.Nodes.valu | String | The node primary value \(i.e. "1.2.3.4" for an IP\). | 
-
+| Synapse.Nodes.created | String | Timestamp when the node was first created in the Synapse Cortex. |
+| Synapse.Nodes.form | String | The type of node \(i.e. "inet:ipv4" for an IP address\). |
+| Synapse.Nodes.tags | String | The tags associated with the resulting node. |
+| Synapse.Nodes.valu | String | The node primary value \(i.e. "1.2.3.4" for an IP\). |
 
 #### Command Example
 
@@ -392,12 +371,10 @@ Execute a Synapse Storm query.
 >|---|---|
 >| 1599919637048 | unicast |
 
-
 ### synapse-list-users
 
 ***
 Lists current users in Synapse Cortex.
-
 
 #### Base Command
 
@@ -411,13 +388,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. | 
-| Synapse.Users.Email | String | The email address of the Synapse user. | 
-| Synapse.Users.Iden | String | The unique identifier of the Synapse user. | 
-| Synapse.Users.Name | String | The user's Synapse username. | 
-| Synapse.Users.Roles | String | The roles applied to the Synapse user. | 
-| Synapse.Users.Rules | String | The rules applied to the Synapse user. | 
-
+| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. |
+| Synapse.Users.Email | String | The email address of the Synapse user. |
+| Synapse.Users.Iden | String | The unique identifier of the Synapse user. |
+| Synapse.Users.Name | String | The user's Synapse username. |
+| Synapse.Users.Roles | String | The roles applied to the Synapse user. |
+| Synapse.Users.Rules | String | The rules applied to the Synapse user. |
 
 #### Command Example
 
@@ -473,12 +449,10 @@ There are no input arguments for this command.
 >| testuser |  | false |  | xsoar-role,<br/>all |
 >| xsoartesting |  | false |  | all |
 
-
 ### synapse-list-roles
 
 ***
 Lists current roles in Synapse Cortex.
-
 
 #### Base Command
 
@@ -492,10 +466,9 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Roles.Iden | String | The unique identifier of the Synapse Role. | 
-| Synapse.Roles.Name | String | The name of the Synapse Role. | 
-| Synapse.Roles.Rules | String | The rules applied to the Synapse Role. | 
-
+| Synapse.Roles.Iden | String | The unique identifier of the Synapse Role. |
+| Synapse.Roles.Name | String | The name of the Synapse Role. |
+| Synapse.Roles.Rules | String | The rules applied to the Synapse Role. |
 
 #### Command Example
 
@@ -537,12 +510,10 @@ There are no input arguments for this command.
 >| all | c486fa9eb8d50a8c35a60687f12dc4c9 |  |
 >| xsoartestingrole | e7e6ee238bc5bceeff96d10f100142ae |  |
 
-
 ### synapse-create-user
 
 ***
 Create a new Synapse user.
-
 
 #### Base Command
 
@@ -552,21 +523,19 @@ Create a new Synapse user.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | New username to be created. | Required | 
-| password | Optionally set the new user's password. | Optional | 
-
+| username | New username to be created. | Required |
+| password | Optionally set the new user's password. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. | 
-| Synapse.Users.Email | String | The email address of the Synapse user. | 
-| Synapse.Users.Iden | String | The unique identifier of the Synapse user. | 
-| Synapse.Users.Name | String | The user's Synapse username. | 
-| Synapse.Users.Roles | String | The roles applied to the Synapse user. | 
-| Synapse.Users.Rules | String | The rules applied to the Synapse user. | 
-
+| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. |
+| Synapse.Users.Email | String | The email address of the Synapse user. |
+| Synapse.Users.Iden | String | The unique identifier of the Synapse user. |
+| Synapse.Users.Name | String | The user's Synapse username. |
+| Synapse.Users.Roles | String | The roles applied to the Synapse user. |
+| Synapse.Users.Rules | String | The rules applied to the Synapse user. |
 
 #### Command Example
 
@@ -599,12 +568,10 @@ Create a new Synapse user.
 >|---|---|---|---|---|
 >| xsoardemo |  | false |  | all |
 
-
 ### synapse-create-role
 
 ***
 Create a new Synapse role.
-
 
 #### Base Command
 
@@ -614,17 +581,15 @@ Create a new Synapse role.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role | New role to create in Synapse. | Required | 
-
+| role | New role to create in Synapse. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Roles.Iden | String | The unique identifier of the Synapse Role. | 
-| Synapse.Roles.Name | String | The name of the Synapse Role. | 
-| Synapse.Roles.Rules | String | The rules applied to the Synapse Role. | 
-
+| Synapse.Roles.Iden | String | The unique identifier of the Synapse Role. |
+| Synapse.Roles.Name | String | The name of the Synapse Role. |
+| Synapse.Roles.Rules | String | The rules applied to the Synapse Role. |
 
 #### Command Example
 
@@ -652,12 +617,10 @@ Create a new Synapse role.
 >|---|---|---|
 >| xsoar-role-demo | 029019964000fef6ccd2be428f496423 |  |
 
-
 ### synapse-grant-user-role
 
 ***
 Grants a user access to role based perrmissions.
-
 
 #### Base Command
 
@@ -667,21 +630,19 @@ Grants a user access to role based perrmissions.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User's "iden" property - not the username. | Required | 
-| role | Role's "iden" property - not the name of the role. | Required | 
-
+| user | User's "iden" property - not the username. | Required |
+| role | Role's "iden" property - not the name of the role. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. | 
-| Synapse.Users.Email | String | The email address of the Synapse user. | 
-| Synapse.Users.Iden | String | The unique identifier of the Synapse user. | 
-| Synapse.Users.Name | String | The user's Synapse username. | 
-| Synapse.Users.Roles | String | The roles applied to the Synapse user. | 
-| Synapse.Users.Rules | String | The rules applied to the Synapse user. | 
-
+| Synapse.Users.Admin | Boolean | True/False whether the Synapse user is an admin. |
+| Synapse.Users.Email | String | The email address of the Synapse user. |
+| Synapse.Users.Iden | String | The unique identifier of the Synapse user. |
+| Synapse.Users.Name | String | The user's Synapse username. |
+| Synapse.Users.Roles | String | The roles applied to the Synapse user. |
+| Synapse.Users.Rules | String | The rules applied to the Synapse user. |
 
 #### Command Example
 
@@ -715,12 +676,10 @@ Grants a user access to role based perrmissions.
 >|---|---|---|---|---|
 >| testuser |  | false |  | xsoar-role,<br/>all |
 
-
 ### synapse-query-model
 
 ***
 Query the Synapse data model and return details for given type or form (i.e. "inet:ipv4" for an IPv4 IP address).
-
 
 #### Base Command
 
@@ -730,20 +689,18 @@ Query the Synapse data model and return details for given type or form (i.e. "in
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Type/Form query (i.e. "inet:ipv4" or "inet"fqdn") | Required | 
-
+| query | Type/Form query (i.e. "inet:ipv4" or "inet"fqdn") | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Synapse.Model.Doc | String | The docstring associated with the particular Synapse model element. | 
-| Synapse.Model.Example | String | An example of the given Synapse element. | 
-| Synapse.Model.Form | String | A form is the definition of an object in the Synapse data model \(node\). | 
-| Synapse.Model.Properties | String | The unique properties associated with the given Synapse object. | 
-| Synapse.Model.Type | String | A Type is the definition of a data element within the data model. | 
-| Synapse.Model.Valu | String | The given value of the Synapse object type. | 
-
+| Synapse.Model.Doc | String | The docstring associated with the particular Synapse model element. |
+| Synapse.Model.Example | String | An example of the given Synapse element. |
+| Synapse.Model.Form | String | A form is the definition of an object in the Synapse data model \(node\). |
+| Synapse.Model.Properties | String | The unique properties associated with the given Synapse object. |
+| Synapse.Model.Type | String | A Type is the definition of a data element within the data model. |
+| Synapse.Model.Valu | String | The given value of the Synapse object type. |
 
 #### Command Example
 

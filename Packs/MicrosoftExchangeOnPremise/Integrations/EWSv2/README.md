@@ -1467,16 +1467,17 @@ Replies to an email using EWS.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| inReplyTo | ID of the item to reply to. | Required |
-| to | A CSV list of email addresses for the 'to' field. | Required |
-| cc | A CSV list of email addresses for the 'cc' field. | Optional |
-| bcc | A CSV list of email addresses for the 'bcc' field. | Optional |
-| subject | Subject for the email to be sent. | Optional |
-| body | The contents (body) of the email to be sent. | Optional |
-| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional |
-| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
-| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
-| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional |
+| inReplyTo | ID of the item to reply to. | Required | 
+| to | A CSV list of email addresses for the 'to' field. | Required | 
+| cc | A CSV list of email addresses for the 'cc' field. | Optional | 
+| bcc | A CSV list of email addresses for the 'bcc' field. | Optional | 
+| subject | Subject for the email to be sent. | Optional | 
+| body | The contents (body) of the email to be sent. | Optional | 
+| htmlBody | HTML formatted content (body) of the email to be sent. This argument overrides the "body" argument. | Optional | 
+| attachIDs | A CSV list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional | 
+| attachNames | A CSV list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional | 
+| attachCIDs | A CSV list of CIDs to embed attachments within the email itself. | Optional | 
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML and attached to the email as inline attachment objects. Possible values are: True, False. Default is True. NOTE: Sometimes inline images sent in emails may not appear for recipients, either because their email system blocks the image (for example, due to image size or the email is flagged as malicious) or for other reasons. | Optional |
 
 #### Context Output
 

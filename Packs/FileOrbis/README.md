@@ -5,7 +5,8 @@ This integration enables the status management for FileOrbis users. Users that u
 ##### What does this pack do?
 
 The integration in this pack enables you to:
+
 - Change of the user status (enable/disable)
- 
+
  \
 For more information on FileOrbis, please visit [www.fileorbis.com](https://www.fileorbis.com)

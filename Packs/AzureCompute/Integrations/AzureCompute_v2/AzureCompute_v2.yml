@@ -14,22 +14,26 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Token (received from the admin consent - see Detailed Instructions (?) section)
   name: tenant_id
   type: 4
   hidden: true
   required: false
+  section: Connect
 - display: Key (received from the admin consent - see Detailed Instructions (?)
   name: enc_key
   type: 4
   hidden: true
   required: false
+  section: Connect
 - additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: certificate_thumbprint
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: cred_auth_id
   type: 9
   displaypassword: ID (received from the admin consent - see Detailed Instructions (?)
@@ -66,6 +70,7 @@ configuration:
   type: 4
   hidden: true
   required: false
+  section: Connect
 - displaypassword: Default Subscription ID
   name: cred_subscription_id
   hiddenusername: true
@@ -105,6 +110,9 @@ script:
   - arguments:
     - description: "The subscription ID. Note: This argument will override the instance parameter ‘Default Subscription ID'."
       name: subscription_id
+    - description: The maximum number of instances to return.
+      name: limit
+      defaultValue: '50'
     - description: |
         The resource group of the virtual machines.
         To see all the resource groups associated with your subscription, run the `azure-list-resource-groups` command. If none are present, navigate to the Azure Web Portal to create resource groups.
@@ -648,7 +656,7 @@ script:
     description: Run this command if for some reason you need to rerun the authentication process.
     execution: false
     name: azure-vm-auth-reset
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.3174650
   runonce: false
   script: '-'
   subtype: python3

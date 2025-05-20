@@ -2,8 +2,8 @@
 
 ## Configuration on Microsoft IIS
 
-Follow the steps below on Microsoft IIS to configure IIS logging at the [site level](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-logging-at-the-site-level) using the UI.   
-For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-site-logging-at-the-server-level) or [Per-server](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-server-logging-at-the-server-level) at the server level, refer to the Microsoft [Configure Logging in IIS](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis) docs. 
+Follow the steps below on Microsoft IIS to configure IIS logging at the [site level](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-logging-at-the-site-level) using the UI.
+For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-site-logging-at-the-server-level) or [Per-server](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis#configure-per-server-logging-at-the-server-level) at the server level, refer to the Microsoft [Configure Logging in IIS](https://learn.microsoft.com/en-us/iis/manage/provisioning-and-managing-iis/configure-logging-in-iis) docs.
 
 1. Open the IIS Manager.
 ![Server Screenshot](doc_files/IISManager.png)
@@ -20,12 +20,15 @@ For configuring logging [Per-site](https://learn.microsoft.com/en-us/iis/manage/
 ![Server Screenshot](doc_files/IISLogging.png)
 
 ### Supported Log Formats
-The XDM normalization included in this pack is supported only for the *W3C* format, for logs with the following field list structures: 
 
-####  Access Log 
+The XDM normalization included in this pack is supported only for the *W3C* format, for logs with the following field list structures:
+
+#### Access Log
+
 ``` bash
   date time s-sitename s-computername s-ip cs-method cs-uri-stem cs-uri-query s-port cs-username c-ip cs-version cs(User-Agent) cs(Cookie) cs(Referer) cs-host sc-status sc-substatus sc-win32-status sc-bytes cs-bytes time-taken
 ```
+
 #### Error Log
 
 ``` bash
@@ -40,8 +43,7 @@ The XDM normalization included in this pack is supported only for the *W3C* form
   date time c-ip c-port s-ip s-port cs-version cs-method cs-uri streamid streamid_ex sc-status s-siteid s-reason s-queuename transport
 ```
 
-
-## Configuration on Cortex XSIAM 
+## Configuration on Cortex XSIAM
 
 ### XDRC (XDR Collector) Filebeat Configuration
 

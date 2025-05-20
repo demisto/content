@@ -1044,6 +1044,13 @@ script:
       isArray: true
     - description: The email address from which to reply.
       name: from
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML body and attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Replies to an email using EWS.
     name: reply-mail
   dockerimage: demisto/py-ews:5.5.0.118073

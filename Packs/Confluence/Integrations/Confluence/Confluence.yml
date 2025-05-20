@@ -4,6 +4,8 @@ commonfields:
 name: Atlassian Confluence Server
 display: Atlassian Confluence Server
 category: Utilities
+sectionOrder:
+- Connect
 description: Atlassian Confluence Server API.
 configuration:
 - display: Server URL (e.g. http://1.2.3.4:8090)
@@ -11,21 +13,34 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: Username
   name: credentials
   defaultvalue: ""
   type: 9
-  required: true
+  required: false
+  section: Connect
+- display: ""
+  name: personal_access_token
+  type: 9
+  required: false
+  displaypassword: Personal Access Token
+  hiddenusername: true
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: unsecure
   defaultvalue: "false"
   type: 8
   required: false
+  section: Connect
+  advanced: true
 script:
   script: ''
   type: python
@@ -138,6 +153,43 @@ script:
       description: Content body.
       type: String
     description: Returns Confluence content by space key and title.
+  - name: confluence-get-page-as-pdf
+    arguments:
+    - name: pageid
+      required: true
+      description: ID of the Page to download as PDF.
+    outputs:
+    - contextPath: File.Size
+      description: File size.
+      type: number
+    - contextPath: File.SHA1
+      description: SHA1 hash of the file.
+      type: string
+    - contextPath: File.SHA256
+      description: SHA256 hash of the file.
+      type: string
+    - contextPath: File.Name
+      description: The sample name.
+      type: string
+    - contextPath: File.SSDeep
+      description: SSDeep hash of the file.
+      type: string
+    - contextPath: File.EntryID
+      description: War Room entry ID of the file.
+      type: string
+    - contextPath: File.Info
+      description: Basic information of the file.
+      type: string
+    - contextPath: File.Type
+      description: File type, e.g., "PE".
+      type: string
+    - contextPath: File.MD5
+      description: MD5 hash of the file.
+      type: string
+    - contextPath: File.Extension
+      description: File extension.
+      type: string
+    description: Returns Confluence Page as PDF by PageID.
   - name: confluence-delete-content
     arguments:
     - name: id
@@ -156,24 +208,24 @@ script:
     arguments:
     - name: pageid
       required: true
-      description: Page ID used to find and update the page.
+      description: 'Page ID used to find and update the page.'
     - name: currentversion
-      required: true
       description: The version number, extracted from a content search. The integration will increment by 1.
-    - name: title
       required: true
+    - name: title
       description: Title of the page to update.
+      required: true
     - name: type
+      description: Content type. Can be "page" or "blogpost".
       required: true
       auto: PREDEFINED
       predefined:
       - page
       - blogpost
-      description: Content type. Can be "page" or "blogpost".
       defaultValue: page
     - name: space
-      required: true
       description: Space key to update.
+      required: true
     - name: body
       description: Content body to replace (overwrite) existing content of a Confluence page.
     outputs:
@@ -189,7 +241,7 @@ script:
     - contextPath: Confluence.Content.Body
       description: Content body.
       type: String
-    description: Update (overwrite) the existing content of a Confluence page with new content.
+    description: 'Update (overwrite) the existing content of a Confluence page with new content.'
     execution: true
   - name: confluence-search-content
     arguments:
@@ -220,7 +272,7 @@ script:
       description: Content version.
       type: String
     description: 'Fetches a list of content using the Confluence Query Language (CQL). For more information about CQL syntax, see https://developer.atlassian.com/server/confluence/advanced-searching-using-cql/'
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No test - the test requires personal credentials to the confluence account
 fromversion: 5.0.0

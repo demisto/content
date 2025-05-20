@@ -1554,6 +1554,7 @@ No known limitations.
 | attachIDs | A comma-separated list of War Room entry IDs that contain files, and are used to attach files to the outgoing email. For example: attachIDs=15@8,19@8. | Optional |
 | attachNames | A comma-separated list of names of attachments to send. Should be the same number of elements as attachIDs. | Optional |
 | attachCIDs | A comma-separated list of CIDs to embed attachments within the email itself. | Optional |
+| handle_inline_image | Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML and attached to the email as inline attachment objects. Possible values are: True, False. Default is True. NOTE: Sometimes inline images sent in emails may not appear for recipients, either because their email system blocks the image (for example, due to image size or the email is flagged as malicious) or for other reasons. | Optional |
 
 #### Outputs
 

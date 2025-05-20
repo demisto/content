@@ -2,7 +2,8 @@ We recommend using the MITRE v2 Feed instead. The MITRE v2 Feed is more aligned 
 
 Use the MITRE ATT&CK Feed pack to fetch indicators from MITRE ATT&CK. MITRE ATT&CK is a globally-accessible knowledge base of adversary tactics and techniques based on real-world observations of cyber security threats.
 
-You can 
+You can
+
 - Retrieve indicators from MITRE ATT&CK.
 - Look up the reputation of the indicators.
 - Perform a generic search across the MITRE ATT&CK indicators.

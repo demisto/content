@@ -7,8 +7,6 @@ To utilize the example playbooks in this content package you will need a list in
 Create a Lookup JSON List In The Lists Section Containing XSOAR Email To Bonusly User
 
 {
-"shrek@paloaltonetworks.com":"@shrek", 
+"shrek@paloaltonetworks.com":"@shrek",
 "donkey@paloaltonetworks.com":"@donkey"
 }
-
-   

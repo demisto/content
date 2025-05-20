@@ -12,6 +12,7 @@ This script starts an RCS scan and sets the scan ID in context.
 ## Inputs
 
 ---
+
 | **Argument Name** | **Description** |
 | --- | --- |
 | service_id | This is the ASM Service ID. |

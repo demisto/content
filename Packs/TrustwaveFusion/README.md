@@ -7,6 +7,7 @@ security expertise necessary for protecting assets and eradicating threats as
 they arise.
 
 ## What does this pack do?
+
 The Integration included in this pack ingests incidents from Trustwave Fusion.
 
 This pack also provides commands to:

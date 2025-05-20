@@ -1,5 +1,7 @@
 Data output script for populating the dashboard pie graph widget with the top failing incident commands.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,9 +11,11 @@ Data output script for populating the dashboard pie graph widget with the top fa
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

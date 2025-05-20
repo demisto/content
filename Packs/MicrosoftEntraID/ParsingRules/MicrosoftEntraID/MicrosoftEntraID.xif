@@ -1,6 +1,6 @@
 [INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=drop]
 filter category not in("AZFW*", "FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog", "ApplicationGateway*", "AppServiceHTTPLogs", "AppServiceConsoleLogs", "AppServiceAppLogs", "AppServiceIPSecAuditLogs", "AppServicePlatformLogs", "AppServiceAntivirusScanAuditLogs", "AppServiceFileAuditLogs", "FunctionAppLogs", "AppServiceAuditLogs", "WorkflowRuntime", "AppServiceEnvironmentPlatformLogs", "cloud-controller-manager", "cluster-autoscaler", "kube-audit", "kube-audit-admin", "kube-apiserver", "kube-controller-manager", "kube-scheduler", "csi-snapshot-controller", "csi-azuredisk-controller", "csi-azurefile-controller", "SoftwareUpdateProfile", "SoftwareUpdates", "guard")
- AND Type NOT IN ("AzureDevOpsAuditing", "AGWAccessLogs", "AGWFirewallLogs", "AKSAudit", "AKSAuditAdmin")
+ AND Type NOT IN ("AzureDevOpsAuditing", "AGWAccessLogs", "AGWFirewallLogs", "AKSAudit", "AKSAuditAdmin") AND _raw_log ->[0].eventType NOT IN ("AzureDevOpsAuditEvent")
 | alter tmp_time = if(
     category in ("AuditLogs", "ProvisioningLogs", "ServicePrincipalRiskEvents", "UserRiskEvents"), properties -> activityDateTime,
     category in ("ADFSSignInLogs", "ManagedIdentitySignInLogs", "NonInteractiveUserSignInLogs", "ServicePrincipalSignInLogs", "SignInLogs"), properties -> createdDateTime,

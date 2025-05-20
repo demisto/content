@@ -3,37 +3,38 @@ This integration was integrated and tested with Spamcop.
 
 ## Configure Spamcop in Cortex
 
-
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Get IP details from Spamcop service
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP which details you want to find | Required | 
-
+| ip | The IP which details you want to find | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Spamcop.IP | String | IP details | 
-
+| Spamcop.IP | String | IP details |
 
 #### Command Example
+
 ```!ip ip=xxx.xxx.xxx.xxx```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {
@@ -60,6 +61,7 @@ Get IP details from Spamcop service
 #### Human Readable Output
 
 >### Results
+>
 >|indicator|
 >|---|
 >| xxx.xxx.xxx.xxx |

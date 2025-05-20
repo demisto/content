@@ -4,7 +4,6 @@ This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 
 ## Configure Email Hippo in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | MORE Server URL (e.g., https://api.hippoapi.com) |  | True |
@@ -15,7 +14,6 @@ This integration was integrated and tested with version 2.0.1551 of Email Hippo.
 | Create relationships | Create relationships between indicators as part of enrichment. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -39,12 +37,15 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| EmailHippo.Quota.quotaUsed | String | Total quota used. | 
-| EmailHippo.Quota.quotaRemaining | String | The remaining quota. | 
+| EmailHippo.Quota.quotaUsed | String | Total quota used. |
+| EmailHippo.Quota.quotaRemaining | String | The remaining quota. |
 
 #### Command example
+
 ```!email-hippo-email-quota-get```
+
 #### Context Example
+
 ```json
 {
     "EmailHippo": {
@@ -63,10 +64,10 @@ There are no input arguments for this command.
 #### Human Readable Output
 
 >### Email quota
+>
 >|Email Quota remaining|Email Quota used|
 >|---|---|
 >| 99 | 1 |
-
 
 ### email
 
@@ -81,24 +82,27 @@ Return email information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| email | A comma-separated list of email addresses to validate. | Required | 
+| email | A comma-separated list of email addresses to validate. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Email.Address | String | The email address of the indicator. | 
-| Email.Domain | string | The email domain. | 
-| EmailHippo.Email.Address | String | The email address of the indicator. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Email.Address | String | The email address of the indicator. |
+| Email.Domain | string | The email domain. |
+| EmailHippo.Email.Address | String | The email address of the indicator. |
 
 #### Command example
+
 ```!email email=test@example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -238,10 +242,10 @@ Return email information and reputation.
 #### Human Readable Output
 
 >### Email test@example.com
+>
 >|Hippo Trust Score|Inbox quality score|Result|Spam risk score|
 >|---|---|---|---|
 >| Low | DoNotSend | result: Unverifiable<br/>reason: DomainIsWellKnownDea | Block |
-
 
 ### domain
 
@@ -256,40 +260,43 @@ Returns domain information and reputation.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to query (CSV). | Required | 
+| domain | The domain to query (CSV). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | The reliability score of the vendor. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Domain.Name | String | The name of the domain that was checked. | 
-| Domain.NameServers | String | Name of the servers of the domain. | 
-| Domain.UpdatedDate | Date | The date that the domain was last updated. | 
-| Domain.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e.,'2020-04-30T10:35:00.000Z'\). | 
-| Domain.Registrar.Name | String | The name of the registrar. | 
-| Domain.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse. | 
-| Domain.Registrar.AbusePhone | String | The phone number of the contact for reporting abuse. | 
-| Domain.Admin.Country | String | The country of the domain administrator. | 
-| Domain.Admin.Email | String | The email address of the domain administrator. | 
-| Domain.Admin.Name | String | The name of the domain administrator. | 
-| Domain.Admin.Phone | String | The phone number of the domain administrator. | 
-| Domain.Tech.Country | String | The country of tech administrator. | 
-| Domain.Tech.Name | String | The name of the tech administrator. | 
-| Domain.Tech.Email | String | The email of the tech administrator. | 
-| Domain.Tech.Organization | String | The organization of the tech administrator. | 
-| Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. | 
-| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
-| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). | 
-| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | The reliability score of the vendor. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Domain.Name | String | The name of the domain that was checked. |
+| Domain.NameServers | String | Name of the servers of the domain. |
+| Domain.UpdatedDate | Date | The date that the domain was last updated. |
+| Domain.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e.,'2020-04-30T10:35:00.000Z'\). |
+| Domain.Registrar.Name | String | The name of the registrar. |
+| Domain.Registrar.AbuseEmail | String | The email address of the contact for reporting abuse. |
+| Domain.Registrar.AbusePhone | String | The phone number of the contact for reporting abuse. |
+| Domain.Admin.Country | String | The country of the domain administrator. |
+| Domain.Admin.Email | String | The email address of the domain administrator. |
+| Domain.Admin.Name | String | The name of the domain administrator. |
+| Domain.Admin.Phone | String | The phone number of the domain administrator. |
+| Domain.Tech.Country | String | The country of tech administrator. |
+| Domain.Tech.Name | String | The name of the tech administrator. |
+| Domain.Tech.Email | String | The email of the tech administrator. |
+| Domain.Tech.Organization | String | The organization of the tech administrator. |
+| Domain.WHOIS.NameServers | String | A CSV string of name servers, for example 'ns1.bla.com, ns2.bla.com'. |
+| Domain.WHOIS.CreationDate | Date | The creation date of the domain. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). |
+| Domain.WHOIS.UpdatedDate | Date | The date when the domain was last updated. Format is ISO8601 \(i.e., '2020-04-30T10:35:00.000Z'\). |
+| Domain.WHOIS.ExpirationDate | Date | The expiration date of the domain. |
 
 #### Command example
+
 ```!domain domain=example.com```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -495,6 +502,7 @@ Returns domain information and reputation.
 #### Human Readable Output
 
 >### Domain example.com
+>
 >|Domain Age|Expires On|Name servers|Registered On|Registrar|Status|Time To Expiry|Updated On|
 >|---|---|---|---|---|---|---|---|
 >| 0 year(s), 0 month(s), 0 week(s), 0 day(s) |  | {'Address': 'A.example.NET'},<br/>{'Address': 'B.example.NET'} |  |  |  | 0 year(s), 0 months, 0 week(s), 0 day(s) |  |

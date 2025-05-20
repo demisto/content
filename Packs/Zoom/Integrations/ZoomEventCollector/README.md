@@ -5,7 +5,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure Zoom Event Collector in Cortex
 
-
 | **Parameter** | **Required** |
 |--------| --- |
 | Server URL (e.g., 'https://api.zoom.us/v2/')                                                             | True   |
@@ -15,7 +14,6 @@ This is the default integration for this content pack when configured by the Dat
 | First fetch time (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days) - within the last six months | False  |
 | Trust any certificate (not secure)                                                                       | False  |
 | Use system proxy settings                                                                                | False  |
-
 
 ## Commands
 
@@ -35,8 +33,8 @@ Gets events from Zoom.
 
 | **Argument Name**  | **Description**                                                                                                                   | **Required** |
 |--------------------|-----------------------------------------------------------------------------------------------------------------------------------|--------------|
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required     | 
-| limit              | Maximum results to return.  The maximum is 300.                                                                                   | Optional     | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required     |
+| limit              | Maximum results to return.  The maximum is 300.                                                                                   | Optional     |
 
 #### Context Output
 
@@ -60,8 +58,7 @@ There is no context output for this command.
 |-------------|---------------------|------------|----------------------|---------|---------|
 | Browser     | example@example.com | 8.8.8.8    | 2023-01-19T14:44:23Z | Sign in | -       |
 
-
-
 ### Rate Limits
-To prevent abuse and ensure service stability, all API requests are rate limited. Rate limits specify the maximum number of API calls that can be made in a minute period. The exact number of calls that your application can make per minute varies based on company plan. 
+
+To prevent abuse and ensure service stability, all API requests are rate limited. Rate limits specify the maximum number of API calls that can be made in a minute period. The exact number of calls that your application can make per minute varies based on company plan.
 For more information, please refer to the Zoom API documentation on [Rate limits by account type](https://developers.zoom.us/docs/api/rest/rate-limits/#rate-limits-by-account-type).

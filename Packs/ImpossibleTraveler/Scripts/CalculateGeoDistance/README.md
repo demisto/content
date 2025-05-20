@@ -1,6 +1,7 @@
 Compute the distance between two sets of coordinates, in miles.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Compute the distance between two sets of coordinates, in miles.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Impossible Traveler
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,6 +27,7 @@ This script is used in the following playbooks and scripts.
 | dest_coords | Latitude and Longitude coordinates for the second location.  Required format 1.23,4.56 |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

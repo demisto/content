@@ -1,7 +1,6 @@
 Cortex XDR is the world's first detection and response app that natively integrates network, endpoint and cloud data to stop sophisticated attacks.
 
-Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSOAR and Cortex XDR. The integration will sync indicators according to the defined fetch interval. At each interval, the integration will push new and modified indicators defined in the **Sync Query** from Cortex XSOAR to Cortex XDR. Additionally, the integration will check if there are manual modifications of indicators on Cortex XDR and sync back to Cortex XSOAR. Once per day, the integration will perform a *complete sync* which will also remove indicators that have been deleted/expired in Cortex XSOAR, from Cortex XDR. 
-
+Use the Cortex XDR - IOCs feed integration to sync indicators between Cortex XSOAR and Cortex XDR. The integration will sync indicators according to the defined fetch interval. At each interval, the integration will push new and modified indicators defined in the **Sync Query** from Cortex XSOAR to Cortex XDR. Additionally, the integration will check if there are manual modifications of indicators on Cortex XDR and sync back to Cortex XSOAR. Once per day, the integration will perform a *complete sync* which will also remove indicators that have been deleted/expired in Cortex XSOAR, from Cortex XDR.
 
 This integration was integrated and tested with Branch: stable-50 of XDR.
 
@@ -10,7 +9,6 @@ This integration was integrated and tested with Branch: stable-50 of XDR.
 An API key of type **Advanced** with an **Administrator** role.
 
 ## Configure Cortex XDR - IOC in Cortex
-  
   
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
@@ -35,9 +33,12 @@ An API key of type **Advanced** with an **Administrator** role.
 | feedBypassExclusionList | Bypass exclusion list | False |  
   
 ## Commands  
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.  
 After you successfully execute a command, a DBot message appears in the War Room with the command details.  
+
 ### xdr-iocs-sync  
+
 ***
 Sync IOCs with Cortex XDR.
 Run this command manually only when configuring the instance integration with fetch indicators disabled (run this only once).
@@ -50,6 +51,7 @@ As a result, the duration of the first sync depends on the number of IOCs in the
 #### Base Command  
   
 `xdr-iocs-sync`  
+
 #### Input  
   
 There are no input arguments for this command.  
@@ -59,127 +61,137 @@ There are no input arguments for this command.
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-sync```  
+
 #### Human Readable Output  
   
 >sync with XDR completed.  
   
 ### xdr-iocs-push
+
 ***  
 Push new or modified IOCs to Cortex XDR.
-  
   
 #### Base Command  
   
 `xdr-iocs-push`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | the indicators | Optional | 
-
+| indicator | the indicators | Optional |
 
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```xdr-iocs-push```  
   
 #### Human Readable Output  
+>
 >push success.
   
-  
 ### xdr-iocs-enable  
+
 ***  
 Enable iocs in XDR server  
-  
   
 #### Base Command  
   
 `xdr-iocs-enable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| indicator | The indicator to enable | Required |   
+| indicator | The indicator to enable | Required |
   
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-enable indicator=11.11.11.11```  
-    
+
 #### Human Readable Output  
   
 >indicators 11.11.11.11 enabled.  
   
 ### xdr-iocs-disable  
+
 ***  
 Disable iocs in XDR server  
-  
   
 #### Base Command  
   
 `xdr-iocs-disable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| indicator | The indicator to enable | Required |   
+| indicator | The indicator to enable | Required |
   
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-disable indicator=22.22.22.22```  
   
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
+>
 ### xdr-iocs-set-sync-time
+
 ***
 Set sync time manually (Do not use this command unless you unredstandard the consequences).
-
 
 #### Base Command
 
 `xdr-iocs-set-sync-time`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time | The time of the file creation (use UTC time zone). | Required | 
-
+| time | The time of the file creation (use UTC time zone). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-iocs-create-sync-file
+
 ***
 Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
-
 
 #### Base Command
 
 `xdr-iocs-create-sync-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| zip | Whether to zip the output file. | Required | 
-| set_time | Whether to modify the sync time locally. | Required | 
+| zip | Whether to zip the output file. | Required |
+| set_time | Whether to modify the sync time locally. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
-
 #### Base Command
 
 `xdr-iocs-to-keep-file`
+
 #### Input
 
 There are no input arguments for this command.

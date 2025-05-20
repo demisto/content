@@ -1,6 +1,7 @@
 Retrieves the time left until the next shift begins.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Retrieves the time left until the next shift begins.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

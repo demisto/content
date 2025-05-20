@@ -136,9 +136,7 @@ The main active response playbook is the `Cortex ASM - ASM Alert` playbook. This
 
 A playbook that given the email address enriches Service owner in Azure  and On-Prem directory.
 
-
 ![Cortex ASM - Active Directory Enrichment](doc_files/Cortex_ASM_-_Active_Directory_Enrichment.png)
-
 
 #### Cortex ASM - ASM Alert
 
@@ -172,7 +170,7 @@ This playbook is used to pull information from Cortex Endpoint (XSIAM/XDR) syste
 
 #### Cortex ASM - Cortex Endpoint Remediation
 
-This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)). 
+This playbook is used for remediating a single exposed Cortex Endpoint (XSIAM/XDR) by isolating the endpoint from the network using the "Isolate Endpoint" feature in XSIAM ([see XSIAM details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Isolate-an-Endpoint)) and XDR ([see XDR details](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Isolate-an-Endpoint)).
 
 ![Cortex ASM - Cortex Endpoint Remediation](doc_files/Cortex_ASM_-_Cortex_Endpoint_Remediation.png)
 

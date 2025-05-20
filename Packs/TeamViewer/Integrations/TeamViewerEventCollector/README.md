@@ -5,7 +5,6 @@ A Tensor license is required.
 
 ## Configure TeamViewer Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Your server URL |  | True |
@@ -14,7 +13,6 @@ A Tensor license is required.
 | Use system proxy settings |  | False |
 | First fetch time |  | False |
 | The maximum number of alerts per fetch |  | False |
-
 
 ## Commands
 
@@ -34,8 +32,8 @@ Gets events from TeamViewer.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of results to return. | Optional |
 
 #### Context Output
 

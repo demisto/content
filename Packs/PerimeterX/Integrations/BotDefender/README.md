@@ -1,6 +1,6 @@
 Gathers PerimeterX related data
-## Configure BotDefender in Cortex
 
+## Configure BotDefender in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -11,40 +11,43 @@ Gathers PerimeterX related data
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### ip
+
 ***
 Gets the PerimeterX DBotScore decision for a particular IP
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The custom parameter value or IP address for which the report is requested | Optional | 
-
+| ip | The custom parameter value or IP address for which the report is requested | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | Bad IP address | 
-| IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision | 
-| IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision | 
-| DBotScore.Indicator | String | The indicator that was tested | 
-| DBotScore.Type | String | The indicator type | 
-| DBotScore.Vendor | String | The vendor used to calculate the score | 
-| DBotScore.Score | Number | The actual score | 
-
+| IP.Address | String | Bad IP address |
+| IP.Malicious.Vendor | String | For malicious IPs, the vendor that made the decision |
+| IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision |
+| DBotScore.Indicator | String | The indicator that was tested |
+| DBotScore.Type | String | The indicator type |
+| DBotScore.Vendor | String | The vendor used to calculate the score |
+| DBotScore.Score | Number | The actual score |
 
 #### Command Example
+
 ```!ip ip="5.79.76.181"```
 
 #### Context Example
+
 ```
 {
     "DBotScore": {

@@ -2,7 +2,6 @@ Use this integration to fetch security incidents from Forcepoint DLP as Cortex X
 
 ## Configure Forcepoint DLP Event Collector in Cortex
 
-
 | **Parameter**                      | **Required** |
 |------------------------------------|--------------|
 | Server URL                         | True         |
@@ -11,7 +10,6 @@ Use this integration to fetch security incidents from Forcepoint DLP as Cortex X
 | First fetch                        | False        |
 | Trust any certificate (not secure) | False        |
 | Use system proxy settings          | False        |
-
 
 ## Commands
 
@@ -31,8 +29,8 @@ Gets events from Forcepoint DLP.
 
 | **Argument Name**  | **Description**                                                                                                                      | **Default** | **Required** |
 |--------------------|--------------------------------------------------------------------------------------------------------------------------------------|-------------|--------------|
-| limit              | The number of events to return.                                                                                                      | 10          | Optional     | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | false       | Required     | 
+| limit              | The number of events to return.                                                                                                      | 10          | Optional     |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. | false       | Required     |
 
 #### Context Output
 
