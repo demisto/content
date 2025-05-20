@@ -572,12 +572,7 @@ def fetch_events(client: Client, max_fetch: dict, events_type_to_fetch: list[str
         last_ids = last_run.get(event_type_name, {}).get(LATEST_FETCHED_IDS, [])
         demisto.debug(f"Last run for {event_type_name}: time={last_time}, ids={len(last_ids)}")
 
-        fetch_func = event_fetch_function.get(event_type_name)
-        if not fetch_func:
-            demisto.debug(f"No fetch function for event type '{event_type_name}'")
-            continue
-
-        events = fetch_func(  # type: ignore
+        events = event_fetch_function[event_type_name](  # type: ignore
             start_date=last_time,
             end_date=now.strftime(DATE_FORMAT),
             limit=max_fetch[event_type_name] + len(last_ids),

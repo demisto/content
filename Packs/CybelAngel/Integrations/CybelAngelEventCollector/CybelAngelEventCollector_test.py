@@ -1158,35 +1158,19 @@ def test_fetch_events_same_timestamp(mocker):
     assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
 
 
-def test_http_request_csv_302(monkeypatch):
+def test_get_token_request_raises(monkeypatch):
     """
     Given:
-      - A DummyResponse with status_code=302 and .text = "http://redirect"
-      - The http_request call with csv=True
+      - A Client whose _http_request returns {} (no access_token)
 
     When:
-      - Calling client.http_request("GET", "/x", csv=True)
+      - Calling get_token_request()
 
     Then:
-      - requests.get is called on the dummy .text URL
-      - The result of requests.get is returned verbatim
+      - RuntimeError is raised with the correct message
     """
     client = Client("u", "i", "s", verify=False, proxy=False)
-
-    # Dummy 302 response
-    class Dummy302:
-        status_code = 302
-        text = "http://redirect"
-
-    dummy302 = Dummy302()
-
-    # What requests.get should return
-    sentinel = object()
-
-    # Patch _http_request to return the 302
-    monkeypatch.setattr(client, "_http_request", lambda *args, **kw: dummy302)
-    # Patch requests.get to return our sentinel
-    monkeypatch.setattr(requests, "get", lambda url: sentinel)
-
-    out = client.http_request("GET", "/x", csv=True)
-    assert out is sentinel
+    monkeypatch.setattr(client, "_http_request", lambda *a, **k: {})
+    with pytest.raises(RuntimeError) as ei:
+        client.get_token_request()
+    assert "Could not retrieve token" in str(ei.value)
