@@ -140,7 +140,7 @@ def exchangelib_cleanup():  # pragma: no cover
 
 
 # Prep Functions
-def parse_auth_type(auth_type):  # pragma: no cover
+def parse_auth_type(auth_type: str):  # pragma: no cover
     auth_type = auth_type.lower()
     if auth_type == "ntlm":
         return NTLM
@@ -1556,13 +1556,15 @@ def send_email(client: EWSClient, args):
     return results
 
 
-def reply_email(client: EWSClient, args):  # pragma: no cover
+def reply_email(client: EWSClient, args: dict):  # pragma: no cover
     time_zone = get_time_zone()
     account = client.get_account(target_mailbox=client.account_email, time_zone=time_zone)
     bcc = argToList(args.get("bcc"))
     cc = argToList(args.get("cc"))
     to = argToList(args.get("to"))
-    subject = args.get("subject")
+    handle_inline_image: bool = argToBoolean(args.get("handle_inline_image", True))
+    from_mailbox = args.get("from")
+    subject = args.get("subject", "")
     subject = subject[:252] + "..." if subject and len(subject) > 255 else subject
 
     attachments, attachments_names = process_attachments(
@@ -1570,19 +1572,20 @@ def reply_email(client: EWSClient, args):  # pragma: no cover
     )
 
     client.reply_email(
-        args.get("inReplyTo", ""),
-        to,
-        args.get("body", ""),
-        subject,
-        bcc,
-        cc,
-        args.get("htmlBody"),
-        attachments,
-        args.get("from"),
-        account,
+        in_reply_to=args.get("inReplyTo", ""),
+        to=to,
+        body=args.get("body", ""),
+        subject=subject,
+        bcc=bcc,
+        cc=cc,
+        html_body=args.get("htmlBody"),
+        attachments=attachments,
+        from_mailbox=from_mailbox,
+        account=account,
+        handle_inline_image=handle_inline_image,
     )
     result_object = {
-        "from": args.get("from") or account.primary_smtp_address,
+        "from": from_mailbox or account.primary_smtp_address,
         "to": to,
         "subject": subject,
         "attachments": attachments_names,

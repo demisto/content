@@ -3,7 +3,6 @@ This integration was integrated and tested with version v1 of DeCYFIR Feed
 
 ## Configure DeCYFIR Indicators & Threat Intelligence Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | DeCYFIR Server URL (e.g. https://decyfir.cyfirma.com) |  | True |
@@ -19,7 +18,6 @@ This integration was integrated and tested with version v1 of DeCYFIR Feed
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Tags | Supports CSV values. | False |
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed | False |
-
 
 ## Commands
 

@@ -9,6 +9,7 @@ This script uses the script `CyrenThreatInDepthRenderRelated` using the followin
 * Value (hyperlinked if possible)
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -18,14 +19,17 @@ This script uses the script `CyrenThreatInDepthRenderRelated` using the followin
 | XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Human Readable Output
+
 ---
 
 | Indicator Type | Value |
