@@ -397,10 +397,13 @@ INTEGRATION_INSTANCE = demisto.integrationInstance()
 
 
 """ HELPER FUNCTIONS """
-def is_detection_fetch_type_selected(selected_types:list):
+
+
+def is_detection_fetch_type_selected(selected_types: list):
     return any(detection_type in selected_types for detection_type in DETECTION_FETCH_TYPES)
-    
-def is_incident_fetch_type_selected(selected_types:list):
+
+
+def is_incident_fetch_type_selected(selected_types: list):
     return any(incident_type in selected_types for incident_type in INCIDENT_FETCH_TYPES)
 
 
@@ -3310,9 +3313,9 @@ def fetch_items(command="fetch-incidents"):
     demisto.debug(f"CrowdstrikeFalconMsg: Selected fetch types: {fetch_incidents_or_detections}")
 
     # Fetch Endpoint Detections
-    
+
     if is_detection_fetch_type_selected(selected_types=fetch_incidents_or_detections):
-    # if "Detections" in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
+        # if "Detections" in fetch_incidents_or_detections or "Endpoint Detection" in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Detections")
         demisto.debug(f"CrowdStrikeFalconMsg: Current detections_last_run object: {detections_last_run}")
 
@@ -3321,7 +3324,7 @@ def fetch_items(command="fetch-incidents"):
 
     # Fetch Endpoint Incidents
     if is_incident_fetch_type_selected(selected_types=fetch_incidents_or_detections):
-    # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
+        # if "Incidents" in fetch_incidents_or_detections or "Endpoint Incident" in fetch_incidents_or_detections:
         demisto.debug("CrowdStrikeFalconMsg: Start fetch Incidents")
         demisto.debug(f"CrowdStrikeFalconMsg: Current Incidents last_run object: {incidents_last_run}")
         fetched_incidents, incidents_last_run = fetch_endpoint_incidents(incidents_last_run, look_back, is_fetch_events)
