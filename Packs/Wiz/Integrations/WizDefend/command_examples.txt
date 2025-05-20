@@ -2,32 +2,31 @@
 
 !wiz-get-detections severity=CRITICAL
 
-!wiz-get-detections detection_type="GENERATED THREAT"
+!wiz-get-detections type="GENERATED THREAT"
 
-!wiz-get-detections detection_platform="AWS"
-!wiz-get-detections detection_platform="AWS,Azure,GCP"
+!wiz-get-detections platform="AWS"
+!wiz-get-detections platform="AWS,Azure,GCP"
 
-!wiz-get-detections detection_origin="WIZ_SENSOR"
-!wiz-get-detections detection_origin="WIZ_SENSOR,AWS_GUARD_DUTY"
+!wiz-get-detections origin="WIZ_SENSOR"
+!wiz-get-detections origin="WIZ_SENSOR,AWS_GUARD_DUTY"
 
 !wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
 !wiz-get-detections resource_id="i-0g03j4h5gd123d456"
 
-!wiz-get-detections creation_minutes_back="60"
+!wiz-get-detections rule_match_id="12345678-1234-1234-1234-3792e8a03318"
+!wiz-get-detections rule_match_name="My-rule-name"
 
-!wiz-get-detections matched_rule="12345678-1234-1234-1234-3792e8a03318"
-
-!wiz-get-detections project_id="production-project"
+!wiz-get-detections project="production-project"
 
 !wiz-get-detections cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
 
-!wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
-!wiz-get-detections detection_type="GENERATED THREAT" detection_platform="Azure" severity=HIGH
-!wiz-get-detections detection_origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_minutes_back="120"
-!wiz-get-detections detection_type="GENERATED THREAT" detection_platform="AWS,Azure,GCP" severity=CRITICAL
-!wiz-get-detections severity=CRITICAL detection_platform="AWS" creation_minutes_back="60"
+!wiz-get-detections severity=CRITICAL platform="AWS" creation_minutes_back="60"
+!wiz-get-detections type="GENERATED THREAT" platform="Azure" severity=HIGH
+!wiz-get-detections origin="WIZ_SENSOR" resource_id="i-0g03j4h5gd123d456" creation_minutes_back="120"
+!wiz-get-detections type="GENERATED THREAT" platform="AWS,Azure,GCP" severity=CRITICAL
+!wiz-get-detections severity=CRITICAL platform="AWS" creation_minutes_back="60"
 !wiz-get-detections resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" creation_minutes_back="600"
-!wiz-get-detections detection_origin="AWS_GUARD_DUTY" severity=HIGH
+!wiz-get-detections origin="AWS_GUARD_DUTY" severity=HIGH
 
 !wiz-get-threat issue_id="12345678-1234-1234-1234-d25e16359c19"
 
@@ -46,7 +45,7 @@
 
 !wiz-get-threats creation_days_back="30"
 
-!wiz-get-threats project_id="production-project"
+!wiz-get-threats project="production-project"
 
 !wiz-get-threats cloud_account_or_cloud_organization="12345678-1234-1234-1234-12345678abcd"
 

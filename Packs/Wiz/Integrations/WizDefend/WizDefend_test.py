@@ -3032,3 +3032,240 @@ def test_wiz_input_param_consistency(yaml_content):
     )
 
     print(f"Successfully validated that all {len(yaml_param_names)} YAML parameters have corresponding values in the enums")
+
+
+# ===== COMMAND EXAMPLES TESTS =====
+
+def get_command_examples():
+    """Load and parse command examples from command_examples.txt"""
+    with open('command_examples.txt', 'r') as f:
+        examples = f.read().splitlines()
+    return [example.strip() for example in examples if example.strip()]
+
+
+def extract_param_value_pairs(command_line):
+    """Extract parameter-value pairs from a command line"""
+    # Skip the command name (everything before the first space)
+    params_part = command_line.split(' ', 1)[1] if ' ' in command_line else ''
+
+    # Define regex pattern to match parameter=value pairs, handling quoted values
+    pattern = r'(\w+)=(?:"([^"]*)"|([\w\-\.,:/]+))'
+    matches = re.findall(pattern, params_part)
+
+    # Convert matches to dictionary
+    param_values = {}
+    for match in matches:
+        param_name = match[0]
+        # Value is either the quoted value or the non-quoted value
+        param_value = match[1] if match[1] else match[2]
+        param_values[param_name] = param_value
+
+    return param_values
+
+
+# Extract demisto command name from example command
+def get_demisto_command_name(example_command):
+    """Convert example command to demisto command name"""
+    # Strip '!' prefix and replace hyphens with underscores
+    command_name = example_command.split(' ')[0][1:].replace('-', '_').upper()
+    return command_name
+
+
+# Group example commands by their demisto command name
+def group_examples_by_command():
+    """Group examples by command type"""
+    examples = get_command_examples()
+    grouped = {}
+
+    for example in examples:
+        if not example.startswith('!'):
+            continue
+
+        command_name = example.split(' ')[0]
+        demisto_command = get_demisto_command_name(command_name)
+
+        if demisto_command not in grouped:
+            grouped[demisto_command] = []
+
+        grouped[demisto_command].append(example)
+
+    return grouped
+
+
+# Get all commands and examples for parametrize
+def get_all_commands_for_test():
+    """Get all commands and examples for parametrized test"""
+    grouped = group_examples_by_command()
+    test_params = []
+
+    for demisto_command, examples in grouped.items():
+        for example in examples:
+            test_params.append((demisto_command, example))
+
+    return test_params
+
+
+def extract_param_value_pairs(command_line):
+    """Extract parameter-value pairs from a command line"""
+    # Skip the command name (everything before the first space)
+    params_part = command_line.split(' ', 1)[1] if ' ' in command_line else ''
+
+    # Define regex pattern to match parameter=value pairs, handling quoted values
+    pattern = r'(\w+)=(?:"([^"]*)"|([\w\-\.,:/]+))'
+    matches = re.findall(pattern, params_part)
+
+    # Convert matches to dictionary
+    param_values = {}
+    for match in matches:
+        param_name = match[0]
+        # Value is either the quoted value or the non-quoted value
+        param_value = match[1] if match[1] else match[2]
+        param_values[param_name] = param_value
+
+    return param_values
+
+
+def test_commands_in_examples_match_demisto_commands():
+    """Test that all commands in the examples match those defined in DemistoCommands"""
+    command_examples = get_command_examples()
+
+    # Get all command values from DemistoCommands class
+    demisto_command_values = {getattr(DemistoCommands, attr) for attr in dir(DemistoCommands)
+                              if not attr.startswith('_') and not callable(getattr(DemistoCommands, attr))}
+
+    # Convert command values to command names as they would appear in examples (with ! prefix)
+    demisto_command_names = {'!' + cmd.replace('_', '-') for cmd in demisto_command_values
+                             if cmd not in ['TEST_MODULE', 'FETCH_INCIDENTS']}  # Exclude commands not meant for direct use
+
+    # Extract all commands from examples
+    example_commands = set()
+    for example in command_examples:
+        if not example.startswith('!'):
+            continue
+
+        command_name = example.split(' ')[0]
+        example_commands.add(command_name)
+
+    # Check that all example commands are defined in DemistoCommands
+    undefined_commands = example_commands - demisto_command_names
+    assert not undefined_commands, f"Found commands in examples that are not defined in DemistoCommands: {undefined_commands}"
+
+    # Check that all demo-accessible DemistoCommands are used in examples
+    unused_commands = demisto_command_names - example_commands
+    if unused_commands:
+        print(f"Note: The following commands are defined in DemistoCommands but not used in examples: {unused_commands}")
+
+
+def test_all_command_examples_are_in_wiz_input_params():
+    """Test that all parameters in command examples are defined in WizInputParam"""
+    command_examples = get_command_examples()
+
+    # Get all attribute values from WizInputParam class
+    wiz_input_param_values = set()
+    for attr in dir(WizInputParam):
+        if not attr.startswith('_') and not callable(getattr(WizInputParam, attr)):
+            wiz_input_param_values.add(getattr(WizInputParam, attr))
+
+    # Extract all parameters from command examples
+    unknown_params = set()
+    for example in command_examples:
+        if not example.startswith('!'):
+            continue
+
+        command_parts = example.split(' ', 1)
+        if len(command_parts) == 1:  # No parameters
+            continue
+
+        param_values = extract_param_value_pairs(example)
+
+        for param in param_values.keys():
+            # Check if parameter exists in WizInputParam values
+            if param not in wiz_input_param_values:
+                unknown_params.add(param)
+
+    # Assert that all parameters are recognized
+    assert not unknown_params, f"Found parameters not defined in WizInputParam values: {unknown_params}"
+
+
+def test_all_wiz_input_params_have_examples():
+    """Test that all values in WizInputParam have corresponding examples in the command examples"""
+    command_examples = get_command_examples()
+
+    # Get all attribute values from WizInputParam class
+    wiz_input_param_values = set()
+    for attr in dir(WizInputParam):
+        if not attr.startswith('_') and not callable(getattr(WizInputParam, attr)):
+            wiz_input_param_values.add(getattr(WizInputParam, attr))
+
+    # Parameters that can be ignored (don't need examples)
+    ignore_list = []
+
+    # Extract all parameters used in the command examples
+    example_params = set()
+    for example in command_examples:
+        if not example.startswith('!'):
+            continue
+
+        command_parts = example.split(' ', 1)
+        if len(command_parts) == 1:  # No parameters
+            continue
+
+        param_values = extract_param_value_pairs(example)
+        example_params.update(param_values.keys())
+
+    # Remove ignored parameters from check
+    params_to_check = wiz_input_param_values - set(ignore_list)
+
+    # Check which parameters don't have examples
+    missing_examples = set()
+    for param in params_to_check:
+        if param not in example_params:
+            missing_examples.add(param)
+
+    # Assert that all parameters have examples
+    assert not missing_examples, f"The following WizInputParam values don't have examples in command_examples.txt: {missing_examples}"
+
+
+import pytest
+from unittest.mock import patch
+
+@pytest.mark.parametrize("demisto_command,example", get_all_commands_for_test())
+def test_command_validation(demisto_command, example, mocker):
+    """Test that all commands in the examples file can be validated without errors"""
+    # Extract parameters from example
+    params = extract_param_value_pairs(example)
+
+    # Mock demisto.args() to return our parameters
+    mocker.patch.object(demisto, 'args', return_value=params)
+
+    # Mock demisto.command() to return our command
+    mocker.patch.object(demisto, 'command', return_value=getattr(DemistoCommands, demisto_command))
+
+    # Create mock result
+    mock_result = [{"id": "test-id", "severity": "CRITICAL"}]
+
+    # Import the module directly to patch internal functions
+    import Packs.Wiz.Integrations.WizDefend.WizDefend as WizDefend
+
+    # Patch at module level
+    mocker.patch.object(WizDefend, 'query_detections', return_value=mock_result)
+    mocker.patch.object(WizDefend, 'query_threats', return_value=mock_result)
+
+    # Create the mock functions with MagicMock to track calls
+    mock_return_results = mocker.MagicMock(return_value=True)
+    mock_return_error = mocker.MagicMock(return_value=True)
+
+    # Apply the patches
+    mocker.patch.object(WizDefend, 'return_results', mock_return_results)
+    mocker.patch.object(WizDefend, 'return_error', mock_return_error)
+
+    # Run the main function
+    main()
+
+    # Check if return_error was called (indicating validation failure)
+    if mock_return_error.called:
+        error_message = mock_return_error.call_args[0][0]
+        pytest.fail(f"Example failed validation: {example}\nError: {error_message}")
+
+    # Otherwise, validation passed
+    assert mock_return_results.called, f"Example should have called return_results: {example}"
