@@ -1988,7 +1988,8 @@ def argToBoolean(value):
 
 def appendContext(key, data, dedup=False):
     """
-       Append data to the investigation context
+       Append data to the investigation context.
+       Usable by scripts not integrations, since it uses setContext
 
        :type key: ``str``
        :param key: The context path (required)
@@ -10704,7 +10705,7 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
             demisto.debug(
                 "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
-            demisto.debug(e)
+            demisto.debug(str(e))
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
