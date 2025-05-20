@@ -43,8 +43,13 @@ OK_CODES = (
     403,
     404,
     521,
-    *(status_code for status_code in requests.status_codes._codes if status_code    # type: ignore[attr-defined]
-      >= 200 and status_code < 300),  # type: ignore[attr-defined]
+    *(
+        status_code
+        for status_code in requests.status_codes._codes # type: ignore[attr-defined]
+        if status_code
+        >= 200
+        and status_code < 300
+    ),  # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DEFAULT_END_TIME = "now"
@@ -246,13 +251,13 @@ class Client(BaseClient):
         # For reputation commands which run during an enrichment we limit the timeout and the retries
         retries = TOTAL_RETRIES_ON_ENRICHMENT if is_time_sensitive() else TOTAL_RETRIES
         timeout = TIMEOUT_ON_ENRICHMENT if is_time_sensitive() else DEFAULT_TIMEOUT
-        
+
         resp = self._http_request(
             method=method,
             url_suffix=url_suffix,
             params=params,
             json_data=json_data,
-            retries=TOTAL_RETRIES,
+            retries=retries,
             status_list_to_retry=STATUS_CODE_TO_RETRY,
             backoff_factor=BACKOFF_FACTOR,
             raise_on_redirect=False,
@@ -440,8 +445,7 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
         fetch_params = prepare_args_for_fetch_compromised_credentials(max_fetch, start_time, is_fresh, last_run)  # type: ignore
 
     elif fetch_type == "Alerts":
-        fetch_params = prepare_args_for_fetch_alerts(
-            max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_alerts(max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
         start_time = fetch_params["created_after"]
 
     remove_nulls_from_dictionary(fetch_params)
@@ -843,8 +847,10 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
         if not (start_date or end_date):
             raise ValueError(MESSAGES["MISSING_DATE_ERROR"])
         # type: ignore
-        date_query = (f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"   # type: ignore[union-attr]
-                      f" {end_date.strftime(DATE_FORMAT)}]")    # type: ignore[union-attr]
+        date_query = (
+            f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"  # type: ignore[union-attr]
+            f" {end_date.strftime(DATE_FORMAT)}]" # type: ignore[union-attr]
+        )
         params["query"] += date_query
     elif start_date or end_date:
         raise ValueError(MESSAGES["MISSING_FILTER_DATE_ERROR"])
@@ -1536,12 +1542,13 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                 hr_indicator = {
                     "Author": indicator.get("author", EMPTY_DATA),
                     # type: ignore[union-attr]
-                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),    # type: ignore
+                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),  # type: ignore
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
                         READABLE_DATE_FORMAT
                     ),
-                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(    # type: ignore
-                        READABLE_DATE_FORMAT),
+                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(  # type: ignore
+                        READABLE_DATE_FORMAT
+                    ),
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
