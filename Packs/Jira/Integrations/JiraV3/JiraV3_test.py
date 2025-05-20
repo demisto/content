@@ -4,7 +4,7 @@ from unittest.mock import patch, Mock
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command, QuickActionPreview
+from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command
 from pytest_mock import MockerFixture
 
 
