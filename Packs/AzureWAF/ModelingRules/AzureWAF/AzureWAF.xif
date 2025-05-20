@@ -137,7 +137,7 @@ Handles Application Gateway logs
 [RULE: application_gateway_access_and_waf_logs]
 alter 
 	get_properties_action = coalesce(properties -> action, action),
-	get_properties_httpStatus = to_integer(coalesce(properties -> httpStatus,httpstatus)),
+	get_properties_httpStatus = to_integer(coalesce(to_string(properties -> httpStatus),to_string(httpstatus))),
 	get_properties_host = coalesce(properties -> host, host),
 	get_properties_hostname = coalesce(properties -> hostname, hostname),
 	get_properties_originalHost = coalesce(properties -> originalHost, originalhost ),
