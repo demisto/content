@@ -714,6 +714,7 @@ tasks:
         simple: ${alert.initiatorsha256}
     separatecontext: false
     continueonerrortype: ""
+    continueonerror: true
     view: |-
       {
         "position": {
