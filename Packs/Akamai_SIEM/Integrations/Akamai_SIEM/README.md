@@ -1,4 +1,4 @@
-# Get security event from [Akamai Web Application Firewall (WAF)](https://www.akamai.com/us/en/resources/waf.jsp) service.
+# Get security event from [Akamai Web Application Firewall (WAF)](https://www.akamai.com/us/en/resources/waf.jsp) service
 
 This integration was integrated and tested with [API version 1.0 of Akamai WAF SIEM](https://developer.akamai.com/api/cloud_security/siem/v1.html).
 
@@ -106,51 +106,52 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 ### akamai-siem-get-events
+
 ***
 Get security events from Akamai WAF.
-
 
 #### Base Command
 
 `akamai-siem-get-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| config_ids | Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912. | Required | 
-| offset | This token denotes the last message. If specified, this operation fetches only security events that have occurred from the offset. This is a required parameter for offset mode and you can’t use it in time-based requests | Optional | 
-| limit | Defines the maximum number of security events returned per fetch. | Optional | 
-| from_epoch | The start of a specified time range, expressed in Unix epoch seconds. | Optional | 
-| to_epoch | The end of a specified time range, expressed in Unix epoch seconds. | Optional | 
-| time_stamp | Timestamp of events (`<number> <time unit>`. For example, 12 hours, 7 days). | Optional | 
+| config_ids | Unique identifier for each security configuration. To report on more than one configuration, separate the integer identifiers with semicolons (;), for example: 12892;29182;82912. | Required |
+| offset | This token denotes the last message. If specified, this operation fetches only security events that have occurred from the offset. This is a required parameter for offset mode and you can’t use it in time-based requests | Optional |
+| limit | Defines the maximum number of security events returned per fetch. | Optional |
+| from_epoch | The start of a specified time range, expressed in Unix epoch seconds. | Optional |
+| to_epoch | The end of a specified time range, expressed in Unix epoch seconds. | Optional |
+| time_stamp | Timestamp of events (`<number> <time unit>`. For example, 12 hours, 7 days). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.SIEM.AttackData.clientIP | String | IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.ConfigID | String | Unique identifier of the security configuration involved. | 
-| Akamai.SIEM.AttackData.PolicyID | String | Unique identifier of the policy configuration involved. | 
-| Akamai.SIEM.AttackData.Geo.Asn | String | Geographic ASN location of the IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.Geo.City | String | City of the IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.Geo.Continent | String | Continent of the IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.Geo.Country | String | Country of the IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.Geo.RegionCode | String | Region code of the IP address involved in the attack. | 
-| Akamai.SIEM.AttackData.HttpMessage.Bytes | Number | HTTP messege size in bytes. | 
-| Akamai.SIEM.AttackData.HttpMessage.Host | String | HTTP messege host. | 
-| Akamai.SIEM.AttackData.HttpMessage.Method | String | HTTP messege method. | 
-| Akamai.SIEM.AttackData.HttpMessage.Path | String | HTTP messege path. | 
-| Akamai.SIEM.AttackData.HttpMessage.Port | String | HTTP messege port. | 
-| Akamai.SIEM.AttackData.HttpMessage.Protocol | String | HTTP messege protocol. | 
-| Akamai.SIEM.AttackData.HttpMessage.Query | String | HTTP messege query. | 
-| Akamai.SIEM.AttackData.HttpMessage.RequestHeaders | String | HTTP messege request headers. | 
-| Akamai.SIEM.AttackData.HttpMessage.RequestID | String | HTTP messege request ID. | 
-| Akamai.SIEM.AttackData.HttpMessage.ResponseHeaders | String | HTTP message response headers. | 
-| Akamai.SIEM.AttackData.HttpMessage.Start | Date | HTTP messege epoch start time. | 
-| Akamai.SIEM.AttackData.HttpMessage.Status | Number | HTTP messege status code. | 
-| IP.Address | String | IP address. | 
-| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
-| IP.Geo.Country | String | The country in which the IP address is located. | 
+| Akamai.SIEM.AttackData.clientIP | String | IP address involved in the attack. |
+| Akamai.SIEM.AttackData.ConfigID | String | Unique identifier of the security configuration involved. |
+| Akamai.SIEM.AttackData.PolicyID | String | Unique identifier of the policy configuration involved. |
+| Akamai.SIEM.AttackData.Geo.Asn | String | Geographic ASN location of the IP address involved in the attack. |
+| Akamai.SIEM.AttackData.Geo.City | String | City of the IP address involved in the attack. |
+| Akamai.SIEM.AttackData.Geo.Continent | String | Continent of the IP address involved in the attack. |
+| Akamai.SIEM.AttackData.Geo.Country | String | Country of the IP address involved in the attack. |
+| Akamai.SIEM.AttackData.Geo.RegionCode | String | Region code of the IP address involved in the attack. |
+| Akamai.SIEM.AttackData.HttpMessage.Bytes | Number | HTTP messege size in bytes. |
+| Akamai.SIEM.AttackData.HttpMessage.Host | String | HTTP messege host. |
+| Akamai.SIEM.AttackData.HttpMessage.Method | String | HTTP messege method. |
+| Akamai.SIEM.AttackData.HttpMessage.Path | String | HTTP messege path. |
+| Akamai.SIEM.AttackData.HttpMessage.Port | String | HTTP messege port. |
+| Akamai.SIEM.AttackData.HttpMessage.Protocol | String | HTTP messege protocol. |
+| Akamai.SIEM.AttackData.HttpMessage.Query | String | HTTP messege query. |
+| Akamai.SIEM.AttackData.HttpMessage.RequestHeaders | String | HTTP messege request headers. |
+| Akamai.SIEM.AttackData.HttpMessage.RequestID | String | HTTP messege request ID. |
+| Akamai.SIEM.AttackData.HttpMessage.ResponseHeaders | String | HTTP message response headers. |
+| Akamai.SIEM.AttackData.HttpMessage.Start | Date | HTTP messege epoch start time. |
+| Akamai.SIEM.AttackData.HttpMessage.Status | Number | HTTP messege status code. |
+| IP.Address | String | IP address. |
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
+| IP.Geo.Country | String | The country in which the IP address is located. |
 
 ##### Context Example
 
@@ -267,7 +268,7 @@ Get security events from Akamai WAF.
 
 ### Troubleshooting
 
-## receiving 416 error code / aggregated delay when fetching events:
+## receiving 416 error code / aggregated delay when fetching events
 
 This may be due to not querying for enough events per interval / request.
 The proposed solution in that case is to use the two parameters **Fetch limit** and **Akamai Page size**.
@@ -281,7 +282,7 @@ If after readjusting the limits you keep encounter errors, please refer to the s
 
 ### Known limitations
 
-## The config ID can only be configured on one instance:
+## The config ID can only be configured on one instance
 
 Due to limitations from Akamai, the config ID can only be configured on one instance on the same machine or on different machines (i.e. the same config ID can't be configured both on dev and prod tenants or twice on the same tenant).
 Configuring on multiple machines may lead to duplications or missing events.
