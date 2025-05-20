@@ -298,8 +298,10 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
 
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
-    assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
-    last_id = EVENT_TYPE[event_type].get_id(fetched_events[-1])
+
+    max_event_index = EVENT_TYPE[event_type].max_index
+    assert last_run[event_type][LATEST_TIME] == fetched_events[max_event_index]["_time"]
+    last_id = EVENT_TYPE[event_type].get_id(fetched_events[max_event_index])
     assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
 
 
@@ -426,9 +428,10 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
     assert set_last_run_mocker.called
 
     last_run = set_last_run_mocker.call_args[0][0]
-    assert last_run[event_type][LATEST_TIME] == fetched_events[-1]["_time"]
+    max_event_index = EVENT_TYPE[event_type].max_index
+    assert last_run[event_type][LATEST_TIME] == fetched_events[max_event_index]["_time"]
 
-    last_id = EVENT_TYPE[event_type].get_id(fetched_events[-1])
+    last_id = EVENT_TYPE[event_type].get_id(fetched_events[max_event_index])
     assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
 
     assert all(event["SOURCE_LOG_TYPE"] == EVENT_TYPE[event_type].source_log_type for event in fetched_events)
@@ -1061,11 +1064,11 @@ def test_fetch_events_domain_two_call_paging(mocker):
     assert fetched[0]["SOURCE_LOG_TYPE"] == EVENT_TYPE[DOMAIN].source_log_type
 
     returend_ids = [EVENT_TYPE[DOMAIN].get_id(event) for event in fetched]
-    assert returend_ids == [str(i) for i in range(26, 96)]
+    assert returend_ids == [str(i) for i in range(95, 25, -1)]
 
     lr = set_last_run.call_args[0][0]
-    assert lr[DOMAIN][LATEST_TIME] == fetched[-1]["_time"]
-    last_id = EVENT_TYPE[DOMAIN].get_id(fetched[-1])
+    assert lr[DOMAIN][LATEST_TIME] == fetched[0]["_time"]
+    last_id = EVENT_TYPE[DOMAIN].get_id(fetched[0])
     assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == last_id
 
 
