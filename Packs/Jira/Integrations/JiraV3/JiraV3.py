@@ -233,6 +233,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             ok_codes=ok_codes,
             files=files,
             headers=request_headers,
+            with_metrics=True
         )
 
     def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
