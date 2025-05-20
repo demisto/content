@@ -1,7 +1,9 @@
 # Prisma Cloud Compute
+
 This pack includes Cortex XSIAM content.
 
 <~XSIAM>
+
 ## Overview
 
 This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Cortex XSIAM.
@@ -38,10 +40,10 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSIAM by creating an ale
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
-
 ## Using the integration and scripts
 
 The integration ships with four default playbooks:
+
 * **Prisma Cloud Compute - Audit Alert v3**
 * **Prisma Cloud Compute - Cloud Discovery Alert**
 * **Prisma Cloud Compute - Compliance Alert v2**
@@ -59,36 +61,36 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 
 ![image](doc_files/prisma_alert_raw_input.png)
 
-
 * Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
-
 
 ![image](doc_files/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
 ### Audit Alert v3 playbook
+
 This is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
 Enrichment:
-- Image details
-- Similar container events
-- Owner details
-- Vulnerabilities
-- Compliance details
-- Forensics
-- Defender logs
+* Image details
+* Similar container events
+* Owner details
+* Vulnerabilities
+* Compliance details
+* Forensics
+* Defender logs
 
 Remediation:
-- Block Indicators - Generic v3
-- Cloud Response - Generic
-- Manual Remediation
+* Block Indicators - Generic v3
+* Cloud Response - Generic
+* Manual Remediation
 
 Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
 
 ### Compliance Alert v2
+
 This is a default playbook for parsing and enrichment of Prisma Cloud Compute compliance alerts.
 
 It will handle hosts, images and container compliance alerts.
@@ -105,6 +107,7 @@ If any alerts are missing in Cortex XSIAM, check the status of the integration:
 </~XSIAM>
 
 <~XSOAR>
+
 ## Overview
 
 This integration lets you import **Palo Alto Networks - Prisma Cloud Compute** alerts into Cortex XSOAR.
@@ -141,10 +144,10 @@ Configure Prisma Cloud Compute to send alerts to Cortex XSOAR by creating an ale
 4. Click **Test** to validate the integration.
 5. Click **Done** to save the integration.
 
-
 ## Using the integration and scripts
 
 The integration ships with four default playbooks:
+
 * **Prisma Cloud Compute - Audit Alert v3**
 * **Prisma Cloud Compute - Cloud Discovery Alert**
 * **Prisma Cloud Compute - Compliance Alert v2**
@@ -162,36 +165,36 @@ To better understand how playbooks and scripts interoperate, consider the _Prism
 
 ![image](doc_files/prisma_alert_raw_input.png)
 
-
 * Click **outputs** to see how the script transformed the raw JSON input into a Cortex XSOAR object.
-
 
 ![image](doc_files/prisma_alert_outputs.png)
 
 At this point, you can add tasks that extend the playbook to check and respond to alerts depending on the properties of the Cortex XSOAR object.
 
 ### Audit Alert v3 playbook
+
 This is a default playbook for parsing and enrichment of Prisma Cloud Compute audit alerts.
 
 The playbook has the following sections:
 
 Enrichment:
-- Image details
-- Similar container events
-- Owner details
-- Vulnerabilities
-- Compliance details
-- Forensics
-- Defender logs
+* Image details
+* Similar container events
+* Owner details
+* Vulnerabilities
+* Compliance details
+* Forensics
+* Defender logs
 
 Remediation:
-- Block Indicators - Generic v3
-- Cloud Response - Generic
-- Manual Remediation
+* Block Indicators - Generic v3
+* Cloud Response - Generic
+* Manual Remediation
 
 Currently, the playbook supports incidents created by **Runtime** and **WAAS** triggers.
 
 ### Compliance Alert v2
+
 This is a default playbook for parsing and enrichment of Prisma Cloud Compute compliance alerts.
 It will handle hosts, images and container compliance alerts.
 Each sub playbook in this playbook is dedicated to a specific resource type: host, container or image, and will loop through all of the retrieved Compliance Issue IDs in order to retrieve enriched information about each of the resources.
