@@ -2,6 +2,7 @@ Manage Box users
 This integration was integrated and tested with API version 2.0 of Box v2
 
 ## Configure the Box Application to Interface with XSOAR
+
 1. Navigate to [the developer console](https://app.box.com/developers/console) for Box.
 2. Click **Create a New App**.
 3. Select **Custom App** and when prompted, select **Server Authentication (with JWT)**
@@ -14,7 +15,7 @@ This integration was integrated and tested with API version 2.0 of Box v2
 
 Once you have obtained the JSON file, copy and paste its contents into the *Credentials JSON* parameter.
 
-Before testing the integration, navigate to the General Settings for your app in the developer console and click 
+Before testing the integration, navigate to the General Settings for your app in the developer console and click
 **Review and Submit**. Your enterprise admin will need to approve the app before your integration will start working.
 
 From the General Settings menu, you may also obtain your *User ID* for the service account.
@@ -41,6 +42,7 @@ From the General Settings menu, you may also obtain your *User ID* for the servi
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Differences between Box \(Deprecated\) and Box v2
+
 - Context outputs were changed to be nested under the entity type for each command. For example, user outputs
 used to be stored under the context root, Box. In this version they are stored under the entity Box.Users.
 - Authentication is handled via JSON Web Tokens \(JWT\) and no longer requires each command to retrieve an authentication
@@ -48,100 +50,103 @@ token manually.
 - All results given via the Box API is returned into the context.
 
 ## Commands
+
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### box-search-content
+
 ***
 Searches for files, folders, web links, and shared files across the users content or across the entire enterprise.
-
 
 #### Base Command
 
 `box-search-content`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| type | Limits the search results to any items of this type. This parameter only takes one value. By default the API returns items that match any of these types. Possible values are: file, folder, web_link. | Optional | 
-| ancestor_folder_ids | A comma-separated lists of folder IDs that limits the search results to items within the given list of folders. | Optional | 
-| item_name | Query for an item by name. | Optional | 
-| item_description | The description of the item to search for. | Optional | 
-| comments | The comments of the item to search for. | Optional | 
-| tag | The tag of the item to search for.  | Optional | 
-| created_range | A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days). | Optional | 
-| file_extensions | Limits the search results to any files that match any of the provided file extensions. | Optional | 
-| limit | The maximum number of items to return as part of a page of results. Default is "100". | Optional | 
-| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
-| owner_uids | A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners. | Optional | 
-| trash_content | Whether the search should look in the trash for items. | Optional | 
-| updated_at_range | Limits the search results to any items updated within a given date range. | Optional | 
-| query | The string to search for. | Optional | 
-
+| type | Limits the search results to any items of this type. This parameter only takes one value. By default the API returns items that match any of these types. Possible values are: file, folder, web_link. | Optional |
+| ancestor_folder_ids | A comma-separated lists of folder IDs that limits the search results to items within the given list of folders. | Optional |
+| item_name | Query for an item by name. | Optional |
+| item_description | The description of the item to search for. | Optional |
+| comments | The comments of the item to search for. | Optional |
+| tag | The tag of the item to search for.  | Optional |
+| created_range | A comma-separated list of the time frame of when the item was created. Can be RFC3339 timestamps, or relative to the current time (e.g., 3 Days). | Optional |
+| file_extensions | Limits the search results to any files that match any of the provided file extensions. | Optional |
+| limit | The maximum number of items to return as part of a page of results. Default is "100". | Optional |
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional |
+| owner_uids | A comma-separated list of user IDs used to limit the search results to any items that are owned by the given list of owners. | Optional |
+| trash_content | Whether the search should look in the trash for items. | Optional |
+| updated_at_range | Limits the search results to any items updated within a given date range. | Optional |
+| query | The string to search for. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Query.id | Number | The ID of the item found. | 
-| Box.Query.etag | Number | The entry tag for the item found. | 
-| Box.Query.type | String | The type of the item found. | 
-| Box.Query.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Query.name | String | The name of the item. | 
-| Box.Query.sha1 | String | The SHA1 hash of the item. | 
-| Box.Query.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Query.file_version.type | String | Value is always file_version. | 
-| Box.Query.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.Query.description | String | The description of the item. | 
-| Box.Query.size | Number | The file size in bytes. | 
-| Box.Query.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Query.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.Query.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.Query.path_collection.entries.type | String | The type of the item found. | 
-| Box.Query.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Query.path_collection.entries.name | String | The name of the item. | 
-| Box.Query.created_at | Date | The date and time when the item was created on Box. | 
-| Box.Query.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.Query.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.Query.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.Query.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.Query.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.Query.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.Query.created_by.type | String | Value is always user. | 
-| Box.Query.created_by.name | String | The display name of the user who created the item. | 
-| Box.Query.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.Query.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.Query.modified_by.type | String | Value is always user. | 
-| Box.Query.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.Query.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.Query.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.Query.owned_by.type | String | Value is always user. | 
-| Box.Query.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.Query.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.Query.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.Query.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.Query.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.Query.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.Query.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.Query.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.Query.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.Query.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.Query.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.Query.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.Query.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.Query.entries.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.Query.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.Query.parent.id | Number | The ID of the parent for the item found | 
-| Box.Query.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.Query.parent.type | String | The type for the parent of the item found. | 
-| Box.Query.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.Query.parent.name | String | The name of the parent of the item. | 
-| Box.Query.item_status | String | The status of the parent of the item. | 
-
+| Box.Query.id | Number | The ID of the item found. |
+| Box.Query.etag | Number | The entry tag for the item found. |
+| Box.Query.type | String | The type of the item found. |
+| Box.Query.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Query.name | String | The name of the item. |
+| Box.Query.sha1 | String | The SHA1 hash of the item. |
+| Box.Query.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.Query.file_version.type | String | Value is always file_version. |
+| Box.Query.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.Query.description | String | The description of the item. |
+| Box.Query.size | Number | The file size in bytes. |
+| Box.Query.path_collection.total_count | Number | The number of folders in the list. |
+| Box.Query.path_collection.entries.id | Number | The ID of the item found. |
+| Box.Query.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.Query.path_collection.entries.type | String | The type of the item found. |
+| Box.Query.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Query.path_collection.entries.name | String | The name of the item. |
+| Box.Query.created_at | Date | The date and time when the item was created on Box. |
+| Box.Query.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.Query.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.Query.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.Query.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.Query.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.Query.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.Query.created_by.type | String | Value is always user. |
+| Box.Query.created_by.name | String | The display name of the user who created the item. |
+| Box.Query.created_by.login | String | The primary email address of the user who created the item. |
+| Box.Query.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.Query.modified_by.type | String | Value is always user. |
+| Box.Query.modified_by.name | String | The display name of the user who modified the item. |
+| Box.Query.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.Query.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.Query.owned_by.type | String | Value is always user. |
+| Box.Query.owned_by.name | String | The display name of the user who owns the item. |
+| Box.Query.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.Query.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.Query.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.Query.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.Query.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.Query.entries.shared_link.access | String | The access level for the shared link. |
+| Box.Query.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.Query.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.Query.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.Query.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.Query.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.Query.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.Query.entries.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.Query.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.Query.parent.id | Number | The ID of the parent for the item found |
+| Box.Query.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.Query.parent.type | String | The type for the parent of the item found. |
+| Box.Query.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.Query.parent.name | String | The name of the parent of the item. |
+| Box.Query.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-search-content item_name="test" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -207,91 +212,92 @@ Searches for files, folders, web links, and shared files across the users conten
 #### Human Readable Output
 
 >### Search results
+>
 >|Content Created At|Content Modified At|Created At|Created By|Etag|Id|Item Status|Modified At|Modified By|Name|Owned By|Parent|Path Collection|Sequence Id|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 0 | 127109452066 | active | 2020-11-30T03:53:45-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | test-demo name | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | type: folder<br/>id: 0<br/>sequence_id: null<br/>etag: null<br/>name: All Files | total_count: 1<br/>entries: {'type': 'folder', 'id': '0', 'sequence_id': None, 'etag': None, 'name': 'All Files'} | 0 | 0 | folder |
 
-
 ### box-find-file-folder-by-share-link
+
 ***
 Return the file represented by a shared link.
-
 
 #### Base Command
 
 `box-find-file-folder-by-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| shared_link | Linked used to share the file. | Required | 
-| password | Password used to access the shared link. | Optional | 
-
+| shared_link | Linked used to share the file. | Required |
+| password | Password used to access the shared link. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found. | 
-| Box.ShareLink.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.ShareLink.name | String | The name of the item. | 
-| Box.ShareLink.sha1 | String | The SHA1 hash of the item. | 
-| Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.ShareLink.file_version.type | String | Value is always file_version. | 
-| Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.ShareLink.description | String | The description of the item. | 
-| Box.ShareLink.size | Number | The file size in bytes. | 
-| Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.path_collection.entries.type | String | The type of the item found. | 
-| Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.ShareLink.path_collection.entries.name | String | The name of the item. | 
-| Box.ShareLink.created_at | Date | The date and time when the item was created on Box. | 
-| Box.ShareLink.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.ShareLink.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.ShareLink.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.ShareLink.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.ShareLink.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.ShareLink.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.ShareLink.created_by.type | String | Value is always user. | 
-| Box.ShareLink.created_by.name | String | The display name of the user who created the item. | 
-| Box.ShareLink.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.ShareLink.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.ShareLink.modified_by.type | String | Value is always user. | 
-| Box.ShareLink.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.ShareLink.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.ShareLink.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.ShareLink.owned_by.type | String | Value is always user. | 
-| Box.ShareLink.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.ShareLink.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.ShareLink.parent.id | Number | The ID of the parent for the item found | 
-| Box.ShareLink.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.ShareLink.parent.type | String | The type for the parent of the item found. | 
-| Box.ShareLink.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.ShareLink.parent.name | String | The name of the parent of the item. | 
-| Box.ShareLink.item_status | String | The status of the parent of the item. | 
-
+| Box.ShareLink.id | Number | The ID of the item found. |
+| Box.ShareLink.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.ShareLink.name | String | The name of the item. |
+| Box.ShareLink.sha1 | String | The SHA1 hash of the item. |
+| Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.ShareLink.file_version.type | String | Value is always file_version. |
+| Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.ShareLink.description | String | The description of the item. |
+| Box.ShareLink.size | Number | The file size in bytes. |
+| Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. |
+| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. |
+| Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.path_collection.entries.type | String | The type of the item found. |
+| Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.ShareLink.path_collection.entries.name | String | The name of the item. |
+| Box.ShareLink.created_at | Date | The date and time when the item was created on Box. |
+| Box.ShareLink.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.ShareLink.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.ShareLink.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.ShareLink.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.ShareLink.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.ShareLink.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.ShareLink.created_by.type | String | Value is always user. |
+| Box.ShareLink.created_by.name | String | The display name of the user who created the item. |
+| Box.ShareLink.created_by.login | String | The primary email address of the user who created the item. |
+| Box.ShareLink.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.ShareLink.modified_by.type | String | Value is always user. |
+| Box.ShareLink.modified_by.name | String | The display name of the user who modified the item. |
+| Box.ShareLink.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.ShareLink.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.ShareLink.owned_by.type | String | Value is always user. |
+| Box.ShareLink.owned_by.name | String | The display name of the user who owns the item. |
+| Box.ShareLink.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.ShareLink.parent.id | Number | The ID of the parent for the item found |
+| Box.ShareLink.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.ShareLink.parent.type | String | The type for the parent of the item found. |
+| Box.ShareLink.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.ShareLink.parent.name | String | The name of the parent of the item. |
+| Box.ShareLink.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-find-file-folder-by-share-link shared_link="https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -348,53 +354,54 @@ Return the file represented by a shared link.
 #### Human Readable Output
 
 >### File/Folder Share Link for `https://app.box.com/s/oyujr5qpxy1nbky394slw7n98v8pnpmy`
+>
 >|Content Created At|Content Modified At|Created At|Created By|Etag|File Version|Id|Item Status|Modified At|Modified By|Name|Owned By|Path Collection|Sequence Id|Sha1|Size|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:55-08:00 | 2020-11-25T05:20:56-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 2 | type: file_version<br/>id: 794731944502<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 745868717302 | active | 2020-12-01T06:28:21-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 55555.gif | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 2 | 1ff8be1766d9e16b0b651f89001e8e7375c9e71f | 26891788 | file |
 
-
 ### box-get-shared-link-by-file
+
 ***
 Gets the information for a shared link on a file.
-
 
 #### Base Command
 
 `box-get-shared-link-by-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The unique identifier that represent a file. | Required | 
-| as_user | The user ID for the account used to access the file. | Optional | 
-
+| file_id | The unique identifier that represent a file. | Required |
+| as_user | The user ID for the account used to access the file. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-get-shared-link-by-file file_id="742246263170" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -427,57 +434,58 @@ Gets the information for a shared link on a file.
 #### Human Readable Output
 
 >### Shared link information for the file 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
-
 ### box-create-file-share-link
+
 ***
 Adds a shared link to a file.
-
 
 #### Base Command
 
 `box-create-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The unique identifier that represent a file. | Optional | 
-| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional | 
-| password | The password required to access the shared link. | Optional | 
-| unshared_at | The timestamp at which this shared link will expire. | Optional | 
-| can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional | 
-| as_user | The user who is making the request. | Optional | 
-
+| file_id | The unique identifier that represent a file. | Optional |
+| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional |
+| password | The password required to access the shared link. | Optional |
+| unshared_at | The timestamp at which this shared link will expire. | Optional |
+| can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional |
+| as_user | The user who is making the request. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found. | 
-| Box.ShareLink.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | Number | The ID of the item found. |
+| Box.ShareLink.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-create-file-share-link file_id="742246263170" access="open" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -510,57 +518,58 @@ Adds a shared link to a file.
 #### Human Readable Output
 
 >### File Share Link was created/updated for file_id: 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/khro4bw4g6ay68ye70gsnisqsp9c9r23.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/khro4bw4g6ay68ye70gsnisqsp9c9r23` |
 
-
 ### box-update-file-share-link
+
 ***
 Updates a shared link on a file.
-
 
 #### Base Command
 
 `box-update-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional | 
-| password | The password required to access the shared link. | Optional | 
-| unshared_at | The timestamp at which this shared link will expire. | Optional | 
-| can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional | 
-| file_id | The unique identifier that represent a file. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional |
+| password | The password required to access the shared link. | Optional |
+| unshared_at | The timestamp at which this shared link will expire. | Optional |
+| can_download | If the shared link allows for downloading of files. Possible values are: true, false. | Optional |
+| file_id | The unique identifier that represent a file. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found. | 
-| Box.ShareLink.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | Number | The ID of the item found. |
+| Box.ShareLink.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-update-file-share-link file_id="742246263170" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -593,40 +602,41 @@ Updates a shared link on a file.
 #### Human Readable Output
 
 >### File Share Link was created/updated for file_id: 742246263170
+>
 >|Access|Download Count|Download Url|Effective Access|Effective Permission|Is Password Enabled|Permissions|Preview Count|Url|
 >|---|---|---|---|---|---|---|---|---|
 >| open | 0 | `https://app.box.com/shared/static/g3xy2he56jd2hfakjv5ptik08de8v15f.jpeg` | open | can_preview | false | can_preview: true<br/>can_download: false | 0 | `https://app.box.com/s/g3xy2he56jd2hfakjv5ptik08de8v15f` |
 
-
 ### box-remove-file-share-link
+
 ***
 Removes a shared link from a file.
-
 
 #### Base Command
 
 `box-remove-file-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The unique identifier that represents a file. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| file_id | The unique identifier that represents a file. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
 
 #### Command Example
+
 ```!box-remove-file-share-link file_id="742246263170" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -645,47 +655,48 @@ Removes a shared link from a file.
 >File Share Link for the file_id 742246263170 was removed.
 
 ### box-get-shared-link-by-folder
+
 ***
 Gets the information for a shared link on a folder.
-
 
 #### Base Command
 
 `box-get-shared-link-by-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-get-shared-link-by-folder folder_id="125959916474" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -718,57 +729,58 @@ Gets the information for a shared link on a folder.
 #### Human Readable Output
 
 >### Shared link information for the folder 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
-
 ### box-create-folder-share-link
+
 ***
 Adds a shared link to a folder.
-
 
 #### Base Command
 
 `box-create-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional | 
-| password | The password required to access the shared link. | Optional | 
-| unshared_at | The timestamp at which this shared link will expire. | Optional | 
-| can_download | If the shared link allows for downloading of folders. Possible values are: true, false. | Optional | 
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional |
+| password | The password required to access the shared link. | Optional |
+| unshared_at | The timestamp at which this shared link will expire. | Optional |
+| can_download | If the shared link allows for downloading of folders. Possible values are: true, false. | Optional |
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-create-folder-share-link folder_id="125959916474" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -801,57 +813,58 @@ Adds a shared link to a folder.
 #### Human Readable Output
 
 >### Folder Share Link for 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/qmfynlq5bpaq5cn7nnbet8vh9nnsswqi` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
-
 ### box-update-folder-share-link
+
 ***
 Updates a shared link on a folder.
-
 
 #### Base Command
 
 `box-update-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional | 
-| password | The password required to access the shared link. | Optional | 
-| unshared_at | The timestamp at which this shared link will expire. | Optional | 
-| can_download | If the shared link allows for downloading of folders. Possible values are: true, false. | Optional | 
-
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
+| access | The level of access for the shared link. Possible values are: open, company, collaborators. | Optional |
+| password | The password required to access the shared link. | Optional |
+| unshared_at | The timestamp at which this shared link will expire. | Optional |
+| can_download | If the shared link allows for downloading of folders. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.entries.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
 
 #### Command Example
+
 ```!box-update-folder-share-link folder_id="125959916474" as_user="14342567114" access="open" can_download="false"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -884,40 +897,41 @@ Updates a shared link on a folder.
 #### Human Readable Output
 
 >### Folder Share Link for 125959916474
+>
 >|Etag|Id|Shared Link|Type|
 >|---|---|---|---|
 >| 0 | 125959916474 | url: `https://app.box.com/s/uaigc08phyoxnx59nlllecax7mfsrfb1` <br/>download_url: null<br/>vanity_url: null<br/>vanity_name: null<br/>effective_access: open<br/>effective_permission: can_preview<br/>is_password_enabled: false<br/>unshared_at: null<br/>download_count: 0<br/>preview_count: 0<br/>access: open<br/>permissions: {"can_preview": true, "can_download": false} | folder |
 
-
 ### box-remove-folder-share-link
+
 ***
 Removes a shared link from a folder.
-
 
 #### Base Command
 
 `box-remove-folder-share-link`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | String | The ID of the item found. | 
-| Box.ShareLink.etag | String | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-
+| Box.ShareLink.id | String | The ID of the item found. |
+| Box.ShareLink.etag | String | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
 
 #### Command Example
+
 ```!box-remove-folder-share-link folder_id="125959916474" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -933,92 +947,93 @@ Removes a shared link from a folder.
 
 #### Human Readable Output
 
->### Folder Share Link for 125959916474 was removed.
+>### Folder Share Link for 125959916474 was removed
+>
 >|Etag|Id|Type|
 >|---|---|---|
 >| 0 | 125959916474 | folder |
 
-
 ### box-get-folder
+
 ***
 Retrieves details for a folder, including the first 100 entries in the folder.
-
 
 #### Base Command
 
 `box-get-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.ShareLink.id | Number | The ID of the item found. | 
-| Box.ShareLink.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.type | String | The type of the item found. | 
-| Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.ShareLink.name | String | The name of the item. | 
-| Box.ShareLink.sha1 | String | The SHA1 hash of the item. | 
-| Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.ShareLink.file_version.type | String | Value is always file_version. | 
-| Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.ShareLink.description | String | The description of the item. | 
-| Box.ShareLink.size | Number | The file size in bytes. | 
-| Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.ShareLink.path_collection.entries.type | String | The type of the item found. | 
-| Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.ShareLink.path_collection.entries.name | String | The name of the item. | 
-| Box.ShareLink.created_at | Date | The date and time when the item was created on Box. | 
-| Box.ShareLink.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.ShareLink.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.ShareLink.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.ShareLink.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.ShareLink.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.ShareLink.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.ShareLink.created_by.type | String | Value is always user. | 
-| Box.ShareLink.created_by.name | String | The display name of the user who created the item. | 
-| Box.ShareLink.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.ShareLink.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.ShareLink.modified_by.type | String | Value is always user. | 
-| Box.ShareLink.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.ShareLink.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.ShareLink.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.ShareLink.owned_by.type | String | Value is always user. | 
-| Box.ShareLink.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.ShareLink.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.ShareLink.shared_link.access | String | The access level for the shared link. | 
-| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.ShareLink.parent.id | Number | The ID of the parent for the item found | 
-| Box.ShareLink.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.ShareLink.parent.type | String | The type for the parent of the item found. | 
-| Box.ShareLink.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.ShareLink.parent.name | String | The name of the parent of the item. | 
-| Box.ShareLink.item_status | String | The status of the parent of the item. | 
-
+| Box.ShareLink.id | Number | The ID of the item found. |
+| Box.ShareLink.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.type | String | The type of the item found. |
+| Box.ShareLink.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.ShareLink.name | String | The name of the item. |
+| Box.ShareLink.sha1 | String | The SHA1 hash of the item. |
+| Box.ShareLink.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.ShareLink.file_version.type | String | Value is always file_version. |
+| Box.ShareLink.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.ShareLink.description | String | The description of the item. |
+| Box.ShareLink.size | Number | The file size in bytes. |
+| Box.ShareLink.path_collection.total_count | Number | The number of folders in the list. |
+| Box.ShareLink.path_collection.entries.id | Number | The ID of the item found. |
+| Box.ShareLink.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.ShareLink.path_collection.entries.type | String | The type of the item found. |
+| Box.ShareLink.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.ShareLink.path_collection.entries.name | String | The name of the item. |
+| Box.ShareLink.created_at | Date | The date and time when the item was created on Box. |
+| Box.ShareLink.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.ShareLink.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.ShareLink.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.ShareLink.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.ShareLink.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.ShareLink.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.ShareLink.created_by.type | String | Value is always user. |
+| Box.ShareLink.created_by.name | String | The display name of the user who created the item. |
+| Box.ShareLink.created_by.login | String | The primary email address of the user who created the item. |
+| Box.ShareLink.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.ShareLink.modified_by.type | String | Value is always user. |
+| Box.ShareLink.modified_by.name | String | The display name of the user who modified the item. |
+| Box.ShareLink.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.ShareLink.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.ShareLink.owned_by.type | String | Value is always user. |
+| Box.ShareLink.owned_by.name | String | The display name of the user who owns the item. |
+| Box.ShareLink.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.ShareLink.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.ShareLink.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.ShareLink.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.ShareLink.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.ShareLink.shared_link.access | String | The access level for the shared link. |
+| Box.ShareLink.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.ShareLink.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.ShareLink.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.ShareLink.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.ShareLink.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.ShareLink.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.ShareLink.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.ShareLink.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.ShareLink.parent.id | Number | The ID of the parent for the item found |
+| Box.ShareLink.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.ShareLink.parent.type | String | The type for the parent of the item found. |
+| Box.ShareLink.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.ShareLink.parent.name | String | The name of the parent of the item. |
+| Box.ShareLink.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-get-folder folder_id="0" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1278,11 +1293,14 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 
 #### Human Readable Output
 
->### Folder overview for 0.
+>### Folder overview for 0
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>
 >### File contents for the folder 0
+>
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
 >| 0 | 125959916474 | My Box Notes | 0 | folder |
@@ -1304,45 +1322,45 @@ Retrieves details for a folder, including the first 100 entries in the folder.
 >| 5 | 745898898314 | testing event1234.gif | 5 | file |
 >| 3 | 753421883491 | vandijk5.gif | 3 | file |
 
-
 ### box-list-folder-items
+
 ***
 Retrieves a page of items in a folder.
-
 
 #### Base Command
 
 `box-list-folder-items`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| folder_id | The unique identifier that represent a folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-| limit | The maximum number of items to return per page. Default is "100". | Optional | 
-| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
-| sort | The field the results should be sorted by. Possible values are: id, name, date, size. Default is name. | Optional | 
-
+| folder_id | The unique identifier that represent a folder. | Required |
+| as_user | The user who is performing the action. | Optional |
+| limit | The maximum number of items to return per page. Default is "100". | Optional |
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional |
+| sort | The field the results should be sorted by. Possible values are: id, name, date, size. Default is name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Folder.id | Number | The ID of the folder. | 
-| Box.Folder.etag | Number | The entity tag of the folder. | 
-| Box.Folder.type | String | Value is always \`folder\`. | 
-| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Folder.name | String | The name of the folder. | 
-| Box.Folder.sha1 | String | The SHA1 has of the folder. | 
-| Box.Folder.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Folder.file_version.type | String | Value is always file_version. | 
-| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-
+| Box.Folder.id | Number | The ID of the folder. |
+| Box.Folder.etag | Number | The entity tag of the folder. |
+| Box.Folder.type | String | Value is always \`folder\`. |
+| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Folder.name | String | The name of the folder. |
+| Box.Folder.sha1 | String | The SHA1 has of the folder. |
+| Box.Folder.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.Folder.file_version.type | String | Value is always file_version. |
+| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. |
 
 #### Command Example
+
 ```!box-list-folder-items folder_id="0" as_user="test@test.com"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1602,11 +1620,14 @@ Retrieves a page of items in a folder.
 
 #### Human Readable Output
 
->### Folder overview for 0.
+>### Folder overview for 0
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |
+>
 >### File contents for the folder 0
+>
 >|Etag|Id|Name|Sequence Id|Type|
 >|---|---|---|---|---|
 >| 0 | 125959916474 | My Box Notes | 0 | folder |
@@ -1628,88 +1649,88 @@ Retrieves a page of items in a folder.
 >| 5 | 745898898314 | testing event1234.gif | 5 | file |
 >| 3 | 753421883491 | vandijk5.gif | 3 | file |
 
-
 ### box-folder-create
+
 ***
 Creates a new empty folder within the specified parent folder.
-
 
 #### Base Command
 
 `box-folder-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name for the new folder. | Required | 
-| parent_id | The parent folder to create the new folder within. Default is 0. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| name | The name for the new folder. | Required |
+| parent_id | The parent folder to create the new folder within. Default is 0. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Folder.id | Number | The ID of the folder created. | 
-| Box.Folder.etag | Number | The entry tag for the folder created. | 
-| Box.Folder.type | String | The type of folder. | 
-| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. | 
-| Box.Folder.name | String | The name of the folder. | 
-| Box.Folder.sha1 | String | The SHA1 hash of the folder. | 
-| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. | 
-| Box.Folder.file_version.type | String | Value is always file_version. | 
-| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.Folder.description | String | The description of the item. | 
-| Box.Folder.size | Number | The folder size in bytes. | 
-| Box.Folder.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Folder.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.Folder.path_collection.entries.type | String | The type of the item found. | 
-| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Folder.path_collection.entries.name | String | The name of the item. | 
-| Box.Folder.created_at | Date | The date and time when the item was created on Box. | 
-| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.Folder.created_by.type | String | Value is always user. | 
-| Box.Folder.created_by.name | String | The display name of the user who created the item. | 
-| Box.Folder.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.Folder.modified_by.type | String | Value is always user. | 
-| Box.Folder.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.Folder.owned_by.type | String | Value is always user. | 
-| Box.Folder.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.Folder.shared_link.access | String | The access level for the shared link. | 
-| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.Folder.parent.id | Number | The ID of the parent for the item found | 
-| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.Folder.parent.type | String | The type for the parent of the item found. | 
-| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.Folder.parent.name | String | The name of the parent of the item. | 
-| Box.Folder.item_status | String | The status of the parent of the item. | 
-
+| Box.Folder.id | Number | The ID of the folder created. |
+| Box.Folder.etag | Number | The entry tag for the folder created. |
+| Box.Folder.type | String | The type of folder. |
+| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. |
+| Box.Folder.name | String | The name of the folder. |
+| Box.Folder.sha1 | String | The SHA1 hash of the folder. |
+| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. |
+| Box.Folder.file_version.type | String | Value is always file_version. |
+| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.Folder.description | String | The description of the item. |
+| Box.Folder.size | Number | The folder size in bytes. |
+| Box.Folder.path_collection.total_count | Number | The number of folders in the list. |
+| Box.Folder.path_collection.entries.id | Number | The ID of the item found. |
+| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.Folder.path_collection.entries.type | String | The type of the item found. |
+| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Folder.path_collection.entries.name | String | The name of the item. |
+| Box.Folder.created_at | Date | The date and time when the item was created on Box. |
+| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.Folder.created_by.type | String | Value is always user. |
+| Box.Folder.created_by.name | String | The display name of the user who created the item. |
+| Box.Folder.created_by.login | String | The primary email address of the user who created the item. |
+| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.Folder.modified_by.type | String | Value is always user. |
+| Box.Folder.modified_by.name | String | The display name of the user who modified the item. |
+| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.Folder.owned_by.type | String | Value is always user. |
+| Box.Folder.owned_by.name | String | The display name of the user who owns the item. |
+| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.Folder.shared_link.access | String | The access level for the shared link. |
+| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.Folder.parent.id | Number | The ID of the parent for the item found |
+| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.Folder.parent.type | String | The type for the parent of the item found. |
+| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.Folder.parent.name | String | The name of the parent of the item. |
+| Box.Folder.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-folder-create name="Sample Folder for Docs" parent_id="0" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1728,29 +1749,31 @@ Creates a new empty folder within the specified parent folder.
 >Folder named Sample Folder for Docs, was successfully created.
 
 ### box-file-delete
+
 ***
 Deletes a file, either permanently or by moving it to the trash.
-
 
 #### Base Command
 
 `box-file-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The unique identifier that represent a file. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| file_id | The unique identifier that represent a file. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box-file-delete file_id="751526132294" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -1760,51 +1783,52 @@ There is no context output for this command.
 >The file 751526132294 was successfully deleted.
 
 ### box-list-users
+
 ***
 Returns a list of all users for the Enterprise along with their user_id, public_name, and login.
-
 
 #### Base Command
 
 `box-list-users`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fields | Attributes to include in the response. Possible values are: id, type, name. | Optional | 
-| filter_term | Limits the results to only users who's name or login start with the search term. | Optional | 
-| limit | The maximum number of items to return per page. Default is "100". | Optional | 
-| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
-
+| fields | Attributes to include in the response. Possible values are: id, type, name. | Optional |
+| filter_term | Limits the results to only users who's name or login start with the search term. | Optional |
+| limit | The maximum number of items to return per page. Default is "100". | Optional |
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.User.id | Number | The unique identifier for this user. | 
-| Box.User.type | String | Value is always user. | 
-| Box.User.name | String | The display name of this user. | 
-| Box.User.login | String | The primary email address of this user. | 
-| Box.User.created_at | Date | When the user object was created. | 
-| Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The user's timezone. | 
-| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
-| Box.User.space_used | Number | The amount of space in use by the user. | 
-| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The user's account status. | 
-| Box.User.job_title | String | The user's job title. | 
-| Box.User.phone | Number | The users phone number. | 
-| Box.User.address | String | The user's address. | 
-| Box.User.avatar_url | String | URL of the user's avatar image | 
-| Box.User.notification_email.email | String | The email address to send the notifications to. | 
-| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
-
+| Box.User.id | Number | The unique identifier for this user. |
+| Box.User.type | String | Value is always user. |
+| Box.User.name | String | The display name of this user. |
+| Box.User.login | String | The primary email address of this user. |
+| Box.User.created_at | Date | When the user object was created. |
+| Box.User.modified_at | Date | When the user object was last modified. |
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. |
+| Box.User.timezone | String | The user's timezone. |
+| Box.User.space_amount | Number | The user's total available space amount in bytes. |
+| Box.User.space_used | Number | The amount of space in use by the user. |
+| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. |
+| Box.User.status | String | The user's account status. |
+| Box.User.job_title | String | The user's job title. |
+| Box.User.phone | Number | The users phone number. |
+| Box.User.address | String | The user's address. |
+| Box.User.avatar_url | String | URL of the user's avatar image |
+| Box.User.notification_email.email | String | The email address to send the notifications to. |
+| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. |
 
 #### Command Example
+
 ```!box-list-users fields=name filter_term="Andrew"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1819,94 +1843,95 @@ Returns a list of all users for the Enterprise along with their user_id, public_
 
 #### Human Readable Output
 
->### The following users were found.
+>### The following users were found
+>
 >|Id|Name|Type|
 >|---|---|---|
 >| 14342567114 | Jane Doe | user |
 
-
 ### box-upload-file
+
 ***
 Uploads a file to the given folder.
-
 
 #### Base Command
 
 `box-upload-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The entry ID of the file to upload. | Required | 
-| as_user | The ID of the user who is performing the action. | Optional | 
-| file_name | The name of the file. | Optional | 
-| folder_id | The ID of the folder the file is being uploaded to. Default is 0/root. | Required | 
-
+| entry_id | The entry ID of the file to upload. | Required |
+| as_user | The ID of the user who is performing the action. | Optional |
+| file_name | The name of the file. | Optional |
+| folder_id | The ID of the folder the file is being uploaded to. Default is 0/root. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.File.id | Number | The ID of the item found. | 
-| Box.File.etag | Number | The entry tag for the item found. | 
-| Box.File.type | String | The type of the item found. | 
-| Box.File.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.File.name | String | The name of the item. | 
-| Box.File.sha1 | String | The SHA1 hash of the item. | 
-| Box.File.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.File.file_version.type | String | Value is always file_version. | 
-| Box.File.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.File.description | String | The description of the item. | 
-| Box.File.size | Number | The file size in bytes. | 
-| Box.File.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.File.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.File.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.File.path_collection.entries.type | String | The type of the item found. | 
-| Box.File.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.File.path_collection.entries.name | String | The name of the item. | 
-| Box.File.created_at | Date | The date and time when the item was created on Box. | 
-| Box.File.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.File.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.File.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.File.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.File.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.File.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.File.created_by.type | String | Value is always user. | 
-| Box.File.created_by.name | String | The display name of the user who created the item. | 
-| Box.File.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.File.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.File.modified_by.type | String | Value is always user. | 
-| Box.File.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.File.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.File.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.File.owned_by.type | String | Value is always user. | 
-| Box.File.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.File.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.File.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.File.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.File.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.File.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.File.shared_link.access | String | The access level for the shared link. | 
-| Box.File.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.File.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.File.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.File.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.File.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.File.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.File.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.File.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.File.parent.id | Number | The ID of the parent for the item found | 
-| Box.File.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.File.parent.type | String | The type for the parent of the item found. | 
-| Box.File.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.File.parent.name | String | The name of the parent of the item. | 
-| Box.File.item_status | String | The status of the parent of the item. | 
-
+| Box.File.id | Number | The ID of the item found. |
+| Box.File.etag | Number | The entry tag for the item found. |
+| Box.File.type | String | The type of the item found. |
+| Box.File.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.File.name | String | The name of the item. |
+| Box.File.sha1 | String | The SHA1 hash of the item. |
+| Box.File.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.File.file_version.type | String | Value is always file_version. |
+| Box.File.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.File.description | String | The description of the item. |
+| Box.File.size | Number | The file size in bytes. |
+| Box.File.path_collection.total_count | Number | The number of folders in the list. |
+| Box.File.path_collection.entries.id | Number | The ID of the item found. |
+| Box.File.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.File.path_collection.entries.type | String | The type of the item found. |
+| Box.File.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.File.path_collection.entries.name | String | The name of the item. |
+| Box.File.created_at | Date | The date and time when the item was created on Box. |
+| Box.File.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.File.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.File.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.File.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.File.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.File.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.File.created_by.type | String | Value is always user. |
+| Box.File.created_by.name | String | The display name of the user who created the item. |
+| Box.File.created_by.login | String | The primary email address of the user who created the item. |
+| Box.File.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.File.modified_by.type | String | Value is always user. |
+| Box.File.modified_by.name | String | The display name of the user who modified the item. |
+| Box.File.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.File.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.File.owned_by.type | String | Value is always user. |
+| Box.File.owned_by.name | String | The display name of the user who owns the item. |
+| Box.File.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.File.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.File.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.File.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.File.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.File.shared_link.access | String | The access level for the shared link. |
+| Box.File.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.File.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.File.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.File.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.File.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.File.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.File.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.File.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.File.parent.id | Number | The ID of the parent for the item found |
+| Box.File.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.File.parent.type | String | The type for the parent of the item found. |
+| Box.File.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.File.parent.name | String | The name of the parent of the item. |
+| Box.File.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-upload-file entry_id="364@c9316be6-93dc-440a-8c68-c68912590052" folder_id="0" file_name="changelog.json" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -1916,41 +1941,42 @@ Uploads a file to the given folder.
 >File was successfully uploaded
 
 ### box-trashed-items-list
+
 ***
 Retrieves the files and folders that have been moved to the trash.
-
 
 #### Base Command
 
 `box-trashed-items-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| as_user | The user performing the action. | Optional | 
-| limit | The maximum number of items to return per page. Default is "100". | Optional | 
-| offset | The offset of the item at which to begin the response. Default is "0". | Optional | 
-
+| as_user | The user performing the action. | Optional |
+| limit | The maximum number of items to return per page. Default is "100". | Optional |
+| offset | The offset of the item at which to begin the response. Default is "0". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Trash.id | Number | The ID of the item found. | 
-| Box.Trash.etag | Number | The entry tag for the item found. | 
-| Box.Trash.type | String | The type of the item found. | 
-| Box.Trash.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Trash.name | String | The name of the item. | 
-| Box.Trash.sha1 | String | The SHA1 hash of the item. | 
-| Box.Trash.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Trash.file_version.type | String | Value is always file_version. | 
-| Box.Trash.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-
+| Box.Trash.id | Number | The ID of the item found. |
+| Box.Trash.etag | Number | The entry tag for the item found. |
+| Box.Trash.type | String | The type of the item found. |
+| Box.Trash.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Trash.name | String | The name of the item. |
+| Box.Trash.sha1 | String | The SHA1 hash of the item. |
+| Box.Trash.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.Trash.file_version.type | String | Value is always file_version. |
+| Box.Trash.file_version.sha1 | String | The SHA1 hash of this version of the file. |
 
 #### Command Example
+
 ```!box-trashed-items-list as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -1973,93 +1999,94 @@ Retrieves the files and folders that have been moved to the trash.
 
 #### Human Readable Output
 
->### Trashed items were found.
+>### Trashed items were found
+>
 >|Etag|File Version|Id|Name|Sequence Id|Sha1|Type|
 >|---|---|---|---|---|---|---|
 >| 11 | type: file_version<br/>id: 801011020694<br/>sha1: aa58d9692d58f5d9316d7cf1950d19a0b01bc204 | 751526132294 | list.json | 11 | aa58d9692d58f5d9316d7cf1950d19a0b01bc204 | file |
 
-
 ### box-trashed-item-restore
+
 ***
 Restores a file or folder that has been moved to the trash.
-
 
 #### Base Command
 
 `box-trashed-item-restore`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The unique identifier that represents the file or folder. | Required | 
-| type | Type of the object to restore. Possible values are: file, folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| item_id | The unique identifier that represents the file or folder. | Required |
+| type | Type of the object to restore. Possible values are: file, folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Item.id | Number | The ID of the item found. | 
-| Box.Item.etag | Number | The entry tag for the item found. | 
-| Box.Item.type | String | The type of the item found. | 
-| Box.Item.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Item.name | String | The name of the item. | 
-| Box.Item.sha1 | String | The SHA1 hash of the item. | 
-| Box.Item.file_version.id | Number | The unique identifier that represent a file version. | 
-| Box.Item.file_version.type | String | Value is always file_version. | 
-| Box.Item.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.Item.description | String | The description of the item. | 
-| Box.Item.size | Number | The file size in bytes. | 
-| Box.Item.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Item.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.Item.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.Item.path_collection.entries.type | String | The type of the item found. | 
-| Box.Item.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Item.path_collection.entries.name | String | The name of the item. | 
-| Box.Item.created_at | Date | The date and time when the item was created on Box. | 
-| Box.Item.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.Item.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.Item.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.Item.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.Item.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.Item.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.Item.created_by.type | String | Value is always user. | 
-| Box.Item.created_by.name | String | The display name of the user who created the item. | 
-| Box.Item.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.Item.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.Item.modified_by.type | String | Value is always user. | 
-| Box.Item.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.Item.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.Item.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.Item.owned_by.type | String | Value is always user. | 
-| Box.Item.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.Item.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.Item.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.Item.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.Item.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.Item.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.Item.shared_link.access | String | The access level for the shared link. | 
-| Box.Item.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.Item.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.Item.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.Item.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.Item.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.Item.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.Item.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.Item.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.Item.parent.id | Number | The ID of the parent for the item found | 
-| Box.Item.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.Item.parent.type | String | The type for the parent of the item found. | 
-| Box.Item.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.Item.parent.name | String | The name of the parent of the item. | 
-| Box.Item.item_status | String | The status of the parent of the item. | 
-
+| Box.Item.id | Number | The ID of the item found. |
+| Box.Item.etag | Number | The entry tag for the item found. |
+| Box.Item.type | String | The type of the item found. |
+| Box.Item.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Item.name | String | The name of the item. |
+| Box.Item.sha1 | String | The SHA1 hash of the item. |
+| Box.Item.file_version.id | Number | The unique identifier that represent a file version. |
+| Box.Item.file_version.type | String | Value is always file_version. |
+| Box.Item.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.Item.description | String | The description of the item. |
+| Box.Item.size | Number | The file size in bytes. |
+| Box.Item.path_collection.total_count | Number | The number of folders in the list. |
+| Box.Item.path_collection.entries.id | Number | The ID of the item found. |
+| Box.Item.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.Item.path_collection.entries.type | String | The type of the item found. |
+| Box.Item.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Item.path_collection.entries.name | String | The name of the item. |
+| Box.Item.created_at | Date | The date and time when the item was created on Box. |
+| Box.Item.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.Item.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.Item.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.Item.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.Item.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.Item.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.Item.created_by.type | String | Value is always user. |
+| Box.Item.created_by.name | String | The display name of the user who created the item. |
+| Box.Item.created_by.login | String | The primary email address of the user who created the item. |
+| Box.Item.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.Item.modified_by.type | String | Value is always user. |
+| Box.Item.modified_by.name | String | The display name of the user who modified the item. |
+| Box.Item.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.Item.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.Item.owned_by.type | String | Value is always user. |
+| Box.Item.owned_by.name | String | The display name of the user who owns the item. |
+| Box.Item.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.Item.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.Item.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.Item.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.Item.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.Item.shared_link.access | String | The access level for the shared link. |
+| Box.Item.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.Item.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.Item.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.Item.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.Item.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.Item.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.Item.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.Item.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.Item.parent.id | Number | The ID of the parent for the item found |
+| Box.Item.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.Item.parent.type | String | The type for the parent of the item found. |
+| Box.Item.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.Item.parent.name | String | The name of the parent of the item. |
+| Box.Item.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-trashed-item-restore item_id="751526132294" type="file" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2132,76 +2159,76 @@ Restores a file or folder that has been moved to the trash.
 >Item with the ID 751526132294 was restored.
 
 ### box-trashed-item-delete-permanently
+
 ***
 Permanently deletes a file or folder that is in the trash. This action cannot be undone.
-
 
 #### Base Command
 
 `box-trashed-item-delete-permanently`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| item_id | The unique identifier that represents the file or folder. | Required | 
-| type | The type of the item to delete. Possible values are: file, folder. | Required | 
-| as_user | The user who is performing the action. | Optional | 
-
+| item_id | The unique identifier that represents the file or folder. | Required |
+| type | The type of the item to delete. Possible values are: file, folder. | Required |
+| as_user | The user who is performing the action. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### box-get-current-user
+
 ***
 Retrieves information about the user who is currently authenticated.
-
 
 #### Base Command
 
 `box-get-current-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| as_user | The ID of the user making the request. | Optional | 
-
+| as_user | The ID of the user making the request. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.User.id | Number | The unique identifier for this user. | 
-| Box.User.type | String | Value is always user. | 
-| Box.User.name | String | The display name of this user. | 
-| Box.User.login | String | The primary email address of this user. | 
-| Box.User.created_at | Date | When the user object was created. | 
-| Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The users timezone. | 
-| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
-| Box.User.space_used | Number | The amount of space in use by the user. | 
-| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The user's account status. | 
-| Box.User.job_title | String | The user's job title. | 
-| Box.User.phone | Number | The user's phone number. | 
-| Box.User.address | String | The user's address. | 
-| Box.User.avatar_url | String | URL of the user's avatar image | 
-| Box.User.notification_email.email | String | The email address to send the notifications to. | 
-| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
-
+| Box.User.id | Number | The unique identifier for this user. |
+| Box.User.type | String | Value is always user. |
+| Box.User.name | String | The display name of this user. |
+| Box.User.login | String | The primary email address of this user. |
+| Box.User.created_at | Date | When the user object was created. |
+| Box.User.modified_at | Date | When the user object was last modified. |
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. |
+| Box.User.timezone | String | The users timezone. |
+| Box.User.space_amount | Number | The user's total available space amount in bytes. |
+| Box.User.space_used | Number | The amount of space in use by the user. |
+| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. |
+| Box.User.status | String | The user's account status. |
+| Box.User.job_title | String | The user's job title. |
+| Box.User.phone | Number | The user's phone number. |
+| Box.User.address | String | The user's address. |
+| Box.User.avatar_url | String | URL of the user's avatar image |
+| Box.User.notification_email.email | String | The email address to send the notifications to. |
+| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. |
 
 #### Command Example
+
 ```!box-get-current-user as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2230,72 +2257,73 @@ Retrieves information about the user who is currently authenticated.
 
 #### Human Readable Output
 
->### The current user is test@test.com.
+>### The current user is test@test.com
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:58:34-08:00 | Jane Doe | 4808675309 | 10737418240 | 212311360 | active | America/Los_Angeles | user |
 
-
 ### box-update-user
+
 ***
 Updates a managed user in an enterprise. This endpoint is only available to users and applications with the right admin permissions.
-
 
 #### Base Command
 
 `box-update-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| role | The user’s enterprise role. Possible values are: coadmin, user. | Optional | 
-| address | The user’s address. | Optional | 
-| job_title | The user’s job title. | Optional | 
-| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional | 
-| login | The email address the user uses to log in. | Optional | 
-| name | The name of the user. | Optional | 
-| phone | The user’s phone number. | Optional | 
-| space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional | 
-| status | The user's account status. Possible values are: active, inactive, cannot_delete_edit, cannot_delete_edit_upload. | Optional | 
-| timezone | The user's timezone. | Optional | 
-| is_sync_enabled | Whether the user can use Box Sync. Possible values are: true, false. | Optional | 
-| is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional | 
-| is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional | 
-| is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional | 
-| can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
-| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional | 
-| user_id | The ID of the user. | Required | 
-| as_user | The ID of the user who is making the request. | Optional | 
-
+| role | The user’s enterprise role. Possible values are: coadmin, user. | Optional |
+| address | The user’s address. | Optional |
+| job_title | The user’s job title. | Optional |
+| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional |
+| login | The email address the user uses to log in. | Optional |
+| name | The name of the user. | Optional |
+| phone | The user’s phone number. | Optional |
+| space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional |
+| status | The user's account status. Possible values are: active, inactive, cannot_delete_edit, cannot_delete_edit_upload. | Optional |
+| timezone | The user's timezone. | Optional |
+| is_sync_enabled | Whether the user can use Box Sync. Possible values are: true, false. | Optional |
+| is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional |
+| is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional |
+| is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional |
+| can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional |
+| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional |
+| user_id | The ID of the user. | Required |
+| as_user | The ID of the user who is making the request. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.User.id | Number | The unique identifier for this user. | 
-| Box.User.type | String | Value is always user. | 
-| Box.User.name | String | The display name of this user. | 
-| Box.User.login | String | The primary email address of this user. | 
-| Box.User.created_at | Date | When the user object was created. | 
-| Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The user's timezone. | 
-| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
-| Box.User.space_used | Number | The amount of space in use by the user. | 
-| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The user's account status. | 
-| Box.User.job_title | String | The user's job title. | 
-| Box.User.phone | Number | The user's phone number. | 
-| Box.User.address | String | The user's address. | 
-| Box.User.avatar_url | String | URL of the user's avatar image | 
-| Box.User.notification_email.email | String | The email address to send the notifications to. | 
-| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
-
+| Box.User.id | Number | The unique identifier for this user. |
+| Box.User.type | String | Value is always user. |
+| Box.User.name | String | The display name of this user. |
+| Box.User.login | String | The primary email address of this user. |
+| Box.User.created_at | Date | When the user object was created. |
+| Box.User.modified_at | Date | When the user object was last modified. |
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. |
+| Box.User.timezone | String | The user's timezone. |
+| Box.User.space_amount | Number | The user's total available space amount in bytes. |
+| Box.User.space_used | Number | The amount of space in use by the user. |
+| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. |
+| Box.User.status | String | The user's account status. |
+| Box.User.job_title | String | The user's job title. |
+| Box.User.phone | Number | The user's phone number. |
+| Box.User.address | String | The user's address. |
+| Box.User.avatar_url | String | URL of the user's avatar image |
+| Box.User.notification_email.email | String | The email address to send the notifications to. |
+| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. |
 
 #### Command Example
+
 ```!box-update-user phone="4808675309" is_sync_enabled="true" is_exempt_from_device_limits="true" is_external_collab_restricted="false" is_exempt_from_login_verification="false" can_see_managed_users="true" user_id="14342567114" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2324,72 +2352,73 @@ Updates a managed user in an enterprise. This endpoint is only available to user
 
 #### Human Readable Output
 
->### The user test@test.com has been updated.
+>### The user test@test.com has been updated
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14342567114 | 2020-11-11T04:34:53-08:00 | 14342567114 | en | test@test.com | 2147483648 | 2020-12-15T03:59:04-08:00 | Jane Doe | 4808675309 | 10737418240 | 212312495 | active | America/Los_Angeles | user |
 
-
 ### box-create-user
+
 ***
 Creates a new managed user in an enterprise. This endpoint is only available to users and applications with the right admin permissions.
-
 
 #### Base Command
 
 `box-create-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| as_user | The user who is making the request. | Optional | 
-| login | The email address the user uses to log in. | Optional | 
-| name | The name of the user. | Required | 
-| role | The user’s enterprise role. Possible values are: coadmin, user. | Optional | 
-| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional | 
-| is_sync_enabled | Whether the user can use Box Sync. Possible values are: true, false. | Optional | 
-| job_title | The user’s job title. | Optional | 
-| phone | The user’s phone number. | Optional | 
-| address | The user’s address. | Optional | 
-| space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional | 
-| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional | 
-| can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional | 
-| timezone | The user's timezone. | Optional | 
-| is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional | 
-| is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional | 
-| is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional | 
-| is_platform_access_only | Specifies that the user is an app user. Possible values are: true, false. | Optional | 
-| status | The user's account status. Possible values are: active, inactive, cannot_delete_edit, cannot_delete_edit_upload. | Optional | 
-
+| as_user | The user who is making the request. | Optional |
+| login | The email address the user uses to log in. | Optional |
+| name | The name of the user. | Required |
+| role | The user’s enterprise role. Possible values are: coadmin, user. | Optional |
+| language | The language of the user, formatted in a modified version of the ISO 639-1 format. | Optional |
+| is_sync_enabled | Whether the user can use Box Sync. Possible values are: true, false. | Optional |
+| job_title | The user’s job title. | Optional |
+| phone | The user’s phone number. | Optional |
+| address | The user’s address. | Optional |
+| space_amount | The user’s total available space in bytes. Set this to -1 to indicate unlimited storage. | Optional |
+| tracking_codes | A tracking code that allows an admin to generate reports from the admin console and assign an attribute to a specific group of users. The expected format is `key1:value1,key2:value2`. Multiple key value pairs may be used when using the `,` separator. | Optional |
+| can_see_managed_users | Whether the user can see other enterprise users in their contact list. Possible values are: true, false. | Optional |
+| timezone | The user's timezone. | Optional |
+| is_exempt_from_device_limits | Whether to exempt the user from enterprise device limits. Possible values are: true, false. | Optional |
+| is_exempt_from_login_verification | Whether the user must use two-factor authentication. Possible values are: true, false. | Optional |
+| is_external_collab_restricted | Whether the user is allowed to collaborate with users outside their enterprise. Possible values are: true, false. | Optional |
+| is_platform_access_only | Specifies that the user is an app user. Possible values are: true, false. | Optional |
+| status | The user's account status. Possible values are: active, inactive, cannot_delete_edit, cannot_delete_edit_upload. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.User.id | Number | The unique identifier for this user. | 
-| Box.User.type | String | Value is always user. | 
-| Box.User.name | String | The display name of this user. | 
-| Box.User.login | String | The primary email address of this user. | 
-| Box.User.created_at | Date | When the user object was created. | 
-| Box.User.modified_at | Date | When the user object was last modified. | 
-| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. | 
-| Box.User.timezone | String | The user's timezone. | 
-| Box.User.space_amount | Number | The user's total available space amount in bytes. | 
-| Box.User.space_used | Number | The amount of space in use by the user. | 
-| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. | 
-| Box.User.status | String | The user's account status. | 
-| Box.User.job_title | String | The user's job title. | 
-| Box.User.phone | Number | The user's phone number. | 
-| Box.User.address | String | The user's address. | 
-| Box.User.avatar_url | String | URL of the user's avatar image | 
-| Box.User.notification_email.email | String | The email address to send the notifications to. | 
-| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. | 
-
+| Box.User.id | Number | The unique identifier for this user. |
+| Box.User.type | String | Value is always user. |
+| Box.User.name | String | The display name of this user. |
+| Box.User.login | String | The primary email address of this user. |
+| Box.User.created_at | Date | When the user object was created. |
+| Box.User.modified_at | Date | When the user object was last modified. |
+| Box.User.language | String | The language of the user, formatted in a modified version of the ISO 639-1 format. |
+| Box.User.timezone | String | The user's timezone. |
+| Box.User.space_amount | Number | The user's total available space amount in bytes. |
+| Box.User.space_used | Number | The amount of space in use by the user. |
+| Box.User.max_upload_size | Number | The maximum individual file size in bytes the user can have. |
+| Box.User.status | String | The user's account status. |
+| Box.User.job_title | String | The user's job title. |
+| Box.User.phone | Number | The user's phone number. |
+| Box.User.address | String | The user's address. |
+| Box.User.avatar_url | String | URL of the user's avatar image |
+| Box.User.notification_email.email | String | The email address to send the notifications to. |
+| Box.User.notification_email.is_confirmed | Boolean | Specifies if this email address has been confirmed. |
 
 #### Command Example
+
 ```!box-create-user name="some_name_test" is_sync_enabled="false" phone="000000000" can_see_managed_users="false" is_exempt_from_device_limits="true" is_exempt_from_login_verification="false" is_external_collab_restricted="false" is_platform_access_only="true"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -2418,37 +2447,39 @@ Creates a new managed user in an enterprise. This endpoint is only available to 
 
 #### Human Readable Output
 
->### The user AppUser_1403892_rBpFRjYb94@boxdevedition.com has been created.
+>### The user AppUser_1403892_rBpFRjYb94@boxdevedition.com has been created
+>
 >|Avatar Url|Created At|Id|Language|Login|Max Upload Size|Modified At|Name|Phone|Space Amount|Space Used|Status|Timezone|Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| https://app.box.com/api/avatar/large/14658591950 | 2020-12-15T03:58:28-08:00 | 14658591950 | en | AppUser_1403892_rBpFRjYb94@boxdevedition.com | 2147483648 | 2020-12-15T03:58:28-08:00 | some_name_test | 000000000 | 10737418240 | 0 | active | America/Los_Angeles | user |
 
-
 ### box-delete-user
+
 ***
 Deletes a user. By default this will fail if the user still owns any content. Move their owned content first before proceeding, or use the force field to delete the user and their files.
-
 
 #### Base Command
 
 `box-delete-user`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The ID of the user. | Required | 
-| as_user | The user ID of the account making the request. | Optional | 
-| force | Whether the user should be deleted even if this user still own files. Possible values are: true, false. | Optional | 
-
+| user_id | The ID of the user. | Required |
+| as_user | The user ID of the account making the request. | Optional |
+| force | Whether the user should be deleted even if this user still own files. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!box-delete-user user_id="14639008448"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -2458,42 +2489,43 @@ There is no context output for this command.
 >The user 14639008448 was successfully deleted.
 
 ### box-list-user-events
+
 ***
 Returns up to a year of past events for a given user.
-
 
 #### Base Command
 
 `box-list-user-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| as_user | The user who is performing the action. | Optional | 
-| stream_type | The type of stream to retrieve. Possible values are: all, changes, sync. | Required | 
-| limit | The maximum number of events to return. Default is "100". | Optional | 
-
+| as_user | The user who is performing the action. | Optional |
+| stream_type | The type of stream to retrieve. Possible values are: all, changes, sync. | Required |
+| limit | The maximum number of events to return. Default is "100". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Events.type | String | The type of the event. | 
-| Box.Events.event_id | String | The ID of the event object. You can use this to detect duplicate events. | 
-| Box.Events.created_by.type | String | Value is always user. | 
-| Box.Events.created_by.id | Date | The unique identifier for this user. | 
-| Box.Events.created_by.name | String | The display name of this user. | 
-| Box.Events.created_by.login | String | The primary email address of this user. | 
-| Box.Events.created_at | Date | Time which the event was created. | 
-| Box.Events.recorded_at | Date | Time which the event was recorded. | 
-| Box.Events.event_type | String | The event type that triggered this event. | 
-| Box.Events.session_id | String | The session of the user who performed the action. Not all events will populate this attribute. | 
-
+| Box.Events.type | String | The type of the event. |
+| Box.Events.event_id | String | The ID of the event object. You can use this to detect duplicate events. |
+| Box.Events.created_by.type | String | Value is always user. |
+| Box.Events.created_by.id | Date | The unique identifier for this user. |
+| Box.Events.created_by.name | String | The display name of this user. |
+| Box.Events.created_by.login | String | The primary email address of this user. |
+| Box.Events.created_at | Date | Time which the event was created. |
+| Box.Events.recorded_at | Date | Time which the event was recorded. |
+| Box.Events.event_type | String | The event type that triggered this event. |
+| Box.Events.session_id | String | The session of the user who performed the action. Not all events will populate this attribute. |
 
 #### Command Example
+
 ```!box-list-user-events stream_type="all" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3256,6 +3288,7 @@ Returns up to a year of past events for a given user.
 #### Human Readable Output
 
 >### Events found for the user: 14342567114
+>
 >|Created At|Created By|Event Id|Event Type|Recorded At|Session Id|Source|Type|
 >|---|---|---|---|---|---|---|---|
 >| 2020-11-25T04:12:23-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 821c82f3cf438bf0d206aa80aac526ea1700a46b | ITEM_UPLOAD | 2020-11-25T04:12:24-08:00 | stw7zogl1ohiczrp | type: file<br/>id: 745851995250<br/>file_version: {"type": "file_version", "id": "794713426050", "sha1": "1ff8be1766d9e16b0b651f89001e8e7375c9e71f"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: 1ff8be1766d9e16b0b651f89001e8e7375c9e71f<br/>name: image.gif<br/>description: <br/>size: 26891788<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T04:12:23-08:00<br/>modified_at: 2020-11-25T04:12:23-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T04:12:23-08:00<br/>content_modified_at: 2020-11-25T04:12:23-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
@@ -3269,53 +3302,53 @@ Returns up to a year of past events for a given user.
 >| 2020-11-25T06:48:49-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | be9d499190f23542227cad001c02d8c2bb22c65c | ITEM_UPLOAD | 2020-11-25T06:49:05-08:00 | w1pn5lgl1t09vsfa | type: file<br/>id: 745898101397<br/>file_version: {"type": "file_version", "id": "794764186997", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image8_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:48:49-08:00<br/>modified_at: 2020-11-25T06:48:49-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:48:49-08:00<br/>content_modified_at: 2020-11-25T06:48:49-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
 >| 2020-11-25T06:50:31-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 4ce8a9d707a286ea1c62eb2fcccc399bccc68278 | ITEM_UPLOAD | 2020-11-25T06:50:32-08:00 | zlecagl1t21rmdp | type: file<br/>id: 745898898314<br/>file_version: {"type": "file_version", "id": "794764999514", "sha1": "bd992f78f1f50b4b424b0633870aca5eed3bedce"}<br/>sequence_id: 0<br/>etag: 0<br/>sha1: bd992f78f1f50b4b424b0633870aca5eed3bedce<br/>name: image9_please_work.gif<br/>description: <br/>size: 3653705<br/>path_collection: {"total_count": 1, "entries": [{"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}]}<br/>created_at: 2020-11-25T06:50:31-08:00<br/>modified_at: 2020-11-25T06:50:31-08:00<br/>trashed_at: null<br/>purged_at: null<br/>content_created_at: 2020-11-25T06:50:31-08:00<br/>content_modified_at: 2020-11-25T06:50:31-08:00<br/>created_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>modified_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"}<br/>shared_link: null<br/>parent: {"type": "folder", "id": "0", "sequence_id": null, "etag": null, "name": "All Files"}<br/>item_status: active<br/>synced: true | event |
 
-
 ### box-list-enterprise-events
+
 ***
 Returns up to a year of past events for the entire enterprise.
-
 
 #### Base Command
 
 `box-list-enterprise-events`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| as_user | The user who is performing the action. | Optional | 
-| created_after | The lower bound date and time to return events for. | Optional | 
-| limit | The maximum number of events to return. Default is "100". | Optional | 
-
+| as_user | The user who is performing the action. | Optional |
+| created_after | The lower bound date and time to return events for. | Optional |
+| limit | The maximum number of events to return. Default is "100". | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Events.source.item_type | String | The type of the item that the event represents. | 
-| Box.Events.source.item_id | Date | The unique identifier that represents the item. | 
-| Box.Events.source.item_name | String | The name of the item. | 
-| Box.Events.source.parent.type | String | Value is always folder. | 
-| Box.Events.source.parent.name | String | The name of the folder. | 
-| Box.Events.source.parent.id | String | The unique identifier that represents a folder. | 
-| Box.Events.source.owned_by.type | String | Value is always user. | 
-| Box.Events.source.owned_by.id | Date | The unique identifier for this user. | 
-| Box.Events.source.owned_by.name | String | The display name of this user. | 
-| Box.Events.source.owned_by.login | String | The primary email address of this user. | 
-| Box.Events.created_by.type | String | Value is always user. | 
-| Box.Events.created_by.id | Date | The unique identifier for this user. | 
-| Box.Events.created_by.name | String | The display name of this user. | 
-| Box.Events.created_by.login | String | The primary email address of this user. | 
-| Box.Events.created_at | Date | Time which the event was created. | 
-| Box.Events.event_id | String | The ID of the event object. You can use this to detect duplicate events. | 
-| Box.Events.event_type | String | The event type that triggered this event. | 
-| Box.Events.ip_address | String | IP address of the user who triggered the event. | 
-| Box.Events.type | String | Always event. | 
-
+| Box.Events.source.item_type | String | The type of the item that the event represents. |
+| Box.Events.source.item_id | Date | The unique identifier that represents the item. |
+| Box.Events.source.item_name | String | The name of the item. |
+| Box.Events.source.parent.type | String | Value is always folder. |
+| Box.Events.source.parent.name | String | The name of the folder. |
+| Box.Events.source.parent.id | String | The unique identifier that represents a folder. |
+| Box.Events.source.owned_by.type | String | Value is always user. |
+| Box.Events.source.owned_by.id | Date | The unique identifier for this user. |
+| Box.Events.source.owned_by.name | String | The display name of this user. |
+| Box.Events.source.owned_by.login | String | The primary email address of this user. |
+| Box.Events.created_by.type | String | Value is always user. |
+| Box.Events.created_by.id | Date | The unique identifier for this user. |
+| Box.Events.created_by.name | String | The display name of this user. |
+| Box.Events.created_by.login | String | The primary email address of this user. |
+| Box.Events.created_at | Date | Time which the event was created. |
+| Box.Events.event_id | String | The ID of the event object. You can use this to detect duplicate events. |
+| Box.Events.event_type | String | The event type that triggered this event. |
+| Box.Events.ip_address | String | IP address of the user who triggered the event. |
+| Box.Events.type | String | Always event. |
 
 #### Command Example
+
 ```!box-list-enterprise-events created_after="1 day" limit="1"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3691,7 +3724,8 @@ Returns up to a year of past events for the entire enterprise.
 
 #### Human Readable Output
 
->### Enterprise Events found.
+>### Enterprise Events found
+>
 >|Additional Details|Created At|Created By|Event Id|Event Type|Ip Address|Source|Type|
 >|---|---|---|---|---|---|---|---|
 >| size: 18860439<br/>version_id: 803108695891 | 2020-12-15T00:44:58-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | 451677f7-9c7c-497d-a272-69903c1f6c29 | RENAME | 37.142.10.140 | item_type: file<br/>item_id: 753421883491<br/>item_name: vandijk3.gif<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
@@ -3706,28 +3740,31 @@ Returns up to a year of past events for the entire enterprise.
 >| size: 1135<br/>version_id: 801011020694<br/>service_id: 1403892<br/>service_name: XSOAR_TESTING | 2020-12-15T03:11:59-08:00 | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | cdc29617-5e30-477f-8a56-0497457c61fb | UNDELETE | 176.34.214.130 | item_type: file<br/>item_id: 751526132294<br/>item_name: list.json<br/>parent: {"type": "folder", "name": "All Files", "id": "0"}<br/>owned_by: {"type": "user", "id": "14342567114", "name": "Jane Doe", "login": "test@test.com"} | event |
 
 ### box-download-file
+
 ***
 Returns the contents of a file in binary format.
 
 #### Base Command
 
 `box-download-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file_id | The ID of the file. | Required | 
-| as_user | The user ID of the account making the request. | Optional | 
-
+| file_id | The ID of the file. | Required |
+| as_user | The user ID of the account making the request. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` !box-download-file file_id="745898898314" as_user="14342567114"```
+
+```!box-download-file file_id="745898898314" as_user="14342567114"```
 
 #### Context Example
+
 ```json
 {}
 ```
@@ -3737,6 +3774,7 @@ There is no context output for this command.
 >Uploaded file: TestFile.gif
 
 ### box-move-folder
+
 ***
 Moves all of the items (files, folders and workflows) owned by a user into another user's account. Only the root folder `0` will be transferred.
 
@@ -3744,83 +3782,83 @@ Folders can only be moved across users by users with administrative permissions.
 
 This command is performed synchronously which might lead to a slow response when the source user has a large number of items in all of its folders.
 
-
 #### Base Command
 
 `box-move-folder`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| to_user_id | The ID of the user who will receive the folders. | Required | 
-| from_user_id | The ID of the user who currently owns the folder. | Required | 
-| notify | Determines if users should receive email notification for the action performed. | Optional | 
-
+| to_user_id | The ID of the user who will receive the folders. | Required |
+| from_user_id | The ID of the user who currently owns the folder. | Required |
+| notify | Determines if users should receive email notification for the action performed. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Box.Folder.id | Number | The ID of the folder created. | 
-| Box.Folder.etag | Number | The entry tag for the folder created. | 
-| Box.Folder.type | String | The type of folder. | 
-| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. | 
-| Box.Folder.name | String | The name of the folder. | 
-| Box.Folder.sha1 | String | The SHA1 hash of the folder. | 
-| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. | 
-| Box.Folder.file_version.type | String | Value is always file_version. | 
-| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. | 
-| Box.Folder.description | String | The description of the item. | 
-| Box.Folder.size | Number | The folder size in bytes. | 
-| Box.Folder.path_collection.total_count | Number | The number of folders in the list. | 
-| Box.Folder.path_collection.entries.id | Number | The ID of the item found. | 
-| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. | 
-| Box.Folder.path_collection.entries.type | String | The type of the item found. | 
-| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. | 
-| Box.Folder.path_collection.entries.name | String | The name of the item. | 
-| Box.Folder.created_at | Date | The date and time when the item was created on Box. | 
-| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. | 
-| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. | 
-| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. | 
-| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. | 
-| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. | 
-| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. | 
-| Box.Folder.created_by.type | String | Value is always user. | 
-| Box.Folder.created_by.name | String | The display name of the user who created the item. | 
-| Box.Folder.created_by.login | String | The primary email address of the user who created the item. | 
-| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. | 
-| Box.Folder.modified_by.type | String | Value is always user. | 
-| Box.Folder.modified_by.name | String | The display name of the user who modified the item. | 
-| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. | 
-| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. | 
-| Box.Folder.owned_by.type | String | Value is always user. | 
-| Box.Folder.owned_by.name | String | The display name of the user who owns the item. | 
-| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. | 
-| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. | 
-| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. | 
-| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. | 
-| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. | 
-| Box.Folder.shared_link.access | String | The access level for the shared link. | 
-| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  | 
-| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. | 
-| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. | 
-| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. | 
-| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. | 
-| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. | 
-| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. | 
-| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. | 
-| Box.Folder.parent.id | Number | The ID of the parent for the item found | 
-| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. | 
-| Box.Folder.parent.type | String | The type for the parent of the item found. | 
-| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. | 
-| Box.Folder.parent.name | String | The name of the parent of the item. | 
-| Box.Folder.item_status | String | The status of the parent of the item. | 
-
+| Box.Folder.id | Number | The ID of the folder created. |
+| Box.Folder.etag | Number | The entry tag for the folder created. |
+| Box.Folder.type | String | The type of folder. |
+| Box.Folder.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the folder. |
+| Box.Folder.name | String | The name of the folder. |
+| Box.Folder.sha1 | String | The SHA1 hash of the folder. |
+| Box.Folder.file_version.id | Number | The unique identifier that represents a file version. |
+| Box.Folder.file_version.type | String | Value is always file_version. |
+| Box.Folder.file_version.sha1 | String | The SHA1 hash of this version of the file. |
+| Box.Folder.description | String | The description of the item. |
+| Box.Folder.size | Number | The folder size in bytes. |
+| Box.Folder.path_collection.total_count | Number | The number of folders in the list. |
+| Box.Folder.path_collection.entries.id | Number | The ID of the item found. |
+| Box.Folder.path_collection.entries.etag | Number | The entry tag for the item found. |
+| Box.Folder.path_collection.entries.type | String | The type of the item found. |
+| Box.Folder.path_collection.entries.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the item. |
+| Box.Folder.path_collection.entries.name | String | The name of the item. |
+| Box.Folder.created_at | Date | The date and time when the item was created on Box. |
+| Box.Folder.modified_at | Date | The date and time when the item was last updated on Box. |
+| Box.Folder.trashed_at | Date | The time at which the item was put in the trash. |
+| Box.Folder.purged_at | Date | The time at which the item is expected to be purged from the trash. |
+| Box.Folder.content_created_at | Date | The date and time at which the item was originally created, which might be before it was uploaded to Box. |
+| Box.Folder.content_modified_at | Date | The date and time at which the item was last updated, which might be before it was uploaded to Box. |
+| Box.Folder.created_by.id | Number | The unique identifier for the user who created the item. |
+| Box.Folder.created_by.type | String | Value is always user. |
+| Box.Folder.created_by.name | String | The display name of the user who created the item. |
+| Box.Folder.created_by.login | String | The primary email address of the user who created the item. |
+| Box.Folder.modified_by.id | Number | The unique identifier for the user who modified the item. |
+| Box.Folder.modified_by.type | String | Value is always user. |
+| Box.Folder.modified_by.name | String | The display name of the user who modified the item. |
+| Box.Folder.modified_by.login | String | The primary email address of the user who modified the item. |
+| Box.Folder.owned_by.id | Number | The unique identifier for the user who owns the item. |
+| Box.Folder.owned_by.type | String | Value is always user. |
+| Box.Folder.owned_by.name | String | The display name of the user who owns the item. |
+| Box.Folder.owned_by.login | String | The primary email address of the user who owns the item. |
+| Box.Folder.shared_link.url | String | The URL that can be used to access the item on Box. |
+| Box.Folder.shared_link.download_url | String | The URL that can be used to download the item from Box. |
+| Box.Folder.shared_link.vanity_url | String | The "Custom URL" that can also be used to preview the item on Box. |
+| Box.Folder.shared_link.vanity_name | String | The custom name of a shared link, as used in the vanity_url field. |
+| Box.Folder.shared_link.access | String | The access level for the shared link. |
+| Box.Folder.shared_link.effective_access | String | The effective access level for the shared link.  |
+| Box.Folder.shared_link.effective_permission | String | The effective permissions for this shared link. |
+| Box.Folder.shared_link.unshared_at | Date | The date and time when the link will be unshared. |
+| Box.Folder.shared_link.is_password_enabled | Boolean | Defines if the shared link requires a password to access the item. |
+| Box.Folder.shared_link.permissions.can_download | Boolean | Defines if the shared link allows for the item to be downloaded. |
+| Box.Folder.shared_link.permissions.can_preview | Boolean | Defines if the shared link allows for the item to be previewed. |
+| Box.Folder.shared_link.download_count | Number | The number of times the item has been downloaded. |
+| Box.Folder.shared_link.preview_count | Number | The number of times the item has been previewed. |
+| Box.Folder.parent.id | Number | The ID of the parent for the item found |
+| Box.Folder.parent.etag | Number | The entry tag for the parent of the item found. |
+| Box.Folder.parent.type | String | The type for the parent of the item found. |
+| Box.Folder.parent.sequence_id | Number | The numeric identifier that represents the most recent user event that has been applied to the parent of the item. |
+| Box.Folder.parent.name | String | The name of the parent of the item. |
+| Box.Folder.item_status | String | The status of the parent of the item. |
 
 #### Command Example
+
 ```!box-move-folder to_user_id="123456" from_user_id="654321" notify="true"```
 
 #### Context Example
+
 ```json
 {
     "Box": {
@@ -3871,7 +3909,8 @@ This command is performed synchronously which might lead to a slow response when
 
 #### Human Readable Output
 
->### Folder overview for transferred folder.
+>### Folder overview for transferred folder
+>
 >|Created By|Id|Item Status|Modified By|Name|Owned By|Path Collection|Size|Type|
 >|---|---|---|---|---|---|---|---|---|
 >| type: user<br/>id: <br/>name: <br/>login:  | 0 | active | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | All Files | type: user<br/>id: 14342567114<br/>name: Jane Doe<br/>login: test@test.com | total_count: 0<br/>entries:  | 212311360 | folder |

@@ -7,7 +7,11 @@ from urllib.parse import urlencode
 import demistomock as demisto
 import pytest
 import requests
+
+
 import ServiceNowv2
+import jwt
+
 from CommonServerPython import CommandResults, DemistoException, EntryType
 from freezegun import freeze_time
 from pytest_mock import MockerFixture
@@ -122,6 +126,7 @@ from test_data.response_constants import (
     RESPONSE_UPDATE_TICKET_SC_REQ,
     RESPONSE_UPLOAD_FILE,
     USER_RESPONSE,
+    JWT_PARAMS,
 )
 from test_data.result_constants import (
     EXPECTED_ADD_COMMENT_HR,
@@ -1727,6 +1732,104 @@ def test_test_module(mocker):
     assert "Test button cannot be used when using OAuth 2.0" in str(e)
 
 
+def test_invalid_private_key():
+    """
+    Given:
+    - Invalid format of private key
+    When:
+    - creating the JWT
+    Then:
+    - Raise a Value error with informative message
+    """
+    params = {"private_key": "-----INVALID FORMAT----- test_token -----INVALID FORMAT-----", "kid": "test1", "sub": "test"}
+
+    with pytest.raises(ValueError) as e:
+        Client(
+            "server_url",
+            "sc_server_url",
+            "cr_server_url",
+            "username",
+            "password",
+            "verify",
+            "fetch_time",
+            "sysparm_query",
+            sysparm_limit=10,
+            timestamp_field="opened_at",
+            ticket_type="incident",
+            get_attachments=False,
+            incident_name="description",
+            oauth_params=OAUTH_PARAMS,
+            jwt_params=params,
+        )
+    assert "Invalid private key format" in str(e)
+
+
+def test_jwt_checker(mocker):
+    """
+    Given:
+    - private key
+    When:
+    - creating a jwt
+    Then:
+    - (a) that the return type is a string
+    - (b) validate the pem format
+    """
+
+    mocker.patch.object(jwt, "encode", return_value="")
+    client = Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        sysparm_limit=10,
+        timestamp_field="opened_at",
+        ticket_type="incident",
+        get_attachments=False,
+        incident_name="description",
+        oauth_params=OAUTH_PARAMS,
+        jwt_params=JWT_PARAMS,
+    )
+    test_token = client.check_private_key(JWT_PARAMS["private_key"])
+    assert isinstance(test_token, str)
+    assert test_token.startswith("-----BEGIN PRIVATE KEY-----")
+    assert test_token.endswith("-----END PRIVATE KEY-----")
+
+
+def test_jwt_init(mocker):
+    """
+    Given:
+    - JWT credential
+    When:
+    - User connect using JWT authentication
+    Then:
+    - create jwt
+    """
+    mocker.patch("jwt.encode", return_value="test")
+    client = Client(
+        "server_url",
+        "sc_server_url",
+        "cr_server_url",
+        "username",
+        "password",
+        "verify",
+        "fetch_time",
+        "sysparm_query",
+        sysparm_limit=10,
+        timestamp_field="opened_at",
+        ticket_type="incident",
+        get_attachments=False,
+        incident_name="description",
+        oauth_params=OAUTH_PARAMS,
+        jwt_params=JWT_PARAMS,
+    )
+    jwt = client.create_jwt()
+    assert jwt == "test"
+
+
 def test_oauth_test_module(mocker):
     """
     Given:
@@ -2372,19 +2475,15 @@ TICKET_FIELDS = {
 
 
 def ticket_fields(*args, **kwargs):
-    state = '7' if kwargs.get('ticket_type') == 'incident' else '3'
-    assert args[0] == {'state': state }
+    state = "7" if kwargs.get("ticket_type") == "incident" else "3"
+    assert args[0] == {"state": state}
 
-    return {
-        "state": "3"
-        }
+    return {"state": "3"}
 
 
 def update_ticket(*args):
     state = "7" if "incident" in args else "3"
-    return {
-        "state": state
-        }
+    return {"state": state}
 
 
 @pytest.mark.parametrize("ticket_type", ["sc_task", "sc_req_item", "incident"])
@@ -2937,8 +3036,8 @@ def test_converts_close_code_or_state_to_close_reason(
 
 
 def ticket_fields_mocker(*args, **kwargs):
-    state = '88' if kwargs.get('ticket_type') == 'incident' else '90'
-    fields = {'state': state }
+    state = "88" if kwargs.get("ticket_type") == "incident" else "90"
+    fields = {"state": state}
     assert fields == args[0]
     return fields
 
