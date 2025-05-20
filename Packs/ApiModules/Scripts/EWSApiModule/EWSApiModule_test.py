@@ -713,13 +713,13 @@ def test_client_reply_email(mocker, mock_account):
     reply_cc = ["cc_recipient@example.com"]
     reply_bcc = []
     message = client.reply_email(
-        inReplyTo=MSG_ID,
+        in_reply_to=MSG_ID,
         to=reply_to,
         body=reply_body,
         subject="",
         bcc=reply_bcc,
         cc=reply_cc,
-        htmlBody=None,
+        html_body=None,
         attachments=[],
     )
 
