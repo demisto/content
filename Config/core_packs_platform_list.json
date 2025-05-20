@@ -75,15 +75,6 @@
             ]
         },
         {
-            "id": "CortexAttackSurfaceManagement",
-            "supportedModules": [
-                "X1",
-                "X3",
-                "X5",
-                "ENT_PLUS"
-            ]
-        },
-        {
             "id": "DemistoLocking",
             "supportedModules": [
                 "X1",
@@ -283,6 +274,14 @@
                 "X3",
                 "X5",
                 "ENT_PLUS"
+            ]
+        },
+        {
+            "id": "AWS",
+            "supportedModules":[
+                "C1", 
+                "C3",
+                "X5"
             ]
         }
     ]

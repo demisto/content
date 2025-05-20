@@ -1,6 +1,6 @@
 Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and above.
-## Configure OpenCTI Feed 4.X in Cortex
 
+## Configure OpenCTI Feed 4.X in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -21,16 +21,19 @@ Ingest indicators from the OpenCTI feed. Compatible with OpenCTI 5.12.17 and abo
 | Score maximum value | Score maximum value to filter by. Values range is 1-100.  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### opencti-reset-fetch-indicators
+
 ***
 WARNING: This command will reset your fetch history.
-
 
 #### Base Command
 
 `opencti-reset-fetch-indicators`
+
 #### Input
 
 There are no input arguments for this command.
@@ -40,6 +43,7 @@ There are no input arguments for this command.
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-reset-fetch-indicators```
 
 #### Human Readable Output
@@ -47,32 +51,34 @@ There is no context output for this command.
 >Fetch history deleted successfully
 
 ### opencti-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `opencti-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return per fetch. Default value is 50. Maximum value is 500. | Optional | 
-| indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional | 
-| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional | 
-| score_start | Score minimum value to filter by. Values range is 1-100. | Optional | 
-| score_end | Score naximum value to filter by. Values range is 1-100. | Optional | 
-
+| limit | The maximum number of indicators to return per fetch. Default value is 50. Maximum value is 500. | Optional |
+| indicator_types | The indicator types to fetch. Out-of-the-box indicator types supported in XSOAR are: Account, Domain, Email, File, Host, IP, IPv6, Registry Key, and URL. Other types will not cause automatic indicator creation in XSOAR. Possible values are: ALL, Account, Domain, Email, File, Host, IP, IPv6, Registry Key, URL. Default is ALL. | Optional |
+| last_run_id | The last ID from the previous call, from which to begin pagination for this call. You can find this value at the OpenCTI.IndicatorsList.LastRunID context path. | Optional |
+| score_start | Score minimum value to filter by. Values range is 1-100. | Optional |
+| score_end | Score naximum value to filter by. Values range is 1-100. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!opencti-get-indicators limit=2 indicator_types="IP"```
 
 #### Context Example
+
 ```json
 {
     "OpenCTI": {
@@ -117,6 +123,7 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### Indicators
+>
 >|type|value|id|
 >|---|---|---|
 >| IP | 1.2.3.4 | 700c8187-2dce-4aeb-bf3a-0864cb7b02c7 |
