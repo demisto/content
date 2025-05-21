@@ -244,6 +244,12 @@ def api_call_command(client: Client):
     )
 
 
+def test_module(client):
+    # Basic test logic to validate the connection or configuration
+    return """Test-module is not implemented in this integration due to the number
+            of possible API endpoints that may be configured."""
+
+
 """ MAIN FUNCTION """
 
 
@@ -275,7 +281,8 @@ def main():
 
             demisto.debug(f"Command being called is {command}")
             results = api_call_command(client)
-
+        elif command == "test-module":
+            return_results(test_module(client))
         return_results(results)
 
     except Exception as e:
