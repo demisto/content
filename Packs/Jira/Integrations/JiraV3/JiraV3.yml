@@ -1774,7 +1774,7 @@ script:
     - description: Indicates if the ticket should be mirrored.
       name: mirroring
       type: mirroring
-      required: true
+      hidden: true
     - name: priority
       description: Priority of the ticket.
       predefined:
