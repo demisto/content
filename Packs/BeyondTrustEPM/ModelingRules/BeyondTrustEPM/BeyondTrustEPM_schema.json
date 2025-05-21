@@ -21,7 +21,7 @@
         "is_array": false
       },
       "host": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "hostName": {
@@ -45,11 +45,11 @@
         "is_array": false
       },
       "process": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "DomainIdentifier": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "LocalIdentifier": {
@@ -73,11 +73,11 @@
         "is_array": false
       },
       "file": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "DomainNetBIOSName": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "category": {
@@ -101,7 +101,7 @@
         "is_array": false
       },
       "client": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       },
       "email": {
@@ -117,7 +117,7 @@
         "is_array": false
       },
       "url": {
-        "type": "int",
+        "type": "string",
         "is_array": false
       }
     }
