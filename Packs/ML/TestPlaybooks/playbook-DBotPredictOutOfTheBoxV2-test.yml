@@ -550,8 +550,6 @@ tasks:
         simple: Your account was restricted. Please click on this definitely super legit link to fix this. This is URGENT! Do it NOW!
       emailsubject:
         simple: '[Alert] Account Restricted Due to security reasons [Ref-160997]'
-      ignore-outputs:
-        simple: "false"
       name:
         simple: ootb_1
       type:
@@ -593,8 +591,6 @@ tasks:
         simple: Dear sir. This is a very important message. We declined a transaction that very much happened (we would know of course). Please click here. Do it. Please.
       emailsubject:
         simple: '[IMPORTANT] We declined your last transaction for your safety.'
-      ignore-outputs:
-        simple: "false"
       name:
         simple: ootb_2
       type:

@@ -692,8 +692,6 @@ tasks:
           closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed closed church squeamish squeamish moaning closed closed
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           fall
-      ignore-outputs:
-        simple: "false"
       name:
         simple: fine_tune_1
       type:
@@ -738,8 +736,6 @@ tasks:
           ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument ntidy boy substance faulty waves type boat argument
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           closed
-      ignore-outputs:
-        simple: "false"
       name:
         simple: fine_tune_2
       type:
@@ -784,8 +780,6 @@ tasks:
           suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall suspend trucks aboriginal thread succeed gray last fall fall
           Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed viverra nunc sit amet elit rutrum tempor.
           boat
-      ignore-outputs:
-        simple: "false"
       name:
         simple: fine_tune_3
       type:
