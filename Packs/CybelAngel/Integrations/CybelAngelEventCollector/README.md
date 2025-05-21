@@ -3,15 +3,20 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 ## Configure CybelAngel in Cortex
 
 
-| **Parameter**                                                     | **Required** |
-|-------------------------------------------------------------------|--------------|
-| Server URL                                                        | True         |
-| Client ID                                                         | True         |
-| Client Secret                                                     | True         |
-| First fetch timestamp (number, time unit, e.g., 12 hours, 7 days) | False        |
-| The maximum number of events per fetch                            | True         |
-| Trust any certificate (not secure)                                | False        |
-| Use system proxy settings                                         | False        |
+
+| **Parameter** | **Required** |
+| --- | --- |
+| Server URL | True |
+| Client ID | True |
+| Client Secret | True |
+| Trust any certificate (not secure) | False |
+| Use system proxy settings | False |
+| Fetch events | True |
+| Event Types To Fetch | True |
+| The maximum number of report event per fetch | False |
+| The maximum number of Credential watchlist events per fetch | False |
+| The maximum number of Domain watchlist events  per fetch | False |
+
 
 
 ## Commands
@@ -32,8 +37,11 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date. | Optional | 
-| end_date | Get reports until a specific end date. If not provided, uses current date. | Optional | 
+| event_type | Get events from the required type. Possible values are: Reports, Credential watchlist, Domain watchlist. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| start_date | Get events from a specific start date formatted with ISO 8601. | Optional | 
+| end_date | Get events until a specific end date formatted with ISO 8601. | Optional | 
+| limit | The maximum number of events to return. Default is 50. | Optional | 
 
 #### Context Output
 
