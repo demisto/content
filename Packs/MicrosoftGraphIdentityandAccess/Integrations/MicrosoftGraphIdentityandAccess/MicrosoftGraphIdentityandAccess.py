@@ -374,7 +374,7 @@ class Client:  # pragma: no cover
 
         try:
             res = self.ms_client.http_request(method="GET", url_suffix=url_suffix, resp_type="json")
-            # if a single policy is returned (dict), make it a list to unify the structure
+            # if a single policy is returned (dict), make it a list to standardize the structure
             if not res:
                 return []
             if not policy_id:
