@@ -300,6 +300,7 @@ outputs:
   description: All headers of a specific mail (list).
 tests:
 - No tests
+deprecated: true
 fromversion: 6.5.0
 supportedModules:
 - X1
