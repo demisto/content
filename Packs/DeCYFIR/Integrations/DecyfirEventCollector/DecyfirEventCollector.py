@@ -27,40 +27,35 @@ class Client(BaseClient):
     """
 
     def search_events(
-        self, prev_id: int, alert_status: None | str, limit: int, from_date: str | None = None, default_Protocol: str = "UDP"
-    ) -> List[Dict]:  # noqa: E501
+        self, api_key:str, limit: dict, from_date: str | None = None
+    ) -> list[dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
 
         Args:
-            prev_id: previous id that was fetched.
-            alert_status:
             limit: limit.
             from_date: get events from from_date.
 
         Returns:
             List[Dict]: the next event
         """
+        # TODO: need to add support for selected event types\
+        #        need to add support for limit and pagination
         demisto.debug("Starting to fetch events.")
         # use limit & from date arguments to query the API
-        return [
-            {
-                "id": prev_id + 1,
-                "created_time": datetime.now().isoformat(),
-                "description": f"This is test description {prev_id + 1}",
-                "alert_status": alert_status,
-                "protocol": default_Protocol,
-                "t_port": prev_id + 1,
-                "custom_details": {
-                    "triggered_by_name": f"Name for id: {prev_id + 1}",
-                    "triggered_by_uuid": str(uuid.uuid4()),
-                    "type": "customType",
-                    "requested_limit": limit,
-                    "requested_From_date": from_date,
-                },
-            }
-        ]
+        params = {
+            "after": from_date,
+            "key": api_key
+        }
+        try:
+            raw_response = self._http_request(url_suffix="/access-logs", method="GET", params=params)
+        except Exception as e:
+            demisto.error(f"error when fetching events: {e}")
+            
+        
+            
+        return raw_response
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
@@ -99,7 +94,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
     return "ok"
 
 
-def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict], CommandResults]:
+def get_events(client: Client, api_key: str, args: dict) -> tuple[List[Dict], CommandResults]:
     """Gets events from API
 
     Args:
@@ -114,8 +109,7 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
     limit = args.get("limit", 50)
     from_date = args.get("from_date")
     events = client.search_events(
-        prev_id=0,
-        alert_status=alert_status,
+        api_key=api_key,
         limit=limit,
         from_date=from_date,
     )
@@ -123,36 +117,40 @@ def get_events(client: Client, alert_status: str, args: dict) -> tuple[List[Dict
     return events, CommandResults(readable_output=hr)
 
 
+def get_timestamp_format(value):
+    timestamp: datetime
+    if isinstance(value, int):
+        return value
+    if not isinstance(value, datetime):
+        timestamp = dateparser.parse(value)  # type: ignore
+    return int(time.mktime(timestamp.timetuple()))
+
+
 def fetch_events(
-    client: Client, last_run: dict[str, int], first_fetch_time, alert_status: str | None, max_events_per_fetch: int
-) -> tuple[Dict, List[Dict]]:
+    client: Client, last_run: dict[str, str], api_key:str, first_fetch_time, max_events_per_fetch: dict, event_types_to_fetch: list
+) -> list[dict]:
     """
     Args:
         client (Client): HelloWorld client to use.
         last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time: If last_run is None (first time we are fetching), it contains the timestamp in
+        first_fetch_time (dict): If last_run is None (first time we are fetching), it contains the timestamp in
             milliseconds on when to start fetching events.
-        alert_status (str): status of the alert to search for. Options are: 'ACTIVE' or 'CLOSED'.
-        max_events_per_fetch (int): number of events per fetch
+        max_events_per_fetch (dict): number of events per fetch
+        event_types_to_fetch (list):
     Returns:
         dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
         list: List of events that will be created in XSIAM.
     """
-    prev_id = last_run.get("prev_id", None)
-    if not prev_id:
-        prev_id = 0
-
     events = client.search_events(
-        prev_id=prev_id,
-        alert_status=alert_status,
+        api_key = api_key,
         limit=max_events_per_fetch,
         from_date=first_fetch_time,
     )
-    demisto.debug(f"Fetched event with id: {prev_id + 1}.")
+    # demisto.debug(f"Fetched event with id: {prev_id + 1}.")
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {"prev_id": prev_id + 1}
-    return next_run, events
+    # next_run = {"prev_id": prev_id + 1}
+    return events
 
 
 """ MAIN FUNCTION """
@@ -181,19 +179,27 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
     command = demisto.command()
     api_key = params.get("api_key", "")
-    base_url = urljoin(params.get("url"), "/api/v1")
+    from_time = params.get("from", "")
+    base_url = urljoin(params.get("url"), "/org/api-ua/v1/event-logs/")
     verify_certificate = not params.get("insecure", False)
-
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", []))
+    event_types_to_fetch = [event_type.strip() for event_type in event_types_to_fetch]
     # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
+    first_fetch_time = get_timestamp_format(from_time)
+    
     proxy = params.get("proxy", False)
-    alert_status = params.get("alert_status", '')
-    max_events_per_fetch = params.get("max_events_per_fetch", 1000)
+    max_access_logs_events_per_fetch = params.get("max_access_logs_events_per_fetch", 3000)
+    max_assets_logs_events_per_fetch = params.get("max_assets_logs_events_per_fetch", 3000)
+    max_drkl_events_per_fetch = params.get("max_drkl_events_per_fetch", 3000)
+    max_events_per_fetch = {
+        "Access Logs": max_access_logs_events_per_fetch,
+        "Assets Logs": max_assets_logs_events_per_fetch,
+        "Digital Risk Keywords Logs": max_drkl_events_per_fetch,
+    }
 
     demisto.debug(f"Command being called is {command}")
     try:
-        headers = {"Authorization": f"Bearer {api_key}"}
-        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy)  # params api_key
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -202,7 +208,7 @@ def main() -> None:  # pragma: no cover
 
         elif command == "decyfir-event-collector-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events"))
-            events, results = get_events(client, alert_status, demisto.args())
+            events, results = get_events(client, api_key, demisto.args())
             return_results(results)
             if should_push_events:
                 add_time_to_events(events)
@@ -213,8 +219,9 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
+                api_key = api_key,
                 first_fetch_time=first_fetch_time,
-                alert_status=alert_status,
+                event_types_to_fetch=event_types_to_fetch,
                 max_events_per_fetch=max_events_per_fetch,
             )
 

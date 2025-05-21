@@ -17,16 +17,22 @@ configuration:
   required: true
   type: 4
   section: Connect
+- display: First fetch time interval
+  name: from
+  type: 0
+  defaultvalue: 3 days
+  section: Collect
+  required: false
 - defaultvalue: ACTIVE
   section: Collect
   display: Events type to fetch
   name: alert_status
   options:
-  - Access Logs 
+  - Access Logs
   - Assets Logs
   - Digital Risk Keywords Logs
   required: false
-  type: 15
+  type: 16
 - defaultvalue: 3000
   section: Collect
   display: Maximum number of Access Logs events
