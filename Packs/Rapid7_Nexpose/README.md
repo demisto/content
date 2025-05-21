@@ -1,5 +1,6 @@
 Overview
 -
+
 Rapid7 Nexpose provides vulnerability management, assessment, and
 response to changes in the environment while prioritizing risk across
 vulnerabilities, configurations, and controls.\
@@ -9,6 +10,7 @@ the Nexpose API v3.
 
 Rapid7 Nexpose Playbooks
 -
+
 For scans there are two sub-playbooks available, depending on the command.
 
 To start a site scan, use the `Nexpose Scan Site` sub-playbook.
@@ -22,6 +24,7 @@ type of response can be found in the [API Documentation.](https://help.rapid7.co
 #### Nexpose Scan Assets
 
 ![image](doc_files/Scan_Assets_-_Nexpose.png)
+
 #### Nexpose Scan Site
 
 ![image](doc_files/Scan_Site_-_Nexpose.png)

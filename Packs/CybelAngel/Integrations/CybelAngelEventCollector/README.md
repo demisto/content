@@ -2,7 +2,6 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 
 ## Configure CybelAngel in Cortex
 
-
 | **Parameter**                                                     | **Required** |
 |-------------------------------------------------------------------|--------------|
 | Server URL                                                        | True         |
@@ -12,7 +11,6 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 | The maximum number of events per fetch                            | True         |
 | Trust any certificate (not secure)                                | False        |
 | Use system proxy settings                                         | False        |
-
 
 ## Commands
 
@@ -32,12 +30,13 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date. | Optional | 
-| end_date | Get reports until a specific end date. If not provided, uses current date. | Optional | 
+| start_date | Get reports from a specific start date. | Optional |
+| end_date | Get reports until a specific end date. If not provided, uses current date. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cybelangel-report-status-update
 
 ***
@@ -51,14 +50,17 @@ Update the status of one or multiple reports.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_ids | List of report IDs to update. | Required | 
-| status | The new status of the reports. Possible values are: draft, open, in_progress, resolved, discarded. | Required | 
+| report_ids | List of report IDs to update. | Required |
+| status | The new status of the reports. Possible values are: draft, open, in_progress, resolved, discarded. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cybelangel-report-status-update report_ids=1234 status=open```
+
 #### Human Readable Output
 
 >"The status of the following reports </report list> has been successfully updated to </report status>."
@@ -76,19 +78,22 @@ Retrieve reports from CybelAngel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report to retrieve. | Required | 
-| pdf | If true, retrieves the report as a PDF file. Possible values are: True, False. | Optional | 
+| report_id | The ID of the report to retrieve. | Required |
+| pdf | If true, retrieves the report as a PDF file. Possible values are: True, False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report | unknown | The retrieved report. | 
-| InfoFile.EntryID | String | Entry ID of the saved PDF file. | 
+| CybelAngel.Report | unknown | The retrieved report. |
+| InfoFile.EntryID | String | Entry ID of the saved PDF file. |
 
 #### Command example
+
 ```!cybelangel-report-get report_id=1234```
+
 #### Context Example
+
 ```json
 {
     "CybelAngel": {
@@ -206,15 +211,17 @@ Retrieve reports from CybelAngel.
 #### Human Readable Output
 
 ### Report ID example-id-6 details
+
 |id|report_type|sender|severity|status|updated_at|
 |---|---|---|---|---|---|
 | example-id-6 | incident_detection | example@example.com | 1 | in_progress | 2025-03-03T09:13:33.253781 |
 
-
-
 #### Command example
+
 ```!cybelangel-report-get report_id=1234 pdf=true```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -232,7 +239,6 @@ Retrieve reports from CybelAngel.
 
 >Returned file: cybelangel_report_1234.pdf
 
-
 ### cybelangel-report-remediation-request-create
 
 ***
@@ -246,16 +252,20 @@ Create a remediation request for a report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report. | Required | 
-| requestor_email | Email of the requestor. | Required | 
-| requestor_fullname | Full name of the requestor. | Required | 
+| report_id | The ID of the report. | Required |
+| requestor_email | Email of the requestor. | Required |
+| requestor_fullname | Full name of the requestor. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cybelangel-report-remediation-request-create report_id=1234 requestor_email=test@paloaltonetworks.com requestor_fullname="Example Test"```
+
 #### Context Example
+
 ```json
 {
     "CybelAngel": {
@@ -285,18 +295,21 @@ Retrieve an attachment from a report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report. | Required | 
-| attachment_id | The ID of the attachment. | Required | 
+| report_id | The ID of the report. | Required |
+| attachment_id | The ID of the attachment. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryID | unknown | Entry ID of the retrieved file. | 
+| InfoFile.EntryID | unknown | Entry ID of the retrieved file. |
 
 #### Command example
+
 ```!cybelangel-report-attachment-get report_id=1234 attachment_id=5678```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -312,8 +325,6 @@ Retrieve an attachment from a report.
 
 #### Human Readable Output
 
-
-
 ### cybelangel-archive-report-by-id-get
 
 ***
@@ -327,17 +338,20 @@ Retrieve an archived report by ID as a ZIP file.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the archived report. | Required | 
+| report_id | The ID of the archived report. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.EntryID | unknown | Entry ID of the saved ZIP file. | 
+| InfoFile.EntryID | unknown | Entry ID of the saved ZIP file. |
 
 #### Command example
+
 ```!cybelangel-archive-report-by-id-get report_id=1234```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -353,8 +367,6 @@ Retrieve an archived report by ID as a ZIP file.
 
 #### Human Readable Output
 
-
-
 ### cybelangel-mirror-report-get
 
 ***
@@ -368,19 +380,22 @@ Retrieve the mirror details for the specified report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report. | Required | 
-| csv | If true, retrieves the mirror report in CSV format. Possible values are: True, False. | Optional | 
+| report_id | The ID of the report. | Required |
+| csv | If true, retrieves the mirror report in CSV format. Possible values are: True, False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.ReportMirror | unknown | Mirror details of the report. | 
-| InfoFile.EntryID| unknown | Entry ID of the saved CSV file. | 
+| CybelAngel.ReportMirror | unknown | Mirror details of the report. |
+| InfoFile.EntryID| unknown | Entry ID of the saved CSV file. |
 
 #### Command example
+
 ```!cybelangel-mirror-report-get report_id=1234```
+
 #### Context Example
+
 ```json
 {
     "CybelAngel": {
@@ -401,14 +416,17 @@ Retrieve the mirror details for the specified report.
 #### Human Readable Output
 
 ### Mirror details for Report ID example-id-7
+
 |report_id|created_at|available_files_count|updated_at|
 |---|---|---|---|
 | example-id-7 | 2024-07-11T12:50:20Z | 1 | 2025-01-12T03:26:49Z |
 
-
 #### Command example
+
 ```!cybelangel-mirror-report-get report_id=1234 csv=true```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -424,8 +442,6 @@ Retrieve the mirror details for the specified report.
 
 #### Human Readable Output
 
-
-
 ### cybelangel-report-comment-create
 
 ***
@@ -439,16 +455,17 @@ Create a new comment on a report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| discussion_id | The discussion_id is made of report id and tenant id like uuid:uuid. Example: [report_id]:[your-tenant-id]. | Required | 
-| content | The content of the comment. | Required | 
-| parent_id | The ID of the parent comment (for replies). | Optional | 
-| assigned | Specifies if the comment is assigned to analysts (true/false). | Optional | 
+| discussion_id | The discussion_id is made of report id and tenant id like uuid:uuid. Example: [report_id]:[your-tenant-id]. | Required |
+| content | The content of the comment. | Required |
+| parent_id | The ID of the parent comment (for replies). | Optional |
+| assigned | Specifies if the comment is assigned to analysts (true/false). | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!cybelangel-report-comment-create report_id=1234 content="Test Comment"```
 
 #### Human Readable Output
@@ -468,18 +485,21 @@ Retrieve reports from CybelAngel.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_date | Get reports from a specific start date formatted with ISO 8601. | Optional | 
-| end_date | Get reports until a specific end date formatted with ISO 8601. | Optional | 
+| start_date | Get reports from a specific start date formatted with ISO 8601. | Optional |
+| end_date | Get reports until a specific end date formatted with ISO 8601. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report | unknown | The retrieved reports. | 
+| CybelAngel.Report | unknown | The retrieved reports. |
 
 #### Command example
+
 ```!cybelangel-report-list start_date="19 hours ago" end_date="now"```
+
 #### Context Example
+
 ```json
 {
     "CybelAngel": {
@@ -708,6 +728,7 @@ Retrieve reports from CybelAngel.
 #### Human Readable Output
 
 ### Reports list
+
 |id|url|report_type|sender|severity|status|updated_at|report_content|
 |---|---|---|---|---|---|---|---|
 | example-id-1 | https://platform.example.com/reports/example-id-1 | incident_detection | example@example.com | 1 | open | 2025-02-25T13:06:06.821922 | ### Sample content… Example |
@@ -720,7 +741,6 @@ Retrieve reports from CybelAngel.
 | example-id-8 | https://platform.example.com/reports/example-id-8 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:26:11.424002 | ### Sample content… Example |
 | example-id-9 | https://platform.example.com/reports/example-id-9 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:22:14.184243 | ### Sample content… Example |
 | example-id-10 | https://platform.example.com/reports/example-id-10 | incident_detection | example@example.com | 1 | open | 2025-03-03T14:28:22.089922 | ### Sample content… Example |
-
 
 ### cybelangel-report-comments-get
 
@@ -735,17 +755,20 @@ Retrieve comments from a report.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| report_id | The ID of the report. | Required | 
+| report_id | The ID of the report. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CybelAngel.Report.Comment | unknown | The list of comments for the report. | 
+| CybelAngel.Report.Comment | unknown | The list of comments for the report. |
 
 #### Command example
+
 ```!cybelangel-report-comments-get report_id=1234```
+
 #### Context Example
+
 ```json
 {
     "CybelAngel": {
@@ -795,6 +818,7 @@ Retrieve comments from a report.
 #### Human Readable Output
 
 ### Comments for Report ID example-id-8
+
 |content|created_at|discussion_id|assigned|author_firstname|author_lastname|last_updated_at|
 |---|---|---|---|---|---|---|
 | This is a comment message | 2025-02-27T11:04:05Z | example-id-8:example-tenant-id | false | ExampleFirst | ExampleLast | 2025-02-27T11:04:05Z |
