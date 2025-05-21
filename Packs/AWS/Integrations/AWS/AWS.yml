@@ -843,7 +843,7 @@ script:
       required: false
 
   - name: aws-eks-cluster-config-update
-    description: 'Updates an Amazon EKS cluster configuration.'
+    description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
     arguments:
     - name: account_id
       description: 'Will be taken from the "account" field on the asset/issue.'
@@ -857,10 +857,10 @@ script:
       description: 'The name of the Amazon EKS cluster to update.'
       required: true
     - name: logging
-      description: 'The logging configuration for your cluster.'
+      description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs . By default, cluster control plane logs aren’t exported to CloudWatch Logs . e.g. \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
       required: false
     - name: resources_vpc_config
-      description: 'The VPC configuration used by the cluster control plane.'
+      description: "A JSON representation of the VPC configuration used by the cluster control plane. e.g. \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
       required: false
 
   isfetch: false

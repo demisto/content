@@ -99,26 +99,6 @@ def create_user_id_group_pairs_dict(args):
             UserIdGroupPairs_dict.update({dict_key: args.get(args_key)})
     return UserIdGroupPairs_dict
 
-
-def validate_args(resources_vpc_config: dict, logging_arg: dict, authentication_mode: bool):
-    """
-    Check that exactly one argument is passed, and if not raise a value error
-    Args:
-        resources_vpc_config: An object representing the VPC configuration to use for an Amazon EKS cluster.
-        logging_arg: The cluster control plane logging configuration.
-        authentication_mode: The desired authentication mode for the cluster.
-
-    Returns:
-        A Command Results object
-    """
-    arr = [resources_vpc_config, logging_arg, authentication_mode]
-    arg_num = sum(bool(arg) for arg in arr)  # counts the number of non-empty args.
-    if arg_num != 1:
-        raise ValueError(
-            "Please provide exactly one of the following arguments: resources_vpc_config, logging or authentication_mode."
-        )
-
-
 def get_client(params, command_args):
     """
     Creates an AWS client with the provided authentication parameters.
@@ -871,32 +851,33 @@ class EKS:
         """
         Updates an Amazon EKS cluster configuration.
         Args:
-            args: command arguments
+            args: Command Arguments
 
         Returns:
             A Command Results object
         """
-        cluster_name = args.get("cluster_name")
-        resources_vpc_config = args.get("resources_vpc_config", "").replace("'", '"')
-        logging_arg = args.get("logging", "").replace("'", '"')
-        resources_vpc_config = json.loads(resources_vpc_config) if resources_vpc_config else {}
-        logging_arg = json.loads(logging_arg) if logging_arg else {}
-        authentication_mode = argToBoolean(args.get("authentication_mode", False))
+        
+        def validate_args(args: Dict[str, Any]) -> dict:
+            """
+            Check that exactly one argument is passed, and if not raises a value error
+            """
+            validated_args = {"name": args.get("cluster_name")}
+            
+            if resources_vpc_config := args.get('resources_vpc_config'):
+                resources_vpc_config = json.loads(resources_vpc_config) if isinstance(resources_vpc_config, str) else resources_vpc_config
+                validated_args = {"resourcesVpcConfig": resources_vpc_config}
+            if logging_arg := args.get('logging'):
+                logging_arg = json.loads(logging_arg) if isinstance(logging_arg, str) else logging_arg
+                validated_args = {"logging": logging_arg}
+                
+            if logging_arg and resources_vpc_config:
+                raise ValueError
+            
+            return remove_empty_elements(validate_args)                  
 
-        validate_args(resources_vpc_config, logging_arg, authentication_mode)
-
-        access_config = {"authenticationMode": "API_AND_CONFIG_MAP"} if authentication_mode else {}
-
+        validated_args: dict = validate_args(args)
         try:
-            if resources_vpc_config:
-                response = self.client_session.update_cluster_config(name=cluster_name, resourcesVpcConfig=resources_vpc_config)
-            elif logging_arg:
-                response = self.client_session.update_cluster_config(
-                    name=cluster_name,
-                    logging=logging_arg,
-                )
-            else:  # access_config
-                response = self.client_session.update_cluster_config(name=cluster_name, accessConfig=access_config)
+            response = self.client_session.update_cluster_config(**validated_args)
 
             response_data = response.get("update", {})
             response_data["clusterName"] = cluster_name
@@ -1005,5 +986,5 @@ def main():
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
-if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
+if __name__ in ("__main__", "__builtin__", "builatins"):  # pragma: no cover
     main()
