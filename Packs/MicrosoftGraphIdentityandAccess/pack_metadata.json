@@ -2,11 +2,7 @@
     "name": "Microsoft Graph Identity and Access",
     "description": "Use this pack to manage roles and members in Microsoft.",
     "support": "xsoar",
-<<<<<<< HEAD
-    "currentVersion": "1.2.61",
-=======
-    "currentVersion": "1.2.60",
->>>>>>> e561647783 (update yml file, readme, Release Notes, add tests)
+    "currentVersion": "1.2.62",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
