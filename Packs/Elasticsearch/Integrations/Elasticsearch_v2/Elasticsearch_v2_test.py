@@ -887,7 +887,9 @@ def test_execute_raw_query_v8(mocker, raw_query_body):
      - make sure the query body can be serialized an does not throw errors.
     """
     import Elasticsearch_v2
-    import elastic_transport
+    from elastic_transport import RequestsHttpNode
+
+    Elasticsearch_v2.RequestsHttpNode = RequestsHttpNode
 
     class CustomExecute:
         def to_dict():  # type: ignore
@@ -897,7 +899,7 @@ def test_execute_raw_query_v8(mocker, raw_query_body):
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "search", return_value=ES_V7_RESPONSE)
     mocker.patch.object(Elasticsearch_v2.Search, "execute", return_value=CustomExecute)
     mocker.patch.object(Elasticsearch_v2.Elasticsearch, "__init__", return_value=None)
-    mocker.patch.object(elastic_transport.RequestsHttpNode, "__init__", return_value=None)
+    mocker.patch.object(RequestsHttpNode, "__init__", return_value=None)
 
     es = Elasticsearch_v2.elasticsearch_builder({})
     assert Elasticsearch_v2.execute_raw_query(es, json.dumps(raw_query_body)) == ES_V8_RESPONSE
