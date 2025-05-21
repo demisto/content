@@ -16,7 +16,6 @@ alter
     Get_file_code_signature_subject_name = file -> code_signature.subject_name,
     Get_file_code_signature_valid = file -> code_signature.valid,
     Get_file_code_signature_exists = file -> code_signature.exists
-    //Get_check_if_file_signed_boolean = if(Get_file_code_signature_exists = "true", Get_file_code_signature_valid, "false")
 | alter
     xdm.source.host.os = Get_host_os_type,
     xdm.source.host.os_family = if(Get_host_os_type contains "windows", XDM_CONST.OS_FAMILY_WINDOWS, Get_host_os_type contains "mac", XDM_CONST.OS_FAMILY_MACOS),
