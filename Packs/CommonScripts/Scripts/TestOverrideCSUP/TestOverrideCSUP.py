@@ -12,6 +12,7 @@ def main():
     try:
         args = demisto.args()
         my_bool = args.get('my_arg')
+        # Tests that the argToBoolean func is called from the CSUP instead of the CSP for system scripts
         res = argToBoolean(my_bool)
         return_results(res)
     except Exception as ex:

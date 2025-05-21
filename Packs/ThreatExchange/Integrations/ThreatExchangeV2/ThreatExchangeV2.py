@@ -971,7 +971,9 @@ def main():
     params = demisto.params()
     args = demisto.args()
 
+    # Tests that integrations are stull using cortex-module funcs and not CSUP funcs even though we use the decorator
     print(argToBoolean("True"))
+    
     app_id_obj = params.get("app_id")
     app_id = app_id_obj["identifier"]
     app_secret = app_id_obj["password"]
