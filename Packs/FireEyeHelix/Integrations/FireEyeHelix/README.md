@@ -1190,7 +1190,7 @@ Gets the status of an archive search.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| FireEyeHelixSearch<span></span>.ID | Number | The archive search's ID. |
+| FireEyeHelixSearch.ID | Number | The archive search's ID. |
 | FireEyeHelixSearch.PercentComplete | String | The percentage of the search that was completed. |
 | FireEyeHelixSearch.Query | String | The search query. |
 | FireEyeHelixSearch.State | String | The state of the search. |
