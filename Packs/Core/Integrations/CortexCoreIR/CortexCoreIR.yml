@@ -4119,6 +4119,8 @@ script:
         - description: String that identifies the indicator you want to insert into Cortex.
           name: indicator
           required: true
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Keyword identifying the type of indicator.
           name: type
@@ -4129,6 +4131,8 @@ script:
             - 'DOMAIN_NAME'
             - 'FILE_NAME'
           required: true
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Keyword identifying the indicator's severity.
           name: severity
@@ -4139,12 +4143,18 @@ script:
             - 'HIGH'
             - 'CRITICAL'
           required: true
+          isArray: false
+          type: String
         - description: "If this indicator has no expiration, use Never. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days."
           name: expiration_date
           required: false
+          isArray: false
+          type: String
         - description: Comment string.
           name: comment
           required: false
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Keyword representing the indicator's reputation.
           name: reputation
@@ -4154,6 +4164,8 @@ script:
             - 'SUSPICIOUS'
             - 'UNKNOWN'
           required: false
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Character representing the indicator's reliability rating. Valid values are A-F. A is the most reliable, F is the least.
           name: reliability
@@ -4165,12 +4177,18 @@ script:
             - 'E'
             - 'F'
           required: false
+          isArray: false
+          type: String
         - description: String representing the indicator class (for example, "Malware").
           name: class
           required: false
+          isArray: false
+          type: String
         - description: String representing the name of the vendor who reported this indicator.
           name: vendor_name
           required: false
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Keyword representing the vendor's reputation. Required when vendor_name is defined.
           name: vendor_reputation
@@ -4180,6 +4198,8 @@ script:
             - 'SUSPICIOUS'
             - 'UNKNOWN'
           required: false
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined
           name: vendor_reliability
@@ -4191,6 +4211,8 @@ script:
             - 'E'
             - 'F'
           required: false
+          isArray: false
+          type: String
         - auto: PREDEFINED
           description: The input format selected, which determines how parameters are sent to the XDR API.
           defaultValue: 'JSON'
@@ -4199,10 +4221,14 @@ script:
             - 'CSV'
             - 'JSON'
           required: false
+          isArray: false
+          type: String
         - description: "The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed.
                             CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n195.200.31.22,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware"
           name: ioc_object
           required: false
+          isArray: false
+          type: String
 
       description: "When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
                     If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object`.
