@@ -5,7 +5,6 @@ from calendar import monthrange
 import csv
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-demisto.debug('pack name = Community Common Dashboards, pack version = 2.1.0')
 
 
 MAXINC = 2000
