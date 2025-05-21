@@ -1,0 +1,1 @@
+Use the Cyberint Feed integration to get indicators from the feed.
