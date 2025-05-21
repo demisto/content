@@ -13,7 +13,6 @@ from imapclient import IMAPClient
 from tempfile import NamedTemporaryFile
 
 
-
 class Email:
     def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
         """
@@ -59,6 +58,19 @@ class Email:
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
+        
+        self.parse_headers()
+
+    def parse_headers(self):
+        parsed_headers = {}
+        for header_name, header_value in self.headers.items():
+            if not isinstance(header_value, str):
+                if header_name == 'From':
+                    header_value = header_value[0][0] + '<' + header_value[0][1] + '>'
+                else:
+                    header_value = ''.join(header_value[0])
+                    
+            parsed_headers[header_name] = header_value
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
