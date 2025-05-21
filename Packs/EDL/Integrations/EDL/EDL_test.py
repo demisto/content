@@ -9,7 +9,20 @@ from tempfile import mkdtemp
 
 import demistomock as demisto
 import pytest
-from EDL import DONT_COLLAPSE, check_platform_and_version, datetime, get_indicators_to_format, initialize_edl_context, timezone
+from EDL import (
+    DONT_COLLAPSE,
+    check_platform_and_version,
+    datetime,
+    get_indicators_to_format,
+    initialize_edl_context,
+    timezone,
+    RequestArguments,
+    FORMAT_TEXT,
+    FORMAT_CSV,
+    FORMAT_JSON,
+    FORMAT_MWG,
+    FORMAT_PROXYSG,
+)
 from freezegun import freeze_time
 
 IOC_RES_LEN = 38
@@ -1404,3 +1417,25 @@ def test_store_log_data(mocker, wip_exist):
     request_args = edl.RequestArguments()
     edl.store_log_data(request_args, datetime.now(), {})
     assert Path(edl.EDL_FULL_LOG_PATH).exists() == wip_exist
+
+
+@pytest.mark.parametrize(
+    "out_format, fields_to_present, expected",
+    [
+        # Case 1: use_legacy_query returns ""
+        (FORMAT_TEXT, "use_legacy_query", ""),
+        # Case 2: FORMAT_CSV with 'all' returns ""
+        (FORMAT_CSV, "all", ""),
+        # Case 3: FORMAT_JSON with 'value' replaced to 'name'
+        (FORMAT_JSON, "value,type", "name,type"),
+        # Case 4: FORMAT_MWG with no fields_to_present
+        (FORMAT_MWG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_MWG),
+        # Case 5: FORMAT_PROXYSG with no fields_to_present
+        (FORMAT_PROXYSG, "", RequestArguments.FILTER_FIELDS_ON_FORMAT_PROXYSG),
+        # Case 6: Unknown format fallback to FILTER_FIELDS_ON_FORMAT_TEXT
+        ("unknown_format", "", RequestArguments.FILTER_FIELDS_ON_FORMAT_TEXT),
+    ],
+)
+def test_get_fields_to_present(out_format, fields_to_present, expected):
+    args = RequestArguments(out_format=out_format, fields_to_present=fields_to_present)
+    assert args.fields_to_present == expected
