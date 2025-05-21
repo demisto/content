@@ -61,14 +61,20 @@ class Email:
 
     def parse_headers(self, headers):
         parsed_headers = {}
-        for header_name, header_value in headers.items():
-            if not isinstance(header_value, str):
-                if header_name == "From":
-                    header_value = header_value[0][0] + " <" + header_value[0][1] + ">"
+        for header_name, raw_header_value in headers.items():
+            if not isinstance(raw_header_value, str):
+                if header_name in ["From", "To", "Cc", "Delivered-To"]:
+                    header_value_array = []
+                    for sub_header_data in raw_header_value:
+                        if sub_header_data[0]:
+                            header_value_array.append(sub_header_data[0] + " <" + sub_header_data[1] + ">")
+                        else:
+                            header_value_array.append("<" + sub_header_data[1] + ">")
+                    parsed_header_value = "; ".join(header_value_array)
                 else:
-                    header_value = "".join(header_value[0])
+                    parsed_header_value = ", ".join(raw_header_value[0])
 
-            parsed_headers[header_name] = header_value
+            parsed_headers[header_name] = parsed_header_value
 
         return parsed_headers
 
