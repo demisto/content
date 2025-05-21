@@ -2835,9 +2835,10 @@ def test_first_fetch_timestamp_consistency(yaml_content):
     # Extract max days value from the display text
     display_text = first_fetch_config.get('display', '')
     import re
-    max_days_match = re.search(r'max (\d+) days', display_text)
+    # Update the pattern to match both "max X days" and "maximum X days"
+    max_days_match = re.search(r'max(?:imum)? (\d+) days', display_text)
 
-    assert max_days_match is not None, f"Could not find 'max X days' in first_fetch display text: {display_text}"
+    assert max_days_match is not None, f"Could not find 'max X days' or 'maximum X days' in first_fetch display text: {display_text}"
     max_days_in_yaml = int(max_days_match.group(1))
 
     # Assert that the code constant matches the YAML value
@@ -2847,7 +2848,6 @@ def test_first_fetch_timestamp_consistency(yaml_content):
     )
 
     print(f"Successfully validated MAX_DAYS_FIRST_FETCH_DETECTIONS consistency with YAML")
-
 
 def test_threats_days_params_consistency(yaml_content):
     """Test that THREATS_DAYS constants match the creation_days_back argument description"""
@@ -2871,9 +2871,10 @@ def test_threats_days_params_consistency(yaml_content):
     # Extract min, max, default values from description
     description = creation_days_back_arg.get('description', '')
     import re
-    range_match = re.search(r'\((\d+)-(\d+)\)', description)
+    # Update pattern to match "range 1-30" instead of just "(1-30)"
+    range_match = re.search(r'range (\d+)-(\d+)', description)
 
-    assert range_match is not None, f"Could not find range (MIN-MAX) in description: {description}"
+    assert range_match is not None, f"Could not find range format (e.g., 'range 1-30') in description: {description}"
     min_days_in_yaml = int(range_match.group(1))
     max_days_in_yaml = int(range_match.group(2))
 
@@ -2923,9 +2924,10 @@ def test_fetch_interval_consistency(yaml_content):
     # Extract min, max values from description
     description = creation_minutes_back_arg.get('description', '')
     import re
-    range_match = re.search(r'\((\d+)-(\d+)\)', description)
+    # Update pattern to match "range 10-600" instead of just "(10-600)"
+    range_match = re.search(r'range (\d+)-(\d+)', description)
 
-    assert range_match is not None, f"Could not find range (MIN-MAX) in description: {description}"
+    assert range_match is not None, f"Could not find range format (e.g., 'range 10-600') in description: {description}"
     min_minutes_in_yaml = int(range_match.group(1))
     max_minutes_in_yaml = int(range_match.group(2))
 
@@ -2967,10 +2969,10 @@ def test_default_fetch_back_consistency(yaml_content):
         f"the defaultvalue in first_fetch configuration ({default_value_in_yaml})"
     )
 
-    # Also check the additional info
+    # Also check the additional info - update to match the actual text in additionalinfo
     additional_info = first_fetch_config.get('additionalinfo', '')
-    assert "maximum is 5 days" in additional_info, (
-        f"first_fetch additionalinfo doesn't mention 'maximum is 5 days': {additional_info}"
+    assert "Maximum allowed is 5 days" in additional_info, (
+        f"first_fetch additionalinfo doesn't mention the maximum days limit: {additional_info}"
     )
 
     print(f"Successfully validated DEFAULT_FETCH_BACK consistency with YAML")

@@ -87,6 +87,7 @@ configuration:
   - SelfHosted
   - LKE
   type: 16
+  isArray: true
 - name: origin
   display: Cloud event origin to fetch.
   options:

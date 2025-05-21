@@ -726,14 +726,14 @@ def get_entries(query, variables, wiz_type):
         get_token()
 
     data = {"variables": variables, "query": query}
-    demisto.info(f"Invoking the API with {json.dumps(data)}")
+    demisto.info(f"Invoking Wiz API with variables {json.dumps(variables)}")
 
     try:
         response = requests.post(url=URL, json=data, headers=HEADERS)
         response_json = response.json()
 
-        demisto.info(f"Response status code is {response.status_code}")
-        demisto.info(f"The response is {response_json}")
+        demisto.info(f"Wiz API response status code is {response.status_code}")
+        demisto.debug(f"The response is {response_json}")
 
         if response.status_code != requests.codes.ok:
             raise Exception('Got an error querying Wiz API [{}] - {}'.format(response.status_code, response.text))
@@ -742,7 +742,6 @@ def get_entries(query, variables, wiz_type):
             demisto.error(f"Wiz error content: {response_json[WizApiResponse.ERRORS]}")
             error_message = f"Wiz API error details: {get_error_output(response_json)}"
             demisto.error("An error has occurred using:"
-                          f"\tQuery: {query} - "
                           f"\tVariables: {variables} -"
                           f"\t{error_message}")
             demisto.error(error_message)
@@ -769,11 +768,11 @@ def query_threats(query, variables, paginate=True):
 def query_api(query, variables, wiz_type, paginate=True):
     entries, page_info = get_entries(query, variables, wiz_type)
     if not entries:
-        demisto.info("No detection(/s) available to fetch.")
+        demisto.info(f"No {wiz_type}(/s) available to fetch.")
         entries = {}
 
     while page_info[WizApiResponse.HAS_NEXT_PAGE] and paginate:
-        demisto.debug(f"Successfully pulled {len(entries)} detections")
+        demisto.debug(f"Successfully pulled {len(entries)} {wiz_type}")
 
         variables[WizApiVariables.AFTER] = page_info[WizApiResponse.END_CURSOR]
         new_entries, page_info = get_entries(query, variables, wiz_type)
@@ -784,7 +783,10 @@ def query_api(query, variables, wiz_type, paginate=True):
                          f"Some detections will not be processed in this fetch cycle.\n"
                          f"Consider adjusting the filters to get relevant logs")
             break
-
+    if entries:
+        demisto.info(f"Successfully pulled {len(entries)} {wiz_type}")
+    else:
+        demisto.info(f"No {wiz_type}(/s) available to fetch according to this filter.")
     return entries
 
 
@@ -1675,7 +1677,8 @@ def validate_all_threat_parameters(parameters_dict):
     project_id = parameters_dict.get(WizInputParam.PROJECT_ID)
 
     # Check if at least one parameter is provided
-    if not any([issue_id, platform, cloud_account_or_cloud_organization, resource_id, severity, status, project_id, creation_days_back]):
+    if not any(
+        [issue_id, platform, cloud_account_or_cloud_organization, resource_id, severity, status, project_id, creation_days_back]):
         param_list = [
             f"\t{WizInputParam.ISSUE_ID}",
             f"\t{WizInputParam.PLATFORM}",
@@ -2065,6 +2068,7 @@ def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_or
 
     return variables
 
+
 def apply_severity_filter(variables, severity_list, is_detection=True):
     """
     Adds the severity filter to the query variables
@@ -2160,7 +2164,8 @@ def apply_all_detection_filters(variables, validated_values):
     variables = apply_detection_type_filter(variables, validated_values.get(WizInputParam.TYPE))
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM))
     variables = apply_origin_filter(variables, validated_values.get(WizInputParam.ORIGIN))
-    variables = apply_cloud_account_or_cloud_organization_filter(variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG))
+    variables = apply_cloud_account_or_cloud_organization_filter(variables,
+                                                                 validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG))
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID))
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY))
     variables = apply_rule_match_id_filter(variables, validated_values.get(WizInputParam.RULE_MATCH_ID))
@@ -2170,8 +2175,35 @@ def apply_all_detection_filters(variables, validated_values):
     return variables
 
 
+def log_input_parameters(parameters_dict):
+    """
+    Log parameters for debugging/informational purposes.
+    Only logs parameters that have values (not None or empty).
+    Can be used for both detections and threats.
+
+    Args:
+        parameters_dict (dict): Dictionary containing parameters
+    """
+    log_lines = []
+
+    for param_key, param_value in parameters_dict.items():
+        # Only include non-empty values
+        if param_value is not None and param_value != "":
+            log_lines.append(f"{param_key}: {param_value}")
+
+    # Only log if there are actually parameters to log
+    demisto_command = demisto.command()
+    if log_lines:
+        str_param = f"'{demisto_command}' input parameters are: "
+        str_param += " - ".join(log_lines)
+        demisto.info(str_param)
+    else:
+        demisto.info(f"{demisto_command} input parameters are empty.")
+
+
 def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
-                            detection_origin=None, detection_cloud_account_or_cloud_organization=None, resource_id=None, severity=None,
+                            detection_origin=None, detection_cloud_account_or_cloud_organization=None, resource_id=None,
+                            severity=None,
                             creation_minutes_back=None, rule_match_id=None, rule_match_name=None, project_id=None,
                             after_time=None, add_detection_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
     """
@@ -2195,22 +2227,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
     Returns:
         list/str: List of detections or error message
     """
-    demisto.info(f"Detection ID is {detection_id}\n"
-                 f"Issue ID is {issue_id}\n"
-                 f"Detection type is {detection_type}\n"
-                 f"Detection platform is {detection_platform}\n"
-                 f"Detection origin is {detection_origin}\n"
-                 f"Detection cloud_account_or_cloud_organization is {detection_cloud_account_or_cloud_organization}\n"
-                 f"Resource ID is {resource_id}\n"
-                 f"Severity is {severity}\n"
-                 f"Creation minutes back is {creation_minutes_back}\n"
-                 f"After time is {after_time}\n"
-                 f"Matched rule is {rule_match_id}\n"
-                 f"Matched rule name is {rule_match_name}\n"
-                 f"Project ID is {project_id}\n"
-                 f"First is {api_limit}\n")
-
-    # Create parameters dictionary for validation
+    # Create parameters dictionary
     parameters_dict = {
         WizInputParam.DETECTION_ID: detection_id,
         WizInputParam.ISSUE_ID: issue_id,
@@ -2226,6 +2243,8 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         WizInputParam.PROJECT_ID: project_id,
         DemistoParams.AFTER_TIME: after_time
     }
+
+    log_input_parameters(parameters_dict)
 
     validation_success, error_message, validated_values = validate_all_detection_parameters(parameters_dict)
 
@@ -2260,7 +2279,9 @@ def apply_all_threat_filters(variables, validated_values):
     variables = apply_issue_id_filter(variables, validated_values.get(WizInputParam.ISSUE_ID), is_detection=False)
     variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK), 'days')
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM), is_detection=False)
-    variables = apply_cloud_account_or_cloud_organization_filter(variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG), is_detection=False)
+    variables = apply_cloud_account_or_cloud_organization_filter(variables,
+                                                                 validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG),
+                                                                 is_detection=False)
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID), is_detection=False)
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY), is_detection=False)
     variables = apply_status_filter(variables, validated_values.get(WizInputParam.STATUS))
@@ -2293,17 +2314,6 @@ def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_or
     Returns:
         list/str: List of threats or error message
     """
-    demisto.info(f"Issue ID is {issue_id}\n"
-                 f"Platform is {platform}\n"
-                 f"Origin is {origin}\n"
-                 f"Cloud account or cloud organization is {cloud_account_or_cloud_organization}\n"
-                 f"Resource ID is {resource_id}\n"
-                 f"Severity is {severity}\n"
-                 f"Status is {status}\n"
-                 f"Creation days back is {creation_days_back}\n"
-                 f"Project ID is {project_id}\n"
-                 f"First is {api_limit}\n")
-
     parameters_dict = {
         WizInputParam.ISSUE_ID: issue_id,
         WizInputParam.PLATFORM: platform,
@@ -2315,6 +2325,8 @@ def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_or
         WizInputParam.CREATION_DAYS_BACK: creation_days_back,
         WizInputParam.PROJECT_ID: project_id
     }
+
+    log_input_parameters(parameters_dict)
 
     validation_success, error_message, validated_values = validate_all_threat_parameters(parameters_dict)
 
@@ -2460,7 +2472,6 @@ def get_single_threat():
         issue_id=issue_id
     )
     if isinstance(threat, str):
-        # this means the Threat is an error
         return_error(threat)
     else:
         return CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=threat,
@@ -2507,6 +2518,7 @@ def main():
     set_api_endpoint(params.get(DemistoParams.API_ENDPOINT, ''))
     try:
         command = demisto.command()
+        demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
 
         if command == DemistoCommands.TEST_MODULE:
             test_module()
