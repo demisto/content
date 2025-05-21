@@ -5,7 +5,6 @@ The integration was integrated and tested with version v3 API of VirusTotal.
 
 ## Configure VirusTotal (API v3) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key | See [Acquiring your API key](#acquiring-your-api-key) | True |
@@ -30,7 +29,6 @@ The integration was integrated and tested with version v3 API of VirusTotal.
 | Domain Popularity Ranking Threshold | See [Rules Threshold](#rules-threshold). | False |
 | Premium Subscription Only: Relationship Malicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
 | Premium Subscription Only: Relationship Suspicious Files Threshold | See [Premium analysis - Relationship Files Threshold](#premium-analysis---relationship-files-threshold) | False |
-
 
 ### Acquiring your API key
 
@@ -126,6 +124,7 @@ The following lists the changes in this version according to the commands from t
   For more information regarding File relationships, see: <https://docs.virustotal.com/reference/files>
 
 - Starting with XSOAR version 6.8.0, You may monitor API usage via the *VirusTotal API Execution Metrics* dashboard.
+
 ### Comments
 
 In VirusTotal (API v3) you can now add comments to all indicator types (IP, Domain, File and URL) so each command now has the *resource_type* argument.
@@ -189,7 +188,7 @@ Checks the file reputation of the specified hash.
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
 | DBotScore.Vendor | unknown | The vendor used to calculate the score. |
-| DBotScore.Score | Number | The actual score. | 
+| DBotScore.Score | Number | The actual score. |
 | DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
 | VirusTotal.File.attributes.type_description | String | Description of the type of the file. |
 | VirusTotal.File.attributes.tlsh | String | The locality-sensitive hashing. |
@@ -407,57 +406,60 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to check. | Required | 
-| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional | 
-| override_private_lookup | When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level. Possible values are: true, false. | Optional | 
+| ip | IP address to check. | Required |
+| extended_data | Whether to return extended data (last_analysis_results). Possible values are: true, false. | Optional |
+| override_private_lookup | When set to "true", enrichment of private IP addresses will be conducted even if it has been disabled at the integration level. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | unknown | Bad IP address. | 
-| IP.ASN | unknown | Bad IP ASN. | 
-| IP.Geo.Country | unknown | Bad IP country. | 
-| IP.Relationships.EntityA | string | The source of the relationship. | 
-| IP.Relationships.EntityB | string | The destination of the relationship. | 
-| IP.Relationships.Relationship | string | The name of the relationship. | 
-| IP.Relationships.EntityAType | string | The type of the source of the relationship. | 
-| IP.Relationships.EntityBType | string | The type of the destination of the relationship. | 
-| IP.Malicious.Vendor | String | For malicious IPs, the vendor who made the decision. | 
-| IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. | 
+| IP.Address | unknown | Bad IP address. |
+| IP.ASN | unknown | Bad IP ASN. |
+| IP.Geo.Country | unknown | Bad IP country. |
+| IP.Relationships.EntityA | string | The source of the relationship. |
+| IP.Relationships.EntityB | string | The destination of the relationship. |
+| IP.Relationships.Relationship | string | The name of the relationship. |
+| IP.Relationships.EntityAType | string | The type of the source of the relationship. |
+| IP.Relationships.EntityBType | string | The type of the destination of the relationship. |
+| IP.Malicious.Vendor | String | For malicious IPs, the vendor who made the decision. |
+| IP.Malicious.Description | String | For malicious IPs, the reason that the vendor made the decision. |
 | IP.VTVendors.EngineDetections | Number | Number of VT vendors that flagged the IP as malicious. |
 | IP.VTVendors.EngineVendors | Array | VT vendors who flagged the IP as malicious. |
 | IP.VTVendors.EngineDetectionNames | Array | VT detection names that flagged the IP as malicious. |
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | The indicator type. | 
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| IP.ASOwner | String | The autonomous system owner of the IP. |
+| DBotScore.Indicator | unknown | The indicator that was tested. |
+| DBotScore.Type | unknown | The indicator type. |
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |  
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). | 
-| VirusTotal.IP.attributes.jarm | String | JARM data. | 
-| VirusTotal.IP.attributes.network | String | Network data. | 
-| VirusTotal.IP.attributes.country | String | The country where the IP is located. | 
-| VirusTotal.IP.attributes.as_owner | String | IP owner. | 
-| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
-| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
-| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
-| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
-| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
-| VirusTotal.IP.attributes.asn | Number | ASN data. | 
-| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. | 
-| VirusTotal.IP.attributes.reputation | Number | IP reputation. | 
-| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. | 
-| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. | 
-| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. | 
-| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. | 
-| VirusTotal.IP.attributes.whois | String | whois data. | 
-| VirusTotal.IP.type | String | Indicator IP type. | 
-| VirusTotal.IP.id | String | ID of the IP. | 
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| VirusTotal.IP.attributes.regional_internet_registry | String | Regional internet registry \(RIR\). |
+| VirusTotal.IP.attributes.jarm | String | JARM data. |
+| VirusTotal.IP.attributes.network | String | Network data. |
+| VirusTotal.IP.attributes.country | String | The country where the IP is located. |
+| VirusTotal.IP.attributes.as_owner | String | IP owner. |
+| VirusTotal.IP.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
+| VirusTotal.IP.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
+| VirusTotal.IP.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
+| VirusTotal.IP.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
+| VirusTotal.IP.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
+| VirusTotal.IP.attributes.asn | Number | ASN data. |
+| VirusTotal.IP.attributes.whois_date | Number | Date of the last update of the whois record. |
+| VirusTotal.IP.attributes.reputation | Number | IP reputation. |
+| VirusTotal.IP.attributes.last_modification_date | Number | Last modification date in epoch format. |
+| VirusTotal.IP.attributes.total_votes.harmless | Number | Total number of harmless votes. |
+| VirusTotal.IP.attributes.total_votes.malicious | Number | Total number of malicious votes. |
+| VirusTotal.IP.attributes.continent | String | The continent where the IP is located. |
+| VirusTotal.IP.attributes.whois | String | whois data. |
+| VirusTotal.IP.type | String | Indicator IP type. |
+| VirusTotal.IP.id | String | ID of the IP. |
 
 #### Command example
+
 ```!ip ip=1.1.1.1```
+
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -2175,7 +2177,6 @@ Retrieves result of the last Sigma analysis.
 >|---|---|---|---|---|---|---|
 >| $EventID: '1117' | high | Detects all actions taken by Windows Defender malware detection engines | Sigma Integrated Rule Set (GitHub) | Windows Defender Threat Detected | 693c36f61ac022fd66354b440464f490058c22b984ba1bef05ca246aba210ed1 | Ján Trenčanský |
 
-
 ### vt-privatescanning-file
 
 ***
@@ -2410,7 +2411,6 @@ See files through the eyes of VirusTotal without uploading them to the main thre
 >|---|---|---|---|---|---|---|
 >| Example_sha1 | Example_sha256 | Example_md5 | private | HIGH | trojan | MALICIOUS |
 
-
 ### vt-privatescanning-file-scan
 
 ***
@@ -2479,7 +2479,6 @@ Submits a file for private scanning. Use the vt-privatescanning-analysis-get com
 >|id|EntryID|MD5|SHA1|SHA256|
 >|---|---|---|---|---|---|---|
 >| example-analysis-id | example-entry-id | Example_md5 | Example_sha1 | Example_sha256 |
-
 
 ### vt-privatescanning-analysis-get
 
@@ -2566,14 +2565,15 @@ Get analysis of a private file or URL submitted to VirusTotal.
 ## VT indicator fields
 
 3 indicator fields have been added to all indicator types:
+
 - **VT Engine Detections**. Number. Number of VT vendors that flagged the indicator as malicious.
 - **VT Engine Vendors**. Array. VT vendors who flagged the indicator as malicious.
 - **VT Engine Detection Names**. Array. VT detection names that flagged the indicator as malicious.
 
 To display the new fields in indicators:
 
-1. Navigate to `Settings > Objects Setup > Indicators > Types`. 
-2. Select the desired indicator type, for example, `File`. 
+1. Navigate to `Settings > Objects Setup > Indicators > Types`.
+2. Select the desired indicator type, for example, `File`.
 3. Click `Edit` and, under `Custom Fields`, choose the desired field and add the corresponding path. For instance, if you select the `VT Engine Detections` field for the `File` indicator type, add the path `File.VTVendors.EngineDetections`. This will enable the field to be populated in the indicator data.
 
 Note that the field will not automatically appear in the indicator's layout. To make it visible:
@@ -2581,7 +2581,6 @@ Note that the field will not automatically appear in the indicator's layout. To 
 1. Navigate to `Settings > Objects Setup > Indicators > Layouts`.
 2. Select the desired layout (e.g., `File Indicator`).
 3. Click `Detach` if needed, and then edit the layout to include the new field.
-
 
 ### vt-privatescanning-url-scan
 
@@ -2596,14 +2595,14 @@ Submits an URL for private scanning. Use the vt-privatescanning-analysis-get com
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The private URL to scan. | Required | 
+| url | The private URL to scan. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.Submission.Type | String | The type of the submission \(private_analysis\). | 
-| VirusTotal.Submission.id | String | The ID of the submission. | 
+| VirusTotal.Submission.Type | String | The type of the submission \(private_analysis\). |
+| VirusTotal.Submission.id | String | The ID of the submission. |
 
 ### vt-privatescanning-url
 
@@ -2618,30 +2617,30 @@ Checks the reputation of a private URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | Private URL to check. | Required | 
+| url | Private URL to check. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| VirusTotal.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. | 
-| VirusTotal.URL.attributes.favicon.dhash | String | Difference hash. | 
-| VirusTotal.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. | 
-| VirusTotal.URL.attributes.last_http_response_headers.date | Date | The last response header date. | 
-| VirusTotal.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. | 
-| VirusTotal.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. | 
-| VirusTotal.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. | 
-| VirusTotal.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. | 
-| VirusTotal.URL.attributes.last_http_response_code | Number | Last response status code. | 
-| VirusTotal.URL.attributes.last_final_url | String | Last final URL. | 
-| VirusTotal.URL.attributes.url | String | The URL itself. | 
-| VirusTotal.URL.attributes.title | String | Title of the page. | 
-| VirusTotal.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. | 
-| VirusTotal.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. | 
-| VirusTotal.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. | 
-| VirusTotal.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. | 
-| VirusTotal.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. | 
-| VirusTotal.URL.attributes.outgoing_links | String | Outgoing links of the URL page. | 
-| VirusTotal.URL.type | String | Type of the indicator \(private_url\). | 
-| VirusTotal.URL.id | String | ID of the indicator. | 
-| VirusTotal.URL.links.self | String | Link to the response. | 
+| VirusTotal.URL.attributes.favicon.raw_md5 | String | The MD5 hash of the URL. |
+| VirusTotal.URL.attributes.favicon.dhash | String | Difference hash. |
+| VirusTotal.URL.attributes.last_http_response_content_length | Number | The last HTTPS response length. |
+| VirusTotal.URL.attributes.last_http_response_headers.date | Date | The last response header date. |
+| VirusTotal.URL.attributes.last_http_response_headers.x-sinkhole | String | DNS sinkhole from last response. |
+| VirusTotal.URL.attributes.last_http_response_headers.content-length | String | The content length of the last response. |
+| VirusTotal.URL.attributes.last_http_response_headers.content-type | String | The content type of the last response. |
+| VirusTotal.URL.attributes.last_http_response_content_sha256 | String | The SHA-256 hash of the content of the last response. |
+| VirusTotal.URL.attributes.last_http_response_code | Number | Last response status code. |
+| VirusTotal.URL.attributes.last_final_url | String | Last final URL. |
+| VirusTotal.URL.attributes.url | String | The URL itself. |
+| VirusTotal.URL.attributes.title | String | Title of the page. |
+| VirusTotal.URL.attributes.last_analysis_stats.harmless | Number | The number of engines that found the domain to be harmless. |
+| VirusTotal.URL.attributes.last_analysis_stats.malicious | Number | The number of engines that found the indicator to be malicious. |
+| VirusTotal.URL.attributes.last_analysis_stats.suspicious | Number | The number of engines that found the indicator to be suspicious. |
+| VirusTotal.URL.attributes.last_analysis_stats.undetected | Number | The number of engines that could not detect the indicator. |
+| VirusTotal.URL.attributes.last_analysis_stats.timeout | Number | The number of engines that timed out for the indicator. |
+| VirusTotal.URL.attributes.outgoing_links | String | Outgoing links of the URL page. |
+| VirusTotal.URL.type | String | Type of the indicator \(private_url\). |
+| VirusTotal.URL.id | String | ID of the indicator. |
+| VirusTotal.URL.links.self | String | Link to the response. |
