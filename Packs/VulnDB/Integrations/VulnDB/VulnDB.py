@@ -431,7 +431,7 @@ def vulndb_fetch_incidents_command(
     min_disclosure_date: datetime,
     ignore_deprecated: bool,
     client: Client,
-):
+):  # pragma: no cover
     demisto.info("[VulnDB]: Running Fetch Incidents")
     last_run = demisto.getLastRun()
     hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
