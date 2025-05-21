@@ -29,7 +29,7 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearchpy import OpenSearch as Elasticsearch
 elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elastic_transport import RequestsHttpNode
-    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
+    from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment,misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
