@@ -92,6 +92,7 @@ def BuildWindows(start_date_str, end_date_str):
     end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
     result_dates = []
     current_date = start_date
+    day = 1
 
     # Increment the window and store the first and last dates until reaching the end date
     while current_date <= end_date:
