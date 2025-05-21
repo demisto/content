@@ -6,13 +6,10 @@ configuration:
   - name: base_url
     display: Base API Endpoint URL (https:// with no trailing slash)
     required: true
-    defaultvalue: null
     type: 0
-    additionalinfo: null
   - name: credentials
     display: Username (Blank when using API key)
     required: false
-    defaultvalue: null
     type: 9
     additionalinfo: >-
       For basic authorization, specify both username and password or select the
@@ -33,6 +30,7 @@ configuration:
     required: false
     defaultvalue: "false"
     type: 8
+    section: Connect
     additionalinfo: >-
       Is the API key used for each call provided in the header or as a
       parameter?
@@ -41,7 +39,6 @@ configuration:
   - name: api_call_key
     display: Authentication Header
     required: false
-    defaultvalue: null
     type: 0
     additionalinfo: >-
       Specify the value to use when passing the API key as a header or parameter
@@ -55,15 +52,18 @@ configuration:
   - name: proxy
     display: Use system proxy settings
     required: false
-    defaultvalue: "true"
+    defaultvalue: "false"
     type: 8
     additionalinfo: ""
+    section: Connect
+    advanced: true
   - name: insecure
     display: Trust any certificate (not secure)
     required: false
     defaultvalue: "false"
     type: 8
-    additionalinfo: null
+    section: Connect
+    advanced: true
 description: Integration version of the httpv2 automation used to send HTTP
   requests for API calls to endpoints not associated with an existing XSOAR
   integration.
@@ -80,7 +80,6 @@ script:
           auto: PREDEFINED
           required: true
           isArray: false
-          defaultValue: POST
           predefined:
             - GET
             - POST
@@ -109,20 +108,13 @@ script:
           required: false
           isArray: false
           defaultValue: ""
-          additionalinfo: >-
-            Example JSON request body sent to the API endpoint: {
-              "name": "xsoar",
-              "title": "XSOAR Ninja"
-            }
-
-            When supplying this parameter via the CLI and not a playbook task, make sure to enclose the JSON body in back ticks (`{JSON_BODY_HERE}`) to avoid escaping issues that may arise with special characters.
         - name: request_content_type
           description: "Specify the Content-Type header for the request.Shorthands are
             provided for the following common content types:json
             (application/json)xml (text/xml)form
             (application/x-www-form-urlencoded)data (multipart/form-data)If you
             choose to define a different type, please include the full type
-            name, e.g: application/pdf"
+            name, e.g: application/pdf."
           required: false
           isArray: false
           defaultValue: ""
@@ -142,7 +134,7 @@ script:
             types:json (application/json)xml (text/xml)form
             (application/x-www-form-urlencoded)data (multipart/form-data)If you
             choose to define a different type, please include the full type
-            name, e.g: application/pdf"
+            name, e.g: application/pdf."
           required: false
           isArray: false
           defaultValue: ""
@@ -171,7 +163,7 @@ script:
             - true
             - false
         - name: file_name
-          description: Name of file to save response as
+          description: Name of file to save response as.
           required: false
           isArray: false
           defaultValue: ""
@@ -199,7 +191,7 @@ script:
           isArray: false
           defaultValue: ""
         - name: enable_redirect
-          description: "The request will be called again with the new URL (Default: false)"
+          description: "The request will be called again with the new URL (Default: false)."
           required: false
           isArray: false
           defaultValue: "false"
@@ -209,29 +201,29 @@ script:
             - false
       outputs:
         - contextPath: APICall.StatusCode
-          description: The number that indicates the status of the request
+          description: The number that indicates the status of the request.
           type: String
         - contextPath: APICall.StatusText
-          description: The text corresponding to the status code
+          description: The text corresponding to the status code.
           type: String
         - contextPath: APICall.URL
-          description: The URL of the API call
+          description: The URL of the API call.
           type: String
         - contextPath: APICall.ParsedBody
           description: The parsed response, formatted according to `parse_response_as`
-            argument
+            argument.
           type: String
         - contextPath: APICall.Headers
-          description: The response headers
+          description: The response headers.
           type: String
         - contextPath: APICall.Body
-          description: The response data
+          description: The response data.
           type: String
   runonce: false
   script: "-"
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.10.12.63474
+  dockerimage: demisto/python3:3.12.8.3296088
   feed: false
   isfetch: false
 fromversion: 5.5.0
