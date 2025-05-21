@@ -461,12 +461,13 @@ def main():
             raise NotImplementedError(f"Command not implemented: {command}")
 
         creds = None
-        if service_account_info := json.loads(params.get("credentials", {}).get("password")):
-            creds = service_account.Credentials.from_service_account_info(service_account_info, scopes=SCOPES)
+        if (credentials := params.get("credentials")) and (password := credentials.get("password")):
+            service_account_info = json.loads(password)
+            creds = service_account.Credentials.from_service_account_info(service_account_info)
             args["project_id"] = service_account_info.get("project_id")
             demisto.debug("Using service account credentials")
         if not creds:
-            token = get_access_token(CloudTypes.GCP.value, scopes=SCOPES)
+            token = get_access_token(CloudTypes.GCP.value)
             creds = Credentials(token=token)
             demisto.debug("Using token-based credentials")
 
