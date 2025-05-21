@@ -9,6 +9,7 @@ configuration:
     display: Base API Endpoint URL (https:// with no trailing slash)
     required: true
     type: 0
+    section: Connect
   - name: credentials
     display: Username (Blank when using API key)
     required: false
@@ -21,11 +22,13 @@ configuration:
       For API key authorization, fill in the password field only or use only the password field in a credential object. 
     displaypassword: Password/API Key
     hiddenusername: false
+    section: Connect
   - name: is_auth
     display: "API call is authenticated (Default: False)"
     required: false
     defaultvalue: "false"
     type: 8
+    section: Connect
     additionalinfo: Does this API call require authentication (Basic, API key, etc.)?
   - name: apikey_in_header
     display: API Key supplied in header
@@ -42,6 +45,7 @@ configuration:
     display: Authentication Header
     required: false
     type: 0
+    section: Connect
     additionalinfo: >-
       Specify the value to use when passing the API key as a header or parameter
       value.
