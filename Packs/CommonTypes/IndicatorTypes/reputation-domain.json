@@ -6,7 +6,7 @@
     "sortValues": null,
     "commitMessage": "",
     "shouldCommit": false,
-    "regex": "(?i)[_]?(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?:%[\\da-f][\\da-f])?(?P<domain>(?:[\\p{L}\\d\\-–_]+(?:\\.|\\[\\.\\]))*(?:[\\p{L}\\d\\-–]+(?:\\.|\\[\\.\\]))[\\p{L}]{2,})(@|%40)?",
+    "regex": "(?i)[_]?(?P<scheme>(?:http|ftp|hxxp)s?(?:://|-3A__|%3A%2F%2F))?(?:%[\\da-f][\\da-f])?(?P<domain>(?:[\\p{L}\\d\\-–_]+(?:\\.|\\[\\.\\]))*(?:[\\p{L}\\d\\-–]+(?:\\.|\\[\\.\\]))[\\p{L}]{2,})(@|%40)?\\b",
     "details": "Domain",
     "prevDetails": "Domain",
     "reputationScriptName": "",
