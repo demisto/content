@@ -1,7 +1,7 @@
 from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from CoreIRApiModule import *
+from Packs.ApiModules.Scripts.CoreIRApiModule.CoreIRApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -304,6 +304,70 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         # delete ScriptRun from context data
         script_res.outputs = None
     return script_res
+
+
+def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
+    """
+    Add Indicator Rule to XSIAM command.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                     - indicator (str): String that identifies the indicator to insert into Cortex. **Required.**
+            - type (str): Type of indicator. One of: 'HASH', 'IP', 'PATH', 'DOMAIN_NAME', 'FILENAME'. **Required.**
+            - severity (str): Indicator severity. One of: 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'. **Required.**
+            - expiration_date (str, optional): Expiration as relative time ('7 days', '30 days', etc.), epoch millis,
+             or "Never". If null, defaults by type.
+            - comment (str, optional): Comment string describing the indicator.
+            - reputation (str, optional): Indicator reputation. One of: 'GOOD', 'BAD', 'SUSPICIOUS', 'UNKNOWN'.
+            - reliability (str, optional): Reliability rating (A-F). A is most reliable, F is least.
+            - class (str, optional): Indicator classification (e.g., "Malware").
+            - vendor_name (str, optional): Name of the vendor reporting the indicator.
+            - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD', 'BAD',
+             'SUSPICIOUS', 'UNKNOWN'.
+            - vendor_reliability (str, optional): Vendor reliability rating (A-F). Required if vendor_reputation is provided.
+            - input_format (str, optional): Input format. One of: 'CSV', 'JSON'. Defaults to 'JSON'.
+            - ioc_object (str, optional): Full IOC object as JSON or CSV string, depending on input_format.
+             Required if you prefer raw input instead of individual fields.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    # Required arguments
+    indicator = args['indicator']
+    indicator_type = args['type']
+    severity = args['severity']
+
+    # Optional arguments
+    expiration_date = args.get('expiration_date')
+    comment = args.get('comment')
+    reputation = args.get('reputation')
+    reliability = args.get('reliability')
+    indicator_class = args.get('class')
+    vendor_name = args.get('vendor_name')
+    vendor_reputation = args.get('vendor_reputation')
+    vendor_reliability = args.get('vendor_reliability')
+    input_format = args.get('input_format', 'JSON')  # Default to 'JSON'
+    ioc_object = args.get('ioc_object')
+
+    # make "work" on params - string to int dates etc.
+    # check if I have ISO object
+        # yes - validate his type and send a request using him
+        # No - go to nex stage
+    # get all the argument that are not none and add them to body/csv according to what is mention there
+        # make sure the type match the indicator
+            # if not return an error
+        # send using client call - adding validate: true
+
+    # return vakues:
+        # make sure there is no error:
+            # id success is false - there is an error
+                    # return the error
+            # if successes is true:
+                # return CommandResults(output)
+
 
 
 def main():  # pragma: no cover
@@ -692,6 +756,9 @@ def main():  # pragma: no cover
 
         elif command == "core-execute-command":
             return_results(core_execute_command_command(client, args))
+
+        elif command == "core-add-indicator":
+            return_results(core_add_indicator_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

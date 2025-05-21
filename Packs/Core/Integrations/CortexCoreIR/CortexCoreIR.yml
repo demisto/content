@@ -4129,7 +4129,7 @@ script:
             - 'IP'
             - 'PATH'
             - 'DOMAIN_NAME'
-            - 'FILE_NAME'
+            - 'FILENAME'
           required: true
           isArray: false
           type: String
@@ -4229,7 +4229,6 @@ script:
           required: false
           isArray: false
           type: String
-
       description: "When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
                     If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object`.
                         Adding the same indicator with different parameters will result in an update to the existing rule."
