@@ -1,10 +1,12 @@
 Enhancement script to enrich whois information for Domain and Email type of indicators.
 It can be set by following these steps:
- - Settings > ADVANCED > Indicator Type
- - Edit Domain and Email Indicator one by one 
- - Add this script into Enhancement Scripts
- 
+
+- Settings > ADVANCED > Indicator Type
+- Edit Domain and Email Indicator one by one
+- Add this script into Enhancement Scripts
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,11 +16,13 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* pt-whois-search
+- pt-whois-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,14 +30,16 @@ This script uses the following commands and scripts.
 | indicator_value | domain or email indicator value that need to enrich |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!RiskIQPassiveTotalWhoisScript indicator_value=domains@riskiq.com```
 
 ## Context Example
+
 ```
 {
     "DBotScore": [
@@ -212,7 +218,9 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 2
+>
 >### Associated Domains
+>
 >|Domain|WHOIS Server|Registrar|Contact Email|Name Servers|Registrant|Admin|Tech|Creation Date (GMT)|Expire Date (GMT)|Updated Date (GMT)|Last Scanned (GMT)|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| someone@riskiq.com | whois.godaddy.com | GODADDY.COM, LLC | domains@riskiq.com | luke.ns.cloudflare.com, serena.ns.cloudflare.com | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | **City:** san francisco,<br/>**Country:** us,<br/>**Email:** domains@riskiq.com,<br/>**Name:** Risk IQ,<br/>**Organization:** RiskIQ, Inc.,<br/>**PostalCode:** 94111,<br/>**State:** california,<br/>**Street:** 22 Battery Street<br/>10th Floor,<br/>**Telephone:** 18884154447 | 2006-01-11T16:00:00.000-0800 | 2017-01-11T16:00:00.000-0800 | 2014-12-08T16:00:00.000-0800 | 2016-09-27T09:40:31.102-0700 |
