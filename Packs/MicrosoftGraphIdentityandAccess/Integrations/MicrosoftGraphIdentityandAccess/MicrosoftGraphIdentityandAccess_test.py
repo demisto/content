@@ -994,7 +994,7 @@ def test_update_conditional_access_policy_command(
 @pytest.mark.parametrize(
     "root, path, expected",
     [
-        # Basic nested dictionary access
+        # nested dictionary access
         ({"a": {"b": {"c": "value"}}}, ["a", "b", "c"], "value"),
         # Non-existent key in path
         ({"a": {"b": {"c": "value"}}}, ["a", "b", "d"], None),
