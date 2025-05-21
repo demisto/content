@@ -18,5 +18,9 @@
         "marketplacev2",
         "platform"
     ],
+    "supportedModules": [
+        "X3",
+        "X5"
+    ],
     "githubUser": []
 }
