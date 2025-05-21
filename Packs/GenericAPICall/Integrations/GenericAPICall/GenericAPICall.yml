@@ -72,11 +72,11 @@ name: GenericAPICall
 script:
   commands:
     - name: generic-api-call
-      description: Generic HTTPS request to a specified API endpoint
+      description: Generic HTTPS request to a specified API endpoint.
       deprecated: false
       arguments:
         - name: method
-          description: Specify the HTTP method to use (GET, POST, PUT, PATCH, DELETE, HEAD)
+          description: Specify the HTTP method to use (GET, POST, PUT, PATCH, DELETE, HEAD).
           auto: PREDEFINED
           required: true
           isArray: false
@@ -88,12 +88,12 @@ script:
             - DELETE
             - HEAD
         - name: urlpath
-          description: The URL path, including preceeding slash, to the API endpoint
+          description: The URL path, including preceeding slash, to the API endpoint.
           required: true
           isArray: false
           defaultValue: /
         - name: parse_response_as
-          description: Specify the type of data expected in the API response
+          description: Specify the type of data expected in the API response.
           required: true
           isArray: false
           defaultValue: ""
@@ -168,7 +168,7 @@ script:
           isArray: false
           defaultValue: ""
         - name: timeout
-          description: Specify the timeout of the HTTP request in seconds. Defaults to 10
+          description: Specify the timeout of the HTTP request in seconds. Defaults to 10.
             seconds.
           required: false
           isArray: false
