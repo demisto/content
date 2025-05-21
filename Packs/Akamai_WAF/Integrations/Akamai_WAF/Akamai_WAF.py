@@ -1,12 +1,14 @@
+import re
+from datetime import datetime
+import time
+import requests
+import urllib3
+import json
+from akamai.edgegrid import EdgeGridAuth
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from akamai.edgegrid import EdgeGridAuth
-import json
-import urllib3
-import requests
-import time
-from datetime import datetime
-import re
+demisto.debug('pack name = Akamai WAF, pack version = 2.1.2')
+
 
 """ IMPORTS """
 # Std imports

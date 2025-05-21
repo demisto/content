@@ -4,17 +4,23 @@ This is the modified version where a new command "akamai-update-network-list-ele
 
 ## Configure Akamai WAF in Cortex
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL (e.g., https://example.net) | True |
-| Client token | False |
-| Access token | False |
-| Client secret | False |
-| Client token | False |
-| Access token | False |
-| Client secret | False |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL (e.g., https://example.net) |  | True |
+| Client token |  | False |
+| Access token |  | False |
+| Client secret |  | False |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch indicators |  | False |
+| Indicator Verdict | Indicators from this integration instance will be marked with this verdict | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+|  |  | False |
+|  |  | False |
+| Feed Fetch Interval |  | False |
+| Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
+
 
 ## Commands
 
@@ -1844,112 +1850,6 @@ Lists enrollments with active certificates. Note that the rate limit for this op
 | --- | --- | --- |
 | Akamai.Cps.Active.Certificates.Enrollments | Dictionary | A collection of Active Akami CPS enrollments. | 
 
-### akamai-list-idam-properties
-
-***
-Lists the properties and includes for the current account.
-
-#### Base Command
-
-`akamai-list-idam-properties`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.Idam.Properties | unknown | Akamai Properties of the current account via Identity Access Management. | 
-
-### akamai-list-edgehostname
-
-***
-Lists all edge hostnames available under a contract.
-
-#### Base Command
-
-`akamai-list-edgehostname`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| contract_id | Unique identifier of a contract. | Required | 
-| group_id | Unique identifier of a group. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.Edgehostname | unknown | Akamai Edgehostnames. | 
-
-### akamai-list-datastream-properties-bygroup
-
-***
-Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
-
-#### Base Command
-
-`akamai-list-datastream-properties-bygroup`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStream.Group | unknown | List of the Active Properties within the Group. | 
-
-### akamai-list-datastream-groups
-
-***
-Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
-
-#### Base Command
-
-`akamai-list-datastream-groups`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| contract_id | Uniquely identifies the contract that belongs to a group. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStreamGroups | unknown | Akamai Groups within the contract. | 
-
-### akamai-get-datastream
-
-***
-Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
-
-#### Base Command
-
-`akamai-get-datastream`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| stream_id | Uniquely identifies the stream. | Required | 
-| version | Identifies the version of the stream. If omitted, the operation returns the latest version of the stream. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Akamai.DataStreamDetails | unknown | Akamai DataStream Details. | 
-
 ### akamai-new-datastream
 
 ***
@@ -1995,6 +1895,49 @@ Creates a stream configuration. Within a stream configuration, you can select pr
 | --- | --- | --- |
 | Akamai.DataStream | unknown | Akamai DataStream. | 
 
+### akamai-activate-datastream
+
+***
+Activate/Deactivate the latest version of a DataStream.
+
+#### Base Command
+
+`akamai-activate-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Uniquely identifies the stream. | Optional | 
+| option | "activate" or "deactivate". Possible values are: activate, deactivate. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Activation | unknown | Akamai DataStream Activation. | 
+
+### akamai-list-datastream-properties-bygroup
+
+***
+Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+#### Base Command
+
+`akamai-list-datastream-properties-bygroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Group | unknown | List of the Active Properties within the Group. | 
+
 ### akamai-list-datastreams
 
 ***
@@ -2016,40 +1959,28 @@ Returns the latest versions of the stream configurations for all groups within t
 | --- | --- | --- |
 | Akamai.DataStreams | unknown | Akamai DataStreams. | 
 
-### akamai-generic-api-call-command
+### akamai-get-datastream
 
 ***
-Akamai Generic API Call.
+Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
 
 #### Base Command
 
-`akamai-generic-api-call-command`
+`akamai-get-datastream`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| method | Type 'str'. The HTTP method, for example: GET, POST, and so on. Possible values are: GET, POST, PUT, PATCH, DELETE. | Optional | 
-| url_suffix | Type 'str'. The API endpoint. | Optional | 
-| headers | Type 'dict'. Headers to send in the request. If None, will use self._headers. | Optional | 
-| params | Type 'dict'. URL parameters to specify the query. | Optional | 
-| data | Type 'dict'. The data to send in a 'POST' request. | Optional | 
-| json_data | Type 'dict'. The dictionary to send in a 'POST' request. | Optional | 
-| files | Type 'dict'. The file data to send in a 'POST' request. | Optional | 
-| timeout | Type 'float' or comma separated two floats. The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. can be only float (Connection Timeout) or  or Comma separated two floats for Connection Timeout and Read Timeout. (Samput Input: 60, 60). | Optional | 
-| resp_type | Type 'str'. Determines which data format to return from the HTTP request. The default is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response' to return the full response object. Possible values are: json, text, content, xml, response. | Optional | 
-| ok_codes | Type 'tuple'. The request codes to accept as OK, for example: 200, 201, 204. If you specify "None", will use self._ok_codes. Default is None. | Optional | 
-| retries | Type 'int'. How many retries should be made in case of a failure. when set to '0'- will fail on the first time. | Optional | 
-| status_list_to_retry | Type 'iterable'. A set of integer HTTP status codes that we should force a retry on. A retry is initiated if the request method is in ['GET', 'POST', 'PUT'] and the response status code is in 'status_list_to_retry'. | Optional | 
-| backoff_factor | Type 'float'. A backoff factor to apply between attempts after the second try (most errors are resolved immediately by a second try without a delay). urllib3 will sleep for: {backoff factor} * (2 ** ({number of total retries} - 1)) seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer than :attr:`Retry.BACKOFF_MAX`. By default, backoff_factor set to 5. | Optional | 
-| raise_on_redirect | Type 'bool'. Whether, if the number of redirects is exhausted, to raise a MaxRetryError, or to return a response with a response code in the 3xx range. Possible values are: True, False. | Optional | 
-| raise_on_status | Type 'bool'. Similar meaning to 'raise_on_redirect': whether we should raise an exception, or return a response, if status falls in 'status_forcelist' range and retries have been exhausted. Possible values are: True, False. | Optional | 
-| empty_valid_codes | Type 'list'.A list of all valid status codes of empty responses (usually only 204, but can vary). | Optional | 
-| with_metrics | Type 'bool'. Whether or not to calculate execution metrics from the response. | Optional | 
+| stream_id | Uniquely identifies the stream. | Required | 
+| version | Identifies the version of the stream. If omitted, the operation returns the latest version of the stream. | Optional | 
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamDetails | unknown | Akamai DataStream Details. | 
+
 ### akamai-delete-datastream
 
 ***
@@ -2091,6 +2022,27 @@ Get accessible client lists
 | --- | --- | --- |
 | Akamai.ClientList | unknown | Akamai ClientList. | 
 
+### akamai-list-datastream-groups
+
+***
+Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
+
+#### Base Command
+
+`akamai-list-datastream-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Uniquely identifies the contract that belongs to a group. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamGroups | unknown | Akamai Groups within the contract. | 
+
 ### akamai-patch-datastream
 
 ***
@@ -2116,25 +2068,79 @@ Updates selected details of an existing stream. Running this operation using JSO
 | --- | --- | --- |
 | Akamai.DataStream | unknown | Akamai DataStream. | 
 
-### akamai-activate-datastream
+### akamai-list-idam-properties
 
 ***
-Activate/Deactivate the latest version of a DataStream.
+Lists the properties and includes for the current account.
 
 #### Base Command
 
-`akamai-activate-datastream`
+`akamai-list-idam-properties`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| stream_id | Uniquely identifies the stream. | Optional | 
-| option | "activate" or "deactivate". Possible values are: activate, deactivate. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.DataStream.Activation | unknown | Akamai DataStream Activation. | 
+| Akamai.Idam.Properties | unknown | Akamai Properties of the current account via Identity Access Management. | 
+
+### akamai-generic-api-call-command
+
+***
+Akamai Generic API Call.
+
+#### Base Command
+
+`akamai-generic-api-call-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| method | Type 'str'. The HTTP method, for example: GET, POST, and so on. Possible values are: GET, POST, PUT, PATCH, DELETE. | Optional | 
+| url_suffix | Type 'str'. The API endpoint. | Optional | 
+| headers | Type 'dict'. Headers to send in the request. If None, will use self._headers. | Optional | 
+| params | Type 'dict'. URL parameters to specify the query. | Optional | 
+| data | Type 'dict'. The data to send in a 'POST' request. | Optional | 
+| json_data | Type 'dict'. The dictionary to send in a 'POST' request. | Optional | 
+| files | Type 'dict'. The file data to send in a 'POST' request. | Optional | 
+| timeout | Type 'float' or comma separated two floats. The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. can be only float (Connection Timeout) or  or Comma separated two floats for Connection Timeout and Read Timeout. (Samput Input: 60, 60). | Optional | 
+| resp_type | Type 'str'. Determines which data format to return from the HTTP request. The default is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response' to return the full response object. Possible values are: json, text, content, xml, response. | Optional | 
+| ok_codes | Type 'tuple'. The request codes to accept as OK, for example: 200, 201, 204. If you specify "None", will use self._ok_codes. Default is None. | Optional | 
+| retries | Type 'int'. How many retries should be made in case of a failure. when set to '0'- will fail on the first time. | Optional | 
+| status_list_to_retry | Type 'iterable'. A set of integer HTTP status codes that we should force a retry on. A retry is initiated if the request method is in ['GET', 'POST', 'PUT'] and the response status code is in 'status_list_to_retry'. | Optional | 
+| backoff_factor | Type 'float'. A backoff factor to apply between attempts after the second try (most errors are resolved immediately by a second try without a delay). urllib3 will sleep for: {backoff factor} * (2 ** ({number of total retries} - 1)) seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer than :attr:`Retry.BACKOFF_MAX`. By default, backoff_factor set to 5. | Optional | 
+| raise_on_redirect | Type 'bool'. Whether, if the number of redirects is exhausted, to raise a MaxRetryError, or to return a response with a response code in the 3xx range. Possible values are: True, False. | Optional | 
+| raise_on_status | Type 'bool'. Similar meaning to 'raise_on_redirect': whether we should raise an exception, or return a response, if status falls in 'status_forcelist' range and retries have been exhausted. Possible values are: True, False. | Optional | 
+| empty_valid_codes | Type 'list'.A list of all valid status codes of empty responses (usually only 204, but can vary). | Optional | 
+| with_metrics | Type 'bool'. Whether or not to calculate execution metrics from the response. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-list-edgehostname
+
+***
+Lists all edge hostnames available under a contract.
+
+#### Base Command
+
+`akamai-list-edgehostname`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier of a contract. | Required | 
+| group_id | Unique identifier of a group. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Edgehostname | unknown | Akamai Edgehostnames. | 
 
