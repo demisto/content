@@ -216,7 +216,7 @@ alter
 	xdm.source.host.ipv6_addresses = arraydistinct(arraycreate(get_properties_host_ipv6, get_properties_hostname_ipv6, get_properties_originalHost_ipv6)),
 	xdm.source.ipv4 = coalesce(get_properties_clientip_ipv4, get_callerIpAddress_ipv4),
 	xdm.source.ipv6	= coalesce(get_properties_clientip_ipv6, get_callerIpAddress_ipv6),
-    xdm.source.port = to_integer(coalesce(properties -> clientPort, upstreamsourceport)),
+    xdm.source.port = to_integer(coalesce(to_string(properties -> clientPort), to_string(upstreamsourceport))),
     xdm.source.sent_bytes = to_integer(coalesce(properties -> sentBytes, sentBytes)),
     xdm.source.user_agent = coalesce(properties -> userAgent,useragent),
 	xdm.intermediate.host.hostname = coalesce(properties -> instanceId, instanceid),
