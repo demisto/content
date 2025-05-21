@@ -1378,7 +1378,7 @@ def _platformAPICall(path=None, method=None, params=None, data=None, timeout=Non
         path: path to append to the base url
         method: HTTP method to use (GET, POST, PUT, DELETE, etc.)
         params: url query args to pass. Use a dictionary such as: `{"key":"value"}`
-        data: POST data as a string. Make sure to json.dumps.
+        data: POST data as a dict.
         timeout: The amount of time (in seconds) that a request will wait for a client to send data before the request is aborted
         *Note if data is empty then a GET request is performed instead of a POST.
     Returns:

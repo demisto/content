@@ -34,35 +34,47 @@ def get_access_token(cloud_type: str, scopes: list = None) -> str:
         DemistoException: If token retrieval fails or response parsing fails.
     """
     context = demisto.callingContext.get("context", {})
+    cloud_info = context.get("CloudIntegrationProviderInfo", {})
+
+    demisto.info(f"Access token request context: {context}")
 
     request_data = {
-        "connector_id": context.get("connector_id"),
-        "account_id": context.get("account_id"),
-        "outpost_id": context.get("outpost_id"),
+        "connector_id": cloud_info.get("connectorID"),
+        "account_id": cloud_info.get("accountID"),
+        "outpost_id": cloud_info.get("outpostID"),
         "cloud_type": cloud_type,
-        "scopes": scopes or []
     }
+
+    if scopes:
+        request_data["scopes"] = scopes
 
     if cloud_type == CloudTypes.AWS.value and context.get("region_name"):
         request_data["region_name"] = context["region_name"]
 
+    demisto.info(f"Request data for token retrieval: {request_data}")
+
     response = demisto._platformAPICall(
         path=GET_CTS_ACCOUNTS_TOKEN,
         method="POST",
-        data=json.dumps({"request_data": request_data})
+        data={"request_data": request_data}
     )
 
-    status_code = response.get("status_code")
+    status_code = response.get("status")
     if status_code != 200:
-        error_detail = response.get("data") or "No error message provided"
+        error_detail = response.get("data", "No error message provided")
         raise DemistoException(
             f"Failed to get token from CTS for {cloud_type}. "
-            f"Status code: {status_code}. Detail: {error_detail}"
+            f"Status code: {status_code}. Error: {error_detail}"
         )
 
     try:
-        return json.loads(response["data"])["access_token"]
-    except (json.JSONDecodeError, KeyError) as e:
+        res_json = json.loads(response["data"])
+        token_data = res_json.get("data", {})
+        access_token = token_data["access_token"]
+        expiration_time = token_data.get("expiration_time")
+        demisto.info(f"Received access token. Expiration time: {expiration_time}")
+        return access_token
+    except (json.JSONDecodeError, KeyError, TypeError) as e:
         raise DemistoException(
             f"Failed to parse access token from CTS response for {cloud_type}."
         ) from e
