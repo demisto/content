@@ -1,10 +1,12 @@
 import demistomock as demisto
 from AWSApiModule import *  # noqa: E402
+# TODO - Enable # from COOCApiModule import * # noqa: E402
 from CommonServerPython import *
 from http import HTTPStatus
 from datetime import date
 from collections.abc import Callable
 from botocore.client import BaseClient as BotoBaseClient
+from boto3 import Session
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -175,9 +177,7 @@ def get_client(params, command_args):
 
 
 def get_client_session(aws_client: AWSClient, service: str, args: Dict[str, Any]) -> BotoBaseClient:
-    print("RRRRRR")
     session = aws_client.aws_session(service=service, region=args.get("region"))
-    print("TALALAL")
     return session
 
 
@@ -873,14 +873,18 @@ class EKS:
             if logging_arg and resources_vpc_config:
                 raise ValueError
             
-            return remove_empty_elements(validate_args)                  
-
+            result = remove_empty_elements(validated_args)
+            if isinstance(result, dict):
+                return result
+            else:
+                raise ValueError("No valid configuration argument provided")
+                                  
         validated_args: dict = validate_args(args)
         try:
             response = self.client_session.update_cluster_config(**validated_args)
 
             response_data = response.get("update", {})
-            response_data["clusterName"] = cluster_name
+            response_data["clusterName"] = validated_args["name"]
             response_data["createdAt"] = datetime_to_string(response_data.get("createdAt"))
 
             headers = ["clusterName", "id", "status", "type", "params"]
@@ -975,10 +979,23 @@ def main():
     demisto.debug(f"Args: {command_args}")
 
     aws_client = get_client(params, command_args)
+    
     try:
+        # TODO - Enable >>
+        # # Getting credentials from CTS (Cloud Token Service) endpoint.
+        # credentials: dict = get_access_token(cloud_type=CloudTypes.AWS)
+        # aws_session: Session = Session(
+        #     aws_access_key_id=credentials["key"],
+        #     aws_secret_access_key=credentials["access_token"],
+        #     aws_session_token=credentials["session_token"],
+        #     region_name=args.get('region') or param.get('region')
+        # )
+        # TODO - Enable <<
         if command == "test-module":
             return_results(test_module(params, command_args))
         elif command_function := COMMANDS.get(command):
+            
+            # TODO - Enable # return_results(command_function(aws_session, command_args))
             return_results(command_function(aws_client, command_args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
