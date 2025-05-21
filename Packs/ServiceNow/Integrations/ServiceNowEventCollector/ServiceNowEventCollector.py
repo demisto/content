@@ -62,6 +62,7 @@ class Client:
             url_suffix=None,
             params=remove_empty_elements(params),
         )
+            
         return res.get("result")
 
 
@@ -274,6 +275,19 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     return collected_events, last_run
 
 
+def reset_auth() -> CommandResults:
+    """
+    This command resets the integration context.
+    After running the command, running any other command will generate new refresh token automatically.
+    """
+    demisto.debug("Reset integration-context")
+    set_integration_context({})
+    return CommandResults(
+        readable_output="Authorization was reset successfully. You can continue working, "
+        "and a new refresh token will be generated automatically."
+    )
+
+
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover
     """
     Test API connectivity and authentication.
@@ -364,6 +378,9 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
+        elif command == "service-now-oauth-login":
+            return_results(reset_auth())
+            
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
@@ -371,6 +388,7 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         demisto.info(f"here {e!s}")
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
+
 
 
 from ServiceNowApiModule import *  # noqa: E402

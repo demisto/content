@@ -20,6 +20,8 @@ from ServiceNowEventCollector import (
     initialize_from_date,
     process_and_filter_events,
     update_last_run,
+    reset_auth,
+    module_of_testing
 )
 
 
@@ -931,3 +933,50 @@ def test_handle_log_types_empty_list():
     """
     event_types_to_fetch = []
     assert handle_log_types(event_types_to_fetch) == []
+
+
+def test_reset_auth_context_cleared(mocker):
+    """
+    Test reset_auth when integration context contains an expired token.
+
+    Given:
+        - Integration context contains a refresh token.
+    When:
+        - Calling reset_auth to manually clear the authentication state.
+    Then:
+        - set_integration_context is called with an empty dict.
+        - get_integration_context is logged for debugging purposes.
+        - CommandResults is returned with a success message.
+    """
+    mocker.patch('ServiceNowEventCollector.get_integration_context', return_value={'refresh_token': 'abc123'})
+    set_context_mock = mocker.patch('ServiceNowEventCollector.set_integration_context')
+    debug_mock = mocker.patch('ServiceNowEventCollector.demisto.debug')
+
+    result = reset_auth()
+
+    set_context_mock.assert_called_once_with({})
+
+    debug_mock.assert_called_once()
+    assert 'Reset integration-context' in debug_mock.call_args[0][0]
+
+    assert "Authorization was reset successfully" in result.readable_output
+
+def test_module_of_testing_success_and_failure(mocker):
+    client = Client(
+        use_oauth=True,
+        credentials={"username": "test", "password": "test"},
+        client_id="id",
+        client_secret="secret",
+        url="https://example.com",
+        verify=False,
+        proxy=False,
+        api_server_url="https://example.com/api/now",
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+    )
+
+    mocker.patch(
+        "ServiceNowEventCollector.fetch_events_command",
+        return_value=([], {})
+    )
+    assert module_of_testing(client, [AUDIT]) == "ok"
