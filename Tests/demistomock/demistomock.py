@@ -1,4 +1,4 @@
-from __future__ import print_function
+from __future__ import print_function  # noqa: UP010
 
 import json
 import logging
@@ -226,31 +226,31 @@ exampleUsers = [
                 "homepage": "",
                 "id": "admin",
                 "image": "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJAAAACQCAYAAADnRuK4AAAACXBIWXMAAB"
-                         "YlAAAWJQFJUiTwAAAFeElEQVR42u2dO1MbVxSAj2whIZAQHlWksSrcwKAMVWjYNLhiRjOkSYXyC7"
-                         "z5BfE/iNKmYWlchRnNyE2oRKO0y5DGaiI3pokcbRYNelopCDNOeGmlXS269/v6BcH9dPace+4jM"
-                         "hwOhwIwJk/4FwACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAgECAQIBAAAgECAQIBAgECASAQIB"
-                         "AgECAQAAIBAgECAQIBIBAEQfSxfJBK74NY7ZrYg4ac9huMzD1sRDOSj2XFTKzLciQW6meJhH3AlN1"
-                         "viNmqyknvHDM8ko7E5PXCppiJdT0Fsto1+e6iggkTsh9fFStl6JUDIY9/HHZqUrw80ycC2f2GGE5Zn"
-                         "GGX0feRP559K9mnKfUjkNmqIk8AFNvTj0JTF8juN0iYA6LUqasvkNV5x0gHxPtPF1P/nVOfB7IfmON"
-                         "JR2JSWtoRY+6LmR/QgluRw05NaWmnHoEeen1ZKWPm5WkOu1rIE0oEeoh8LDvz8hhOWZvZdHphyINAyI"
-                         "NAyEMOpCe6z6oTgZCHCCRy1Zy1Ou9uTBNsz61IIf5CCvOryINAN6kPXMm7x3fmHye9cznpnUuxfSal1I"
-                         "4vzUbkUeQVVh+4kmsejZS8nvYbkmseSX3gThzpvmweIY8KAuXdY08D6Qy7knePJ5KHNUyKCGS1a2OVza"
-                         "f9hljtGvJoL9AEXX2vzyKPgkn0JGuKvDxrtqry0+XvmKJiDjQNkAeBAIEAgXxme24llGdBEYEK8RehPAu"
-                         "qCDS/KhvRjOfnNqIZ3/tiCDSjlFI7kvZwuEA6EpNSaodRR6Arsk9TYi/vjRSJNqIZsZf3pr5zE4FmRKK"
-                         "DpHFrcrw9tyIHSQN5AkKZ9UCF+VVyGyIQIBAgEAACAQIBAgECASAQIBAg0AiUunVGBYHu5qHFXAW3IpX"
-                         "eB0ZmRph6LywXzdy7K8IZduVr5y0jQwS6I8KwGjAw0iFcvDJ1gXLRDGuSAyKMw0lDSaKLi1uhfFtUx0"
-                         "ys6SFQLpqR4uIWI+4j+/FVfSKQyNUCsIOkwcj7wEY0I8VkOF9ILpybcV4l1kKN5qELdA1XXo7O8ydJ"
-                         "ycezYs6vh77O+9EI9FiJ/PnzxK+XSno39LtNlcuBdEls7eU9ZeUR4ZzowDhIGlrsEkEgn1HpuioEC"
-                         "qGc9usoYXIgDfOdSnpXu92vRCAf+GFhU14vbGr5tyPQhPmOlTJm/pI8BAqB50+SUlp6KbkxzihCIM"
-                         "3ZnluR0tJLped3SKID4lViTemZZSJQgOgyOYhAASTLlfSu9vkOAnmkOewq3wydFLrxQBINCAQIBAik"
-                         "CXa/IdmPb8a6ufAhrHZNsh/fiK3JslztkujmsCu5v36R958uRETkx8WvxEys+/Kzi5dn8n3rNxG5"
-                         "anXYz75RvnrTSqDmsCuGU76xaH8/vipWypjoZxfcihx2/hvRdJgC0OoVZl5Ub93xcdipieGUpTnG"
-                         "Vd7XUv5fHpGrC37Niyo5kBLytKq3DvI1J71zMZyyp3vl6wNXDKd87562w05NzJa6EmnxCvNy6/Ko"
-                         "bQu73xDDKY98b72qfTQtIlAumhn5MAfn31fSfRWa1a55kicdiSnbR9Mmia4PXMm7x552vd5WoX1"
-                         "eaY2C6gvttavC8n//6mkf/ucV2m2V1n3osPBMy2bqOCJcJ9rjiKcy2nbjvb6KvODn5CQCPfLqzGx"
-                         "R06GR0mWi4tbWq1a1H49kNdyfNLyH4Go0LSrtBAooApNl0oLgQKq0HSptBAogApNp0oLgXys0HSst"
-                         "BDIpwqN/WEINHaFJiLaVloI5EOFJiJsLkQg8Bu29QACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIB"
-                         "AgECAQIBAAAgECAQLBLPMPFxalhUpzvrEAAAAASUVORK5CYII=",
+                "YlAAAWJQFJUiTwAAAFeElEQVR42u2dO1MbVxSAj2whIZAQHlWksSrcwKAMVWjYNLhiRjOkSYXyC7"
+                "z5BfE/iNKmYWlchRnNyE2oRKO0y5DGaiI3pokcbRYNelopCDNOeGmlXS269/v6BcH9dPace+4jM"
+                "hwOhwIwJk/4FwACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIBAgECAQIBAAAgECAQIBAgECASAQIB"
+                "AgECAQAAIBAgECAQIBIBAEQfSxfJBK74NY7ZrYg4ac9huMzD1sRDOSj2XFTKzLciQW6meJhH3AlN1"
+                "viNmqyknvHDM8ko7E5PXCppiJdT0Fsto1+e6iggkTsh9fFStl6JUDIY9/HHZqUrw80ycC2f2GGE5Zn"
+                "GGX0feRP559K9mnKfUjkNmqIk8AFNvTj0JTF8juN0iYA6LUqasvkNV5x0gHxPtPF1P/nVOfB7IfmON"
+                "JR2JSWtoRY+6LmR/QgluRw05NaWmnHoEeen1ZKWPm5WkOu1rIE0oEeoh8LDvz8hhOWZvZdHphyINAyI"
+                "NAyEMOpCe6z6oTgZCHCCRy1Zy1Ou9uTBNsz61IIf5CCvOryINAN6kPXMm7x3fmHye9cznpnUuxfSal1I"
+                "4vzUbkUeQVVh+4kmsejZS8nvYbkmseSX3gThzpvmweIY8KAuXdY08D6Qy7knePJ5KHNUyKCGS1a2OVza"
+                "f9hljtGvJoL9AEXX2vzyKPgkn0JGuKvDxrtqry0+XvmKJiDjQNkAeBAIEAgXxme24llGdBEYEK8RehPAu"
+                "qCDS/KhvRjOfnNqIZ3/tiCDSjlFI7kvZwuEA6EpNSaodRR6Arsk9TYi/vjRSJNqIZsZf3pr5zE4FmRKK"
+                "DpHFrcrw9tyIHSQN5AkKZ9UCF+VVyGyIQIBAgEAACAQIBAgECASAQIBAg0AiUunVGBYHu5qHFXAW3IpX"
+                "eB0ZmRph6LywXzdy7K8IZduVr5y0jQwS6I8KwGjAw0iFcvDJ1gXLRDGuSAyKMw0lDSaKLi1uhfFtUx0"
+                "ys6SFQLpqR4uIWI+4j+/FVfSKQyNUCsIOkwcj7wEY0I8VkOF9ILpybcV4l1kKN5qELdA1XXo7O8ydJ"
+                "ycezYs6vh77O+9EI9FiJ/PnzxK+XSno39LtNlcuBdEls7eU9ZeUR4ZzowDhIGlrsEkEgn1HpuioEC"
+                "qGc9usoYXIgDfOdSnpXu92vRCAf+GFhU14vbGr5tyPQhPmOlTJm/pI8BAqB50+SUlp6KbkxzihCIM"
+                "3ZnluR0tJLped3SKID4lViTemZZSJQgOgyOYhAASTLlfSu9vkOAnmkOewq3wydFLrxQBINCAQIBAik"
+                "CXa/IdmPb8a6ufAhrHZNsh/fiK3JslztkujmsCu5v36R958uRETkx8WvxEys+/Kzi5dn8n3rNxG5"
+                "anXYz75RvnrTSqDmsCuGU76xaH8/vipWypjoZxfcihx2/hvRdJgC0OoVZl5Ub93xcdipieGUpTnG"
+                "Vd7XUv5fHpGrC37Niyo5kBLytKq3DvI1J71zMZyyp3vl6wNXDKd87562w05NzJa6EmnxCvNy6/Ko"
+                "bQu73xDDKY98b72qfTQtIlAumhn5MAfn31fSfRWa1a55kicdiSnbR9Mmia4PXMm7x552vd5WoX1"
+                "eaY2C6gvttavC8n//6mkf/ucV2m2V1n3osPBMy2bqOCJcJ9rjiKcy2nbjvb6KvODn5CQCPfLqzGx"
+                "R06GR0mWi4tbWq1a1H49kNdyfNLyH4Go0LSrtBAooApNl0oLgQKq0HSptBAogApNp0oLgXys0HSst"
+                "BDIpwqN/WEINHaFJiLaVloI5EOFJiJsLkQg8Bu29QACAQIBAgECASAQIBAgECAQAAIBAgECAQIBIB"
+                "AgECAQIBAAAgECAQLBLPMPFxalhUpzvrEAAAAASUVORK5CYII=",
                 # noqa E501
                 "investigationPage": "",
                 "lastLogin": "0001-01-01T00:00:00Z",
@@ -262,16 +262,12 @@ exampleUsers = [
                 "preferences": {
                     "userPreferencesIncidentTableQueries": {
                         "Open Jobs in the last 7 days": {
-                            "picker": {
-                                "predefinedRange": {"id": "7", "name": "Last 7 days"}
-                            },
+                            "picker": {"predefinedRange": {"id": "7", "name": "Last 7 days"}},
                             "query": "-status:closed category:job",
                         },
                         "Open incidents in the last 7 days": {
                             "isDefault": True,
-                            "picker": {
-                                "predefinedRange": {"id": "7", "name": "Last 7 days"}
-                            },
+                            "picker": {"predefinedRange": {"id": "7", "name": "Last 7 days"}},
                             "query": "-status:closed -category:job",
                         },
                     },
@@ -346,7 +342,7 @@ exampleUsers = [
         "FileID": "",
         "FileMetadata": None,
         "HumanReadable": "## Users\nUsername|Email|Name|Phone|Roles\n-|-|-|-|-\nadmin|admintest@demisto.com|Admin Dude|"
-                         "\\+650-123456|demisto: \\[Administrator\\]\n",
+        "\\+650-123456|demisto: \\[Administrator\\]\n",
         # noqa E501
         "ID": "",
         "IgnoreAutoExtract": False,
@@ -410,27 +406,19 @@ exampleDemistoUrls = {
     "warRoom": "https://test-address:8443/#/WarRoom/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
     "workPlan": "https://test-address:8443/#/WorkPlan/7ab2ac46-4142-4af8-8cbe-538efb4e63d6",
 }
-exampleAutoFocusApiKey = '1234'
+exampleAutoFocusApiKey = "1234"
 
 callingContext = {}  # type: dict
 
 contentSecrets = {
-    "WildFire-Reports": {
-        "token": "<ReplaceWithToken>"
-    },
-    "AutoFocusTagsFeed": {
-        "api_key": "<ReplaceWithApiKey>"
-    },
-    "Http_Connector": {
-        "token": "<ReplaceWithToken>",
-        "url": "<ReplaceWithURL>"
-    }
+    "WildFire-Reports": {"token": "<ReplaceWithToken>"},
+    "AutoFocusTagsFeed": {"api_key": "<ReplaceWithApiKey>"},
+    "Http_Connector": {"token": "<ReplaceWithToken>", "url": "<ReplaceWithURL>"},
 }
 
 
 def initialize():
     """Runs some initializations to the demisto object. Should not be used in integration code"""
-    pass
 
 
 def params():
@@ -576,7 +564,7 @@ def setLastRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def info(msg, *args):
@@ -605,7 +593,7 @@ def error(msg, *args):
 
     """
     # print to stdout so pytest fail if not mocked
-    print(msg, *args)
+    print(msg, *args)  # noqa: T201
 
 
 def debug(msg, *args):
@@ -657,7 +645,7 @@ def results(results):
     """
     if isinstance(results, dict) and results.get("contents"):
         results = results.get("contents")
-    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))
+    log("demisto results: {}".format(json.dumps(results, indent=4, sort_keys=True)))    # noqa: UP032
 
 
 def credentials(credentials):
@@ -671,7 +659,7 @@ def credentials(credentials):
       None: No data returned
 
     """
-    log("credentials: {}".format(credentials))
+    log("credentials: {}".format(credentials))  # noqa: UP032
 
 
 def getFilePath(id):
@@ -684,7 +672,7 @@ def getFilePath(id):
       dict: Object contains file ID, path and name
 
     """
-    return {'id': id, 'path': 'test/test.txt', 'name': 'test.txt'}
+    return {"id": id, "path": "test/test.txt", "name": "test.txt"}
 
 
 def investigation():
@@ -819,11 +807,9 @@ def incidents(incidents=None):
 
     """
     if incidents is None:
-        return exampleIncidents[0]['Contents']['data']  # type: ignore[index]
+        return exampleIncidents[0]["Contents"]["data"]  # type: ignore[index]
     else:
-        return results(
-            {"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"}
-        )
+        return results({"Type": 1, "Contents": json.dumps(incidents), "ContentsFormat": "json"})
 
 
 def incident():
@@ -1034,10 +1020,7 @@ def demistoVersion():
       dict: Objects contains server version and build number
 
     """
-    return {
-        'version': '5.5.0',
-        'buildNumber': '12345'
-    }
+    return {"version": "5.5.0", "buildNumber": "12345"}
 
 
 def integrationInstance():
@@ -1066,8 +1049,9 @@ def createIndicators(indicators_batch, noUpdate=False):
     return ""
 
 
-def searchIndicators(fromDate='', query='', size=100, page=0, toDate='', value='', searchAfter=None,
-                     populateFields=None, **kwargs):
+def searchIndicators(
+    fromDate="", query="", size=100, page=0, toDate="", value="", searchAfter=None, populateFields=None, **kwargs
+):
     """Searches for indicators according to given query.
     If using Elasticsearch with Cortex XSOAR 6.1 or later,
     the searchAfter argument must be used instead of the page argument.
@@ -1117,7 +1101,7 @@ def getIndexHash():
       str: Hashed value of tenant name
 
     """
-    return ''
+    return ""
 
 
 def getLicenseID():
@@ -1127,7 +1111,7 @@ def getLicenseID():
       str: The license ID
 
     """
-    return ''
+    return ""
 
 
 def mapObject(obj, mapper, mapper_type):
@@ -1172,24 +1156,12 @@ def internalHttpRequest(method, uri, body=None):
         "status": "404 Not Found",
         "body": "This is a mock. Your request was not found.",
         "headers": {
-            "X-Xss-Protection": [
-                "1; mode=block"
-            ],
-            "X-Content-Type-Options": [
-                "nosniff"
-            ],
-            "Strict-Transport-Security": [
-                "max-age=10886400000000000; includeSubDomains"
-            ],
-            "Date": [
-                "Wed, 27 Jan 2021 17:11:16 GMT"
-            ],
-            "X-Frame-Options": [
-                "DENY"
-            ],
-            "Content-Type": [
-                "text/plain; charset=utf-8"
-            ]
+            "X-Xss-Protection": ["1; mode=block"],
+            "X-Content-Type-Options": ["nosniff"],
+            "Strict-Transport-Security": ["max-age=10886400000000000; includeSubDomains"],
+            "Date": ["Wed, 27 Jan 2021 17:11:16 GMT"],
+            "X-Frame-Options": ["DENY"],
+            "Content-Type": ["text/plain; charset=utf-8"],
         },
     }
 
@@ -1227,7 +1199,7 @@ def setLastMirrorRun(obj):
       None: No data returned
 
     """
-    return None
+    return
 
 
 def searchRelationships(args):
@@ -1306,7 +1278,7 @@ def searchRelationships(args):
     }
     ```
     """
-    return {'data': []}
+    return {"data": []}
 
 
 def _apiCall(name=None, params=None, data=None, headers=None, method=None, path=None, timeout=None, response_data_type=None):
