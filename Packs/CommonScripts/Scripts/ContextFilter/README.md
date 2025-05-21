@@ -1,6 +1,7 @@
 Filters context keys by applying one of the various available manipulations and stores a new context key. The resulting context key will not be available automatically but you can still specify it as an option.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Filters context keys by applying one of the various available manipulations and 
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,5 +22,6 @@ Filters context keys by applying one of the various available manipulations and 
 | additional | The additional arguments to add to filter. For example, flags for regex. Flags, replace string for replace. Length for substr. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
