@@ -7,12 +7,11 @@ import csv
 import io
 import requests
 from concurrent.futures import ThreadPoolExecutor, TimeoutError as ThreadTimeoutError
+import xml.etree.ElementTree as ET
 
 from urllib3 import disable_warnings
 
-
 disable_warnings()  # pylint: disable=no-member
-
 
 """ CONSTANTS """
 
@@ -32,12 +31,11 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = "host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = "host_last_fetch"
 ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
-ASSET_SIZE_LIMIT = 10**6  # 1MB
+ASSET_SIZE_LIMIT = 10 ** 6  # 1MB
 TEST_FROM_DATE = "one day"
 HOST_LIST_DETECTIONS_THREAD_TIME_OUT = 150
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
-
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1768,6 +1766,45 @@ class Client(BaseClient):
 
         return response
 
+    def get_qid_for_cve(self, cve: str) -> requests.Response:
+        """
+        This method retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+        """
+        self._headers.update({"Content-Type": "application/json"})
+
+        params: dict[str, Any] = {"cve": cve}
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+            params=params,
+            resp_type='xml',
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
+    def get_asset_by_qid(self, qid: str) -> requests.Response:
+        """
+        This method retrieves the Qualys assets associated with a specified qid.
+        """
+
+        self._headers.update({"Content-Type": "application/x-www-form-urlencoded"})
+
+        params: dict[str, Any] = {"qids": qid}
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+            params=params,
+            resp_type='xml',
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
 
 """ HELPER FUNCTIONS """
 
@@ -2136,7 +2173,7 @@ def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str)
             if rule_type_arg != "STATIC" and not rule_text_arg:
                 raise DemistoException(
                     message="Rule Type argument is passed but Rule Text argument is missing."
-                    + " Rule Text is optional only when Rule Type is 'STATIC'."
+                            + " Rule Text is optional only when Rule Type is 'STATIC'."
                 )
 
             ServiceRequest = ET.Element("ServiceRequest")
@@ -2802,9 +2839,6 @@ def handle_host_list_detection_result(raw_response: str) -> tuple[list, Optional
     host_count = len(response_requested_value) if response_requested_value else 0
     demisto.debug(f"Extracted a list of {host_count} hosts, and next URL - {response_next_url}")
 
-
-
-
     return response_requested_value, str(response_next_url)
 
 
@@ -3218,6 +3252,58 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     new_last_run = DEFAULT_LAST_ASSETS_RUN
 
     return vulnerabilities, new_last_run
+
+
+def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
+    """
+    This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+    """
+
+    demisto.debug(f"Start getting qids for the given {cve=}")
+
+    response = client.get_qid_for_cve(cve=cve)
+    # Parse XML response
+    root = ET.fromstring(response.content)
+
+    # Extract QID(s)
+    qids = [vuln.find('QID').text for vuln in root.findall('.//VULN')]
+
+    return CommandResults(
+        readable_output=f"They are the {qids=} from Qualys for the given {cve=}",
+        outputs=qids,
+        outputs_prefix="Qualys.QID"
+    )
+
+
+def get_asset_by_qid(client: Client, qid: str):
+    """
+    This function retrieves the Qualys assets associated with a specified qid.
+    """
+
+    demisto.debug(f"Start getting assets for the given QID = {qid}")
+
+    response = client.get_asset_by_qid(qid=qid)
+
+    # Parse XML response
+    root = ET.fromstring(response.content)
+
+    # Extract host info
+    hosts = []
+    for host in root.findall('.//HOST'):
+        host_data = {
+            'id': host.findtext('ID'),
+            'ip': host.findtext('IP'),
+            'dns': host.findtext('DNS'),
+            'os': host.findtext('OS'),
+            'tracking_method': host.findtext('TRACKING_METHOD')
+        }
+        hosts.append(host_data)
+
+    return CommandResults(
+        readable_output=f"They are the {hosts=} from Qualys for the given {qid=}",
+        outputs=hosts,
+        outputs_prefix="Qualys.HostDetections"
+    )
 
 
 def fetch_events(
@@ -3787,6 +3873,12 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
             return_results(assets)
+
+        elif command == "qualys-get-quid-by-cve":
+            return_results(get_qid_for_cve(client=client, cve=args["cve"]))
+
+        elif command == "qualys-get-assets-by-qid":
+            get_asset_by_qid(client=client, qid=args["qid"])
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
