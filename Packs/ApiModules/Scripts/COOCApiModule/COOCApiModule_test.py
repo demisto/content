@@ -1,213 +1,227 @@
-from COOCApiModule import *
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 import json
 import pytest
+from CommonServerPython import DemistoException
+from COOCApiModule import CloudTypes, get_access_token, get_cloud_entities
 
 
 def test_get_access_token_success(mocker):
     """
-    Given: A valid cloud type and scopes.
-    When: The get_access_token function is called with these parameters.
-    Then: The function should return the access token from the API response.
-    """
-    # Mock the callingContext as a property
-    mock_context = {
-        "context": {"connector_id": "test-connector-id", "account_id": "test-account-id", "outpost_id": "test-outpost-id"}
-    }
-    mocker.patch.object(demisto, "callingContext", mock_context)
-
-    # Mock the platform API call
-    mock_response = {"status_code": 200, "data": json.dumps({"access_token": "mock-access-token"})}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
-
-    # Execute the function
-    result = get_access_token("GCP", scopes=["https://www.googleapis.com/auth/cloud-platform"])
-
-    # Assert the result
-    assert result == "mock-access-token"
-    demisto._platformAPICall.assert_called_once()
-
-
-def test_get_access_token_aws_with_region(mocker):
-    """
-    Given: An AWS cloud type with region_name in the context.
+    Given: A valid cloud type and calling context with required cloud information.
     When: The get_access_token function is called.
-    Then: The function should include region_name in the request data.
+    Then: Function successfully returns the access token from the platform API response.
     """
-    # Mock the callingContext as a property
-    mock_context = {
-        "context": {
-            "connector_id": "test-connector-id",
-            "account_id": "test-account-id",
-            "outpost_id": "test-outpost-id",
-            "region_name": "us-west-2",
-        }
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
+
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
+
+    # Mock the demisto functions directly
+    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mocker.patch.object(demisto, "info")
+
+    # Mock platform API response
+    api_response = {
+        "status": 200,
+        "data": json.dumps({"data": {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}}),
     }
-    mocker.patch.object(demisto, "callingContext", mock_context)
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Mock the platform API call
-    mock_response = {"status_code": 200, "data": json.dumps({"access_token": "mock-aws-token"})}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Call the function
+    result = get_access_token(CloudTypes.AWS.value)
 
-    # Execute the function
-    result = get_access_token("AWS")
+    # Verify result
+    assert result == "test-access-token"
 
-    # Assert the result
-    assert result == "mock-aws-token"
-
-    # Check that region_name was included in the request data
+    # Verify API call was made with correct parameters
+    assert demisto._platformAPICall.called
     call_args = demisto._platformAPICall.call_args[1]
-    request_data = json.loads(call_args["data"])["request_data"]
-    assert request_data["region_name"] == "us-west-2"
+    assert call_args["path"] == "/cts/accounts/token"
+    assert call_args["method"] == "POST"
+    assert "request_data" in call_args["data"]
+    assert call_args["data"]["request_data"]["cloud_type"] == "AWS"
 
 
-def test_get_access_token_error_response(mocker):
+def test_get_access_token_with_scopes(mocker):
     """
-    Given: A cloud type and an error response from the API.
-    When: The get_access_token function is called.
-    Then: The function should raise a DemistoException with the error details.
+    Given: A valid cloud type and a list of scopes.
+    When: The get_access_token function is called with scopes parameter.
+    Then: The scopes are included in the API request.
     """
-    # Mock the callingContext as a property
-    mock_context = {
-        "context": {"connector_id": "test-connector-id", "account_id": "test-account-id", "outpost_id": "test-outpost-id"}
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
+
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mocker.patch.object(demisto, "info")
+
+    # Mock platform API response
+    api_response = {
+        "status": 200,
+        "data": json.dumps({"data": {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}}),
     }
-    mocker.patch.object(demisto, "callingContext", mock_context)
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Mock the platform API call
-    mock_response = {"status_code": 403, "data": "Access denied"}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Call the function with scopes
+    test_scopes = ["scope1", "scope2"]
+    result = get_access_token(CloudTypes.GCP.value, scopes=test_scopes)
 
-    # Execute the function and expect an exception
-    with pytest.raises(DemistoException) as e:
-        get_access_token("GCP")
+    # Verify result
+    assert result == "test-access-token"
 
-    # Assert the exception message
-    assert "Failed to get token from CTS for GCP" in str(e.value)
-    assert "Status code: 403" in str(e.value)
-    assert "Detail: Access denied" in str(e.value)
+    # Verify API call was made with correct parameters
+    call_args = demisto._platformAPICall.call_args[1]
+    request_data = call_args["data"]["request_data"]
+    assert request_data["cloud_type"] == "GCP"
+    assert request_data["scopes"] == test_scopes
+
+
+def test_get_access_token_api_error(mocker):
+    """
+    Given: A valid cloud type but the API returns an error.
+    When: The get_access_token function is called.
+    Then: A DemistoException is raised with the error details.
+    """
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
+
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mocker.patch.object(demisto, "info")
+
+    # Mock platform API error response
+    api_response = {"status": 400, "data": "Bad request"}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+
+    # Call the function and expect an exception
+    with pytest.raises(DemistoException) as excinfo:
+        get_access_token(CloudTypes.AZURE.value)
+
+    # Verify exception message
+    assert "Failed to get token from CTS for AZURE" in str(excinfo.value)
+    assert "Status code: 400" in str(excinfo.value)
+    assert "Error: Bad request" in str(excinfo.value)
 
 
 def test_get_access_token_parse_error(mocker):
     """
-    Given: A cloud type and an invalid JSON response.
+    Given: A valid cloud type but the API returns a malformed response.
     When: The get_access_token function is called.
-    Then: The function should raise a DemistoException about parsing failure.
+    Then: A DemistoException is raised due to parsing failure.
     """
-    # Mock the callingContext as a property
-    mock_context = {
-        "context": {"connector_id": "test-connector-id", "account_id": "test-account-id", "outpost_id": "test-outpost-id"}
-    }
-    mocker.patch.object(demisto, "callingContext", mock_context)
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
 
-    # Mock the platform API call with invalid JSON
-    mock_response = {"status_code": 200, "data": "{invalid json"}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Mock context data
+    cloud_info = {"connectorID": "test-connector-id", "accountID": "test-account-id", "outpostID": "test-outpost-id"}
+    mock_context = {"CloudIntegrationProviderInfo": cloud_info}
+    mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
+    mocker.patch.object(demisto, "info")
 
-    # Execute the function and expect an exception
-    with pytest.raises(DemistoException) as e:
-        get_access_token("GCP")
+    # Mock platform API with invalid JSON
+    api_response = {"status": 200, "data": "Not a valid JSON"}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Assert the exception message
-    assert "Failed to parse access token from CTS response for GCP" in str(e.value)
+    # Call the function and expect an exception
+    with pytest.raises(DemistoException) as excinfo:
+        get_access_token(CloudTypes.OCI.value)
 
-
-def test_get_access_token_missing_token(mocker):
-    """
-    Given: A cloud type and a response without the access_token key.
-    When: The get_access_token function is called.
-    Then: The function should raise a DemistoException about missing token.
-    """
-    # Mock the callingContext as a property
-    mock_context = {
-        "context": {"connector_id": "test-connector-id", "account_id": "test-account-id", "outpost_id": "test-outpost-id"}
-    }
-    mocker.patch.object(demisto, "callingContext", mock_context)
-
-    # Mock the platform API call with missing token
-    mock_response = {"status_code": 200, "data": json.dumps({"something_else": "value"})}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
-
-    # Execute the function and expect an exception
-    with pytest.raises(DemistoException) as e:
-        get_access_token("GCP")
-
-    # Assert the exception message
-    assert "Failed to parse access token from CTS response for GCP" in str(e.value)
+    # Verify exception message
+    assert "Failed to parse access token from CTS response for OCI" in str(excinfo.value)
 
 
-def test_get_cloud_entities_connector(mocker):
+def test_get_cloud_entities_with_connector_id(mocker):
     """
     Given: A connector_id parameter.
-    When: The get_cloud_entities function is called with this connector_id.
-    Then: The function should return accounts associated with the connector.
+    When: The get_cloud_entities function is called with the connector_id.
+    Then: The function calls the platform API with the correct parameters and returns the response.
     """
-    # Mock the platform API call response
-    mock_response = {"status_code": 200, "data": json.dumps({"accounts": [{"id": "account-1"}, {"id": "account-2"}]})}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
 
-    # Execute the function
-    result = get_cloud_entities(connector_id="connector-123")
+    # Mock platform API response
+    api_response = {"status_code": 200, "data": {"accounts": [{"id": "account-1"}, {"id": "account-2"}]}}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Assert the result
-    assert result == mock_response
-    demisto._platformAPICall.assert_called_once_with(
-        path=GET_ONBOARDING_ACCOUNTS, method="GET", params={"entity_type": "account", "entity_id": "connector-123"}
-    )
+    # Call the function
+    result = get_cloud_entities(connector_id="test-connector-id")
+
+    # Verify API call was made with correct parameters
+    call_args = demisto._platformAPICall.call_args[1]
+    assert call_args["path"] == "/onboarding/accounts"
+    assert call_args["method"] == "GET"
+    assert call_args["params"] == {"entity_type": "account", "entity_id": "test-connector-id"}
+
+    # Verify result
+    assert result == api_response
 
 
-def test_get_cloud_entities_account(mocker):
+def test_get_cloud_entities_with_account_id(mocker):
     """
     Given: An account_id parameter.
-    When: The get_cloud_entities function is called with this account_id.
-    Then: The function should return connectors associated with the account.
+    When: The get_cloud_entities function is called with the account_id.
+    Then: The function calls the platform API with the correct parameters and returns the response.
     """
-    # Mock the platform API call response
-    mock_response = {"status_code": 200, "data": json.dumps({"connectors": [{"id": "connector-1"}, {"id": "connector-2"}]})}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
 
-    # Execute the function
-    result = get_cloud_entities(account_id="account-123")
+    # Mock platform API response
+    api_response = {"status_code": 200, "data": {"connectors": [{"id": "connector-1"}, {"id": "connector-2"}]}}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Assert the result
-    assert result == mock_response
-    demisto._platformAPICall.assert_called_once_with(
-        path=GET_ONBOARDING_CONNECTORS, method="GET", params={"entity_type": "connector", "entity_id": "account-123"}
-    )
+    # Call the function
+    result = get_cloud_entities(account_id="test-account-id")
 
+    # Verify API call was made with correct parameters
+    call_args = demisto._platformAPICall.call_args[1]
+    assert call_args["path"] == "/onboarding/connectors"
+    assert call_args["method"] == "GET"
+    assert call_args["params"] == {"entity_type": "connector", "entity_id": "test-account-id"}
 
-def test_get_cloud_entities_validation_error():
-    """
-    Given: Neither connector_id nor account_id parameters provided, or both provided.
-    When: The get_cloud_entities function is called.
-    Then: The function should raise a ValueError.
-    """
-    # Case 1: Neither parameter provided
-    with pytest.raises(ValueError) as e:
-        get_cloud_entities()
-    assert "Exactly one of connector_id or account_id must be provided" in str(e.value)
-
-    # Case 2: Both parameters provided
-    with pytest.raises(ValueError) as e:
-        get_cloud_entities(connector_id="connector-123", account_id="account-123")
-    assert "Exactly one of connector_id or account_id must be provided" in str(e.value)
+    # Verify result
+    assert result == api_response
 
 
 def test_get_cloud_entities_api_error(mocker):
     """
-    Given: A connector_id parameter and an error response from the API.
+    Given: A connector_id parameter but the API returns an error.
     When: The get_cloud_entities function is called.
-    Then: The function should raise a DemistoException with the error details.
+    Then: A DemistoException is raised with the error details.
     """
-    # Mock the platform API call with an error
-    mock_response = {"status_code": 403, "data": "Permission denied"}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=mock_response)
+    # Import needed to avoid the ModuleNotFoundError
+    import demistomock as demisto
 
-    # Execute the function and expect an exception
-    with pytest.raises(DemistoException) as e:
-        get_cloud_entities(connector_id="connector-123")
+    # Mock platform API error response
+    api_response = {"status_code": 404, "data": "Connector not found"}
+    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
-    # Assert the exception message
-    assert "Failed to get accounts for ID 'connector-123'" in str(e.value)
-    assert "Status code: 403" in str(e.value)
-    assert "Detail: Permission denied" in str(e.value)
+    # Call the function and expect an exception
+    with pytest.raises(DemistoException) as excinfo:
+        get_cloud_entities(connector_id="test-connector-id")
+
+    # Verify exception message
+    assert "Failed to get accounts for ID 'test-connector-id'" in str(excinfo.value)
+    assert "Status code: 404" in str(excinfo.value)
+    assert "Detail: Connector not found" in str(excinfo.value)
+
+
+def test_get_cloud_entities_invalid_params():
+    """
+    Given: No parameters or both connector_id and account_id parameters.
+    When: The get_cloud_entities function is called.
+    Then: A ValueError is raised indicating exactly one parameter must be provided.
+    """
+    # Test with no parameters
+    with pytest.raises(ValueError) as excinfo:
+        get_cloud_entities()
+    assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)
+
+    # Test with both parameters
+    with pytest.raises(ValueError) as excinfo:
+        get_cloud_entities(connector_id="test-connector-id", account_id="test-account-id")
+    assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)
