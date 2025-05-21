@@ -29,6 +29,7 @@ from TOPdesk import (
     list_persons_command,
     subcategories_command,
     update_remote_system_command,
+    get_assets_list_command
 )
 
 
@@ -1309,6 +1310,36 @@ def test_get_modified_remote_data_command(client, requests_mock, args, params):
     get_modified_remote_data_command(client, args, params)
 
 
-@pytest.mark.parametrize("args,params", [({"remote_incident_id": "some-id"}, {"close_ticket": False})])
+@pytest.mark.parametrize(
+    "args,params", [({"remote_incident_id": "some-id"}, {"close_ticket": False})]
+)
 def test_update_remote_system_command(client, args, params):
     update_remote_system_command(client, args, params)
+
+
+@pytest.mark.parametrize(
+    "command_args",
+    [
+        ({"search_term": "test", "archived": False, "page_size": 1, "start": 0}),
+    ],
+)
+def test_assets_list(client, requests_mock, command_args):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (search_term, archived, page_size, start)
+    When
+        - running get_assets_list_command
+    Then
+        - The result fits the expected mapping
+    """
+
+    mock_assets = util_load_json("test_data/topdesk_asset.json")
+
+    requests_mock.get(
+        "https://test.com/api/assetmgmt/assets",
+        json=mock_assets,
+    )
+
+    get_assets_list_command(client, command_args)
+    assert requests_mock.called
