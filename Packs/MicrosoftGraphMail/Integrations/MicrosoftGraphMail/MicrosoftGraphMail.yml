@@ -415,24 +415,6 @@ script:
     name: msgraph-mail-delete-email
     polling: true
   - arguments:
-    - description: User ID or principal ID of the mailbox owner (usually an email address) from which the message should be deleted.
-      name: user_id
-      required: true
-    - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
-      name: message_id
-      required: true
-    - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
-      name: folder_id
-    - deprecated: true
-      description: flag for rate limit retry.
-      name: ran_once_flag
-    name: msgraph-mail-delete-email-quick-action
-    quickaction: true
-    hidden: true
-    prettyname: Delete Email – Office 365
-    description: Deletes an email.
-    polling: true
-  - arguments:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
@@ -689,6 +671,64 @@ script:
       type: String
     polling: true
   - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder.
+      name: destination_folder_id
+      defaultValue: deleteditems
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - deprecated: true
+      description: flag for rate limit retry.
+      name: ran_once_flag
+    description: Soft-deletes an email by moving it to the "Deleted Items" folder.
+    name: msgraph-mail-soft-delete-email-quick-action
+    quickaction: true
+    hidden: true
+    prettyname: Delete Email - Office 365
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: String
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: String
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+      type: String
+    polling: true
+  - arguments:
+    - description: The unique ID of the mail. You cannot use the the 'MessageID' key in the form '<message-id>'.
+      name: message_id
+      required: true
+    - description: The ID of the destination folder.
+      name: destination_folder_id
+      defaultValue: inbox
+    - description: User ID or principal ID (usually an email address in the format someuser@example.com).
+      name: user_id
+      required: true
+    - deprecated: true
+      description: flag for rate limit retry.
+      name: ran_once_flag
+    description: Restores a soft-deleted email by moving it back to the "Inbox" folder.
+    name: msgraph-mail-restore-email-quick-action
+    quickaction: true
+    hidden: true
+    prettyname: Restore Email - Office 365
+    outputs:
+    - contextPath: MSGraphMail.MovedEmails.DestinationFolderID
+      description: The folder where the email message was moved.
+      type: String
+    - contextPath: MSGraphMail.MovedEmails.ID
+      description: The new ID of the moved email message.
+      type: String
+    - contextPath: MSGraphMail.MovedEmails.UserID
+      description: The user ID.
+      type: String
+    polling: true
+  - arguments:
     - description: User ID or principal ID (usually an email address in the format someuser@example.com).
       name: user_id
       required: true
@@ -920,7 +960,7 @@ script:
     name: send-mail-quick-action
     quickaction: true
     hidden: true
-    prettyname: Send Email to Recipients – Office 365
+    prettyname: Send Email to Recipients - Office 365
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
       description: The email headers.

@@ -200,7 +200,7 @@ def main():  # pragma: no cover
             return_results(reply_to_command(client, args))  # pylint: disable=E1123
         elif command == "msgraph-mail-get-email":
             return_results(get_message_command(client, args))
-        elif command == "msgraph-mail-delete-email" or command == "msgraph-mail-delete-email-quick-action":
+        elif command == "msgraph-mail-delete-email":
             return_results(delete_mail_command(client, args))
         elif command == "msgraph-mail-list-attachments":
             return_results(list_attachments_command(client, args))
@@ -216,7 +216,11 @@ def main():  # pragma: no cover
             return_results(list_child_folders_command(client, args))
         elif command == "msgraph-mail-delete-folder":
             return_results(delete_folder_command(client, args))
-        elif command == "msgraph-mail-move-email":
+        elif command in (
+            "msgraph-mail-move-email",
+            "msgraph-mail-soft-delete-email-quick-action",
+            "msgraph-mail-restore-email-quick-action",
+        ):
             return_results(move_email_command(client, args))
         elif command == "msgraph-mail-get-email-as-eml":
             return_results(get_email_as_eml_command(client, args))
