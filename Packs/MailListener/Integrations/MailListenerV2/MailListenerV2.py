@@ -58,18 +58,18 @@ class Email:
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
-        
+
         self.parse_headers()
 
     def parse_headers(self):
         parsed_headers = {}
         for header_name, header_value in self.headers.items():
             if not isinstance(header_value, str):
-                if header_name == 'From':
-                    header_value = header_value[0][0] + '<' + header_value[0][1] + '>'
+                if header_name == "From":
+                    header_value = header_value[0][0] + "<" + header_value[0][1] + ">"
                 else:
-                    header_value = ''.join(header_value[0])
-                    
+                    header_value = "".join(header_value[0])
+
             parsed_headers[header_name] = header_value
 
     @staticmethod
