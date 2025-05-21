@@ -2,62 +2,78 @@ category: Vulnerability Management
 commonfields:
   id: VulnDB
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - defaultvalue: https://vulndb.cyberriskanalytics.com/api/v1
   display: Hostname, IP address, or server URL
   name: api_url
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: client_id
   type: 0
   hidden: true
+  section: Connect
 - display: Client Secret
   name: client_secret
   type: 4
   hidden: true
+  section: Connect
 - display: Client ID
   name: credentials
   type: 9
   displaypassword: Client Secret
-- display: Include All CVSS Versions
-  name: include_all_cvss
-  type: 8
-  required: false
-- display: Include CPE Information
-  name: include_cpe
-  type: 8
-  required: false
-- display: Ignore Deprecated
-  name: ignore_deprecated
-  required: false
-  type: 8
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - defaultvalue: '300'
   display: Timeout (in seconds) for HTTP requests to VulnDB
   name: requestTimeout
   type: 0
   required: false
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+- display: Include All CVSS Versions
+  name: include_all_cvss
+  type: 8
+  required: false
+  section: Collect
+- display: Include CPE Information
+  name: include_cpe
+  type: 8
+  required: false
+  section: Collect
+- display: Ignore Deprecated
+  name: ignore_deprecated
+  required: false
+  type: 8
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
   type: 0
   defaultvalue: '7 days'
+  section: Collect
 - defaultvalue: '100'
   display: Max incidents per fetch
   name: max_fetch
   type: 0
+  section: Collect
 - display: Ignore Vulnerabilities disclosed before (<number> <time unit>, e.g., 12 hours, 7 days)
   name: disclosure_after
   type: 0
   required: false
   defaultvalue: '30 days'
-- display: Use system proxy settings
-  name: proxy
-  type: 8
-  required: false
+  section: Collect
 - additionalinfo: Reliability of the source providing the intelligence data.
   defaultvalue: C - Fairly reliable
   display: Source Reliability
@@ -72,12 +88,15 @@ configuration:
   - F - Reliability cannot be judged
   required: false
   type: 15
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
+  section: Collect
 description: Lists all of the security vulnerabilities for various products (OS,Applications) etc).
 display: VulnDB
 name: VulnDB
