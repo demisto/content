@@ -2,7 +2,12 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 
 ## Configure CybelAngel in Cortex
 
-
+<~XSIAM>
+## Required modules
+- Account Takeover Protection module is required.
+  
+- Domain Protection module is required.
+</~XSIAM>
 
 | **Parameter** | **Required** |
 | --- | --- |

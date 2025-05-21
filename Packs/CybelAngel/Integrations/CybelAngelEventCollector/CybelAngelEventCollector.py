@@ -19,10 +19,6 @@ DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VENDOR = "cybelangel"
 PRODUCT = "platform"
 
-MAX_FETCH_REPORT_LIMIT = 5000
-MAX_FETCH_DOMAIN_LIMIT = 500
-MAX_FETCH_CREDENTIALS_LIMIT = 50
-
 
 class EventType:
     """
@@ -38,6 +34,7 @@ class EventType:
         ascending_order: bool,
         time_field: str,
         source_log_type: str,
+        default_max_fetch: int,
     ):
         """
         Args:
@@ -47,6 +44,7 @@ class EventType:
             ascending_order (bool): If the API return in sorted by ascending or descending order after returning from get_event.
             time_field (str): Field name in the event used for timestamp mapping (`_time`).
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            default_max_fetch (int): Default max_fetch limit.
         """
         self.name = name
         self.url_suffix = url_suffix
@@ -56,6 +54,7 @@ class EventType:
         self.max_index = -1 if ascending_order else 0
         self.time_field = time_field
         self.source_log_type = source_log_type
+        self.default_max_fetch = default_max_fetch
 
     def get_id(self, event: Dict[str, Any]) -> str:
         """Return unique id by the id_key fields"""
@@ -71,6 +70,7 @@ REPORT = EventType(
     ascending_order=True,
     time_field="updated_at",
     source_log_type="Report",
+    default_max_fetch=5000,
 )
 CREDENTIALS = EventType(
     name="Credential watchlist",
@@ -79,6 +79,7 @@ CREDENTIALS = EventType(
     ascending_order=True,
     time_field="last_detection_date",
     source_log_type="Credential watchlist",
+    default_max_fetch=50,
 )
 DOMAIN = EventType(
     name="Domain watchlist",
@@ -87,6 +88,7 @@ DOMAIN = EventType(
     ascending_order=False,
     time_field="detection_date",
     source_log_type="Domain watchlist",
+    default_max_fetch=500,
 )
 
 EVENT_TYPE = {"Reports": REPORT, "Credential watchlist": CREDENTIALS, "Domain watchlist": DOMAIN}
@@ -970,9 +972,9 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     event_types_to_fetch = argToList(params.get("event_types_to_fetch", [REPORT]))
     event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
     demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
-    max_fetch_reports = arg_to_number(params.get("max_fetch")) or MAX_FETCH_REPORT_LIMIT
-    max_fetch_creds = arg_to_number(params.get("max_fetch_creds")) or MAX_FETCH_CREDENTIALS_LIMIT
-    max_fetch_domain = arg_to_number(params.get("max_fetch_domain")) or MAX_FETCH_DOMAIN_LIMIT
+    max_fetch_reports = arg_to_number(params.get("max_fetch")) or REPORT.default_max_fetch
+    max_fetch_creds = arg_to_number(params.get("max_fetch_creds")) or CREDENTIALS.default_max_fetch
+    max_fetch_domain = arg_to_number(params.get("max_fetch_domain")) or DOMAIN.default_max_fetch
 
     event_types = []
     if REPORT.name in event_types_to_fetch:
