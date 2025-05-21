@@ -13,6 +13,7 @@ from imapclient import IMAPClient
 from tempfile import NamedTemporaryFile
 
 
+
 class Email:
     def __init__(self, message_bytes: bytes, include_raw_body: bool, save_file: bool, id_: int) -> None:
         """
