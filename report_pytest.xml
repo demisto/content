@@ -1,2 +1,0 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<testsuites><testsuite name="pytest" errors="0" failures="0" skipped="0" tests="2" time="2.181" timestamp="2025-05-19T12:08:15.985080+00:00" hostname="94f479434e18"><testcase classname="Packs.VulnDB.Integrations.VulnDB.VulnDB_test" name="test_http_request_json_negative[cve_id]" time="0.034"/><testcase classname="Packs.VulnDB.Integrations.VulnDB.VulnDB_test" name="test_http_request_json_negative[cve]" time="0.005"/></testsuite></testsuites>
