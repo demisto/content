@@ -1,6 +1,7 @@
 This script will translate a country code provided by Cyren Threat InDepth to the full country name, based on [ISO 3166-1](https://en.wikipedia.org/wiki/ISO_3166-1) as defined in [pycountry](https://github.com/flyingcircusio/pycountry).
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ This script will translate a country code provided by Cyren Threat InDepth to th
 | XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ This script will translate a country code provided by Cyren Threat InDepth to th
 | value | the country code provided by Cyren Threat InDepth |
 
 ## Outputs
+
 ---
 
 The full country name in the English language.

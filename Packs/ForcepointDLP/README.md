@@ -1,8 +1,9 @@
 # Forcepoint DLP
+
 This pack includes Cortex XSIAM content.
 
-
 ## Configuration on Server Side
+
 Use the Settings > General > Remediation page in the Data Security module of the Forcepoint Security Manager to define the location of the syslog server and mail release gateway used for remediation.
 
 1. Under Syslog Settings, enter the IP address or hostname of the syslog server, and the logging port.
@@ -21,10 +22,11 @@ The system then ensures that the person attempting to release a message is a rec
 6. Click **OK** to save your changes.
 
 ## Collect Events from Vendor
+
 In order to use the collector, use the [Broker VM](#broker-vm) option.
 
-
 ### Broker VM
+
 To create or configure the Broker VM, use the information described [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XDR/Cortex-XDR-Pro-Administrator-Guide/Configure-the-Broker-VM).
 
 You can configure the specific vendor and product for this instance.
@@ -34,4 +36,4 @@ You can configure the specific vendor and product for this instance.
 3. Click **Add New**.
 4. When configuring the Syslog Collector, change the format to *CEF*.
 
-*NOTE*: The log format is CEF. The name of the *Vender* and the *Product* will be based on the vendor and product fields in the raw data.
+*NOTE*: The log format is CEF. The name of the *Vender* and the *Product* will be based on the vendor and product fields in the raw data.  
