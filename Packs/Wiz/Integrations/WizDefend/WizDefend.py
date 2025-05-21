@@ -123,6 +123,7 @@ class WizApiVariables:
     URL = 'url'
     THREAT_RESOURCE = 'threatResource'
     IDS = 'ids'
+    FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = 'fetchCloudAccountsAndCloudOrganizations'
 
 
 class WizThreatVariables:
@@ -564,7 +565,7 @@ PULL_DETECTIONS_VARIABLES = {
 }
 
 PULL_ISSUE_QUERY = """
-query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $first: Int, $after: String, $orderBy: IssueOrder) {
+query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $first: Int, $after: String, $orderBy: IssueOrder, $fetchSecurityScoreImpact: Boolean = false, $fetchThreatDetectionDetails: Boolean = false, $securityScoreImpactSelection: SecurityScoreImpactSelection, $fetchTotalCount: Boolean = true, $fetchActorsAndResourcesGraphEntities: Boolean = false, $fetchCloudAccountsAndCloudOrganizations: Boolean = false, $fetchMultipleSourceRules: Boolean = false, $fetchCommentThread: Boolean = false, $fetchThreatCenterActors: Boolean = false, $fetchTdrLogic: Boolean = false, $fetchSecuritySubCategories: Boolean = false) {
   issues: issuesV2(
     filterBy: $filterBy
     first: $first
@@ -574,46 +575,79 @@ query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $fir
   ) {
     nodes {
       id
-      sourceRule {
-        __typename
-        ... on Control {
+      type
+      resolutionNote
+      resolvedAt
+      resolutionReason
+      ...ResolvedByUser
+      control {
+        id
+        name
+        description
+        severity
+        type
+        query
+        enabled
+        enabledForLBI
+        enabledForMBI
+        enabledForHBI
+        enabledForUnattributed
+        tagsV2 {
+          key
+          value
+        }
+        risks
+        threats
+        sourceCloudConfigurationRule {
           id
           name
-          controlDescription: description
-          resolutionRecommendation
-          securitySubCategories {
-            title
-            category {
+        }
+        serviceTickets {
+          ...ControlServiceTicket
+        }
+      }
+      sourceRules {
+        ...SourceRuleFields
+        securitySubCategories @include(if: $fetchSecuritySubCategories) {
+          id
+          title
+          category {
+            id
+            name
+            framework {
+              id
               name
-              framework {
-                name
-              }
+              enabled
             }
           }
         }
-        ... on CloudEventRule {
+      }
+      sourceRules @include(if: $fetchMultipleSourceRules) {
+        ...SourceRuleFields
+        securitySubCategories @include(if: $fetchSecuritySubCategories) {
           id
-          name
-          cloudEventRuleDescription: description
-          sourceType
-          type
-        }
-        ... on CloudConfigurationRule {
-          id
-          name
-          cloudConfigurationRuleDescription: description
-          remediationInstructions
-          serviceType
+          title
+          category {
+            id
+            name
+            framework {
+              id
+              name
+              enabled
+            }
+          }
         }
       }
-      type
       createdAt
       updatedAt
+      resolvedAt
       dueAt
+      rejectionExpiredAt
       projects {
         id
         name
         slug
+        isFolder
         businessUnit
         riskProfile {
           businessImpact
@@ -621,45 +655,247 @@ query IssuesTable($filterBy: IssueFilters, $filterScope: IssueFiltersScope, $fir
       }
       status
       severity
+      resolutionReason
       entitySnapshot {
         id
         type
-        nativeType
-        name
         status
+        name
         cloudPlatform
-        cloudProviderURL
-        providerId
         region
-        resourceGroupExternalId
-        subscriptionExternalId
         subscriptionName
-        subscriptionTags
+        subscriptionId
+        subscriptionExternalId
+        nativeType
+        kubernetesClusterId
+        kubernetesClusterName
+        kubernetesNamespaceName
         tags
         externalId
       }
+      notes {
+        id
+        text
+      }
+      environments
+      cloudAccounts @include(if: $fetchCloudAccountsAndCloudOrganizations) {
+        id
+        name
+        externalId
+        cloudProvider
+      }
+      cloudOrganizations @include(if: $fetchCloudAccountsAndCloudOrganizations) {
+        id
+        name
+        externalId
+        cloudProvider
+      }
+      threatDetectionDetails @include(if: $fetchThreatDetectionDetails) {
+        ...ThreatDetectionDetailsActorsResources
+        ...ThreatDetectionDetailsMainDetection
+        detections(first: 0) {
+          totalCount
+        }
+        eventOrigin
+      }
+      threatCenterActors @include(if: $fetchThreatCenterActors) {
+        id
+        name
+        type
+      }
       serviceTickets {
+        id
         externalId
         name
         url
       }
-      notes {
+      applicationServices {
         id
-        createdAt
-        updatedAt
-        text
-        user {
-          name
-          email
-        }
-        serviceAccount {
-          name
-        }
+        displayName
+      }
+      commentThread @include(if: $fetchCommentThread) {
+        id
+        hasComments
       }
     }
     pageInfo {
       hasNextPage
       endCursor
+    }
+    totalCount @include(if: $fetchTotalCount)
+  }
+}
+
+fragment ResolvedByUser on Issue {
+  resolvedBy {
+    user {
+      id
+      email
+      name
+    }
+  }
+}
+
+fragment ControlServiceTicket on ServiceTicket {
+  id
+  externalId
+  name
+  url
+  project {
+    id
+    name
+  }
+  integration {
+    id
+    type
+    name
+    typeConfiguration {
+      type
+      iconUrl
+    }
+  }
+}
+
+fragment SourceRuleFields on IssueSourceRule {
+  ... on CloudConfigurationRule {
+    id
+    tags {
+      key
+      value
+    }
+    builtin
+    createdBy {
+      name
+    }
+    name
+    description
+    subjectEntityType
+    hasAutoRemediation
+    cloudProvider
+    securityScoreImpact(selection: $securityScoreImpactSelection) @include(if: $fetchSecurityScoreImpact)
+    risks
+    threats
+    control {
+      id
+      resolutionRecommendation
+    }
+  }
+  ... on CloudEventRule {
+    id
+    name
+    cloudEventRuleType: type
+    description
+    ruleSeverity: severity
+    builtin
+    createdBy {
+      name
+    }
+    generateIssues
+    generateFindings
+    enabled
+    sourceType
+    ...CloudEventRuleLogicFields @include(if: $fetchTdrLogic)
+    securityScoreImpact(selection: $securityScoreImpactSelection) @include(if: $fetchSecurityScoreImpact)
+    risks
+    threats
+  }
+  ... on Control {
+    id
+    tagsV2 {
+      key
+      value
+    }
+    name
+    query
+    type
+    enabled
+    enabledForHBI
+    enabledForLBI
+    enabledForMBI
+    enabledForUnattributed
+    builtin
+    createdBy {
+      name
+    }
+    resolutionRecommendation
+    controlDescription: description
+    securityScoreImpact(selection: $securityScoreImpactSelection) @include(if: $fetchSecurityScoreImpact)
+    risks
+    threats
+  }
+}
+
+fragment CloudEventRuleLogicFields on CloudEventRule {
+  params {
+    ...CloudEventRuleParamsLogicFields
+  }
+}
+
+fragment CloudEventRuleParamsLogicFields on CorrelationCloudEventRuleParams {
+  securityGraphContext {
+    description
+    inUse
+  }
+  detectionThresholds {
+    inUse
+  }
+  behavioralBaselines {
+    id
+    builtInId
+    title
+    description
+  }
+}
+
+fragment ThreatDetectionDetailsActorsResources on ThreatDetectionIssueDetails {
+  actorsMaxCountReached
+  actorsTotalCount
+  actors {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+    nativeType
+    graphEntity @include(if: $fetchActorsAndResourcesGraphEntities) {
+      id
+      deletedAt
+      type
+      name
+      properties
+    }
+  }
+  resourcesTotalCount
+  resourcesMaxCountReached
+  resources {
+    id
+    name
+    externalId
+    providerUniqueId
+    type
+    nativeType
+    graphEntity @include(if: $fetchActorsAndResourcesGraphEntities) {
+      id
+      type
+      deletedAt
+      name
+      properties
+    }
+  }
+}
+
+fragment ThreatDetectionDetailsMainDetection on ThreatDetectionIssueDetails {
+  mainDetection {
+    id
+    startedAt
+    severity
+    description(format: MARKDOWN)
+    ruleMatch {
+      rule {
+        id
+        name
+        origins
+      }
     }
   }
 }
@@ -670,9 +906,9 @@ PULL_THREAT_ISSUE_VARIABLES = {
         WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]
     },
     WizApiVariables.FILTER_SCOPE: WizThreatVariables.ALL_ISSUE_DETECTIONS,
+    WizApiVariables.FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG: True,
     WizApiVariables.ORDER_BY: {WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
                                WizApiVariables.DIRECTION: WizOrderDirection.DESC}
-
 }
 
 
