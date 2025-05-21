@@ -56,9 +56,11 @@ configuration:
   - display: Incident type
     name: incidentType
     type: 13
+    section: Collect
   - display: Fetch incidents
     name: isFetch
     type: 8
+    section: Collect
 description: Forcepoint Data Loss Prevention (DLP) enables businesses to discover, classify, monitor, and protect data intuitively with zero friction to the user experience. Audit behavior in real-time with Risk-Adaptive Protection to stop data loss before it occurs. Use this integration to fetch security incidents as XSOAR incidents.
 display: Forcepoint DLP
 name: Forcepoint DLP
@@ -317,7 +319,7 @@ script:
         - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.resource_name
           description: The name of the resource.
           type: String
-        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource
+        - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.type
           description: The type of the resource (for example, computers).
           type: String
         - contextPath: ForcepointDlp.SourceDestinationRule.Rule.Source.Resource.include
@@ -1104,7 +1106,7 @@ script:
     - name: update-remote-system
       arguments: []
       description: Updates the remote incident or detection with local incident or detection changes. This method is only used for debugging purposes and will not update the current incident or detection.
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ""
   subtype: python3
