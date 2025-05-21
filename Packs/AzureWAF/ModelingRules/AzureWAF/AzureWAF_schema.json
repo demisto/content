@@ -49,7 +49,7 @@
             "is_array": false
         },
         "httpstatus": {
-            "type": "int",
+            "type": "string",
             "is_array": false
         },
         "originalrequesturiwithargs": {
