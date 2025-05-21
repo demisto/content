@@ -64,12 +64,12 @@ class Email:
         for header_name, header_value in headers.items():
             if not isinstance(header_value, str):
                 if header_name == "From":
-                    header_value = header_value[0][0] + "<" + header_value[0][1] + ">"
+                    header_value = header_value[0][0] + " <" + header_value[0][1] + ">"
                 else:
                     header_value = "".join(header_value[0])
 
             parsed_headers[header_name] = header_value
-        
+
         return parsed_headers
 
     @staticmethod
