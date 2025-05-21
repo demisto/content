@@ -142,7 +142,6 @@ def predict_phishing_words(
     model_type = {
         "": FASTTEXT_MODEL_TYPE,
         FASTTEXT_TYPE: FASTTEXT_MODEL_TYPE,
-        FASTTEXT_MODEL_TYPE: FASTTEXT_MODEL_TYPE,
         TORCH_TYPE: TORCH_TYPE,
         UNKNOWN_MODEL_TYPE: UNKNOWN_MODEL_TYPE,
     }.get(model_type.strip(), UNKNOWN_MODEL_TYPE)
@@ -279,11 +278,7 @@ def find_words_contain_tokens(positive_tokens, words_to_token_maps):
 
 
 def try_get_incident_field(field):
-    value = ""
-    incident = demisto.incident()
-    if "CustomFields" in incident and incident["CustomFields"] is not None and field in incident["CustomFields"]:
-        value = incident["CustomFields"][field]
-    return value
+    return dict_safe_get(demisto.incident(), ["CustomFields", field]) or ""
 
 
 def main():
