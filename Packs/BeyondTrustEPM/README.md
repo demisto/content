@@ -10,7 +10,6 @@ Data normalization capabilities:
     * Modeling Rules for BeyondTrust EPM Events include computer, activity, and authorization requests logs that are ingested via the S3 Collector on Cortex XSIAM.
     * The ingested BeyondTrust EPM logs can be queried in XQL Search using the *`beyondtrust_epm_raw`* dataset.
    
-
 ***
  
 ## Data Collection
@@ -39,7 +38,6 @@ For more information <[Link to the official docs](https://docs.beyondtrust.com/e
  
 ### Cortex XSIAM side - Amazon S3 Collector
 To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
- 
 1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
 2. If you have already configured an **Amazon S3 Collector**, select the **3 dots**, and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "Amazon S3" and then select **Connect**.
 4. Set the following values:
