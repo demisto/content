@@ -50,7 +50,7 @@ class Email:
         self.html = email_object.text_html[0] if email_object.text_html else ""
         self.text = email_object.text_plain[0] if email_object.text_plain else ""
         self.subject = email_object.subject
-        self.headers = email_object.headers
+        self.headers = self.parse_headers(email_object.headers)
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
         self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None  # noqa: UP017
@@ -59,11 +59,9 @@ class Email:
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
 
-        self.parse_headers()
-
-    def parse_headers(self):
+    def parse_headers(self, headers):
         parsed_headers = {}
-        for header_name, header_value in self.headers.items():
+        for header_name, header_value in headers.items():
             if not isinstance(header_value, str):
                 if header_name == "From":
                     header_value = header_value[0][0] + "<" + header_value[0][1] + ">"
@@ -71,6 +69,8 @@ class Email:
                     header_value = "".join(header_value[0])
 
             parsed_headers[header_name] = header_value
+        
+        return parsed_headers
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
