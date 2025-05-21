@@ -1,0 +1,86 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: DecyfirEventCollector
+  version: -1
+configuration:
+- defaultvalue: https://decyfir.cyfirma.com/
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: API Key
+  name: api_key
+  required: true
+  type: 4
+  section: Connect
+- defaultvalue: ACTIVE
+  section: Collect
+  display: Events type to fetch
+  name: alert_status
+  options:
+  - Access Logs 
+  - Assets Logs
+  - Digital Risk Keywords Logs
+  required: false
+  type: 15
+- defaultvalue: 3000
+  section: Collect
+  display: Maximum number of Access Logs events
+  name: max_access_logs_events_per_fetch
+  required: false
+  type: 0
+- defaultvalue: 3000
+  section: Collect
+  display: Maximum number of Assets Logs events
+  name: max_assets_logs_events_per_fetch
+  required: false
+  type: 0
+- defaultvalue: 3000
+  section: Collect
+  display: Maximum number of Digital Risk Keywords Logs events
+  name: max_drkl_events_per_fetch
+  required: false
+  type: 0
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+description: This is the Hello World event collector integration for Cortex XSIAM.
+display: DecyfirEventCollector
+name: DecyfirEventCollector
+script:
+  commands:
+  - description: Manual command to fetch events.
+    name: decyfir-event-collector-get-events
+    arguments:
+    - auto: PREDEFINED
+      defaultValue: 'False'
+      description: Set this argument to True in order to create events, otherwise the command will only display them.
+      name: should_push_events
+      predefined:
+      - 'True'
+      - 'False'
+      required: true
+  dockerimage: demisto/python3:3.12.8.1983910
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+supportlevelheader: xsoar
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.4.0
+tests:
+- No tests (auto formatted)
