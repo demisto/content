@@ -34,13 +34,13 @@ class HttpRequestsMocker:
 
     def valid_http_request_side_effect(self, method: str, url_suffix: str = "", params: Dict | None = None, **kwargs):
         if method == "GET":
-            if url_suffix == EVENT_TYPE[REPORT].url_suffix:
+            if url_suffix == REPORT.url_suffix:
                 start_date = params.get("start-date")
                 events = create_report_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-            elif url_suffix == EVENT_TYPE[DOMAIN].url_suffix:
+            elif url_suffix == DOMAIN.url_suffix:
                 start_date = params.get("min-date")
                 events = create_domain_events(1, amount_of_events=self.num_of_events, start_date=start_date)
-            elif url_suffix == EVENT_TYPE[CREDENTIALS].url_suffix:
+            elif url_suffix == CREDENTIALS.url_suffix:
                 start_date = params.get("start")
                 events = create_creds_events(1, amount_of_events=self.num_of_events, start_date=start_date)
             return create_mocked_response(events)
@@ -66,7 +66,7 @@ def create_report_events(start_id: int, amount_of_events: int, start_date: str) 
     """Return {"reports": [...]} with shuffled `_time` and `id` fields."""
     events = [
         {
-            EVENT_TYPE[REPORT].id_key: str(i),
+            REPORT.id_key: str(i),
             "updated_at": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -79,7 +79,7 @@ def create_domain_events(start_id: int, amount_of_events: int, start_date: str, 
     """Return {"results": [...]} with reversed chronological order."""
     events = [
         {
-            **{k: str(i) for k in EVENT_TYPE[DOMAIN].id_key},
+            **{k: str(i) for k in DOMAIN.id_key},
             "detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id + amount_of_events - 1, start_id - 1, -1)
@@ -91,7 +91,7 @@ def create_creds_events(start_id: int, amount_of_events: int, start_date: str) -
     """Return a plain list of credential-watchlist events in ascending order."""
     return [
         {
-            EVENT_TYPE[CREDENTIALS].id_key: str(i),
+            CREDENTIALS.id_key: str(i),
             "last_detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -129,10 +129,10 @@ def test_get_last_run_no_previous(mocker):
     result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
     expected_time = (now - timedelta(days=180)).strftime(DATE_FORMAT)  # TODO
 
-    for etype in (REPORT, DOMAIN, CREDENTIALS):
-        assert etype in result
-        assert result[etype][LATEST_TIME] == expected_time
-        assert result[etype][LATEST_FETCHED_IDS] == []
+    for event_type in (REPORT, DOMAIN, CREDENTIALS):
+        assert event_type.name in result
+        assert result[event_type.name][LATEST_TIME] == expected_time
+        assert result[event_type.name][LATEST_FETCHED_IDS] == []
 
 
 def test_get_last_run_partial_existing(mocker):
@@ -148,19 +148,19 @@ def test_get_last_run_partial_existing(mocker):
     mocker.patch.object(
         demisto,
         "getLastRun",
-        return_value={REPORT: {LATEST_TIME: existing_time, LATEST_FETCHED_IDS: existing_ids}},
+        return_value={REPORT.name: {LATEST_TIME: existing_time, LATEST_FETCHED_IDS: existing_ids}},
     )
 
     result = get_last_run(now, [REPORT, DOMAIN, CREDENTIALS])
     # REPORT must be unchanged
-    assert result[REPORT][LATEST_TIME] == existing_time
-    assert result[REPORT][LATEST_FETCHED_IDS] == existing_ids
+    assert result[REPORT.name][LATEST_TIME] == existing_time
+    assert result[REPORT.name][LATEST_FETCHED_IDS] == existing_ids
 
     # DOMAIN and CREDENTIALS must now be set to now-1min
     expected_time = (now - timedelta(minutes=1)).strftime(DATE_FORMAT)
-    for etype in (DOMAIN, CREDENTIALS):
-        assert result[etype][LATEST_TIME] == expected_time
-        assert result[etype][LATEST_FETCHED_IDS] == []
+    for event_type in (DOMAIN, CREDENTIALS):
+        assert result[event_type.name][LATEST_TIME] == expected_time
+        assert result[event_type.name][LATEST_FETCHED_IDS] == []
 
 
 def test_get_last_run_all_present(mocker):
@@ -172,9 +172,9 @@ def test_get_last_run_all_present(mocker):
 
     now = datetime(2025, 5, 15, 12, 0, 0)
     initial = {
-        REPORT: {LATEST_TIME: "2025-05-14T11:00:00", LATEST_FETCHED_IDS: [1]},
-        DOMAIN: {LATEST_TIME: "2025-05-14T11:01:00", LATEST_FETCHED_IDS: [2]},
-        CREDENTIALS: {LATEST_TIME: "2025-05-14T11:02:00", LATEST_FETCHED_IDS: [3]},
+        REPORT.name: {LATEST_TIME: "2025-05-14T11:00:00", LATEST_FETCHED_IDS: [1]},
+        DOMAIN.name: {LATEST_TIME: "2025-05-14T11:01:00", LATEST_FETCHED_IDS: [2]},
+        CREDENTIALS.name: {LATEST_TIME: "2025-05-14T11:02:00", LATEST_FETCHED_IDS: [3]},
     }
     mocker.patch.object(demisto, "getLastRun", return_value=initial.copy())
 
@@ -246,9 +246,9 @@ def test_the_test_module(mocker):
 @pytest.mark.parametrize(
     "event_type, max_fetch_key",
     [
-        (REPORT, "max_fetch_reports"),
-        (CREDENTIALS, "max_fetch_creds"),
-        (DOMAIN, "max_fetch_domain"),
+        (REPORT.name, "max_fetch"),
+        (CREDENTIALS.name, "max_fetch_creds"),
+        (DOMAIN.name, "max_fetch_domain"),
     ],
 )
 def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
@@ -337,7 +337,7 @@ def test_fetch_events_token_expired(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "event_types_to_fetch": REPORT,
+            "event_types_to_fetch": REPORT.name,
             "is_fetch_events": True,
         },
     )
@@ -359,8 +359,8 @@ def test_fetch_events_token_expired(mocker):
     assert set_last_run_mocker.called
     last_run = set_last_run_mocker.call_args[0][0]
 
-    assert last_run[REPORT][LATEST_TIME] == fetched_events[-1]["_time"]
-    assert last_run[REPORT][LATEST_FETCHED_IDS][0] == fetched_events[-1]["id"]
+    assert last_run[REPORT.name][LATEST_TIME] == fetched_events[-1]["_time"]
+    assert last_run[REPORT.name][LATEST_FETCHED_IDS][0] == fetched_events[-1]["id"]
 
     assert set_integration_context_mocker.call_args[0][0] == {"access_token": "new_access_token"}
 
@@ -368,9 +368,9 @@ def test_fetch_events_token_expired(mocker):
 @pytest.mark.parametrize(
     "event_type, max_fetch_key",
     [
-        (REPORT, "max_fetch_reports"),
-        (CREDENTIALS, "max_fetch_creds"),
-        (DOMAIN, "max_fetch_domain"),
+        (REPORT.name, "max_fetch_reports"),
+        (CREDENTIALS.name, "max_fetch_creds"),
+        (DOMAIN.name, "max_fetch_domain"),
     ],
 )
 def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
@@ -461,9 +461,9 @@ def test_fetch_events_with_last_run_no_events(mocker):
         demisto,
         "getLastRun",
         return_value={
-            REPORT: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
-            CREDENTIALS: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
-            DOMAIN: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
+            REPORT.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
+            CREDENTIALS.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
+            DOMAIN.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
         },
     )
 
@@ -476,7 +476,7 @@ def test_fetch_events_with_last_run_no_events(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "event_types_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
+            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
             "is_fetch_events": True,
         },
     )
@@ -496,12 +496,12 @@ def test_fetch_events_with_last_run_no_events(mocker):
     actual_last_run = set_last_run_mocker.call_args[0][0]
 
     for event_type in (REPORT, CREDENTIALS, DOMAIN):
-        assert event_type in actual_last_run
+        assert event_type.name in actual_last_run
 
-        ts = actual_last_run[event_type][LATEST_TIME]
+        ts = actual_last_run[event_type.name][LATEST_TIME]
         assert ts != initial_time
 
-        assert actual_last_run[event_type][LATEST_FETCHED_IDS] == []
+        assert actual_last_run[event_type.name][LATEST_FETCHED_IDS] == []
 
 
 def test_fetch_events_without_last_run_no_events(mocker):
@@ -535,7 +535,7 @@ def test_fetch_events_without_last_run_no_events(mocker):
             "max_fetch_reports": 100,
             "max_fetch_creds": 100,
             "max_fetch_domain": 100,
-            "event_types_to_fetch": [REPORT, CREDENTIALS, DOMAIN],
+            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
             "is_fetch_events": True,
         },
     )
@@ -555,21 +555,21 @@ def test_fetch_events_without_last_run_no_events(mocker):
     actual_last_run = set_last_run_mocker.call_args[0][0]
 
     for event_type in (REPORT, CREDENTIALS, DOMAIN):
-        assert event_type in actual_last_run
+        assert event_type.name in actual_last_run
 
-        ts = actual_last_run[event_type][LATEST_TIME]
+        ts = actual_last_run[event_type.name][LATEST_TIME]
         assert ts
         assert isinstance(ts, str)
 
-        assert actual_last_run[event_type][LATEST_FETCHED_IDS] == []
+        assert actual_last_run[event_type.name][LATEST_FETCHED_IDS] == []
 
 
 @pytest.mark.parametrize(
     "event_type, max_fetch_key",
     [
-        (REPORT, "max_fetch_reports"),
-        (CREDENTIALS, "max_fetch_creds"),
-        (DOMAIN, "max_fetch_domain"),
+        (REPORT.name, "max_fetch_reports"),
+        (CREDENTIALS.name, "max_fetch_creds"),
+        (DOMAIN.name, "max_fetch_domain"),
     ],
 )
 def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_key):
@@ -1037,7 +1037,7 @@ def test_fetch_events_domain_two_call_paging(mocker):
     mocker.patch.object(
         demisto,
         "getLastRun",
-        return_value={DOMAIN: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: [str(i) for i in range(1, 26)]}},
+        return_value={DOMAIN.name: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: [str(i) for i in range(1, 26)]}},
     )
     mocker.patch.object(
         demisto,
@@ -1046,7 +1046,7 @@ def test_fetch_events_domain_two_call_paging(mocker):
             "url": TEST_URL,
             "credentials": {"identifier": "1234", "password": "1234"},
             "max_fetch_domain": 70,
-            "event_types_to_fetch": [DOMAIN],
+            "event_types_to_fetch": [DOMAIN.name],
             "is_fetch_events": True,
         },
     )
@@ -1061,15 +1061,15 @@ def test_fetch_events_domain_two_call_paging(mocker):
     fetched = send_events.call_args[0][0]
 
     assert len(fetched) == 70
-    assert fetched[0]["SOURCE_LOG_TYPE"] == EVENT_TYPE[DOMAIN].source_log_type
+    assert fetched[0]["SOURCE_LOG_TYPE"] == DOMAIN.source_log_type
 
-    returend_ids = [EVENT_TYPE[DOMAIN].get_id(event) for event in fetched]
+    returend_ids = [DOMAIN.get_id(event) for event in fetched]
     assert returend_ids == [str(i) for i in range(95, 25, -1)]
 
     lr = set_last_run.call_args[0][0]
-    assert lr[DOMAIN][LATEST_TIME] == fetched[0]["_time"]
-    last_id = EVENT_TYPE[DOMAIN].get_id(fetched[0])
-    assert lr[DOMAIN][LATEST_FETCHED_IDS][0] == last_id
+    assert lr[DOMAIN.name][LATEST_TIME] == fetched[0]["_time"]
+    last_id = DOMAIN.get_id(fetched[0])
+    assert lr[DOMAIN.name][LATEST_FETCHED_IDS][0] == last_id
 
 
 def test_get_latest_event_time_and_ids():
@@ -1091,14 +1091,14 @@ def test_get_latest_event_time_and_ids():
     last_run_time = "2024-02-29T13:48:32"
     events = [
         {
-            EVENT_TYPE[REPORT].id_key: f"{i}",
+            REPORT.id_key: f"{i}",  # type: ignore
             "_time": last_run_time,
         }
         for i in range(4, 7)
     ]
     last_run_ids = ["1", "2", "3"]
     last_time, last_ids = get_latest_event_time_and_ids(
-        events=events, event_type=EVENT_TYPE[REPORT], last_run_time=last_run_time, last_run_ids=last_run_ids
+        events=events, event_type=REPORT, last_run_time=last_run_time, last_run_ids=last_run_ids
     )
     assert last_time == last_run_time
     assert len(last_ids) == 6
@@ -1119,14 +1119,14 @@ def test_fetch_events_same_timestamp(mocker):
       - Only events 4,5,6 are sent back from the function.
       - lastRun is set to the same time with all 6 ids.
     """
-    from CybelAngelEventCollector import fetch_events, Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS, EVENT_TYPE
+    from CybelAngelEventCollector import fetch_events, Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS
 
     last_run_time = "2024-02-29T13:48:32"
     last_run_ids = ["1", "2", "3"]
 
     # Mock LastRun so fetch_events sees 1,2,3 already fetched at that timestamp
     mocker.patch.object(
-        demisto, "getLastRun", return_value={DOMAIN: {LATEST_TIME: last_run_time, LATEST_FETCHED_IDS: last_run_ids}}
+        demisto, "getLastRun", return_value={DOMAIN.name: {LATEST_TIME: last_run_time, LATEST_FETCHED_IDS: last_run_ids}}
     )
 
     # DummyClient must match the real signature: (start_date, end_date, event_type, limit)
@@ -1142,23 +1142,23 @@ def test_fetch_events_same_timestamp(mocker):
             return [{"domain": str(i), "_time": last_run_time} for i in range(1, limit + 1)]
 
     client = DummyClient()
-    max_fetch = {DOMAIN: 3}
+    DOMAIN.max_fetch = 3
 
     # Run the orchestration
-    events, new_last_run = fetch_events(client, max_fetch, [DOMAIN])
+    events, new_last_run = fetch_events(client, [DOMAIN])
 
     # 1) We should have fetched limit = previous_ids(3) + max_fetch(3) = 6
     assert client.called["limit"] == 6
 
     # 2) Of those 6, only IDs 4,5,6 remain after dedup + truncation to max_fetch=3
     assert len(events) == 3
-    returned_ids = [EVENT_TYPE[DOMAIN].get_id(e) for e in events]
+    returned_ids = [DOMAIN.get_id(e) for e in events]
     assert returned_ids == ["4", "5", "6"]
 
     # 3) last_run should still have that same timestamp, but now include all six IDs
-    assert DOMAIN in new_last_run
-    assert new_last_run[DOMAIN][LATEST_TIME] == last_run_time
-    assert set(new_last_run[DOMAIN][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
+    assert DOMAIN.name in new_last_run
+    assert new_last_run[DOMAIN.name][LATEST_TIME] == last_run_time
+    assert set(new_last_run[DOMAIN.name][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
 
 
 def test_get_token_request_raises(monkeypatch):
