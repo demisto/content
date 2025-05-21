@@ -3,7 +3,6 @@ This integration was integrated and tested with version 7.4 of fortimail.
 
 ## Configure FortiMail in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version 7.4 of fortimail.
 | Password | True |
 | Use system proxy settings | False |
 | Trust any certificate (not secure) | False |
-
 
 ## Commands
 
@@ -42,8 +40,11 @@ Create an IP group. IP group is a container that contains members of IP address 
 | FortiMail.IPGroup.mkey | String | The name of the IP group. |
 
 #### Command example
+
 ```!fortimail-ip-group-create name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -58,10 +59,10 @@ Create an IP group. IP group is a container that contains members of IP address 
 #### Human Readable Output
 
 >### Ip Group created successfully
+>
 >|mkey|
 >|---|
 >| TestT |
-
 
 ### fortimail-ip-group-update
 
@@ -87,8 +88,11 @@ Update the comment of an IP group.
 | FortiMail.IPGroup.mkey | String | The name of the IP group. |
 
 #### Command example
+
 ```!fortimail-ip-group-update name=TestT comment=comment```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -103,10 +107,10 @@ Update the comment of an IP group.
 #### Human Readable Output
 
 >### Ip Group updated successfully
+>
 >|mkey|comment|
 >|---|---|
 >| TestT | comment |
-
 
 ### fortimail-ip-group-delete
 
@@ -126,9 +130,13 @@ Delete an IP group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-ip-group-delete name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -168,8 +176,11 @@ List IP groups. if a name is given, the command will return the information abou
 | FortiMail.IPGroup.mkey | String | The name of the IP group. |
 
 #### Command example
+
 ```!fortimail-ip-group-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -224,6 +235,7 @@ List IP groups. if a name is given, the command will return the information abou
 #### Human Readable Output
 
 >### Ip Group list
+>
 >|Name|Comment|
 >|---|---|
 >| TAL | TEST |
@@ -236,7 +248,6 @@ List IP groups. if a name is given, the command will return the information abou
 >| tal_test |  |
 >| test | dfsdfsdf |
 >| test1 | test1 |
-
 
 ### fortimail-ip-group-member-add
 
@@ -262,8 +273,11 @@ Add an IP group member (IP/Netmask or IP range) to an IP group. An IP group memb
 | FortiMail.IPGroup.Member.mkey | String | The name of the IP member. |
 
 #### Command example
+
 ```!fortimail-ip-group-member-add group_name=TestT ip=2.2.2.2```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -300,9 +314,13 @@ Replace IP group members with new members. This command overwrites all the IP gr
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-ip-group-member-replace group_name=TestT ips=3.3.3.3,4.4.4.4```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -344,9 +362,13 @@ Delete an IP group member from IP group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-ip-group-member-delete group_name=TestT ip=4.4.4.4```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -387,8 +409,11 @@ List IP group members. If an ip is given, the command will return the informatio
 | FortiMail.IPGroup.Member.mkey | String | The name of the IP member. |
 
 #### Command example
+
 ```!fortimail-ip-group-member-list group_name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -407,10 +432,10 @@ List IP group members. If an ip is given, the command will return the informatio
 #### Human Readable Output
 
 >### Ip Group Member
+>
 >|Name|Group Name|
 >|---|---|
 >| 3.3.3.3-3.3.3.3 | TestT |
-
 
 ### fortimail-email-group-create
 
@@ -436,8 +461,11 @@ Create an email group. An email group is a container for a list of email address
 | FortiMail.EmailGroup.mkey | String | The name of the email group. |
 
 #### Command example
+
 ```!fortimail-email-group-create name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -452,10 +480,10 @@ Create an email group. An email group is a container for a list of email address
 #### Human Readable Output
 
 >### Email Group created successfully
+>
 >|mkey|
 >|---|
 >| TestT |
-
 
 ### fortimail-email-group-update
 
@@ -481,8 +509,11 @@ Update the comment of an email group.
 | FortiMail.EmailGroup.mkey | String | The name of the email group. |
 
 #### Command example
+
 ```!fortimail-email-group-update name=TestT comment=comment```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -497,10 +528,10 @@ Update the comment of an email group.
 #### Human Readable Output
 
 >### Email Group updated successfully
+>
 >|mkey|comment|
 >|---|---|
 >| TestT | comment |
-
 
 ### fortimail-email-group-delete
 
@@ -520,9 +551,13 @@ Delete an email group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-email-group-delete name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -562,8 +597,11 @@ List email groups. If a name is given, the command will return the information a
 | FortiMail.EmailGroup.mkey | String | The name of the email group. |
 
 #### Command example
+
 ```!fortimail-email-group-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -590,12 +628,12 @@ List email groups. If a name is given, the command will return the information a
 #### Human Readable Output
 
 >### Email Group list
+>
 >|Name|Comment|
 >|---|---|
 >| TestT | comment |
 >| new_version3242342.0 | new_comment_update |
 >| test |  |
-
 
 ### fortimail-email-group-member-add
 
@@ -621,8 +659,11 @@ Add an email group member (email address) to an email group.
 | FortiMail.EmailGroup.Member.mkey | String | The name of the email member. |
 
 #### Command example
+
 ```!fortimail-email-group-member-add group_name=TestT email=t@t.com```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -659,9 +700,13 @@ Replace email group members with new members. This command overwrites all the em
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-email-group-member-replace group_name=TestT emails=d@d.com,r@r.com```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -703,9 +748,13 @@ Delete an email group member from an email group.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-email-group-member-delete group_name=TestT email=r@r.com```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -746,8 +795,11 @@ List email group members. If an email is given, the command will return the info
 | FortiMail.EmailGroup.Member.mkey | String | The name of the email member. |
 
 #### Command example
+
 ```!fortimail-email-group-member-list group_name=TestT```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -766,10 +818,10 @@ List email group members. If an email is given, the command will return the info
 #### Human Readable Output
 
 >### Email Group Member
+>
 >|Name|Group Name|
 >|---|---|
 >| d@d.com | TestT |
-
 
 ### fortimail-system-safe-block-list
 
@@ -796,8 +848,11 @@ List the system Block/Safe list. Choose the specified list by the type argument.
 | FortiMail.SystemList.list_type | String | The type of the list (safelist or blocklist). |
 
 #### Command example
+
 ```!fortimail-system-safe-block-list list_type=Blocklist```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -846,6 +901,7 @@ List the system Block/Safe list. Choose the specified list by the type argument.
 #### Human Readable Output
 
 >### System Safe Block
+>
 >|item|list_type|
 >|---|---|
 >| 1.1.1.1/24 | Blocklist |
@@ -857,7 +913,6 @@ List the system Block/Safe list. Choose the specified list by the type argument.
 >| 3.5.7.8/24 | Blocklist |
 >| 5.5.5.5/24 | Blocklist |
 >| 7.7.7.7/24 | Blocklist |
-
 
 ### fortimail-system-safe-block-add
 
@@ -878,9 +933,13 @@ Add an email address/ domain name/ IP address to the system safe/block list. Blo
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-system-safe-block-add values=1.1.1.1 list_type=Blocklist```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -895,10 +954,10 @@ There is no context output for this command.
 #### Human Readable Output
 
 >### System Block List Items Was Added Successfully
+>
 >|item|list_type|
 >|---|---|
 >| 1.1.1.1 | Blocklist |
-
 
 ### fortimail-system-safe-block-delete
 
@@ -919,9 +978,13 @@ Delete an email address/ domain name/ IP address from the system safe/block list
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-system-safe-block-delete values=1.1.1.1 list_type=Blocklist```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1003,8 +1066,11 @@ Create an IP policy. IP-based policies lets you control emails based on IP/Netma
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
+
 ```!fortimail-ip-policy-create status=enable comment=testTal```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1045,10 +1111,10 @@ Create an IP policy. IP-based policies lets you control emails based on IP/Netma
 #### Human Readable Output
 
 >### Ip Policy created successfully
+>
 >|Action|Action On Failure|Client|Client Type|Comment|Name|Server|Server Type|Status|
 >|---|---|---|---|---|---|---|---|---|
 >| Scan | Scan | 0.0.0.0/0 | IP/Netmask | testTal | 1 | 0.0.0.0/0 | IP/Netmask | enable |
-
 
 ### fortimail-ip-policy-update
 
@@ -1118,8 +1184,11 @@ Update an IP policy.
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
+
 ```!fortimail-ip-policy-update ip_policy_id=4 comment=test2```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1135,10 +1204,10 @@ Update an IP policy.
 #### Human Readable Output
 
 >### Ip Policy updated successfully
+>
 >|Comment|Name|Status|
 >|---|---|---|
 >| test2 | 4 | enable |
-
 
 ### fortimail-ip-policy-move
 
@@ -1160,8 +1229,11 @@ Move an IP policy location in the policy list. FortiMail units match the policie
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-ip-policy-move policy_id=4 action=up```
+
 #### Human Readable Output
 
 >Ip Policy moved successfully
@@ -1184,9 +1256,13 @@ Delete an IP policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-ip-policy-delete policy_id=9```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1252,8 +1328,11 @@ List an IP policy. If an ID is given, the command will return the information ab
 | FortiMail.IPPolicy.mkey | Number | The ID of the IP policy. |
 
 #### Command example
+
 ```!fortimail-ip-policy-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1362,13 +1441,13 @@ List an IP policy. If an ID is given, the command will return the information ab
 #### Human Readable Output
 
 >### Ip Policy list
+>
 >|Name|Comment|Server|Client|Client Type|Status|
 >|---|---|---|---|---|---|
 >| 1 | testTal | 0.0.0.0/0 | 0.0.0.0/0 | IP/Netmask | enable |
 >| 3 |  | 0.0.0.0/0 | 0.0.0.0/0 | IP/Netmask | enable |
 >| 4 | test2 | 0.0.0.0/0 | 0.0.0.0/0 | IP/Netmask | enable |
 >| 5 | s | 0.0.0.0/0 | 0.0.0.0/0 | IP/Netmask | enable |
-
 
 ### fortimail-access-control-create
 
@@ -1385,9 +1464,9 @@ Create an Access control rule. Access control rules take effect after the FortiM
 | --- | --- | --- |
 | status | Whether to activate the access rule. Possible values are: enable, disable. Default is enable. | Optional |
 | sender_type | The method of the SMTP client attempting to send the email message. Select either User Defined and enter a complete or partial sender email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from an unprotected domain. Email Group: Match any email address in the group. If you select this option, in the sender argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the sender_ldap_profile argument insert an LDAP profile and in  sender insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the sender_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
-| sender | The sender. Relevant when sender_type is not External or Internal. When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
+| sender | The sender. Relevant when sender_type is not External or Internal. When sender_type = Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When sender_type = LDAP Verification, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When sender_type = Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is*. | Optional |
 | recipient_type | The recipient pattern type. Either select User Defined and enter a complete or partial recipient email address to match, or select: Internal: Match any email address from a protected domain. External: Match any email address from a domain that is not protected. Email Group: Match any email address in the group. If you select this option, in the recipient argument insert an email group. LDAP Group: Match any email address in the group. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile and in the recipient insert an LDAP group name. LDAP Verification: Match any individual email address queried by the LDAP profile. If you select this option, in the recipient_ldap_profile argument insert an LDAP profile. Regular Expression: Use regular expression syntax instead of wildcards to specify the pattern. User Defined: Specify the email addresses. The pattern can use wildcards or regular expressions. Possible values are: External, Internal, Email Group, LDAP Group, LDAP Verification, Regular Expression, User Defined. Default is User Defined. | Optional |
-| recipient | The recipient. Relevant when recipient_type is not External or Internal. When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When recipient_type= LDAP Verification, insert LDAP server. When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is *. | Optional |
+| recipient | The recipient. Relevant when recipient_type is not External or Internal. When recipient_type= Email Group, insert email group (use fortimail-email-group-list to retrieve all the email groups). When recipient_type= LDAP Verification, insert LDAP server. When recipient_type= LDAP Group, insert LDAP group (use fortimail-ldap-group-list to retrieve all the LDAP groups). When recipient_type= Regular Expression or User Defined, insert a pattern that defines recipient email addresses which match this rule, surrounded in slashes and single quotes (such as \'*\' ). Default is*. | Optional |
 | sender_ldap_profile | Sender LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when sender_type= LDAP Group. | Optional |
 | recipient_ldap_profile | Recipient LDAP profile (use fortimail-ldap-group-list to retrieve all the LDAP profiles). Relevant when recipient_type= LDAP Group. | Optional |
 | source_type | The method of the SMTP client attempting to send the email message. Possible values are: IP/Netmask, IP Group, GeoIP Group, ISDB. Default is IP/Netmask. | Optional |
@@ -1428,8 +1507,11 @@ Create an Access control rule. Access control rules take effect after the FortiM
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
 #### Command example
+
 ```!fortimail-access-control-create status=enable comment=TalTest1```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1465,10 +1547,10 @@ Create an Access control rule. Access control rules take effect after the FortiM
 #### Human Readable Output
 
 >### Access Control created successfully
+>
 >|Action|Action On Failure|Authenticated|Comment|Name|Recipient Pattern Type|Sender Geo IP Group|Sender Ip Group|Sender Ip Mask|Sender Ip Type|Sender Pattern|Sender Pattern Type|Status|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| Reject | Reject | Any | TalTest1 | 3 | User Defined | 0.0.0.0/0 | 0.0.0.0/0 | 0.0.0.0/0 | IP/Netmask | * | User Defined | enable |
-
 
 ### fortimail-access-control-update
 
@@ -1529,8 +1611,11 @@ Update an access control.
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
 #### Command example
+
 ```!fortimail-access-control-update access_control_id=1 comment=test2```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1546,10 +1631,10 @@ Update an access control.
 #### Human Readable Output
 
 >### Access Control updated successfully
+>
 >|Comment|Name|Status|
 >|---|---|---|
 >| test2 | 1 | enable |
-
 
 ### fortimail-access-control-delete
 
@@ -1569,9 +1654,13 @@ Delete an access control rule.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-access-control-delete access_control_id=19```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -1606,8 +1695,11 @@ Move an Access control rule location in the rules list. FortiMail units match th
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-access-control-move access_control_id=2 action=down```
+
 #### Human Readable Output
 
 >Access Control moved successfully
@@ -1658,8 +1750,11 @@ List access control rules. If an ID is given, the command will return the inform
 | FortiMail.AccessControl.mkey | Number | The ID of the access control. |
 
 #### Command example
+
 ```!fortimail-access-control-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -2197,6 +2292,7 @@ List access control rules. If an ID is given, the command will return the inform
 #### Human Readable Output
 
 >### Access Control list
+>
 >|Name|Comment|Action On Failure|Status|Action|Authenticated|Sender Pattern|Sender Pattern Type|Sender Ip Type|Sender Ip Group|Sender Ip Mask|Sender Geo IP Group|Recipient Pattern Type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | test2 | Reject | enable | Reject | Any | * | User Defined | IP/Netmask |  | 0.0.0.0/0 |  | User Defined |
@@ -2220,7 +2316,6 @@ List access control rules. If an ID is given, the command will return the inform
 >| 20 | Talll | Reject | enable | Reject | Any | * | LDAP Group | IP/Netmask |  | 0.0.0.0/0 |  | User Defined |
 >| 21 | action 1 | Safe & Relay | enable | Safe & Relay | Any | * | Email Group | IP Group | test | 0.0.0.0/0 |  | LDAP Verification |
 >| 23 | action 33331 | Safe & Relay | enable | Safe & Relay | Any | * | LDAP Group | IP Group | test | 0.0.0.0/0 |  | LDAP Verification |
-
 
 ### fortimail-recipient-policy-create
 
@@ -2299,8 +2394,11 @@ Create an Inbound/ Outbound Recipient policy. Recipient policies control email b
 | FortiMail.RecipientPolicy.certificate_required | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 
 #### Command example
+
 ```!fortimail-recipient-policy-create comment=TalTest1 resource_profile=Res_Default```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -2349,10 +2447,10 @@ Create an Inbound/ Outbound Recipient policy. Recipient policies control email b
 #### Human Readable Output
 
 >### Recipient Policy created successfully
+>
 >|Comment|Direction|Name|PKI Auth|Recipient Pattern Regex|Resource Profile|Sender Pattern|Sender Type|Status|
 >|---|---|---|---|---|---|---|---|---|
 >| TalTest1 | Inbound | 15 | disable | .* | Res_Default | * | User (wildcard) | enable |
-
 
 ### fortimail-recipient-policy-update
 
@@ -2432,8 +2530,11 @@ Update a recipient policy.
 | FortiMail.RecipientPolicy.certificate_required | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 
 #### Command example
+
 ```!fortimail-recipient-policy-update recipient_policy_id=1 comment=test2```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -2449,10 +2550,10 @@ Update a recipient policy.
 #### Human Readable Output
 
 >### Recipient Policy updated successfully
+>
 >|Comment|Name|Status|
 >|---|---|---|
 >| test2 | 1 | enable |
-
 
 ### fortimail-recipient-policy-delete
 
@@ -2472,9 +2573,13 @@ Delete a recipient policy.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-recipient-policy-delete recipient_policy_id=14```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -2509,8 +2614,11 @@ Move a recipient policy location in the policy list. FortiMail units match the p
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!fortimail-recipient-policy-move recipient_policy_id=1 reference_id=5 action=after```
+
 #### Human Readable Output
 
 >Recipient Policy moved successfully
@@ -2571,8 +2679,11 @@ List recipient policies. If an ID is given, the command will return the informat
 | FortiMail.RecipientPolicy.certificate_required | String | Whether to allow email users to log in to their per-recipient spam quarantine by presenting a certificate rather than a user name and password. |
 
 #### Command example
+
 ```!fortimail-recipient-policy-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3104,6 +3215,7 @@ List recipient policies. If an ID is given, the command will return the informat
 #### Human Readable Output
 
 >### Recipient Policy list
+>
 >|Name|Status|Sender Type|Sender Pattern|Recipient Pattern Regex|anti-spam|Content|PKI Auth|Direction|Antivirus|Resource Profile|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 5 | enable | User (regex) | * | .* | AS_Inbound@system | CF_Inbound@system | disable | Inbound | AV_Discard@system | Res_Default@system |
@@ -3120,7 +3232,6 @@ List recipient policies. If an ID is given, the command will return the informat
 >| 13 | enable | User (wildcard) | ****@ron.com | .* |  |  | disable | Outbound |  |  |
 >| 2 | enable | User (wildcard) | * | .* |  |  | disable | Inbound |  | Res_Default@system |
 >| 15 | enable | User (wildcard) | * | .* |  |  | disable | Inbound |  | Res_Default@system |
-
 
 ### fortimail-tls-profile-list
 
@@ -3150,8 +3261,11 @@ List TLS profiles. TLS profiles allow you to selectively disable or enable TLS f
 | FortiMail.TLSprofile.is_referenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-tls-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3176,11 +3290,11 @@ List TLS profiles. TLS profiles allow you to selectively disable or enable TLS f
 #### Human Readable Output
 
 >### Tls Profile list
+>
 >|Name|Comment|TLS level|Action On Failure|Action|
 >|---|---|---|---|---|
 >| tal | tal | 2 | true | true |
 >| test | test | 4 | false | false |
-
 
 ### fortimail-ldap-group-list
 
@@ -3210,8 +3324,11 @@ List LDAP profiles. LDAP groups lets to allow match email addresses as sender or
 | FortiMail.LDAPprofile.is_referenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-ldap-group-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3268,11 +3385,11 @@ List LDAP profiles. LDAP groups lets to allow match email addresses as sender or
 #### Human Readable Output
 
 >### Ldap Group list
+>
 >|Name|Server|Port|Group State|Auth State|Alias State|Routing State|Address Map State|Cache State|
 >|---|---|---|---|---|---|---|---|---|
 >| tal | 2.2.2.2 | 389 | false | true | true | false | false | true |
 >| test |  | 389 | false | true | true | false | false | true |
-
 
 ### fortimail-geoip-group-list
 
@@ -3301,8 +3418,11 @@ List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo location
 | FortiMail.GeoIPgroup.is_referenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-geoip-group-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3331,12 +3451,12 @@ List GeoIP groups. FortiMail utilizes the GeoIP database to map the geo location
 #### Human Readable Output
 
 >### Geoip Group list
+>
 >|Name|Comment|Country|
 >|---|---|---|
 >| Test_3 |  | AO,AR,AW,AT,BF,CM,CV,KY,CF |
 >| test_2 |  |  |
 >| test_ben | test | AL,DZ,AD,AQ |
-
 
 ### fortimail-antispam-profile-list
 
@@ -3366,8 +3486,11 @@ List AntiSpam profiles. Antispam profiles are sets of antispam scans that you ca
 | FortiMail.AntispamProfile.isReferenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-antispam-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3405,13 +3528,13 @@ List AntiSpam profiles. Antispam profiles are sets of antispam scans that you ca
 #### Human Readable Output
 
 >### Antispam Profile list
+>
 >|Name|Comment|
 >|---|---|
 >| AS_Inbound |  |
 >| AS_Inbound_High |  |
 >| AS_Outbound |  |
 >| fortimail-antispam-profile-list | fortimail-antispam-profile-listfortimail-antispam-profile-listfortimail-antispam-profile-list |
-
 
 ### fortimail-antivirus-profile-list
 
@@ -3438,8 +3561,11 @@ List AntiVirus profiles. if the FortiMail unit detects a virus, it will take act
 | FortiMail.AntivirusProfile.comment | String | A brief comment for the antivirus profile. |
 
 #### Command example
+
 ```!fortimail-antivirus-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3469,13 +3595,13 @@ List AntiVirus profiles. if the FortiMail unit detects a virus, it will take act
 #### Human Readable Output
 
 >### Antivirus Profile list
+>
 >|Name|Comment|
 >|---|---|
 >| AV_Discard |  |
 >| AV_Reject |  |
 >| AV_SysQuarantine |  |
 >| fortimail-antivirus-profile-list | fortimail-antivirus-profile-list |
-
 
 ### fortimail-content-profile-list
 
@@ -3503,8 +3629,11 @@ List Content profiles. Content profiles enable matching emails based upon its su
 | FortiMail.ContentProfile.isReferenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-content-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3530,12 +3659,12 @@ List Content profiles. Content profiles enable matching emails based upon its su
 #### Human Readable Output
 
 >### Content Profile list
+>
 >|Name|Comment|
 >|---|---|
 >| CF_Inbound |  |
 >| CF_Outbound |  |
 >| fortimail-content-profile-list | fortimail-content-profile-list |
-
 
 ### fortimail-ip-pool-list
 
@@ -3567,8 +3696,11 @@ List IP pool profiles. IP pools define a range of IP addresses, and can be used 
 | FortiMail.IPPool.is_certificate_expired | Boolean | Whether the certificate expired. |
 
 #### Command example
+
 ```!fortimail-ip-pool-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3608,12 +3740,12 @@ List IP pool profiles. IP pools define a range of IP addresses, and can be used 
 #### Human Readable Output
 
 >### Ip Pool list
+>
 >|Name|Comment|IP Group|SMTP Certificate|SMTP Certificate Direction|SMTP Greeting Name|
 >|---|---|---|---|---|---|
 >| fortimail-ip-pool-list | fortimail-ip-pool-list | test1 | Factory | 3 | fortimail-ip-pool-list |
 >| tal-pool |  | test |  | 2 |  |
 >| test_tal | tal test | test1 | Self | 3 |  |
-
 
 ### fortimail-session-profile-list
 
@@ -3641,8 +3773,11 @@ List IP session profiles. Session profiles focus on the connection and envelope 
 | FortiMail.SessionProfile.action | Boolean | The action of the session profile. |
 
 #### Command example
+
 ```!fortimail-session-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3665,11 +3800,11 @@ List IP session profiles. Session profiles focus on the connection and envelope 
 #### Human Readable Output
 
 >### Session Profile list
+>
 >|Name|Comment|
 >|---|---|
 >| Inbound_Session | fortimail-session-profile-list |
 >| Outbound_Session |  |
-
 
 ### fortimail-radius-auth-profile-list
 
@@ -3698,8 +3833,11 @@ List RADIUS authentication profiles. If a name is given, the command will return
 | FortiMail.RadiusAuthProfile.authport | Number | The server port of the RADIUS authentication profile. |
 
 #### Command example
+
 ```!fortimail-radius-auth-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3722,10 +3860,10 @@ List RADIUS authentication profiles. If a name is given, the command will return
 #### Human Readable Output
 
 >### Radius Auth Profile list
+>
 >|Name|Comment|Server|Auth Port|Access Override Vendor|Domain Override Vendor|
 >|---|---|---|---|---|---|
 >| fortimail-radius-auth-profile-list | fortimail-radius-auth-profile-list | 127.0.0.1 | 1812 | 12356 | 12356 |
-
 
 ### fortimail-pop3-auth-profile-list
 
@@ -3755,8 +3893,11 @@ List POP3 authentication profiles. If a name is given, the command will return t
 | FortiMail.Pop3AuthProfile.auth_type | Number | The authentication type of the POP3 authentication profile. |
 
 #### Command example
+
 ```!fortimail-pop3-auth-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3774,10 +3915,10 @@ List POP3 authentication profiles. If a name is given, the command will return t
 #### Human Readable Output
 
 >### Pop3 Auth Profile list
+>
 >|Name|Comment|Server|Auth Type|Port|
 >|---|---|---|---|---|
 >| fortimail-radius-auth-profile-listpop | fortimail-radius-auth-profile-list | 1.1.1.1 | 0 | 110 |
-
 
 ### fortimail-imap-auth-profile-list
 
@@ -3807,8 +3948,11 @@ List IMAP authentication profiles. If a name is given, the command will return t
 | FortiMail.ImapAuthProfile.auth_type | Number | The authentication type of the IMAP authentication profile. |
 
 #### Command example
+
 ```!fortimail-imap-auth-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3826,10 +3970,10 @@ List IMAP authentication profiles. If a name is given, the command will return t
 #### Human Readable Output
 
 >### Imap Auth Profile list
+>
 >|Name|Comment|Server|Auth Type|Port|
 >|---|---|---|---|---|
 >| fortimail-radius-auth-profile-listimap | fortimail-radius-auth-profile-list | 2.2.2.2 | 3 | 143 |
-
 
 ### fortimail-smtp-auth-profile-list
 
@@ -3859,8 +4003,11 @@ List SMTP authentication profiles. If a name is given, the command will return t
 | FortiMail.SmtpAuthProfile.auth_type | Number | The authentication type of the SMTP authentication profile. |
 
 #### Command example
+
 ```!fortimail-smtp-auth-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3878,10 +4025,10 @@ List SMTP authentication profiles. If a name is given, the command will return t
 #### Human Readable Output
 
 >### Smtp Auth Profile list
+>
 >|Name|Comment|Server|Auth Type|Port|
 >|---|---|---|---|---|
 >| fortimail-radius-auth-profile-listsmtp | fortimail-radius-auth-profile-list | 3.3.3.3 | 1 | 25 |
-
 
 ### fortimail-resource-profile-list
 
@@ -3909,8 +4056,11 @@ List resource profiles. Resouce profile configure miscellaneous aspects of the e
 | FortiMail.ResourceProfile.is_referenced | Number | Number of referencing entities. |
 
 #### Command example
+
 ```!fortimail-resource-profile-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3926,10 +4076,10 @@ List resource profiles. Resouce profile configure miscellaneous aspects of the e
 #### Human Readable Output
 
 >### Resource Profile list
+>
 >|Name|
 >|---|
 >| Res_Default |
-
 
 ### fortimail-pki-user-list
 
@@ -3958,8 +4108,11 @@ List PKI users. PKI users can authenticate by presenting a valid client certific
 | FortiMail.PKIuser.ldapprofile | String | The LDAP profile of the PKI user. |
 
 #### Command example
+
 ```!fortimail-pki-user-list```
+
 #### Context Example
+
 ```json
 {
     "FortiMail": {
@@ -3998,6 +4151,7 @@ List PKI users. PKI users can authenticate by presenting a valid client certific
 #### Human Readable Output
 
 >### Pki User list
+>
 >|Name|Subject|LDAP Profile|LDAP Query|OCSP verify|
 >|---|---|---|---|---|
 >| lior | tola |  | true | false |

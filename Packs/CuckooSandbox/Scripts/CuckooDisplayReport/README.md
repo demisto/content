@@ -1,5 +1,7 @@
 Displays the contents of a Cuckoo report file from a War Room entry.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -7,13 +9,15 @@ Displays the contents of a Cuckoo report file from a War Room entry.
 | Script Type | python |
 | Tags | cuckoo |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * ck-report
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +28,6 @@ This script uses the following commands and scripts.
 | reportdata | The report to be parsed.  |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

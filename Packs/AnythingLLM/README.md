@@ -1,9 +1,10 @@
-# Anything LLM 
-This content pack contains an integration for Anything LLM that supports using Retrieval Augmented Generation (RAG) with an LLM and user documents embedded in a vector DB.  The LLM and vector DB can be fully local for maximum data privacy or configured to use cloud-based services such as OpenAI. A variety of LLMs and vector DBs are supported. Anything LLM itself can be installed on customer infrastructure or accessed as a cloud service. 
+# Anything LLM
+
+This content pack contains an integration for Anything LLM that supports using Retrieval Augmented Generation (RAG) with an LLM and user documents embedded in a vector DB.  The LLM and vector DB can be fully local for maximum data privacy or configured to use cloud-based services such as OpenAI. A variety of LLMs and vector DBs are supported. Anything LLM itself can be installed on customer infrastructure or accessed as a cloud service.
 
 ### Locally Hosted
 
-#### Example local LLM models:
+#### Example local LLM models
 
 * Llama3
 * Llama2
@@ -13,7 +14,7 @@ This content pack contains an integration for Anything LLM that supports using R
 * Orca
 * Phi
 
-#### Example local vector DBs:
+#### Example local vector DBs
 
 * LanceDB
 * Chroma
@@ -21,7 +22,7 @@ This content pack contains an integration for Anything LLM that supports using R
 
 ### Cloud Hosted
 
-#### Example cloud LLM services:
+#### Example cloud LLM services
 
 * OpenAI
 * Google Gemini
@@ -30,7 +31,7 @@ This content pack contains an integration for Anything LLM that supports using R
 * Hugging Face
 * Perplexity
 
-#### Example cloud vector DB services:
+#### Example cloud vector DB services
 
 * Pinecode
 * QDrant
@@ -63,7 +64,7 @@ The following JSON keys are currently supported for updating:
 * name                  - workspace name
 * openAiTemp            - LLM temperature (0 - 1) where 1 is more creative and 0 is more repeatable
 * openAiHistory         - chat history length to keep in context
-* openAiPrompt          - prompt 
+* openAiPrompt          - prompt
 * similarityThreshold   - vector DB similarity (None, 0.25, 0.50, 0.75)
 * topN                  - top N similar results to return to chat context (1 - 12)
 * chatMode              - query mode focuses on using the embedded document data, chat mode is traditional LLM chatting (query, chat)
@@ -97,7 +98,7 @@ The general use case development process is:
 * Threat Blog Summaries
 * Advisory Summaries
 * CVE summaries
-* Investigation Summaries 
+* Investigation Summaries
 
 ## Workspace and Document Management
 

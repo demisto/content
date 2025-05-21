@@ -3,15 +3,17 @@ By default, the analyst is picked randomly from the available users, according t
 The analyst will be picked according to the `assignBy` arguments.
 
 Machine-Learning: DBot will calculate and decide who is the best analyst for the job.
- * top-user: The user that is most commonly owns this type of incident.
- * less-busy-user: The less busy analyst will be picked to be the incident owner.
- * online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles are provided, this will fetch all users).
- * current: The user that executed the command.
 
-When the chosen  `assignBy` argument is either: machine-learning, top-user or  less-busy-user, 
+* top-user: The user that is most commonly owns this type of incident.
+* less-busy-user: The less busy analyst will be picked to be the incident owner.
+* online: The analyst is picked randomly from all online analysts, according to the provided roles (if no roles are provided, this will fetch all users).
+* current: The user that executed the command.
+
+When the chosen  `assignBy` argument is either: machine-learning, top-user or  less-busy-user,
 the selection of the analyst will not take into consideration the given role.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -19,8 +21,8 @@ the selection of the analyst will not take into consideration the given role.
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -32,5 +34,6 @@ the selection of the analyst will not take into consideration the given role.
 | onCall | Set to true to assign only a user that is currently on shift (optional, default: false). Requires Cortex XSOAR v5.5 or later. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -8,7 +8,6 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 
 ## Configure Zscaler Internet Access in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Cloud Name (i.e. <https://zsapi.zscalertwo.net>) | See <https://help.zscaler.com/zia/getting-started-zia-api#RetrieveBaseURL> on how to retrieve your cloud name. | True |
@@ -21,7 +20,6 @@ A custom category ID has the format `CUSTOM_01`, which is not indicative of the
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Timeout (in seconds) for HTTP requests to Zscaler |  | False |
-
 
 ## Commands
 
@@ -41,7 +39,7 @@ Adds the specified URLs to the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to add to block list. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to add to block list. For example, snapchat.com,facebook.com. | Required |
 
 #### Context Output
 
@@ -70,23 +68,23 @@ Looks up the classification for the each of the specified URLs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs for which to look up the classification.  For example, abc.com,xyz.com. The maximum number of URLs per call is 100. A URL cannot exceed 1024 characters. If there are multiple URLs, set the 'multiple' argument to 'true'. | Required | 
-| multiple | Whether there are multiple URLs in the 'url' argument. If a URL contains commas, set this argument to 'false' and enter the single URL as the 'url' argument. Possible values are: true, false. Default is true. | Optional | 
+| url | A comma-separated list of URLs for which to look up the classification.  For example, abc.com,xyz.com. The maximum number of URLs per call is 100. A URL cannot exceed 1024 characters. If there are multiple URLs, set the 'multiple' argument to 'true'. | Required |
+| multiple | Whether there are multiple URLs in the 'url' argument. If a URL contains commas, set this argument to 'false' and enter the single URL as the 'url' argument. Possible values are: true, false. Default is true. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| URL.Data | string | The URL that was searched. | 
-| URL.Address | string | The URL that was searched. | 
-| Zscaler.URL.urlClassifications | string | The classification of the URL. For example, MUSIC or WEB_SEARCH. | 
-| Zscaler.URL.urlClassificationsWithSecurityAlert | string | The classifications of the URLs that have security alerts. | 
-| URL.Malicious.Vendor | string | For malicious URLs, the vendor that tagged the URL as malicious. | 
-| URL.Malicious.Description | string | For malicious URLs, the reason the vendor tagged the URL as malicious. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | number | The actual score. | 
+| URL.Data | string | The URL that was searched. |
+| URL.Address | string | The URL that was searched. |
+| Zscaler.URL.urlClassifications | string | The classification of the URL. For example, MUSIC or WEB_SEARCH. |
+| Zscaler.URL.urlClassificationsWithSecurityAlert | string | The classifications of the URLs that have security alerts. |
+| URL.Malicious.Vendor | string | For malicious URLs, the vendor that tagged the URL as malicious. |
+| URL.Malicious.Description | string | For malicious URLs, the reason the vendor tagged the URL as malicious. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | number | The actual score. |
 
 #### Command Example
 
@@ -133,21 +131,21 @@ Looks up the classification for each of the specified IP addresses.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP address for which to look up the classification. For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100. An IP address cannot exceed 1024 characters. | Required | 
+| ip | A comma-separated list of IP address for which to look up the classification. For example, 8.8.8.8,1.2.3.4. The maximum number of URLs per call is 100. An IP address cannot exceed 1024 characters. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | string | The IP address that was searched. | 
-| Zscaler.IP.ipClassifications | string | The classification of the IP address. For example, MUSIC or WEB_SEARCH. | 
-| Zscaler.IP.iplClassificationsWithSecurityAlert | string | Classifications that have a security alert for the IP address. | 
-| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that tagged the IP address as malicious. | 
-| IP.Malicious.Description | string | For malicious IP addresses, the reason the vendor tagged the IP address as malicious. | 
-| DBotScore.Indicator | string | The indicator that was tested. | 
-| DBotScore.Type | string | The indicator type. | 
-| DBotScore.Vendor | string | The vendor used to calculate the score. | 
-| DBotScore.Score | number | The actual score. | 
+| IP.Address | string | The IP address that was searched. |
+| Zscaler.IP.ipClassifications | string | The classification of the IP address. For example, MUSIC or WEB_SEARCH. |
+| Zscaler.IP.iplClassificationsWithSecurityAlert | string | Classifications that have a security alert for the IP address. |
+| IP.Malicious.Vendor | string | For malicious IP addresses, the vendor that tagged the IP address as malicious. |
+| IP.Malicious.Description | string | For malicious IP addresses, the reason the vendor tagged the IP address as malicious. |
+| DBotScore.Indicator | string | The indicator that was tested. |
+| DBotScore.Type | string | The indicator type. |
+| DBotScore.Vendor | string | The vendor used to calculate the score. |
+| DBotScore.Score | number | The actual score. |
 
 #### Command Example
 
@@ -193,7 +191,7 @@ Removes the specified URLs from the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to remove from the block list. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to remove from the block list. For example, snapchat.com,facebook.com. | Required |
 
 #### Context Output
 
@@ -212,7 +210,7 @@ Adds the specified URLs to the allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to add to the allow list. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to add to the allow list. For example, snapchat.com,facebook.com. | Required |
 
 #### Context Output
 
@@ -241,7 +239,7 @@ Removes the specified URLs from the allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | A comma-separated list of URLs to remove from the allow list. For example, snapchat.com,facebook.com. | Required | 
+| url | A comma-separated list of URLs to remove from the allow list. For example, snapchat.com,facebook.com. | Required |
 
 #### Context Output
 
@@ -270,7 +268,7 @@ Removes the specified IP addresses from the allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required |
 
 #### Context Output
 
@@ -299,7 +297,7 @@ Adds the specified IP address to the allow list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to add to the allow list. For example, 8.8.8.8,1.2.3.4. | Required |
 
 #### Context Output
 
@@ -328,7 +326,7 @@ Removes the specified IP addresses from the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to remove from the allow list. For example, 8.8.8.8,1.2.3.4. | Required |
 
 #### Context Output
 
@@ -337,7 +335,6 @@ There is no context output for this command.
 #### Command Example
 
 ```!zscaler-undo-blacklist-ip ip=2.2.2.2,3.3.3.3```
-
 
 #### Human Readable Output
 
@@ -358,7 +355,7 @@ Adds the specified IP addresses to the block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4. | Required | 
+| ip | A comma-separated list of IP addresses to add to the block list. For example, 8.8.8.8,1.2.3.4. | Required |
 
 #### Context Output
 
@@ -367,7 +364,6 @@ There is no context output for this command.
 #### Command Example
 
 ```!zscaler-blacklist-ip ip=2.2.2.2,3.3.3.3```
-
 
 #### Human Readable Output
 
@@ -379,7 +375,7 @@ Added the following IP addresses to the block list successfully:
 
 ***
 Adds URLs to the specified category.  
-Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the (Zscaler URL Format Guidelines)[https://help.zscaler.com/zia/url-format-guidelines].
+Ensure that the URLs are properly formatted according to Zscaler's guidelines. For more information on valid URL formats, refer to the [Zscaler URL Format Guidelines](https://help.zscaler.com/zia/url-format-guidelines).
 
 #### Base Command
 
@@ -389,18 +385,18 @@ Ensure that the URLs are properly formatted according to Zscaler's guidelines. F
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category-id | The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
+| category-id | The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required |
 | url | A comma-separated list of URLs to add to the specified category. For example, `pandora.com,spotify.com`. <br> **Important:** <br> If any URL contains a comma (`,`), you must pass the `url` argument as a JSON list wrapped in backticks (\`). <br> **Example (single URL with comma):** <br> url=\`["https://example.com/foo,bar"]\` <br> **Example (multiple URLs with commas):** <br> url=\`["https://example.com/foo,bar","https://example2.com/foo,bar"]\` | Optional |
-| retaining-parent-category-url | A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional | 
+| retaining-parent-category-url | A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. |
+| Zscaler.Category.Description | string | The description of the category. |
+| Zscaler.Category.ID | string | The ID of the category. |
+| Zscaler.Category.URL | string | The URL of the category. |
 
 #### Command Example
 
@@ -432,8 +428,8 @@ Ensure that the URLs are properly formatted according to Zscaler's guidelines. F
 
 Added the following URL addresses to category MUSIC:
 
-*   demisto.com
-*   apple.com
+* demisto.com
+* apple.com
 
 ### zscaler-category-add-ip
 
@@ -448,18 +444,18 @@ Adds IP address to the specified category.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category-id | The ID of the category to add the specified IP addresses to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| ip | A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
-| retaining-parent-category-ip | A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
+| category-id | The ID of the category to add the specified IP addresses to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required |
+| ip | A comma-separated list of IP address to add to the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
+| retaining-parent-category-ip | A comma-separated list of IP address to add to the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category | 
+| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. |
+| Zscaler.Category.Description | string | The description of the category. |
+| Zscaler.Category.ID | string | The ID of the category. |
+| Zscaler.Category.URL | string | The URL of the category |
 
 #### Command Example
 
@@ -487,8 +483,8 @@ Adds IP address to the specified category.
 
 Added the following IP addresses to category REFERENCE_SITES:
 
-*   1.2.3.4
-*   8.8.8.8
+* 1.2.3.4
+* 8.8.8.8
 
 ### zscaler-category-remove-url
 
@@ -503,18 +499,18 @@ Removes URLs from the specified category.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category-id | The ID of the category to remove the specified URLs from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| url | A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com. | Optional | 
-| retaining-parent-category-url | A comma-separated list of URLs to remove from the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional | 
+| category-id | The ID of the category to remove the specified URLs from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required |
+| url | A comma-separated list of URLs to remove from the specified category. For example, pandora.com,spotify.com. | Optional |
+| retaining-parent-category-url | A comma-separated list of URLs to remove from the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. |
+| Zscaler.Category.Description | string | The description of the category. |
+| Zscaler.Category.ID | string | The ID of the category. |
+| Zscaler.Category.URL | string | The URL of the category. |
 
 #### Command Example
 
@@ -541,7 +537,7 @@ Removes URLs from the specified category.
 
 Removed the following URL addresses to category MUSIC:
 
-*   apple.com
+* apple.com
 
 ### zscaler-category-remove-ip
 
@@ -556,18 +552,18 @@ Removes IP address from the specified category.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| category-id | The ID of the category to remove the specified IP addresses from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| ip | A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
-| retaining-parent-category-ip | A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional | 
+| category-id | The ID of the category to remove the specified IP addresses from. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required |
+| ip | A comma-separated list of IP addresses to remove from the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
+| retaining-parent-category-ip | A comma-separated list of IP address to remove from the retaining parent category section inside the specified category. For example, 1.2.3.4,8.8.8.8. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.Description | string | The description of the category. | 
-| Zscaler.Category.ID | string | The ID of the category. | 
-| Zscaler.Category.URL | string | The URL of the category. | 
+| Zscaler.Category.CustomCategory | boolean | True, if the category is a custom category. Otherwise, false. |
+| Zscaler.Category.Description | string | The description of the category. |
+| Zscaler.Category.ID | string | The ID of the category. |
+| Zscaler.Category.URL | string | The URL of the category. |
 
 #### Command Example
 
@@ -594,7 +590,7 @@ Removes IP address from the specified category.
 
 Removed the following IP addresses to category REFERENCE\_SITES:
 
-*   1.2.3.4
+* 1.2.3.4
 
 ### zscaler-get-categories
 
@@ -609,20 +605,20 @@ Retrieves a list of all categories.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| displayURL | Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data. Possible values are: true, false. Default is false. | Optional | 
-| custom_categories_only | Whether to retrieve only custom categories to the War Room. Possible values are: true, false. Default is false. | Optional | 
-| get_ids_and_names_only | Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only. Possible values are: true, false. Default is false. | Optional | 
+| displayURL | Whether to display the URLs of each category in the War Room. URLs will always be returned to the Context Data. Possible values are: true, false. Default is false. | Optional |
+| custom_categories_only | Whether to retrieve only custom categories to the War Room. Possible values are: true, false. Default is false. | Optional |
+| get_ids_and_names_only | Whether to retrieve only a list containing URL category IDs and names. Even if *displayURL* is set to true, URLs will not be returned. Please note - the API does not support the combination of custom_only and get_ids_and_names_only. Possible values are: true, false. Default is false. | Optional |
 
 #### Context Output
 
 | **Path**                                    | **Type** | **Description**                                               |
 |---------------------------------------------|----------|---------------------------------------------------------------|
-| Zscaler.Category.ID                         | string   | The ID of the category.                                       | 
-| Zscaler.Category.CustomCategory             | boolean  | True, if the category is a custom category. Otherwise, false. | 
-| Zscaler.Category.URL                        | string   | The URL of the category.                                      | 
-| Zscaler.Category.RetainingParentCategoryURL | string   | The URLs of the retaining parent category.                    | 
-| Zscaler.Category.Description                | string   | The description of the category.                              | 
-| Zscaler.Category.Name                       | string   | The name of the category.                                     | 
+| Zscaler.Category.ID                         | string   | The ID of the category.                                       |
+| Zscaler.Category.CustomCategory             | boolean  | True, if the category is a custom category. Otherwise, false. |
+| Zscaler.Category.URL                        | string   | The URL of the category.                                      |
+| Zscaler.Category.RetainingParentCategoryURL | string   | The URLs of the retaining parent category.                    |
+| Zscaler.Category.Description                | string   | The description of the category.                              |
+| Zscaler.Category.Name                       | string   | The name of the category.                                     |
 
 #### Command Example
 
@@ -677,14 +673,14 @@ Retrieves the Zscaler default block list.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | Filter results by URL or IP objects. Possible values are: url, ip. | Optional | 
-| query | Query (Python regular expression) to match against. For example, 8.*.*.8. | Optional | 
+| filter | Filter results by URL or IP objects. Possible values are: url, ip. | Optional |
+| query | Query (Python regular expression) to match against. For example, 8.*.*.8. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Blacklist | string | The Zscaler block list. | 
+| Zscaler.Blacklist | string | The Zscaler block list. |
 
 #### Command Example
 
@@ -707,8 +703,8 @@ Retrieves the Zscaler default block list.
 
 Zscaler block list
 
-*   malicious.com
-*   bad.net
+* malicious.com
+* bad.net
 
 ### zscaler-get-whitelist
 
@@ -727,7 +723,7 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.Whitelist | string | The Zscaler allow list. | 
+| Zscaler.Whitelist | string | The Zscaler allow list. |
 
 #### Command Example
 
@@ -750,8 +746,8 @@ There are no input arguments for this command.
 
 Zscaler whitelist
 
-*   demisto.com
-*   apple.net
+* demisto.com
+* apple.net
 
 ### zscaler-sandbox-report
 
@@ -766,22 +762,22 @@ Retrieves a full or summary report of the file that was analyzed by Sandbox. The
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| md5 | The MD5 hash of a file. | Required | 
-| details | The type of report. Possible values are 'full' or 'summary'. Default is 'full'. | Optional | 
+| md5 | The MD5 hash of a file. | Required |
+| details | The type of report. Possible values are 'full' or 'summary'. Default is 'full'. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | string | The MD5 hash of the file. | 
-| File.Malicious.Vendor | string | For malicious files, the vendor that tagged the file as malicious. | 
-| File.Malicious.Description | string | For malicious files, the reason the vendor tagged the file as malicious. | 
-| File.DetectedMalware | string | The malware detected in the file. | 
-| File.FileType | string | The file type. | 
-| DBotScore.Indicator | string | The MD5 hash file that was tested. | 
-| DBotScore.Type | string | The MD5 hash file type. | 
-| DBotScore.Vendor | string | The vendor that calculated the DBot score. | 
-| DBotScore.Score | number | The actual DBot score. | 
+| File.MD5 | string | The MD5 hash of the file. |
+| File.Malicious.Vendor | string | For malicious files, the vendor that tagged the file as malicious. |
+| File.Malicious.Description | string | For malicious files, the reason the vendor tagged the file as malicious. |
+| File.DetectedMalware | string | The malware detected in the file. |
+| File.FileType | string | The file type. |
+| DBotScore.Indicator | string | The MD5 hash file that was tested. |
+| DBotScore.Type | string | The MD5 hash file type. |
+| DBotScore.Vendor | string | The vendor that calculated the DBot score. |
+| DBotScore.Score | number | The actual DBot score. |
 
 #### Command Example
 
@@ -917,8 +913,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.remainingUrlsQuota | Number | The number of URLs you can add before reaching the quota. | 
-| Zscaler.uniqueUrlsProvisioned | Number | The number of unique URLs that are currently provisioned for your organization. | 
+| Zscaler.remainingUrlsQuota | Number | The number of URLs you can add before reaching the quota. |
+| Zscaler.uniqueUrlsProvisioned | Number | The number of unique URLs that are currently provisioned for your organization. |
 
 ### zscaler-get-users
 
@@ -933,9 +929,9 @@ Get Zscaler users
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filer by user name. | Optional | 
-| page | Specifies the page offset. | Optional | 
-| pageSize | Specifies the page size. Default is 100. | Optional | 
+| name | Filer by user name. | Optional |
+| page | Specifies the page offset. | Optional |
+| pageSize | Specifies the page size. Default is 100. | Optional |
 
 #### Context Output
 
@@ -954,9 +950,8 @@ Updates the user information for the specified ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The unique identifier for the user. | Required | 
-| user | New user information. Docs: <https://help.zscaler.com/zia/api#/User%20Management/updateUser>. | Required | 
-
+| id | The unique identifier for the user. | Required |
+| user | New user information. Docs: <https://help.zscaler.com/zia/api#/User%20Management/updateUser>. | Required |
 
 #### Context Output
 
@@ -975,9 +970,9 @@ Get a list of departments. It can be searched by name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filter by department name. | Optional | 
-| page | Specifies the page offset. | Optional | 
-| pageSize | Specifies the page size. Default is 100. | Optional | 
+| name | Filter by department name. | Optional |
+| page | Specifies the page offset. | Optional |
+| pageSize | Specifies the page size. Default is 100. | Optional |
 
 #### Context Output
 
@@ -996,9 +991,9 @@ Gets a list of groups
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filter by group name or comment. | Optional | 
-| page | Specifies the page offset. | Optional | 
-| pageSize | Specifies the page size. Default is 100. | Optional | 
+| name | Filter by group name or comment. | Optional |
+| page | Specifies the page offset. | Optional |
+| pageSize | Specifies the page size. Default is 100. | Optional |
 
 #### Context Output
 
@@ -1017,25 +1012,25 @@ Adds a new IP destination group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Destination IP group name. | Required | 
-| type | Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs). Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Required | 
-| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional | 
-| description | Additional information about the destination IP group. | Optional | 
-| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values, you can execute the zscaler-get-categories command. | Optional | 
-| countries | Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here <https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post>. | Optional | 
+| name | Destination IP group name. | Required |
+| type | Destination IP group type (i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs). Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Required |
+| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional |
+| description | Additional information about the destination IP group. | Optional |
+| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values, you can execute the zscaler-get-categories command. | Optional |
+| countries | Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here <https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups-post>. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | number | Unique identifier for the destination IP group. | 
-| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. | 
-| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). | 
-| Zscaler.IPDestinationGroup.Description | string | Destination IP group description. | 
-| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
-| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
-| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. | 
-| Zscaler.IPDestinationGroup.IsNonEditable | boolean | If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified. | 
+| Zscaler.IPDestinationGroup.ID | number | Unique identifier for the destination IP group. |
+| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. |
+| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). |
+| Zscaler.IPDestinationGroup.Description | string | Destination IP group description. |
+| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. |
+| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. |
+| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. |
+| Zscaler.IPDestinationGroup.IsNonEditable | boolean | If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified. |
 
 #### Command Example
 
@@ -1064,6 +1059,7 @@ Adds a new IP destination group.
 #### Human Readable Output
 
 IP Destination group created
+
 |Addresses|Countries|Description|ID|IpCategories|IsNonEditable|Name|Type|
 |---|---|---|---|---|---|---|---|
 | 127.0.0.2,<br>127.0.0.1 |  | Localhost | 2000359 |  | false | Test99 | DSTN_IP |
@@ -1081,25 +1077,25 @@ Updates the IP destination group information for the specified group ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_id | The unique identifier for the IP destination group. | Required | 
-| name | Destination IP group name. | Optional | 
-| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional | 
-| description | Additional information about the destination IP group. | Optional | 
-| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values you can execute the zscaler-get-categories command. | Optional | 
-| countries | Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here <https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put>. | Optional | 
-| is_non_editable | If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified. Possible values are: True, False. Default is False. | Optional | 
+| ip_group_id | The unique identifier for the IP destination group. | Required |
+| name | Destination IP group name. | Optional |
+| addresses | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | Optional |
+| description | Additional information about the destination IP group. | Optional |
+| ip_categories | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. To retrieve a list of possible values you can execute the zscaler-get-categories command. | Optional |
+| countries | Destination IP address countries. You can identify destinations based on the location of a server. A list of possible values can be found here <https://help.zscaler.com/zia/firewall-policies#/ipDestinationGroups/{ipGroupId}-put>. | Optional |
+| is_non_editable | If set to true, the destination IP address group is non-editable. This field is applicable only to predefined IP address groups, which cannot be modified. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | number | Unique identifier for the destination IP group. | 
-| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. | 
-| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). | 
-| Zscaler.IPDestinationGroup.Description | string | Destination IP group description. | 
-| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
-| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
-| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. | 
+| Zscaler.IPDestinationGroup.ID | number | Unique identifier for the destination IP group. |
+| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. |
+| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). |
+| Zscaler.IPDestinationGroup.Description | string | Destination IP group description. |
+| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. |
+| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. |
+| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. |
 
 #### Command Example
 
@@ -1126,6 +1122,7 @@ Updates the IP destination group information for the specified group ID.
 #### Human Readable Output
 
 IP Destination group updated
+
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 2000359 |  | Test01 | DSTN_IP |
@@ -1143,25 +1140,25 @@ Gets a list of all IP destination groups or the IP destination group information
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_id | A comma-separated list of unique identifiers for the IP destination groups. | Optional | 
-| exclude_type | The IP group type to be excluded from the results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional | 
-| category_type | The IP group type to be filtered from results. This argument is only supported when the 'lite' argument is set to True. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional | 
-| include_ipv6 | Retrieve IPv6 destination groups. Possible values are: True, False. Default is False. | Optional | 
-| limit | Limit of the results to be retrieved. Default is 50. | Optional | 
-| all_results | Whether to retrieve all results at once. Possible values are: True, False. Default is False. | Optional | 
-| lite | Whether to retrieve only limited information of IP destination groups. Includes ID, name and type of the IP destination groups. Possible values are: True, False. Default is False. | Optional | 
+| ip_group_id | A comma-separated list of unique identifiers for the IP destination groups. | Optional |
+| exclude_type | The IP group type to be excluded from the results. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
+| category_type | The IP group type to be filtered from results. This argument is only supported when the 'lite' argument is set to True. Possible values are: DSTN_IP, DSTN_FQDN, DSTN_DOMAIN, DSTN_OTHER. | Optional |
+| include_ipv6 | Retrieve IPv6 destination groups. Possible values are: True, False. Default is False. | Optional |
+| limit | Limit of the results to be retrieved. Default is 50. | Optional |
+| all_results | Whether to retrieve all results at once. Possible values are: True, False. Default is False. | Optional |
+| lite | Whether to retrieve only limited information of IP destination groups. Includes ID, name and type of the IP destination groups. Possible values are: True, False. Default is False. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zscaler.IPDestinationGroup.ID | string | Unique identifier for the destination IP group. | 
-| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. | 
-| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). | 
-| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. | 
-| Zscaler.IPDestinationGroup.Description | string | Additional information about the destination IP group | 
-| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. | 
-| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. | 
+| Zscaler.IPDestinationGroup.ID | string | Unique identifier for the destination IP group. |
+| Zscaler.IPDestinationGroup.Name | string | Destination IP group name. |
+| Zscaler.IPDestinationGroup.Type | string | Destination IP group type \(i.e., the group can contain destination IP addresses, countries, URL categories or FQDNs\). |
+| Zscaler.IPDestinationGroup.Addresses | string | Destination IP addresses, FQDNs, or wildcard FQDNs added to the group. |
+| Zscaler.IPDestinationGroup.Description | string | Additional information about the destination IP group |
+| Zscaler.IPDestinationGroup.IpCategories | string | Destination IP address URL categories. You can identify destinations based on the URL category of the domain. |
+| Zscaler.IPDestinationGroup.Countries | string | Destination IP address countries. You can identify destinations based on the location of a server. |
 
 #### Command Example
 
@@ -1197,6 +1194,7 @@ Gets a list of all IP destination groups or the IP destination group information
 #### Human Readable Output
 
 IPv4 Destination groups (2)
+
 |Addresses|Countries|Description|ID|IpCategories|Name|Type|
 |---|---|---|---|---|---|---|
 | 127.0.0.2 |  | Localhost v2 | 1997898 |  | Test99 | DSTN_IP |
@@ -1219,9 +1217,10 @@ IPv4 Destination groups (2)
 #### Human Readable Output
 
 IPv4 Destination groups lite (1)
+
 ID|Name|Type|
 |---|---|---|
-| 1964949 |  | Russia-Region | DSTN_OTHER 
+| 1964949 |  | Russia-Region | DSTN_OTHER
 
 ### zscaler-delete-ip-destination-groups
 
@@ -1236,7 +1235,7 @@ Deletes the IP destination groups for the specified group ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip_group_ids | A comma-separated list of unique identifiers for the IP destination groups. | Optional | 
+| ip_group_ids | A comma-separated list of unique identifiers for the IP destination groups. | Optional |
 
 #### Context Output
 

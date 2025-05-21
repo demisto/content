@@ -1,7 +1,7 @@
 Use the Microsoft Azure AD Connect Health Feed integration to get indicators from the feed.
 This integration was integrated and tested with version 1 of Azure AD Connect Health Feed
-## Configure Azure AD Connect Health Feed in Cortex
 
+## Configure Azure AD Connect Health Feed in Cortex
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
@@ -18,38 +18,43 @@ This integration was integrated and tested with version 1 of Azure AD Connect He
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### azure-ad-health-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `azure-ad-health-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. The default value is 10. | Optional | 
-
+| limit | The maximum number of results to return. The default value is 10. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!azure-ad-health-get-indicators```
 
 #### Context Example
+
 ```
 {}
 ```
 
 #### Human Readable Output
 
->### Indicators from Microsoft Azure Feed:
+>### Indicators from Microsoft Azure Feed
+>
 >|value|type|
 >|---|---|
 >| https://login.microsoftonline.com | URL |

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 
 ## Configure Darktrace in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL \(e.g. https://example.net\) | True |
@@ -15,7 +14,6 @@ This integration was integrated and tested with version 6.0.0 of Darktrace
 | min_score | Minimum Score | True |
 | max_alerts | Maximum Model Breaches per Fetch | False |
 | first_fetch | First fetch time | False |
-
 
 ## Commands
 
