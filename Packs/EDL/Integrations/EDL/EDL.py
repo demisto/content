@@ -84,6 +84,8 @@ MWG_TYPE_OPTIONS = ["string", "applcontrol", "dimension", "category", "ip", "med
 
 INCREASE_LIMIT = 1.1
 
+EXTENSIVE_LOGGING: bool = False
+
 
 class IndicatorAction(Enum):
     ADDED = "Added"
@@ -96,9 +98,11 @@ class IndicatorAction(Enum):
 
 def debug_function(func):
     def wrapper(*args, **kwargs):
-        demisto.debug(f"edl: Entering function {func.__name__}")
+        if EXTENSIVE_LOGGING:
+            demisto.debug(f"edl: Entering function {func.__name__}")
         results = func(*args, **kwargs)
-        demisto.debug(f"edl: Exiting function {func.__name__}")
+        if EXTENSIVE_LOGGING:
+            demisto.debug(f"edl: Exiting function {func.__name__}")
         return results
 
     return wrapper
@@ -281,14 +285,17 @@ def log_iocs_file_data(formatted_indicators: str, max_length: int = 100) -> None
 @debug_function
 def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
     """
-    Get indicators from the server using IndicatorsSearcher and format them.
+    Retrieves indicators using the IndicatorsSearcher and formats them according to the request arguments.
+    Applies optional cleanup (invalid removal, IP collapsing) and collects statistics on the changes.
 
-    Parameters:
-        request_args: Request arguments
+    Args:
+        request_args (RequestArguments): User-defined settings for formatting, filtering, and pagination.
 
     Returns:
-        tuple[str, int]: A tuple of formatted indicators to display in EDL's response (str),
-            and the number of original indicators received from the server before formatting (int).
+        tuple[str, int, dict]:
+            - str: A formatted string of indicators, ready to be returned in an EDL (one per line).
+            - int: The number of original indicators fetched before formatting.
+            - dict: Logging statistics about actions taken on indicators (added, dropped, modified).
     """
     limit = request_args.offset + request_args.limit
     offset = request_args.offset
@@ -317,12 +324,15 @@ def create_new_edl(request_args: RequestArguments) -> tuple[str, int, dict]:
                 iocs_set.add(line)
                 formatted_indicators += line
 
+        demisto.debug(f"Finished formatting ioc. Count after collapse: {len(iocs_set)}")
+
     else:
         new_iocs_file, original_indicators_count = get_indicators_to_format(indicator_searcher, request_args)
         new_iocs_file.seek(0)
         formatted_indicators = new_iocs_file.read()
     new_iocs_file.close()
-    log_iocs_file_data(formatted_indicators)
+    if EXTENSIVE_LOGGING:
+        log_iocs_file_data(formatted_indicators)
     return formatted_indicators, original_indicators_count, new_log_stats
 
 
@@ -355,34 +365,35 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
     """
     f = tempfile.TemporaryFile(mode="w+t")
     list_fields = replace_field_name_to_output_format(request_args.fields_to_present)
-    headers_was_writen = False
+    headers_was_written = False
     files_by_category = {}  # type:Dict
     ioc_counter = 0
     try:
         for ioc_res in indicator_searcher:
             fetched_iocs = ioc_res.get("iocs") or []
             for ioc in fetched_iocs:
-                # demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
+                if EXTENSIVE_LOGGING:
+                    demisto.debug(f"Parsing the following indicator: {ioc.get('value')}")
 
                 ioc_counter += 1
                 if request_args.out_format == FORMAT_PROXYSG:
                     files_by_category = create_proxysg_out_format(ioc, files_by_category, request_args)
 
                 elif request_args.out_format == FORMAT_MWG:
-                    f.write(create_mwg_out_format(ioc, request_args, headers_was_writen))
-                    headers_was_writen = True
+                    f.write(create_mwg_out_format(ioc, request_args, headers_was_written))
+                    headers_was_written = True
 
                 elif request_args.out_format == FORMAT_JSON:
-                    f.write(create_json_out_format(list_fields, ioc, request_args, headers_was_writen))
-                    headers_was_writen = True
+                    f.write(create_json_out_format(list_fields, ioc, request_args, headers_was_written))
+                    headers_was_written = True
 
                 elif request_args.out_format == FORMAT_TEXT:
                     # save only the value and type of each indicator
                     f.write(str(json.dumps({"value": ioc.get("value"), "indicator_type": ioc.get("indicator_type")})) + "\n")
 
                 elif request_args.out_format == FORMAT_CSV:
-                    f.write(create_csv_out_format(headers_was_writen, list_fields, ioc, request_args))
-                    headers_was_writen = True
+                    f.write(create_csv_out_format(headers_was_written, list_fields, ioc, request_args))
+                    headers_was_written = True
                 if ioc_counter >= indicator_searcher.limit:
                     break
 
@@ -394,7 +405,6 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
             # NG + XSIAM can recover from a shutdown
             if version.get("platform") == "x2" or is_demisto_version_ge("8"):
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
-
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
         f.write("]")
@@ -725,7 +735,7 @@ def log_indicator_line(raw_indicator: str, indicator: str, action: str, reason: 
 
 
 def store_log_data(request_args: RequestArguments, created: datetime, log_stats: dict) -> None:
-    """Add the header to the log string.
+    """Finalizes and writes the full EDL log file by adding a summary header and appending logged indicator actions.
 
     Args:
         request_args (RequestArguments): The request args, they will be added to the header.
@@ -762,17 +772,31 @@ def store_log_data(request_args: RequestArguments, created: datetime, log_stats:
 @debug_function
 def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Union[IO, IO[str]], dict]:
     """
-    Create a list in new file of formatted_indicators, and log the modifications.
-     * IP / CIDR:
-         1) if collapse_ips, collapse IPs/CIDRs
-     * URL:
-        1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
-        2) if port_stripping, strip ports
-        3) if protocol_stripping, strip protocols
-        4) if url_truncate, truncate urls
-    * Other indicator types:
-        1) if drop_invalids, drop invalids (has invalid chars)
-        2) if port_stripping, strip ports
+    Formats a stream of indicators (IOCs) into a standardized text output and logs processing actions.
+    Args:
+        iocs (IO): A file-like object with JSON lines, each representing an indicator with "value" and "indicator_type".
+        request_args (RequestArguments): An object containing formatting preferences such as from the following categories:
+            * IP / CIDR:
+                1) if collapse_ips, collapse IPs/CIDRs
+            * URL:
+                1) if drop_invalids, drop invalids (length > 254 or has invalid chars)
+                2) if port_stripping, strip ports
+                3) if protocol_stripping, strip protocols
+                4) if url_truncate, truncate urls
+            * Other indicator types:
+                1) if drop_invalids, drop invalids (has invalid chars)
+                2) if port_stripping, strip ports
+    Returns:
+        tuple:
+            - A temporary file-like object containing the formatted indicators, one per line.
+            - A dictionary with statistics about dropped, added, and modified indicators.
+
+    Behavior:
+        - Skips indicators missing a value or non-ASCII (if configured).
+        - For URLs/domains: applies cleaning (strip protocol/port, truncate) and filtering (length, invalid chars).
+        - For IPs/CIDRs: can collapse into ranges or drop if too large.
+        - Wildcard domains and TLDs are handled according to config.
+        - All actions (add, drop, modify) are logged and counted in the result.
     """
     enforce_ascii = argToBoolean(demisto.params().get("enforce_ascii", False))
     ipv4_formatted_indicators = set()
@@ -923,7 +947,7 @@ def create_text_out_format(iocs: IO, request_args: RequestArguments) -> tuple[Un
                     reason="Found new IPv6.",
                     log_stats=log_stats,
                 )
-
+    # Log on the logs files all the modification of the indicators
     return formatted_indicators, log_stats
 
 
@@ -1006,7 +1030,8 @@ def get_edl_on_demand() -> tuple[str, int]:
             demisto.debug(f"edl: Error in writing to file: {e!s}")
             raise e
 
-        demisto.debug("edl: Finished writing EDL data to cache")
+        if EXTENSIVE_LOGGING:
+            demisto.debug("edl: Finished writing EDL data to cache")
         set_integration_context(ctx)
 
     else:
@@ -1019,8 +1044,7 @@ def get_edl_on_demand() -> tuple[str, int]:
         except Exception as e:
             demisto.debug(f"edl: Error reading cache file: {e!s}")
             raise e
-
-    demisto.debug("edl: Finished reading EDL data from cache")
+        demisto.debug("edl: Finished reading EDL data from cache")
 
     return edl_data, EDL_ON_DEMAND_CACHE_ORIGINAL_SIZE
 
@@ -1069,7 +1093,8 @@ def authenticate_app(params: dict, request_headers: Any) -> Optional[Response]:
     credentials = params.get("credentials", {})
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
-
+    if EXTENSIVE_LOGGING:
+        demisto.debug("Attempting authentication for incoming request.")
     if username and password:
         headers: dict = cast(dict[Any, Any], request_headers)
         if not validate_basic_authentication(headers, username, password):
@@ -1093,6 +1118,8 @@ def get_edl_log_file() -> str:
     if os.path.exists(EDL_FULL_LOG_PATH):
         demisto.debug("found log file")
         if os.path.getsize(EDL_FULL_LOG_PATH) > MAX_DISPLAY_LOG_FILE_SIZE:
+            if EXTENSIVE_LOGGING:
+                demisto.debug("EDL log file too large to display")
             return LARGE_LOG_DISPLAY_MSG
 
         with open(EDL_FULL_LOG_PATH) as log_file:
@@ -1131,12 +1158,18 @@ def route_edl() -> Response:
     """
     params = demisto.params()
     cache_refresh_rate: str = params.get("cache_refresh_rate")
+    if EXTENSIVE_LOGGING:
+        demisto.debug("edl: Starting EDL route handler")
     auth_resp = authenticate_app(params, request.headers)
     if auth_resp:
         return auth_resp
-
+    if EXTENSIVE_LOGGING:
+        demisto.debug("edl: authentication successful")
     request_args = get_request_args(request.args, params)
     on_demand = params.get("on_demand")
+    if EXTENSIVE_LOGGING:
+        demisto.debug(f"{'Using' if on_demand else 'Not using'} on-demand cache to serve EDL.")
+
     created = datetime.now(timezone.utc)
     if on_demand:
         edl_data, original_indicators_count = get_edl_on_demand()
@@ -1159,6 +1192,8 @@ def route_edl() -> Response:
         edl_data = prepare_response_data(
             data=edl_data, append_str=params.get("append_string"), prepend_str=params.get("prepend_string")
         )
+    if EXTENSIVE_LOGGING:
+        demisto.debug(f"Final EDL size: {len(edl_data)} characters, {edl_size} lines")
 
     mimetype = get_outbound_mimetype(request_args)
     max_age = ceil((datetime.now() - dateparser.parse(cache_refresh_rate)).total_seconds())  # type: ignore[operator]
@@ -1183,13 +1218,21 @@ def route_edl() -> Response:
 
 @APP.route("/log_download", methods=["GET"])
 def log_download() -> Response:
-    params = demisto.params()
+    """Flask route to download the full EDL log file as a zip.
+    The log file zipped is located at EDL_FULL_LOG_PATH.
 
+    Return:
+        Response: A Flask Response object that sends a ZIP file containing the full log.
+    """
+    params = demisto.params()
+    demisto.debug("edl: Starting EDL route/log_download handler")
     auth_resp = authenticate_app(params, request.headers)
+    if EXTENSIVE_LOGGING:
+        demisto.debug("edl: authentication successful")
     if auth_resp:
         return auth_resp
 
-    demisto.debug("Getting log file to show")
+    demisto.debug("edl: Getting log file to show")
 
     created = datetime.now(timezone.utc)
 
@@ -1204,15 +1247,23 @@ def log_download() -> Response:
 
 @APP.route("/log", methods=["GET"])
 def route_edl_log() -> Response:
-    """Show the edl indicators log on '/log' API request."""
+    """
+    Flask route to serve the EDL indicators log via HTTP.
+
+    Returns:
+        Response: A Flask Response containing either:
+            - The log contents as plain text (with optional prepend/append formatting), or
+            - A ZIP file download containing the log, if the log is too large to display.
+    """
     params = demisto.params()
 
     cache_refresh_rate: str = params.get("cache_refresh_rate")
+    demisto.debug("edl: Starting EDL route/log handler")
     auth_resp = authenticate_app(params, request.headers)
+    if EXTENSIVE_LOGGING:
+        demisto.debug("edl: authentication successful")
     if auth_resp:
         return auth_resp
-
-    demisto.debug("Getting log file to show")
 
     edl_data_log = get_edl_log_file() or "# Empty"
     request_args = get_request_args(request.args, params)
@@ -1281,6 +1332,8 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
     Returns:
         RequestArguments instance with processed arguments
     """
+    if EXTENSIVE_LOGGING:
+        demisto.debug("Parsing EDL request args...")
     limit = try_parse_integer(request_args.get("n", params.get("edl_size") or 10000), EDL_LIMIT_ERR_MSG)
     offset = try_parse_integer(request_args.get("s", 0), EDL_OFFSET_ERR_MSG)
     out_format = request_args.get("v", params.get("format", FORMAT_TEXT))
@@ -1355,6 +1408,16 @@ def get_request_args(request_args: dict, params: dict) -> RequestArguments:
         )
         limit = min(limit, MAX_LIST_SIZE_WITH_URL_QUERY)
 
+    demisto.debug(
+        f"RequestArguments resolved:\n"
+        f"limit={limit}, offset={offset}, format={out_format}, query='{query}', "
+        f"mwg_type={mwg_type}, collapse_ips={collapse_ips}, drop_invalids={drop_invalids}, "
+        f"strip_port={strip_port}, strip_protocol={strip_protocol}, "
+        f"url_truncate={url_truncate}, maximum_cidr_size={maximum_cidr_size}, no_wildcard_tld={no_wildcard_tld}, "
+        f"fields_to_present={fields_to_present}, category_default={category_default}, "
+        f"category_attribute={category_attribute}, csv_text={csv_text}, comment_if_empty={add_comment_if_empty}"
+    )
+
     return RequestArguments(
         query,
         out_format,
@@ -1409,7 +1472,7 @@ def test_module(_: dict, params: dict):
 @debug_function
 def update_edl_command(args: dict, params: dict):
     """
-    Updates the context to update the EDL values on demand the next time it runs
+    Updates the context to update the EDL values on demand the next time it runs.
     """
     on_demand = params.get("on_demand")
     if not on_demand:
@@ -1543,11 +1606,11 @@ def check_platform_and_version(params: dict) -> bool:
     return platform in ["xsoar", "xsoar_hosted"] and not is_demisto_version_ge("8.0.0") and not params.get("longRunningPort")
 
 
-def main():
+def main():  # pragma: no cover
     """
     Main
     """
-    global PAGE_SIZE
+    global PAGE_SIZE, EXTENSIVE_LOGGING
     params = demisto.params()
     try:
         PAGE_SIZE = max(1, int(params.get("page_size") or PAGE_SIZE))
@@ -1556,6 +1619,9 @@ def main():
     credentials = params.get("credentials") if params.get("credentials") else {}
     username: str = credentials.get("identifier", "")
     password: str = credentials.get("password", "")
+
+    EXTENSIVE_LOGGING = params.get("extensive_logging", False)
+
     if (username and not password) or (password and not username):
         err_msg: str = "If using credentials, both username and password should be provided."
         demisto.debug(err_msg)
@@ -1570,6 +1636,8 @@ def main():
             raise DemistoException("Please specify a Listen Port, in the integration configuration")
 
         initialize_edl_context(params)
+        if EXTENSIVE_LOGGING:
+            demisto.debug("EDL context initialized.")
         if command == "long-running-execution":
             run_long_running(params)
         elif command in commands:
