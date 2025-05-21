@@ -35,7 +35,6 @@
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
-/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py @RosenbergYehuda @demisto/content-leaders
 
 # Common Packs
 /Packs/CommonTypes/ @altmannyarden @idovandijk
