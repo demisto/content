@@ -44,9 +44,9 @@ class EventType:
             name (str): Human-friendly name of the event type.
             url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
             id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
+            ascending_order (bool): If the API return in sorted by ascending or descending order after returning from get_event.
             time_field (str): Field name in the event used for timestamp mapping (`_time`).
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
-            default_limit (int): Default maximum number of events to fetch per API call.
         """
         self.name = name
         self.url_suffix = url_suffix
@@ -58,6 +58,7 @@ class EventType:
         self.source_log_type = source_log_type
 
     def get_id(self, event: Dict[str, Any]) -> str:
+        """Return unique id by the id_key fields"""
         if isinstance(self.id_key, list):
             return "".join(str(event[k]) for k in self.id_key)
         return str(event.get(self.id_key, ""))
@@ -232,8 +233,7 @@ class Client(BaseClient):
         1. Requests up to `limit` events.
         2. If the API reports more exist, requests the remaining events using `skip`/`limit`.
         3. Combines both pages.
-        4. Reverses the combined list so that events are in ascending order by detection date.
-        5. Annotates each record with `_time` and `SOURCE_LOG_TYPE`.
+        4. Annotates each record with `_time` and `SOURCE_LOG_TYPE`.
 
         Args:
             start_date (str): ISO-formatted lower bound for `detection_date`.
@@ -264,12 +264,7 @@ class Client(BaseClient):
             demisto.debug(f"{remaining} more events available; fetching skip={len(events)}")
             params.update({"limit": remaining, "skip": len(events)})
             second_response = self.http_request(method="GET", url_suffix=DOMAIN.url_suffix, params=params) or {}
-
-            if not isinstance(second_response, dict):
-                demisto.debug("Type error: expected dict from second domain request")
-                return []
-            more_events = second_response.get("results", [])
-            events.extend(more_events)
+            events.extend(second_response.get("results", []))  # type: ignore
 
         demisto.debug(f"Total fetched {len(events)} domain events.")
 
@@ -434,7 +429,7 @@ class Client(BaseClient):
 def add_fields_to_events(events: List[Dict[str, Any]], event_type: EventType) -> List[Dict[str, Any]]:
     """
     Annotate each event with:
-      - `_time`: from its configured time_field (or fallback for reports)
+      - `_time`: from its configured time_fields.
       - `SOURCE_LOG_TYPE`: the event type name.
     """
     for event in events:
