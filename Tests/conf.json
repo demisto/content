@@ -904,8 +904,7 @@
             "playbookID": "Create Phishing Classifier V2 ML Test",
             "timeout": 60000,
             "fromversion": "6.1.0",
-            "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "instance_names": "ml_dummy_prod"
         },
         {
             "integrations": "ZeroFox",
@@ -4036,8 +4035,9 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "fromversion": "5.5.0",
-            "timeout": 1000
+            "fromversion": "6.10.0",
+            "timeout": 1000,
+            "memory_threshold": 1000
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -6367,6 +6367,9 @@
             },
             "demisto/pan-os-python:1.0.0.108041": {
                 "memory_threshold": 120
+            },
+            "demisto/ml": {
+                "memory_threshold": 500
             }
         }
     },
