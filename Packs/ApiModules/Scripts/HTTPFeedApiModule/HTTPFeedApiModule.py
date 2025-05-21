@@ -150,7 +150,7 @@ class Client(BaseClient):
             self.feed_url_to_config = feed_url_to_config
         else:
             self.feed_url_to_config = {url: self.get_feed_config(fields, indicator)}
-        self.ignore_regex: Optional[Pattern] = None
+        self.ignore_regex: Pattern | None = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
 
@@ -224,7 +224,7 @@ class Client(BaseClient):
             kwargs["auth"] = (self.username, self.password)
         try:
             urls = self._base_url
-            url_to_response_list: List[dict] = []
+            url_to_response_list: list[dict] = []
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
@@ -295,7 +295,7 @@ class Client(BaseClient):
             err_msg = (
                 "Verify that the server URL parameter"
                 " is correct and that you have access to the server from your host."
-                "\nError Type: {}\nError Number: [{}]\nMessage: {}\n".format(err_type, exception.errno, exception.strerror)
+                f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
             )
             raise DemistoException(err_msg, exception)
 
@@ -705,7 +705,7 @@ def feed_main(feed_name, params=None, prefix=""):
     client = Client(**params)
     command = demisto.command()
     if command != "fetch-indicators":
-        demisto.info("Command being called is {}".format(command))
+        demisto.info(f"Command being called is {command}")
     if prefix and not prefix.endswith("-"):
         prefix += "-"
     # Switch case
