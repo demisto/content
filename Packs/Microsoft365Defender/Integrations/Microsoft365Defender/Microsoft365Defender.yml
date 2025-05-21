@@ -1,7 +1,4 @@
 category: Network Security
-sectionOrder:
-- Connect
-- Collect
 commonfields:
   id: Microsoft 365 Defender
   version: -1
@@ -22,12 +19,14 @@ configuration:
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - name: creds_tenant_id
   type: 9
   displaypassword: Token or Tenant ID
   hiddenusername: true
   section: Connect
   required: false
+  display: ''
 - additionalinfo: The API key to use to connect.
   defaultvalue: 9093c354-630a-47f1-b087-6768eb9427e6
   display: Application ID
@@ -94,6 +93,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
+  display: ''
 - defaultvalue: 12 hours
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -220,6 +220,26 @@ configuration:
   hidden:
   - marketplacev2
   required: false
+- additionalinfo: 'Define how to close the mirrored incidents from Cortex XSOAR into Defender with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Cortex XSOAR close reason}={Defender close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: "Resolved=TruePositive-Malware,False Positive=FalsePositive-NotMalicious". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
+  display: Custom close-reason mapping (XSOAR -> Defender mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  name: custom_xsoar_to_defender_close_reason_mapping
+  required: false
+  type: 0
+- additionalinfo: 'Define how to close the mirrored incidents from Defender into Cortex XSOAR with a custom close reason mapping. Enter a comma-separated list of close reasons (acceptable format {Defender close reason}={Cortex XSOAR close reason}) to override the default close reason mapping defined by Cortex XSOAR. Note that the mapping must be configured accordingly with the existing close reasons in Cortex XSOAR and Defender. Not following this format will result in closing the incident with a default close reason. Example: “TruePositive=Resolved,FalsePositive=False Positive,InformationalExpectedActivity=Resolved". Refer to ../README.md for possible close-reasons - `Defender Incident Mirroring`.'
+  display: Custom close-reason mapping (Defender -> XSOAR mirrored incident. Overwrites default close-reason mapping defined by Cortex XSOAR)
+  name: custom_defender_to_xsoar_close_reason_mapping
+  required: false
+  type: 0
+- defaultvalue: 'false'
+  display: Enable custom XSOAR -> Defender close-reason mapping.
+  name: custom_xsoar_to_defender_close_reason
+  required: false
+  type: 8
+- defaultvalue: 'false'
+  display: Enable custom Defender -> XSOAR close-reason mapping.
+  name: custom_defender_to_xsoar_close_reason
+  required: false
+  type: 8
 description: Microsoft 365 Defender is a unified pre- and post-breach enterprise defense suite that natively coordinates detection, prevention, investigation, and response across endpoints, identities, email, and applications to provide integrated protection against sophisticated attacks.
 display: Microsoft 365 Defender
 name: Microsoft 365 Defender
@@ -452,45 +472,26 @@ script:
     - contextPath: Microsoft365Defender.Incident.comments
       description: List of comments created by secops when managing the incident, for example additional information about the classification selection.
   - arguments:
-    - default: false
-      description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
-      isArray: false
+    - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
     description: Get the list of incidents that were modified since the last update time. This method is used for debugging purposes. The get-modified-remote-data command is used as part of the Mirroring feature that was introduced in Cortex XSOAR version 6.1.
-    execution: false
     name: get-modified-remote-data
   - arguments:
-    - default: false
-      description: The remote incident ID.
-      isArray: false
+    - description: The remote incident ID.
       name: id
       required: true
-      secret: false
-    - default: false
-      defaultValue: '0'
+    - defaultValue: '0'
       description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
-      isArray: false
       name: lastUpdate
-      required: false
-      secret: false
-    deprecated: false
     description: Get remote data from a remote incident. This method does not update the current incident, and should be used for debugging purposes only.
-    execution: false
     name: get-remote-data
   - arguments: []
-    deprecated: false
     description: Returns the list of fields to map in outgoing mirroring. This command is only used for debugging purposes.
-    execution: false
     name: get-mapping-fields
   - arguments: []
-    deprecated: false
     description: Updates the remote incident with local incident changes. This method is only used for debugging purposes and will not update the current incident.
-    execution: false
     name: update-remote-system
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3174650
   isfetch: true
   script: ''
   subtype: python3
@@ -498,8 +499,7 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  runonce: false
 fromversion: 5.5.0
 tests:
 - No tests
-defaultmapperin: Microsoft 365 Defender - Incoming Mapper
-defaultmapperout: Microsoft 365 Defender - Outgoing Mapper
