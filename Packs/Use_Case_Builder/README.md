@@ -22,7 +22,7 @@ The default playbook is **Use Case Builder**, this playbook is performs alot of 
 
 - Provide important information to get you started.
 - Clones and Autogenerates playbooks based off your selections
-- Set SLAs and Timers for the development stages 
+- Set SLAs and Timers for the development stages
 - Renders Markdown and HTML
 - Generates the Use Case Defintion Document
 - Evaluates XSOAR Usage and sets Adoption Metrics
