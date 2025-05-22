@@ -1741,6 +1741,10 @@ script:
       predefined:
       - 'true'
       - 'false'
+    - description: Indicates if the ticket should be mirrored.
+      name: mirroring
+      type: mirroring
+      hidden: true
     - description: The ticket activity due date, in the format "2016-07-02 21:51:11".
       name: activity_due
     - description: List of users assigned to the ticket.
