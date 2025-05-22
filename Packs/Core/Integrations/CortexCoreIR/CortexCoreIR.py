@@ -421,7 +421,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
             }]
         input_format = 'JSON'  # Default format for this path
 
-        # Final request body
+    # Final request body
 
     if input_format == 'CSV':
         suffix = "indicators/insert_csv"
@@ -432,6 +432,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         response = client.post_indicator(ioc_payload, suffix=suffix)
     except DemistoException as error:
         raise DemistoException(f"Core Add Indicator Command: During post, exception occurred {str(error)}")
+
     is_success = response["reply"]["success"]
 
     if not is_success:

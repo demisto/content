@@ -4145,7 +4145,11 @@ script:
           required: true
           isArray: false
           type: String
-        - description: "If this indicator has no expiration, use Never. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. Valid values are: 7 days, 30 days, 90 days, or 180 days."
+        - description: "Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds.
+                          Also valid is the UTC date or relative timestamp to set the IOC rule expiration date.
+                            Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.
+                              If this indicator has no expiration, use Never.
+                                If this value is NULL, the indicator receives the indicator's type value with the default expiration date."
           name: expiration_date
           required: false
           isArray: false
