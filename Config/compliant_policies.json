@@ -81,7 +81,7 @@
             ]
         },
         {
-            "name": "Quarantine File",
+            "name": "File Quarantine",
             "category": "EndPoint",
             "arguments": []
         },
