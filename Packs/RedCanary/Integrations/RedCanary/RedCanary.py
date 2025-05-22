@@ -199,6 +199,7 @@ def get_full_timeline(detection_id, per_page=100):
 
 def process_timeline(detection_id):
     res = get_full_timeline(detection_id)
+    demisto.debug(f'The full process timeline: {res}')
     activities = []
     domains = []
     files = []
@@ -318,6 +319,7 @@ def detection_to_context(raw_detection):
 
 
 def detections_to_entry(detections, show_timeline=False):
+    demisto.debug(f"Detection Data: {detections}")
     fixed_detections = [detection_to_context(d) for d in detections]
     endpoints = []
     for d in detections:
@@ -335,6 +337,7 @@ def detections_to_entry(detections, show_timeline=False):
     activities = ""
     title = "Detections"
     if show_timeline and len(detections) == 1:
+        demisto.debug(f"Fixed detection: {fixed_detections}")
         title = "Detection {}".format(fixed_detections[0]["Headline"])
         activities, domains, files, ips, processes = process_timeline(fixed_detections[0]["ID"])
         activities = tableToMarkdown("Detection Timeline", activities, headers=["Time", "Type", "Activity Details", "Notes"])
