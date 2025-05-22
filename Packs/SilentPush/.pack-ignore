@@ -1,5 +1,0 @@
-[file:README.md]
-ignore=RM113
-
-[file:SilentPush.py]
-ignore=BA119
