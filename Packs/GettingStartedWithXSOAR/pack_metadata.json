@@ -23,9 +23,7 @@
         "Case Management"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ],
     "devEmail": [
         "joecosgrove@paloaltonetworks.com"
