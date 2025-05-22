@@ -1,4 +1,4 @@
-In order to connect to the Azure Network Security Groups use one of the following methods:
+In order to connect to the Azure Firewall use one of the following methods:
 
 1. *Client Credentials Flow*
 2. *Device Code Flow*.
