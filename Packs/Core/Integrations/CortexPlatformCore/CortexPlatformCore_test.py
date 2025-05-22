@@ -1,5 +1,6 @@
 import json
 
+
 def load_test_data(json_path):
     with open(json_path) as f:
         return json.load(f)
