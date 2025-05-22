@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: js_auto_connect_agent
+  CURRENT_BRANCH_NAME: jb_enhance_agent_connect_get_details
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: js_auto_connect_agent) 
+    ref: jb_enhance_agent_connect_get_details
     project: "${CI_PROJECT_NAMESPACE}/infra"
