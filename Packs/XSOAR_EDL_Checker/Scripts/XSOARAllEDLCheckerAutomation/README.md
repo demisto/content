@@ -1,6 +1,7 @@
 Runs the xsoaredlchecker-get-edl command for all configured instances, and returns a consolidated output.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,15 +11,19 @@ Runs the xsoaredlchecker-get-edl command for all configured instances, and retur
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * xsoaredlchecker-get-edl
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
