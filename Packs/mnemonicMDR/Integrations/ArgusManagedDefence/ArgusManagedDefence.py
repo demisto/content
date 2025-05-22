@@ -150,7 +150,7 @@ def str_to_dict(string: str) -> dict | None:
     return {lst[i]: lst[i + 1] for i in range(0, len(lst), 2)}
 
 
-def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:  # type: ignore
+def date_time_to_epoch_milliseconds(date_time: datetime | str | None = None) -> int:  # type: ignore
     if isinstance(date_time, datetime):
         return int(date_time.timestamp() * 1000)
     if isinstance(date_time, str):
@@ -158,7 +158,7 @@ def date_time_to_epoch_milliseconds(date_time: datetime | str = None) -> int:  #
     return int(datetime.now().timestamp() * 1000)
 
 
-def pretty_print_date(date_time: datetime | str = None) -> str:  # type: ignore
+def pretty_print_date(date_time: datetime | str | None = None) -> str:  # type: ignore
     if isinstance(date_time, datetime):
         return date_time.strftime(PRETTY_DATE_FORMAT)
     if isinstance(date_time, str):
