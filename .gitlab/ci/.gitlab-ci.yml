@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: CIAC-12862-alerts-pushing-in-test-use-case
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: CIAC-12862-alerts-pushing-in-test-use-case
     project: "${CI_PROJECT_NAMESPACE}/infra"
