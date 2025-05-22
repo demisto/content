@@ -474,7 +474,7 @@ script:
     name: get-modified-remote-data
   - name: splunk-reset-enriching-fetch-mechanism
     arguments: []
-    description: Resets the enrichment mechanism of fetched notables.
+    description: Resets the enrichment mechanism of fetched notables.dsd
   dockerimage: demisto/splunksdk:1.0.0.49073
   isfetch: true
   ismappable: true

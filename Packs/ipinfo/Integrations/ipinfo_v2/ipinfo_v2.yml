@@ -61,7 +61,7 @@ script:
     name: ip
     outputs:
     - contextPath: IPinfo.IP.Address
-      description: The IP address.
+      description: The IP address.dfdf
       type: String
     - contextPath: IPinfo.IP.Hostname
       description: The IP hostname.
