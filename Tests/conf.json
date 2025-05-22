@@ -907,7 +907,8 @@
             "instance_names": "ml_dummy_prod",
             "scripts": [
                 "FindDuplicateEmailIncidents"
-            ]
+            ],
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "ZeroFox",
@@ -4043,7 +4044,8 @@
             "memory_threshold": 1000,
             "scripts": [
                 "FindDuplicateEmailIncidents"
-            ]
+            ],
+            "integrations": "AzureWAF"
         },
         {
             "integrations": "HPEArubaClearPass",
