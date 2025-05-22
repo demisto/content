@@ -75,6 +75,12 @@ class Client(CoreClient):
         )
         return reply
 
+    def post_indicator(self, request_data: dict, suffix : str):
+        reply = self._http_request(
+            method="POST", json_data={"request_data": request_data, "validate":True}, headers=self._headers, url_suffix=suffix
+        )
+        return reply
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
@@ -175,6 +181,29 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         outputs=parsed,
         raw_response=parsed,
     )
+
+
+def parse_expiration_date(expiration: str) -> Optional[int, str]:
+    """Converts relative expiration strings to epoch milliseconds or returns 'Never'."""
+    if not expiration:
+        return None
+    if expiration == 'Never':
+        return 'Never'
+
+    convert_datetime_to_epoch_milli = lambda x: int(x.timestamp() * 1000)
+
+    now_epoch_milli = convert_datetime_to_epoch_milli(get_current_time())
+    datetime_arg = arg_to_datetime(expiration)
+    if datetime_arg:
+        datetime_arg_epoch_milli = convert_datetime_to_epoch_milli(datetime_arg)
+        delta = now_epoch_milli - datetime_arg_epoch_milli
+        if delta > 0:
+            # the arg_to_datetime returned a time in the past
+            return now_epoch_milli + delta
+        else:
+            return datetime_arg
+    else:
+        raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
 
 
 def core_execute_command_reformat_readable_output(script_res: list) -> str:
@@ -314,22 +343,22 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         client (Client): The client instance used to send the request.
         args (dict): Dictionary containing the arguments for the command.
                      Expected to include:
-                     - indicator (str): String that identifies the indicator to insert into Cortex. **Required.**
-            - type (str): Type of indicator. One of: 'HASH', 'IP', 'PATH', 'DOMAIN_NAME', 'FILENAME'. **Required.**
-            - severity (str): Indicator severity. One of: 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'. **Required.**
-            - expiration_date (str, optional): Expiration as relative time ('7 days', '30 days', etc.), epoch millis,
-             or "Never". If null, defaults by type.
-            - comment (str, optional): Comment string describing the indicator.
-            - reputation (str, optional): Indicator reputation. One of: 'GOOD', 'BAD', 'SUSPICIOUS', 'UNKNOWN'.
-            - reliability (str, optional): Reliability rating (A-F). A is most reliable, F is least.
-            - class (str, optional): Indicator classification (e.g., "Malware").
-            - vendor_name (str, optional): Name of the vendor reporting the indicator.
-            - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD', 'BAD',
-             'SUSPICIOUS', 'UNKNOWN'.
-            - vendor_reliability (str, optional): Vendor reliability rating (A-F). Required if vendor_reputation is provided.
-            - input_format (str, optional): Input format. One of: 'CSV', 'JSON'. Defaults to 'JSON'.
-            - ioc_object (str, optional): Full IOC object as JSON or CSV string, depending on input_format.
-             Required if you prefer raw input instead of individual fields.
+                    - indicator (str): String that identifies the indicator to insert into Cortex. **Required.**
+                    - type (str): Type of indicator. One of: 'HASH', 'IP', 'PATH', 'DOMAIN_NAME', 'FILENAME'. **Required.**
+                    - severity (str): Indicator severity. One of: 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'. **Required.**
+                    - expiration_date (str, optional): Expiration as relative time ('7 days', '30 days', etc.), epoch millis,
+                     or "Never". If null, defaults by type.
+                    - comment (str, optional): Comment string describing the indicator.
+                    - reputation (str, optional): Indicator reputation. One of: 'GOOD', 'BAD', 'SUSPICIOUS', 'UNKNOWN'.
+                    - reliability (str, optional): Reliability rating (A-F). A is most reliable, F is least.
+                    - class (str, optional): Indicator classification (e.g., "Malware").
+                    - vendor_name (str, optional): Name of the vendor reporting the indicator.
+                    - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD', 'BAD',
+                     'SUSPICIOUS', 'UNKNOWN'.
+                    - vendor_reliability (str, optional): Vendor reliability rating (A-F). Required if vendor_reputation is provided.
+                    - input_format (str, optional): Input format. One of: 'CSV', 'JSON'. Defaults to 'JSON'.
+                    - ioc_object (str, optional): Full IOC object as JSON or CSV string, depending on input_format.
+                     Required if you prefer raw input instead of individual fields.
 
     Returns:
         CommandResults: Object containing the formatted asset details,
@@ -352,22 +381,60 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
     input_format = args.get('input_format', 'JSON')  # Default to 'JSON'
     ioc_object = args.get('ioc_object')
 
-    # make "work" on params - string to int dates etc.
-    # check if I have ISO object
-        # yes - validate his type and send a request using him
+    # Handle pre-built IOC object
+    if ioc_object:
+        # Try to detect JSON
+        try:
+            ioc_payload = json.loads(ioc_object)
+            input_format = 'JSON'
+        except json.JSONDecodeError:
+            # Not JSON, check if it looks like CSV (very basic check)
+            if ',' in ioc_object and '\n' in ioc_object:
+                ioc_payload = ioc_object  # Leave as raw string
+                input_format = 'CSV'
+            else:
+                raise DemistoException("Invalid ioc_object: must be either valid JSON or CSV string.")
+    else:
         # No - go to nex stage
-    # get all the argument that are not none and add them to body/csv according to what is mention there
-        # make sure the type match the indicator
-            # if not return an error
-        # send using client call - adding validate: true
+        # get all the argument that are not none and add them to body/csv according to what is mention there
+        # Case 2: Build payload from individual arguments
+        ioc_payload = {
+            "indicator": indicator,
+            "type": indicator_type,
+            "severity": severity
+        }
+        # TODO: Fix this param its not correct
+        parsed_expiration_date = parse_expiration_date(expiration_date)
+        ioc_payload["expiration_date"] = parsed_expiration_date
+        ioc_payload["comment"] = comment
+        ioc_payload["reputation"] = reputation
+        ioc_payload["reliability"] = reliability
+        ioc_payload["class"] = indicator_class
+
+        if vendor_name:
+            ioc_payload["vendors"] = [{
+                "name": vendor_name,
+                "reliability": vendor_reliability,
+                "reputation": vendor_reputation
+            }]
+        input_format = 'JSON'  # Default format for this path
+
+        # Final request body
+    body = {
+        "request_data": [ioc_payload],
+        "validate": True
+    }
+    # yes - validate his type and send a request using him
+
+    # if not return an error
+    # send using client call - adding validate: true
 
     # return vakues:
-        # make sure there is no error:
-            # id success is false - there is an error
-                    # return the error
-            # if successes is true:
-                # return CommandResults(output)
-
+    # make sure there is no error:
+    # id success is false - there is an error
+    # return the error
+    # if successes is true:
+    # return CommandResults(output)
 
 
 def main():  # pragma: no cover
