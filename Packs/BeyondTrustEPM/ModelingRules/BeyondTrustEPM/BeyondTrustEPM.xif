@@ -27,7 +27,7 @@ alter
     xdm.source.host.hostname = hostName,
     xdm.source.host.device_id = id,
     xdm.source.user.username = name,
-    xdm.source.host.ipv4_addresses = replace(arraystring(Get_related_ip, ","), "\"",""),
+    xdm.source.host.ipv4_addresses = arraymap(Get_related_ip, replex("@element", "\"", "")),
     xdm.source.process.command_line = Get_process_command_line,
     xdm.source.process.pid = Get_process_pid,
     xdm.target.file.md5 = Get_file_hash_md5,
