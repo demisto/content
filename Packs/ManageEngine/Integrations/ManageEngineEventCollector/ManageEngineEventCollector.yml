@@ -1,0 +1,98 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: ManageEngineEventCollector
+  version: -1
+configuration:
+- name: server_url
+  display: Server URL
+  type: 0
+  required: true
+  defaultvalue: https://endpointcentral.manageengine.com
+  section: Connect
+- name: client_id
+  display: Client ID
+  type: 0
+  required: true
+  section: Connect
+- name: client_secret
+  display: Client Secret
+  type: 9
+  displaypassword: Client Secret
+  hiddenusername: true
+  required: true
+  section: Connect
+- name: client_code
+  displaypassword: Code
+  display: Code
+  type: 9
+  hiddenusername: true
+  required: true
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+- name: max_audit_events
+  display: Max number of audit events per fetch
+  type: 0
+  required: false
+  defaultvalue: 25000
+  section: Collect
+- display: Fetch events
+  name: isFetchEvents
+  type: 8
+  section: Collect
+  required: false
+description: ManageEngine EndpointCentral event collector integration for Cortex XSIAM.
+display: ManageEngineEventCollector
+name: ManageEngineEventCollector
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: If true, the command will create events, otherwise it will only display them.
+      isArray: false
+      name: should_push_events
+      predefined:
+      - 'true'
+      - 'false'
+      required: true
+    - defaultvalue: '100'
+      description: Maximum number of results to return.
+      isArray: false
+      name: limit
+      required: false
+    - default: false
+      description: Date from which to get events.
+      name: start_date
+      required: false
+    - default: false
+      description: Date to which to get events.
+      name: end_date
+      required: false
+    deprecated: false
+    description: Gets events from ManageEngine.
+    execution: false
+    name: manage-engine-get-events
+  dockerimage: demisto/python3:3.12.8.1983910
+  isfetchevents: true
+  runonce: false
+  script: '-'
+  subtype: python3
+  type: python
+marketplaces:
+- marketplacev2
+- platform
+fromversion: 8.3.0
+tests:
+- No tests (auto formatted)
