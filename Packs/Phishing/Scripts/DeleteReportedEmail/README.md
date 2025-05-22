@@ -1,9 +1,11 @@
 A script for deleting reported phishing emails from the mailbox in which they were reported.
 
 ## Note
+
 The script was specifically developed for use by the `Delete Reported Email` layout on the `Phishing - Generic v3` playbook, and should not be used elsewhere.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +15,7 @@ The script was specifically developed for use by the `Delete Reported Email` lay
 | Cortex XSOAR Version | 6.1.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,6 +27,7 @@ The script was specifically developed for use by the `Delete Reported Email` lay
 | interval_in_seconds | Interval in seconds between each poll. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -36,7 +40,9 @@ The script was specifically developed for use by the `Delete Reported Email` lay
 | DeleteReportedEmail.message_id | The message ID of the deleted email. | String |
 
 ## Troubleshooting
+
 ---
+
 * If the `Reported Email Origin` field is missing or has a value of `None`, the script will not be able to locate the email and fail.  
   This can happen if the email forwarded to the listener mailbox was not forwarded as an attachment (with an `EML` file) as it should.
 * If either the `Reported Email Message ID` or `Reported Email To` fields are missing, the cause is likely to be one of the following:
