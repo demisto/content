@@ -216,7 +216,11 @@ def main():  # pragma: no cover
             return_results(list_child_folders_command(client, args))
         elif command == "msgraph-mail-delete-folder":
             return_results(delete_folder_command(client, args))
-        elif command == "msgraph-mail-move-email":
+        elif command in (
+            "msgraph-mail-move-email",
+            "msgraph-mail-soft-delete-email-quick-action",
+            "msgraph-mail-restore-email-quick-action",
+        ):
             return_results(move_email_command(client, args))
         elif command == "msgraph-mail-get-email-as-eml":
             return_results(get_email_as_eml_command(client, args))
@@ -226,7 +230,7 @@ def main():  # pragma: no cover
             return_results(update_email_status_command(client, args))
         elif command == "reply-mail":
             return_results(reply_email_command(client, args))
-        elif command == "send-mail":
+        elif command == "send-mail" or command == "send-mail-quick-action":
             return_results(send_email_command(client, args))
         elif command == "msgraph-mail-auth-reset":
             return_results(reset_auth())
