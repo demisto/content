@@ -388,11 +388,8 @@ def get_fetch_start_times(params, service, last_run_earliest_time, occurence_tim
 
 
 def build_fetch_kwargs(
-        occured_start_time,
-        latest_time, search_offset,
-        occurred_start_time_fieldname,
-        occurred_end_time_fieldname
-    ):
+    occured_start_time, latest_time, search_offset, occurred_start_time_fieldname, occurred_end_time_fieldname
+):
     extensive_log(f"[SplunkPy] occurred_start_time_fieldname: {occurred_start_time_fieldname}")
     extensive_log(f"[SplunkPy] occured_start_time: {occured_start_time}")
     extensive_log(f"[SplunkPy] occurred_end_time_fieldname: {occurred_end_time_fieldname}")
@@ -463,7 +460,7 @@ def fetch_notables(
     if late_indexed_pagination := last_run_data.get("late_indexed_pagination"):
         # This is for handling the case when events get indexed late, and inserted in pages
         # that we have already went through
-        window = f'{kwargs_oneshot.get(occurred_start_time_fieldname)}-{kwargs_oneshot.get(occurred_end_time_fieldname)}'
+        window = f"{kwargs_oneshot.get(occurred_start_time_fieldname)}-{kwargs_oneshot.get(occurred_end_time_fieldname)}"
         demisto.debug(f"[SplunkPy] additional fetch for the window {window} to check for late indexed incidents")
         if last_run_fetched_ids:
             ids_to_exclude = [f'"{fetched_id}"' for fetched_id in last_run_fetched_ids]
@@ -2577,10 +2574,12 @@ class ResponseReaderWrapper(io.RawIOBase):
         # Remove non utf-8 characters to avoid decode errors in JSONResultsReader
         # See resolution section from: https://splunk.my.site.com/customer/s/article/Search-Failed-Due-to
         cleaned_data = data.decode("utf-8", errors="ignore").encode("utf-8")
-        if len(cleaned_data) != len(data): # Check if any bytes were removed
-            demisto.debug("Removed non utf-8 characters in incoming Splunk data:\n"
-                          f"Original Splunk data: {data}\n"
-                          f"Modified data: {cleaned_data}\n")
+        if len(cleaned_data) != len(data):  # Check if any bytes were removed
+            demisto.debug(
+                "Removed non utf-8 characters in incoming Splunk data:\n"
+                f"Original Splunk data: {data}\n"
+                f"Modified data: {cleaned_data}\n"
+            )
 
         for idx, ch in enumerate(cleaned_data):
             b[idx] = ch
@@ -3043,7 +3042,7 @@ def splunk_search_command(service: client.Service, args: dict) -> CommandResults
     status_cmd_result: CommandResults | None = None
     if polling:
         status_cmd_results = splunk_job_status(service, args)
-        assert status_cmd_results # if polling is true, status_cmd_result should not be an empty list
+        assert status_cmd_results  # if polling is true, status_cmd_result should not be an empty list
         status_cmd_result = status_cmd_results[0]
         status = status_cmd_result.outputs["Status"]  # type: ignore[index]
         if status.lower() != "done":
@@ -3409,16 +3408,21 @@ def splunk_job_status(service: client.Service, args: dict) -> list[CommandResult
             if str(error) == "HTTP 404 Not Found -- Unknown sid.":
                 job_results.append(CommandResults(readable_output=f"Not found job for SID: {sid}"))
             else:
-                job_results.append(CommandResults(
-                    readable_output=f"Querying splunk for SID: {sid} resulted in the following error {str(error)}")
+                job_results.append(
+                    CommandResults(readable_output=f"Querying splunk for SID: {sid} resulted in the following error {str(error)}")
                 )
         else:
             status = job.state.content.get("dispatchState")
             entry_context = {"SID": sid, "Status": status}
             human_readable = tableToMarkdown("Splunk Job Status", entry_context)
-            job_results.append(CommandResults(
-                outputs=entry_context, readable_output=human_readable, outputs_prefix="Splunk.JobStatus", outputs_key_field="SID"
-            ))
+            job_results.append(
+                CommandResults(
+                    outputs=entry_context,
+                    readable_output=human_readable,
+                    outputs_prefix="Splunk.JobStatus",
+                    outputs_key_field="SID",
+                )
+            )
     return job_results
 
 
