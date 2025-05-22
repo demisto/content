@@ -395,15 +395,6 @@
                             },
                             {
                                 "endCol": 4,
-                                "fieldId": "wizdefendrecommendedactions",
-                                "height": 106,
-                                "id": "wizdefend-actions-field",
-                                "index": 5,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "endCol": 4,
                                 "fieldId": "wizresourceid",
                                 "height": 53,
                                 "id": "0084c1f0-6985-11ec-8f54-25c02ba6665c",
@@ -430,15 +421,6 @@
                                 "id": "cda13420-698a-11ec-8f54-25c02ba6665c",
                                 "index": 2,
                                 "listId": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
-                                "sectionItemType": "field",
-                                "startCol": 2
-                            },
-                            {
-                                "endCol": 4,
-                                "fieldId": "wizdefendtimeline",
-                                "height": 106,
-                                "id": "wizdefend-timeline-field",
-                                "index": 3,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
@@ -486,7 +468,7 @@
     },
     "group": "incident",
     "id": "WizDefend Layout",
-    "name": "Wiz Defend Layout",
+    "name": "WizDefend Layout",
     "system": false,
     "version": -1,
     "fromVersion": "6.0.0",

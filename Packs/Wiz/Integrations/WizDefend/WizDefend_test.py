@@ -1848,7 +1848,7 @@ def test_fetch_incidents_with_max_fetch_variations(mock_extract_params, mock_las
     # isFetch=True scenarios
     (True, '100', True, True, ""),  # Valid max_fetch
     (True, '5', False, False, "max_fetch must be a valid integer between 10 and 1000"),  # Invalid max_fetch - updated message
-    (True, 'invalid', False, False, "max_fetch must be a valid integer between 10 and 1000"),  # Non-numeric max_fetch - updated message
+    (True, 'invalid', False, False, "max_fetch must be a valid integer between 10 and 1000"),
     (True, None, True, True, ""),  # No max_fetch (should still be valid)
     # isFetch=False scenarios (should skip max_fetch validation)
     (False, '5', True, True, ""),  # Invalid max_fetch but isFetch=False

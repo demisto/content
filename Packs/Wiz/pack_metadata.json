@@ -24,6 +24,7 @@
         }
     },
     "githubUser": "ariel-wiz",
+    "defaultDataSource": "Wiz",
     "marketplaces": [
         "xsoar",
         "marketplacev2"

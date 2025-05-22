@@ -93,7 +93,6 @@ configuration:
   - SelfHosted
   - LKE
   type: 16
-  isArray: true
 - name: origin
   display: Cloud event origin to fetch.
   options:
@@ -170,8 +169,7 @@ script:
       description: The internal Wiz Issue ID of the Detections.
       required: false
     - name: cloud_account_or_cloud_organization
-      display: Detection cloud account or cloud organization to fetch.
-      type: 0
+      description: Detection cloud account or cloud organization to fetch.
       required: false
     - name: origin
       description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
@@ -324,6 +322,25 @@ script:
         name: issue_id
         isArray: true
         required: false
+    outputs:
+      - contextPath: Wiz.Manager.Threat.id
+        description: Threat ID in Wiz.
+        type: String
+      - contextPath: Wiz.Manager.Threat.severity
+        description: Threat severity.
+        type: String
+      - contextPath: Wiz.Manager.Threat.description
+        description: Threat description.
+        type: String
+      - contextPath: Wiz.Manager.Threat.createdAt
+        description: Threat creation time.
+        type: Date
+      - contextPath: Wiz.Manager.Threat.resources
+        description: Related resources.
+        type: String
+      - contextPath: Wiz.Manager.Threat.url
+        description: URL to the Wiz Threat in the Wiz console.
+        type: String
   - name: wiz-get-threats
     description: Retrieve Wiz threats based on specified filters.
     arguments:
@@ -370,7 +387,7 @@ script:
         auto: PREDEFINED
         isArray: true
       - name: resource_id
-        description: Filter threats by specific resource ID..
+        description: Filter threats by specific resource ID.
       - name: severity
         auto: PREDEFINED
         predefined:
@@ -379,7 +396,6 @@ script:
           - MEDIUM
           - LOW
           - INFORMATIONAL
-        additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
         description: Minimum threat severity to fetch
       - name: status
         auto: PREDEFINED
@@ -439,23 +455,23 @@ script:
         description: Filter Threats by project.
         required: false
     outputs:
-      - contextPath: Wiz.Manager.Detections.entitySnapshot
+      - contextPath: Wiz.Manager.Threats.entitySnapshot
         description: All resource details.
         type: String
-      - contextPath: Wiz.Manager.Detections.createdAt
-        description: Detection created at.
+      - contextPath: Wiz.Manager.Threats.createdAt
+        description: Threat created at.
         type: String
-      - contextPath: Wiz.Manager.Detections.id
-        description: Wiz Detection ID.
+      - contextPath: Wiz.Manager.Threats.id
+        description: Wiz Threat ID.
         type: String
-      - contextPath: Wiz.Manager.Detections.url
-        description: Wiz Detection URL.
+      - contextPath: Wiz.Manager.Threats.url
+        description: Wiz Threat URL.
         type: String
-      - contextPath: Wiz.Manager.Detections.severity
-        description: Wiz Detection severity.
+      - contextPath: Wiz.Manager.Threats.severity
+        description: Wiz Threat severity.
         type: String
-      - contextPath: Wiz.Manager.Detections.status
-        description: Wiz Detection status.
+      - contextPath: Wiz.Manager.Threats.status
+        description: Wiz Threat status.
         type: String
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
