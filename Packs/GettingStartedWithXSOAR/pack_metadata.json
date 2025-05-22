@@ -5,7 +5,7 @@
     "videos": [
         "https://www.youtube.com/watch?v=03TmGeAzvOQ"
     ],
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.0",
     "author": "Joe Cosgrove",
     "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
     "email": "",
@@ -23,9 +23,7 @@
         "Case Management"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ],
     "devEmail": [
         "joecosgrove@paloaltonetworks.com"
