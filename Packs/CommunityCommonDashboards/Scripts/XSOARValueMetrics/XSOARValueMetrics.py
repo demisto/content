@@ -1,11 +1,11 @@
-import csv
-from calendar import monthrange
-from collections import defaultdict
-from datetime import datetime
-
-import demistomock as demisto  # noqa: F401
 import pandas as pd
+from datetime import datetime
+from collections import defaultdict
+from calendar import monthrange
+import csv
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
 
 MAXINC = 2000
 XDEBUG = True
@@ -92,11 +92,12 @@ def BuildWindows(start_date_str, end_date_str):
     end_date = datetime.strptime(end_date_str, "%Y-%m-%d")
     result_dates = []
     current_date = start_date
+    day = 1
 
     # Increment the window and store the first and last dates until reaching the end date
     while current_date <= end_date:
         # Get the first day of the current month
-        day = 1  # initializing the parameter
+
         if current_date != start_date:
             start = current_date
         else:
