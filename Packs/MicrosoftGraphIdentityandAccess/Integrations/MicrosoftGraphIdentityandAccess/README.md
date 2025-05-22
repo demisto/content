@@ -656,3 +656,447 @@ There is no context output for this command.
 #### Human Readable Output
 
 >✅ Dismissed successfully.
+### msgraph-identity-ca-policy-create
+
+***
+Creates a Conditional Access policy.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-create`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. <br/>. | Optional | 
+| policy_name | The name of the Conditional Access policy to be created. Required if policy argument not present. | Optional | 
+| state | The state of the policy.<br/>Required if policy argument not present.<br/>. Possible values are: enabled, disabled. | Optional | 
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.<br/>Required if policy argument not present.<br/>. | Optional | 
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`.<br/>Required if policy argument not present.<br/>. | Optional | 
+| client_app_types | List of types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>Required if policy argument not present.<br/>. | Optional | 
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional | 
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional | 
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional | 
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional | 
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional | 
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control.<br/>Default value is 'AND'. Possible values are: AND, OR. Default is AND. | Optional | 
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Default value is 'mfa'<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. Default is mfa. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. | 
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. | 
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. | 
+
+#### Command example
+```!msgraph-identity-ca-policy-create policy_name="test" state=disabled client_app_types="all" include_users="All" include_applications="none" include_platforms="iOS" grant_control_enforcement="block" grant_control_operator="AND" sign_in_risk_levels="low" user_risk_levels="low"```
+#### Context Example
+```json
+{
+    "MSGraphIdentity": {
+        "ConditionalAccessPolicy": {
+            "@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies/$entity",
+            "conditions": {
+                "applications": {
+                    "applicationFilter": null,
+                    "excludeApplications": [],
+                    "includeApplications": [
+                        "None"
+                    ],
+                    "includeAuthenticationContextClassReferences": [],
+                    "includeUserActions": []
+                },
+                "authenticationFlows": null,
+                "clientAppTypes": [
+                    "all"
+                ],
+                "clientApplications": null,
+                "devices": null,
+                "insiderRiskLevels": null,
+                "locations": null,
+                "platforms": {
+                    "excludePlatforms": [],
+                    "includePlatforms": [
+                        "iOS"
+                    ]
+                },
+                "servicePrincipalRiskLevels": [],
+                "signInRiskLevels": [
+                    "low"
+                ],
+                "userRiskLevels": [
+                    "low"
+                ],
+                "users": {
+                    "excludeGroups": [],
+                    "excludeGuestsOrExternalUsers": null,
+                    "excludeRoles": [],
+                    "excludeUsers": [],
+                    "includeGroups": [],
+                    "includeGuestsOrExternalUsers": null,
+                    "includeRoles": [],
+                    "includeUsers": [
+                        "All"
+                    ]
+                }
+            },
+            "createdDateTime": "2025-05-15T14:11:02.0356168Z",
+            "displayName": "test",
+            "grantControls": {
+                "authenticationStrength": null,
+                "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('0a31b9ab-be62-4f1b-b4a7-523940eb9f54')/grantControls/authenticationStrength/$entity",
+                "builtInControls": [
+                    "block"
+                ],
+                "customAuthenticationFactors": [],
+                "operator": "OR",
+                "termsOfUse": []
+            },
+            "id": "0a31b9ab-be62-4f1b-b4a7-523940eb9f54",
+            "modifiedDateTime": null,
+            "sessionControls": null,
+            "state": "disabled",
+            "templateId": null
+        }
+    }
+}
+```
+
+#### Human Readable Output
+
+>Conditional Access policy 0a31b9ab-be62-4f1b-b4a7-523940eb9f54 was successfully created.
+
+### msgraph-identity-ca-policy-update
+
+***
+Updates a Conditional Access policy. By default, the command attempts to **append** values to existing list-based fields (e.g., `include_users`, `include_groups`, etc.). If a field does not support appending (i.e., it's not a list), the command **overrides** the existing value with the new one.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-update`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to update. | Required | 
+| policy | JSON object containing the policy details. Ensure a valid policy object is passed. If no `policy` argument is provided,<br/>other required arguments like `policy_name`, `state`, etc. must be included.<br/>. | Optional | 
+| policy_name | The name of the Conditional Access policy to be created. | Optional | 
+| state | The state of the policy.<br/>. Possible values are: enabled, disabled. | Optional | 
+| sign_in_risk_levels | List of sign-in risk levels for the policy. Options: `low`, `medium`, `high`, `none`.<br/>. | Optional | 
+| user_risk_levels | List of user risk levels for the policy. Options: `low`, `medium`, `high`.<br/>. | Optional | 
+| client_app_types | Types of client apps to be included in the policy. Options: `all`, `browser`, `mobileAppsAndDesktopClients`, `exchangeActiveSync`, `easSupported`, `other`.<br/>. | Optional | 
+| include_applications | List of application IDs to be included in the policy. If no applications are defined, `includeApplications: 'none'` will be used.<br/>. | Optional | 
+| exclude_applications | List of application IDs to be excluded from the policy.<br/>. | Optional | 
+| include_user_actions | List of user actions to be included in the policy. Options: `vrn:user:registersecurityinfo`, `urn:user:registerdevice`.<br/>. Possible values are: vrn:user:registersecurityinfo, urn:user:registerdevice. | Optional | 
+| include_users | List of user IDs to be included in the policy. Options: None, All, GuestsOrExternalUsers.<br/>. | Optional | 
+| exclude_users | List of user IDs to be excluded from the policy.<br/>. | Optional | 
+| include_groups | List of group IDs to be included in the policy.<br/>. | Optional | 
+| exclude_groups | List of group IDs to be excluded from the policy.<br/>. | Optional | 
+| include_roles | List of role IDs to be included in the policy.<br/>. | Optional | 
+| exclude_roles | List of role IDs to be excluded from the policy.<br/>. | Optional | 
+| include_platforms | List of platforms to be included in the policy. Options: `Android`, `iOS`, `Windows`, `windowsPhone`, `macOS`, `Linux`, `all`.<br/>. | Optional | 
+| exclude_platforms | List of platforms to be excluded from the policy.<br/>. | Optional | 
+| include_locations | List of location IDs to be included in the policy. Options: `All`, `AllTrusted`, or a list of specific location IDs.<br/>. | Optional | 
+| exclude_locations | List of location IDs to be excluded from the policy.<br/>. | Optional | 
+| grant_control_operator | The operator for grant control.<br/>. Possible values are: AND, OR. | Optional | 
+| grant_control_enforcement | List of built-in controls for the policy. Options: `block`, `mfa`, `compliantDevice`, `domainJoinedDevice`, `approvedApplication`, `compliantApplication`, `passwordChange`.<br/>Special considerations when using `passwordChange`: <br/>- `passwordChange` must be accompanied by `mfa` using an `AND` operator.<br/>- `passwordChange` must be used with `userRiskLevels`.<br/>- The policy should target all applications and not exclude any.<br/>. | Optional | 
+| update_action | Defines how to update fields in the policy.<br/>- `override` (default): Replaces existing values.<br/>- `append`: Adds new values to existing ones without removing them.<br/>. Possible values are: override, append. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+#### Command example
+```!msgraph-identity-ca-policy-update policy_id="58c3a52b-190f-4be3-a19c-a4d03f8ce684" state="disabled"```
+
+#### Human Readable Output
+
+>Conditional Access policy 58c3a52b-190f-4be3-a19c-a4d03f8ce684 was successfully updated.
+>
+>Note:
+>Field `state` is not a list - overriding the value.
+
+### msgraph-identity-ca-policies-list
+
+***
+Retrieve one or all Conditional Access policies from Microsoft Graph API.
+
+#### Base Command
+
+`msgraph-identity-ca-policies-list`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Optional. The ID of the Conditional Access policy to retrieve. If not provided, all policies will be returned. | Optional | 
+| filter | Optional. The OData filter query to retrieve specific Conditional Access policies. | Optional | 
+| limit | Optional. The maximum number of Conditional Access policies to return. Applicable only when all_results is set to false. | Optional | 
+| all_results | Optional. Whether to retrieve all results without applying the 'limit'. Default value is true. Possible values are: true, false. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| MSGraphIdentity.ConditionalAccessPolicy.id | string | The unique ID of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.displayName | string | The display name of the Conditional Access policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.createdDateTime | date | The date and time the policy was created. | 
+| MSGraphIdentity.ConditionalAccessPolicy.modifiedDateTime | date | The date and time the policy was last modified. | 
+| MSGraphIdentity.ConditionalAccessPolicy.state | string | The state of the policy \(enabled/disabled\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.signInRiskLevels | list | List of sign-in risk levels this policy applies to. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.clientAppTypes | list | Client application types this policy targets. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeApplications | list | List of applications included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.excludeApplications | list | List of applications excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.applications.includeUserActions | list | User actions included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeUsers | list | User IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeUsers | list | User IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeGroups | list | Group IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeGroups | list | Group IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.includeRoles | list | Role IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.users.excludeRoles | list | Role IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.includePlatforms | list | Platforms included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.platforms.excludePlatforms | list | Platforms excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.includeLocations | list | Location IDs included in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.conditions.locations.excludeLocations | list | Location IDs excluded from the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.operator | string | Logical operator used in the grant controls \(e.g., AND, OR\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.builtInControls | list | List of built-in access controls \(e.g., MFA, compliant device\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.customAuthenticationFactors | list | Custom authentication factors used in the policy. | 
+| MSGraphIdentity.ConditionalAccessPolicy.grantControls.termsOfUse | list | List of Terms of Use policy IDs applied. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.cloudAppSecurityType | string | The type of cloud app security control. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.cloudAppSecurity.isEnabled | boolean | Whether cloud app security is enabled. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.value | number | Sign-in frequency value. | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.type | string | Unit of the sign-in frequency \(e.g., hours, days\). | 
+| MSGraphIdentity.ConditionalAccessPolicy.sessionControls.signInFrequency.isEnabled | boolean | Whether sign-in frequency control is enabled. | 
+
+#### Command example
+```!msgraph-identity-ca-policies-list limit=2 all_results=false```
+#### Context Example
+```json
+{
+    "MSGraphIdentity": {
+        "ConditionalAccessPolicy": [
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "Office365"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": {
+                        "excludeLocations": [],
+                        "includeLocations": [
+                            "All"
+                        ]
+                    },
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": [
+                            "d629c370-61c9-4851-8f3d-80ea6c07655f"
+                        ]
+                    }
+                },
+                "createdDateTime": "2025-02-12T11:58:25.6358652Z",
+                "displayName": "block office test policy",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('24d40f2e-1998-4bf1-96ff-db841b6d51e6')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "24d40f2e-1998-4bf1-96ff-db841b6d51e6",
+                "modifiedDateTime": "2025-02-13T06:51:23.575868Z",
+                "sessionControls": null,
+                "state": "disabled",
+                "templateId": null
+            },
+            {
+                "conditions": {
+                    "applications": {
+                        "applicationFilter": null,
+                        "excludeApplications": [],
+                        "includeApplications": [
+                            "All"
+                        ],
+                        "includeAuthenticationContextClassReferences": [],
+                        "includeUserActions": []
+                    },
+                    "authenticationFlows": null,
+                    "clientAppTypes": [
+                        "all"
+                    ],
+                    "clientApplications": null,
+                    "devices": null,
+                    "insiderRiskLevels": null,
+                    "locations": null,
+                    "platforms": null,
+                    "servicePrincipalRiskLevels": [],
+                    "signInRiskLevels": [
+                        "high"
+                    ],
+                    "userRiskLevels": [],
+                    "users": {
+                        "excludeGroups": [],
+                        "excludeGuestsOrExternalUsers": null,
+                        "excludeRoles": [],
+                        "excludeUsers": [],
+                        "includeGroups": [
+                            "66b0b57b-25c5-4ef3-9d4f-b7bdea0e8794"
+                        ],
+                        "includeGuestsOrExternalUsers": null,
+                        "includeRoles": [],
+                        "includeUsers": []
+                    }
+                },
+                "createdDateTime": "2025-02-12T22:01:32.2461656Z",
+                "displayName": "Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins",
+                "grantControls": {
+                    "authenticationStrength": null,
+                    "authenticationStrength@odata.context": "https://graph.microsoft.com/v1.0/$metadata#identity/conditionalAccess/policies('f1b54946-07ee-4c43-a78a-3f33ee248495')/grantControls/authenticationStrength/$entity",
+                    "builtInControls": [
+                        "mfa"
+                    ],
+                    "customAuthenticationFactors": [],
+                    "operator": "OR",
+                    "termsOfUse": []
+                },
+                "id": "f1b54946-07ee-4c43-a78a-3f33ee248495",
+                "modifiedDateTime": "2025-05-14T20:18:55.0820676Z",
+                "sessionControls": {
+                    "applicationEnforcedRestrictions": null,
+                    "cloudAppSecurity": null,
+                    "disableResilienceDefaults": null,
+                    "persistentBrowser": null,
+                    "signInFrequency": {
+                        "authenticationType": "primaryAndSecondaryAuthentication",
+                        "frequencyInterval": "everyTime",
+                        "isEnabled": true,
+                        "type": null,
+                        "value": null
+                    }
+                },
+                "state": "enabled",
+                "templateId": "4200930c-0da2-4e33-ca01-000000000007"
+            }
+        ]
+    }
+}
+```
+
+#### Human Readable Output
+
+>### Conditional Access Policies
+>|CreatedDateTime|DisplayName|ID|IncludeUsers|State|
+>|---|---|---|---|---|
+>| 2025-02-12T11:58:25.6358652Z | block office test policy | 24d40f2e-1998-4bf1-96ff-db841b6d51e6 | d629c370-61c9-4851-8f3d-80ea6c07655f | disabled |
+>| 2025-02-12T22:01:32.2461656Z | Microsoft-managed: Multifactor authentication and reauthentication for risky sign-ins | f1b54946-07ee-4c43-a78a-3f33ee248495 |  | enabled |
+
+
+### msgraph-identity-ca-policy-delete
+
+***
+Delete specific Conditional Access policy by ID.
+
+#### Base Command
+
+`msgraph-identity-ca-policy-delete`
+
+#### Required Permissions
+
+`Permission type : Application or Delegated`
+`Permissions:Policy.Read.All`
+`Policy.ReadWrite.ConditionalAccess`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| policy_id | Required. The ID of the Conditional Access policy to delete. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
+#### Command example
+```!msgraph-identity-ca-policy-delete policy_id="fc271abb-e52c-4c40-aff9-5fd1e534a58d"```
+
+#### Human Readable Output
+>Conditional Access policy fc271abb-e52c-4c40-aff9-5fd1e534a58d was successfully deleted.
