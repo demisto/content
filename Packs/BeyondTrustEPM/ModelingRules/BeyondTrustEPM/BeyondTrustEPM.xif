@@ -37,7 +37,7 @@ alter
     xdm.target.file.signer = if(Get_file_code_signature_exists = "true", Get_file_code_signature_subject_name),
     xdm.target.file.filename = if(Get_host_os_type = "macos", Get_file_path, Get_host_os_type = "windows", Get_file_name),
     xdm.target.file.directory = if(Get_host_os_type = "macos", Get_file_path, Get_host_os_type = "windows", Get_file_directory),
-    xdm.source.process.name = if(xdm.source.host.os = "macos", Get_process_parent_name, xdm.source.host.os = "windows", Get_file_name),
+    xdm.source.process.name = if(Get_host_os_type = "macos", Get_process_parent_name, Get_host_os_type = "windows", Get_file_name),
     xdm.target.file.is_signed = to_boolean(if(Get_file_code_signature_exists = "true", Get_file_code_signature_valid)),
     xdm.event.description = if(code = "100", "Process has started with admin rights added to token.",
     code = "101", "Process has been started from the shell context menu with admin rights added to token.",
