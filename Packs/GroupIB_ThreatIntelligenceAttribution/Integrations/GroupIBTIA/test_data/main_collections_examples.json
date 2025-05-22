@@ -3219,7 +3219,7 @@
                         "description": null,
                         "id": "6ecb34d68b26c7bc369dd209f0db9cc3a9c6a8c7",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3250,7 +3250,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3319,7 +3319,7 @@
                         "description": null,
                         "id": "375efaa5e042b289579c147dd1c95d9b8ccdbee4",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3350,7 +3350,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3419,7 +3419,7 @@
                         "description": null,
                         "id": "0a3f9339b944b7976bbbccf6a695592ce97b7523",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3448,7 +3448,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3511,7 +3511,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "name": "ChamelGang",
                 "oldId": null,
@@ -3646,7 +3646,7 @@
                     "nation-state"
                 ],
                 "langs": [
-                    "ru",
+                    "uz",
                     "en"
                 ],
                 "name": "APT41",
@@ -4087,7 +4087,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "name": "Bahamut",
                 "oldId": null,
@@ -4495,7 +4495,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [
@@ -4675,7 +4675,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -5380,7 +5380,7 @@
                 "id": "d7fde57f6ed2051ffae9257ba6beefe0fc99192f",
                 "isPublished": true,
                 "langs": [
-                    "ru",
+                    "uz",
                     "en"
                 ],
                 "linkedMalware": [],
