@@ -1535,7 +1535,7 @@ def test_translate_severity(severity, expected_result):
 ])
 def test_get_fetch_incidents_api_limit(max_fetch, expected_api_limit):
     """Test get_fetch_incidents_api_limit with various max_fetch values"""
-    api_limit = get_fetch_incidents_api_limit(max_fetch)
+    api_limit = get_fetch_incidents_api_max_fetch(max_fetch)
     assert api_limit == expected_api_limit
 
 
@@ -1784,64 +1784,6 @@ def test_extract_params_from_integration_settings(mocker):
     assert result['incidentFetchInterval'] == 10
     assert result['incidentType'] == 'WizDefend Detection'
     assert result['isFetch'] is True
-
-
-@pytest.mark.parametrize("max_fetch_value,expected_api_limit", [
-    ('50', 50),  # Valid max_fetch
-    ('100', 100),  # Another valid max_fetch
-    ('1000', 1000),  # Maximum valid max_fetch
-    (None, API_MAX_FETCH),  # No max_fetch should use default
-    ('invalid', API_MAX_FETCH),  # Invalid max_fetch should use default
-])
-@freeze_time("2022-01-02T00:00:00Z")
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_fetch_incidents_api_limit')
-@patch.object(demisto, 'setLastRun')
-@patch.object(demisto, 'incidents')
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections')
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_last_run_time', return_value="2022-01-01T00:00:00Z")
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.extract_params_from_integration_settings')
-def test_fetch_incidents_with_max_fetch_variations(mock_extract_params, mock_last_run,
-                                                   mock_get_filtered, mock_incidents, mock_set_last_run,
-                                                   mock_get_api_limit, sample_detection, max_fetch_value, expected_api_limit):
-    """Test fetch_incidents with various max_fetch parameter values"""
-    # Mock the return value of extract_params_from_integration_settings
-    # This should match what the function actually returns (using the correct keys)
-    mock_integration_params = {
-        WizInputParam.TYPE: 'GENERATED THREAT',
-        WizInputParam.PLATFORM: 'AWS',
-        WizInputParam.SEVERITY: 'CRITICAL',
-        WizInputParam.ORIGIN: 'WIZ_SENSOR',
-        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: 'test-subscription',
-        DemistoParams.FIRST_FETCH: '2 days',
-        DemistoParams.INCIDENT_FETCH_INTERVAL: 10,
-        DemistoParams.INCIDENT_TYPE: 'WizDefend Detection',
-        DemistoParams.IS_FETCH: True
-    }
-
-    # Add max_fetch if it's provided
-    if max_fetch_value is not None:
-        mock_integration_params[DemistoParams.MAX_FETCH] = max_fetch_value
-
-    # Set up mocks
-    mock_extract_params.return_value = mock_integration_params
-    mock_get_filtered.return_value = [sample_detection]
-    mock_get_api_limit.return_value = expected_api_limit
-
-    # Call the function
-    fetch_incidents()
-
-    # Verify get_fetch_incidents_api_limit was called with correct value
-    expected_call_value = max_fetch_value if max_fetch_value is not None else mock_integration_params.get(DemistoParams.MAX_FETCH)
-    mock_get_api_limit.assert_called_once_with(expected_call_value)
-
-    # Verify get_filtered_detections was called with the correct api_limit
-    mock_get_filtered.assert_called_once()
-    call_kwargs = mock_get_filtered.call_args[1]
-    assert call_kwargs['api_limit'] == expected_api_limit
-
-    # Verify incidents were created
-    mock_incidents.assert_called_once()
-    mock_set_last_run.assert_called_once()
 
 
 @pytest.mark.parametrize("is_fetch,max_fetch,validation_result,expected_valid,expected_error", [

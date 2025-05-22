@@ -1186,7 +1186,7 @@ def test_module():
         demisto.results('ok')
 
 
-def get_fetch_incidents_api_limit(max_fetch):
+def get_fetch_incidents_api_max_fetch(max_fetch):
     """
     Get the API limit for fetching incidents
     """
@@ -1199,10 +1199,14 @@ def fetch_incidents():
     """
     Fetch all Detections (OOB XSOAR Fetch)
     """
+    global API_MAX_FETCH
+
     integration_settings_params = extract_params_from_integration_settings(advanced_params=True)
     last_run = get_last_run_time()
-
     api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
+
+    get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
+    API_MAX_FETCH = get_fetch_incidents_api_max_fetch(integration_settings_params.get(DemistoParams.MAX_FETCH))
 
     wiz_detections = get_filtered_detections(
         detection_type=integration_settings_params[WizInputParam.TYPE],
@@ -1211,7 +1215,6 @@ def fetch_incidents():
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
         detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
         after_time=last_run,
-        api_limit=get_fetch_incidents_api_limit(integration_settings_params.get(DemistoParams.MAX_FETCH))
     )
 
     if isinstance(wiz_detections, str):
