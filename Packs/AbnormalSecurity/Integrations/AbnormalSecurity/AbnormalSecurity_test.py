@@ -598,7 +598,7 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     polling_lag = timedelta(minutes=5)
 
     # Calculate expected timestamps
-    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC)
+    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC) + timedelta(milliseconds=1)
     adjusted_start_time = original_timestamp - polling_lag
     expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -610,10 +610,10 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     adjusted_end_time = fixed_current_time - polling_lag
     expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lt {expected_end_time}"
+    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
-    _, incidents = fetch_incidents(
+    _, _ = fetch_incidents(
         client=client,
         last_run=last_run,
         first_fetch_time=first_fetch_time,
