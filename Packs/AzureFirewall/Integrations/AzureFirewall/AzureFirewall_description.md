@@ -1,47 +1,33 @@
-In order to connect to the Azure Firewall using either Cortex XSOAR Azure App or the Self-Deployed Azure App, use one of the following methods:
+In order to connect to the Azure Network Security Groups use one of the following methods:
 
-- *Device Code Flow*.
-- *Azure Managed Identities*
-- *Client Credentials Flow*.
+1. *Client Credentials Flow*
+2. *Device Code Flow*.
+3. *Azure Managed Identities Flow*.
 
-## Required Permissions:
-1. user_impersonation
-2. user.read 
+## Self-Deployed Azure App
 
+To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
-## Authentication Using the Device Code Flow
+To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
 
-1. In the Azure Portal, add a new Azure App Registration. To add the registration, refer to the following [Microsoft article](https://docs.microsoft.com/en-us/azure/active-directory/develop/quickstart-register-app).
-2. Add the following permissions to your registered app:
-   - `Azure Service Management/user_impersonation`
-   - `Microsoft Graph/User.Read`
-4. In your registered app - Get the Application (client) ID. 
-   1. In the Azure Portal, navigate to **App registrations** > your registered application > **Overview**.
-   2. Copy and save the Application (client) ID.
-5. In the *Client ID* parameter, enter your registered app Application (client) ID.
+### Required permissions
 
-### Testing authentication and connectivity
+- Azure Service Management - permission `user_impersonation` of type Delegated
+- Microsoft Graph - permission `User.Read` of type Delegated
 
-In order to connect to the Azure firewall integration, use the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code).
-   1. Fill in the required parameters.
-   2. Run the ***!azure-firewall-auth-start*** command.
-   3. Follow the instructions that appear.
-   4. Run the ***!azure-firewall-auth-complete*** command.
+To add a permission:
 
-#### Cortex XSOAR Azure app
-In order to use the Cortex XSOAR Azure application, use the default application ID (cf22fd73-29f1-4245-8e16-533704926d20) and fill in your subscription ID and default resource group name.
+1. Navigate to **Home** > **App registrations**.
+2. Search for your app under 'all applications'.
+3. Click **API permissions** > **Add permission**.
+4. Search for the specific Microsoft API and select the specific permission of type Delegated.
 
-# Self-Deployed Application
-To use a self-configured Azure application, you need to add a [new Azure App Registration in the Azure Portal](https://docs.microsoft.com/en-us/graph/auth-register-app-v2#register-a-new-application-using-the-azure-portal).
+### Authentication Using the Client Credentials Flow
 
-## Client Credentials Flow Authentication
-
-Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal)
-
+Assign Azure roles using the Azure portal [Microsoft article](https://learn.microsoft.com/en-us/azure/role-based-access-control/role-assignments-portal).
 *Note:* In the *Select members* section, assign the application you created earlier.
-
 To configure a Microsoft integration that uses this authorization flow with a self-deployed Azure application:
-1. In the **Application ID** field, enter your Client/Application ID.
+1. In the **Client ID** field, enter your Client/Application ID.
 2. In the **Tenant ID** field, enter your Tenant ID .
 3. In the **Client Secret** field, enter your Client Secret.
 4. Click **Test** to validate the URLs, token, and connection
@@ -51,6 +37,24 @@ To configure a Microsoft integration that uses this authorization flow with a se
 - Certificate Thumbprint - The certificate thumbprint as appears when registering the certificate to the app.
 - Private Key - The private key of the registered certificate.  
 
+### Authentication Using the Device Code Flow
+
+Use the [device code flow](https://xsoar.pan.dev/docs/reference/articles/microsoft-integrations---authentication#device-code-flow).
+
+In order to connect to the Azure Firewall using either Cortex XSOAR Azure App or the Self-Deployed Azure App:
+
+1. Fill in the required parameters.
+2. Run the ***!azure-firewall-auth-start*** command.
+3. Follow the instructions that appear.
+4. Run the ***!azure-firewall-auth-complete*** command.
+
+At end of the process you'll see a message that you've logged in successfully.
+
+#### Cortex XSOAR Azure App
+
+In order to use the Cortex XSOAR Azure application, use the default application ID (f5b37a76-f937-4c57-a9b5-31dab1c7e236).
+
+You only need to fill in your subscription ID and resource group name.
 
 ### Azure Managed Identities Authentication
 ##### Note: This option is relevant only if the integration is running on Azure VM.
