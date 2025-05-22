@@ -1,10 +1,12 @@
+import copy
+from unittest.mock import patch
+from freezegun import freeze_time
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock
 import demistomock as demisto
 import yaml
 import os
 
-from CommonServerPython import DemistoException
 from Packs.Wiz.Integrations.WizDefend.WizDefend import *
 
 
@@ -53,6 +55,7 @@ def global_mocks(mocker):
     mocker.patch.object(demisto, 'debug')
     mocker.patch.object(demisto, 'info')
     mocker.patch.object(demisto, 'error')
+
 
 @pytest.fixture(scope="function")
 def reset_domain():
@@ -180,6 +183,7 @@ def sample_detection_no_rule():
         }
     }
 
+
 @pytest.fixture
 def sample_threat():
     """Return a sample threat object for testing"""
@@ -218,6 +222,7 @@ def sample_threat():
         ]
     }
 
+
 @pytest.fixture
 def mock_threat_api_response(sample_threat):
     """Return a complete threat API response structure"""
@@ -233,6 +238,7 @@ def mock_threat_api_response(sample_threat):
         }
     }
 
+
 @pytest.fixture
 def mock_api_response(sample_detection):
     """Return a complete API response structure"""
@@ -245,36 +251,6 @@ def mock_api_response(sample_detection):
                     "endCursor": ""
                 }
             }
-        }
-    }
-
-
-@pytest.fixture
-def sample_detection():
-    """Return a sample detection object for testing"""
-    return {
-        "id": "12345678-1234-1234-1234-d25e16359c19",
-        "issue": {
-            "id": "98765432-4321-4321-4321-ff5fa2ff7f78",
-            "url": "https://app.wiz.io/issues/98765432-4321-4321-4321-ff5fa2ff7f78"
-        },
-        "ruleMatch": {
-            "rule": {
-                "id": "12345678-4321-4321-4321-3792e8a03318",
-                "name": "suspicious activity detected",
-                "sourceType": "THREAT_DETECTION",
-                "securitySubCategories": []
-            }
-        },
-        "description": "Suspicious activity detected",
-        "severity": "CRITICAL",
-        "createdAt": "2022-01-02T15:46:34Z",
-        "startedAt": "2022-01-02T15:45:00Z",
-        "endedAt": "2022-01-02T15:47:00Z",
-        "actors": [],
-        "resources": [],
-        "triggeringEvents": {
-            "nodes": []
         }
     }
 
@@ -349,14 +325,16 @@ def mock_api_empty_response():
         }
     }
 
+
 @pytest.fixture
 def yaml_content():
     """Fixture to load the YAML file once for all tests"""
     yaml_file_path = os.path.join(os.path.dirname(__file__), 'WizDefend.yml')
-    with open(yaml_file_path, 'r') as f:
+    with open(yaml_file_path) as f:
         return yaml.safe_load(f)
 
 # ===== VALIDATION FUNCTION TESTS =====
+
 
 @pytest.mark.parametrize("detection_type,expected_valid,expected_value", [
     ("GENERATED THREAT", True, "GENERATED_THREAT"),
@@ -409,7 +387,8 @@ def test_validate_detection_origin(origin, expected_valid, expected_value):
 
 
 @pytest.mark.parametrize("subscription,expected_valid,expected_value", [
-    (["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"], True, ["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"]),
+    (["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"], True,
+     ["12345678-1234-1234-1234-d25e16359c19", "12345678-1234-1234-1234-d25e16359c20"]),
     ("12345678-1234-1234-1234-d25e16359c19", True, ["12345678-1234-1234-1234-d25e16359c19"]),
     ("test-subscription", False, "test-subscription"),
     ("", True, None),
@@ -486,20 +465,6 @@ def test_validate_rule_match_id(rule_id, expected_valid, expected_value):
         assert result.value == rule_id
 
 
-@pytest.mark.parametrize("rule_name,expected_valid,expected_value", [
-    ("test rule", True, "test rule"),
-    ("", True, ""),
-    (None, True, None),
-    (123, True, 123),  # Any value should be valid
-])
-def test_validate_rule_match_name(rule_name, expected_valid, expected_value):
-    """Test validate_rule_match_name with various inputs"""
-    result = validate_rule_match_name(rule_name)
-    assert result.is_valid == expected_valid
-    if expected_valid:
-        assert result.value == expected_value
-
-
 @pytest.mark.parametrize("project,expected_valid,expected_value", [
     ("test project", True, "test project"),
     ("", True, ""),
@@ -539,6 +504,42 @@ def test_validate_fetch_interval(fetch_interval, expected_valid, expected_value)
     assert result.is_valid == expected_valid
     if expected_valid:
         assert result.minutes_value == expected_value
+
+
+@pytest.mark.parametrize("max_fetch,expected_valid,expected_value", [
+    ("10", True, 10),  # Minimum valid value
+    ("1000", True, 1000),  # Maximum valid value
+    ("500", True, 500),  # Middle value
+    ("9", False, None),  # Below minimum
+    ("1001", False, None),  # Above maximum
+    ("not_a_number", False, None),  # Non-numeric string
+    ("", True, API_MAX_FETCH),  # Empty string should default to max
+    (None, True, API_MAX_FETCH),  # None should default to max
+    (10, True, 10),  # Integer input
+    (1000, True, 1000),  # Integer input at max
+])
+def test_validate_max_fetch(max_fetch, expected_valid, expected_value):
+    """Test validate_max_fetch with various inputs"""
+    result = validate_max_fetch(max_fetch)
+    assert result.is_valid == expected_valid
+    if expected_valid:
+        assert result.value == expected_value
+
+
+@pytest.mark.parametrize("max_fetch,expected_in_error", [
+    ("5", "Received 5"),  # Below minimum
+    ("2000", "Received 2000"),  # Above maximum
+    ("invalid", None),  # Non-numeric (no "Received" message)
+    ("-10", "Received -10"),  # Negative number
+    ("0", "Received 0"),  # Zero
+])
+def test_validate_max_fetch_error_messages(max_fetch, expected_in_error):
+    """Test validate_max_fetch error messages"""
+    result = validate_max_fetch(max_fetch)
+    assert result.is_valid is False
+    assert f"{DemistoParams.MAX_FETCH} must be a valid integer between 10 and 1000" in result.error_message
+    if expected_in_error:
+        assert expected_in_error in result.error_message
 
 
 @pytest.mark.parametrize("first_fetch,expected_valid,expected_value", [
@@ -721,6 +722,7 @@ def test_validate_all_threat_parameters():
     success, error_message, validated_values = validate_all_threat_parameters(invalid_status_params)
     assert success is False
     assert "Invalid status" in error_message
+
 
 @pytest.mark.parametrize("rule_id,expected_valid,expected_value", [
     (str(uuid.uuid4()), True, None),  # Valid UUID
@@ -973,7 +975,8 @@ def test_apply_all_filters():
     assert result["filterBy"]["type"]["equals"] == [validated_values['type']]
     assert result["filterBy"]["cloudPlatform"]["equals"] == validated_values['platform']
     assert result["filterBy"]["origin"]["equals"] == validated_values['origin']
-    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == [validated_values['cloud_account_or_cloud_organization']]
+    assert result["filterBy"]["cloudAccountOrCloudOrganizationId"]["equals"] == [
+        validated_values['cloud_account_or_cloud_organization']]
     assert result["filterBy"]["resource"]["id"]["equals"] == [validated_values['resource_id']]
     assert result["filterBy"]["severity"]["equals"] == validated_values['severity']
     assert result["filterBy"]["createdAt"]["inLast"]["amount"] == validated_values['creation_minutes_back']
@@ -1086,6 +1089,7 @@ def test_apply_all_threat_filters():
     assert "severity" in result["filterBy"]
     assert len(result["filterBy"]) == 1
 
+
 def test_apply_matched_rule_filter():
     """Test apply_matched_rule_filter function"""
     # Test with value
@@ -1116,6 +1120,7 @@ def test_apply_rule_match_name_filter():
     assert result == {}
 
 # ===== CORE API COMMUNICATION TESTS =====
+
 
 def test_get_token_error(mock_response_factory, mocker):
     """Test get_token with error response"""
@@ -1327,7 +1332,6 @@ def test_get_token_success(mock_response_factory, mocker):
     WizDefend.HEADERS = original_headers
 
 
-
 def test_query_api(mocker, sample_detection):
     """Test query_api with simple response"""
     # Import the module locally
@@ -1499,6 +1503,7 @@ def test_query_threats_with_pagination_disabled(mock_get_entries, sample_threat)
 
 # ===== UTILITY FUNCTION TESTS =====
 
+
 @pytest.mark.parametrize("severity,expected_result", [
     ("CRITICAL", 4),
     ("HIGH", 3),
@@ -1511,6 +1516,27 @@ def test_translate_severity(severity, expected_result):
     """Test translate_severity with various severity levels"""
     detection = {"severity": severity}
     assert translate_severity(detection) == expected_result
+
+
+@pytest.mark.parametrize("max_fetch,expected_api_limit", [
+    # Valid values - should return the input value
+    (10, 10),  # Minimum valid value
+    (100, 100),  # Middle value
+    (500, 500),  # Another middle value
+    (1000, 1000),  # Maximum valid value
+    # Invalid values - should return API_MAX_FETCH
+    (5, API_MAX_FETCH),  # Below minimum
+    (1001, API_MAX_FETCH),  # Above maximum
+    (None, API_MAX_FETCH),  # None value
+    ("invalid", API_MAX_FETCH),  # Non-numeric string
+    ("", API_MAX_FETCH),  # Empty string
+    (0, API_MAX_FETCH),  # Zero
+    (-10, API_MAX_FETCH),  # Negative value
+])
+def test_get_fetch_incidents_api_limit(max_fetch, expected_api_limit):
+    """Test get_fetch_incidents_api_limit with various max_fetch values"""
+    api_limit = get_fetch_incidents_api_limit(max_fetch)
+    assert api_limit == expected_api_limit
 
 
 def test_build_incidents(sample_detection):
@@ -1621,7 +1647,7 @@ def test_update_wiz_domain_url(mocker, auth_endpoint, expected_domain, reset_dom
     update_wiz_domain_url()
 
     # Verify domain was correctly extracted
-    assert WizDefend.WIZ_DOMAIN_URL == expected_domain, \
+    assert expected_domain == WizDefend.WIZ_DOMAIN_URL, \
         f"Failed for auth_endpoint={auth_endpoint}: " \
         f"expected {expected_domain}, got {WizDefend.WIZ_DOMAIN_URL}"
 
@@ -1671,7 +1697,7 @@ def test_set_authentication_endpoint(mocker):
     WizDefend.set_authentication_endpoint(test_endpoint)
 
     # Verify the endpoint was set correctly
-    assert WizDefend.AUTH_E == test_endpoint
+    assert test_endpoint == WizDefend.AUTH_E
 
 
 def test_set_api_endpoint(mocker):
@@ -1686,10 +1712,46 @@ def test_set_api_endpoint(mocker):
     WizDefend.set_api_endpoint(test_endpoint)
 
     # Verify the endpoint was set correctly
-    assert WizDefend.URL == test_endpoint
+    assert test_endpoint == WizDefend.URL
 
 
 # ===== INTEGRATION CONTEXT FUNCTION TESTS =====
+
+@pytest.mark.parametrize("advanced_params,expected_has_max_fetch", [
+    (False, False),  # Basic params should not include max_fetch
+    (True, True),  # Advanced params should include max_fetch
+])
+def test_extract_params_from_integration_settings_with_max_fetch(mocker, advanced_params, expected_has_max_fetch):
+    """Test extract_params_from_integration_settings function includes max_fetch in advanced params"""
+    # Mock demisto.params with max_fetch
+    integration_params = {
+        'type': 'GENERATED THREAT',
+        'platform': 'AWS',
+        'severity': 'CRITICAL',
+        'origin': 'WIZ_SENSOR',
+        'cloud_account_or_cloud_organization': 'sub-123',
+        'first_fetch': '2 days',
+        'incidentFetchInterval': 10,
+        'incidentType': 'WizDefend Detection',
+        'isFetch': True,
+        'max_fetch': '100'
+    }
+    mocker.patch.object(demisto, 'params', return_value=integration_params)
+
+    result = extract_params_from_integration_settings(advanced_params=advanced_params)
+
+    if expected_has_max_fetch:
+        assert result['max_fetch'] == '100'
+        assert result['first_fetch'] == '2 days'
+        assert result['incidentFetchInterval'] == 10
+        assert result['incidentType'] == 'WizDefend Detection'
+        assert result['isFetch'] is True
+    else:
+        assert 'max_fetch' not in result
+        # Basic params should still be present
+        assert result['type'] == 'GENERATED THREAT'
+        assert result['platform'] == 'AWS'
+
 
 def test_extract_params_from_integration_settings(mocker):
     """Test extract_params_from_integration_settings function"""
@@ -1722,6 +1784,106 @@ def test_extract_params_from_integration_settings(mocker):
     assert result['incidentFetchInterval'] == 10
     assert result['incidentType'] == 'WizDefend Detection'
     assert result['isFetch'] is True
+
+
+@pytest.mark.parametrize("max_fetch_value,expected_api_limit", [
+    ('50', 50),  # Valid max_fetch
+    ('100', 100),  # Another valid max_fetch
+    ('1000', 1000),  # Maximum valid max_fetch
+    (None, API_MAX_FETCH),  # No max_fetch should use default
+    ('invalid', API_MAX_FETCH),  # Invalid max_fetch should use default
+])
+@freeze_time("2022-01-02T00:00:00Z")
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_fetch_incidents_api_limit')
+@patch.object(demisto, 'setLastRun')
+@patch.object(demisto, 'incidents')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections')
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_last_run_time', return_value="2022-01-01T00:00:00Z")
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.extract_params_from_integration_settings')
+def test_fetch_incidents_with_max_fetch_variations(mock_extract_params, mock_last_run,
+                                                   mock_get_filtered, mock_incidents, mock_set_last_run,
+                                                   mock_get_api_limit, sample_detection, max_fetch_value, expected_api_limit):
+    """Test fetch_incidents with various max_fetch parameter values"""
+    # Mock the return value of extract_params_from_integration_settings
+    # This should match what the function actually returns (using the correct keys)
+    mock_integration_params = {
+        WizInputParam.TYPE: 'GENERATED THREAT',
+        WizInputParam.PLATFORM: 'AWS',
+        WizInputParam.SEVERITY: 'CRITICAL',
+        WizInputParam.ORIGIN: 'WIZ_SENSOR',
+        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: 'test-subscription',
+        DemistoParams.FIRST_FETCH: '2 days',
+        DemistoParams.INCIDENT_FETCH_INTERVAL: 10,
+        DemistoParams.INCIDENT_TYPE: 'WizDefend Detection',
+        DemistoParams.IS_FETCH: True
+    }
+
+    # Add max_fetch if it's provided
+    if max_fetch_value is not None:
+        mock_integration_params[DemistoParams.MAX_FETCH] = max_fetch_value
+
+    # Set up mocks
+    mock_extract_params.return_value = mock_integration_params
+    mock_get_filtered.return_value = [sample_detection]
+    mock_get_api_limit.return_value = expected_api_limit
+
+    # Call the function
+    fetch_incidents()
+
+    # Verify get_fetch_incidents_api_limit was called with correct value
+    expected_call_value = max_fetch_value if max_fetch_value is not None else mock_integration_params.get(DemistoParams.MAX_FETCH)
+    mock_get_api_limit.assert_called_once_with(expected_call_value)
+
+    # Verify get_filtered_detections was called with the correct api_limit
+    mock_get_filtered.assert_called_once()
+    call_kwargs = mock_get_filtered.call_args[1]
+    assert call_kwargs['api_limit'] == expected_api_limit
+
+    # Verify incidents were created
+    mock_incidents.assert_called_once()
+    mock_set_last_run.assert_called_once()
+
+
+@pytest.mark.parametrize("is_fetch,max_fetch,validation_result,expected_valid,expected_error", [
+    # isFetch=True scenarios
+    (True, '100', True, True, ""),  # Valid max_fetch
+    (True, '5', False, False, "max_fetch must be a valid integer between 10 and 1000"),  # Invalid max_fetch - updated message
+    (True, 'invalid', False, False, "max_fetch must be a valid integer between 10 and 1000"),  # Non-numeric max_fetch - updated message
+    (True, None, True, True, ""),  # No max_fetch (should still be valid)
+    # isFetch=False scenarios (should skip max_fetch validation)
+    (False, '5', True, True, ""),  # Invalid max_fetch but isFetch=False
+    (False, 'invalid', True, True, ""),  # Non-numeric max_fetch but isFetch=False
+])
+def test_check_advanced_params_max_fetch(mocker, is_fetch, max_fetch, validation_result, expected_valid, expected_error):
+    """Test check_advanced_params function with max_fetch validation"""
+    # Mock all other validation functions to return success
+    validation_response_success = ValidationResponse()
+    validation_response_success.is_valid = True
+
+    mocker.patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_first_fetch', return_value=validation_response_success)
+    mocker.patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_fetch_interval', return_value=validation_response_success)
+    mocker.patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_incident_type', return_value=validation_response_success)
+
+    # For failing cases, don't mock validate_max_fetch - let it run with real validation
+    # This way we test against the actual error messages
+    if validation_result:
+        # Only mock when we want to force success
+        max_fetch_response = validation_response_success
+        mocker.patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_max_fetch', return_value=max_fetch_response)
+    # For failing cases, let the real validate_max_fetch function run
+
+    params = {
+        'isFetch': is_fetch,
+        'first_fetch': '2 days',
+        'incidentFetchInterval': 10,
+        'incidentType': 'WizDefend Detection',
+        'max_fetch': max_fetch
+    }
+
+    are_valid, error_message = check_advanced_params(params)
+    assert are_valid is expected_valid
+    if expected_error:
+        assert expected_error in error_message
 
 
 def test_check_advanced_params(mocker):
@@ -1869,7 +2031,8 @@ def test_get_fetch_timestamp_invalid(mocker):
 
 
 # ===== DETECTION FUNCTION TESTS =====
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters',
+       return_value=(True, None, {'severity': ['CRITICAL']}))
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
 def test_get_filtered_detections_success(mock_query_api, mock_validate, sample_detection):
     """Test get_filtered_detections with successful validation and API call"""
@@ -1889,7 +2052,8 @@ def test_get_filtered_detections_success(mock_query_api, mock_validate, sample_d
     assert mock_query_api.called
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(False, "Validation error message", None))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters',
+       return_value=(False, "Validation error message", None))
 def test_get_filtered_detections_validation_error(mock_validate):
     """Test get_filtered_detections with validation error"""
     # Call the function
@@ -1899,9 +2063,11 @@ def test_get_filtered_detections_validation_error(mock_validate):
     assert result == "Validation error message"
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters', return_value=(True, None, {'severity': ['CRITICAL']}))
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_detection_parameters',
+       return_value=(True, None, {'severity': ['CRITICAL']}))
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.query_api')
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_detection_url', return_value="https://app.wiz.io/detection/123")
+@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_detection_url',
+       return_value="https://app.wiz.io/detection/123")
 def test_get_filtered_detections_with_all_params(mock_url, mock_query_api, mock_validate, sample_detection):
     """Test get_filtered_detections with all parameters specified"""
     # Set up validated values
@@ -1983,7 +2149,7 @@ def test_get_filtered_detections_with_api_limit(mock_query_api, mock_validate, s
     mock_query_api.return_value = [sample_detection]
 
     # Call the function with custom api_limit
-    result = get_filtered_detections(
+    get_filtered_detections(
         severity="CRITICAL",
         api_limit=50
     )
@@ -1991,28 +2157,6 @@ def test_get_filtered_detections_with_api_limit(mock_query_api, mock_validate, s
     # Verify query_api was called with correct api_limit
     variables = mock_query_api.call_args[0][1]
     assert variables["first"] == 50
-
-
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections', return_value=[{"id": "test-detection"}])
-@patch('WizDefend.check_advanced_params', return_value=(True, ""))
-@patch('WizDefend.extract_params_from_integration_settings')
-@patch.object(demisto, 'results')
-def test_test_module_success(mock_results, mock_extract_params, mock_check_params, mock_get_filtered):
-    """Test test_module function with successful validation and API call"""
-    # Set up mock extraction params
-    mock_extract_params.return_value = {
-        'type': 'GENERATED THREAT',
-        'platform': 'AWS',
-        'severity': 'CRITICAL',
-        'origin': 'WIZ_SENSOR',
-        'subscription': 'test-subscription'
-    }
-
-    # Call the function
-    test_module()
-
-    # Verify demisto.results was called with 'ok'
-    mock_results.assert_called_with('ok')
 
 
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_detections', return_value=[{"id": "test-detection"}])
@@ -2075,9 +2219,6 @@ def test_test_module_api_error(mock_results, mock_extract_params, mock_check_par
 
     # Verify demisto.results was called with the error message
     mock_results.assert_called_with("API error message")
-
-
-from freezegun import freeze_time
 
 
 @freeze_time("2022-01-02T00:00:00Z")  # This is safer than patching datetime
@@ -2319,6 +2460,7 @@ def test_get_filtered_threats_success(mock_query_threats, mock_validate, sample_
     assert result == [sample_threat]
     assert mock_query_threats.called
 
+
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters',
        return_value=(False, "Validation error message", None))
 def test_get_filtered_threats_validation_error(mock_validate):
@@ -2457,9 +2599,6 @@ def test_main_get_threat(mock_command, mock_args, mock_set_auth, mock_set_api,
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_error')  # Add return_error patch
 def test_get_single_threat(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
     """Test get_single_threat function"""
-    # Configure mock CommandResults to return a testable object
-    mock_instance = mock_command_results.return_value
-
     # Import here because we need the patched versions
     from Packs.Wiz.Integrations.WizDefend.WizDefend import get_single_threat
     get_single_threat()
@@ -2477,9 +2616,6 @@ def test_get_single_threat(mock_return_error, mock_command_results, mock_get_fil
 @patch('Packs.Wiz.Integrations.WizDefend.WizDefend.return_error')  # Add return_error patch
 def test_get_threats(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
     """Test get_threats function"""
-    # Configure mock CommandResults to return a testable object
-    mock_instance = mock_command_results.return_value
-
     # Import here because we need the patched versions
     from Packs.Wiz.Integrations.WizDefend.WizDefend import get_threats
     get_threats()
@@ -2491,6 +2627,7 @@ def test_get_threats(mock_return_error, mock_command_results, mock_get_filtered,
     assert mock_command_results.call_args[1]['outputs_prefix'] == OutputPrefix.THREATS
 
 # ===== CLASS TESTS =====
+
 
 def test_detection_type_class():
     """Test the DetectionType class"""
@@ -2612,9 +2749,6 @@ def test_cloud_platform_values_consistency(yaml_content):
         f"wiz-get-threats: {yaml_platform_values_threats}"
     )
 
-    # Print confirmation message if all tests pass
-    print(f"Successfully validated {len(code_platform_values)} platform values across code and YAML")
-
 
 def test_detection_type_values_consistency(yaml_content):
     """Test that detection type values defined in YAML match those in the DetectionType class"""
@@ -2656,9 +2790,6 @@ def test_detection_type_values_consistency(yaml_content):
         f"YAML config: {yaml_type_values_config}"
     )
 
-    # Print confirmation message if all tests pass
-    print(f"Successfully validated {len(code_type_values)} detection type values across code and YAML")
-
 
 def test_severity_values_consistency(yaml_content):
     """Test that severity values defined in YAML match those in the WizSeverity class, ignoring INFORMATIONAL"""
@@ -2698,37 +2829,35 @@ def test_severity_values_consistency(yaml_content):
     # Test case-insensitive equality between code and YAML values (ignoring INFORMATIONAL)
     assert code_upper == yaml_config_upper, (
         f"Severity values in code do not match configuration options (ignoring INFORMATIONAL):\n"
-        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
-        f"YAML config (uppercase, without INFORMATIONAL): {sorted(list(yaml_config_upper))}"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(code_upper)}\n"
+        f"YAML config (uppercase, without INFORMATIONAL): {sorted(yaml_config_upper)}"
     )
 
     assert code_upper == yaml_detections_upper, (
         f"Severity values in code do not match wiz-get-detections (ignoring INFORMATIONAL):\n"
-        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
-        f"YAML detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(code_upper)}\n"
+        f"YAML detections (uppercase, without INFORMATIONAL): {sorted(yaml_detections_upper)}"
     )
 
     assert code_upper == yaml_threats_upper, (
         f"Severity values in code do not match wiz-get-threats (ignoring INFORMATIONAL):\n"
-        f"Code (uppercase, without INFORMATIONAL): {sorted(list(code_upper))}\n"
-        f"YAML threats (uppercase, without INFORMATIONAL): {sorted(list(yaml_threats_upper))}"
+        f"Code (uppercase, without INFORMATIONAL): {sorted(code_upper)}\n"
+        f"YAML threats (uppercase, without INFORMATIONAL): {sorted(yaml_threats_upper)}"
     )
 
     # Test equality between the YAML values (case-insensitive)
     assert yaml_detections_upper == yaml_threats_upper, (
         f"Severity values differ between commands (ignoring INFORMATIONAL):\n"
-        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}\n"
-        f"wiz-get-threats (uppercase, without INFORMATIONAL): {sorted(list(yaml_threats_upper))}"
+        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(yaml_detections_upper)}\n"
+        f"wiz-get-threats (uppercase, without INFORMATIONAL): {sorted(yaml_threats_upper)}"
     )
 
     assert yaml_detections_upper == yaml_config_upper, (
         f"Severity values differ between command and configuration (ignoring INFORMATIONAL):\n"
-        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(list(yaml_detections_upper))}\n"
-        f"configuration (uppercase, without INFORMATIONAL): {sorted(list(yaml_config_upper))}"
+        f"wiz-get-detections (uppercase, without INFORMATIONAL): {sorted(yaml_detections_upper)}\n"
+        f"configuration (uppercase, without INFORMATIONAL): {sorted(yaml_config_upper)}"
     )
 
-    # Print confirmation message if all tests pass
-    print(f"Successfully validated severity values across code and YAML (ignoring INFORMATIONAL)")
 
 def test_status_values_consistency(yaml_content):
     """Test that status values defined in YAML match those in the WizStatus class"""
@@ -2755,9 +2884,6 @@ def test_status_values_consistency(yaml_content):
         f"Code: {code_status_values}\n"
         f"YAML: {yaml_status_values}"
     )
-
-    # Print confirmation message if all tests pass
-    print(f"Successfully validated {len(code_status_values)} status values across code and YAML")
 
 
 def test_origin_values_consistency(yaml_content):
@@ -2817,8 +2943,52 @@ def test_origin_values_consistency(yaml_content):
         f"wiz-get-threats: {yaml_origin_values_threats}"
     )
 
-    # Print confirmation message if all tests pass
-    print(f"Successfully validated {len(code_origin_values)} origin values across code and YAML")
+
+def test_max_fetch_values_consistency(yaml_content):
+    """Test that max_fetch values defined in YAML match those in the code constants"""
+    # Find the max_fetch configuration
+    max_fetch_config = None
+    for config in yaml_content.get('configuration', []):
+        if config.get('name') == 'max_fetch':
+            max_fetch_config = config
+            break
+
+    assert max_fetch_config is not None, "max_fetch configuration not found in YAML"
+
+    # Get default value from YAML
+    default_value_in_yaml = max_fetch_config.get('defaultvalue')
+    assert default_value_in_yaml is not None, "No defaultvalue for max_fetch"
+    default_max_fetch_in_yaml = int(default_value_in_yaml)
+
+    # Assert that the code constant matches the YAML value
+    assert default_max_fetch_in_yaml == API_MAX_FETCH, (
+        f"API_MAX_FETCH ({API_MAX_FETCH}) does not match "
+        f"the defaultvalue in max_fetch configuration ({default_max_fetch_in_yaml})"
+    )
+
+    # Check additional info mentions the range
+    additional_info = max_fetch_config.get('additionalinfo', '')
+    assert "10-1000" in additional_info, (
+        f"max_fetch additionalinfo doesn't mention the expected range (10-1000): {additional_info}"
+    )
+
+    # Verify the range in additionalinfo matches the code constants
+    import re
+    range_match = re.search(r'(\d+)-(\d+)', additional_info)
+    assert range_match is not None, f"Could not find range format in additionalinfo: {additional_info}"
+
+    min_value_in_yaml = int(range_match.group(1))
+    max_value_in_yaml = int(range_match.group(2))
+
+    assert min_value_in_yaml == API_MIN_FETCH, (
+        f"API_MIN_FETCH ({API_MIN_FETCH}) does not match "
+        f"the minimum value in max_fetch additionalinfo ({min_value_in_yaml})"
+    )
+
+    assert max_value_in_yaml == API_MAX_FETCH, (
+        f"API_MAX_FETCH ({API_MAX_FETCH}) does not match "
+        f"the maximum value in max_fetch additionalinfo ({max_value_in_yaml})"
+    )
 
 
 def test_first_fetch_timestamp_consistency(yaml_content):
@@ -2838,16 +3008,16 @@ def test_first_fetch_timestamp_consistency(yaml_content):
     # Update the pattern to match both "max X days" and "maximum X days"
     max_days_match = re.search(r'max(?:imum)? (\d+) days', display_text)
 
-    assert max_days_match is not None, f"Could not find 'max X days' or 'maximum X days' in first_fetch display text: {display_text}"
+    assert max_days_match is not None, f"Could not find 'max X days' or 'maximum X days' " \
+                                       f"in first_fetch display text: {display_text}"
     max_days_in_yaml = int(max_days_match.group(1))
 
     # Assert that the code constant matches the YAML value
-    assert MAX_DAYS_FIRST_FETCH_DETECTIONS == max_days_in_yaml, (
+    assert max_days_in_yaml == MAX_DAYS_FIRST_FETCH_DETECTIONS, (
         f"MAX_DAYS_FIRST_FETCH_DETECTIONS ({MAX_DAYS_FIRST_FETCH_DETECTIONS}) does not match "
         f"the value in first_fetch display text ({max_days_in_yaml})"
     )
 
-    print(f"Successfully validated MAX_DAYS_FIRST_FETCH_DETECTIONS consistency with YAML")
 
 def test_threats_days_params_consistency(yaml_content):
     """Test that THREATS_DAYS constants match the creation_days_back argument description"""
@@ -2884,22 +3054,20 @@ def test_threats_days_params_consistency(yaml_content):
     default_days_in_yaml = int(default_value_in_yaml)
 
     # Assert that code constants match YAML values
-    assert THREATS_DAYS_MIN == min_days_in_yaml, (
+    assert min_days_in_yaml == THREATS_DAYS_MIN, (
         f"THREATS_DAYS_MIN ({THREATS_DAYS_MIN}) does not match "
         f"the minimum value in creation_days_back description ({min_days_in_yaml})"
     )
 
-    assert THREATS_DAYS_MAX == max_days_in_yaml, (
+    assert max_days_in_yaml == THREATS_DAYS_MAX, (
         f"THREATS_DAYS_MAX ({THREATS_DAYS_MAX}) does not match "
         f"the maximum value in creation_days_back description ({max_days_in_yaml})"
     )
 
-    assert THREATS_DAYS_DEFAULT == default_days_in_yaml, (
+    assert default_days_in_yaml == THREATS_DAYS_DEFAULT, (
         f"THREATS_DAYS_DEFAULT ({THREATS_DAYS_DEFAULT}) does not match "
         f"the default value in creation_days_back argument ({default_days_in_yaml})"
     )
-
-    print(f"Successfully validated THREATS_DAYS constants consistency with YAML")
 
 
 def test_fetch_interval_consistency(yaml_content):
@@ -2943,8 +3111,6 @@ def test_fetch_interval_consistency(yaml_content):
         f"is greater than FETCH_INTERVAL_MAXIMUM_MIN ({FETCH_INTERVAL_MAXIMUM_MIN})"
     )
 
-    print(f"Successfully validated FETCH_INTERVAL constants consistency with YAML")
-
 
 def test_default_fetch_back_consistency(yaml_content):
     """Test that DEFAULT_FETCH_BACK matches the first_fetch defaultvalue"""
@@ -2964,7 +3130,7 @@ def test_default_fetch_back_consistency(yaml_content):
     assert default_value_in_yaml is not None, "No defaultvalue for first_fetch"
 
     # Assert that the code constant matches the YAML value
-    assert DEFAULT_FETCH_BACK == default_value_in_yaml, (
+    assert default_value_in_yaml == DEFAULT_FETCH_BACK, (
         f"DEFAULT_FETCH_BACK ({DEFAULT_FETCH_BACK}) does not match "
         f"the defaultvalue in first_fetch configuration ({default_value_in_yaml})"
     )
@@ -2974,8 +3140,6 @@ def test_default_fetch_back_consistency(yaml_content):
     assert "Maximum allowed is 5 days" in additional_info, (
         f"first_fetch additionalinfo doesn't mention the maximum days limit: {additional_info}"
     )
-
-    print(f"Successfully validated DEFAULT_FETCH_BACK consistency with YAML")
 
 
 def test_wiz_input_param_consistency(yaml_content):
@@ -3033,14 +3197,12 @@ def test_wiz_input_param_consistency(yaml_content):
         f"Please add these values to the appropriate enum class."
     )
 
-    print(f"Successfully validated that all {len(yaml_param_names)} YAML parameters have corresponding values in the enums")
-
 
 # ===== COMMAND EXAMPLES TESTS =====
 
 def get_command_examples():
     """Load and parse command examples from command_examples.txt"""
-    with open('command_examples.txt', 'r') as f:
+    with open('command_examples.txt') as f:
         examples = f.read().splitlines()
     return [example.strip() for example in examples if example.strip()]
 
@@ -3107,26 +3269,6 @@ def get_all_commands_for_test():
     return test_params
 
 
-def extract_param_value_pairs(command_line):
-    """Extract parameter-value pairs from a command line"""
-    # Skip the command name (everything before the first space)
-    params_part = command_line.split(' ', 1)[1] if ' ' in command_line else ''
-
-    # Define regex pattern to match parameter=value pairs, handling quoted values
-    pattern = r'(\w+)=(?:"([^"]*)"|([\w\-\.,:/]+))'
-    matches = re.findall(pattern, params_part)
-
-    # Convert matches to dictionary
-    param_values = {}
-    for match in matches:
-        param_name = match[0]
-        # Value is either the quoted value or the non-quoted value
-        param_value = match[1] if match[1] else match[2]
-        param_values[param_name] = param_value
-
-    return param_values
-
-
 def test_commands_in_examples_match_demisto_commands():
     """Test that all commands in the examples match those defined in DemistoCommands"""
     command_examples = get_command_examples()
@@ -3155,7 +3297,7 @@ def test_commands_in_examples_match_demisto_commands():
     # Check that all demo-accessible DemistoCommands are used in examples
     unused_commands = demisto_command_names - example_commands
     if unused_commands:
-        print(f"Note: The following commands are defined in DemistoCommands but not used in examples: {unused_commands}")
+        pass  # Removed print statement
 
 
 def test_all_command_examples_are_in_wiz_input_params():
@@ -3180,7 +3322,7 @@ def test_all_command_examples_are_in_wiz_input_params():
 
         param_values = extract_param_value_pairs(example)
 
-        for param in param_values.keys():
+        for param in param_values:
             # Check if parameter exists in WizInputParam values
             if param not in wiz_input_param_values:
                 unknown_params.add(param)
@@ -3225,11 +3367,9 @@ def test_all_wiz_input_params_have_examples():
             missing_examples.add(param)
 
     # Assert that all parameters have examples
-    assert not missing_examples, f"The following WizInputParam values don't have examples in command_examples.txt: {missing_examples}"
+    assert not missing_examples, f"The following WizInputParam values don't have examples " \
+                                 f"in command_examples.txt: {missing_examples}"
 
-
-import pytest
-from unittest.mock import patch
 
 @pytest.mark.parametrize("demisto_command,example", get_all_commands_for_test())
 def test_command_validation(demisto_command, example, mocker):
@@ -3247,7 +3387,7 @@ def test_command_validation(demisto_command, example, mocker):
     mock_result = [{"id": "test-id", "severity": "CRITICAL"}]
 
     # Import the module directly to patch internal functions
-    import Packs.Wiz.Integrations.WizDefend.WizDefend as WizDefend
+    from Packs.Wiz.Integrations.WizDefend import WizDefend
 
     # Patch at module level
     mocker.patch.object(WizDefend, 'query_detections', return_value=mock_result)

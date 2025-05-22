@@ -1649,7 +1649,7 @@ def get_token():
     response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
 
     if response.status_code != requests.codes.ok:
-        raise Exception('Error authenticating to Wiz [%d] - %s' % (response.status_code, response.text))
+        raise Exception(f'Error authenticating to Wiz [{response.status_code}] - {response.text}')
     try:
         response_json = response.json()
         TOKEN = response_json.get('access_token')
@@ -1903,7 +1903,7 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
             return "Resource not found."
 
     if severity:
-        if 'filterBy' not in issue_variables.keys():
+        if 'filterBy' not in issue_variables:
             issue_variables['filterBy'] = {"severity": []}
             issue_variables['first'] = limit
         if severity.upper() == 'CRITICAL':
@@ -1923,7 +1923,7 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
                     "upper or lower case.")
 
     if issue_type:
-        if 'filterBy' not in issue_variables.keys():
+        if 'filterBy' not in issue_variables:
             issue_variables['filterBy'] = {}
             issue_variables['first'] = limit
 
