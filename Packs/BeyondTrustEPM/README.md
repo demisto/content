@@ -2,12 +2,12 @@
  
 ## Overview
 BeyondTrust Endpoint Privilege Management (EPM) is a platform for managing user privileges and application control on Windows and macOS devices. 
-It’s designed to support least privilege policies and simplify endpoint compliance through centralized management and auditing.
+It supports least privilege policies and simplifies endpoint compliance with centralized management and auditing.
  
 ## This pack includes:
  
 Data normalization capabilities:
-    * Modeling Rules for BeyondTrust EPM Events include computer, activity, and authorization requests logs that are ingested via the S3 Collector on Cortex XSIAM.
+    * Modeling rules for BeyondTrust EPM events include computer, activity, and authorization request logs ingested via the S3 Collector on Cortex XSIAM.
     * The ingested BeyondTrust EPM logs can be queried in XQL Search using the *`beyondtrust_epm_raw`* dataset.
    
 ***
