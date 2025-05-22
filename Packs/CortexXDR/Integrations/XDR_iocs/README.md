@@ -17,7 +17,6 @@ The Cortex XDR - IOC integration allows you to manage Indicators of Compromise (
 - Simplify IOC lifecycle management with automated workflows for creation, updates, and removal.
 
 ## Configure Cortex XDR - IOC in Cortex
-
 | **Parameter** | **Description** | **Required** |  
 | --- | --- | --- |  
 | Server URL | In Cortex XDR, navigate to **Settings** > **Configurations** > **API Keys** and click Copy API URL. | True |  
@@ -63,6 +62,7 @@ As a result, the duration of the first sync depends on the number of IOCs in the
 #### Base Command  
   
 `xdr-iocs-sync`  
+
 #### Input  
   
 There are no input arguments for this command.  
@@ -72,123 +72,132 @@ There are no input arguments for this command.
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-sync```  
+
 #### Human Readable Output  
   
 >sync with XDR completed.  
   
 ### xdr-iocs-push
+
 ***  
 Push new or modified IOCs to Cortex XDR.
-  
   
 #### Base Command  
   
 `xdr-iocs-push`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| indicator | the indicators | Optional | 
-
+| indicator | the indicators | Optional |
 
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```xdr-iocs-push```  
   
 #### Human Readable Output  
+>
 >push success.
   
-  
 ### xdr-iocs-enable  
+
 ***  
 Enable iocs in XDR server  
-  
   
 #### Base Command  
   
 `xdr-iocs-enable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| indicator | The indicator to enable | Required |   
+| indicator | The indicator to enable | Required |
   
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-enable indicator=11.11.11.11```  
-    
+
 #### Human Readable Output  
   
 >indicators 11.11.11.11 enabled.  
   
 ### xdr-iocs-disable  
+
 ***  
 Disable iocs in XDR server  
-  
   
 #### Base Command  
   
 `xdr-iocs-disable`  
+
 #### Input  
   
 | **Argument Name** | **Description** | **Required** |  
 | --- | --- | --- |  
-| indicator | The indicator to enable | Required |   
+| indicator | The indicator to enable | Required |
   
 #### Context Output  
   
 There is no context output for this command.  
   
 #### Command Example  
+
 ```!xdr-iocs-disable indicator=22.22.22.22```  
   
 #### Human Readable Output  
   
 >indicators 22.22.22.22 disabled.  
+>
 ### xdr-iocs-set-sync-time
+
 ***
 Deprecated. Set sync time manually (Do not use this command unless you understand the consequences).
-
 
 #### Base Command
 
 `xdr-iocs-set-sync-time`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| time | The time of the file creation (use UTC time zone). | Required | 
-
+| time | The time of the file creation (use UTC time zone). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### xdr-iocs-create-sync-file
+
 ***
 Creates the sync file for the manual process. Run this command when instructed by the XDR support team.
-
 
 #### Base Command
 
 `xdr-iocs-create-sync-file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| zip | Whether to zip the output file. | Required | 
-| set_time | Whether to modify the sync time locally. | Required | 
+| zip | Whether to zip the output file. | Required |
+| set_time | Whether to modify the sync time locally. | Required |
 
 #### Context Output
 
 There is no context output for this command.
-
 
 #### Base Command
 

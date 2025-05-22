@@ -162,7 +162,7 @@ def test_prepare_request(mocker, absolute_client_v3):
     jwt_encode = mocker.patch.object(jwt, "encode", return_value="")
     absolute_client_v3.prepare_request("method", "url_suffix", "query_string", {})
 
-    assert jwt_encode.call_args.args == ({}, "secret")
+    assert jwt_encode.call_args.args == ({"data": {}}, "secret")
     absolute_client_v3.prepare_request("method", "url_suffix", "query_string", {"test": "test"})
 
     assert jwt_encode.call_args.args == ({"data": {"test": "test"}}, "secret")
@@ -906,3 +906,28 @@ def test_fetch_events_case_fetch_limit_equal_last_run_events_id(mocker, absolute
     assert len(events_first_batch) == 2
     assert len(events_second_batch) == 4
     assert all_events == mock_response.get("data")
+
+
+def test_last_run_hold_created_time_and_events_sorted_by_created_time_in_fetch_events(mocker, absolute_client_v3):
+    """
+    Given:
+        - Events to fetch.
+
+    When:
+        - The fetch_events function is called.
+
+    Then:
+        - Validate last_run hold createdDateTimeUtc (created time) and _TIME field hold eventDateTimeUtc (occurred time)
+    """
+    from Absolute import ClientV3, fetch_events
+
+    mock_response = util_load_json("test_data/siem_events_test_fetch_limit.json")
+    fetch_limit = 6
+    mock_response = {"data": mock_response.get("data")[:fetch_limit]}
+    mocker.patch.object(ClientV3, "prepare_query_string_for_fetch_events", return_value="")
+    mocker.patch.object(ClientV3, "send_request_to_api", return_value=mock_response)
+    events, last_run_object = fetch_events(absolute_client_v3, fetch_limit, {})
+    assert len(events) == 6
+    assert last_run_object.get("latest_events_time") == events[-1].get("createdDateTimeUtc")
+    for event in events:
+        assert event.get("_time") == event.get("eventDateTimeUtc")
