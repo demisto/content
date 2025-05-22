@@ -17,10 +17,10 @@ Data normalization capabilities:
 ### AWS side
 Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want to capture.
 
-See this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
+For more information on creating an S3 bucket,  [see Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
  
 ### BeyondTrust EPM side
-**Add the AWS S3 Bucket in EPM**
+Add the AWS S3 Bucket in EPM
 1. Select Configuration, and then select SIEM Settings.
 2. Select Enable SIEM Integration to turn on the feature.
 3. From the Integration Type list, select S3
@@ -36,15 +36,15 @@ See this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XS
  
 For more information <[Link to the official docs](https://docs.beyondtrust.com/epm-wm/docs/welcome-to-endpoint-privilege-management-for-windows-and-mac)>.
  
-### Cortex XSIAM side - Amazon S3 Collector
+### Connect Cortex XSIAM to the AWS S3 bucket.
 To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
 1. Navigate to **Settings** -> **Data Sources** -> **Add Data Source**.
-2. If you have already configured an **Amazon S3 Collector**, select the **3 dots**, and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "Amazon S3" and then select **Connect**.
+2. If you have already configured an **Amazon S3 Collector**, select the **3 dots** and then select **+ Add New Instance**. If not, select **+ Add Data Source**, search for "Amazon S3" and then select **Connect**.
 4. Set the following values:
  
     | Parameter    | Value                                                                                                                                           |
     |:-------------|:------------------------------------------------------------------------------------------------------------------------------------------------|                 
-    | `SQS URL`    | Refer to Configure an Amazon Simple Queue Service (SQS) [here](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3). |
+    | `SQS URL`    | For more information, see  [Configure an Amazon Simple Queue Service (SQS).](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3). |
     | `Name`       | BeyondTrust EPM Logs.                 |
     | `AWS Client ID`     |                                                                                                                                   |
     | `AWS Client Secret`    |                                                                                                                                  |
@@ -54,6 +54,6 @@ To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
     | `Product`    | Enter EPM.                                                                                                                                 |
     | `Compression`    | Select the desired compression.                                                                                                                                 |
  
-For more information, see this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
+For more information, see this [Ingest Generic Logs from Amazon S3.](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3).
  
 </~XSIAM>
