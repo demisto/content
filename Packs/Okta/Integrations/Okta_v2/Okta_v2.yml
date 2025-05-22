@@ -1275,6 +1275,8 @@ script:
       For more information and examples:
       https://developer.okta.com/docs/reference/api/users/#user-sessions
     name: okta-clear-user-sessions
+    compliantpolicies:
+    - Users Soft Remediation
   - arguments:
     - description: The maximum number of results to return.
       name: limit
