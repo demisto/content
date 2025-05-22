@@ -1,4 +1,4 @@
-Trigger xMatters workflows and on-call schedules to track down the appropriate resources. Additionally, pull the latest xMatters events as Incidents into XSOAR. 
+Trigger xMatters workflows and on-call schedules to track down the appropriate resources. Additionally, pull the latest xMatters events as Incidents into XSOAR.
 
 ## What does this pack do?
 
@@ -13,4 +13,4 @@ Trigger xMatters workflows and on-call schedules to track down the appropriate r
 
 ## Installation Details
 
-For details on setting up the xMatters environment, navigate to the installation document [here](https://github.com/xmatters/xm-labs-xsoar). 
+For details on setting up the xMatters environment, navigate to the installation document [here](https://github.com/xmatters/xm-labs-xsoar).

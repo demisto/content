@@ -426,6 +426,29 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
         )
 
 
+def add_playbook_metadata(data: dict, command: str):
+    ctx_output: dict = demisto.callingContext or {}
+    entry_task: dict = ctx_output.get("context", {}).get("ParentEntry", {}).get("entryTask", {})
+    incidents: list = ctx_output.get("context", {}).get("Incidents", [])
+    playbook_id = incidents[0].get("playbookId", "") if incidents else ""
+    playbook_name = entry_task.get("playbookName", "")
+    task_name = entry_task.get("taskName", "")
+    task_id = entry_task.get("taskId", "")
+    brand = ctx_output.get("context", {}).get("IntegrationBrand", "")
+    playbook_metadata = {
+        "playbook_name": playbook_name,
+        "playbook_id": playbook_id,
+        "task_name": task_name,
+        "task_id": task_id,
+        "integration_name": brand,
+        "command_name": command,
+    }
+    data["request_data"]["playbook_metadata"] = playbook_metadata
+    demisto.debug(
+        f"Added playbook metadata data['request_data']['playbook_metadata']: {data['request_data']['playbook_metadata']}"
+    )
+
+
 def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
     """Execute an XQL query.
 
@@ -447,6 +470,9 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
             "query": query,
         }
     }
+
+    add_playbook_metadata(data, "start_xql_query")
+
     time_frame = args.get("time_frame")
     if time_frame:
         data["request_data"]["timeframe"] = convert_timeframe_string_to_json(time_frame)
@@ -577,7 +603,7 @@ def format_results(list_to_format: list, remove_empty_fields: bool = True) -> li
     """
 
     def format_dict(item_to_format: Any) -> Any:
-        if not isinstance(item_to_format, (dict, list)):  # recursion stopping condition, formatting field
+        if not isinstance(item_to_format, dict | list):  # recursion stopping condition, formatting field
             return format_item(item_to_format)
 
         elif isinstance(item_to_format, list):
