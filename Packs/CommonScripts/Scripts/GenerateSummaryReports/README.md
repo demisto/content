@@ -1,6 +1,7 @@
 Generates a report summary for past incidents.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Generates a report summary for past incidents.
 | Cortex XSOAR Version | 4.1.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ Generates a report summary for past incidents.
 | ids | The incident IDs for which to generate. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
