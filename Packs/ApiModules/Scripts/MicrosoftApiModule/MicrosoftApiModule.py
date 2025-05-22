@@ -147,6 +147,64 @@ MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
     "gcc-high": "https://login.microsoftonline.us",
 }
 
+
+# https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list
+MICROSOFT_DEFENDER_XDR_365_TYPE = {
+    "Worldwide": "com",
+    "US Geo Proximity": "geo-us",
+    "EU Geo Proximity": "geo-eu",
+    "UK Geo Proximity": "geo-uk",
+    "AU Geo Proximity": "geo-au",
+    "SWA Geo Proximity": "geo-swa",
+    "INA Geo Proximity": "geo-ina",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+# https://learn.microsoft.com/en-us/defender-endpoint/api/exposed-apis-list
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
+MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS = {
+    "com": "https://api.security.microsoft.com",
+    "geo-us": "https://us.api.security.microsoft.com",
+    "geo-eu": "https://eu.api.security.microsoft.com",
+    "geo-uk": "https://uk.api.security.microsoft.com",
+    "geo-au": "https://au.api.security.microsoft.com",
+    "geo-swa": "https://swa.api.security.microsoft.com",
+    "geo-ina": "https://ina.api.security.microsoft.com",
+    "gcc": "https://graph.microsoft.us",
+    "gcc-high": "https://graph.microsoft.us",
+    "dod": "https://dod-graph.microsoft.us",
+}
+
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide
+MICROSOFT_DEFENDER_XDR_365_TOKEN_RETRIEVAL_ENDPOINTS = {
+    "com": "https://login.windows.net",
+    "geo-us": "https://login.windows.net",
+    "geo-eu": "https://login.windows.net",
+    "geo-uk": "https://login.windows.net",
+    "geo-au": "https://login.windows.net",
+    "geo-swa": "https://login.windows.net",
+    "geo-ina": "https://login.windows.net",
+    "gcc": "https://login.microsoftonline.com",
+    "gcc-high": "https://login.microsoftonline.us",
+    "dod": "https://login.microsoftonline.us",
+}
+
+# https://learn.microsoft.com/en-us/defender-xdr/usgov?view=o365-worldwide#feature-parity-with-commercial
+MICROSOFT_DEFENDER_XDR_365_SCOPES = {
+    "com": "https://security.microsoft.com/mtp",
+    "geo-us": "https://security.microsoft.com",
+    "geo-eu": "https://security.microsoft.com",
+    "geo-uk": "https://security.microsoft.com",
+    "geo-au": "https://security.microsoft.com",
+    "geo-swa": "https://security.microsoft.com",
+    "geo-ina": "https://security.microsoft.com",
+    "gcc": "https://graph.microsoft.us",
+    "gcc-high": "https://graph.microsoft.us",
+    "dod": "https://dod-graph.microsoft.us",
+}
+
 # Azure Managed Identities
 MANAGED_IDENTITIES_TOKEN_URL = "http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01"
 MANAGED_IDENTITIES_SYSTEM_ASSIGNED = "SYSTEM_ASSIGNED"
@@ -666,6 +724,17 @@ def get_azure_cloud(params, integration_name):
 
     # There is no need for backward compatibility support, as the integration didn't support it to begin with.
     return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
+
+
+def microsoft_defender_get_base_url(base_url: str, endpoint_type: str) -> str:
+    if endpoint_type == "Custom":
+        if not base_url:
+            raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+        url = base_url
+    else:
+        endpoint = MICROSOFT_DEFENDER_XDR_365_TYPE.get(endpoint_type, "com")
+        url = MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS.get(endpoint, MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS["com"])
+    return url
 
 
 class MicrosoftClient(BaseClient):
@@ -1428,12 +1497,21 @@ class MicrosoftClient(BaseClient):
     def device_auth_request(self) -> dict:
         response_json = {}
         try:
+            if self.tenant_id:
+                url = f"{self.azure_ad_endpoint}/{self.tenant_id}/oauth2/v2.0/devicecode"
+            else:
+                url = f"{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode"
             response = requests.post(
-                url=f"{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode",
+                url=url,
                 data={"client_id": self.client_id, "scope": self.scope},
                 verify=self.verify,
             )
             if not response.ok:
+                if "National Cloud" in self.error_parser(response):
+                    return_error(
+                        f"Error in Microsoft authorization. Status: {response.status_code},"
+                        f" The tenant is not supported by the chosen endpoint type. body: {self.error_parser(response)}"
+                    )
                 return_error(
                     f"Error in Microsoft authorization. Status: {response.status_code}, body: {self.error_parser(response)}"
                 )

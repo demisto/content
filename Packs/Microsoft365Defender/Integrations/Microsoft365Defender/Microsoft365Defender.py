@@ -62,13 +62,15 @@ class Client:
         app_id: str,
         verify: bool,
         proxy: bool,
-        base_url: str = BASE_URL,
+        base_url: str = MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS["com"],
         tenant_id: str = None,
         enc_key: str = None,
         client_credentials: bool = False,
         certificate_thumbprint: Optional[str] = None,
         private_key: Optional[str] = None,
         managed_identities_client_id: Optional[str] = None,
+        endpoint: str = "com",
+        azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
     ):
         if app_id and "@" in app_id:
             app_id, refresh_token = app_id.split("@")
@@ -77,20 +79,24 @@ class Client:
             set_integration_context(integration_context)
 
         self.client_credentials = client_credentials
+        self.endpoint = endpoint
         client_args = assign_params(
             base_url=base_url,
             verify=verify,
             proxy=proxy,
             ok_codes=(200, 201, 202, 204),
-            scope="offline_access https://security.microsoft.com/mtp/.default",
+            scope=f"offline_access {MICROSOFT_DEFENDER_XDR_365_SCOPES.get(self.endpoint)}/.default",
             self_deployed=True,  # We always set the self_deployed key as True because when not using a self
             # deployed machine, the DEVICE_CODE flow should behave somewhat like a self deployed
             # flow and most of the same arguments should be set, as we're !not! using OProxy.
             auth_id=app_id,
             grant_type=CLIENT_CREDENTIALS if client_credentials else DEVICE_CODE,
             # used for device code flow
-            resource="https://api.security.microsoft.com" if not client_credentials else None,
-            token_retrieval_url="https://login.windows.net/organizations/oauth2/v2.0/token" if not client_credentials else None,
+            resource=MICROSOFT_DEFENDER_XDR_365_API_ENDPOINTS.get(endpoint) if not client_credentials else None,
+            token_retrieval_url=f"{MICROSOFT_DEFENDER_XDR_365_TOKEN_RETRIEVAL_ENDPOINTS.get(endpoint)}"
+            f"/organizations/oauth2/v2.0/token"
+            if not client_credentials
+            else None,
             # used for client credentials flow
             tenant_id=tenant_id,
             enc_key=enc_key,
@@ -99,8 +105,16 @@ class Client:
             managed_identities_client_id=managed_identities_client_id,
             managed_identities_resource_uri=Resources.security,
             command_prefix="microsoft-365-defender",
+            endpoint=endpoint,
+            azure_cloud=azure_cloud,
         )
         self.ms_client = MicrosoftClient(**client_args)  # type: ignore
+
+    def get_suffix_by_endpoint_type(self):
+        if self.endpoint in ["gcc", "gcc-high", "dod"]:
+            # When using 'gcc', 'gcc-high', 'dod', we are using graph endpoint.
+            return "v1.0/security"
+        return "api"
 
     @logger
     def incidents_list(
@@ -167,7 +181,8 @@ class Client:
             if skip:
                 params["$skip"] = skip
 
-        return self.ms_client.http_request(method="GET", url_suffix="api/incidents", timeout=timeout, params=params)
+        url_suffix = f"{self.get_suffix_by_endpoint_type()}/incidents"
+        return self.ms_client.http_request(method="GET", url_suffix=url_suffix, timeout=timeout, params=params)
 
     @logger
     def update_incident(
@@ -213,9 +228,8 @@ class Client:
         )
         if assigned_to == "":
             body["assignedTo"] = ""
-        updated_incident = self.ms_client.http_request(
-            method="PATCH", url_suffix=f"api/incidents/{incident_id}", json_data=body, timeout=timeout
-        )
+        url_suffix = f"{self.get_suffix_by_endpoint_type()}/incidents/{incident_id}"
+        updated_incident = self.ms_client.http_request(method="PATCH", url_suffix=url_suffix, json_data=body, timeout=timeout)
         return updated_incident
 
     @logger
@@ -233,7 +247,8 @@ class Client:
                      }
 
         """
-        incident = self.ms_client.http_request(method="GET", url_suffix=f"api/incidents/{incident_id}", timeout=timeout)
+        url_suffix = f"{self.get_suffix_by_endpoint_type()}/incidents/{incident_id}"
+        incident = self.ms_client.http_request(method="GET", url_suffix=url_suffix, timeout=timeout)
         return incident
 
     @logger
@@ -252,9 +267,12 @@ class Client:
                 Schema - The schema of the response, a list of Name-Type pairs for each column.
                 Results - A list of advanced hunting events.
         """
-        return self.ms_client.http_request(
-            method="POST", url_suffix="api/advancedhunting/run", json_data={"Query": query}, timeout=timeout
-        )
+        if self.endpoint in ["gcc", "gcc-high", "dod"]:
+            # When using 'gcc', 'gcc-high', 'dod', we are using graph endpoint.
+            url_suffix = "v1.0/security/runHuntingQuery"
+        else:
+            url_suffix = "api/advancedhunting/run"
+        return self.ms_client.http_request(method="POST", url_suffix=url_suffix, json_data={"Query": query}, timeout=timeout)
 
 
 @logger
@@ -1126,6 +1144,9 @@ def main() -> None:
     proxy = params.get("proxy", False)
     app_id = params.get("creds_client_id", {}).get("password", "") or params.get("app_id") or params.get("_app_id")
     base_url = params.get("base_url")
+    endpoint_type = params.get("endpoint_type", "Worldwide")
+    endpoint = MICROSOFT_DEFENDER_XDR_365_TYPE.get(endpoint_type, "com")
+    base_url = microsoft_defender_get_base_url(base_url, endpoint_type)
 
     tenant_id = params.get("creds_tenant_id", {}).get("password", "") or params.get("tenant_id") or params.get("_tenant_id")
     client_credentials = params.get("client_credentials", False)
@@ -1158,6 +1179,7 @@ def main() -> None:
         if not managed_identities_client_id and not app_id:
             raise Exception("Application ID must be provided.")
 
+        azure_cloud = AZURE_CLOUDS.get(endpoint)
         client = Client(
             app_id=app_id,
             verify=verify_certificate,
@@ -1169,6 +1191,8 @@ def main() -> None:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
+            endpoint=endpoint,
+            azure_cloud=azure_cloud,
         )
         if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
