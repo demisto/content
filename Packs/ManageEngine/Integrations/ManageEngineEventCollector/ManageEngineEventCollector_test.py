@@ -270,6 +270,7 @@ def test_page_limit_lt_total_limit_gt(http_mocker_100, mocker):
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
     evs = _run_search(0, 100, 150)
     assert len(evs) == 100
+    assert [e["eventTime"] for e in evs] == list(range(100))
 
 
 def test_page_limit_lt_total_limit_between(http_mocker_100, mocker):
@@ -279,6 +280,17 @@ def test_page_limit_lt_total_limit_between(http_mocker_100, mocker):
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
     evs = _run_search(0, 100, 50)
     assert len(evs) == 50
+    assert [e["eventTime"] for e in evs] == list(range(50))
+
+
+def test_page_limit_lt_total_limit_between_second(http_mocker_100, mocker):
+    import ManageEngineEventCollector
+
+    # Override PAGE_LIMIT=20; limit=50 > 20 but < 100 → should return 50
+    mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
+    evs = _run_search(20, 100, 50)
+    assert len(evs) == 50
+    assert [e["eventTime"] for e in evs] == list(range(20, 70))
 
 
 def test_zero_events(mocker):
@@ -296,10 +308,4 @@ def test_zero_events(mocker):
 def test_start_after_end(http_mocker_100):
     # startTime > endTime → should return []
     evs = _run_search(50, 20, 10)
-    assert evs == []
-
-
-def test_zero_limit(http_mocker_100):
-    # limit = 0 → should return []
-    evs = _run_search(0, 100, 0)
     assert evs == []

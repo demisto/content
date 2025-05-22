@@ -174,7 +174,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
     manage-engine-get-events command
     """
     should_push = argToBoolean(args.get("should_push_events", "false"))
-    limit = arg_to_number(args.get("limit")) or DEFAULT_MAX_FETCH
+    limit = arg_to_number(args.get("limit")) or 10
     now = datetime.now()
     start_date = dateparser.parse(args.get("start_date", "")) or now
     end_date = dateparser.parse(args.get("end_date", "")) or now - timedelta(days=1)
