@@ -125,7 +125,7 @@ def main():  # pragma: no cover
 
     # Verify correct dt path (does not verify condition!)
     if not demisto.dt(demisto.context(), dt):
-        if not demisto.dt(demisto.context(), re.sub("\(.*\)", "", dt)):
+        if not demisto.dt(demisto.context(), re.sub(r"\(.*\)", "", dt)):
             demisto.debug(f"Could not find the dt path: {dt} in the context: {demisto.context()}")
             return_error(f"Incorrect dt path {dt}: no ids found in the context: {demisto.context()}")
         demisto.results(

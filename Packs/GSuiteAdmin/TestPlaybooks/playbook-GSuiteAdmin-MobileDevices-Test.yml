@@ -737,19 +737,19 @@ view: |-
 inputs:
 - key: limit
   value:
-    simple: "5"
+    simple: "4"
   required: false
   description: The max mobile devices to return
   playbookInputQuery: null
 - key: page_size
   value:
-    simple: "3"
+    simple: "2"
   required: false
   description: The page size
   playbookInputQuery: null
 - key: mobile_device_id
   value:
-    simple: 311fc9cb34adecd6
+    simple: 841D2E2E-2458-4C38-ACBA-0BFA2F26C60A
   required: false
   description: The mobile device id to perform the action command on it.
   playbookInputQuery: null
