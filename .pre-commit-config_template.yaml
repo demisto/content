@@ -72,7 +72,7 @@ repos:
     exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
     require_serial: true
     language: system
-    # skip nightly since we don't care about warnings in nightly
+    # skip nightly since we don't care about warnings in nightly test
     skip:nightly: true
     skip:docker_autoupdate: true
 
