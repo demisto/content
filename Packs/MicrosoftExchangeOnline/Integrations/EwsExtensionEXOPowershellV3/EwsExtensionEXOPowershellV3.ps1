@@ -2142,8 +2142,12 @@ function EXOReleaseQuarantineMessageQuickActionCommand {
         $release_kwargs[$key] = $kwargs[$key]
     }
 
-    if ($kwargs.ContainsKey("message_id") -and $kwargs.message_id) {
-        #Call EXOGetQuarantineMessageCommand with message_id
+    if (
+        $kwargs.ContainsKey("message_id") -and 
+        $kwargs.message_id -and 
+        (-not $kwargs.ContainsKey("identity") -or -not $kwargs["identity"])
+    ) {
+        # Call EXOGetQuarantineMessageCommand with message_id
         $get_kwargs = @{
             message_id = $kwargs.message_id
             include_messages_from_blocked_sender_address = "true"

@@ -393,6 +393,7 @@ script:
       required: true
       description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
       isArray: true
+      prettyname: Email ID
     - name: list_type
       defaultValue: sender
       auto: PREDEFINED
@@ -2481,17 +2482,14 @@ script:
     hidden: true
     arguments:
     - name: entries
+      prettyname: Email ID
       description: Entries to remove from the list.  Either use this OR 'ids' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
       isArray: true
+      required: true
     - name: ids
       description: Entry IDs to remove from the list.  Either use this OR 'entries' to specify items to remove.  Separate multiple entries with a comma (e.g. "Item1,Item2").
     - name: list_type
       defaultValue: sender
-      auto: PREDEFINED
-      predefined:
-      - sender
-      - filehash
-      - url
       description: List type to remove items from.
     - name: list_subtype
       auto: PREDEFINED

@@ -403,10 +403,10 @@ script:
     - description: User ID or principal ID of the mailbox owner (usually an email address) from which the message should be deleted.
       name: user_id
       required: true
-    - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the the 'MessageID' key in the form '<message-id>'.
+    - description: The unique ID of the mail. This could be extracted from - msgraph-mail-list-emails command results. You cannot use the 'MessageID' key in the form '<message-id>'.
       name: message_id
       required: true
-    - description: A comma-separated list of folder IDs. For example, mailFolders,childFolders,childFolders.
+    - description: A comma-separated list of folder IDs. For example mailFolders,childFolders.
       name: folder_id
     - deprecated: true
       description: flag for rate limit retry.
@@ -960,7 +960,7 @@ script:
     name: send-mail-quick-action
     quickaction: true
     hidden: true
-    prettyname: Send Email to Recipients - Office 365
+    prettyname: Send Email - Office 365
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
       description: The email headers.
