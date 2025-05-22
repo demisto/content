@@ -29,9 +29,15 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
-COMMAND_DATA_KEYS = ['failed_files', 'retention_date', 'retrieved_files', 'standard_output', 'command_output', 'execution_status']
-EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = ['endpoint_id', 'command', 'command_output', 'endpoint_ip_address', 'endpoint_name',
-                                          'endpoint_status']
+COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
+EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
+    "endpoint_id",
+    "command",
+    "command_output",
+    "endpoint_ip_address",
+    "endpoint_name",
+    "endpoint_status",
+]
 
 
 class Client(CoreClient):
@@ -190,18 +196,22 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
     """
     reformatted_results = []
     for response in script_res:
-        results = response.outputs.get('results')
+        results = response.outputs.get("results")
         for res in results:
             # for each result, get only the data we want to present to the user
             reformatted_result = {}
             for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
-            reformatted_result['command'] = reformatted_result['command'].removeprefix('_')
+            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
-    return tableToMarkdown(f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
-                           reformatted_results, EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS, removeNull=True,
-                           headerTransform=string_to_table_header)
+    return tableToMarkdown(
+        f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
+        reformatted_results,
+        EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
 
 
 def core_execute_command_reformat_command_data(result: dict) -> dict:
@@ -214,7 +224,7 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     Returns:
         dict: all relevant command data from the result
     """
-    reformatted_command = {'command': result['command'].removeprefix('_')}  # remove the underscore prefix from the command name
+    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
     return reformatted_command
@@ -232,22 +242,22 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
     """
     new_results: dict[str, Any] = {}
     for response in script_res:
-        results = response.outputs.get('results')
+        results = response.outputs.get("results")
         for res in results:
-            endpoint_id = res.get('endpoint_id')
+            endpoint_id = res.get("endpoint_id")
             if endpoint_id in new_results:
                 # if the endpoint already exists - adding the command data to new_results (the endpoint data already in)
-                new_results[endpoint_id]['executed_command'].append(core_execute_command_reformat_command_data(res))
+                new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
-                command_name = res.get('command')
+                command_name = res.get("command")
                 new_results[endpoint_id].pop(command_name)
             else:
                 # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
                 # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
-                reformatted_res['executed_command'] = [core_execute_command_reformat_command_data(res)]
+                reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
-                command_name = reformatted_res.pop('command')
+                command_name = reformatted_res.pop("command")
                 reformatted_res.pop(command_name)
                 for key in COMMAND_DATA_KEYS:
                     reformatted_res.pop(key)
@@ -269,16 +279,16 @@ def core_execute_command_reformat_args(args: dict) -> dict:
     Returns:
         dict: reformatted args.
     """
-    commands = args.get('command')
+    commands = args.get("command")
     if not commands:
         raise DemistoException("'command' is a required argument.")
     # the value of script_uid is the Unique identifier of execute_commands script.
-    reformatted_args = args | {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
-    is_raw_command = argToBoolean(args.get('is_raw_command', False))
-    commands_list = [commands] if is_raw_command else argToList(commands, args.get('command_separator', ','))
-    if args.get('command_type') == 'powershell':
+    reformatted_args = args | {"is_core": True, "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf"}
+    is_raw_command = argToBoolean(args.get("is_raw_command", False))
+    commands_list = [commands] if is_raw_command else argToList(commands, args.get("command_separator", ","))
+    if args.get("command_type") == "powershell":
         commands_list = [form_powershell_command(command) for command in commands_list]
-    reformatted_args['parameters'] = json.dumps({'commands_list': commands_list})
+    reformatted_args["parameters"] = json.dumps({"commands_list": commands_list})
     return reformatted_args
 
 
@@ -294,12 +304,12 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         PollResult: Reformatted script_run_polling_command result.
     """
     reformatted_args = core_execute_command_reformat_args(args)
-    script_res = script_run_polling_command(reformatted_args, client, statuses=('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
+    script_res = script_run_polling_command(reformatted_args, client, statuses=("PENDING", "IN_PROGRESS", "PENDING_ABORT"))
     # script_res = [CommandResult] if it's the final result (ScriptResult)
     # else if the polling still continue, script_res = CommandResult
     if isinstance(script_res, list):
         script_res[0].readable_output = core_execute_command_reformat_readable_output(script_res)
-        script_res[0].outputs['results'] = core_execute_command_reformat_outputs(script_res)
+        script_res[0].outputs["results"] = core_execute_command_reformat_outputs(script_res)
     elif isinstance(script_res, CommandResults):
         # delete ScriptRun from context data
         script_res.outputs = None

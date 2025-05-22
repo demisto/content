@@ -1,6 +1,7 @@
-## Humio and XSOAR Integration 
+## Humio and XSOAR Integration
+
 Humio is a log management platform that allows customers to ingest everything to answer anything.
-Humio provides comprehensive visibility for Security Operations and can ingest unlimited data at any throughput to provide the full data set needed to detect and respond to any incident. 
+Humio provides comprehensive visibility for Security Operations and can ingest unlimited data at any throughput to provide the full data set needed to detect and respond to any incident.
 Live searches and real-time dashboards cut detection times and blazing fast search empowers threat hunting teams to unleash their curiosity.
 
 This pack provides a means to enable API integration between Humio and XSOAR so that XSOAR can use Humio commands in playbooks.

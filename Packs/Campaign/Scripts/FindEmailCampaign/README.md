@@ -5,8 +5,8 @@ The script would search among past incidents whether past incidents with high te
 If such incidents were found, the script would aggregate details regarding them, such as their senders, recipients, dates, mutual indicators, snippets from the email, etc.
 This script's purpose is to provide you an immediate background for phishing incidents when similar incidents exist, and furthermore, help you to detect phishing campaigns more  easily.
 
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,11 +16,14 @@ This script's purpose is to provide you an immediate background for phishing inc
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Detect & Manage Phishing Campaigns
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -43,6 +46,7 @@ This script is used in the following playbooks and scripts.
 | includeSelf | Include the current incident in EmailCampaign path in context. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
