@@ -21,7 +21,7 @@ class AzureFirewallClient:
         certificate_thumbprint: str | None = None,
         private_key: str | None = None,
         managed_identities_client_id: str | None = None,
-        is_credentials: bool = False
+        is_credentials: str | None = None,
     ):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
@@ -3108,7 +3108,7 @@ def main() -> None:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
-            is_credentials=is_credentials
+            is_credentials=is_credentials,
         )
 
         commands = {
