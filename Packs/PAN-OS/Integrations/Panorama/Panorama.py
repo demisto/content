@@ -10663,6 +10663,7 @@ class HygieneLookups:
         device_filter_str: Optional[str] = None,
         minimum_block_severities: Optional[List[str]] = None,
         minimum_alert_severities: Optional[List[str]] = None,
+        return_nonconforming_profiles: Optional[bool] = False
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
@@ -10672,6 +10673,7 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
         :param minimum_block_severities: A string list of severities that MUST be in block mode
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
         """
 
         if not minimum_block_severities:
@@ -10680,6 +10682,7 @@ class HygieneLookups:
             minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
 
         conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        non_conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
 
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-4"])
@@ -10692,6 +10695,23 @@ class HygieneLookups:
                 minimum_block_severities=minimum_block_severities,
                 minimum_alert_severities=minimum_alert_severities,
             )
+            
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [profile for profile in vulnerability_profiles 
+                                                                 if profile not in conforming_profiles]
+                
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="Vulnerability profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-4"
+                        )
+                    )
+                
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -10715,6 +10735,7 @@ class HygieneLookups:
         device_filter_str: Optional[str] = None,
         minimum_block_severities: Optional[List[str]] = None,
         minimum_alert_severities: Optional[List[str]] = None,
+        return_nonconforming_profiles: Optional[bool] = False
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
@@ -10724,6 +10745,7 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
         :param minimum_block_severities: A string list of severities that MUST be in block mode
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
         """
         if not minimum_block_severities:
             minimum_block_severities = BestPractices.SPYWARE_BLOCK_SEVERITIES
@@ -10731,6 +10753,7 @@ class HygieneLookups:
             minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
 
         conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        non_conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-5"])
         # BP-V-5 - Check at least one AS profile exists with the correct settings.
@@ -10741,6 +10764,23 @@ class HygieneLookups:
                 minimum_block_severities=minimum_block_severities,
                 minimum_alert_severities=minimum_alert_severities,
             )
+            
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [profile for profile in spyware_profiles 
+                                                                 if profile not in conforming_profiles]
+                
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="Spyware profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-5"
+                        )
+                    )
+                
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -10874,16 +10914,21 @@ class HygieneLookups:
         return result
 
     @staticmethod
-    def check_url_filtering_profiles(topology: Topology, device_filter_str: Optional[str] = None):
+    def check_url_filtering_profiles(
+        topology: Topology, device_filter_str: Optional[str] = None, 
+        return_nonconforming_profiles: Optional[bool] = False):
         """
         Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
         for visibility.
 
         :param topology: `Topology` Instance
         :param device_filter_str: Filter checks to a specific device or devices
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
         """
         issues: List[ConfigurationHygieneIssue] = []
         conforming_profiles: List[URLFilteringProfile] = []
+        non_conforming_profiles: List[URLFilteringProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-6"])
         # BP-V-6 - Check at least one URL Filtering profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
@@ -10891,6 +10936,23 @@ class HygieneLookups:
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_url_filtering_profiles(
                 url_filtering_profiles
             )
+            
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [profile for profile in url_filtering_profiles 
+                                                                 if profile not in conforming_profiles]
+                
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="URL Filtering profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-6"
+                        )
+                    )
+                
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -11738,6 +11800,7 @@ def check_vulnerability_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
@@ -11747,12 +11810,14 @@ def check_vulnerability_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
     """
     return HygieneLookups.check_vulnerability_profiles(
         topology,
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles)
     )
 
 
@@ -11761,6 +11826,7 @@ def check_spyware_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
@@ -11769,27 +11835,34 @@ def check_spyware_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
     return HygieneLookups.check_spyware_profiles(
         topology,
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles)
     )
 
 
 def check_url_filtering_profiles(
-    topology: Topology, device_filter_string: Optional[str] = None
+    topology: Topology, device_filter_string: Optional[str] = None,
+    return_nonconforming_profiles: str = "no"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured URL Filtering profiles to ensure at least one meets best practices.
 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
     return HygieneLookups.check_url_filtering_profiles(
         topology,
         device_filter_str=device_filter_string,
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles)
     )
 
 

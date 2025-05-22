@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama_mrizzo_copy
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -228,8 +228,8 @@ configuration:
   section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS mrizzo copy
+name: Panorama_mrizzo_copy
 script:
   commands:
   - arguments:
@@ -8089,6 +8089,13 @@ script:
       description: A comma-separated list of severities that must be in alert/default or higher mode.
       isArray: true
       name: minimum_alert_severities
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured vulnerability profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-vulnerability-profiles
     outputs:
@@ -8148,6 +8155,13 @@ script:
     - defaultValue: medium,low
       description: A CSV list of severities that must be in alert/default or higher mode.
       name: minimum_alert_severities
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured anti-spyware profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-spyware-profiles
     outputs:
@@ -8181,6 +8195,13 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
+    - auto: PREDEFINED
+      defaultValue: 'no'
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
+      predefined:
+      - 'yes'
+      - 'no'
     description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
     name: pan-os-hygiene-check-url-filtering-profiles
     outputs:
