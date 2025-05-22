@@ -570,8 +570,8 @@ class TestImportCommands:
         # validate
         json_data = Client.http_request.call_args[1]["json"]["meta"]
         assert set(expected_meta_data_keys).issubset(json_data.keys())
-        for key in expected_meta_data_changed:
-            assert json_data[key] == expected_meta_data_changed[key]
+        for key, value in expected_meta_data_changed.items():
+            assert json_data[key] == value
         assert result == "The data was imported successfully."
 
     @pytest.mark.parametrize(argnames="command", argvalues=[import_ioc_with_approval, import_ioc_without_approval])

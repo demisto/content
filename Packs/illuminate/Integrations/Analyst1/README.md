@@ -4,7 +4,7 @@
 
 Analyst1 is an advanced threat intelligence platform (TIP) which simplifies every cybrersecurity analyst's role. This integration with XSOAR presently emphasizes indicator, countermeasure, sensor management, and intelligence collection workflows to enable analysts to collect, analyze, and respond to evidence of malicious activity. Analyst1’s web based interface provides a single location to collect and analyze evidence of malicious activity and manage indicators then author, test, task and track rules to detect malicious cyber activity. Maintaing traceability between evidence, indicators, rules and sensors, analysts can identify why a rule was created, the type of activity it detects and what sensors are tasked.
 
-This integration utilizes Analyst1's system API to: 
+This integration utilizes Analyst1's system API to:
 
 1. enrich Cortex XSOAR indicators with data provided by the Analyst1 REST API, such as actor and malware information, activity and reported dates, evidence and hit counts, and more.
 2. submit Evidence as content created in XSOAR, downloaded by XSOAR, or a synthesis of both back to Analsyt1 as 'evidence'.
@@ -12,7 +12,7 @@ This integration utilizes Analyst1's system API to:
 
 This integration was integrated and tested with version 2.1.0 of Analyst1.
 
-For full documentation on the Analyst1 API, please access the "Help" or "Guides" section within your Analyst1 instance. For help please contact support@analyst1.com. 
+For full documentation on the Analyst1 API, please access the "Help" or "Guides" section within your Analyst1 instance. For help please contact support@analyst1.com.
 
 ## Analyst1 Playbook
 
@@ -73,7 +73,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 17. analyst1-get-sensor-diff
 18. analyst1-get-sensors
 
-
 ### 1. domain
 
 ---
@@ -87,34 +86,32 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| domain | The domain for which to return information. | Required | 
-
+| domain | The domain for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Domain.Name | string | The domain name, for example, "google.com". | 
-| Analyst1.Domain.ID | number | The indicator's unique ID in Analyst1. | 
-| Analyst1.Domain.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Domain.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Domain.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Domain.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Domain.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Domain.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Domain.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Domain.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Domain.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.Domain.Malwares.Name | string | Each matched malware name in Analyst1. | 
-| Analyst1.Domain.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Domain.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Domain.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-| Analyst1.Domain.IpResolution | string | The resolved IP address for this domain. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The AlienVault OTX vendor. | 
-
+| Domain.Name | string | The domain name, for example, "google.com". |
+| Analyst1.Domain.ID | number | The indicator's unique ID in Analyst1. |
+| Analyst1.Domain.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Domain.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Domain.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Domain.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Domain.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Domain.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Domain.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Domain.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Domain.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.Domain.Malwares.Name | string | Each matched malware name in Analyst1. |
+| Analyst1.Domain.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Domain.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Domain.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| Analyst1.Domain.IpResolution | string | The resolved IP address for this domain. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The AlienVault OTX vendor. |
 
 #### Command Example
 
@@ -165,7 +162,6 @@ Queries the Analyst1 REST API and enriches the given domain with Analyst1 Indica
 |---|---|---|---|---|---|
 | true | 1 | 2043650 | <https://analyst1instance.domain/indicators/2043650> | abc.com | 2018-06-12 |
 
-
 ### 2. email
 
 ---
@@ -179,33 +175,31 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| email | The email for which to return information. | Required | 
-
+| email | The email for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Email.From | string | The sender of the email. | 
-| Analyst1.Email.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.Email.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Email.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Email.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Email.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Email.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Email.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Email.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Email.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Email.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.Email.Malwares.Name | string | Each matched malware name in Analyst1. | 
-| Analyst1.Email.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Email.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Email.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The AlienVault OTX vendor. | 
-
+| Email.From | string | The sender of the email. |
+| Analyst1.Email.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.Email.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Email.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Email.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Email.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Email.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Email.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Email.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Email.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Email.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.Email.Malwares.Name | string | Each matched malware name in Analyst1. |
+| Analyst1.Email.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Email.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Email.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The AlienVault OTX vendor. |
 
 #### Command Example
 
@@ -261,7 +255,6 @@ Queries the Analyst1 REST API and enriches the given email with Analyst1 indicat
 |---|---|---|---|---|---|---|
 | true | id = -2, name = Unknown | 1 | 1637756 | <https://analyst1instance.domain/indicators/1637756> | 001toxic@gmail.com | 2018-02-05 |
 
-
 ### 3. ip
 
 ---
@@ -275,33 +268,31 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| ip | The IP address for which to return information. | Required | 
-
+| ip | The IP address for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| IP.Address | string | The IP address. | 
-| Analyst1.Ip.ID | number | The indicator's unique ID in Analyst1. | 
-| Analyst1.Ip.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Ip.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Ip.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Ip.FirstHit | date | The first date this this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ip.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ip.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ip.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Ip.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Ip.Malwares.ID | number | Each matched malware unique identifier in Analyst1 | 
-| Analyst1.Ip.Malwares.Name | string | Each matched malware name in Analyst1 | 
-| Analyst1.Ip.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Ip.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Ip.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The AlienVault OTX vendor. | 
-
+| IP.Address | string | The IP address. |
+| Analyst1.Ip.ID | number | The indicator's unique ID in Analyst1. |
+| Analyst1.Ip.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Ip.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Ip.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Ip.FirstHit | date | The first date this this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ip.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ip.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ip.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Ip.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Ip.Malwares.ID | number | Each matched malware unique identifier in Analyst1 |
+| Analyst1.Ip.Malwares.Name | string | Each matched malware name in Analyst1 |
+| Analyst1.Ip.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Ip.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Ip.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The AlienVault OTX vendor. |
 
 #### Command Example
 
@@ -352,7 +343,6 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 |---|---|---|---|---|---|
 | true | 1 | 51469 | <https://analyst1instance.domain/indicators/51469> | 0.154.17.105 | 2014-01-04 |
 
-
 ### 4. file
 
 ---
@@ -366,35 +356,33 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| file | The file for which to return information. | Required | 
-
+| file | The file for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Analyst1.File.ID | number | The indicator's unique ID in Analyst1. | 
-| Analyst1.File.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.File.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.File.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.File.FirstHit | date | The first date this this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.File.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.File.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.File.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.File.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.File.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.File.Malwares.Name | string | Each matched malware name in Analyst1 | 
-| Analyst1.File.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.File.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.File.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The AlienVault OTX vendor. | 
-
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Analyst1.File.ID | number | The indicator's unique ID in Analyst1. |
+| Analyst1.File.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.File.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.File.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.File.FirstHit | date | The first date this this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.File.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.File.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.File.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.File.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.File.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.File.Malwares.Name | string | Each matched malware name in Analyst1 |
+| Analyst1.File.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.File.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.File.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The AlienVault OTX vendor. |
 
 #### Command Example
 
@@ -458,7 +446,6 @@ Queries the Analyst1 REST API and enriches the given file with Analyst1 indicato
 |---|---|---|---|---|---|---|---|
 | true | 2018-08-02,<br/>2019-09-01 | id = -4, name = Multiple Actors Extracted,<br/>id = 150, name = FIN8 | 2 | 1527155 | <https://analyst1instance.domain/indicators/1527155> | 00000000000000000000000000000000 | 2019-06-25,<br/>2020-01-09 |
 
-
 ### 5. analyst1-enrich-string
 
 ---
@@ -472,28 +459,26 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| string | The string for which to return information. | Required | 
-
+| string | The string for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.String.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.String.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.String.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.String.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.String.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.String.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.String.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.String.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.String.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.String.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.String.Malwares.Name | string | Each matched malware name in Analyst1 | 
-| Analyst1.String.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.String.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.String.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-
+| Analyst1.String.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.String.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.String.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.String.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.String.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.String.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.String.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.String.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.String.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.String.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.String.Malwares.Name | string | Each matched malware name in Analyst1 |
+| Analyst1.String.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.String.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.String.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
 
 #### Command Example
 
@@ -544,7 +529,6 @@ Queries the Analyst1 REST API and enriches the given string with Analyst1 indica
 |---|---|---|---|---|---|---|---|
 | true | 2014-12-11,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 | id = -2, name = Unknown | 15 | 90548 | <https://analyst1instance.domain/indicators/90548> | ?? | 2014-12-12,<br/>2014-12-14,<br/>2014-12-19,<br/>2014-12-20 |
 
-
 ### 6. analyst1-enrich-ipv6
 
 ---
@@ -558,28 +542,26 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| ip | The IP address for which to return information. | Required | 
-
+| ip | The IP address for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.Ipv6.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.Ipv6.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Ipv6.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Ipv6.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Ipv6.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ipv6.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ipv6.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Ipv6.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Ipv6.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Ipv6.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.Ipv6.Malwares.Name | string | Each matched malware name in Analyst1 | 
-| Analyst1.Ipv6.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Ipv6.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Ipv6.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-
+| Analyst1.Ipv6.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.Ipv6.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Ipv6.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Ipv6.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Ipv6.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ipv6.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ipv6.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Ipv6.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Ipv6.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Ipv6.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.Ipv6.Malwares.Name | string | Each matched malware name in Analyst1 |
+| Analyst1.Ipv6.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Ipv6.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Ipv6.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
 
 #### Command Example
 
@@ -619,7 +601,6 @@ Queries the Analyst1 REST API and enriches the given IP address with Analyst1 in
 |---|---|---|---|---|---|---|
 | true | 2018-09-08 | 1 | 2623838 | <https://analyst1instance.domain/indicators/2623838> | 16:: | 2015-05-13 |
 
-
 ### 7. analyst1-enrich-mutex
 
 ---
@@ -633,28 +614,26 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| mutex | The mutex to query information for | Required | 
-
+| mutex | The mutex to query information for | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.Mutex.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.Mutex.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Mutex.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Mutex.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Mutex.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Mutex.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Mutex.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Mutex.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Mutex.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Mutex.Malwares.ID | number | Each matched malware unique identifier in Analyst1. | 
-| Analyst1.Mutex.Malwares.Name | string | Each matched malware name in Analyst1 | 
-| Analyst1.Mutex.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Mutex.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Mutex.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-
+| Analyst1.Mutex.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.Mutex.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Mutex.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Mutex.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Mutex.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Mutex.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Mutex.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Mutex.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Mutex.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Mutex.Malwares.ID | number | Each matched malware unique identifier in Analyst1. |
+| Analyst1.Mutex.Malwares.Name | string | Each matched malware name in Analyst1 |
+| Analyst1.Mutex.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Mutex.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Mutex.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
 
 #### Command Example
 
@@ -708,7 +687,6 @@ Queries the Analyst1 REST API and enriches the given mutex with Analyst1 indicat
 |---|---|---|---|---|---|---|---|
 | true | 2015-01-06,<br/>2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 | id = -2, name = Unknown | 6 | 95267 | <https://analyst1instance.domain/indicators/95267> | ?? | 2015-01-07,<br/>2015-01-14,<br/>2015-02-23,<br/>2017-08-05,<br/>2017-08-06 |
 
-
 ### 8. analyst1-enrich-http-request
 
 ---
@@ -722,28 +700,26 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| http-request | The HTTP request for which to return information. | Required | 
-
+| http-request | The HTTP request for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.Httprequest.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.Httprequest.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Httprequest.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Httprequest.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Httprequest.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Httprequest.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Httprequest.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Httprequest.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Httprequest.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Httprequest.Malwares.ID | number | Each matched malware unique identifier in Analyst1 | 
-| Analyst1.Httprequest.Malwares.Name | string | Each matched malware name in Analyst1. | 
-| Analyst1.Httprequest.Actors.ID | number | Each matched actor unique identifier in Analyst1. | 
-| Analyst1.Httprequest.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Httprequest.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-
+| Analyst1.Httprequest.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.Httprequest.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Httprequest.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Httprequest.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Httprequest.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Httprequest.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Httprequest.HitCount | number | The total number of times this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Httprequest.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Httprequest.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Httprequest.Malwares.ID | number | Each matched malware unique identifier in Analyst1 |
+| Analyst1.Httprequest.Malwares.Name | string | Each matched malware name in Analyst1. |
+| Analyst1.Httprequest.Actors.ID | number | Each matched actor unique identifier in Analyst1. |
+| Analyst1.Httprequest.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Httprequest.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
 
 #### Command Example
 
@@ -781,7 +757,6 @@ Queries the Analyst1 REST API and enriches the given HTTP request with Analyst1 
 |---|---|---|---|---|---|---|
 | true | high | 1 | 2885382 | <https://analyst1instance.domain/indicators/2885382> | /~ | 2020-01-06 |
 
-
 ### 9. url
 
 ---
@@ -795,33 +770,31 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| url | The URL for which to return information. | Required | 
-
+| url | The URL for which to return information. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| URL.Data | String | The URL. | 
-| Analyst1.Url.ID | number | The unique identifier of the given Indicator in Analyst1 | 
-| Analyst1.Url.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. | 
-| Analyst1.Url.Active | boolean | Whether the given indicator is noted as active in Analyst1. | 
-| Analyst1.Url.ConfidenceLevel | string | The confidence level of the data in Analyst1. | 
-| Analyst1.Url.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Url.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Url.HitCount | number | The total number of this indicator was seen in a source scanned by Analyst1. | 
-| Analyst1.Url.ReportedDates | date | The dates this indicator was reported on in Analyst1. | 
-| Analyst1.Url.ActivityDates | date | The dates this indicator had reported activity in Analyst1. | 
-| Analyst1.Url.Malwares.ID | number | Each matched malware unique identifier in Analyst1 | 
-| Analyst1.Url.Malwares.Name | string | Each matched malware name in Analyst1. | 
-| Analyst1.Url.Actors.ID | number | Each matched actor unique identifier in Analyst1 | 
-| Analyst1.Url.Actors.Name | string | Each matched actor name in Analyst1. | 
-| Analyst1.Url.Analyst1Link | string | The URL of the matched indicator in Analyst1. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Score | Numbe | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The AlienVault OTX vendor. | 
-
+| URL.Data | String | The URL. |
+| Analyst1.Url.ID | number | The unique identifier of the given Indicator in Analyst1 |
+| Analyst1.Url.EvidenceCount | number | The number of evidence reports of the given indicator in Analyst1. |
+| Analyst1.Url.Active | boolean | Whether the given indicator is noted as active in Analyst1. |
+| Analyst1.Url.ConfidenceLevel | string | The confidence level of the data in Analyst1. |
+| Analyst1.Url.FirstHit | date | The first date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Url.LastHit | date | The most recent date this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Url.HitCount | number | The total number of this indicator was seen in a source scanned by Analyst1. |
+| Analyst1.Url.ReportedDates | date | The dates this indicator was reported on in Analyst1. |
+| Analyst1.Url.ActivityDates | date | The dates this indicator had reported activity in Analyst1. |
+| Analyst1.Url.Malwares.ID | number | Each matched malware unique identifier in Analyst1 |
+| Analyst1.Url.Malwares.Name | string | Each matched malware name in Analyst1. |
+| Analyst1.Url.Actors.ID | number | Each matched actor unique identifier in Analyst1 |
+| Analyst1.Url.Actors.Name | string | Each matched actor name in Analyst1. |
+| Analyst1.Url.Analyst1Link | string | The URL of the matched indicator in Analyst1. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Score | Numbe | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The AlienVault OTX vendor. |
 
 #### Command Example
 
@@ -879,7 +852,6 @@ Queries the Analyst1 REST API and enriches the given URL with Analyst1 indicator
 |---|---|---|---|---|---|---|---|
 | true | 2018-12-08 | id = 178, name = APT33 | 1 | 2699554 | <https://analyst1instance.domain/indicators/2699554> | 104.218.120.128/check.aspx | 2019-07-04 |
 
-
 ### 10. analyst1-evidence-submit
 
 ***
@@ -893,19 +865,19 @@ Submits an 'Evidence' to Analyst1. Submission can be any text or attachment (PDF
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| sourceId | Analyst1 ID# of the Source to associate the Evidence. It is a best practice to create a 'Reference' source in Analyst1 to which XSOAR may submit. | Required | 
-| fileContent | Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileConent or fileEntryId must be included. | Optional | 
-| tlp | Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings. . Default is GREEN. | Optional | 
-| fileClassification | Government classification of the Evidence. Ignore if not operating in a Military/Government capacity. Default is U. | Optional | 
-| fileName | Name of the 'file' as it was received as an attachment/download, or as it should be represented in Analyst1. Will become the default 'title' of the created Evidence record. File extension will be used in MIME type discovery which does influence extraction by a1bot. | Required | 
-| fileEntryId | Entry ID in XSOAR context. How the File was acquired matters. For instance, if using the http command, setting saveAsFile=yes is very important or the original, real format will be lost in a {"Body":"encoded file"} wrapping. One of fileConent or fileEntryIdmust be included. | Optional | 
+| sourceId | Analyst1 ID# of the Source to associate the Evidence. It is a best practice to create a 'Reference' source in Analyst1 to which XSOAR may submit. | Required |
+| fileContent | Content of the Evidence to create within Analyst1. Should be used when content is TXT or JSON. Use fileEntryId for attachments in XSOAR context. One of fileConent or fileEntryId must be included. | Optional |
+| tlp | Traffic Light Protocol (TLP) value for the Evidence. If the Evidence is TLP marked that will override this input as the a1bot finds the TLP markings. . Default is GREEN. | Optional |
+| fileClassification | Government classification of the Evidence. Ignore if not operating in a Military/Government capacity. Default is U. | Optional |
+| fileName | Name of the 'file' as it was received as an attachment/download, or as it should be represented in Analyst1. Will become the default 'title' of the created Evidence record. File extension will be used in MIME type discovery which does influence extraction by a1bot. | Required |
+| fileEntryId | Entry ID in XSOAR context. How the File was acquired matters. For instance, if using the http command, setting saveAsFile=yes is very important or the original, real format will be lost in a {"Body":"encoded file"} wrapping. One of fileConent or fileEntryIdmust be included. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.EvidenceSubmit.uuid | unknown | The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'. | 
-| Analyst1.EvidenceSubmit.message | unknown | An explanation of the error which occurred that prevented acceptance of the Evidence submission. | 
+| Analyst1.EvidenceSubmit.uuid | unknown | The unique GUID tracking this specific Evidence's submission. Can be used to monitor to finish extraction. If empty, check 'message'. |
+| Analyst1.EvidenceSubmit.message | unknown | An explanation of the error which occurred that prevented acceptance of the Evidence submission. |
 
 ### 11. analyst1-evidence-status
 
@@ -920,15 +892,15 @@ Check on the status of the analyst1-evidence-submit action by using its output U
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| uuid | Identifier from an Evidence Submission to track status. | Required | 
+| uuid | Identifier from an Evidence Submission to track status. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.EvidenceStatus.id | unknown | Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing. | 
-| Analyst1.EvidenceStatus.message | unknown | If populated, will communicate errors which occurred with the status check or the upload processing.  | 
-| Analyst1.EvidenceStatus.processingComplete | unknown | True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress. | 
+| Analyst1.EvidenceStatus.id | unknown | Evidence ID created by the submission. If 'blank' and message is 'blank', indicates the upload is still procesing. |
+| Analyst1.EvidenceStatus.message | unknown | If populated, will communicate errors which occurred with the status check or the upload processing.  |
+| Analyst1.EvidenceStatus.processingComplete | unknown | True or false to indicate if processing of the Evidence upload is done. Determined by evaluating the id or message are present and populated. If an id is returned but blank, this is false, indicating the upload is still in progress. |
 
 #### Command example
 
@@ -955,7 +927,6 @@ Check on the status of the analyst1-evidence-submit action by using its output U
 >|---|---|
 >| 1608592 | true |
 
-
 ### 12. analyst1-batch-check
 
 ***
@@ -969,15 +940,15 @@ Queries the Analyst1 REST API for indicator enrichment data based on a CSV input
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| values | Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use analyst1-batch-check-post. | Required | 
+| values | Comma delimited set of possible Indicator or other Observable values. Submit as a basic string input with commas separating each value. For more complex or higher volume batches, use analyst1-batch-check-post. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.BatchResults.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
-| Analyst1.BatchResults.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. | 
-| Analyst1.BatchResults | unknown | Full Batch Check JSON | 
+| Analyst1.BatchResults.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. |
+| Analyst1.BatchResults.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. |
+| Analyst1.BatchResults | unknown | Full Batch Check JSON |
 
 #### Command example
 
@@ -1028,7 +999,6 @@ Queries the Analyst1 REST API for indicator enrichment data based on a CSV input
 >|  | false | key: INDICATOR<br/>title: Indicator | 438290 | {'id': 772, 'title': 'AceHash', 'akas': ['AceHash']},<br/>{'id': 875, 'title': '007Keylogger', 'akas': ['007', '007Keylogger']} | 1.2.3.4 | 1.2.3.4 |  | key: ip<br/>title: IPv4 |
 >| {'id': -4, 'title': 'Multiple Actors Extracted', 'akas': ['Multiple Actors Extracted']} | false | key: INDICATOR<br/>title: Indicator | 2043650 |  | abc.com | abc.com |  | key: domain<br/>title: Domain |
 
-
 ### 13. analyst1-batch-check-post
 
 ***
@@ -1042,17 +1012,16 @@ Similar to analyst1-batch-check, however the inputs can be more complex. The 'va
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| values | Newline delimited text for many Indicator or other observable inputs. Either valeus_array or values must be provided. | Optional | 
-| values_array | Array of text, each being an Indicator or other observable value to search. Either valeus_array or values must be provided. | Optional | 
+| values | Newline delimited text for many Indicator or other observable inputs. Either valeus_array or values must be provided. | Optional |
+| values_array | Array of text, each being an Indicator or other observable value to search. Either valeus_array or values must be provided. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1 | unknown | Full Batch Check JSON | 
-| Analyst1.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. | 
-| Analyst1.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. | 
-
+| Analyst1 | unknown | Full Batch Check JSON |
+| Analyst1.ID | unknown | Matched ID values. May not all be Indicators. Could reflect Indicator, Asset, Ignore List, or System records. |
+| Analyst1.matchedValue | unknown | The matched terms from Indicators, Assets, Ignore List, or System CIDR entries. |
 
 ### 14. analyst1-indicator-by-id
 
@@ -1067,13 +1036,13 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| indicator_id | Internal Analyst1 Indicator ID. | Required | 
+| indicator_id | Internal Analyst1 Indicator ID. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.Indicator | unknown | Full Analyst1 native JSON for the Indicator. Will include all attributes, associated sources, enrichment results, and all settings as seen in the Analyst1 UI. | 
+| Analyst1.Indicator | unknown | Full Analyst1 native JSON for the Indicator. Will include all attributes, associated sources, enrichment results, and all settings as seen in the Analyst1 UI. |
 
 #### Command example
 
@@ -1378,7 +1347,6 @@ Gets the full JSON for an Analyst1 Indicator given the internal Analyst1 Indicat
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| false | {'date': '2012-05-08', 'classification': 'U'},<br/>{'date': '2012-05-16', 'classification': 'U'},<br/>{'date': '2012-08-30', 'classification': 'U'},<br/>{'date': '2012-09-05', 'classification': 'U'},<br/>{'date': '2012-09-26', 'classification': 'U'},<br/>{'date': '2012-12-07', 'classification': 'U'},<br/>{'date': '2013-01-17', 'classification': 'U'},<br/>{'date': '2013-03-01', 'classification': 'U'},<br/>{'date': '2013-03-14', 'classification': 'U'},<br/>{'date': '2013-03-27', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-18', 'classification': 'U'},<br/>{'date': '2014-03-05', 'classification': 'U'},<br/>{'date': '2014-05-07', 'classification': 'U'} | {'name': 'APT41', 'id': 30, 'classification': 'U'},<br/>{'name': 'Conimes', 'id': 121, 'classification': 'U'} |  | value: false<br/>classification: U | value: high<br/>classification: U |  | name: unknown<br/>classification: U | {'type': 'ipResolution', 'name': 'IP Resolution (DNS Resolution)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'reverseIp', 'name': 'Reverse IP Lookup (VirusTotal)', 'value': '13 resolutions to this domain', 'numeric': 13.0, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (DomainTools)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'},<br/>{'type': 'ipResolution', 'name': 'IP Resolution (VirusTotal)', 'value': 'redacted_ip_address', 'numeric': None, 'classification': 'unclass'} | { "date": "2020-04-28", "format": "json", "result": "{ \"status\": \"redacted to protect content provider's actual JSON output that in a live call would be provided\" }" "type": "VIRUS_TOTAL" },<br/>{ "date": "2020-12-15", "format": "colonDelimited", "result": "redacted to protected content provider's actual raw text result", "type": "WHOIS_IP_REGISTRATION" } | enrichmentResults,hitStats,sources | name: Stage 7 - Actions on Objectives<br/>id: 6<br/>classification: U | 0 |  |  |  |  |  | 0 | 983 |  |  |  |  |  |  | {'rel': 'self', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983'},<br/>{'rel': 'evidence', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/evidence'},<br/>{'rel': 'stix', 'href': 'https:<span>//</span>analyst1instance.domain/api/1_0/indicator/983/stix'} |  |  |  | {'value': 443, 'classification': 'U'},<br/>{'value': 80, 'classification': 'U'} | 21 | {'date': '2012-05-10', 'classification': 'U'},<br/>{'date': '2013-04-01', 'classification': 'U'},<br/>{'date': '2013-06-19', 'classification': 'U'},<br/>{'date': '2013-09-16', 'classification': 'U'},<br/>{'date': '2014-05-19', 'classification': 'U'},<br/>{'date': '2014-08-14', 'classification': 'U'},<br/>{'date': '2018-09-19', 'classification': 'U'},<br/>{'date': '2019-10-17', 'classification': 'U'},<br/>{'date': '2021-07-01', 'classification': 'U'} |  | {'type': 'reference', 'enabled': False, 'title': 'Internal', 'url': None, 'category': 'INTERNAL', 'id': 0},<br/>{'type': 'rss', 'enabled': False, 'title': 'Threat Connect', 'url': 'https:<span>//</span>feeds.feedburner.com/threatconnect-blogs', 'category': 'FREE', 'id': 78},<br/>{'type': 'api', 'enabled': True, 'title': 'CrowdStrike Premium Paid', 'url': 'https:<span>//</span>api.crowdstrike.com', 'category': 'PAID', 'id': 134} | rc |  |  | {'name': 'Unknown', 'id': -2, 'classification': 'U'},<br/>{'name': 'Manufacturing Industry', 'id': 100017, 'classification': 'U'},<br/>{'name': 'Energy Industry', 'id': 100021, 'classification': 'U'},<br/>{'name': 'Technology Industry', 'id': 100026, 'classification': 'U'} | true | undetermined |  | amber |  | undetermined | resolved | domain | name: conimes.com<br/>classification: U | true |
 
-
 ### 15. analyst1-get-sensor-config
 
 ***
@@ -1392,15 +1360,15 @@ Queries the Analyst1 REST API for the current sensor config given a valid Sensor
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| sensor_id | Sensor ID number for this Analyst1 instance. | Required | 
+| sensor_id | Sensor ID number for this Analyst1 instance. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.SensorTaskings.ConfigFile.config_text | unknown | full text of the current configuration file for the Sensor | 
-| Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID | unknown | FileID from invoking fileResult\(\) in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred. | 
-| Analyst1.SensorTaskings.ConfigFile.warRoomEntry.File | unknown | File Name as saved on the War Room file with fileResult\(\)  | 
+| Analyst1.SensorTaskings.ConfigFile.config_text | unknown | full text of the current configuration file for the Sensor |
+| Analyst1.SensorTaskings.ConfigFile.warRoomEntry.FileID | unknown | FileID from invoking fileResult\(\) in the Common Server Functions. An alternative to the returned config_text in case file processing is preferred. |
+| Analyst1.SensorTaskings.ConfigFile.warRoomEntry.File | unknown | File Name as saved on the War Room file with fileResult\(\)  |
 
 #### Command example
 
@@ -1435,7 +1403,6 @@ Queries the Analyst1 REST API for the current sensor config given a valid Sensor
 >|---|---|
 >| alert tcp $HOME_NET any -> $EXTERNAL_NET $HTTP_PORTS (msg:"ET TROJAN Win32/0xtaRAT CnC Activity M5 (POST)"; flow:established,to_server; content:"POST"; http_method; content:".php?GUID="; http_uri; pcre:"/\.php\?GUID=[a-zA-Z0-9-]{36}$/U"; content:"//"; http_raw_uri; depth:2; content:"name=\|22\|file\|22 3b 20\|filename=\|22\|_screenshot_"; http_client_body; fast_pattern:15,20; content:!"Referer\|3a 20\|"; http_header; reference:md5,a1a39e458977aa512b7ff2ba1995b18d; reference:url,research.checkpoint.com/2023/operation-silent-watch-desktop-surveillance-in-azerbaijan-and-armenia; classtype:trojan-activity; sid:2046186; rev:1; metadata:attack_target Client_Endpoint, created_at 2023_06_09, deployment Perimeter, deployment SSLDecrypt, former_category MALWARE, performance_impact Low, signature_severity Critical, updated_at 2023_06_09;)<br/>alert tcp $EXTERNAL_NET any -> $HTTP_SERVERS $HTTP_PORTS (msg:"ET WEB_SPECIFIC_APPS Joomla! SQL Injection Attempt -- categories.php text SELECT"; flow:established,to_server; content:"/plugins/search/categories.php?"; nocase; http_uri; content:"text="; nocase; http_uri; content:"SELECT"; nocase; http_uri; pcre:"/SELECT.+FROM/Ui"; reference:cve,2007-0373; reference:url,www.securityfocus.com/bid/22122; reference:url,doc.emergingthreats.net/2005438; classtype:web-application-attack; sid:2005438; rev:6; metadata:affected_product Web_Server_Applications, attack_target Web_Server, created_at 2010_07_30, cve CVE_2007_0373, deployment Datacenter, former_category WEB_SPECIFIC_APPS, signature_severity Major, tag SQL_Injection, updated_at 2020_09_11;)<br/> | Contents: <br/>ContentsFormat: text<br/>Type: 3<br/>File: sensor7689Config.txt<br/>FileID: 8cca47a1-aef6-46c4-a372-8653f82abed0 |
 
-
 ### 16. analyst1-get-sensor-taskings
 
 ***
@@ -1449,19 +1416,18 @@ Queries the Analyst1 REST API for the current sensor taskings given a valid Sens
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| sensor_id | Sensor ID number for this Analyst1 instance. | Required | 
-| timeout | Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required. Default is 200. | Optional | 
+| sensor_id | Sensor ID number for this Analyst1 instance. | Required |
+| timeout | Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required. Default is 200. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.SensorTaskings | unknown | Root JSON for processing all taskings data.  | 
-| Analyst1.SensorTaskings.id | unknown | Sensor ID for this Taskings response. | 
-| Analyst1.SensorTaskings.version | unknown | Current version of the Sensor. | 
-| Analyst1.SensorTaskings.Indicators | unknown | Current array of Indicators tasked | 
-| Analyst1.SensorTaskings.Rules | unknown | Current array of Signatures tasked | 
-
+| Analyst1.SensorTaskings | unknown | Root JSON for processing all taskings data.  |
+| Analyst1.SensorTaskings.id | unknown | Sensor ID for this Taskings response. |
+| Analyst1.SensorTaskings.version | unknown | Current version of the Sensor. |
+| Analyst1.SensorTaskings.Indicators | unknown | Current array of Indicators tasked |
+| Analyst1.SensorTaskings.Rules | unknown | Current array of Signatures tasked |
 
 ### 17. analyst1-get-sensor-diff
 
@@ -1476,21 +1442,21 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| sensor_id | ID# of the Sensor record in Analyst1. | Required | 
-| version | Non zero version of the known Sensor. | Required | 
-| timeout | Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required. Default is 200. | Optional | 
+| sensor_id | ID# of the Sensor record in Analyst1. | Required |
+| version | Non zero version of the known Sensor. | Required |
+| timeout | Overrides the XSOAR default of 10s for timeout. Default Analsyt1 app is 200s for this command. Caller may further override as required. Default is 200. | Optional |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Analyst1.SensorTaskings.ID | unknown | Sensor ID | 
-| Analyst1.SensorTaskings.latestVersion | unknown | Current version of the Sensor. Meant to be saved and used on subsequent invocations to 'diff' to only get the latest changes. | 
-| Analyst1.SensorTaskings.version | unknown | Version which was provided as an input to make this result set. | 
-| Analyst1.SensorTaskings.IndicatorsAdded | unknown | Array of Indicators added between version and latestVersion. Type can be used to limit hash values for action. | 
-| Analyst1.SensorTaskings.IndicatorsRemoved | unknown | Array of Indicators removed between version and latestVersion. Type can be used to limit hash values for action. | 
-| Analyst1.SensorTaskings.RulesAdded | unknown | Array of Rules added between version and latestVersion. | 
-| Analyst1.SensorTaskings.RulesRemoved | unknown | Array of Rules removed between version and latestVersion. | 
+| Analyst1.SensorTaskings.ID | unknown | Sensor ID |
+| Analyst1.SensorTaskings.latestVersion | unknown | Current version of the Sensor. Meant to be saved and used on subsequent invocations to 'diff' to only get the latest changes. |
+| Analyst1.SensorTaskings.version | unknown | Version which was provided as an input to make this result set. |
+| Analyst1.SensorTaskings.IndicatorsAdded | unknown | Array of Indicators added between version and latestVersion. Type can be used to limit hash values for action. |
+| Analyst1.SensorTaskings.IndicatorsRemoved | unknown | Array of Indicators removed between version and latestVersion. Type can be used to limit hash values for action. |
+| Analyst1.SensorTaskings.RulesAdded | unknown | Array of Rules added between version and latestVersion. |
+| Analyst1.SensorTaskings.RulesRemoved | unknown | Array of Rules removed between version and latestVersion. |
 
 #### Command example
 
@@ -1564,7 +1530,6 @@ Gets the 'difference' from the last known Analyst1 Sensor version against the cu
 
 >__No entries.__
 
-
 ### 18. analyst1-get-sensors
 
 ***
@@ -1578,8 +1543,8 @@ Queries the Analyst1 REST API to retrieve a list of registered sensors.
 
 | __Argument Name__ | Description | __Required__ |
 | --- | --- | --- |
-| page | page of Sensors to iterate. Default is 1. | Optional | 
-| pageSize | size of each page of Sensors to iterate. Maximum 50. Default is 50. | Optional | 
+| page | page of Sensors to iterate. Default is 1. | Optional |
+| pageSize | size of each page of Sensors to iterate. Maximum 50. Default is 50. | Optional |
 
 #### Context Output
 

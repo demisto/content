@@ -48,7 +48,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Create or update a key vault in the specified subscription. If the Key Vault exists, the updated properties will overwrite the existing ones. Please use azure-key-vault-access-policy-update command if you wish to update the access policy of an existing Key Vault.
 
-
 #### Base Command
 
 `azure-key-vault-create-update`
@@ -57,46 +56,44 @@ Create or update a key vault in the specified subscription. If the Key Vault exi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name. | Required | 
-| location | Key Vault supported Azure location. The location cannot be changed after the Key Vault is created. Default value is 'westus'. Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Optional | 
-| sku_name | Specify whether the key vault is a standard vault or a premium vault. Default value is 'standard'. Possible values are: standard, premium. | Optional | 
-| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations &gt; your registered application &gt; click on manage application in local directory &gt; copy Object ID property. | Required | 
-| keys | Permissions to keys. If the Key Vault exists, you must supply the previous keys' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,create,update,import,delete,backup,restore,recover]. . Possible values are: get, list, create, update, import, delete, backup, restore, recover, decrypt, encrypt, unwrapKey, wrapKey, verify, sign, purge. | Optional | 
-| secrets | Permissions to secrets. If the Key Vault exists, you must supply the previous secrets' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover]. Possible values are: get, list, set, delete, recover, backup, restore, purge. | Optional | 
-| certificates | Permissions to certificates. If the Key Vault exists, you must supply the previous certificate's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers]. Possible values are: get, list, update, create, import, delete, recover, backup, restore, managecontacts, manageissuers, getissuers, listissuers, setissuers, deleteissuers, purge. | Optional | 
-| storage | Permissions to storage accounts. If the Key Vault exists, you must supply the previous storage's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover]. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional | 
-| enabled_for_deployment | Specifies whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
-| enabled_for_disk_encryption | Specifies whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
-| enabled_for_template_deployment | Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional | 
-| default_action | The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property. Possible values are: Allow, Deny. | Optional | 
-| bypass | Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'. Possible values are: AzureServices, None. | Optional | 
-| vnet_subnet_id | Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property. | Optional | 
-| ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional | 
+| vault_name | Key Vault name. | Required |
+| location | Key Vault supported Azure location. The location cannot be changed after the Key Vault is created. Default value is 'westus'. Possible values are: northcentralus, eastus, northeurope, westeurope, eastasia, southeastasia, eastus2, centralus, southcentralus, westus, japaneast, japanwest, australiaeast, australiasoutheast, brazilsouth, centralindia, southindia, westindia, canadacentral, canadaeast, uksouth, ukwest, westcentralus, westus2, koreacentral, francecentral, australiacentral, uaenorth, southafricanorth, switzerlandnorth, germanywestcentral, norwayeast, westus3, jioindiawest. | Optional |
+| sku_name | Specify whether the key vault is a standard vault or a premium vault. Default value is 'standard'. Possible values are: standard, premium. | Optional |
+| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies: Any change in the access policy regards that object ID, will override the exists one. To retrieve it navigate in the Azure Portal to App registrations &gt; your registered application &gt; click on manage application in local directory &gt; copy Object ID property. | Required |
+| keys | Permissions to keys. If the Key Vault exists, you must supply the previous keys' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,create,update,import,delete,backup,restore,recover]. . Possible values are: get, list, create, update, import, delete, backup, restore, recover, decrypt, encrypt, unwrapKey, wrapKey, verify, sign, purge. | Optional |
+| secrets | Permissions to secrets. If the Key Vault exists, you must supply the previous secrets' permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover]. Possible values are: get, list, set, delete, recover, backup, restore, purge. | Optional |
+| certificates | Permissions to certificates. If the Key Vault exists, you must supply the previous certificate's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,update,create,import,delete,recover,backup,restore,managecontacts,manageissuers,getissuers,listissuers,setissuers,deleteissuers]. Possible values are: get, list, update, create, import, delete, recover, backup, restore, managecontacts, manageissuers, getissuers, listissuers, setissuers, deleteissuers, purge. | Optional |
+| storage | Permissions to storage accounts. If the Key Vault exists, you must supply the previous storage's permissions in order to keep them unchanged. Access policy property. Default value is [get,list,set,delete,backup,restore,recover]. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional |
+| enabled_for_deployment | Specifies whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional |
+| enabled_for_disk_encryption | Specifies whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys.If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional |
+| enabled_for_template_deployment | Specifies whether Azure Resource Manager is permitted to retrieve secrets from the key vault. If the Key Vault exists, you must supply the previous value in order to keep it the same. Default value is True. Possible values are: true, false. | Optional |
+| default_action | The default action when no rule from ip_rules and from vnet_subnet_id match. For example, If no ip_rules and vnet_subnet_id arguments are supplied, the access to the key vault from any IP address or virtual network will be according to the default_action value. If you wish to allow access only from specific virtual network or IP address, use the ip_rules or the  vnet_subnet_id arguments. This is only used after the bypass property has been evaluated. Network acl property. Possible values are: Allow, Deny. | Optional |
+| bypass | Tells what traffic can bypass network rules. This can be 'AzureServices' or 'None'. For example, use 'AzureServices' if you wish to give azure services access to key vault, although the default action is 'Deny' or the access for a specific IP address. Network acl property. Default value is 'AzureServices'. Possible values are: AzureServices, None. | Optional |
+| vnet_subnet_id | Allow accessibility of a vault from a specific virtual network. This argument must be the full resource ID of a virtual network subnet. For example, for the subnet ID "/subscriptions/subid/resourceGroups/rg1/providers/Microsoft.Network/virtualNetworks/test-vnet/subnets/subnet1", you allow access to the Key Vault from subnet1. Network acl property. | Optional |
+| ignore_missing_vnet_service_endpoint | Specifies whether the Network Resource Provider will ignore the check if parent subnet has serviceEndpoints configured.  This allows the configuration for the Key Vault to complete without error before the configuration to the virtual network's subnet is complete. Once the subnet configuration is complete, the Cosmos account will then be accessible through the configured subnet. Network Acl property. Possible values are: . Default is True. | Optional |
 | ip_rules | The list of IP address rules. Each rule defines the accessibility of a vault from a specific IP address or IP range. It can be a simple IP address "124.56.78.91" or "124.56.78.0/24" -  all addresses that start with 124.56.78. For example, for the IP addresses list: "124.56.78.91,124.56.78.92", you can access the Key Vault from "124.56.78.91" or "124.56.78.92" IP addresses. Network acl property. |
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.| Optional|
 resource_group_name|The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
-
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.KeyVault.id | String | Resource ID. | 
-| AzureKeyVault.KeyVault.name | String | Key Vault name. | 
-| AzureKeyVault.KeyVault.type | String | Resource type in Azure. | 
-| AzureKeyVault.KeyVault.location | String | Key Vault location. | 
-| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. | 
-| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. | 
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. | 
-| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. | 
-| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. | 
-| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. | 
+| AzureKeyVault.KeyVault.id | String | Resource ID. |
+| AzureKeyVault.KeyVault.name | String | Key Vault name. |
+| AzureKeyVault.KeyVault.type | String | Resource type in Azure. |
+| AzureKeyVault.KeyVault.location | String | Key Vault location. |
+| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
+| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
+| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. |
+| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. |
+| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. |
 | AzureKeyVault.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. |
 | AzureKeyVault.KeyVault.properties.provisioningState | String | The current provisioning state. |
 
@@ -189,12 +186,10 @@ resource_group_name|The resource group name. Note: This argument will override t
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-285 | xsoar-test-285 | Microsoft.KeyVault/vaults | westus |
 
-
 ### azure-key-vault-delete
 
 ***
 Delete the specified key vault.
-
 
 #### Base Command
 
@@ -204,10 +199,9 @@ Delete the specified key vault.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name to delete. | Required | 
+| vault_name | Key Vault name to delete. | Required |
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
 |resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
-
 
 #### Context Output
 
@@ -226,7 +220,6 @@ There is no context output for this command.
 ***
 Get the specified key vault.
 
-
 #### Base Command
 
 `azure-key-vault-get`
@@ -235,33 +228,31 @@ Get the specified key vault.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | Key Vault name. | Required | 
+| vault_name | Key Vault name. | Required |
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
 resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional|
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.KeyVault.id | String | Resource ID. | 
-| AzureKeyVault.KeyVault.name | String | Key Vault name. | 
-| AzureKeyVault.KeyVault.type | String | Resource type in Azure. | 
-| AzureKeyVault.KeyVault.location | String | Key Vault location. | 
-| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. | 
-| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. | 
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. | 
-| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. | 
-| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. | 
-| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. | 
-| AzureKeyVault.KeyVault.properties.enableSoftDelete | Boolean | Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value\(true or false\) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false. | 
-| AzureKeyVault.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. This property is readonly. | 
-
+| AzureKeyVault.KeyVault.id | String | Resource ID. |
+| AzureKeyVault.KeyVault.name | String | Key Vault name. |
+| AzureKeyVault.KeyVault.type | String | Resource type in Azure. |
+| AzureKeyVault.KeyVault.location | String | Key Vault location. |
+| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
+| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
+| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. |
+| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. |
+| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. |
+| AzureKeyVault.KeyVault.properties.enableSoftDelete | Boolean | Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value\(true or false\) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false. |
+| AzureKeyVault.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets. This property is readonly. |
 
 #### Command Example
 
@@ -360,12 +351,10 @@ resource_group_name| The resource group name. Note: This argument will override 
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-vault | xsoar-test-vault | Microsoft.KeyVault/vaults | eastus |
 
-
 ### azure-key-vault-list
 
 ***
 The List operation gets information about the vaults associated with the subscription. For a limit greater than 25, more than one API call will be required and the command might take longer time.
-
 
 #### Base Command
 
@@ -375,33 +364,31 @@ The List operation gets information about the vaults associated with the subscri
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Limit on the number of keys vaults to return. Default value is 50. | Optional | 
-| offset | First index to retrieve from. Default value is 0. | Optional | 
+| limit | Limit on the number of keys vaults to return. Default value is 50. | Optional |
+| offset | First index to retrieve from. Default value is 0. | Optional |
 |subscription_id| The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional|
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.KeyVault.id | String | Resource ID. | 
-| AzureKeyVault.KeyVault.name | String | Key Vault name. | 
-| AzureKeyVault.KeyVault.type | String | Resource type in Azure. | 
-| AzureKeyVault.KeyVault.location | String | Key Vault location. | 
-| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. | 
-| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. | 
-| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. | 
-| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. | 
-| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. | 
-| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. | 
-| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. | 
-| AzureKeyVault.KeyVault.properties.enableSoftDelete | Boolean | Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value\(true or false\) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false. | 
-| AzureKeyVault.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets.  | 
-
+| AzureKeyVault.KeyVault.id | String | Resource ID. |
+| AzureKeyVault.KeyVault.name | String | Key Vault name. |
+| AzureKeyVault.KeyVault.type | String | Resource type in Azure. |
+| AzureKeyVault.KeyVault.location | String | Key Vault location. |
+| AzureKeyVault.KeyVault.properties.sku.family | String | SKU family name. |
+| AzureKeyVault.KeyVault.properties.sku.name | String | SKU name to specify whether the key vault is a standard vault or a premium vault. |
+| AzureKeyVault.KeyVault.properties.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
+| AzureKeyVault.KeyVault.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
+| AzureKeyVault.KeyVault.properties.enabledForDeployment | Boolean | Property to specify whether Azure Virtual Machines are permitted to retrieve certificates stored as secrets from the key vault. |
+| AzureKeyVault.KeyVault.properties.enabledForDiskEncryption | Boolean | Property to specify whether Azure Disk Encryption is permitted to retrieve secrets from the vault and unwrap keys. |
+| AzureKeyVault.KeyVault.properties.enabledForTemplateDeployment | Boolean | Property to specify whether Azure Resource Manager is permitted to retrieve secrets from the key vault. |
+| AzureKeyVault.KeyVault.properties.enableSoftDelete | Boolean | Property to specify whether the 'soft delete' functionality is enabled for this key vault. If it's not set to any value\(true or false\) when creating new key vault, it will be set to true by default. Once set to true, it cannot be reverted to false. |
+| AzureKeyVault.KeyVault.properties.vaultUri | String | The URI of the vault for performing operations on keys and secrets.  |
 
 #### Command Example
 
@@ -500,12 +487,10 @@ The List operation gets information about the vaults associated with the subscri
 >|---|---|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-265 | xsoar-test-265 | Microsoft.KeyVault/vaults | eastasia |
 
-
 ### azure-key-vault-access-policy-update
 
 ***
 Update access policies in a key vault in the specified subscription. The update regards only the access policy for the specified object ID.
-
 
 #### Base Command
 
@@ -515,29 +500,27 @@ Update access policies in a key vault in the specified subscription. The update 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault to update it's access policy. | Required | 
-| operation_kind | The name of the operation to do on the vault's access policy. Supports three operations: add,remove,replace. For example, to add get, list permissions to the current secret permissions, use operation_kind=add and secrets=get,list. Possible values are: add, remove, replace. | Required | 
-| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID. | Required | 
-| keys | Permissions to keys. Possible values are: encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, purge. | Optional | 
-| secrets | Permissions to secrets. Possible values are: get, list, set, delete, backup, restore, recover, purge. | Optional | 
-| certificates | Permissions to certificates. Possible values are: get, list, delete, create, import, update, managecontacts, getissuers, listissuers, setissuers, deleteissuers, manageissuers, recover, purge. | Optional | 
+| vault_name | The name of the Key Vault to update it's access policy. | Required |
+| operation_kind | The name of the operation to do on the vault's access policy. Supports three operations: add,remove,replace. For example, to add get, list permissions to the current secret permissions, use operation_kind=add and secrets=get,list. Possible values are: add, remove, replace. | Required |
+| object_id | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The update regards only the access policy for the specified object ID. | Required |
+| keys | Permissions to keys. Possible values are: encrypt, decrypt, wrapKey, unwrapKey, sign, verify, get, list, create, update, import, delete, backup, restore, recover, purge. | Optional |
+| secrets | Permissions to secrets. Possible values are: get, list, set, delete, backup, restore, recover, purge. | Optional |
+| certificates | Permissions to certificates. Possible values are: get, list, delete, create, import, update, managecontacts, getissuers, listissuers, setissuers, deleteissuers, manageissuers, recover, purge. | Optional |
 | storage | Permissions to storage accounts. Possible values are: get, list, delete, set, update, regeneratekey, getsas, listsas, deletesas, setsas, recover, backup, restore, purge. | Optional |
 |subscription_id|The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'.|Optional
 |resource_group_name| The resource group name. Note: This argument will override the instance parameter ‘Resource Group Name'.|Optional
-
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.VaultAccessPolicy.id | String | Resource ID. | 
-| AzureKeyVault.VaultAccessPolicy.type | String | Resource type in Azure. | 
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. | 
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. | 
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. | 
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. | 
-| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. | 
-
+| AzureKeyVault.VaultAccessPolicy.id | String | Resource ID. |
+| AzureKeyVault.VaultAccessPolicy.type | String | Resource type in Azure. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.tenantId | String | The Azure Active Directory tenant ID that should be used for authenticating requests to the key vault. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.objectId | String | The object ID of a user, service principal or security group in the Azure Active Directory tenant for the vault. The object ID must be unique for the list of access policies. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.keys | Unknown | Permissions to keys. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.secrets | Unknown | Permissions to secrets. |
+| AzureKeyVault.VaultAccessPolicy.properties.accessPolicies.permissions.certificates | Unknown | Permissions to certificates. |
 
 #### Command Example
 
@@ -616,12 +599,10 @@ Update access policies in a key vault in the specified subscription. The update 
 >|---|---|
 >| /subscriptions/SUBSCRIPTION_ID/resourceGroups/test-group/providers/Microsoft.KeyVault/vaults/xsoar-test-285/accessPolicies/ | Microsoft.KeyVault/vaults/accessPolicies |
 
-
 ### azure-key-vault-key-get
 
 ***
 Get the public part of a stored key. This operation requires the keys/get permission.
-
 
 #### Base Command
 
@@ -631,25 +612,23 @@ Get the public part of a stored key. This operation requires the keys/get permis
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the key resides in. | Required | 
-| key_name | Key name. | Required | 
-| key_version | Adding the version parameter retrieves a specific version of a key. This URI fragment is optional. If not specified, the latest version of the key is returned. | Optional | 
-
+| vault_name | The name of the Key Vault where the key resides in. | Required |
+| key_name | Key name. | Required |
+| key_version | Adding the version parameter retrieves a specific version of a key. This URI fragment is optional. If not specified, the latest version of the key is returned. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Key.key.kid | String | Key identifier. | 
-| AzureKeyVault.Key.key.kty | String | JsonWebKey Key Type. | 
-| AzureKeyVault.Key.key.key_ops | Unknown | Supported key operations. | 
-| AzureKeyVault.Key.key.n | String | RSA modulus. | 
-| AzureKeyVault.Key.key.e | String | RSA public exponent. | 
-| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Key.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.Key.attributes.updated | Date | Last updated time in UTC. | 
-| AzureKeyVault.Key.attributes.recoveryLevel | Unknown | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. | 
-
+| AzureKeyVault.Key.key.kid | String | Key identifier. |
+| AzureKeyVault.Key.key.kty | String | JsonWebKey Key Type. |
+| AzureKeyVault.Key.key.key_ops | Unknown | Supported key operations. |
+| AzureKeyVault.Key.key.n | String | RSA modulus. |
+| AzureKeyVault.Key.key.e | String | RSA public exponent. |
+| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Key.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.Key.attributes.updated | Date | Last updated time in UTC. |
+| AzureKeyVault.Key.attributes.recoveryLevel | Unknown | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. |
 
 #### Command Example
 
@@ -697,12 +676,10 @@ Get the public part of a stored key. This operation requires the keys/get permis
 >|---|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/keys/test-key-1/KEY_VERSION> | true | RSA | sign,<br/>verify,<br/>wrapKey,<br/>unwrapKey,<br/>encrypt,<br/>decrypt | 2021-08-11T12:03:16 | 2021-08-11T12:03:16 |
 
-
 ### azure-key-vault-key-list
 
 ***
 List keys in the specified vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the keys/list permission.
-
 
 #### Base Command
 
@@ -712,22 +689,20 @@ List keys in the specified vault. For a limit greater than 25, more than one API
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the keys reside in. | Required | 
-| limit | Limit on the number of keys to return. Default value is 50. Default is 50. | Optional | 
-| offset | First index to retrieve from. Default value is 0. Default is 0. | Optional | 
-
+| vault_name | The name of the Key Vault where the keys reside in. | Required |
+| limit | Limit on the number of keys to return. Default value is 50. Default is 50. | Optional |
+| offset | First index to retrieve from. Default value is 0. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Key.kid | String | Key identifier. | 
-| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Key.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.Key.attributes.updated | Date | Last updated time in UTC. | 
-| AzureKeyVault.Key.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. | 
-| AzureKeyVault.Key.attributes.recoverableDays | Number | Soft Delete data retention days. Value should be &gt;=7 and &lt;=90 when softDelete enabled, otherwise 0. | 
-
+| AzureKeyVault.Key.kid | String | Key identifier. |
+| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Key.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.Key.attributes.updated | Date | Last updated time in UTC. |
+| AzureKeyVault.Key.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. |
+| AzureKeyVault.Key.attributes.recoverableDays | Number | Soft Delete data retention days. Value should be &gt;=7 and &lt;=90 when softDelete enabled, otherwise 0. |
 
 #### Command Example
 
@@ -765,12 +740,10 @@ List keys in the specified vault. For a limit greater than 25, more than one API
 >|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/keys/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
-
 ### azure-key-vault-key-delete
 
 ***
 Delete a key of any type from storage in Azure Key vault. This operation requires the keys/delete permission.
-
 
 #### Base Command
 
@@ -780,26 +753,24 @@ Delete a key of any type from storage in Azure Key vault. This operation require
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the key resides in. | Required | 
-| key_name | Key name to delete. | Required | 
-
+| vault_name | The name of the Key Vault where the key resides in. | Required |
+| key_name | Key name to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Key.recoveryId | String | The url of the recovery object, used to identify and recover the deleted key. | 
-| AzureKeyVault.Key.deletedDate | Date | The time when the key was deleted, in UTC. | 
-| AzureKeyVault.Key.key.kid | String | Key identifier. | 
-| AzureKeyVault.Key.key.kty | String | JsonWebKey Key Type. | 
-| AzureKeyVault.Key.key.key_ops | Unknown | Supported key operations. | 
-| AzureKeyVault.Key.key.n | String | RSA modulus. | 
-| AzureKeyVault.Key.key.e | String | RSA public exponent. | 
-| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Key.attributes.created | Number | Creation time in UTC. | 
-| AzureKeyVault.Key.attributes.updated | Number | Last updated time in UTC. | 
-| AzureKeyVault.Key.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. | 
-
+| AzureKeyVault.Key.recoveryId | String | The url of the recovery object, used to identify and recover the deleted key. |
+| AzureKeyVault.Key.deletedDate | Date | The time when the key was deleted, in UTC. |
+| AzureKeyVault.Key.key.kid | String | Key identifier. |
+| AzureKeyVault.Key.key.kty | String | JsonWebKey Key Type. |
+| AzureKeyVault.Key.key.key_ops | Unknown | Supported key operations. |
+| AzureKeyVault.Key.key.n | String | RSA modulus. |
+| AzureKeyVault.Key.key.e | String | RSA public exponent. |
+| AzureKeyVault.Key.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Key.attributes.created | Number | Creation time in UTC. |
+| AzureKeyVault.Key.attributes.updated | Number | Last updated time in UTC. |
+| AzureKeyVault.Key.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for keys in the current vault. If it contains 'Purgeable' the key can be permanently deleted by a privileged user; otherwise, only the system can purge the key, at the end of the retention interval. |
 
 #### Command Example
 
@@ -852,12 +823,10 @@ Delete a key of any type from storage in Azure Key vault. This operation require
 >|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/keys/test-key-10/KEY_VERSION> | <https://xsoar-test-vault.vault.azure.net/deletedkeys/test-key-10> | 2021-11-01T12:52:40 | 2022-01-30T12:52:40 |
 
-
 ### azure-key-vault-secret-get
 
 ***
 Get a specified secret from a given key vault. The GET operation is applicable to any secret stored in Azure Key Vault. This operation requires the secrets/get permission.
-
 
 #### Base Command
 
@@ -867,22 +836,20 @@ Get a specified secret from a given key vault. The GET operation is applicable t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the secret resides in. | Required | 
-| secret_name | Secret name. | Required | 
-| secret_version | Secret version.If not specified, the latest version of the secret is returned. | Optional | 
-
+| vault_name | The name of the Key Vault where the secret resides in. | Required |
+| secret_name | Secret name. | Required |
+| secret_version | Secret version.If not specified, the latest version of the secret is returned. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
-| AzureKeyVault.Secret.value | String   | Secret value. | 
-| AzureKeyVault.Secret.id | String   | Secret ID. | 
-| AzureKeyVault.Secret.attributes.enabled | Boolean  | Determines whether the object is enabled. | 
-| AzureKeyVault.Secret.attributes.created | Date     | Creation time in UTC. | 
-| AzureKeyVault.Secret.attributes.updated | Date     | Last updated time in UTC. | 
-| AzureKeyVault.Secret.attributes.recoveryLevel | String   | Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable', the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end of the retention interval. | 
-
+| AzureKeyVault.Secret.value | String   | Secret value. |
+| AzureKeyVault.Secret.id | String   | Secret ID. |
+| AzureKeyVault.Secret.attributes.enabled | Boolean  | Determines whether the object is enabled. |
+| AzureKeyVault.Secret.attributes.created | Date     | Creation time in UTC. |
+| AzureKeyVault.Secret.attributes.updated | Date     | Last updated time in UTC. |
+| AzureKeyVault.Secret.attributes.recoveryLevel | String   | Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable', the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end of the retention interval. |
 
 #### Command Example
 
@@ -921,12 +888,10 @@ Get a specified secret from a given key vault. The GET operation is applicable t
 >|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/secrets/test-sec-1/SECRET_VERSION> | true | 2021-08-11T12:04:12 | 2021-08-17T16:22:57 | 2023-08-11T12:04:06 |
 
-
 ### azure-key-vault-secret-list
 
 ***
 List secrets in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the secrets/list permission.
-
 
 #### Base Command
 
@@ -936,24 +901,22 @@ List secrets in a specified key vault. For a limit greater than 25, more than on
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the secrets reside in. | Required | 
-| limit | Limit on the number of secrets to return. Default value is 50. | Optional | 
-| offset | First index to retrieve from. Default value is 0. | Optional | 
-
+| vault_name | The name of the Key Vault where the secrets reside in. | Required |
+| limit | Limit on the number of secrets to return. Default value is 50. | Optional |
+| offset | First index to retrieve from. Default value is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- |----------| --- |
-| AzureKeyVault.Secret.id | String   | Secret ID. | 
-| AzureKeyVault.Secret.attributes.enabled | Boolean  | Determines whether the object is enabled. | 
-| AzureKeyVault.Secret.attributes.nbf | Date     | Not before date in UTC. | 
-| AzureKeyVault.Secret.attributes.exp | Date     | Expiry date in UTC. | 
-| AzureKeyVault.Secret.attributes.created | Date     | Creation time in UTC. | 
-| AzureKeyVault.Secret.attributes.updated | Date     | Last updated time in UTC. | 
-| AzureKeyVault.Secret.attributes.recoveryLevel | String   | Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable', the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end of the retention interval. | 
-| AzureKeyVault.Secret.attributes.recoverableDays | Number   | Soft Delete data retention days. Value should be &gt;=7 and &lt;=90 when softDelete enabled, otherwise 0. | 
-
+| AzureKeyVault.Secret.id | String   | Secret ID. |
+| AzureKeyVault.Secret.attributes.enabled | Boolean  | Determines whether the object is enabled. |
+| AzureKeyVault.Secret.attributes.nbf | Date     | Not before date in UTC. |
+| AzureKeyVault.Secret.attributes.exp | Date     | Expiry date in UTC. |
+| AzureKeyVault.Secret.attributes.created | Date     | Creation time in UTC. |
+| AzureKeyVault.Secret.attributes.updated | Date     | Last updated time in UTC. |
+| AzureKeyVault.Secret.attributes.recoveryLevel | String   | Reflects the deletion recovery level currently in effect for secrets in the current vault. If it contains 'Purgeable', the secret can be permanently deleted by a privileged user; otherwise, only the system can purge the secret, at the end of the retention interval. |
+| AzureKeyVault.Secret.attributes.recoverableDays | Number   | Soft Delete data retention days. Value should be &gt;=7 and &lt;=90 when softDelete enabled, otherwise 0. |
 
 #### Command Example
 
@@ -992,12 +955,10 @@ List secrets in a specified key vault. For a limit greater than 25, more than on
 >|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/secrets/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
-
 ### azure-key-vault-secret-delete
 
 ***
 Delete a secret from a specified key vault. This operation requires the secrets/delete permission.
-
 
 #### Base Command
 
@@ -1007,23 +968,21 @@ Delete a secret from a specified key vault. This operation requires the secrets/
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the secret resides in. | Required | 
-| secret_name | Secret name to delete. | Required | 
-
+| vault_name | The name of the Key Vault where the secret resides in. | Required |
+| secret_name | Secret name to delete. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Secret.recoveryId | String | The URL of the recovery object, used to identify and recover the deleted secret. | 
-| AzureKeyVault.Secret.deletedDate | Date | The time when the secret was deleted, in UTC. | 
-| AzureKeyVault.Secret.scheduledPurgeDate | Date | The time when the secret is scheduled to be purged, in UTC. | 
-| AzureKeyVault.Secret.id | String | Deleted secret ID. | 
-| AzureKeyVault.Secret.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Secret.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.Secret.attributes.updated | Date | Last updated time in UTC. | 
-| AzureKeyVault.Secret.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for secrets in the current vault. | 
-
+| AzureKeyVault.Secret.recoveryId | String | The URL of the recovery object, used to identify and recover the deleted secret. |
+| AzureKeyVault.Secret.deletedDate | Date | The time when the secret was deleted, in UTC. |
+| AzureKeyVault.Secret.scheduledPurgeDate | Date | The time when the secret is scheduled to be purged, in UTC. |
+| AzureKeyVault.Secret.id | String | Deleted secret ID. |
+| AzureKeyVault.Secret.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Secret.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.Secret.attributes.updated | Date | Last updated time in UTC. |
+| AzureKeyVault.Secret.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for secrets in the current vault. |
 
 #### Command Example
 
@@ -1062,12 +1021,10 @@ Delete a secret from a specified key vault. This operation requires the secrets/
 >|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/secrets/test-sec-10/SECRET_VERSION> | <https://xsoar-test-vault.vault.azure.net/deletedsecrets/test-sec-10> | 2021-11-01T12:52:54 | 2022-01-30T12:52:54 |
 
-
 ### azure-key-vault-certificate-get
 
 ***
 Gets information about a specific certificate. This operation requires the certificates/get permission.
-
 
 #### Base Command
 
@@ -1077,27 +1034,25 @@ Gets information about a specific certificate. This operation requires the certi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the certificate resides in. | Required | 
-| certificate_name | Certificate name. | Required | 
-| certificate_version | The version of the certificate. If not specified, the latest version of the certificate is returned. | Optional | 
-
+| vault_name | The name of the Key Vault where the certificate resides in. | Required |
+| certificate_name | Certificate name. | Required |
+| certificate_version | The version of the certificate. If not specified, the latest version of the certificate is returned. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Certificate.id | String | Certificate ID. | 
-| AzureKeyVault.Certificate.kid | String | Key ID. | 
-| AzureKeyVault.Certificate.sid | String | Secret ID. | 
-| AzureKeyVault.Certificate.x5t | String | Thumbprint of the certificate. | 
-| AzureKeyVault.Certificate.cer | String | CER contents of x509 certificate. | 
-| AzureKeyVault.Certificate.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Certificate.attributes.exp | Date | Expiry date in UTC. | 
-| AzureKeyVault.Certificate.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.Certificate.attributes.updated | Date | Last updated time in UTC. | 
-| AzureKeyVault.Certificate.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for certificates in the current vault. If it contains 'Purgeable', the certificate can be permanently deleted by a privileged user; otherwise, only the system can purge the certificate, at the end of the retention interval. | 
-| AzureKeyVault.Certificate.policy | Unknown | The management policy. | 
-
+| AzureKeyVault.Certificate.id | String | Certificate ID. |
+| AzureKeyVault.Certificate.kid | String | Key ID. |
+| AzureKeyVault.Certificate.sid | String | Secret ID. |
+| AzureKeyVault.Certificate.x5t | String | Thumbprint of the certificate. |
+| AzureKeyVault.Certificate.cer | String | CER contents of x509 certificate. |
+| AzureKeyVault.Certificate.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Certificate.attributes.exp | Date | Expiry date in UTC. |
+| AzureKeyVault.Certificate.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.Certificate.attributes.updated | Date | Last updated time in UTC. |
+| AzureKeyVault.Certificate.attributes.recoveryLevel | String | Reflects the deletion recovery level currently in effect for certificates in the current vault. If it contains 'Purgeable', the certificate can be permanently deleted by a privileged user; otherwise, only the system can purge the certificate, at the end of the retention interval. |
+| AzureKeyVault.Certificate.policy | Unknown | The management policy. |
 
 #### Command Example
 
@@ -1189,12 +1144,10 @@ Gets information about a specific certificate. This operation requires the certi
 >|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1/CERTIFICATE_VERSION> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
-
 ### azure-key-vault-certificate-list
 
 ***
 List certificates in a specified key vault. For a limit greater than 25, more than one API call will be required and the command might take longer time. This operation requires the certificates/list permission.
-
 
 #### Base Command
 
@@ -1204,21 +1157,19 @@ List certificates in a specified key vault. For a limit greater than 25, more th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the certificate reside in. | Required | 
-| limit | Limit on the number of certificates to return. Default value is 50. | Optional | 
-| offset | First index to retrieve from. Default value is 0. | Optional | 
-
+| vault_name | The name of the Key Vault where the certificate reside in. | Required |
+| limit | Limit on the number of certificates to return. Default value is 50. | Optional |
+| offset | First index to retrieve from. Default value is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Certificate.id | String | Certificate ID. | 
-| AzureKeyVault.Certificate.x5t | String | Thumbprint of the certificate. | 
-| AzureKeyVault.Certificate.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.Certificate.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.Certificate.attributes.updated | Date | Last updated time in UTC. | 
-
+| AzureKeyVault.Certificate.id | String | Certificate ID. |
+| AzureKeyVault.Certificate.x5t | String | Thumbprint of the certificate. |
+| AzureKeyVault.Certificate.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.Certificate.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.Certificate.attributes.updated | Date | Last updated time in UTC. |
 
 #### Command Example
 
@@ -1255,12 +1206,10 @@ List certificates in a specified key vault. For a limit greater than 25, more th
 >|---|---|---|---|---|
 >| <https://xsoar-test-vault.vault.azure.net/certificates/test-cer-1> | false | 2021-08-11T12:05:48 | 2021-09-05T14:02:13 | 2022-08-11T12:05:48 |
 
-
 ### azure-key-vault-certificate-policy-get
 
 ***
 Get the policy of the specified certificate.This operation requires the certificates/get permission.
-
 
 #### Base Command
 
@@ -1270,23 +1219,21 @@ Get the policy of the specified certificate.This operation requires the certific
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| vault_name | The name of the Key Vault where the secret resides in. | Required | 
-| certificate_name | The name of the certificate to retrieve the policy from. | Required | 
-
+| vault_name | The name of the Key Vault where the secret resides in. | Required |
+| certificate_name | The name of the certificate to retrieve the policy from. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.CertificatePolicy.id | String | Policy ID. | 
-| AzureKeyVault.CertificatePolicy.key_props | Unknown | Properties of the key backing a certificate. | 
-| AzureKeyVault.CertificatePolicy.x509_props | Unknown | Properties of the X509 component of a certificate. | 
-| AzureKeyVault.CertificatePolicy.lifetime_actions | Unknown | Actions that will be performed by Key Vault over the lifetime of a certificate. | 
-| AzureKeyVault.CertificatePolicy.issuer | Unknown | Parameters for the issuer of the X509 component of a certificate. | 
-| AzureKeyVault.CertificatePolicy.attributes.enabled | Boolean | Determines whether the object is enabled. | 
-| AzureKeyVault.CertificatePolicy.attributes.created | Date | Creation time in UTC. | 
-| AzureKeyVault.CertificatePolicy.attributes.updated | Date | Last updated time in UTC. | 
-
+| AzureKeyVault.CertificatePolicy.id | String | Policy ID. |
+| AzureKeyVault.CertificatePolicy.key_props | Unknown | Properties of the key backing a certificate. |
+| AzureKeyVault.CertificatePolicy.x509_props | Unknown | Properties of the X509 component of a certificate. |
+| AzureKeyVault.CertificatePolicy.lifetime_actions | Unknown | Actions that will be performed by Key Vault over the lifetime of a certificate. |
+| AzureKeyVault.CertificatePolicy.issuer | Unknown | Parameters for the issuer of the X509 component of a certificate. |
+| AzureKeyVault.CertificatePolicy.attributes.enabled | Boolean | Determines whether the object is enabled. |
+| AzureKeyVault.CertificatePolicy.attributes.created | Date | Creation time in UTC. |
+| AzureKeyVault.CertificatePolicy.attributes.updated | Date | Last updated time in UTC. |
 
 #### Command Example
 
@@ -1375,13 +1322,14 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.Subscription.id | String | Subscription ID. | 
-| AzureKeyVault.Subscription.displayName | String | Subscription display name. | 
-| AzureKeyVault.Subscription.state | String | Subscription state. | 
-| AzureKeyVault.Subscription.subscriptionPolicies | Unknown | Subscription policies. | 
-| AzureKeyVault.Subscription.authorizationSource | String | Authorization source. | 
-| AzureKeyVault.Subscription.managedByTenants | Unknown | Managed by tenants. | 
-| AzureKeyVault.Subscription.tenantId | String | Tenant ID. | 
+| AzureKeyVault.Subscription.id | String | Subscription ID. |
+| AzureKeyVault.Subscription.displayName | String | Subscription display name. |
+| AzureKeyVault.Subscription.state | String | Subscription state. |
+| AzureKeyVault.Subscription.subscriptionPolicies | Unknown | Subscription policies. |
+| AzureKeyVault.Subscription.authorizationSource | String | Authorization source. |
+| AzureKeyVault.Subscription.managedByTenants | Unknown | Managed by tenants. |
+| AzureKeyVault.Subscription.tenantId | String | Tenant ID. |
+
 ### azure-key-vault-resource-group-list
 
 ***
@@ -1395,20 +1343,19 @@ List all resource groups for a subscription.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional | 
-| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional | 
-| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional | 
+| subscription_id | The subscription ID. Note: This argument will override the instance parameter ‘Subscription ID'. | Optional |
+| limit | Limit on the number of resource groups to return. Default is 50. Default is 50. | Optional |
+| tag | A single tag in the form of '{"Tag Name":"Tag Value"}' to filter the list by. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AzureKeyVault.ResourceGroup.id | String | Resource group ID. | 
-| AzureKeyVault.ResourceGroup.name | String | Resource group name. | 
-| AzureKeyVault.ResourceGroup.location | String | Resource group location. | 
-| AzureKeyVault.ResourceGroup.tags | Unknown | Resource group tags. | 
-| AzureKeyVault.ResourceGroup.properties.provisioningState | unknown | Resource group provisioning state. | 
-
+| AzureKeyVault.ResourceGroup.id | String | Resource group ID. |
+| AzureKeyVault.ResourceGroup.name | String | Resource group name. |
+| AzureKeyVault.ResourceGroup.location | String | Resource group location. |
+| AzureKeyVault.ResourceGroup.tags | Unknown | Resource group tags. |
+| AzureKeyVault.ResourceGroup.properties.provisioningState | unknown | Resource group provisioning state. |
 
 ### azure-key-vault-auth-reset
 
