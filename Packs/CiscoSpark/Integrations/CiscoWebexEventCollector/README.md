@@ -22,8 +22,8 @@ This integration was integrated and tested with version 1 of CiscoWebex API.
     | Fetch security audit events | To fetch security audit events, the Pro Pack must be installed on the Webex instance, and *Allow user authentication data* must be enabled. See the note below. | False |
     | Maximum number of events per fetch |  | False |
 
-4. 
-    1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sign in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). You will then be redirected to the `redirect URI` you defined in the application. The URL will contain a query parameter called `code`. The value of this query parameter will be used in the next command. 
+4.
+    1. Run the ***cisco-webex-oauth-start*** command with the **user** argument - you will be prompted to sign in to Cisco Webex with your username and password. (make sure you sign in with the same user as you defined in the user argument `admin` or `compliance officer`). You will then be redirected to the `redirect URI` you defined in the application. The URL will contain a query parameter called `code`. The value of this query parameter will be used in the next command.
     2. Run the ***cisco-webex-oauth-complete*** command with the **user** and **code** arguments The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`). The **code** argument should be set to the value returned in the code query parameter from the previous command.
     3. Run the ***cisco-webex-oauth-test*** command with the **user** argument. The **user** argument should be set to the same value as in the previous command (`admin` or `compliance officer`) to ensure connectivity to Cisco Webex.
 
@@ -51,11 +51,12 @@ Use this command to start the authorization process. In order to authorize the i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to start authorization. Possible values are: admin, compliance_officer. | Required | 
+| user | The user to start authorization. Possible values are: admin, compliance_officer. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-complete
 
 ***
@@ -69,12 +70,13 @@ Use this command to complete the authorization process. After copying the author
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required | 
-| code | The authorization code retrieved from the callback URL according to the documentation. | Required | 
+| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required |
+| code | The authorization code retrieved from the callback URL according to the documentation. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-oauth-test
 
 ***
@@ -88,11 +90,12 @@ Use this command to complete the authorization process. After copying the author
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required | 
+| user | The user to complete authorization. Possible values are: admin, compliance_officer. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-admin-audit-events
 
 ***
@@ -106,9 +109,9 @@ Gets admin audit events from Cisco Webex.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of events to return. | Optional |
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional |
 
 #### Human Readable Output
 
@@ -121,6 +124,7 @@ Gets admin audit events from Cisco Webex.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-security-audit-events
 
 ***
@@ -134,9 +138,9 @@ Gets security audit events from Cisco Webex.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of events to return. | Optional |
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional |
 
 #### Human Readable Output
 
@@ -149,6 +153,7 @@ Gets security audit events from Cisco Webex.
 #### Context Output
 
 There is no context output for this command.
+
 ### cisco-webex-get-compliance-officer-events
 
 ***
@@ -162,9 +167,9 @@ Gets events from Cisco Webex.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of events to return. | Optional | 
-| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum number of events to return. | Optional |
+| since_datetime | Date in ISO format (2023-10-01T20:33:22.123Z) to return events from. | Optional |
 
 #### Human Readable Output
 
