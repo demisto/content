@@ -12379,7 +12379,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
     client = BaseClient(base_url=xsiam_url, proxy=add_proxy_to_request)
     data_chunks = split_data_to_chunks(data, chunk_size)
 
-    def send_events_old(data_chunk):
+    def send_events(data_chunk):
         chunk_size = len(data_chunk)
         data_chunk = '\n'.join(data_chunk)
         zipped_data = gzip.compress(data_chunk.encode('utf-8'))  # type: ignore[AttributeError,attr-defined]
@@ -12389,13 +12389,13 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
                                     zipped_data=zipped_data, is_json_response=True, data_type=data_type)
         return chunk_size
     
-    def send_events(zipped_data):
+    # def send_events(zipped_data):
         
-        xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
-                                    error_msg=header_msg, headers=headers,
-                                    num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
-                                    zipped_data=zipped_data, is_json_response=True, data_type=data_type)
-        return len(zipped_data)
+    #     xsiam_api_call_with_retries(client=client, events_error_handler=data_error_handler,
+    #                                 error_msg=header_msg, headers=headers,
+    #                                 num_of_attempts=num_of_attempts, xsiam_url=xsiam_url,
+    #                                 zipped_data=zipped_data, is_json_response=True, data_type=data_type)
+    #     return len(zipped_data)
 
     if multiple_threads:
         demisto.info("Sending events to xsiam with multiple threads.")
@@ -12412,7 +12412,7 @@ def send_data_to_xsiam(data, vendor, product, data_format=None, url_key='url', n
         return futures
     else:
         demisto.info("Sending events to xsiam with a single thread.")
-        data_chunks = CompressedChunkSupplier(data).get_compressed_chunks()
+        # data_chunks = CompressedChunkSupplier(data).get_compressed_chunks()
         for chunk in data_chunks:
             data_size += send_events(chunk)
 

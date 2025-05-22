@@ -8,6 +8,7 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
+import time
 import aiohttp
 import asyncio
 from itertools import chain
@@ -715,21 +716,19 @@ def main() -> None:  # pragma: no cover
 
         elif command_name == 'fetch-events':
             if POC:
-                start = datetime.utcnow()
+                start = time.time()
                 
-                demisto.debug('Starting fetch with "/api/v2/events/data/" endpoint')
+                demisto.debug(f'Starting fetch  with last run {last_run}')
                 new_last_run = get_all_events_async(
                     client=client, last_run=last_run, limit=max_fetch, all_event_types=all_event_types
-                )
-                demisto.debug(f"Fetched {len(all_event_types)} total events in {(datetime.utcnow() - start).seconds} seconds")
-                
+                )                
                 # send_start = datetime.utcnow()
                 # send_events_to_xsiam(
                 # events=all_event_types, vendor=vendor, product=product, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT
                 # )
                 # demisto.debug(f"Sent {len(all_event_types)} total events in {(datetime.utcnow() - send_start).seconds} seconds")
                 
-                demisto.debug(f"Handled {len(all_event_types)} total events in {(datetime.utcnow() - start).seconds} seconds")
+                demisto.debug(f"Handled {len(all_event_types)} total events in {time.time() - start} seconds")
                 # next_trigger_time(len(all_event_types), max_fetch, new_last_run)
                 demisto.debug(f"Setting the last_run to: {new_last_run}")
                 # demisto.setLastRun(new_last_run)
