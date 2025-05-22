@@ -12,15 +12,18 @@
     "tags": [
         "runtime",
         "response-actions",
+        "sysdig",
         "falco"
     ],
     "useCases": [],
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "xsoar_saas"
     ],
     "githubUser": [
         "S3B4SZ17"
-    ]
+    ],
+    "defaultDataSource": "SysdigResponseActions"
 }

@@ -1,4 +1,7 @@
 category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: SysdigResponseActions
   version: -1
@@ -8,20 +11,40 @@ configuration:
   name: url
   required: true
   type: 0
-- additionalinfo: The API Key to use for the connection
-  display: API Key
+  section: Connect
+- displaypassword: API Key
   name: credentials
   required: true
   type: 9
   hiddenusername: true
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
   type: 8
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   required: false
   type: 8
+  section: Connect
+- display: Classifier
+  name: classifier
+  type: 13
+  required: false
+  section: Collect
+- defaultvalue: Sysdig Runtime Event
+  display: Incident type (if classifier doesn't exist)
+  name: incidentType
+  required: false
+  type: 13
+  section: Collect
+- defaultvalue: Sysdig Mapper Runtime Event
+  display: Mapper (incoming)
+  name: mapper
+  required: false
+  type: 13
+  section: Collect
 description: 'This is an integration that will use Sysdig agent to respond to malicious activity by triggering different actions at the host or container level like killing a container, quarantine a file or perform a system capture'
 display: Sysdig Response Actions
 name: SysdigResponseActions
@@ -45,21 +68,25 @@ script:
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
       type: String
+      required: false
     - description: 'The path of the file to quarantine. Example "/etc/sensitive". Required for the `FILE_QUARANTINE` action'
       name: path_absolute
       type: String
+      required: false
     - description: 'The host ID. Example "laksjdf1923u90snca893"'
       name: host_id
       type: String
+      required: false
     - description: 'The process ID. Example "1234". Required for the `KILL_PROCESS` action'
       name: process_id
       type: Number
+      required: false
     description: Execute response actions through the Sysdig API
     name: execute-response-action
     outputs:
     - contextPath: execute_response_action.Output
       description: Output of the response-actions API
-      type: String
+      type: Dict
   - arguments:
     - description: 'The container ID to apply the action. Example "container.id": "123456789123"'
       name: container_id
@@ -89,7 +116,7 @@ script:
       description: 'Capture duration in seconds'
       name: scan_duration
       type: Number
-      required: true
+      required: false
     - description: 'Filter the scope of the capture to take. Example: (proc.name=ncat or proc.name=vi)'
       name: scap_filter
       type: String
@@ -99,7 +126,7 @@ script:
     outputs:
     - contextPath: create_system_capture.Output
       description: Output of the system capture created
-      type: String
+      type: Dict
   - arguments:
     - description: System Capture ID
       name: capture_id
@@ -110,7 +137,7 @@ script:
     outputs:
     - contextPath: get_capture_file.Output
       description: Output of the system capture downloaded
-      type: String
+      type: Dict
   - arguments:
     - description: The action exection ID
       name: action_execution_id
@@ -121,8 +148,10 @@ script:
     outputs:
     - contextPath: get_action_execution.Output
       description: Output of the action execution info
-      type: String
-  dockerimage: demisto/python3:3.9.8.24399
+      type: Dict
+  dockerimage: demisto/python3:3.10.14.101217
+  isfetch: true
+  isFetchSamples: true
   runonce: false
   script: ''
   subtype: python3
@@ -130,6 +159,7 @@ script:
 marketplaces:
 - xsoar
 - marketplacev2
+- xsoar_saas
 tests:
 - No tests (auto formatted)
 fromversion: 6.0.0

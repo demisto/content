@@ -19,7 +19,7 @@ SYSTEM_CAPTURES_REQUIRED_FIELDS = ["container_id", "host_name", "capture_name", 
 RESPONSE_ACTIONS_REQUIRED_FIELDS = ["actionType", "callerId"]
 RESPONSE_ACTIONS_PARAMS = {
     "FILE_QUARANTINE": ["path.absolute", "container.id"],
-    "KILL_PROCESS": ["process.id", "host.id"]
+    "KILL_PROCESS": ["process.id", "host.id"],
 }
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
@@ -50,7 +50,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers=headers, proxy=proxy, ok_codes=ok_codes)
 
 
-    def call_sysdig_api(self, method: str = "GET", url_suffix: str = "/secure/response-actions/v1alpha1/action-executions", params: dict = None, data: dict = None, json_data: dict = None, resp_type: str = 'json', full_url: str = None) -> Dict[str, Any]:
+    def call_sysdig_api(self, method: str = "GET", url_suffix: str = "/secure/response-actions/v1alpha1/action-executions", params: dict = None, data: dict = None, json_data: dict = None, resp_type: str = 'json', full_url: str = None) -> Dict[str, Any] | bytes | str:
         '''
         Call the Sysdig API
 
@@ -94,7 +94,7 @@ def _build_data_payload(args: Dict[str, Any]) -> Dict[str, Any]:
 
     parameters = {
         key: value for key, value in {
-            'container.id': args.get("container_id"),
+            'container.id': args.get("container_id") if args.get("container_id") else None,
             'host.id': args.get("host_id") if args.get("host_id") else None,
             'path.absolute': args.get("path_absolute") if args.get("path_absolute") else None,
             'process.id': int(args["process_id"]) if args.get("process_id") else None,
@@ -174,11 +174,16 @@ def _get_public_api_url(base_url: str) -> str:
     Returns:
         The public API URL
     """
-    match = re.search(r"https://(\w+)\.app\.sysdig\.com", base_url)
-    if match:
-        region = match.group(1)  # Extract the region
+    # Regex to capture the region pattern (like us2, us3, au1, etc.)
+    # This assumes the region is a subdomain that starts with 2 lowercase letters and ends with a digit
+    pattern = re.search(r"https://(?:(?P<region1>[a-z]{2}\d)\.app|app\.(?P<region2>[a-z]{2}\d))\.sysdig\.com", base_url)
+    if pattern:
+        region = pattern.group(1)  # Extract the region
         return f"https://api.{region}.sysdig.com"
-    raise ValueError(f"Invalid base URL format. Unable to extract region. Base URL should be in the format https://<region>.app.sysdig.com. Provided: {base_url}.")
+    else:
+        # Edge case for the secure API URL that is us1
+        return f"https://api.us1.sysdig.com"
+
 
 """ COMMAND FUNCTIONS """
 
@@ -192,10 +197,13 @@ def execute_response_action_command(
     data = _build_data_payload(args)
 
     result = client.call_sysdig_api(method = 'POST', full_url = full_url, json_data = data)
+    readable_output = f"## Response Action: {result.get('actionType')}\n Triggered successfully by callerId: **{result.get('callerId')}** with status: **{result.get('status')}**\n Result ID: **{result.get('id')}**\nParameters: **{result.get('parameters')}**\nOutputs: **{result.get('outputs')}**\n"
 
     return CommandResults(
         outputs_prefix="execute_response_action.Output",
-        outputs=result
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result,
     )
 
 def get_action_execution_command(
@@ -208,10 +216,13 @@ def get_action_execution_command(
     full_url = _get_public_api_url(client.base_url) + f'/secure/response-actions/v1alpha1/action-executions/{action_execution_id}'
 
     result = client.call_sysdig_api(method = 'GET', full_url = full_url)
+    readable_output = f"## Response Action: {result.get('actionType')}\n Triggered successfully by callerId: **{result.get('callerId')}** with status: **{result.get('status')}**\n Result ID: **{result.get('id')}**\nParameters: **{result.get('parameters')}**\nOutputs: **{result.get('outputs')}**\n"
 
     return CommandResults(
         outputs_prefix="get_action_execution.Output",
-        outputs=result
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result,
     )
 
 def create_system_capture_command(
@@ -222,10 +233,13 @@ def create_system_capture_command(
     '''
     data = _build_capture_payload(args)
     result = client.call_sysdig_api(method = 'POST', url_suffix = '/api/v1/captures', json_data = data)
+    readable_output = f"## Capture: {result.get('capture',{}).get('name')}\n Triggered successfully with status: {result.get('capture',{}).get('status')}. Capture ID: {result.get('capture',{}).get('id')}"
 
     return CommandResults(
         outputs_prefix="create_system_capture.Output",
-        outputs=result
+        outputs=result,
+        readable_output=readable_output,
+        raw_response=result,
     )
 
 def get_capture_file_command(
@@ -252,14 +266,16 @@ def get_capture_file_command(
 
     return CommandResults(
         readable_output=readable_output,
-        outputs_prefix="download_capture_file.Output",
+        outputs_prefix="get_capture_file.Output",
+        outputs=result,
+        raw_response=result,
     )
 
 def main():
     """main function, parses params and runs command functions"""
 
     params = demisto.params()
-    # Get the service API key for the Bearer auth
+    # Get the service API key for the Bearer auth from the credentials service
     api_key= demisto.params().get('credentials', {}).get('password')
     # get the service API url
     base_url = params.get("url")
@@ -275,11 +291,8 @@ def main():
 
     command = demisto.command()
 
-    # demisto.debug(f"Command being called is {command}")
     try:
 
-        # TODO: Make sure you add the proper headers for authentication
-        # (i.e. "Authorization": {api key})
         headers = {
             "accept": "application/json",
             "Authorization": "Bearer " + api_key,

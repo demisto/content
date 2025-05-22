@@ -113,11 +113,11 @@ tasks:
       capture_name:
         simple: xsoar-capture-${incident.eventid}
       container_id:
-        simple: ${incident.containerid}
+        simple: ${incident.sysdigcontainerid}
       customer_id:
         simple: ${incident.sysdigcustomerid}
       host_name:
-        simple: ${incident.hostname}
+        simple: ${incident.sourcehostname}
       machine_id:
         simple: ${incident.macaddress}
       scan_duration:

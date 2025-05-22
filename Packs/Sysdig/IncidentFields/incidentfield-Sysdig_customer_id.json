@@ -24,7 +24,7 @@
 	],
 	"associatedToAll": false,
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"caseInsensitive": true,
 	"fromVersion": "6.0.0"
 }

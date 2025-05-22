@@ -1,19 +1,18 @@
 {
 	"description": "Maps Sysdig Runtime Event fields for use in Integration Playbooks.",
-	
 	"id": "Sysdig Mapper Runtime Event",
 	"mapping": {
 		"Sysdig Runtime Event": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"Container ID": {
+				"Sysdig Container ID": {
 					"complex": {
 						"filters": [],
 						"root": "containerId",
 						"transformers": []
 					}
 				},
-				"Host Name": {
+				"Source Hostname": {
 					"complex": {
 						"accessor": "host\\.hostName",
 						"filters": [],

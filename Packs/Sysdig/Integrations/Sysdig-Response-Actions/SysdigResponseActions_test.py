@@ -19,8 +19,6 @@ KILL_CONTAINER_RESPONSE = util_load_json('test_data/response_api/kill_container_
 GET_ACTION_EXECUTION_RESPONSE = util_load_json('test_data/response_api/get_execution_response.json')
 SYSTEM_CAPTURE_RESPONSE = util_load_json('test_data/system_capture/create_response.json')
 
-
-# TODO: ADD HERE unit tests for every command
 @pytest.fixture
 def mock_response():
     """Fixture to mock the session.request method"""
