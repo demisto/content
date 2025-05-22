@@ -132,6 +132,7 @@ filter _reporting_device_name = "https://graph.microsoft.com/beta/security/alert
     xdm.source.host.ipv4_addresses = check_ipv4,
     xdm.source.host.ipv6_addresses = check_ipv6,
     xdm.source.user.username = coalesce(mailboxEvidence_displayName, mailboxEvidence_primaryAddress, mailboxEvidence_userAccount_accountName, mailboxEvidence_userAccount_userPrincipalName, processEvidence_userAccount_accountName, processEvidence_userAccount_userPrincipalName, userEvidence_userAccount_accountName, userEvidence_userAccount_userPrincipalName, userEvidence_userAccount_displayName),
+    xdm.source.user.upn = coalesce(userEvidence_userAccount_userPrincipalName, mailboxEvidence_userAccount_userPrincipalName, processEvidence_userAccount_userPrincipalName),
     xdm.source.user.domain = coalesce(mailboxEvidence_userAccount_domainName, processEvidence_userAccount_domainName, userEvidence_userAccount_domainName),
     xdm.source.user.identifier = coalesce(mailboxEvidence_userAccount_userSid, processEvidence_userAccount_userSid, userEvidence_userAccount_userSid),
     xdm.source.process.executable.filename = processEvidence_imageFile_fileName,

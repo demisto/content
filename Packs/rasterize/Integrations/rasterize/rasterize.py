@@ -205,7 +205,7 @@ class PychromeEventHandler:
     request_id = None
     screen_lock = threading.Lock()
 
-    def __init__(self, browser, tab, tab_ready_event, path: str, navigation_timeout: int):
+    def __init__(self, browser: pychrome.Browser, tab: pychrome.Tab, tab_ready_event: Event, path: str, navigation_timeout: int):
         self.browser = browser
         self.tab = tab
         self.tab_ready_event = tab_ready_event
@@ -236,25 +236,75 @@ class PychromeEventHandler:
             demisto.debug(f"PychromeEventHandler.network_data_received, Not using {requestId=}")
 
     def page_frame_stopped_loading(self, frameId):
-        demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}")
+        """
+        Callback handler for when a frame has stopped loading in the page.
+
+        This method is called by Chrome when a frame in the page finishes loading. It checks if
+        the finished frame is the main frame we're tracking, then verifies the loaded URL. If the
+        URL indicates a Chrome error page for a local file, it attempts to retry loading. Otherwise,
+        it signals that the page is ready by setting the tab_ready_event.
+
+        Args:
+            frameId: The identifier of the frame that has finished loading
+
+        Returns:
+            None
+        """
+        demisto.debug(
+            f"PychromeEventHandler.page_frame_stopped_loading, {self.start_frame=}, {frameId=}, {self.tab.id=}, {self.path=}"
+        )
         # Check if this is the main frame that finished loading
         if self.start_frame == frameId:
-            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
-            demisto.debug(f"PychromeEventHandler.page_frame_stopped_loading, Frame URL: {frame_url}, Original path: {self.path}")
-
-            # Check if the loaded page is a Chrome error page, which indicates a failed load
-            # Only retry loading when the URL is a direct file path
-            # This helps handle cases where local files fail to load on the first attempt
-            if frame_url.lower().startswith(CHROME_ERROR_URL) and self.path.lower().startswith("file://"):
-                demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
-                self.retry_loading()
-            else:
-                demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+            try:
+                # Check if the loaded page is a Chrome error page, which indicates a failed load
+                # Only retry loading when the URL is a direct file path
+                # This helps handle cases where temporary files fail to load on the first attempt
+                if self.path.lower().startswith("file://"):
+                    frame_url = self.get_frame_tree_url()
+                    if frame_url and frame_url.lower().startswith(CHROME_ERROR_URL):
+                        demisto.debug(f"Encountered chrome-error {frame_url=}, retrying...")
+                        self.retry_loading()
+                    else:
+                        demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                        self.tab_ready_event.set()
+                else:
+                    demisto.debug("PychromeEventHandler.page_frame_stopped_loading, setting tab_ready_event")
+                    self.tab_ready_event.set()
+            except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
+                demisto.debug(f"page_frame_stopped_loading: Tab {self.tab.id=} for {self.path=} is stopping/stopped: {ex}")
                 self.tab_ready_event.set()
+            except Exception as ex:
+                demisto.info(f"Unexpected exception in page_frame_stopped_loading {self.path=}, {self.tab.id=}: {ex}")
+                self.tab_ready_event.set()
+
+    def get_frame_tree_url(self) -> str:
+        """
+        Gets the frame tree URL from the tab and handles potential exceptions.
+
+        Returns:
+            str: The frame URL if successful, empty string on failure.
+        """
+        try:
+            frame_tree_result = self.tab.Page.getFrameTree()
+            frame_url = frame_tree_result.get("frameTree", {}).get("frame", {}).get("url", "")
+            demisto.debug(f"PychromeEventHandler.get_frame_tree_url, Frame URL: {frame_url}, Original path: {self.path}")
+            return frame_url
+        except (pychrome.exceptions.RuntimeException, pychrome.exceptions.UserAbortException) as ex:
+            # The tab is already stopping or has been stopped
+            demisto.debug(
+                f"get_frame_tree_url: Tab {self.tab.id=} for {self.path=} is stopping/stopped while getting frame tree: {ex}"
+            )
+            return ""
+        except Exception as ex:
+            demisto.debug(f"Unexpected error getting frame tree URL: {ex}")
+            return ""
 
     def retry_loading(self):
         """
         Attempts to reload the page multiple times.
+
+        This method will try to reload the current page up to DEFAULT_RETRIES_COUNT times
+        if it encounters a Chrome error page. It sets the tab_ready_event when successful.
         """
         for retry_count in range(1, DEFAULT_RETRIES_COUNT + 1):
             demisto.debug(f"Retrying loading URL {self.path}. Attempt {retry_count}/{DEFAULT_RETRIES_COUNT}")
@@ -268,14 +318,27 @@ class PychromeEventHandler:
 
             safe_sleep(DEFAULT_PAGE_LOAD_TIME / DEFAULT_RETRIES_COUNT + 1)
 
-            frame_url: str = self.tab.Page.getFrameTree().get("frameTree", {}).get("frame", {}).get("url", "")
+            frame_url = self.get_frame_tree_url()
+
+            # If frame_url is empty string, we can't continue retrying - the tab may be in a bad state
+            if not frame_url:
+                demisto.debug(
+                    f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Could not get frame URL. "
+                    f"Stopping after {DEFAULT_RETRIES_COUNT} retry attempts."
+                )
+                self.tab_ready_event.set()
+                return
 
             if not frame_url.lower().startswith(CHROME_ERROR_URL):
                 demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} successful.")
                 self.tab_ready_event.set()
-                break
-        else:
-            demisto.debug(f"Max retries {DEFAULT_RETRIES_COUNT} reached, could not load the page.")
+                return
+
+            demisto.debug(f"Retry {retry_count}/{DEFAULT_RETRIES_COUNT} failed: Page still showing Chrome error.")
+
+        demisto.debug(f"Max retries ({DEFAULT_RETRIES_COUNT}) reached, could not load the page.")
+        # Ensure we always set the event to prevent hanging
+        self.tab_ready_event.set()
 
     def network_request_will_be_sent(self, documentURL: str, **kwargs):
         """Triggered when a request is sent by the browser, catches mailto URLs."""
@@ -616,7 +679,7 @@ def chrome_manager() -> tuple[Any | None, str | None]:
     return browser, chrome_port
 
 
-def chrome_manager_one_port() -> tuple[pychrome. Browser | None, str | None]:
+def chrome_manager_one_port() -> tuple[pychrome.Browser | None, str | None]:
     """
     Manages Chrome instances based on user-specified chrome options and integration instance ID.
     ONLY uses one chrome instance per chrome option, until https://issues.chromium.org/issues/379034728 is fixed.
@@ -1396,8 +1459,7 @@ def add_filename_suffix(file_names: list, file_extension: str):
 
 def rasterize_command():  # pragma: no cover
     urls = demisto.getArg("url")
-    # Do not remove this line, as rasterize does not support array in `url`.
-    urls = [urls] if isinstance(urls, str) else urls
+    urls = argToList(urls)
     width, height = get_width_height(demisto.args())
     full_screen = argToBoolean(demisto.args().get("full_screen", False))
     rasterize_type = RasterizeType(demisto.args().get("type", "png").lower())
@@ -1509,9 +1571,7 @@ def main():  # pragma: no cover
             raise NotImplementedError(f"command {command} is not supported")
 
     except Exception as ex:
-        return_err_or_warn(
-            f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}"
-        )
+        return_err_or_warn(f"Failed to execute {command} command.\nUnexpected exception: {ex}\nTrace:{traceback.format_exc()}")
     finally:
         kill_zombie_processes()
 

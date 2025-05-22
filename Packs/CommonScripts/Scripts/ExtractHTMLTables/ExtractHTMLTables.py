@@ -12,29 +12,33 @@ def extract_html_table(html, indexes):
         table = []
         headers = []
         # Check if there are headers and use them
-        for th in tab.find_all("th"):
-            headers.append(th.text)
-        for tr in tab.find_all("tr"):
-            tds = tr.find_all("td")
-            # This is a data row and not header row
-            if len(tds) > 0:
-                # Single value in a table - just create an array of strings ignoring header
-                if len(tds) == 1:
-                    table.append(tds[0].text)
-                # If there are 2 columns and no headers, treat as key-value (might override values if same key in first column)
-                elif len(tds) == 2 and len(headers) == 0:
-                    if type(table) is list:
-                        table = {}  # type: ignore
-                    table[tds[0].text] = tds[1].text
-                else:
-                    row = {}
-                    if len(headers) > 0:
-                        for i, td in enumerate(tds):
-                            row[headers[i]] = td.text
+        try:
+            for th in tab.find_all("th"):  # type: ignore
+                headers.append(th.text)
+            for tr in tab.find_all("tr"):  # type: ignore
+                tds = tr.find_all("td")
+                # This is a data row and not header row
+                if len(tds) > 0:
+                    # Single value in a table - just create an array of strings ignoring header
+                    if len(tds) == 1:
+                        table.append(tds[0].text)
+                    # If there are 2 columns and no headers,
+                    # treat as key-value (might override values if same key in first column)
+                    elif len(tds) == 2 and len(headers) == 0:
+                        if type(table) is list:
+                            table = {}  # type: ignore
+                        table[tds[0].text] = tds[1].text
                     else:
-                        for i, td in enumerate(tds):
-                            row["cell" + str(i)] = td.text
-                    table.append(row)
+                        row = {}
+                        if len(headers) > 0:
+                            for i, td in enumerate(tds):
+                                row[headers[i]] = td.text
+                        else:
+                            for i, td in enumerate(tds):
+                                row["cell" + str(i)] = td.text
+                        table.append(row)
+        except Exception as e:
+            demisto.debug(f"Failed to extract table: {e}")
         if len(table) > 0:
             tables.append(table)
     if len(tables) > 0:

@@ -3,6 +3,7 @@ Close historical XSOAR incidents that are already closed on Securonix.
 NOTE: This script will close all the XSOAR incidents which are created from Securonix integration and does not have incident type as "Securonix Incident" in the provided time frame.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,11 +12,14 @@ NOTE: This script will close all the XSOAR incidents which are created from Secu
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * securonix-incident-activity-history-get
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,14 +29,15 @@ This script uses the following commands and scripts.
 | close_states | If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
 | --- | --- | --- |
 | Securonix.CloseHistoricalXSOARIncidents.IncidentIDs | List of XSOAR incident IDs that were closed. | Unknown |
 
-
 ## Troubleshooting
+
 ---
 
 The default timeout of this script is 1 hour. If you expect more number of incidents to be closed, then increase the
