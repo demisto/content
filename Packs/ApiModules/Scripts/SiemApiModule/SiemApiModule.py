@@ -23,7 +23,7 @@ class Method(str, Enum):
 
 
 def load_json(v: Any) -> dict:
-    if not isinstance(v, (dict, str)):
+    if not isinstance(v, dict | str):
         raise ValueError("headers are not dict or a valid json")
     if isinstance(v, str):
         try:

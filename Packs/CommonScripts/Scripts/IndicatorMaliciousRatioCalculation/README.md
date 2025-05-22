@@ -1,6 +1,7 @@
 Returns indicators that appear under resolved incidents, and resolved incident IDs.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Returns indicators that appear under resolved incidents, and resolved incident I
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +25,6 @@ Returns indicators that appear under resolved incidents, and resolved incident I
 | fromDate | The start date by which to filter incidents. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

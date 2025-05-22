@@ -1,4 +1,4 @@
-Sets multiple key/value pairs to the context under a common parent key. 
+Sets multiple key/value pairs to the context under a common parent key.
 
 ## Script Data
 
@@ -8,7 +8,6 @@ Sets multiple key/value pairs to the context under a common parent key.
 | --- | --- |
 | Script Type | python |
 | Tags | Utility |
-
 
 ## Inputs
 
@@ -38,4 +37,3 @@ There are no outputs for this script.
 ### Context Result
 
 ![Example Output](../../doc_files/88423600-dd54b900-cda0-11ea-89f4-83981367659a.png)
-

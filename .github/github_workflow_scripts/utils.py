@@ -22,7 +22,9 @@ TIM_REVIEWER_KEY = "TIM_REVIEWER"
 
 CONTENT_ROLES_FILENAME = "content_roles.json"
 GITHUB_HIDDEN_DIR = ".github"
-CONTENT_ROLES_BLOB_MASTER_URL = f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
+CONTENT_ROLES_BLOB_MASTER_URL = (
+    f"https://raw.githubusercontent.com/demisto/content/master/{GITHUB_HIDDEN_DIR}/{CONTENT_ROLES_FILENAME}"
+)
 
 LOG_FORMAT = "%(asctime)s %(levelname)s %(message)s"
 
@@ -32,7 +34,7 @@ CallArgs = Iterable[tuple[Any] | tuple[Any, dict]]
 
 
 def load_json(file_path: str | Path) -> dict:
-    """ Reads and loads json file.
+    """Reads and loads json file.
 
     Args:
         file_path (str): full path to json file.
@@ -53,7 +55,7 @@ def load_json(file_path: str | Path) -> dict:
 
 
 def timestamped_print(*args, **kwargs):
-    org_print(datetime.now().strftime('%H:%M:%S.%f'), *args, **kwargs)
+    org_print(datetime.now().strftime("%H:%M:%S.%f"), *args, **kwargs)
 
 
 def iter_flatten_call_args(
@@ -78,7 +80,7 @@ def flatten_call_args(call_args: CallArgs) -> tuple[Any, ...]:
 
 class EnvVariableError(Exception):
     def __init__(self, env_var_name: str):
-        super().__init__(f'{env_var_name} env variable not set or empty')
+        super().__init__(f"{env_var_name} env variable not set or empty")
 
 
 def get_env_var(env_var_name: str, default_val: str | None = None) -> str:
@@ -109,7 +111,7 @@ class Checkout:  # pragma: no cover
     previously current branch.
     """
 
-    def __init__(self, repo: git.Repo, branch_to_checkout: str, fork_owner: str | None = None, repo_name: str = 'content'):
+    def __init__(self, repo: git.Repo, branch_to_checkout: str, fork_owner: str | None = None, repo_name: str = "content"):
         """Initializes instance attributes.
         Arguments:
             repo: git repo object
@@ -121,22 +123,23 @@ class Checkout:  # pragma: no cover
         self.repo = repo
 
         if fork_owner:
-            forked_remote_name = f'{fork_owner}_{repo_name}_{branch_to_checkout}_remote'
+            forked_remote_name = f"{fork_owner}_{repo_name}_{branch_to_checkout}_remote"
             url = f"https://github.com/{fork_owner}/{repo_name}"
             try:
                 self.repo.create_remote(name=forked_remote_name, url=url)
-                print(f'Successfully created remote {forked_remote_name} for repo {url}')  # noqa: T201
+                print(f"Successfully created remote {forked_remote_name} for repo {url}")  # noqa: T201
             except Exception as error:
-                if f'{forked_remote_name} already exists' not in str(error):
-                    print(f'could not create remote from {url}, {error=}')  # noqa: T201
+                if f"{forked_remote_name} already exists" not in str(error):
+                    print(f"could not create remote from {url}, {error=}")  # noqa: T201
                     # handle the case where the name of the forked repo is not content
                     if github_event_path := os.getenv("GITHUB_EVENT_PATH"):
                         try:
                             payload = json.loads(github_event_path)
                         except ValueError:
-                            print('failed to load GITHUB_EVENT_PATH')  # noqa: T201
-                            raise ValueError(f'cannot checkout to the forked branch {branch_to_checkout} of the '
-                                             f'owner {fork_owner}')
+                            print("failed to load GITHUB_EVENT_PATH")  # noqa: T201
+                            raise ValueError(
+                                f"cannot checkout to the forked branch {branch_to_checkout} of the " f"owner {fork_owner}"
+                            )
                         # forked repo name includes fork_owner + repo name, for example foo/content.
                         forked_repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("full_name")
                         self.repo.create_remote(name=forked_remote_name, url=f"https://github.com/{forked_repo_name}")
@@ -145,7 +148,7 @@ class Checkout:  # pragma: no cover
 
             forked_remote = self.repo.remote(forked_remote_name)
             forked_remote.fetch(branch_to_checkout)
-            self.branch_to_checkout = f'refs/remotes/{forked_remote_name}/{branch_to_checkout}'
+            self.branch_to_checkout = f"refs/remotes/{forked_remote_name}/{branch_to_checkout}"
         else:
             self.branch_to_checkout = branch_to_checkout
             self.repo.remote().fetch(branch_to_checkout)
@@ -153,12 +156,12 @@ class Checkout:  # pragma: no cover
         try:
             self._original_branch = self.repo.active_branch.name
         except TypeError:
-            self._original_branch = self.repo.git.rev_parse('HEAD')
+            self._original_branch = self.repo.git.rev_parse("HEAD")
 
     def __enter__(self):
         """Checks out the given branch"""
         self.repo.git.checkout(self.branch_to_checkout)
-        print(f'Checked out to branch {self.branch_to_checkout}')  # noqa: T201
+        print(f"Checked out to branch {self.branch_to_checkout}")  # noqa: T201
         return self
 
     def __exit__(self, *args):
@@ -233,11 +236,11 @@ def get_support_level(pack_dirs: set[str]) -> set[str]:
     packs_support_levels = set()
 
     for pack_dir in pack_dirs:
-        if pack_support_level := get_pack_metadata(pack_dir).get('support'):
-            print(f'Pack support level for pack {pack_dir} is {pack_support_level}')  # noqa: T201
+        if pack_support_level := get_pack_metadata(pack_dir).get("support"):
+            print(f"Pack support level for pack {pack_dir} is {pack_support_level}")  # noqa: T201
             packs_support_levels.add(pack_support_level)
         else:
-            print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
+            print(f"Could not find pack support level for pack {pack_dir}")  # noqa: T201
 
     return packs_support_levels
 
@@ -275,10 +278,10 @@ def get_content_roles_from_blob() -> dict[str, Any] | None:
     try:
         response = requests.get(CONTENT_ROLES_BLOB_MASTER_URL)
         response.raise_for_status()  # Raise an error for bad status codes
-        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")
+        print(f"Successfully retrieved {CONTENT_ROLES_FILENAME} from blob")  # noqa: T201
         roles = response.json()
     except (requests.RequestException, requests.HTTPError, json.JSONDecodeError, TypeError) as e:
-        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")
+        print(f"{e.__class__.__name__} getting {CONTENT_ROLES_FILENAME} from blob: {e}.")  # noqa: T201
     finally:
         return roles
 
@@ -297,11 +300,11 @@ def get_content_roles(path: Path | None = None) -> dict[str, Any] | None:
     - `dict[str, Any]` representing the content roles.
     """
 
-    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")
+    print(f"Attempting to retrieve '{CONTENT_ROLES_FILENAME}' from blob {CONTENT_ROLES_BLOB_MASTER_URL}...")  # noqa: T201
     roles = get_content_roles_from_blob()
 
     if not roles:
-        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")
+        print(f"Unable to retrieve '{CONTENT_ROLES_FILENAME}' from blob. Attempting to retrieve from the filesystem...")  # noqa: T201
         repo_root_path = get_repo_path(str(path))
         content_roles_path = repo_root_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         roles = load_json(content_roles_path)
@@ -330,7 +333,7 @@ def get_repo_path(path: str = ".") -> Path:
         else:
             raise ValueError
     except (git.exc.InvalidGitRepositoryError, ValueError):
-        print("Unable to get repo root path. Terminating...")
+        print("Unable to get repo root path. Terminating...")  # noqa: T201
         sys.exit(1)
 
 
@@ -351,7 +354,7 @@ def get_metadata(pack_dirs: set[str]) -> list[dict]:
             print(f"pack metadata was retrieved for pack {pack_dir}")  # noqa: T201
             pack_metadata_list.append(pack_metadata)
         else:
-            print(f'Could not find pack support level for pack {pack_dir}')  # noqa: T201
+            print(f"Could not find pack support level for pack {pack_dir}")  # noqa: T201
 
     return pack_metadata_list
 

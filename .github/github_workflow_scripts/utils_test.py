@@ -16,7 +16,7 @@ from utils import (
     CONTENT_ROLES_BLOB_MASTER_URL,
     get_content_roles,
     CONTENT_ROLES_FILENAME,
-    GITHUB_HIDDEN_DIR
+    GITHUB_HIDDEN_DIR,
 )
 from git import Repo
 
@@ -37,7 +37,7 @@ class TestGetEnvVar:
         - Ensure a 'EnvVariableError' exception is raised
         """
         with pytest.raises(EnvVariableError):
-            get_env_var('MADE_UP_ENV_VARIABLE')
+            get_env_var("MADE_UP_ENV_VARIABLE")
 
     def test_empty_env_var(self, monkeypatch):
         """
@@ -53,9 +53,9 @@ class TestGetEnvVar:
         Then
         - Ensure a 'EnvVariableError' exception is raised
         """
-        monkeypatch.setenv('MADE_UP_ENV_VARIABLE', '')
+        monkeypatch.setenv("MADE_UP_ENV_VARIABLE", "")
         with pytest.raises(EnvVariableError):
-            get_env_var('MADE_UP_ENV_VARIABLE')
+            get_env_var("MADE_UP_ENV_VARIABLE")
 
     def test_no_env_var_with_default(self):
         """
@@ -71,8 +71,8 @@ class TestGetEnvVar:
         Then
         - Ensure 'TIMOTHY' is returned from the function
         """
-        default_val = 'TIMOTHY'
-        env_var_val = get_env_var('MADE_UP_ENV_VARIABLE', default_val)
+        default_val = "TIMOTHY"
+        env_var_val = get_env_var("MADE_UP_ENV_VARIABLE", default_val)
         assert env_var_val == default_val
 
     def test_empty_env_var_with_default(self, monkeypatch):
@@ -89,9 +89,9 @@ class TestGetEnvVar:
         Then
         - Ensure 'TIMOTHY' is returned from the function
         """
-        monkeypatch.setenv('MADE_UP_ENV_VARIABLE', '')
-        default_val = 'TIMOTHY'
-        env_var_val = get_env_var('MADE_UP_ENV_VARIABLE', default_val)
+        monkeypatch.setenv("MADE_UP_ENV_VARIABLE", "")
+        default_val = "TIMOTHY"
+        env_var_val = get_env_var("MADE_UP_ENV_VARIABLE", default_val)
         assert env_var_val == default_val
 
     def test_existing_env_var(self, monkeypatch):
@@ -108,9 +108,9 @@ class TestGetEnvVar:
         Then
         - Ensure 'LEROY JENKINS' is returned from the function
         """
-        monkeypatch.setenv('MADE_UP_ENV_VARIABLE', 'LEROY JENKINS')
-        env_var_val = get_env_var('MADE_UP_ENV_VARIABLE')
-        assert env_var_val == 'LEROY JENKINS'
+        monkeypatch.setenv("MADE_UP_ENV_VARIABLE", "LEROY JENKINS")
+        env_var_val = get_env_var("MADE_UP_ENV_VARIABLE")
+        assert env_var_val == "LEROY JENKINS"
 
     def test_existing_env_var_with_default(self, monkeypatch):
         """
@@ -126,36 +126,46 @@ class TestGetEnvVar:
         Then
         - Ensure 'LEROY JENKINS' is returned from the function
         """
-        monkeypatch.setenv('MADE_UP_ENV_VARIABLE', 'LEROY JENKINS')
-        default_val = 'TIMOTHY'
-        env_var_val = get_env_var('MADE_UP_ENV_VARIABLE', default_val)
-        assert env_var_val == 'LEROY JENKINS'
+        monkeypatch.setenv("MADE_UP_ENV_VARIABLE", "LEROY JENKINS")
+        default_val = "TIMOTHY"
+        env_var_val = get_env_var("MADE_UP_ENV_VARIABLE", default_val)
+        assert env_var_val == "LEROY JENKINS"
 
 
 @pytest.mark.parametrize(
-    'content_roles,expected_content_reviewers,expected_security_reviewer, expected_tim_reviewer',
+    "content_roles,expected_content_reviewers,expected_security_reviewer, expected_tim_reviewer",
     [
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1"],
-            TIM_REVIEWER_KEY: "tr1",
-            "CONTRIBUTION_TL": "tl1",
-            "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1"], "tr1"),
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: [""],
-            TIM_REVIEWER_KEY: "tr1",
-            "CONTRIBUTION_TL": "tl1",
-            "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], [""], "tr1")
-    ]
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1"],
+                TIM_REVIEWER_KEY: "tr1",
+                "CONTRIBUTION_TL": "tl1",
+                "ON_CALL_DEVS": ["ocd1", "ocd2"],
+            },
+            ["cr1", "cr2", "cr3", "cr4"],
+            ["sr1"],
+            "tr1",
+        ),
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: [""],
+                TIM_REVIEWER_KEY: "tr1",
+                "CONTRIBUTION_TL": "tl1",
+                "ON_CALL_DEVS": ["ocd1", "ocd2"],
+            },
+            ["cr1", "cr2", "cr3", "cr4"],
+            [""],
+            "tr1",
+        ),
+    ],
 )
 def test_get_content_reviewers(
     content_roles: dict[str, Any],
     expected_content_reviewers: list[str],
     expected_security_reviewer: str,
-    expected_tim_reviewer: str
+    expected_tim_reviewer: str,
 ):
     """
     Test retrieval of content and security reviewers.
@@ -177,22 +187,27 @@ def test_get_content_reviewers(
 
 
 @pytest.mark.parametrize(
-    'content_roles,expected_content_reviewers,expected_security_reviewer, expected_tim_reviewer',
+    "content_roles,expected_content_reviewers,expected_security_reviewer, expected_tim_reviewer",
     [
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1", "sr2"],
-            TIM_REVIEWER_KEY: "tr1",
-            "CONTRIBUTION_TL": "tl1",
-            "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        }, ["cr1", "cr2", "cr3", "cr4"], ["sr1", "sr2"], "tr1")
-    ]
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2", "cr3", "cr4"],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1", "sr2"],
+                TIM_REVIEWER_KEY: "tr1",
+                "CONTRIBUTION_TL": "tl1",
+                "ON_CALL_DEVS": ["ocd1", "ocd2"],
+            },
+            ["cr1", "cr2", "cr3", "cr4"],
+            ["sr1", "sr2"],
+            "tr1",
+        )
+    ],
 )
 def test_get_content_reviewers_multiple_security(
     content_roles: dict[str, Any],
     expected_content_reviewers: list[str],
     expected_security_reviewer: str,
-    expected_tim_reviewer: str
+    expected_tim_reviewer: str,
 ):
     """
     Test retrieval of content and security reviewers.
@@ -214,39 +229,46 @@ def test_get_content_reviewers_multiple_security(
 
 
 @pytest.mark.parametrize(
-    'content_roles',
+    "content_roles",
     [
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: [],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
-        }),
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: None,
-        }),
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: "",
-        }),
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: "sr1",
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: "cr1",
-        }),
-        ({
-            CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1"],
-        }),
-        ({
-            CONTRIBUTION_REVIEWERS_KEY: ["cr1"],
-        }),
-        ({
-            "CONTRIBUTION_TL": "tl1",
-            "ON_CALL_DEVS": ["ocd1", "ocd2"]
-        })
-    ]
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: [],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
+            }
+        ),
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: None,
+            }
+        ),
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1", "cr2"],
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: "",
+            }
+        ),
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: "sr1",
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: "cr1",
+            }
+        ),
+        (
+            {
+                CONTRIBUTION_SECURITY_REVIEWER_KEY: ["sr1"],
+            }
+        ),
+        (
+            {
+                CONTRIBUTION_REVIEWERS_KEY: ["cr1"],
+            }
+        ),
+        ({"CONTRIBUTION_TL": "tl1", "ON_CALL_DEVS": ["ocd1", "ocd2"]}),
+    ],
 )
-def test_exit_get_content_reviewers(
-    content_roles: dict[str, Any]
-):
+def test_exit_get_content_reviewers(content_roles: dict[str, Any]):
     """
     Test retrieval of content and security reviewers when the file/`dict`
     has unexpected/incorrect structure.
@@ -274,21 +296,21 @@ def test_exit_get_content_reviewers(
 
 
 @pytest.mark.parametrize(
-    'content_roles,expected_doc_reviewer',
+    "content_roles,expected_doc_reviewer",
     [
-        ({
-            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2", "cr3", "cr4"],
-            "CONTRIBUTION_SECURITY_REVIEWER": "sr1",
-            "CONTRIBUTION_TL": "tl1",
-            "ON_CALL_DEVS": ["ocd1", "ocd2"],
-            DOC_REVIEWER_KEY: "dr1"
-        }, "dr1")
-    ]
+        (
+            {
+                "CONTRIBUTION_REVIEWERS": ["cr1", "cr2", "cr3", "cr4"],
+                "CONTRIBUTION_SECURITY_REVIEWER": "sr1",
+                "CONTRIBUTION_TL": "tl1",
+                "ON_CALL_DEVS": ["ocd1", "ocd2"],
+                DOC_REVIEWER_KEY: "dr1",
+            },
+            "dr1",
+        )
+    ],
 )
-def test_get_doc_reviewer(
-    content_roles: dict[str, Any],
-    expected_doc_reviewer: str
-):
+def test_get_doc_reviewer(content_roles: dict[str, Any], expected_doc_reviewer: str):
     """
     Test retrieval of doc reviewer.
 
@@ -309,25 +331,23 @@ def test_get_doc_reviewer(
 
 
 @pytest.mark.parametrize(
-    'content_roles',
+    "content_roles",
     [
-        ({
-            DOC_REVIEWER_KEY: [],
-        }),
-        ({
-            "CONTRIBUTION_REVIEWERS": ["cr1", "cr2"],
-        }),
-        ({
-            DOC_REVIEWER_KEY: ""
-        }),
-        ({
-            DOC_REVIEWER_KEY: None
-        })
-    ]
+        (
+            {
+                DOC_REVIEWER_KEY: [],
+            }
+        ),
+        (
+            {
+                "CONTRIBUTION_REVIEWERS": ["cr1", "cr2"],
+            }
+        ),
+        ({DOC_REVIEWER_KEY: ""}),
+        ({DOC_REVIEWER_KEY: None}),
+    ],
 )
-def test_exit_get_doc_reviewer(
-    content_roles: dict[str, Any]
-):
+def test_exit_get_doc_reviewer(content_roles: dict[str, Any]):
     """
     Test retrieval of content and security reviewers when the file/`dict`
     has unexpected/incorrect structure.
@@ -348,20 +368,16 @@ def test_exit_get_doc_reviewer(
 
 
 class TestGetContentRoles:
-
     content_roles: dict[str, Any] = {
-        CONTRIBUTION_REVIEWERS_KEY: ['prr1', 'prr2', 'prr3'],
-        'CONTRIBUTION_TL': 'tl1',
-        CONTRIBUTION_SECURITY_REVIEWER_KEY: 'sr1',
-        'ON_CALL_DEVS': ['ocd1', 'ocd2'],
-        DOC_REVIEWER_KEY: 'dr1',
-        TIM_REVIEWER_KEY: 'tr1'
+        CONTRIBUTION_REVIEWERS_KEY: ["prr1", "prr2", "prr3"],
+        "CONTRIBUTION_TL": "tl1",
+        CONTRIBUTION_SECURITY_REVIEWER_KEY: "sr1",
+        "ON_CALL_DEVS": ["ocd1", "ocd2"],
+        DOC_REVIEWER_KEY: "dr1",
+        TIM_REVIEWER_KEY: "tr1",
     }
 
-    def test_get_content_roles_success(
-        self,
-        requests_mock: requests_mock.Mocker
-    ):
+    def test_get_content_roles_success(self, requests_mock: requests_mock.Mocker):
         """
         Test successful retrieval of content_roles.json.
 
@@ -375,10 +391,7 @@ class TestGetContentRoles:
         - The response includes the expected content role keys.
         """
 
-        requests_mock.get(
-            CONTENT_ROLES_BLOB_MASTER_URL,
-            json=self.content_roles
-        )
+        requests_mock.get(CONTENT_ROLES_BLOB_MASTER_URL, json=self.content_roles)
 
         actual_content_roles = get_content_roles()
         assert actual_content_roles
@@ -386,11 +399,7 @@ class TestGetContentRoles:
         assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
         assert TIM_REVIEWER_KEY in actual_content_roles
 
-    def test_get_content_roles_fail_blob(
-        self,
-        requests_mock: requests_mock.Mocker,
-        tmp_path: Path
-    ):
+    def test_get_content_roles_fail_blob(self, requests_mock: requests_mock.Mocker, tmp_path: Path):
         """
         Test failure to retrieve the content_roles.json blob
         and successful retrieval from the filesystem.
@@ -406,10 +415,7 @@ class TestGetContentRoles:
         """
 
         # Mock failed request
-        requests_mock.get(
-            CONTENT_ROLES_BLOB_MASTER_URL,
-            status_code=404
-        )
+        requests_mock.get(CONTENT_ROLES_BLOB_MASTER_URL, status_code=404)
 
         # Create repo and content_roles.json in fs
         Repo.init(tmp_path)
@@ -425,11 +431,7 @@ class TestGetContentRoles:
         assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
         assert TIM_REVIEWER_KEY in actual_content_roles
 
-    def test_get_content_roles_invalid_json_blob(
-        self,
-        requests_mock: requests_mock.Mocker,
-        tmp_path: Path
-    ):
+    def test_get_content_roles_invalid_json_blob(self, requests_mock: requests_mock.Mocker, tmp_path: Path):
         """
         Test failure to retrieve content_roles.json
         and successful retrieval from the filesystem.
@@ -444,10 +446,7 @@ class TestGetContentRoles:
         - get_content_roles returns a populated dict.
         """
 
-        requests_mock.get(
-            CONTENT_ROLES_BLOB_MASTER_URL,
-            json={"only_key"}
-        )
+        requests_mock.get(CONTENT_ROLES_BLOB_MASTER_URL, json={"only_key"})
 
         # Create repo and content_roles.json in fs
         Repo.init(tmp_path)
@@ -463,11 +462,7 @@ class TestGetContentRoles:
         assert CONTRIBUTION_SECURITY_REVIEWER_KEY in actual_content_roles
         assert TIM_REVIEWER_KEY in actual_content_roles
 
-    def test_get_content_roles_invalid_json_blob_and_fs(
-        self,
-        requests_mock: requests_mock.Mocker,
-        tmp_path: Path
-    ):
+    def test_get_content_roles_invalid_json_blob_and_fs(self, requests_mock: requests_mock.Mocker, tmp_path: Path):
         """
         Test failure to retrieve content_roles.json
         from the blob and from the filesystem.
@@ -483,17 +478,14 @@ class TestGetContentRoles:
         - get_content_roles returns nothing.
         """
 
-        requests_mock.get(
-            CONTENT_ROLES_BLOB_MASTER_URL,
-            json={"only_key"}
-        )
+        requests_mock.get(CONTENT_ROLES_BLOB_MASTER_URL, json={"only_key"})
 
         # Create repo and content_roles.json in fs
         Repo.init(tmp_path)
         (tmp_path / GITHUB_HIDDEN_DIR).mkdir()
         content_roles_path = tmp_path / GITHUB_HIDDEN_DIR / CONTENT_ROLES_FILENAME
         content_roles_path.touch()
-        content_roles_path.write_text("{\"only_key\"}")
+        content_roles_path.write_text('{"only_key"}')
 
         actual_content_roles = get_content_roles(tmp_path)
 

@@ -4840,7 +4840,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]

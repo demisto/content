@@ -2,7 +2,6 @@ Sums a List
 e.g. ["25", "10", "25"] =>  "60"
 
 This is an example for number transformer.
- 
 
 ## Script Data
 

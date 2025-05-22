@@ -4,8 +4,7 @@ from CommonServerUserPython import *
 
 """ IMPORTS """
 import urllib3
-import requests
-from typing import Optional, Pattern, List
+from typing import Pattern  # noqa: UP035
 from ipaddress import ip_address, summarize_address_range
 
 # disable insecure warnings
@@ -151,7 +150,7 @@ class Client(BaseClient):
             self.feed_url_to_config = feed_url_to_config
         else:
             self.feed_url_to_config = {url: self.get_feed_config(fields, indicator)}
-        self.ignore_regex: Optional[Pattern] = None
+        self.ignore_regex: Pattern | None = None
         if ignore_regex is not None:
             self.ignore_regex = re.compile(ignore_regex)
 
@@ -225,7 +224,7 @@ class Client(BaseClient):
             kwargs["auth"] = (self.username, self.password)
         try:
             urls = self._base_url
-            url_to_response_list: List[dict] = []
+            url_to_response_list: list[dict] = []
             if not isinstance(urls, list):
                 urls = [urls]
             for url in urls:
@@ -296,7 +295,7 @@ class Client(BaseClient):
             err_msg = (
                 "Verify that the server URL parameter"
                 " is correct and that you have access to the server from your host."
-                "\nError Type: {}\nError Number: [{}]\nMessage: {}\n".format(err_type, exception.errno, exception.strerror)
+                f"\nError Type: {err_type}\nError Number: [{exception.errno}]\nMessage: {exception.strerror}\n"
             )
             raise DemistoException(err_msg, exception)
 
@@ -395,7 +394,7 @@ def is_cidr_32(value: str) -> bool:
         return False
 
 
-def convert_cidr32_to_ip(value: str) -> Optional[str]:
+def convert_cidr32_to_ip(value: str) -> str | None:
     """
     Converts a CIDR /32 address to its IP part.
 
@@ -434,7 +433,7 @@ def ip_range_to_cidr(start_ip: str, end_ip: str) -> list:
     return cidr_list
 
 
-def get_indicator_fields(line, url, feed_tags: list, tlp_color: Optional[str], client: Client):
+def get_indicator_fields(line, url, feed_tags: list, tlp_color: str | None, client: Client):
     """
     Extract indicators according to the feed type
     :param line: The current line in the feed
@@ -706,7 +705,7 @@ def feed_main(feed_name, params=None, prefix=""):
     client = Client(**params)
     command = demisto.command()
     if command != "fetch-indicators":
-        demisto.info("Command being called is {}".format(command))
+        demisto.info(f"Command being called is {command}")
     if prefix and not prefix.endswith("-"):
         prefix += "-"
     # Switch case
