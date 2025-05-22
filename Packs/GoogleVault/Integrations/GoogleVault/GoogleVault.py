@@ -1428,24 +1428,26 @@ def get_mail_and_groups_results_command(inquiryType):
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
         if not (output[0].get("From") or output[0].get("To") or output[0].get("Subject")):
             return_error("Error displaying results: Corpus of the invoked command and the supplied ViewID does not match")
-
-        markedown_output = [
-            {
-                "From": document.get("From"),
-                "To": document.get("To"),
-                "CC": document.get("CC"),
-                "BCC": document.get("BCC"),
-                "Subject": document.get("Subject"),
-                "DateSent": document.get("DateSent"),
-                "Account": document.get("Account"),
-                "DateReceived": document.get("DateReceived"),
-            }
-            for document in output
-        ]
+        markedown_output = []
+        for document in output:
+            markedown_output.append(
+                remove_empty_elements(
+                    {
+                        "From": document.get("From"),
+                        "To": document.get("To"),
+                        "CC": document.get("CC"),
+                        "BCC": document.get("BCC"),
+                        "Subject": document.get("Subject"),
+                        "DateSent": document.get("DateSent"),
+                        "Account": document.get("Account"),
+                        "DateReceived": document.get("DateReceived"),
+                    }
+                )
+            )
 
         title = f"Your {inquiryType} inquiry details\n"
         headers = ["Subject", "From", "To", "CC", "BCC", "DateSent", "Account"]
-        markdown = tableToMarkdown(title, markedown_output, headers)
+        markdown = tableToMarkdown(title, markedown_output, headers, removeNull=True)
 
         exportID = str(view_ID).split("/")[1]
         contextOutput = {"ExportID": exportID, "Results": markedown_output}
