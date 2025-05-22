@@ -16,8 +16,8 @@ Data normalization capabilities:
  
 ### AWS side
 Sign in to your AWS account and create a dedicated Amazon S3 bucket, which collects the generic logs that you want to capture.
- 
-See this[doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
+
+See this [doc](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Administrator-Guide/Ingest-Generic-Logs-from-Amazon-S3) for further instructions on how to create a S3 bucket.
  
 ### BeyondTrust EPM side
 **Add the AWS S3 Bucket in EPM**
