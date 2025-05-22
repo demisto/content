@@ -2,11 +2,10 @@ import json
 from typing import Any
 from unittest.mock import patch
 
+import demistomock as demisto
 import pytest
 import SigmaButtonConvert
 from SigmaButtonConvert import main
-
-import demistomock as demisto
 
 
 def load_file(path: str, json_file: bool) -> dict[str, Any] | str:
@@ -24,17 +23,16 @@ xql_query = load_file("test_data/xql_query.txt", json_file=False)
 splunk_query = load_file("test_data/splunk_query.txt", json_file=False)
 
 
-@pytest.mark.parametrize("siem_name, result, expect_exception", [
-    ("xql", xql_query, False),
-    ("splunk", splunk_query, False),
-    ("bad_siem", "Unknown SIEM - bad_siem", True)
-])
-@patch.object(SigmaButtonConvert, 'return_error')
-@patch.object(demisto, 'executeCommand')
+@pytest.mark.parametrize(
+    "siem_name, result, expect_exception",
+    [("xql", xql_query, False), ("splunk", splunk_query, False), ("bad_siem", "Unknown SIEM - bad_siem", True)],
+)
+@patch.object(SigmaButtonConvert, "return_error")
+@patch.object(demisto, "executeCommand")
 def test_main(mock_executeCommand, mock_return_error, mocker, siem_name, result, expect_exception):
-    mock_callingContext = {'args': {'indicator': {"value": "sigma",
-                                                  "CustomFields": {"sigmaruleraw": rule_example}},
-                                    'SIEM': siem_name}}
+    mock_callingContext = {
+        "args": {"indicator": {"value": "sigma", "CustomFields": {"sigmaruleraw": rule_example}}, "SIEM": siem_name}
+    }
 
     mocker.patch.dict(demisto.callingContext, mock_callingContext)
 
@@ -49,14 +47,19 @@ def test_main(mock_executeCommand, mock_return_error, mocker, siem_name, result,
 
 
 def test_main_transform_error(mocker):
-    mock_callingContext = {'args': {'indicator': {"value": "sigma",
-                                                  "CustomFields": {"sigmaruleraw": load_file("test_data/bad_xql_sigma_rule.yml",
-                                                                                             json_file=False)}},
-                                    'SIEM': 'xql'}}
+    mock_callingContext = {
+        "args": {
+            "indicator": {
+                "value": "sigma",
+                "CustomFields": {"sigmaruleraw": load_file("test_data/bad_xql_sigma_rule.yml", json_file=False)},
+            },
+            "SIEM": "xql",
+        }
+    }
 
     mocker.patch.dict(demisto.callingContext, mock_callingContext)
 
-    mock_return_error = mocker.patch.object(SigmaButtonConvert, 'return_error')
+    mock_return_error = mocker.patch.object(SigmaButtonConvert, "return_error")
 
     main()
 

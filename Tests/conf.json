@@ -163,7 +163,8 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
+            "memory_threshold": 150
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
@@ -957,7 +958,7 @@
             "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
             "timeout": 2500,
-            "memory_threshold": 200
+            "memory_threshold": 250
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -1298,7 +1299,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "PAN-OS-panorama-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1306,7 +1307,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_firewall_9.1",
+            "instance_names": "palo_alto_firewall_11",
             "playbookID": "PAN-OS-firewall-topology-test-pb",
             "fromversion": "6.1.0",
             "timeout": 1000,
@@ -1314,7 +1315,7 @@
         },
         {
             "integrations": "Panorama",
-            "instance_names": "palo_alto_panorama_9.1",
+            "instance_names": "palo_alto_panorama_11",
             "playbookID": "palo_alto_panorama_test_pb",
             "fromversion": "6.1.0",
             "timeout": 2400,
@@ -4821,6 +4822,7 @@
         {
             "playbookID": "CrowdStrike_Falcon_X_-Test-Detonate_URL",
             "fromversion": "6.1.0",
+            "memory_threshold": 100,
             "integrations": [
                 "CrowdStrike Falcon X"
             ],
@@ -4838,7 +4840,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5159,7 +5161,7 @@
             "playbookID": "ValidateContent - Test",
             "fromversion": "5.5.0",
             "marketplaces": "xsoar_saas",
-            "timeout": 170
+            "timeout": 300
         },
         {
             "playbookID": "DeleteContext-auto-subplaybook-test",
@@ -5235,7 +5237,7 @@
             "integrations": "Cortex XDR - XQL Query Engine",
             "playbookID": "Cortex XDR - XQL Query - Test",
             "fromversion": "6.2.0",
-            "memory_threshold": 90,
+            "memory_threshold": 250,
             "timeout": 500
         },
         {
@@ -5528,6 +5530,7 @@
                 "legacy_context_output"
             ],
             "memory_threshold": 300,
+            "timeout": 600,
             "pid_threshold": 200,
             "marketplaces": "xsoar_on_prem"
         },
@@ -5743,7 +5746,8 @@
                 "LOLBAS Feed",
                 "Core REST API"
             ],
-            "playbookID": "FeedLOLBas_test"
+            "playbookID": "FeedLOLBas_test",
+            "timeout": 500
         },
         {
             "integrations": "CIRCL CVE Search",
@@ -5797,7 +5801,8 @@
         },
         {
             "integrations": "Palo Alto Networks AIOps",
-            "playbookID": "PaloAltoNetworksAIOps-Test"
+            "playbookID": "PaloAltoNetworksAIOps-Test",
+            "memory_threshold": 250
         },
         {
             "integrations": "MattermostV2",
@@ -6035,10 +6040,13 @@
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
-        "Mail Sender (New) Test": "Creds not working CRTX-160174",
-        "Mail-Listener Test Playbook": "Creds not working CRTX-160174",
-        "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
-        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175"
+        "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
+        "PaloAltoNetworks_PrismaCloudCompute-Test": "The creds were expired CIAC-13447",
+        "PAN-OS URL Filtering enrichment - Test": "The creds were expired CIAC-11260",
+        "PAN-OS-panorama-topology-test-pb": "The creds were expired CIAC-13553",
+        "OpenPhish Test Playbook": "API issue CIAC-13583",
+        "SaasSecurity-Test": "blocked by SCA-8028",
+        "Mail-Listener Test Playbook": " invalid creds CRTX-171878"
 
 
     },
@@ -6180,7 +6188,8 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "Absolute": "No instance"
     },
     "native_nightly_packs": [
         "Palo_Alto_Networks_WildFire",

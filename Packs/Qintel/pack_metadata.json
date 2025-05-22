@@ -2,7 +2,7 @@
     "name": "Qintel",
     "description": "Supports the Qintel suite of products including Patch Management Intelligence (PMI), QSentry and QWatch.",
     "support": "partner",
-    "currentVersion": "1.0.17",
+    "currentVersion": "1.0.18",
     "author": "Qintel, LLC",
     "url": "https://qintel.com",
     "email": "integrations-support@qintel.com",
@@ -28,6 +28,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

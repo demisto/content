@@ -1,9 +1,8 @@
 import json
-import io
 
 
 def util_load_json(path):
-    with io.open(path, mode="r", encoding="utf-8") as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -27,9 +26,7 @@ def test_create_pp_ticket_command(requests_mock):
     requests_mock.post("https://example.test.com/securitymanager/api/authentication/login", json=mock_response)
 
     mock_response = util_load_json("test_data/get_workflows.json")
-    requests_mock.get(
-        "https://example.test.com/policyplanner/api/domain/1/workflow/version/latest/all", json=mock_response
-    )
+    requests_mock.get("https://example.test.com/policyplanner/api/domain/1/workflow/version/latest/all", json=mock_response)
 
     mock_response = util_load_json("test_data/get_pp_ticket.json")
     requests_mock.post("https://example.test.com/policyplanner/api/domain/1/workflow/3/packet", json=mock_response)

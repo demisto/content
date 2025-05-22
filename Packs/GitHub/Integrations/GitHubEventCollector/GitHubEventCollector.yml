@@ -79,6 +79,12 @@ script:
   subtype: python3
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
 fromversion: 6.8.0
 tests:
 - No tests

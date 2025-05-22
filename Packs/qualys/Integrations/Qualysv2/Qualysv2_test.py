@@ -76,6 +76,22 @@ def util_load_json(path: str):
         return json.loads(f.read())
 
 
+def sleep_delay(sleep_time: int | float) -> bool:
+    """Mocks a slow function by introducing an artificial delay using the `sleep_time` argument.
+
+    Args:
+        sleep_time (int | float): The number of seconds to sleep.
+
+    Returns:
+       bool: True to indicate the function is finished.
+    """
+    if sleep_time:
+        time.sleep(sleep_time)  # sleep to simulate slow API response
+
+    is_finished = True
+    return is_finished
+
+
 def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
     """
     Given:
@@ -1118,7 +1134,7 @@ class TestClientClass:
         self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
         assert http_request_kwargs["params"] == {
@@ -1155,7 +1171,7 @@ class TestClientClass:
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
@@ -1903,3 +1919,34 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert send_data_to_xsiam_vulns_kwargs["snapshot_id"] == SNAPSHOT_ID
     assert send_data_to_xsiam_vulns_kwargs["items_count"] == expected_vulns_count_to_report
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
+
+
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
+@pytest.mark.parametrize(
+    "sleep_time, expected_is_finished",
+    [
+        pytest.param(3, False, id="Slow execution"),
+        pytest.param(0, True, id="Fast execution"),
+    ],
+)
+def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
+    """
+    Given:
+        - An execution timeout value of 2 seconds.
+
+    When:
+        - When calling sleep_delay with a simulated "slow" and "fast" executions.
+
+    Assert:
+        - Case A (Slow): Ensure is_finished is False since sleep_delay timed out (sleep_time > execution_timeout).
+        - Case B (Fast): Ensure is_finished is True since sleep_delay finished in time (sleep_time < execution_timeout).
+    """
+    from Qualysv2 import ExecutionTimeout
+
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+
+    is_finished = False
+    with ExecutionTimeout(seconds=execution_timeout):
+        is_finished = sleep_delay(sleep_time)
+
+    assert is_finished == expected_is_finished

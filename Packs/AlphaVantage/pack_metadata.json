@@ -9,15 +9,28 @@
     "categories": [
         "Utilities"
     ],
-    "tags": [],
+    "tags": [
+        "Free Feed"
+    ],
     "useCases": [],
     "keywords": [
         "AlphaVantage",
-        "stocks"
+        "stocks",
+        "API",
+        "finance",
+        "Trade",
+        "developer"
     ],
     "githubUser": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

@@ -1,7 +1,8 @@
 import json
 from typing import Any
-from CommonServerPython import *
+
 import demistomock as demisto
+from CommonServerPython import *
 
 
 def get_slack_block_builder_entry(entries: list[dict[str, Any]]) -> Optional[dict[str, Any]]:
@@ -16,8 +17,8 @@ def get_slack_block_builder_entry(entries: list[dict[str, Any]]) -> Optional[dic
     """
     entries.reverse()
     for entry in entries:
-        contents = entry.get('Contents', '')
-        if 'xsoar-button-submit' in contents:
+        contents = entry.get("Contents", "")
+        if "xsoar-button-submit" in contents:
             return entry
     return None
 
@@ -33,14 +34,16 @@ def parse_entry(entry: dict[str, Any]) -> None:
     json.JSONDecodeError: If the entry contents are not in valid JSON format.
     """
     try:
-        json_content = json.loads(entry['Contents'])
-        return_results({
-            "Type": entryTypes["note"],
-            "ContentsFormat": formats["json"],
-            "Contents": json_content,
-            "HumanReadable": "Successfully parsed the SlackBlockBuilder response.",
-            "EntryContext": {"SlackBlockState": json_content}
-        })
+        json_content = json.loads(entry["Contents"])
+        return_results(
+            {
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": json_content,
+                "HumanReadable": "Successfully parsed the SlackBlockBuilder response.",
+                "EntryContext": {"SlackBlockState": json_content},
+            }
+        )
     except json.JSONDecodeError:
         return_error(f"The response is not a valid JSON format. Received the following response: {entry['Contents']}")
 
@@ -60,8 +63,8 @@ def main() -> None:
         else:
             return_error("No entries found.")
     except Exception as e:
-        return_error(f"An error occurred: {str(e)}")
+        return_error(f"An error occurred: {e!s}")
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

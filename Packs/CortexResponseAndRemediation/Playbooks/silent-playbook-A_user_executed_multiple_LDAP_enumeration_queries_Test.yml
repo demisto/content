@@ -1,3 +1,4 @@
+name: silent-A user executed multiple LDAP enumeration queries Test
 description: 'This playbook addresses the following alerts:
 
 
@@ -16,8 +17,7 @@ description: 'This playbook addresses the following alerts:
 
   - Get endpoint information for the client IP
 
-  - Check preconditions for continuing investigation based on the number of suspicious
-  attributes, attack tool queries, and vulnerable certificate templates
+  - Check preconditions for continuing the investigation based on the number of suspicious attributes, attack tool queries, and vulnerable certificate templates.
 
 
 
@@ -42,14 +42,11 @@ description: 'This playbook addresses the following alerts:
   Remediation:
 
 
-  - With analyst approval, disable the user in Active Directory if user-related anomalies
-  are found and the alert is a True Positive.
+  - With analyst approval, disable the user in Active Directory if user-related anomalies are found and the alert is a true positive.
 
-  - With analyst approval, isolate the endpoint if host-related anomalies are found
-  and the alert is a True Positive.
+  - With analyst approval, isolate the endpoint if host-related anomalies are found and the alert is a true positive.
 
-  - Logoff user from client host if an active session is detected and the alert is
-  a True Positive.
+  - Log off the user from the client host if an active session is detected and the alert is a true positive.
 
 
   Requirements:
@@ -61,13 +58,13 @@ description: 'This playbook addresses the following alerts:
   - Core - IR
 
   - Active Directory Query v2.'
-fromversion: 8.9.0
 id: silent-A user executed multiple LDAP enumeration queries Test
 inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
-name: silent-A user executed multiple LDAP enumeration queries Test
+- platform
+fromversion: 8.9.0
 outputs: []
 starttaskid: '0'
 tags:
@@ -88,11 +85,11 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: b3cdd99f-2cb2-48cf-82a2-83496b582087
       iscommand: false
       name: ''
       version: -1
+      description: ''
     taskid: b3cdd99f-2cb2-48cf-82a2-83496b582087
     timertriggers: []
     type: start
@@ -154,8 +151,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Ensures that the client that executed the LDAP queries is not a
-        server or the domain controller.
+      description: Ensures that the client that executed the LDAP queries is not a server or the domain controller.
       id: f1020a0f-6601-47cd-8617-10fb41f95280
       iscommand: false
       name: Check client is not a server
@@ -224,8 +220,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: This script gathers user data from multiple integrations and returns
-        an Account entity with consolidated information to the context.
+      description: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
       id: f26cce9f-ec35-472f-8ddc-820ac6c5ceae
       iscommand: false
       name: Enrich user
@@ -252,12 +247,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
       iscommand: false
       name: Remediation
       type: title
       version: -1
+      description: ''
     taskid: bf1f8757-6ccd-48fb-8deb-1949e097e4ac
     timertriggers: []
     type: title
@@ -314,9 +309,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if investigation and remediation can be done based on pre-conditions
-        signifying high probability of a true positive alert and inherently malicious
-        behavior.
+      description: Checks if investigation and remediation can be done based on pre-conditions signifying high probability of a true positive alert and inherently malicious behavior.
       id: 0caeb27b-423f-45e3-8971-fa08e763f2d5
       iscommand: false
       name: Check preconditions for continuing investigation
@@ -341,16 +334,22 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: b9b43bcd-a930-4a38-8459-1c1e985bd858
       iscommand: false
       name: Skip / False Positive
       type: title
       version: -1
+      description: ''
     taskid: b9b43bcd-a930-4a38-8459-1c1e985bd858
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 1670,\n    \"y\": 3090\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1954,
+          "y": 3174
+        }
+      }
   '17':
     conditions:
     - condition:
@@ -383,8 +382,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks whether any host-related anomalies were found in the investigation
-        (the host is risky or malware alerts occurred on the host in the past 1 day).
+      description: Checks whether any host-related anomalies were found in the investigation (the host is risky or malware alerts occurred on the host in the past 1 day).
       id: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
       iscommand: false
       name: Check host analysis results
@@ -393,7 +391,13 @@ tasks:
     taskid: 8f70c85b-5ef3-4fee-8d9a-7ca33697047a
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 866,
+          "y": 2560
+        }
+      }
   '18':
     continueonerrortype: ''
     id: '18'
@@ -409,12 +413,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: cbef50e1-da3d-48ca-8e11-ea9882cd7780
       iscommand: false
       name: User Investigation
       type: title
       version: -1
+      description: ''
     taskid: cbef50e1-da3d-48ca-8e11-ea9882cd7780
     timertriggers: []
     type: title
@@ -434,12 +438,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: 5630dcc4-a789-44fd-8886-1c893f868719
       iscommand: false
       name: Host Investigation
       type: title
       version: -1
+      description: ''
     taskid: 5630dcc4-a789-44fd-8886-1c893f868719
     timertriggers: []
     type: title
@@ -460,12 +464,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
       iscommand: false
       name: Triage
       type: title
       version: -1
+      description: ''
     taskid: 3b45073c-b0d9-4d5a-852c-df4e74dc0779
     timertriggers: []
     type: title
@@ -506,8 +510,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if the user executes LDAP queries on a regular basis from
-        one or from multiple hosts, daily.
+      description: Checks if the user executes LDAP queries on a regular basis from one or from multiple hosts, daily.
       id: 778e431e-ce22-471f-87b3-94c1097cc9df
       iscommand: false
       name: Check user LDAP querying frequency
@@ -537,8 +540,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Saves a context key indicating the user doesn't regularly execute
-        LDAP queries (from one or more hosts).
+      description: Saves a context key indicating the user doesn't regularly execute LDAP queries (from one or more hosts).
       id: 75c00eb7-57a6-479b-8116-e1b3036785ab
       iscommand: false
       name: Save result - User does not perform LDAP queries regularly
@@ -610,8 +612,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Converts the user creation date to epoch to find relative time
-        of creation.
+      description: Converts the user creation date to epoch to find relative time of creation.
       id: d2b6725d-73e9-468b-84d6-c59a4fd309af
       iscommand: false
       name: Convert user creation date to epoch
@@ -659,8 +660,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if the user's creation date in AD happened 24 hours or less
-        since the time that this alert occurred.
+      description: Checks if the user's creation date in AD happened 24 hours or less since the time that this alert occurred.
       id: 8082772d-1556-493e-89ce-9ced56fa975e
       iscommand: false
       name: Check if user was created recently
@@ -794,8 +794,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if the user is part of built-in privileged Active Directory
-        groups.
+      description: Checks if the user is part of built-in privileged Active Directory groups.
       id: 3b855ee6-8e16-4a2c-8567-185090bcd3ff
       iscommand: false
       name: Check user groups and roles
@@ -842,9 +841,7 @@ tasks:
                   simple: 'caseid:'
               suffix:
                 value:
-                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087*
-                    or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*)
-                    and -id:'
+                  simple: ' and (mitreattcktechnique:*T1083* or mitreattcktechnique:*T1087* or mitreattcktechnique:*T1615* or mitreattcktechnique:*T1016*) and -id:'
             operator: concat
           - args:
               prefix: {}
@@ -857,11 +854,10 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Searches for additional alerts in the incident that may further
-        indicate user attempts to enumerate Active Directory.
+      description: Searches for additional alerts in the alert that may further indicate user attempts to enumerate Active Directory.
       id: 2b12deed-65f6-4e1d-8b5e-175f07cb4c84
       iscommand: false
-      name: Search for additional discovery alerts in the incident
+      name: Search for additional discovery alerts in the alert
       scriptName: SearchAlertsV2
       type: regular
       version: -1
@@ -889,8 +885,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Saves a context key indicating the user does not belong to default
-        privileged AD groups.
+      description: Saves a context key indicating the user does not belong to default privileged AD groups.
       id: 4132aec2-37d9-44ce-84b0-7ca2ceb5e7d7
       iscommand: false
       name: Save result - user is unprivileged
@@ -970,8 +965,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Saves a context key indicating that the client host's risk level
-        is high.
+      description: Saves a context key indicating that the client host's risk level is high.
       id: 69f4f4c5-9123-4058-8230-f35cc881ca48
       iscommand: false
       name: Save risk result
@@ -1043,11 +1037,9 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Logs off the user by using the logoff command for the active user
-        session''s ID.
+      description: 'Logs off the user by using the logoff command for the active user session''s ID.
 
-        Note: the regex relies on the fact that interactively logged in users will
-        have an active "console" session in Windows machines.'
+        Note: the regex relies on the fact that interactively logged in users will have an active "console" session in Windows machines.'
       id: 164debc9-a89b-403d-8566-3fd31c1185ba
       iscommand: true
       name: Logoff user from client host
@@ -1057,7 +1049,13 @@ tasks:
     taskid: 164debc9-a89b-403d-8566-3fd31c1185ba
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1260,\n    \"y\": 3075\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1532,
+          "y": 3169
+        }
+      }
   '39':
     continueonerrortype: ''
     id: '39'
@@ -1120,7 +1118,13 @@ tasks:
     taskid: c2828931-1af9-4e07-8701-bf60232a986a
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2890\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 866,
+          "y": 2890
+        }
+      }
   '4':
     continueonerrortype: ''
     id: '4'
@@ -1141,8 +1145,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Returns detailed information about the LDAP searches executed by
-        the user.
+      description: Returns detailed information about the LDAP searches executed by the user.
       id: 397aa0fb-bbfe-403b-807b-e1815c8e2bea
       iscommand: true
       name: Get additional event information
@@ -1160,22 +1163,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body: {}
-      cc: null
+      cc:
       format: ''
       methods: []
       replyOptions:
       - Isolate
       - Do not isolate
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       Do not isolate:
       - '42'
@@ -1187,8 +1190,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Review the following findings and decide whether the host should
-        be isolated:
+      description: 'Review the following findings and decide whether the host should be isolated:
 
 
         ${Core.Endpoint.endpoint_name}
@@ -1202,8 +1204,7 @@ tasks:
 
         #### Malware Alerts on Host:
 
-        `${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? "True"
-        : "False"}`
+        `${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? "True" : "False"}`
 
 
         ---
@@ -1222,7 +1223,13 @@ tasks:
     taskid: 66791eda-dabf-4492-88bd-6841c95509eb
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2725\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 866,
+          "y": 2725
+        }
+      }
   '41':
     continueonerrortype: ''
     id: '41'
@@ -1230,22 +1237,22 @@ tasks:
     isautoswitchedtoquietmode: false
     isoversize: false
     message:
-      bcc: null
+      bcc:
       body: {}
-      cc: null
+      cc:
       format: ''
       methods: []
       replyOptions:
       - Disable
       - Do not disable
-      subject: null
+      subject:
       timings:
         completeafterreplies: 1
         completeaftersla: false
         completeafterv2: true
         retriescount: 2
         retriesinterval: 360
-      to: null
+      to:
     nexttasks:
       Disable:
       - '43'
@@ -1257,50 +1264,33 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: 'Review the following findings and decide whether you want to disable
-        the user.
-
+      description: |
+        Review the following findings and decide whether you want to disable the user.
 
         Username: ${UsernameWithoutPrefix}
 
 
-
         Below are the findings of the investigation:
 
-
         ---
-
 
         #### User Created Recently:
-
         `${.=val.UserCreatedLast24Hours ? "True" : "False"}`
 
-
         ---
-
 
         #### Related Discovery Alerts:
-
-        `${.=val.DiscoveryAlertsInIncident && Object.keys(val.DiscoveryAlertsInIncident).length
-        > 0 ? "True" : "False"}`
-
+        `${.=val.DiscoveryAlertsInAlert && Object.keys(val.DiscoveryAlertsInAlert).length > 0 ? "True" : "False"}`
 
         ---
-
 
         #### User is Unprivileged:
-
         `${.=val.UserIsUnprivileged ? "True" : "False"}`
-
 
         ---
 
-
         #### User Rarely Executes Queries:
-
         `${.=val.UserDoesNotRegularlyQuery ? "True" : "False"}`
-
-        '
       id: e95328f6-94c8-443b-84a0-0118c0aa0a6a
       iscommand: false
       name: Manual - decide whether to disable the user
@@ -1309,7 +1299,13 @@ tasks:
     taskid: e95328f6-94c8-443b-84a0-0118c0aa0a6a
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 2725\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 79,
+          "y": 2725
+        }
+      }
   '42':
     continueonerrortype: ''
     id: '42'
@@ -1335,7 +1331,13 @@ tasks:
     taskid: 5c2a3c2d-4e31-497b-8511-e0a84c97a96a
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 3250\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3308
+        }
+      }
   '43':
     continueonerrortype: ''
     id: '43'
@@ -1354,8 +1356,7 @@ tasks:
     skipunavailable: true
     task:
       brand: ''
-      description: Disables the user that executed the LDAP enumeration queries in
-        Active Directory.
+      description: Disables the user that executed the LDAP enumeration queries in Active Directory.
       id: 8f55e219-35b2-459e-854f-cacc017c3c06
       iscommand: true
       name: Disable user in AD
@@ -1365,7 +1366,13 @@ tasks:
     taskid: 8f55e219-35b2-459e-854f-cacc017c3c06
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 2890\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 79,
+          "y": 2890
+        }
+      }
   '44':
     conditions:
     - condition:
@@ -1424,8 +1431,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Ensures that the client is not a server, not the domain controller,
-        and runs the Windows operating system (required for automatic remediation).
+      description: Ensures that the client is not a server or domain controller and is running the Windows operating system, which is necessary for automatic remediation.
       id: e64d505f-b741-489d-8513-9b68a04129f1
       iscommand: false
       name: Check that client OS is Windows and client role is not Server
@@ -1434,7 +1440,13 @@ tasks:
     taskid: e64d505f-b741-489d-8513-9b68a04129f1
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 860,\n    \"y\": 2390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 866,
+          "y": 2390
+        }
+      }
   '49':
     conditions:
     - condition:
@@ -1486,7 +1498,13 @@ tasks:
     taskid: 904e0927-8a4d-4289-8031-e7efbb6c5c30
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 140,\n    \"y\": 2390\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 79,
+          "y": 2390
+        }
+      }
   '5':
     continueonerrortype: ''
     id: '5'
@@ -1522,8 +1540,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Searches for alerts that happened in the past day with Malware
-        category where the host IP is the client IP of the current alert.
+      description: Searches for Malware category alerts that occurred in the past day with host IP equal to the client IP of the current alert.
       id: 2967545d-ba7a-4934-89fc-84f4a41ff124
       iscommand: false
       name: Search for recent malware alerts on client IP
@@ -1549,16 +1566,22 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: fb134545-e8fb-432f-8194-8a901d99a119
       iscommand: false
       name: Insufficient evidence for remediation
       type: title
       version: -1
+      description: ''
     taskid: fb134545-e8fb-432f-8194-8a901d99a119
     timertriggers: []
     type: title
-    view: "{\n  \"position\": {\n    \"x\": 1500,\n    \"y\": 1900\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1954,
+          "y": 1875
+        }
+      }
   '51':
     continueonerrortype: ''
     id: '51'
@@ -1574,13 +1597,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: "The following host is a domain controller, a server, or not a\
-        \ Windows machine. This means automatic remediation cannot be executed. \n\
-        \nPlease review the information below and manually remediate the alert.\n\
-        Endpoint name: ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\
-        \n---\n\n#### Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length\
-        \ > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky\
-        \ ? \"True\" : \"False\"}`\n"
+      description: "The following host is a domain controller, a server, or not a Windows machine. This means automatic remediation cannot be executed. \n\nPlease review the information below and manually remediate the alert.\nEndpoint name: ${Core.Endpoint.endpoint_name}\n\nFindings of the investigation:\n\n---\n\n#### Malware Alerts on Host:\n`${.=val.MalwareAlertsOnHost && val.MalwareAlertsOnHost.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n#### Host is Risky:\n`${.=val.HostIsRisky ? \"True\" : \"False\"}`\n"
       id: 12287b3f-c14f-46d2-8873-42a4283f7c3d
       iscommand: false
       name: Manually remediate server / DC / non-Windows machine
@@ -1589,7 +1606,13 @@ tasks:
     taskid: 12287b3f-c14f-46d2-8873-42a4283f7c3d
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 470,\n    \"y\": 2560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2560
+        }
+      }
   '53':
     continueonerrortype: ''
     id: '53'
@@ -1598,7 +1621,7 @@ tasks:
     isoversize: false
     nexttasks:
       '#none#':
-      - '54'
+      - "58"
     note: false
     quietmode: 0
     scriptarguments:
@@ -1612,18 +1635,23 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Initiates code execution on the client host to check if the user
-        is currently logged in to the host.
-      id: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+      description: Initiates code execution on the client host to check if the user is currently logged in to the host.
+      id: 4db7afb3-3d9f-4268-bf3f-ec92f9b1fd7c
       iscommand: true
-      name: Check if user is logged in
+      name: Execute get user sessions
       script: '|||core-run-script-execute-commands'
       type: regular
       version: -1
-    taskid: 2ad19e3a-59ad-43a6-8e87-3221a3e9fcc7
+    taskid: 4db7afb3-3d9f-4268-bf3f-ec92f9b1fd7c
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 2560\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1302,
+          "y": 2561
+        }
+      }
   '54':
     continueonerrortype: ''
     id: '54'
@@ -1642,18 +1670,23 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Retrieves results from the "quser" command for the user - which
-        can be used to tell if the user is currently logged in.
-      id: f369276b-2db7-4648-8fed-32516d14d725
+      description: Retrieves the output of the "quser" command for the user, which can indicate whether the user is currently logged in.
+      id: 9cdd928b-40cc-4abe-9f62-11968d3d8326
       iscommand: true
-      name: Get log in check result
+      name: Get user session results
       script: '|||core-get-script-execution-results'
       type: regular
       version: -1
-    taskid: f369276b-2db7-4648-8fed-32516d14d725
+    taskid: 9cdd928b-40cc-4abe-9f62-11968d3d8326
     timertriggers: []
     type: regular
-    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 2725\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1532,
+          "y": 2890
+        }
+      }
   '55':
     conditions:
     - condition:
@@ -1702,8 +1735,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Checks if the execution results show that there is currently an
-        active session for the user - which means the user is currently logged in.
+      description: Checks whether the execution results indicate an active session for the user, confirming the user is currently logged in.
       id: e53a7044-64ba-47db-8470-d9d23b475850
       iscommand: false
       name: Check for active session of the user
@@ -1712,7 +1744,13 @@ tasks:
     taskid: e53a7044-64ba-47db-8470-d9d23b475850
     timertriggers: []
     type: condition
-    view: "{\n  \"position\": {\n    \"x\": 1270,\n    \"y\": 2890\n  }\n}"
+    view: |-
+      {
+        "position": {
+          "x": 1532,
+          "y": 3014
+        }
+      }
   '57':
     continueonerrortype: ''
     id: '57'
@@ -1774,12 +1812,12 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: ''
       id: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
       iscommand: false
       name: Investigation
       type: title
       version: -1
+      description: ''
     taskid: 6effa91d-38e0-4dfb-8a92-df531a3d6b4e
     timertriggers: []
     type: title
@@ -1834,8 +1872,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Ensures that the alert contains only 1 client IP. LDAP enumeration
-        query alerts containing multiple IPs are not supported by the playbook.
+      description: Ensures that the alert contains only 1 client IP. LDAP enumeration query alerts containing multiple IPs are not supported by the playbook.
       id: a685af16-c239-4712-81ff-00dbcca78bca
       iscommand: false
       name: Ensure that a single client IP exists
@@ -1867,8 +1904,7 @@ tasks:
     skipunavailable: false
     task:
       brand: ''
-      description: Retrieves the endpoint name, agent ID and more information about
-        the IP used by the client in which the LDAP queries were executed.
+      description: Retrieves the endpoint name, agent ID and more information about the IP used by the client in which the LDAP queries were executed.
       id: 1095fda1-e8e9-4711-8634-165e8ba8345d
       iscommand: true
       name: Get endpoint information for the client IP
@@ -1879,17 +1915,86 @@ tasks:
     timertriggers: []
     type: regular
     view: "{\n  \"position\": {\n    \"x\": 240,\n    \"y\": 680\n  }\n}"
+  "58":
+    id: "58"
+    taskid: 0bbd356a-5c7d-4398-bef4-4c55ee4d5f98
+    type: condition
+    task:
+      id: 0bbd356a-5c7d-4398-bef4-4c55ee4d5f98
+      version: -1
+      name: Check if execution succeeded
+      description: Checks if action_id exists to retrieve the results of the user sessions.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "42"
+      "Yes":
+      - "54"
+    separatecontext: false
+    conditions:
+    - label: "Yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.ScriptRun.action_id
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1302,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 tests:
 - No tests (auto formatted)
 version: -1
-view: "{\n  \"linkLabelsPosition\": {\n    \"10_13_#default#\": 0.2,\n    \"10_5_Non-Server\"\
-  : 0.36,\n    \"14_50_#default#\": 0.15,\n    \"14_6_yes\": 0.49,\n    \"17_40_Remediate\"\
-  : 0.56,\n    \"17_42_#default#\": 0.14,\n    \"20_13_#default#\": 0.2,\n    \"20_21_Anomaly\"\
-  : 0.67,\n    \"22_13_#default#\": 0.26,\n    \"22_24_Exists\": 0.45,\n    \"27_13_#default#\"\
-  : 0.4,\n    \"27_28_Anomaly\": 0.52,\n    \"29_13_#default#\": 0.1,\n    \"29_31_Anomaly\"\
-  : 0.68,\n    \"35_13_#default#\": 0.32,\n    \"40_39_Isolate\": 0.53,\n    \"40_42_Do\
-  \ not isolate\": 0.27,\n    \"41_42_Do not disable\": 0.36,\n    \"41_43_Disable\"\
-  : 0.59,\n    \"49_41_Remediate\": 0.55,\n    \"49_42_#default#\": 0.15,\n    \"\
-  55_16_#default#\": 0.19,\n    \"8_9_yes\": 0.41\n  },\n  \"paper\": {\n    \"dimensions\"\
-  : {\n      \"height\": 3315,\n      \"width\": 3090,\n      \"x\": -1040,\n    \
-  \  \"y\": 30\n    }\n  }\n}"
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_13_#default#": 0.2,
+      "10_5_Non-Server": 0.36,
+      "14_50_#default#": 0.15,
+      "14_6_yes": 0.49,
+      "17_40_Remediate": 0.56,
+      "17_42_#default#": 0.14,
+      "20_13_#default#": 0.2,
+      "20_21_Anomaly": 0.67,
+      "22_13_#default#": 0.26,
+      "22_24_Exists": 0.45,
+      "27_13_#default#": 0.4,
+      "27_28_Anomaly": 0.52,
+      "29_13_#default#": 0.1,
+      "29_31_Anomaly": 0.68,
+      "35_13_#default#": 0.32,
+      "40_39_Isolate": 0.53,
+      "40_42_Do not isolate": 0.27,
+      "41_42_Do not disable": 0.16,
+      "41_43_Disable": 0.59,
+      "49_41_Remediate": 0.55,
+      "49_42_#default#": 0.15,
+      "55_16_#default#": 0.19,
+      "58_42_#default#": 0.2,
+      "8_9_yes": 0.41
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3348,
+        "width": 3375,
+        "x": -1040,
+        "y": 30
+      }
+    }
+  }
+contentitemexportablefields:
+  contentitemfields: {}

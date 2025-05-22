@@ -1,16 +1,15 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
+""" CONSTANTS """
 
-''' CONSTANTS '''
-
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 TOKEN_EXPIRY_BUFFER = timedelta(seconds=10)
 DEFAULT_LIMIT = 50
 MAX_LIMIT = 3000
 
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -18,9 +17,8 @@ class Client(BaseClient):
     Exabeam Client: A Python Wrapper for Interacting with the Exabeam API
     """
 
-    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool,
-                 proxy: bool):
-        super().__init__(base_url=f'{base_url}', verify=verify, proxy=proxy, timeout=20)
+    def __init__(self, base_url: str, client_id: str, client_secret: str, verify: bool, proxy: bool):
+        super().__init__(base_url=f"{base_url}", verify=verify, proxy=proxy, timeout=20)
         self.client_id = client_id
         self.client_secret = client_secret
         self.access_token = None
@@ -69,7 +67,7 @@ class Client(BaseClient):
             data=data,
         )
 
-        new_token = response.get('access_token')
+        new_token = response.get("access_token")
         expires_in = response.get("expires_in")
         current_time_utc = datetime.now(timezone.utc)
         expiry_time_utc = current_time_utc + timedelta(seconds=expires_in)
@@ -150,10 +148,7 @@ class Client(BaseClient):
         Retrieves details of a specific case by its ID.
         """
         full_url = f"{self._base_url}/threat-center/v1/cases/{case_id}"
-        response = self.request(
-            method="GET",
-            full_url=full_url
-        )
+        response = self.request(method="GET", full_url=full_url)
         return response
 
     def alert_search_request(self, data_dict: dict) -> dict:
@@ -162,7 +157,11 @@ class Client(BaseClient):
         """
         data = json.dumps(data_dict)
         full_url = f"{self._base_url}/threat-center/v1/search/alerts"
-        response = self.request(method="POST", full_url=full_url, data=data,)
+        response = self.request(
+            method="POST",
+            full_url=full_url,
+            data=data,
+        )
         return response
 
     def create_table_record(self, table_id, json_data):
@@ -258,12 +257,12 @@ def transform_string(input_str: str) -> str:
         transform_string("status:true") -> 'status:true'
         transform_string("message:Hello World") -> 'message:"Hello World"'
     """
-    if ':' not in input_str:
+    if ":" not in input_str:
         return input_str
-    key, value = input_str.split(':', 1)
+    key, value = input_str.split(":", 1)
     value = value.strip()
-    if value.lower() in ['true', 'false']:
-        return f'{key}:{value.lower()}'
+    if value.lower() in ["true", "false"]:
+        return f"{key}:{value.lower()}"
     else:
         return f'{key}:"{value}"'
 
@@ -278,7 +277,7 @@ def process_string(input_str: str) -> str:
     Returns:
         str: The processed string where each part is transformed using the transform_string function.
     """
-    logical_operators = ['AND', 'OR', 'NOT', 'TO']
+    logical_operators = ["AND", "OR", "NOT", "TO"]
     transformed_parts = []
     start_index = 0
 
@@ -296,7 +295,7 @@ def process_string(input_str: str) -> str:
         if remaining_part:
             transformed_parts.append(transform_string(remaining_part))
 
-    return ' '.join(transformed_parts)
+    return " ".join(transformed_parts)
 
 
 def _parse_entry(entry: dict, fields_to_filter: list[str] = None):  # type: ignore
@@ -386,7 +385,7 @@ def get_limit(args: dict) -> int:
         int: The limit value if specified and less than or equal to 3000; otherwise, returns 3000 as the maximum limit.
         If the 'limit' argument is not present in the dictionary or is None, returns 50 as the default limit.
     """
-    if limit := arg_to_number(args.get('limit')):
+    if limit := arg_to_number(args.get("limit")):
         return min(int(limit), MAX_LIMIT)
 
     return DEFAULT_LIMIT
@@ -394,9 +393,10 @@ def get_limit(args: dict) -> int:
 
 def error_fixes(error: str):
     new_error = ""
-    if 'not enough values to unpack' in error:
-        new_error = ("Recommendation:\nValidate the query argument "
-                     "against the syntax documentation in the integration description.")
+    if "not enough values to unpack" in error:
+        new_error = (
+            "Recommendation:\nValidate the query argument against the syntax documentation in the integration description."
+        )
 
     return new_error
 
@@ -442,8 +442,14 @@ def convert_all_timestamp_to_datestring(incident: dict) -> dict:
     Returns:
         dict: The incident dictionary with timestamp fields converted to date strings.
     """
-    keys = ['caseCreationTimestamp', 'lastModifiedTimestamp', 'creationTimestamp',
-            'ingestTimestamp', 'approxLogTime', 'lastUpdated']
+    keys = [
+        "caseCreationTimestamp",
+        "lastModifiedTimestamp",
+        "creationTimestamp",
+        "ingestTimestamp",
+        "approxLogTime",
+        "lastUpdated",
+    ]
     for key in keys:
         if key in incident:
             incident[key] = timestamp_to_datestring(incident[key] / 1000, date_format=DATE_FORMAT)
@@ -498,10 +504,7 @@ def update_last_run(cases: list, end_time: str) -> dict:
         last_run_time = end_time
         list_ids = []
 
-    last_run = {
-        "time": last_run_time,
-        "last_ids": list_ids
-    }
+    last_run = {"time": last_run_time, "last_ids": list_ids}
     return last_run
 
 
@@ -521,10 +524,12 @@ def format_incidents(cases: list[dict]) -> list[dict]:
     for case in cases:
         case = convert_all_timestamp_to_datestring(case)
         alert_name = case.get("alertName", "")
-        incidents.append({
-            "Name": alert_name,
-            "rawJSON": json.dumps(case),
-        })
+        incidents.append(
+            {
+                "Name": alert_name,
+                "rawJSON": json.dumps(case),
+            }
+        )
     return incidents
 
 
@@ -533,13 +538,13 @@ def format_record_keys(dict_list):
     for input_dict in dict_list:
         new_dict = {}
         for key, value in input_dict.items():
-            new_key = key.replace('_', ' ').title()
+            new_key = key.replace("_", " ").title()
             new_dict[new_key] = value
         new_list.append(new_dict)
     return new_list
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def event_search_command(client: Client, args: dict) -> CommandResults:
@@ -553,22 +558,22 @@ def event_search_command(client: Client, args: dict) -> CommandResults:
     Returns:
         CommandResults: A CommandResults object containing the search results in both structured and human-readable formats.
     """
-    start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-    end_time = get_date(args.get('end_time', 'today'), "end_time")
+    start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
+    end_time = get_date(args.get("end_time", "today"), "end_time")
     if start_time > end_time:
         raise DemistoException("Start time must be before end time.")
 
     kwargs = {
-        'filter': process_string(args.get('query', '')),
-        'fields': argToList(args.get('fields', '*')),
-        'limit': get_limit(args),
-        'startTime': start_time,
-        'endTime': end_time,
+        "filter": process_string(args.get("query", "")),
+        "fields": argToList(args.get("fields", "*")),
+        "limit": get_limit(args),
+        "startTime": start_time,
+        "endTime": end_time,
     }
-    group_by = args.get('group_by')
+    group_by = args.get("group_by")
     if group_by:
         group_list = argToList(group_by)
-        kwargs.update({'groupBy': group_list, 'fields': group_list})
+        kwargs.update({"groupBy": group_list, "fields": group_list})
 
     response = client.event_search_request(kwargs)
 
@@ -619,19 +624,19 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
             data_response = [client.get_alert_request(item_id)]
         table_name = f"{item_type.capitalize()}"
     else:
-        start_time = get_date(args.get('start_time', '7 days ago'), "start_time")
-        end_time = get_date(args.get('end_time', 'today'), "end_time")
+        start_time = get_date(args.get("start_time", "7 days ago"), "start_time")
+        end_time = get_date(args.get("end_time", "today"), "end_time")
         if start_time > end_time:
             raise DemistoException("The start time argument must be earlier than the end time.")
         kwargs = {
-            'filter': process_string(args.get('query') or ""),
-            'fields': argToList(args.get('fields', '*')),
-            'startTime': start_time,
-            'endTime': end_time,
+            "filter": process_string(args.get("query") or ""),
+            "fields": argToList(args.get("fields", "*")),
+            "startTime": start_time,
+            "endTime": end_time,
         }
         all_results = argToBoolean(args.get("all_results", False))
         if not all_results:
-            kwargs['limit'] = get_limit(args)
+            kwargs["limit"] = get_limit(args)
         if order_by := args.get("order_by", ""):
             kwargs["orderBy"] = argToList(order_by)
 
@@ -645,9 +650,21 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
         data_response = response.get("rows", [])
         table_name = f"{item_type.capitalize()}s"
 
-    fields_to_human_readable = ["caseId", "alertId", "riskScore", "priority", "groupedbyValue", "groupedbyKey",
-                                "rules", "mitres", "useCases", "users", "stage", "queue"]
-    human_readable = [_parse_entry(row, fields_to_human_readable)for row in data_response]
+    fields_to_human_readable = [
+        "caseId",
+        "alertId",
+        "riskScore",
+        "priority",
+        "groupedbyValue",
+        "groupedbyKey",
+        "rules",
+        "mitres",
+        "useCases",
+        "users",
+        "stage",
+        "queue",
+    ]
+    human_readable = [_parse_entry(row, fields_to_human_readable) for row in data_response]
 
     include_related_rules = argToBoolean(args.get("include_related_rules", False))
     if not include_related_rules:
@@ -657,7 +674,7 @@ def generic_search_command(client: Client, args: dict, item_type: str) -> Comman
     return CommandResults(
         outputs_prefix=f"ExabeamPlatform.{item_type.capitalize()}",
         outputs=data_response,
-        readable_output=tableToMarkdown(name=table_name, t=human_readable)
+        readable_output=tableToMarkdown(name=table_name, t=human_readable),
     )
 
 
@@ -677,7 +694,7 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
             - outputs: The raw data response from the API.
             - readable_output: A Markdown table of the context tables.
     """
-    if (table_id := args.get("table_id")):
+    if table_id := args.get("table_id"):
         response = client.get_context_table(table_id)
         readable_output = _parse_entry(response)
         table_name = "Table"
@@ -700,7 +717,7 @@ def context_table_list_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="ExabeamPlatform.ContextTable",
         outputs=response,
-        readable_output=tableToMarkdown(name=table_name, t=readable_output)
+        readable_output=tableToMarkdown(name=table_name, t=readable_output),
     )
 
 
@@ -724,9 +741,7 @@ def context_table_delete_command(client: Client, args: dict) -> CommandResults:
     response = client.delete_context_table(table_id, params)
     table_id_response = response.get("id", None)
 
-    return CommandResults(
-        readable_output=f"The context table with ID {table_id_response} has been successfully deleted."
-    )
+    return CommandResults(readable_output=f"The context table with ID {table_id_response} has been successfully deleted.")
 
 
 def table_record_list_command(client: Client, args: dict) -> CommandResults:
@@ -756,10 +771,7 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
         offset = (page - 1) * limit
 
     while len(records) < limit:
-        params = {
-            'limit': min(limit - len(records), MAX_LIMIT),
-            'offset': offset
-        }
+        params = {"limit": min(limit - len(records), MAX_LIMIT), "offset": offset}
 
         response = client.get_table_record_list(table_id, params)
         fetched_records = response.get("records", [])
@@ -774,7 +786,7 @@ def table_record_list_command(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="ExabeamPlatform.Record",
         outputs=records,
-        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=readable_output)
+        readable_output=tableToMarkdown(name=f"Records of table id: {table_id}", t=readable_output),
     )
 
 
@@ -814,8 +826,10 @@ def table_record_create_command(args: dict, client: Client) -> PollResult:
 
     tracker_response = client.check_tracker_id(tracker_id)
     upload_status = tracker_response.get("uploadStatus")
-    human_readable = {"Total Uploaded": tracker_response.get(
-        "totalUploaded"), "Total Errors": tracker_response.get("totalErrors")}
+    human_readable = {
+        "Total Uploaded": tracker_response.get("totalUploaded"),
+        "Total Errors": tracker_response.get("totalErrors"),
+    }
 
     return PollResult(
         response=CommandResults(readable_output=tableToMarkdown("Completed", human_readable)),
@@ -851,8 +865,14 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     start_time, end_time = get_fetch_run_time_range(last_run=last_run, first_fetch=first_fetch, date_format=DATE_FORMAT)
     demisto.debug(f"Fetching incidents between start_time={start_time} and end_time={end_time}")
 
-    args = {"order_by": "caseCreationTimestamp", "query": filter_query, "start_time": start_time, "end_time": end_time,
-            "limit": limit, "include_related_rules": True}
+    args = {
+        "order_by": "caseCreationTimestamp",
+        "query": filter_query,
+        "start_time": start_time,
+        "end_time": end_time,
+        "limit": limit,
+        "include_related_rules": True,
+    }
 
     cases = case_search_command(client, args).outputs
     if not isinstance(cases, list):
@@ -870,7 +890,7 @@ def fetch_incidents(client: Client, params: dict[str, str], last_run) -> tuple[l
     return incidents, last_run
 
 
-def test_module(client: Client) -> str:    # pragma: no cover
+def test_module(client: Client) -> str:  # pragma: no cover
     """test function
 
     Args:
@@ -882,55 +902,52 @@ def test_module(client: Client) -> str:    # pragma: no cover
 
     """
     if client.access_token and generic_search_command(client, {}, "case"):
-        return 'ok'
+        return "ok"
     else:
-        raise DemistoException('Access Token Generation Failure.')
+        raise DemistoException("Access Token Generation Failure.")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
-    credentials = params.get('credentials', {})
-    client_id = credentials.get('identifier')
-    client_secret = credentials.get('password')
-    base_url = params.get('url', '')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    credentials = params.get("credentials", {})
+    client_id = credentials.get("identifier")
+    client_secret = credentials.get("password")
+    base_url = params.get("url", "")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
 
     try:
         client = Client(
-            base_url.rstrip('/'),
-            verify=verify_certificate,
-            client_id=client_id,
-            client_secret=client_secret,
-            proxy=proxy)
+            base_url.rstrip("/"), verify=verify_certificate, client_id=client_id, client_secret=client_secret, proxy=proxy
+        )
 
-        demisto.debug(f'Command being called is {demisto.command()}')
+        demisto.debug(f"Command being called is {demisto.command()}")
 
-        if command == 'test-module':
+        if command == "test-module":
             return_results(test_module(client))
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
             incidents, next_run = fetch_incidents(client, params, last_run)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif command == 'exabeam-platform-event-search':
+        elif command == "exabeam-platform-event-search":
             return_results(event_search_command(client, args))
-        elif command == 'exabeam-platform-case-search':
+        elif command == "exabeam-platform-case-search":
             return_results(case_search_command(client, args))
-        elif command == 'exabeam-platform-alert-search':
+        elif command == "exabeam-platform-alert-search":
             return_results(alert_search_command(client, args))
-        elif command == 'exabeam-platform-context-table-list':
+        elif command == "exabeam-platform-context-table-list":
             return_results(context_table_list_command(client, args))
-        elif command == 'exabeam-platform-context-table-delete':
+        elif command == "exabeam-platform-context-table-delete":
             return_results(context_table_delete_command(client, args))
-        elif command == 'exabeam-platform-table-record-list':
+        elif command == "exabeam-platform-table-record-list":
             return_results(table_record_list_command(client, args))
-        elif command == 'exabeam-platform-table-record-create':
+        elif command == "exabeam-platform-table-record-create":
             return_results(table_record_create_command(args, client))
         else:
             raise NotImplementedError(f"Command {command} is not supported")
@@ -938,11 +955,11 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         recommend = error_fixes(str(e))
         demisto.info(str(e))
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}\n{recommend}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}\n{recommend}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

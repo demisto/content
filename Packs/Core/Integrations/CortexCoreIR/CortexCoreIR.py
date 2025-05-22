@@ -1,3 +1,4 @@
+from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from CoreIRApiModule import *
@@ -28,6 +29,15 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
+COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
+EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
+    "endpoint_id",
+    "command",
+    "command_output",
+    "endpoint_ip_address",
+    "endpoint_name",
+    "endpoint_status",
+]
 
 
 class Client(CoreClient):
@@ -40,7 +50,7 @@ class Client(CoreClient):
         except Exception as err:
             if "API request Unauthorized" in str(err):
                 # this error is received from the Core server when the client clock is not in sync to the server
-                raise DemistoException(f"{str(err)} please validate that your both XSOAR and Core server clocks are in sync")
+                raise DemistoException(f"{err!s} please validate that your both XSOAR and Core server clocks are in sync")
             else:
                 raise
 
@@ -173,6 +183,139 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
+def core_execute_command_reformat_readable_output(script_res: list) -> str:
+    """
+    Reformat the human-readable output of the 'core_execute_command' command
+    so that each command appears as a separate row in the table.
+
+    Args:
+        script_res (list): The result from the polling command.
+
+    Returns:
+        str: Reformatted human-readable output
+    """
+    reformatted_results = []
+    for response in script_res:
+        results = response.outputs.get("results")
+        for res in results:
+            # for each result, get only the data we want to present to the user
+            reformatted_result = {}
+            for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
+                reformatted_result[key] = res.get(key)
+            # remove the underscore prefix from the command name
+            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
+            reformatted_results.append(reformatted_result)
+    return tableToMarkdown(
+        f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
+        reformatted_results,
+        EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+
+def core_execute_command_reformat_command_data(result: dict) -> dict:
+    """
+    Create a dictionary containing all relevant command data from the result.
+
+    Args:
+        result (dict): Data from the execution of a command on a specific endpoint.
+
+    Returns:
+        dict: all relevant command data from the result
+    """
+    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
+    for key in COMMAND_DATA_KEYS:
+        reformatted_command[key] = result.get(key)
+    return reformatted_command
+
+
+def core_execute_command_reformat_outputs(script_res: list) -> list:
+    """
+    Reformats the context outputs so that each endpoint has its own result section, without any duplicated data.
+
+    Args:
+        script_res (list): The result from the polling command.
+
+    Returns:
+        list: Reformatted context outputs
+    """
+    new_results: dict[str, Any] = {}
+    for response in script_res:
+        results = response.outputs.get("results")
+        for res in results:
+            endpoint_id = res.get("endpoint_id")
+            if endpoint_id in new_results:
+                # if the endpoint already exists - adding the command data to new_results (the endpoint data already in)
+                new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
+                # the context output include for each result a field with the name of each command, we want to remove it
+                command_name = res.get("command")
+                new_results[endpoint_id].pop(command_name)
+            else:
+                # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
+                # relocate all the data related to the command to be under executed_command
+                reformatted_res = deepcopy(res)
+                reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
+                # remove from reformatted_res all the data we put under executed_command
+                command_name = reformatted_res.pop("command")
+                reformatted_res.pop(command_name)
+                for key in COMMAND_DATA_KEYS:
+                    reformatted_res.pop(key)
+                new_results[endpoint_id] = reformatted_res
+    # reformat new_results from {"endpoint_id_1": {values_1}, "endpoint_id_2": {values_2}}
+    # to [{values_1}, {values_2}] (values include the endpoint_id)
+    reformatted_results = [new_results[i] for i in new_results]
+    return reformatted_results
+
+
+def core_execute_command_reformat_args(args: dict) -> dict:
+    """
+    Create new dict with the original args and add
+    is_core, script_uid and parameters fields to it before starting the polling.
+
+    Args:
+        args (dict): Dictionary containing the arguments for the command.
+
+    Returns:
+        dict: reformatted args.
+    """
+    commands = args.get("command")
+    if not commands:
+        raise DemistoException("'command' is a required argument.")
+    # the value of script_uid is the Unique identifier of execute_commands script.
+    reformatted_args = args | {"is_core": True, "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf"}
+    is_raw_command = argToBoolean(args.get("is_raw_command", False))
+    commands_list = [commands] if is_raw_command else argToList(commands, args.get("command_separator", ","))
+    if args.get("command_type") == "powershell":
+        commands_list = [form_powershell_command(command) for command in commands_list]
+    reformatted_args["parameters"] = json.dumps({"commands_list": commands_list})
+    return reformatted_args
+
+
+def core_execute_command_command(client: Client, args: dict) -> PollResult:
+    """
+    Run executed_command script and reformat it's results.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+
+    Returns:
+        PollResult: Reformatted script_run_polling_command result.
+    """
+    reformatted_args = core_execute_command_reformat_args(args)
+    script_res = script_run_polling_command(reformatted_args, client, statuses=("PENDING", "IN_PROGRESS", "PENDING_ABORT"))
+    # script_res = [CommandResult] if it's the final result (ScriptResult)
+    # else if the polling still continue, script_res = CommandResult
+    if isinstance(script_res, list):
+        script_res[0].readable_output = core_execute_command_reformat_readable_output(script_res)
+        script_res[0].outputs["results"] = core_execute_command_reformat_outputs(script_res)
+    elif isinstance(script_res, CommandResults):
+        # delete ScriptRun from context data
+        script_res.outputs = None
+    return script_res
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -230,13 +373,13 @@ def main():  # pragma: no cover
         elif command == "core-endpoint-alias-change":
             return_results(endpoint_alias_change_command(client, **args))
 
-        elif command == "core-isolate-endpoint":
+        elif command == "core-isolate-endpoint" or command == "core-isolate-endpoint-quick-action":
             polling_args = {**args, "endpoint_id_list": args.get("endpoint_id")}
             return_results(
                 run_polling_command(
                     client=client,
                     args=polling_args,
-                    cmd="core-isolate-endpoint",
+                    cmd=command,
                     command_function=isolate_endpoint_command,
                     command_decision_field="action_id",
                     results_function=get_endpoints_command,
@@ -296,13 +439,13 @@ def main():  # pragma: no cover
         elif command == "core-allowlist-files":
             return_results(allowlist_files_command(client, args))
 
-        elif command == "core-quarantine-files":
+        elif command == "core-quarantine-files" or command == "core-quarantine-files-quick-action":
             polling_args = {**args, "endpoint_id": argToList(args.get("endpoint_id_list"))[0]}
             return_results(
                 run_polling_command(
                     client=client,
                     args=polling_args,
-                    cmd="core-quarantine-files",
+                    cmd=command,
                     command_function=quarantine_files_command,
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
@@ -314,12 +457,12 @@ def main():  # pragma: no cover
         elif command == "core-get-quarantine-status":
             return_results(get_quarantine_status_command(client, args))
 
-        elif command == "core-restore-file":
+        elif command == "core-restore-file" or command == "core-restore-file-quick-action":
             return_results(
                 run_polling_command(
                     client=client,
                     args=args,
-                    cmd="core-restore-file",
+                    cmd=command,
                     command_function=restore_file_command,
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
@@ -328,12 +471,12 @@ def main():  # pragma: no cover
                 )
             )
 
-        elif command == "core-endpoint-scan":
+        elif command == "core-endpoint-scan" or command == "core-endpoint-scan-quick-action":
             return_results(
                 run_polling_command(
                     client=client,
                     args=args,
-                    cmd="core-endpoint-scan",
+                    cmd=command,
                     command_function=endpoint_scan_command,
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
@@ -354,12 +497,12 @@ def main():  # pragma: no cover
         elif command == "core-get-endpoint-device-control-violations":
             return_outputs(*get_endpoint_device_control_violations_command(client, args))
 
-        elif command == "core-retrieve-files":
+        elif command == "core-retrieve-files" or command == "core-retrieve-files-quick-action":
             return_results(
                 run_polling_command(
                     client=client,
                     args=args,
-                    cmd="core-retrieve-files",
+                    cmd=command,
                     command_function=retrieve_files_command,
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
@@ -389,7 +532,7 @@ def main():  # pragma: no cover
         elif command == "core-run-script":
             return_results(run_script_command(client, args))
 
-        elif command == "core-script-run":
+        elif command == "core-script-run" or command == "core-script-run-quick-action":
             args = args | {"is_core": True}
             return_results(script_run_polling_command(args, client))
 
@@ -537,14 +680,14 @@ def main():  # pragma: no cover
                 )
             )
 
-        elif command == "core-terminate-causality":
+        elif command == "core-terminate-causality" or command == "core-terminate-causality-quick-action":
             if not is_demisto_version_ge(version=TERMINATE_SERVER_VERSION, build_number=TERMINATE_BUILD_NUM):
                 raise DemistoException("This command is only available for XSIAM 2.4 and above")
             return_results(
                 run_polling_command(
                     client=client,
                     args=args,
-                    cmd="core-terminate-causality",
+                    cmd=command,
                     command_function=terminate_causality_command,
                     command_decision_field="action_id",
                     results_function=action_status_get_command,
@@ -556,6 +699,9 @@ def main():  # pragma: no cover
 
         elif command == "core-get-asset-details":
             return_results(get_asset_details_command(client, args))
+
+        elif command == "core-execute-command":
+            return_results(core_execute_command_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
