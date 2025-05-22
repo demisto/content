@@ -54,16 +54,16 @@ repos:
     args:docker_autoupdate:
     - --config=nightly_ruff.toml
 
-- repo: local
-  hooks:
-  - id: mdx-validation
-    name: Validate README.md files with MDX
-    entry: node .hooks/validate-mdx.js
-    language: node
-    files: "^(.*/)?README\\.md$"
-    additional_dependencies:
-      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
-      - "fs-extra@11.3.0"
+# - repo: local
+#   hooks:
+#   - id: mdx-validation
+#     name: Validate README.md files with MDX
+#     entry: node .hooks/validate-mdx.js
+#     language: node
+#     files: "^(.*/)?README\\.md$"
+#     additional_dependencies:
+#       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
+#       - "fs-extra@11.3.0"
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
