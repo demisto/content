@@ -18,6 +18,7 @@ INTEGRATION_COMMAND_NAME = "infoblox"
 INTEGRATION_CONTEXT_NAME = "Infoblox"
 INTEGRATION_HOST_RECORDS_CONTEXT_NAME = "Host"
 INTEGRATION_NETWORK_INFO_CONTEXT_KEY = "NetworkInfo"
+INTEGRATION_DNS_ENTRIES_CONTEXT_KEY = "Records"
 INTEGRATION_AUTHORIZATION_EXCEPTION_MESSAGE = "Authorization error, check your credentials."
 
 # COMMON RAW RESULT KEYS
@@ -642,6 +643,64 @@ class InfoBloxNIOSClient(BaseClient):
                 request_params.update(e)
 
         return self._http_request("GET", "network", params=request_params)
+
+    def get_record(
+        self,
+        name_search: str | None,
+        ip4_search: str | None,
+        ip6_search: str | None,
+        record_type: str | None,
+        max_results: Optional[int] = INTEGRATION_MAX_RESULTS_DEFAULT,
+    ) -> dict:
+        """
+        Get the network information.
+
+        Args:
+        - `name_search` (``str | None``): Filter DNS Entries by Name.
+        - `ip4_search` (``str | None``): Filter DNS Entries by IPv4.
+        - `ip6_search` (``str | None``): Filter DNS Entries by IPv6.
+        - `record_type` (``str | None``): Record Type to list e.g. "a", "aaaa", "cname"
+        - `max_results` (``int``): maximum number of results to return, 0 for unlimited.
+
+        Returns:
+        - Response JSON
+        """
+        request_params = assign_params(_max_results=max_results)
+        if "name~" in request_params:
+            request_params.pop("name~")
+        if "ipv4addr~" in request_params:
+            request_params.pop("ipv4addr~")
+        if "ipv6addr~" in request_params:
+            request_params.pop("ipv6addr~")
+        request_params["_page_id"] = None
+        if max_results == 0:
+            request_params["_paging"] = 1
+            request_params["_max_results"] = 1000
+        else:
+            request_params["_paging"] = None
+        if name_search:
+            request_params["name~"] = name_search
+        if ip4_search and record_type == "a":
+            request_params["ipv4addr~"] = ip4_search
+        if ip6_search and record_type == "aaaa":
+            request_params["ipv6addr~"] = ip6_search
+        if request_params["_paging"]:
+            result = []
+            while True:
+                resp = self._http_request("GET", f"record:{record_type}", params=request_params)
+                if len(resp["result"]) > 0:
+                    result.extend(resp["result"])
+                else:
+                    break
+                if "next_page_id" in resp:
+                    request_params['_page_id'] = resp['next_page_id']
+                else:
+                    break
+            return result
+
+        else:
+            resp = self._http_request("GET", f"record:{record_type}", params=request_params)
+            return resp["result"]
 
 
 """ HELPER FUNCTIONS """
@@ -1582,6 +1641,50 @@ def get_network_info_command(client: InfoBloxNIOSClient, args: dict) -> tuple[st
     return hr, context, raw_response
 
 
+def get_record_command(client: InfoBloxNIOSClient, args: dict) -> tuple[str, dict, dict[str, Any]]:
+    """
+    Get DNS Records command.
+
+    Args:
+    - `client` (``InfoBloxNIOSClient``): Client object
+    - `args` (``dict``): Usually demisto.args()
+
+    Returns:
+    - `tuple[str, Dict, Dict]`: The human readable output, the records and the raw response.
+    """
+
+    record_type = args.get("record_type")
+    name_search = args.get("name_search")
+    ip4_search = args.get("ip4_search")
+    ip6_search = args.get("ip6_search")
+    max_results = arg_to_number(args.get("max_results", INTEGRATION_MAX_RESULTS_DEFAULT))
+
+    record_types = list(record_type.lower().split(","))
+    records = []
+    for record_type in record_types:
+        raw_response = client.get_record(
+            name_search=name_search,
+            ip4_search=ip4_search,
+            ip6_search=ip6_search,
+            record_type=record_type,
+            max_results=max_results,
+        )
+        records.extend(raw_response)
+
+    if "Error" in raw_response:
+       msg = raw_response.get("text")
+       raise DemistoException(f"Error retrieving host records: {msg}", res=raw_response)
+
+    if not records:
+        hr = "No dns entries found"
+        context = {}
+    else:
+        hr = tableToMarkdown("DNS entries", records)
+        context = {f"{INTEGRATION_CONTEXT_NAME}.{INTEGRATION_DNS_ENTRIES_CONTEXT_KEY}": records}
+
+    return hr, context, raw_response
+
+
 """ COMMANDS MANAGER / SWITCH PANEL """
 
 
@@ -1622,6 +1725,7 @@ def main():  # pragma: no cover
         f"{INTEGRATION_COMMAND_NAME}-delete-rpz-rule": delete_rpz_rule_command,
         f"{INTEGRATION_COMMAND_NAME}-list-host-info": get_host_records_command,
         f"{INTEGRATION_COMMAND_NAME}-list-network-info": get_network_info_command,
+        f"{INTEGRATION_COMMAND_NAME}-list-records": get_record_command,
     }
     try:
         if command in commands:
