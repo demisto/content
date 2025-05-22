@@ -939,7 +939,7 @@ def fetch_incidents(
         last_fetch = datetime.fromisoformat(last_fetch[:-1]).astimezone(timezone.utc)
 
         current_datetime = get_current_datetime()
-        start_time = last_fetch
+        start_time = last_fetch + timedelta(milliseconds=1) # Not to overlap with previous polling window
         end_time = get_current_datetime()
 
         if polling_lag is not None:
@@ -954,7 +954,7 @@ def fetch_incidents(
         threat_incidents, abuse_campaign_incidents, account_takeover_cases_incidents = [], [], []
 
         if fetch_threats and current_pending_incidents_to_fetch > 0:
-            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lt {end_timestamp}"
+            threats_filter = f"latestTimeRemediated gte {start_timestamp} and latestTimeRemediated lte {end_timestamp}"
             threats_response = client.get_paginated_threats_list(
                 filter_=threats_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             threat_incidents = generate_threat_incidents(
@@ -963,14 +963,14 @@ def fetch_incidents(
         current_pending_incidents_to_fetch -= len(threat_incidents)
 
         if fetch_abuse_campaigns and current_pending_incidents_to_fetch > 0:
-            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lt {end_timestamp}"
+            abuse_campaigns_filter = f"lastReportedTime gte {start_timestamp} and lastReportedTime lte {end_timestamp}"
             abuse_campaigns_response = client.get_paginated_abusecampaigns_list(
                 filter_=abuse_campaigns_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             abuse_campaign_incidents = generate_abuse_campaign_incidents(client, abuse_campaigns_response.get('campaigns', []))
         current_pending_incidents_to_fetch -= len(abuse_campaign_incidents)
 
         if fetch_account_takeover_cases and current_pending_incidents_to_fetch > 0:
-            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lt {end_timestamp}"
+            account_takeover_cases_filter = f"lastModifiedTime gte {start_timestamp} and lastModifiedTime lte {end_timestamp}"
             account_takeover_cases_response = client.get_paginated_cases_list(
                 filter_=account_takeover_cases_filter, max_incidents_to_fetch=current_pending_incidents_to_fetch)
             account_takeover_cases_incidents = generate_account_takeover_cases_incidents(
