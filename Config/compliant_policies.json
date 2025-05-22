@@ -1,0 +1,104 @@
+{
+    "policies": [
+        {
+            "name": "Users Soft Remediation",
+            "category": "IAM",
+            "arguments": [
+                "username",
+                "user",
+                "user_name",
+                "target-mailbox",
+                "userId",
+                "user_key",
+                "first_name",
+                "last_name",
+                "user_id",
+                "email_address",
+                "destination-mailbox",
+                "source-mailbox",
+                "primary_email",
+                "phone_number",
+                "recovery_email",
+                "recovery_phone",
+                "admin_email",
+                "user_ids",
+                "domain",
+                "computer",
+                "tenant_name",
+                "account_id",
+                "device_id",
+                "realname",
+                "email",
+                "base-dn"
+            ]
+        },
+        {
+            "name": "Users Hard Remediation",
+            "category": "IAM",
+            "arguments": [
+                "username",
+                "base-dn",
+                "user",
+                "user-profile",
+                "user-dn",
+                "user-name",
+                "user_ids",
+                "userName",
+                "emailaddress",
+                "radiususername",
+                "userId",
+                "groups"
+            ]
+        },
+        {
+            "name": "IP Blockage",
+            "category": "EndPoint",
+            "arguments": [
+                "ip",
+                "ip_list",
+                "address_group",
+                "addresses",
+                "ip_address",
+                "host_address"
+            ]
+        },
+        {
+            "name": "EndPoint Isolation",
+            "category": "EndPoint",
+            "arguments": [
+                "endpoint_id",
+                "machine_id",
+                "agentId",
+                "agent_id",
+                "endpoint",
+                "device_ids",
+                "instanceIds",
+                "roleArn",
+                "hostName",
+                "site_id",
+                "assets",
+                "asset_group_ids"
+            ]
+        },
+        {
+            "name": "File Quarantine",
+            "category": "EndPoint",
+            "arguments": []
+        },
+        {
+            "name": "Domain Blockage",
+            "category": "Network",
+            "arguments": [
+                "host_groups",
+                "device_id",
+                "destination_domain",
+                "destination_url",
+                "destination_ip",
+                "destination_ids",
+                "ip_addresses",
+                "domain_names",
+                "url"
+            ]
+        }
+    ]
+}

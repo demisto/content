@@ -115,6 +115,8 @@ script:
     - name: base-dn
       description: Root (for example, DC=domain,DC=com).
     description: Expires the password of an Active Directory user.
+    compliantpolicies:
+    - Users Soft Remediation
   - name: ad-create-user
     arguments:
     - name: username
@@ -281,6 +283,8 @@ script:
     - name: base-dn
       description: Root. For example, DC=domain,DC=com. By default, the Base DN configured for the instance is used.
     description: Unlocks a previously locked Active Directory user account.
+    compliantpolicies:
+    - Users Soft Remediation
   - name: ad-set-new-password
     arguments:
     - name: username
