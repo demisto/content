@@ -524,7 +524,6 @@ def handle_alert_events_query(
 
     return alert
 
-
 def fetch_alerts_with_pagination(
     client: Client,
     alert_status: str | None,
@@ -1088,6 +1087,7 @@ def get_modified_remote_data_command(client: Client, args):
     last_update_time = f"{converted_time},now"
 
     raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
+
 
     # Append the modified alert ids to the list
     # We can have alerts in this list that are already in the cache

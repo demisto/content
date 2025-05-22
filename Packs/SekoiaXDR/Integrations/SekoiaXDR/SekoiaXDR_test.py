@@ -287,6 +287,35 @@ def test_check_id_in_context_without_mirroring(context_cache_without_mirroring):
         "ALL1A4SKUiU2", context_cache_without_mirroring
     )
 
+def test_fetch_alerts_with_pagination(client, requests_mock):
+    first_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_first_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=0",
+        json=first_mock_response,
+    )
+
+    second_mock_response = util_load_json("test_data/SekoiaXDR_get_alerts_second_offset_call.json")
+    requests_mock.get(
+        MOCK_URL + "/v1/sic/alerts?limit=1&sort=created_at&offset=1",
+        json=second_mock_response,
+    )
+
+    args = {
+        "alert_status": None,
+        "alert_urgency": None,
+        "alert_type": None,
+        "max_results": 1,
+        "alerts_created_at": None,
+        "alerts_updated_at": None,
+        "sort_by": "created_at",
+    }
+    result = SekoiaXDR.fetch_alerts_with_pagination(client=client, **args)
+
+    assert len(result) == 2
+    assert result[0]["uuid"] == "80ee2ccc-11e3-4416"
+    assert result[1]["uuid"] == "07fe3fc0-ddb7-44f3"
+
+
 
 """ TEST COMMANDS FUNCTIONS """
 
