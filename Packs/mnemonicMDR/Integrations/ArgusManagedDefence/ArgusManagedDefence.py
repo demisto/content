@@ -131,7 +131,7 @@ def parse_first_fetch(first_fetch: Any) -> Any:
 
 
 def build_tags_from_list(lst: list) -> list[dict] | None:
-    if not lst:
+    if not lst or lst is None:
         return None
     if len(lst) % 2 != 0:
         raise ValueError("Key:value pairs not divisible by two")
@@ -142,7 +142,7 @@ def build_tags_from_list(lst: list) -> list[dict] | None:
 
 
 def str_to_dict(string: str) -> dict | None:
-    if not string:
+    if not string or string is None:
         return None
     lst = argToList(string)
     if len(lst) % 2 != 0:
