@@ -430,7 +430,7 @@ def add_playbook_metadata(data: dict, command: str):
     ctx_output: dict = demisto.callingContext or {}
 
     context = ctx_output.get("context") or {}
-    parent_entry = context.get("parentEntry") or {}
+    parent_entry = context.get("ParentEntry") or {}
     entry_task = parent_entry.get("entryTask") or {}
 
     incidents: list = context.get("Incidents", [])
@@ -475,7 +475,10 @@ def start_xql_query(client: CoreClient, args: Dict[str, Any]) -> str:
         }
     }
 
-    add_playbook_metadata(data, "start_xql_query")
+    try:
+        add_playbook_metadata(data, "start_xql_query")
+    except Exception as e:
+        demisto.error(f"Error adding playbook metadata: {str(e)}")
 
     time_frame = args.get("time_frame")
     if time_frame:
