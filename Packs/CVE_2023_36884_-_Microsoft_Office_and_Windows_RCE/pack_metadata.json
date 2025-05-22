@@ -9,7 +9,11 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack",
+        "Breach",
+        "Incident Response"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",
@@ -19,14 +23,15 @@
         "RCE",
         "Remote Code Execution",
         "IR",
-        "Incident Response",
         "Response",
         "CVE-2023-36884",
         "36884",
-        "Storm-0978",
+        "Storm",
+        "0978",
         "RomCom",
         "Office",
-        "Windows"
+        "Windows",
+        "phishing"
     ],
     "dependencies": {
         "MajorBreachesInvestigationandResponse": {
