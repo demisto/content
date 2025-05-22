@@ -75,7 +75,7 @@ class Client(CoreClient):
         )
         return reply
 
-    def post_indicator(self, request_data: dict, suffix : str):
+    def post_indicator(self, request_data: Union[dict, str], suffix : str):
         reply = self._http_request(
             method="POST", json_data={"request_data": request_data, "validate":True}, headers=self._headers, url_suffix=suffix
         )
@@ -380,6 +380,8 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
     vendor_reliability = args.get('vendor_reliability')
     input_format = args.get('input_format', 'JSON')  # Default to 'JSON'
     ioc_object = args.get('ioc_object')
+    ioc_payload : Union[dict, str]
+
 
     # Handle pre-built IOC object
     if ioc_object:
@@ -420,21 +422,28 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         input_format = 'JSON'  # Default format for this path
 
         # Final request body
-    body = {
-        "request_data": [ioc_payload],
-        "validate": True
-    }
-    # yes - validate his type and send a request using him
 
-    # if not return an error
-    # send using client call - adding validate: true
+    if input_format == 'CSV':
+        suffix = "indicators/insert_csv"
+    else:
+        suffix = "indicators/insert_jsons"
 
-    # return vakues:
-    # make sure there is no error:
-    # id success is false - there is an error
-    # return the error
-    # if successes is true:
-    # return CommandResults(output)
+    try:
+        response = client.post_indicator(ioc_payload, suffix=suffix)
+    except DemistoException as error:
+        raise DemistoException(f"Core Add Indicator Command: During post, exception occurred {str(error)}")
+    is_success = response["reply"]["success"]
+
+    if not is_success:
+        errors_array = []
+        for error_obj in  response["reply"]["validation_errors"]:
+            errors_array.append(error_obj["error"])
+        error_string = ", ".join(errors_array)
+        raise DemistoException(f"Core Add Indicator Command: post of IOC rule failed: {error_string}")
+
+
+    # the call was good:
+        # return Outputresults
 
 
 def main():  # pragma: no cover
