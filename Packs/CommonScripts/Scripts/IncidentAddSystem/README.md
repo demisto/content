@@ -1,6 +1,7 @@
 Adds a remote system (such as a desktop under investigation) to an investigation. This allows you to install an agent on the system.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Adds a remote system (such as a desktop under investigation) to an investigation
 | Script Type | javascript |
 | Tags | management |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,5 +28,6 @@ Adds a remote system (such as a desktop under investigation) to an investigation
 | engineName | The engine to be used if required. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

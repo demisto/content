@@ -1144,6 +1144,7 @@ def test_handle_attached_email_with_incorrect_from_header_fixes_malformed_header
 
     assert result["From"] == "Task One Test <info@test.com>"
 
+
 def test_fetch_attachments_for_message_output(mocker):
     """
     Given:
