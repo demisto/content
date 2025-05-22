@@ -511,7 +511,7 @@ def build_key_val_pair(tagDict):
     demisto.info("this is key: ")
     demisto.info(tagDict["@TagValue"])
 
-    key = ''.join([char for char in str(tagDict["@TagName"]) if char.isalnum()])
+    key = "".join([char for char in str(tagDict["@TagName"]) if char.isalnum()])
     value = tagDict["@TagValue"]
     keyValPair = {key: value}
     return keyValPair
@@ -1258,10 +1258,12 @@ def get_export_command(export_id, matter_id):
         files_results: List[Path] = [
             Path(file.get("objectName", "")) for file in response.get("cloudStorageSink", {}).get("files", [])
         ]
-        xml_object_name = remove_empty_elements([
-            file_path if file_path.match('*-metadata.xml') and export_status == "COMPLETED" else None
-            for file_path in files_results
-        ])
+        xml_object_name = remove_empty_elements(
+            [
+                file_path if file_path.match("*-metadata.xml") and export_status == "COMPLETED" else None
+                for file_path in files_results
+            ]
+        )
         title = "You Export details:\n"
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
             "Matter ID": matter_id,
