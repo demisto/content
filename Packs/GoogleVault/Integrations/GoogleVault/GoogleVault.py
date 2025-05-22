@@ -11,7 +11,6 @@ from googleapiclient._auth import authorized_http
 from googleapiclient.discovery import build
 from httplib2 import Http
 from oauth2client import service_account
-from pathlib import Path
 from CommonServerUserPython import *
 
 #  @@@@@@@@ GLOBALS @@@@@@@@
@@ -1255,14 +1254,10 @@ def get_export_command(export_id, matter_id):
         zip_object_name = (
             get_object_mame_by_type(response.get("cloudStorageSink").get("files"), ".zip") if export_status == "COMPLETED" else ""
         )
-        files_results: List[Path] = [
-            Path(file.get("objectName", "")) for file in response.get("cloudStorageSink", {}).get("files", [])
-        ]
-        xml_object_name = remove_empty_elements(
-            [
-                file_path if file_path.match("*-metadata.xml") and export_status == "COMPLETED" else None
-                for file_path in files_results
-            ]
+        xml_object_name = (
+            get_object_mame_by_type(response.get("cloudStorageSink").get("files"), "-metadata.xml")
+            if export_status == "COMPLETED"
+            else ""
         )
         title = "You Export details:\n"
         output_for_markdown = {  # This one is for tableToMarkdown to correctly map
