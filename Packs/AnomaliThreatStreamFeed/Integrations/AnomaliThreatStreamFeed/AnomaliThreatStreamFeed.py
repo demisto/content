@@ -1,17 +1,3 @@
-"""Base Integration for Cortex XSOAR (aka Demisto)
-
-This is an empty Integration with some basic structure according
-to the code conventions.
-
-Developer Documentation: https://xsoar.pan.dev/docs/welcome
-Code Conventions: https://xsoar.pan.dev/docs/integrations/code-conventions
-Linting: https://xsoar.pan.dev/docs/integrations/linting
-
-This is an empty structure file. Check an example at;
-https://github.com/demisto/content/blob/master/Packs/HelloWorld/Integrations/HelloWorld/HelloWorld.py
-
-"""
-
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
@@ -22,51 +8,65 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 DEFAULT_MALICIOUS_THRESHOLD = 65
 DEFAULT_SUSPICIOUS_THRESHOLD = 25
-THREAT_STREAM = "ThreatStream"
+THREAT_STREAM = "Anomali ThreatStream Feed"
 RETRY_COUNT = 2
+LIMIT = 1000
+STATUS = "active"
 
-# RELATIONSHIPS_MAPPING = {
-#     "ip": [
-#         {"name": EntityRelationship.Relationships.RESOLVES_TO, "raw_field": "rdns", "entity_b_type": FeedIndicatorType.Domain},
-#         {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
-#     ],
-#     "domain": [
-#         {"name": EntityRelationship.Relationships.RESOLVED_FROM, "raw_field": "ip", "entity_b_type": FeedIndicatorType.IP},
-#         {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
-#     ],
-#     "url": [
-#         {"name": EntityRelationship.Relationships.RESOLVED_FROM, "raw_field": "ip", "entity_b_type": FeedIndicatorType.IP},
-#         {"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"},
-#     ],
-#     "file": [{"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"}],
-#     "email": [{"name": EntityRelationship.Relationships.INDICATOR_OF, "raw_field": "meta.maltype", "entity_b_type": "Malware"}],
-# }
+RELATIONSHIPS_MAPPING = {
+    "ip": [
+        {
+            "name": EntityRelationship.Relationships.RESOLVES_TO,
+            "raw_field": "rdns",
+            "entity_b_type": FeedIndicatorType.Domain
+        },
+        {
+            "name": EntityRelationship.Relationships.INDICATOR_OF,
+            "raw_field": "meta.maltype",
+            "entity_b_type": "Malware"
+        },
+    ],
+    "domain": [
+        {
+            "name": EntityRelationship.Relationships.RESOLVED_FROM,
+            "raw_field": "ip",
+            "entity_b_type": FeedIndicatorType.IP
+        },
+        {
+            "name": EntityRelationship.Relationships.INDICATOR_OF,
+            "raw_field": "meta.maltype",
+            "entity_b_type": "Malware"
+        },
+    ],
+    "url": [
+        {
+            "name": EntityRelationship.Relationships.RESOLVED_FROM,
+            "raw_field": "ip",
+            "entity_b_type": FeedIndicatorType.IP
+        },
+        {
+            "name": EntityRelationship.Relationships.INDICATOR_OF,
+            "raw_field": "meta.maltype",
+            "entity_b_type": "Malware"
+        },
+    ],
+    "file": [
+        {
+            "name": EntityRelationship.Relationships.INDICATOR_OF,
+            "raw_field": "meta.maltype",
+            "entity_b_type": "Malware"
+        }
+    ],
+    "email": [
+        {
+            "name": EntityRelationship.Relationships.INDICATOR_OF,
+            "raw_field": "meta.maltype",
+            "entity_b_type": "Malware"
+        }
+    ]
+}
 
-# IOC_ARGS_TO_INDICATOR_KEY_MAP = {
-#     "domain": {
-#         "domain": "value",
-#         "dns": "ip",
-#         "organization": "org",
-#         "traffic_light_protocol": "tlp",
-#         "geo_country": "country",
-#         "creation_date": "created_ts",
-#         "updated_date": "modified_ts",
-#         "registrant_name": "meta.registrant_name",
-#         "registrant_email": "meta.registrant_email",
-#         "registrant_phone": "meta.registrant_phone",
-#     },
-#     "url": {"url": "value", "asn": "asn", "organization": "org", "geo_country": "country", "traffic_light_protocol": "tlp"},
-#     "ip": {
-#         "ip": "value",
-#         "asn": "asn",
-#         "geo_latitude": "latitude",
-#         "geo_longitude": "longitude",
-#         "geo_country": "country",
-#         "traffic_light_protocol": "tlp",
-#     },
-#     "file": {"organization": "org", "traffic_light_protocol": "tlp"},
-# }
-
+# TODO find usage for this
 # INDICATOR_EXTENDED_MAPPING = {
 #     "Value": "value",
 #     "ID": "id",
@@ -180,7 +180,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]):# -> CommandRes
         "limit": limit
     }
     if indicator_type:
-        params["itype"] = f"apt_{indicator_type}"
+        params["type"] = indicator_type
         
     res = client.http_request(method="GET", url_suffix="v2/intelligence", params=params)
  
@@ -195,7 +195,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]):# -> CommandRes
             "Source",
             "ThreatStreamID",
             "Country Code",
-            "ip/domain/email", #TODO find solution
+            str(args.get("indicator_type")),
             "Description",
             "Modified",
             "Organization",
@@ -226,7 +226,6 @@ def parse_indicators_for_get_command(indicators) -> List[dict[str, Any]]:
         List[dict[str, Any]]: List of indicators that can be returned to the war room.
     """
     res = []
-    # indicators = [indicators] if type(indicators) is not list else indicators
     for indicator in indicators:
         indicator_type = indicator.get("type")  # ip/domain/email
         indicator_value = indicator.get("value") # type's value
@@ -255,8 +254,25 @@ def parse_indicators_for_get_command(indicators) -> List[dict[str, Any]]:
         )
     return res
 
+def get_past_time(minutes_interval):
+    """
+    Calculates the time that is now minus the given time interval in minutes,
+    and returns it in the format 'YYYY-MM-DDTHH%3AMM%3ASS'.
 
-def fetch_indicators_command(client: Client, params: dict, last_run: dict):# -> list[dict]:
+    Args:
+        minutes_interval (int): The time interval in minutes.
+
+    Returns:
+        str: The calculated past time in the specified format.
+    """
+    now = datetime.now()
+    past_time = now - timedelta(minutes=minutes_interval)
+    
+    # Format the datetime object as a string
+    formatted_time = past_time.strftime('%Y-%m-%dT%H:%M:%S')
+    return formatted_time
+
+def fetch_indicators_command(client: Client, params: dict, last_run: dict):
     """Wrapper for fetching indicators from the feed to the Indicators tab.
 
     Args:
@@ -265,65 +281,122 @@ def fetch_indicators_command(client: Client, params: dict, last_run: dict):# -> 
     Returns:
         Indicators.
     """
-    feed_fetch_interval = arg_to_number(params.get("feedFetchInterval", "240"))
-    fetch_by = params.get("fetchBy", "modified")
-    status = "active"
-    order_by = "modified_ts"
-    # confidence_threshold = arg_to_number(params.get('confidenceThreshold', "-1"))
-    confidence_threshold = 75  # Default confidence threshold
-    tlp_color = params.get("tlp_color", "WHITE")
+    # TODO what to do with them
     reputation = params.get("feedReputation", "Unknown")
     expiration_method = params.get("indicatorExpirationMethod", "Indicator Type")
-    relationships = params.get("createRelationships", True)
-    reliability = params.get("integrationReliability", DBotScoreReliability.C)
-    if DBotScoreReliability.is_valid_type(reliability):
-        reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(reliability)
-    else:
-        Exception("Please provide a valid value for the Source Reliability parameter.")
+    
+    create_relationship = params.get("createRelationships", True)
+    tlp_color = params.get("tlp_color", "WHITE")
+    reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("integrationReliability", DBotScoreReliability.C))
 
     now = datetime.now(timezone.utc)
-    days_for_query = int(feed_fetch_interval / 1440)  # The interval is validated already in the main
+    order_by = params.get("fetchBy", "modified")+"_ts"
+    confidence_threshold = arg_to_number(params.get('confidenceThreshold', "65"))
+    
+    query = assign_params(limit=LIMIT, status=STATUS, order_by=order_by, confidence__gt=confidence_threshold)
+    feed_fetch_interval = arg_to_number(params.get("feedFetchInterval", "240"))
+    if order_by == "modified_ts":
+        query['modified_ts__gte'] =  "2023-08-04T11:57:00.080Z" # TODO rollback -> get_past_time(feed_fetch_interval)
+    else: # order_by == "created_ts"
+        query['created_ts__gte'] = get_past_time(feed_fetch_interval)
+    
+    response = client.http_request(method="GET", url_suffix="v2/intelligence", params=query)
+    # if response.status_code == 400: # once the order by is jibrish
+    #     return f"No indicators found for {query}"
 
-    if last_run:
-        last_successful_run = dateparser.parse(
-            last_run["last_successful_run"], settings={"TIMEZONE": "UTC", "RETURN_AS_TIMEZONE_AWARE": True}
-        )
-        if last_successful_run:
-            time_delta = now - last_successful_run
-            days_for_query = time_delta.days + 1
+    indicators = response.get('objects', [])
+    if not indicators:
+        raise DemistoException("No indicators found from ThreatStream")
+    
+    results = {}
+    results = parse_indicator_for_fetch(indicators, tlp_color, create_relationship, reliability)
+    
+    next_page = response.get("meta", {}).get("next", None)
+    while next_page:
+        next_page = next_page.replace("api/", "")
+        response = client.http_request(method="GET", url_suffix=next_page)
+        indicators = response.get("objects", [])
+        next_page = response.get("meta", {}).get("next", None)
+        if indicators:
+            results.append(parse_indicator_for_fetch(indicators, tlp_color, create_relationship, reliability))
         else:
-            raise DemistoException("failed to fetch indicators")
-        
-    # handling case of more than 7 days history, as the API fail longer-fetching queries.
-    if days_for_query > 7:  # api can get up to 7 days
-        days_for_query = 7
-
-
-    # TODO cont from here!!!!!!!
-    response = client.get_indicators_request({"query": "get_iocs", "days": days_for_query})
-
-    if response.get("query_status") != "ok":
-        raise DemistoException(f"couldn't fetch, {response.get('query_status')}")
-
-    indicators = response["data"]
-    demisto.debug(f"{THREAT_STREAM} got {len(indicators)}")
-
-    results = []
-
-
-    # TODO this is the filtering
-    for indicator in indicators:
-        if indicator.get("ioc_type") == "sha3_384_hash":
-            demisto.debug(f'{THREAT_STREAM} got indicator of indicator type "sha3" skipping it')
-            continue
-        if (arg_to_number(indicator.get("confidence_level")) or 75) < confidence_threshold:
-            demisto.debug(f"{THREAT_STREAM} got indicator with low confidence level, skipping it")
-            continue
-
-        results.append(parse_indicator_for_fetch(indicator, with_ports, create_relationship, tlp_color))
-
+            break
+   
     return now.strftime("%Y-%m-%dT%H:%M:%SZ"), results
 
+
+def create_relationships(create_relationships: bool, reliability, indicator: dict):
+    """Returns a list of relationships of the indicator.
+
+    Args:
+        # TODO  fix docstring
+
+    Returns:
+        list: List of relationships.
+    """
+    relationships = []
+
+    if not create_relationships:
+        return relationships
+
+    type = indicator.get("type")
+    for relation in RELATIONSHIPS_MAPPING.get(type):
+        entity_b = demisto.get(indicator, relation["raw_field"])
+        relationships.append(
+            EntityRelationship(
+                entity_a=indicator["value"],
+                entity_a_type=type,
+                name=relation["name"],
+                entity_b=entity_b,
+                entity_b_type=relation["entity_b_type"],
+                source_reliability=reliability,
+                brand=THREAT_STREAM,
+            ).to_indicator()
+        )
+    return relationships
+
+
+def parse_indicator_for_fetch(indicator: dict, tlp_color: str, create_relationship: bool, reliability) -> dict[str, Any]:
+    """Parses the indicator given from the api to an indicator that can be sent to TIM XSOAR.
+
+    Args:
+        indicator (dict): The raw data of the indicator.
+        tlp_color (str): The tlp color of the indicator.
+        create_relationship (bool): Whether to create the indicator with relationships.
+
+    Returns:
+        dict[str, Any]: An indicator that can be sent to TIM.
+    """
+    
+    relationships = create_relationships(create_relationship, reliability, indicator)
+
+    indicator_type = indicator.get("type")  # ip/domain/email
+    indicator_value = indicator.get("value") # type's value
+    
+    dynamic_field = {}
+    dynamic_field[str(indicator_type)] = indicator_value
+    
+    fields = assign_params(
+                TargetIndustries=indicator.get("target_industry"),
+                Source=indicator.get("source"),
+                ThreatStreamID=indicator.get("id"),
+                CountryCode=indicator.get("country"),
+                **dynamic_field,  # Unpack the dynamic field into the params
+                Description=indicator.get("description"),
+                Modified=indicator.get("modified_ts"),
+                Organization=indicator.get("org"),
+                Confidence=indicator.get("confidence"),
+                Creation=indicator.get("created_ts"),
+                Expiration=indicator.get("expires_ts"),
+                Tags=indicator.get("tags"),
+                TrafficLightProtocol=tlp_color,
+                Location=indicator.get("locations"),
+                ASN=indicator.get("asn")
+            )
+
+    # TODO check
+    return assign_params(value=indicator_value, type=indicator_type, fields=fields, relationships=relationships, rawJSON=indicator,
+                         score=1) # todo add score
 
 
 def main():
@@ -339,21 +412,13 @@ def main():
     user_name = params.get("credentials", {}).get("identifier")
     api_key = params.get("credentials", {}).get("password")
     server_url = params.get("url", "").strip("/")
-
-    # commands = {
-    #     # reputation commands
-    #     "test-module": test_module,
-    #     "threatstream-feed-get-indicators": get_indicators_command,
-    # }
-
+    
     try:
         client = Client(
             base_url=f"{server_url}/api/",
             user_name=user_name,
             api_key=api_key,
             verify=not params.get("insecure", False),
-            # reliability=reliability,
-            # should_create_relationships=relationships,
         )
 
         if command == "test-module":
@@ -361,7 +426,6 @@ def main():
             return_results(test_module(client))
             
         elif command == 'threatstream-feed-get-indicators':
-            # TODO add the arguments from the run line - demisto arg
             return_results(get_indicators_command(client, demisto.args()))
             
         elif command == "fetch-indicators":
@@ -375,12 +439,9 @@ def main():
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
+        demisto.error(traceback.format_exc())  # Print the traceback stack
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
     main()
-
-
-# https://svlpartner-optic-api.threatstream.com/api/
-# https://svlpartner-optic-api.threatstream.com/api/v2/intelligence?limit=1000&status=active&order_by=modified_ts&confidence__gt=75&modified_ts__gte=2023-08-04T11:57:00
