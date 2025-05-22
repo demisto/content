@@ -509,9 +509,7 @@ class XSOAR2STIXParser:
     def __init__(self, namespace_uuid, fields_to_present, types_for_indicator_sdo, server_version=TAXII_VER_2_1):
         self.server_version = server_version
         if server_version not in ALLOWED_VERSIONS:
-            raise Exception(
-                f'Wrong TAXII 2 Server version: {server_version}. Possible values: {", ".join(ALLOWED_VERSIONS)}.'
-            )
+            raise Exception(f'Wrong TAXII 2 Server version: {server_version}. Possible values: {", ".join(ALLOWED_VERSIONS)}.')
         self.namespace_uuid = namespace_uuid
         self.fields_to_present = fields_to_present
         self.has_extension = fields_to_present != {"name", "type"}
@@ -2582,7 +2580,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         self._conn = _HTTPConnection(verify=self.verify, proxies=self.proxies, version=version, auth=self.auth, cert=self.crt)
         if self.auth_header:
             # add auth_header to the session object
-            self._conn.session.headers = merge_setting( # type: ignore[attr-defined]
+            self._conn.session.headers = merge_setting(  # type: ignore[attr-defined]
                 self._conn.session.headers,  # type: ignore[attr-defined]
                 {self.auth_header: self.auth_key},
                 dict_class=CaseInsensitiveDict,
@@ -2708,7 +2706,7 @@ class Taxii2FeedClient(STIX2XSOARParser):
         :param limit: max amount of indicators to fetch
         :return: Cortex indicators list
         """
-        if not isinstance(self.collection_to_fetch, (v20.Collection, v21.Collection)):
+        if not isinstance(self.collection_to_fetch, v20.Collection | v21.Collection):
             raise DemistoException("Could not find a collection to fetch from. Please make sure you provided a collection.")
         if limit is None:
             limit = -1
