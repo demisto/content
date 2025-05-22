@@ -869,7 +869,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
 
     # Verify the filter contains latestTimeRemediated with adjusted time due to polling lag
     assert "latestTimeRemediated gte" in threats_call_kwargs['filter_']
-    assert "latestTimeRemediated lt" in threats_call_kwargs['filter_']
+    assert "latestTimeRemediated lte" in threats_call_kwargs['filter_']
     assert threats_call_kwargs['max_incidents_to_fetch'] == max_incidents
 
     # 2. Verify abuse campaigns pagination (this is called next in the code)
@@ -878,6 +878,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
 
     # Verify the filter contains lastReportedTime
     assert "lastReportedTime gte" in campaigns_call_kwargs['filter_']
+    assert "lastReportedTime lte" in campaigns_call_kwargs['filter_']
     assert campaigns_call_kwargs['max_incidents_to_fetch'] == max_incidents - len(threat_ids)
 
     # 3. Verify cases pagination (this is called last in the code)
@@ -885,6 +886,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     cases_call_kwargs = get_paginated_cases_spy.call_args.kwargs
     # Verify the filter contains lastModifiedTime
     assert "lastModifiedTime gte" in cases_call_kwargs['filter_']
+    assert "lastModifiedTime lte" in cases_call_kwargs['filter_']
     assert cases_call_kwargs['max_incidents_to_fetch'] == max_incidents - len(threat_ids) - len(campaign_ids)
 
     # Verify we got the expected number of incidents
