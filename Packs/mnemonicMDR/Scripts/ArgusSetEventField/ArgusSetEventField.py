@@ -22,32 +22,32 @@ def seteventfield():
         else:
             try:
                 md += "<b>Name:</b> {}".format(event["attackInfo"]["signature"])
-            except:
+            except KeyError:
                 continue
 
-        if "destination.host" in event["properties"].keys():
+        if "destination.host" in event["properties"]:
             md += "<br><b>Destination host:</b> {}".format(event["properties"]["destination.host"])
 
-        if "source.user" in event["properties"].keys():
+        if "source.user" in event["properties"]:
             md += "<br><b>Username:</b> {}".format(event["properties"]["source.user"])
 
-        if "source.host" in event["properties"].keys():
+        if "source.host" in event["properties"]:
             md += "<br><b>Hostname:</b> {}".format(event["properties"]["source.host"])
 
-        if "process.commandLine" in event["properties"].keys():
+        if "process.commandLine" in event["properties"]:
             md += "<br><b>Command:</b> {}".format(event["properties"]["process.commandLine"])
 
-        if "file.hash" in event["properties"].keys():
+        if "file.hash" in event["properties"]:
             md += "<br><b>File hash:</b> {}".format(event["properties"]["file.hash"])
 
-        if "sensor.address" in event["properties"].keys():
+        if "sensor.address" in event["properties"]:
             md += "<br><b>Sensor address:</b> {}".format(event["properties"]["sensor.address"])
 
-        if event["destination"]["networkAddress"]["address"]:
+        if event["destination"]["networkAddress"]["address"]:  # noqa SIM102
             if event["destination"]["networkAddress"]["address"] != "0.0.0.0":
                 md += "<br><b>Destination:</b> {}".format(event["destination"]["networkAddress"]["address"])
 
-        if event["source"]["networkAddress"]["address"]:
+        if event["source"]["networkAddress"]["address"]:  # noqa SIM102
             if event["source"]["networkAddress"]["address"] != "0.0.0.0":
                 md += "<br><b>Source:</b> {}".format(event["source"]["networkAddress"]["address"])
 

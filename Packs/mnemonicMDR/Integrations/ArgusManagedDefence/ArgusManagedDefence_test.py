@@ -134,7 +134,7 @@ def test_build_tags_from_list():
     assert build_tags_from_list([]) is None
     with pytest.raises(ValueError) as e:
         build_tags_from_list(["list must be divisible by two"])
-    assert e.type == ValueError
+    assert isinstance(e, ValueError)
     assert build_tags_from_list(["foo", "bar"]) == [{"key": "foo", "value": "bar"}]
 
 
@@ -145,7 +145,7 @@ def test_str_to_dict():
     assert str_to_dict("") is None
     with pytest.raises(ValueError) as e:
         str_to_dict("one_value")
-    assert e.type == ValueError
+    assert isinstance(e, ValueError)
     assert str_to_dict("foo,bar") == {"foo": "bar"}
     assert str_to_dict("foo,bar,key,value") == {"foo": "bar", "key": "value"}
 
@@ -244,7 +244,7 @@ def test_get_remote_data_command(requests_mock):
     }
     result = get_remote_data_command(args)
     assert metadata.get("data").items() <= result.mirrored_object.items()
-    assert "xsoar_mirroring" in result.mirrored_object.keys()
+    assert "xsoar_mirroring" in result.mirrored_object
     assert xsoar_mirroring.items() == result.mirrored_object.get("xsoar_mirroring").items()
     assert {"severity": 1} in result.entries
     assert {"arguscasestatus": "pendingCustomer"} in result.entries
@@ -780,7 +780,7 @@ def test_get_sample_metadata_command(requests_mock):
     method_url = f"/sampledb/v2/sample/{SAMPLE_ID}"
 
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
-    result = get_sample_metadata_command({f"sha256": SAMPLE_ID, "context_output": "true"})
+    result = get_sample_metadata_command({"sha256": SAMPLE_ID, "context_output": "true"})
     assert result.raw_response == data
 
 
@@ -814,7 +814,7 @@ def test_add_asset_command(requests_mock):
     with open("test_data/argus_asset.json") as json_file:
         data = json.load(json_file)
 
-    method_url = f"/assets/v2/asset"
+    method_url = "/assets/v2/asset"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = add_asset_command({"context_output": "true"})
     assert result.raw_response == data
@@ -874,7 +874,7 @@ def test_list_vulnerabilities_command(requests_mock):
     with open("test_data/argus_vulnerability.json") as json_file:
         data = json.load(json_file)
 
-    method_url = f"/assets/v2/vulnerability"
+    method_url = "/assets/v2/vulnerability"
     requests_mock.get(f"{BASE_URL}{method_url}", json=data)
     result = list_vulnerabilities_command({"context_output": "true"})
     assert result.raw_response == data
@@ -886,7 +886,7 @@ def test_search_vulnerabilities_command(requests_mock):
     with open("test_data/argus_list_vulnerabilities.json") as json_file:
         data = json.load(json_file)
 
-    method_url = f"/assets/v2/vulnerability/search"
+    method_url = "/assets/v2/vulnerability/search"
     requests_mock.post(f"{BASE_URL}{method_url}", json=data)
     result = search_vulnerabilities_command({"context_output": "true"})
     assert result.raw_response == data

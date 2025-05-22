@@ -10,7 +10,7 @@ def main():
         return_error("Argument 'field' not given.")
 
     try:
-        md = demisto.incidents()[0].get('CustomFields')[field]
+        md = demisto.incidents()[0].get("CustomFields")[field]
     except Exception as e:
         return_error(f"Error getting comment content. field={field}, error={e}")
     if not md:
@@ -25,13 +25,13 @@ def main():
 
     #  create tagged war room entry
     entry = {
-        'Type': entryTypes["note"],
-        'Contents': html,
-        'ContentsFormat': formats["html"],
-        'HumanReadable': html,
-        'ReadableContentsFormat': formats["html"],
-        'Tags': tags,
-        'Note': True
+        "Type": entryTypes["note"],
+        "Contents": html,
+        "ContentsFormat": formats["html"],
+        "HumanReadable": html,
+        "ReadableContentsFormat": formats["html"],
+        "Tags": tags,
+        "Note": True,
     }
 
     # wipe editing field

@@ -12,7 +12,7 @@ import traceback
 def set_incident_type():
     incident = demisto.incident()
 
-    if "arguscaseservice" in incident["CustomFields"]:
+    if "arguscaseservice" in incident["CustomFields"]:  # noqa SIM102
         if incident["CustomFields"]["arguscaseservice"] == "Administrative":
             demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Administrative"})
             demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Administrative"})
@@ -35,6 +35,8 @@ def set_incident_type():
             demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Operational"})
             demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Operational"})
             return "Done"
+
+    return "Incident type not found"
 
 
 """ MAIN FUNCTION """
