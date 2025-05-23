@@ -532,6 +532,12 @@ def http_request(
     return json_result
 
 
+def convert_to_list(obj: Any):
+    if isinstance(obj, list):
+        return obj
+    return [obj]
+
+
 def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
     """
     When retrieving an un-committed object from panorama, a lot of un-relevant data is returned by the api.
@@ -2190,10 +2196,10 @@ def panorama_edit_address_group_command(args: dict):
                 "Please specify exactly one of the following: element_to_add, element_to_remove."
             )
         address_group_prev = panorama_get_address_group(address_group_name)
-        address_group_list: List[str] = []
-        if "static" in address_group_prev:
-            if address_group_prev["static"]:
-                address_group_list = argToList(address_group_prev["static"]["member"])
+        address_group_list: list[str] = [
+            (address["#text"] if isinstance(address, dict) else address)  # in pan-os versions >11 the "address" var is a dict
+            for address in convert_to_list(dict_safe_get(address_group_prev, ["static", "member"], []))
+        ]
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
@@ -4045,7 +4051,9 @@ def build_audit_comment_cmd(xpath, audit_comment, xml_type="set") -> str:
     """
     Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
     """
-    audit_comment = html.escape(html.escape(audit_comment)) # special characters need to be escaped twice to be properly stored on PANOS side.
+    audit_comment = html.escape(
+        html.escape(audit_comment)
+    )  # special characters need to be escaped twice to be properly stored on PANOS side.
     if xml_type == "set":
         return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
     elif xml_type == "show":
