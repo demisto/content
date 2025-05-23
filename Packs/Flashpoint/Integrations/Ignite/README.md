@@ -1085,7 +1085,7 @@ Looks up the "IP" type indicator details. The reputation of the IP address is de
 | Ignite.IP.malware_description | string | The malware description of IP. | 
 | Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. | 
 | Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.IP.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.IP.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.IP.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.IP.relationships.iocs.value | string | The value of ioc. | 
@@ -1168,7 +1168,9 @@ Looks up the "IP" type indicator details. The reputation of the IP address is de
                 {
                     "id": "dummy_attack_id_123",
                     "name": "dummy_attack_name",
-                    "tactic": "Discovery"
+                    "tactics": [
+                        "Discovery"
+                    ]
                 }
             ],
             "relationships": {
@@ -1230,7 +1232,7 @@ Looks up the "IP" type indicator details. The reputation of the IP address is de
 >
 >|ID|IP|Type|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
 >|---|---|---|---|---|---|---|---|---|---|
->|  dummy_id_123 | 0.0.0.1 | ipv4 | dummy_malware_description | dummy_latest_sighting_tag_1,<br>dummy_latest_sighting_tag_2,<br>dummy_latest_sighting_tag_3,<br>dummy_tag_1,<br>dummy_tag_2,<br>dummy_tag_3 | **-**	***type***: file<br>	***value***: dummy_latest_sighting_related_ioc_value_1<br>**-**	***type***: domain<br>	***value***: dummy_related_ioc_value_1.com | **-**	***id***: dummy_attack_id_123<br>	***name***: dummy_attack_name<br>	***tactic***: Discovery | Apr 14, 2025  15:28 | Apr 21, 2025  06:44 | Apr 21, 2025  06:34 |
+>|  dummy_id_123 | 0.0.0.1 | ipv4 | dummy_malware_description | dummy_latest_sighting_tag_1,<br>dummy_latest_sighting_tag_2,<br>dummy_latest_sighting_tag_3,<br>dummy_tag_1,<br>dummy_tag_2,<br>dummy_tag_3 | **-**	***type***: file<br>	***value***: dummy_latest_sighting_related_ioc_value_1<br>**-**	***type***: domain<br>	***value***: dummy_related_ioc_value_1.com | **-**	***id***: dummy_attack_id_123<br>	***name***: dummy_attack_name<br>	**tactics**:<br>		***values***: Discovery | Apr 14, 2025  15:28 | Apr 21, 2025  06:44 | Apr 21, 2025  06:34 |
 >
 >Platform Link(ignite): [https://dummy.ignite.com](https://dummy.ignite.com)
 
@@ -1281,7 +1283,7 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
 | Ignite.File.malware_description | string | The malware description of file. | 
 | Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. | 
 | Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.File.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.File.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.File.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.File.relationships.iocs.value | string | The value of ioc. | 
@@ -1333,7 +1335,7 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
 | Ignite.Domain.malware_description | string | The malware description of domain. | 
 | Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. | 
 | Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.Domain.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.Domain.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.Domain.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.Domain.relationships.iocs.value | string | The value of ioc. | 
@@ -1393,7 +1395,7 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
 | Ignite.URL.malware_description | string | The malware description of URL. | 
 | Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. | 
 | Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.URL.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.URL.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.URL.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.URL.relationships.iocs.value | string | The value of ioc. | 
@@ -1443,7 +1445,7 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
 | Ignite.IP.malware_description | string | The malware description of IP. | 
 | Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. | 
 | Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.IP.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.IP.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.IP.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.IP.relationships.iocs.value | string | The value of ioc. | 
@@ -1540,7 +1542,9 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
             {
                 "id": "dummy_mitre_id",
                 "name": "dummy name",
-                "tactic": "Defense Evasion"
+                "tactics": [
+                    "Defense Evasion"
+                ]
             }
         ],
         "sightings": [
@@ -1592,9 +1596,9 @@ Looks up details for indicators of types: "URL", "Domain", "File Hash", and "IP"
 >Reputation: Malicious
 >
 >
->|ID|Type|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
->|---|---|---|---|---|---|---|---|---|
->| dummy_id | file | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	***tactic***: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+>|ID|Type|Hashes|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|
+>| dummy_id | file | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	**tactics**:<br>		***values***: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
 >Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 
@@ -1645,7 +1649,7 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
 | Ignite.File.malware_description | string | The malware description of file. | 
 | Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. | 
 | Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.File.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.File.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.File.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.File.relationships.iocs.value | string | The value of ioc. | 
@@ -1700,7 +1704,7 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
 | Ignite.Domain.malware_description | string | The malware description of domain. | 
 | Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. | 
 | Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.Domain.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.Domain.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.Domain.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.Domain.relationships.iocs.value | string | The value of ioc. | 
@@ -1763,7 +1767,7 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
 | Ignite.URL.malware_description | string | The malware description of URL. | 
 | Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. | 
 | Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.URL.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.URL.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.URL.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.URL.relationships.iocs.value | string | The value of ioc. | 
@@ -1816,7 +1820,7 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
 | Ignite.IP.malware_description | string | The malware description of IP. | 
 | Ignite.IP.mitre_attack_ids.id | string | The mitre attack id of IP. | 
 | Ignite.IP.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.IP.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.IP.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.IP.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.IP.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.IP.relationships.iocs.value | string | The value of ioc. | 
@@ -1916,7 +1920,9 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
             {
                 "id": "dummy_mitre_id",
                 "name": "dummy name",
-                "tactic": "Defense Evasion"
+                "tactics": [
+                    "Defense Evasion"
+                ]
             }
         ],
         "sightings": [
@@ -1983,9 +1989,9 @@ Looks up details for indicators of types "URL", "Domain", "File Hash", and "IP" 
 >Reputation: Malicious
 >
 >
->|ID|Type|Malware Description|Tags|Related IOCs|Hashes|Mitre Attack IDs|Reports|Created At|Modified At|Last Seen At|
->|---|---|---|---|---|---|---|---|---|---|---|
->| dummy_id | file | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	***tactic***: Defense Evasion | **-**	***html***: https://mock_dummy.com/cti/intelligence/report/report_1<br>	***json***: https://mock_dummy.com/finished-intelligence/v1/reports/report_1<br>**-**	***html***: https://mock_dummy.com/cti/intelligence/report/report_2<br>	***json***: https://mock_dummy.com/finished-intelligence/v1/reports/report_2 | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+>|ID|Type|Hashes|Malware Description|Tags|Related IOCs|Hashes|Mitre Attack IDs|Reports|Created At|Modified At|Last Seen At|
+>|---|---|---|---|---|---|---|---|---|---|---|---|
+>| dummy_id | file | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	**tactics**:<br>		***values***: Defense Evasion | **-**	***html***: https://mock_dummy.com/cti/intelligence/report/report_1<br>	***json***: https://mock_dummy.com/finished-intelligence/v1/reports/report_1<br>**-**	***html***: https://mock_dummy.com/cti/intelligence/report/report_2<br>	***json***: https://mock_dummy.com/finished-intelligence/v1/reports/report_2 | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
 >Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 
@@ -2054,7 +2060,7 @@ Looks up the "URL" type indicator details. The reputation of the URL is decided 
 | Ignite.URL.malware_description | string | The malware description of URL. | 
 | Ignite.URL.mitre_attack_ids.id | string | The mitre attack id of URL. | 
 | Ignite.URL.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.URL.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.URL.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.URL.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.URL.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.URL.relationships.iocs.value | string | The value of ioc. | 
@@ -2238,7 +2244,7 @@ Looks up the "Domain" type indicator details. The reputation of the domain is de
 | Ignite.Domain.malware_description | string | The malware description of domain. | 
 | Ignite.Domain.mitre_attack_ids.id | string | The mitre attack id of domain. | 
 | Ignite.Domain.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.Domain.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.Domain.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.Domain.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.Domain.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.Domain.relationships.iocs.value | string | The value of ioc. | 
@@ -2431,7 +2437,7 @@ Looks up the "File" type indicator details. The reputation of the file is decide
 | Ignite.File.malware_description | string | The malware description of file. | 
 | Ignite.File.mitre_attack_ids.id | string | The mitre attack id of file. | 
 | Ignite.File.mitre_attack_ids.name | string | The name of mitre attack id. | 
-| Ignite.File.mitre_attack_ids.tactic | string | The tactic of mitre attack id. | 
+| Ignite.File.mitre_attack_ids.tactics | unknown | A list of tactics associated with mitre attack id. | 
 | Ignite.File.relationships.iocs.id | string | The id of ioc. | 
 | Ignite.File.relationships.iocs.type | string | The type of ioc. | 
 | Ignite.File.relationships.iocs.value | string | The value of ioc. | 
@@ -2543,7 +2549,9 @@ Looks up the "File" type indicator details. The reputation of the file is decide
             {
                 "id": "dummy_mitre_id",
                 "name": "dummy name",
-                "tactic": "Defense Evasion"
+                "tactics": [
+                    "Defense Evasion"
+                ]
             }
         ],
         "sightings": [
@@ -2597,7 +2605,7 @@ Looks up the "File" type indicator details. The reputation of the file is decide
 >
 >|ID|Hash Type|Hashes|Malware Description|Tags|Related IOCs|Mitre Attack IDs|Created At|Modified At|Last Seen At|
 >|---|---|---|---|---|---|---|---|---|---|
->| dummy_id | md5 | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	***tactic***: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
+>| dummy_id | md5 | ***md5***: 00000000000000000000000000000001<br>***sha1***: 0000000000000000000000000000000000000001<br>***sha256***: 0000000000000000000000000000000000000000000000000000000000000001 | dummy description. | malware:pony,<br>os:windows,<br>source:flashpoint_detection,<br>type:stealer | **-**	***type***: file<br>	***value***: 00000000000000000000000000000002 | **-**	***id***: dummy_mitre_id<br>	***name***: dummy name<br>	**tactics**:<br>		***values***: Defense Evasion | Jan 01, 2025  01:00 | Jan 02, 2025  01:00 | Jan 02, 2025  01:00 |
 >
 >Platform Link(ignite): [https://mock_dummy.com/cti/malware/iocs/dummy_id](https://mock_dummy.com/cti/malware/iocs/dummy_id)
 

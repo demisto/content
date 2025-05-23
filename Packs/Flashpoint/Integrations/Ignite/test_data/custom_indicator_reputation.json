@@ -22,7 +22,9 @@
         {
             "id": "dummy_mitre_attack_id",
             "name": "dummy_mitre_name",
-            "tactic": "Discovery"
+            "tactics": [
+                "Discovery"
+            ]
         }
     ],
     "sightings": [

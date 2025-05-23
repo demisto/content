@@ -70,7 +70,9 @@
             {
                 "id": "dummy_mitre_id",
                 "name": "dummy name",
-                "tactic": "Defense Evasion"
+                "tactics": [
+                    "Defense Evasion"
+                ]
             }
         ],
         "sightings": [

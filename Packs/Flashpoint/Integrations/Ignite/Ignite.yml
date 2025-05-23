@@ -1208,9 +1208,9 @@ script:
     - contextPath: Ignite.IP.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.IP.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.IP.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -1358,9 +1358,9 @@ script:
     - contextPath: Ignite.File.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.File.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.File.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -1514,9 +1514,9 @@ script:
     - contextPath: Ignite.Domain.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.Domain.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.Domain.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -1694,9 +1694,9 @@ script:
     - contextPath: Ignite.URL.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.URL.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.URL.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -1844,9 +1844,9 @@ script:
     - contextPath: Ignite.IP.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.IP.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.IP.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -1994,9 +1994,9 @@ script:
     - contextPath: Ignite.File.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.File.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.File.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -2159,9 +2159,9 @@ script:
     - contextPath: Ignite.Domain.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.Domain.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.Domain.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -2348,9 +2348,9 @@ script:
     - contextPath: Ignite.URL.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.URL.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.URL.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -2507,9 +2507,9 @@ script:
     - contextPath: Ignite.IP.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.IP.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.IP.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.IP.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -2720,9 +2720,9 @@ script:
     - contextPath: Ignite.URL.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.URL.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.URL.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.URL.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -2897,9 +2897,9 @@ script:
     - contextPath: Ignite.Domain.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.Domain.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.Domain.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.Domain.relationships.iocs.id
       description: The id of ioc.
       type: string
@@ -3113,9 +3113,9 @@ script:
     - contextPath: Ignite.File.mitre_attack_ids.name
       description: The name of mitre attack id.
       type: string
-    - contextPath: Ignite.File.mitre_attack_ids.tactic
-      description: The tactic of mitre attack id.
-      type: string
+    - contextPath: Ignite.File.mitre_attack_ids.tactics
+      description: A list of tactics associated with mitre attack id.
+      type: unknown
     - contextPath: Ignite.File.relationships.iocs.id
       description: The id of ioc.
       type: string

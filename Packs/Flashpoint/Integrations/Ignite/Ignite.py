@@ -523,7 +523,14 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
         )  # type: ignore
 
     elif fetch_type == "Alerts":
-        fetch_params = prepare_args_for_fetch_alerts(max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_alerts(
+            max_fetch,  # type: ignore
+            first_fetch,  # type: ignore
+            alert_origin,
+            alert_status,
+            alert_sources,
+            last_run,
+        )
         start_time = fetch_params["created_after"]
 
     remove_nulls_from_dictionary(fetch_params)

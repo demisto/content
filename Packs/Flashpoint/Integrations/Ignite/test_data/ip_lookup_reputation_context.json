@@ -56,7 +56,9 @@
             {
                 "id": "dummy_attack_id_123",
                 "name": "dummy_attack_name",
-                "tactic": "Discovery"
+                "tactics": [
+                    "Discovery"
+                ]
             }
         ],
         "relationships": {
