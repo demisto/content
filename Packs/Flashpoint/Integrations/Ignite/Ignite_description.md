@@ -17,8 +17,8 @@ In order to fetch compromised credentials alerts from Ignite, you need to enable
 
 1. Enable the "Fetches incidents" option.
 2. Choose the "Flashpoint Compromised Credentials" option for the "Incident type (if classifier doesn't exist)" setting.
-3. Choose the "Flashpoint Compromised Credentials - Incoming Mapper" option for the "Mapper (incoming)" setting .
-4. To get the number of incidents per minute you can set a maximum of 200 for the "Maximum number of incidents per fetch" setting .
+3. Choose the "Flashpoint Compromised Credentials - Incoming Mapper" option for the "Mapper (incoming)" setting.
+4. To get the number of incidents per minute you can set a maximum of 200 for the "Maximum number of incidents per fetch" setting.
 5. Choose the "Compromised Credentials" option for the "Fetch Type" setting.
 
 ### Recommended settings for Ignite Alerts fetch
