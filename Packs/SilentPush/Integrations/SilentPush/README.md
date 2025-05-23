@@ -685,7 +685,7 @@ This command fetch indicators of potential future attacks using a feed UUID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| feed_uuid | Unique ID for the feed. | Required | 
+| source_uuids | Unique ID for the feed. | Required | 
 | page_no | The page number to fetch results from. | Optional | 
 | page_size | The number of indicators to fetch per page. | Optional | 
 
@@ -693,7 +693,7 @@ This command fetch indicators of potential future attacks using a feed UUID.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.FutureAttackIndicators.feed_uuid | String | Unique identifier for the feed. | 
+| SilentPush.FutureAttackIndicators.source_uuids | String | Unique identifier for the feed. | 
 | SilentPush.FutureAttackIndicators.page_no | Number | Current page number for pagination. | 
 | SilentPush.FutureAttackIndicators.page_size | Number | Number of items to be retrieved per page. | 
 | SilentPush.FutureAttackIndicators.indicators.total_ioc | Number | Total number of Indicators of Compromise \(IOCs\) associated with the indicator. | 
@@ -783,13 +783,13 @@ This command fetch indicators of potential future attacks using a feed UUID.
 
 ### **Command Example**  
 ```bash
-!silentpush-get-future-attack-indicators feed_uuid="99da9b6a-146b-4a4d-9929-5fd5c6e2c257"
+!silentpush-get-future-attack-indicators source_uuids="99da9b6a-146b-4a4d-9929-5fd5c6e2c257"
 ```
 
 ### **Context Example**  
 ```json
 {
-	"feed_uuid": "99da9b6a-146b-4a4d-9929-5fd5c6e2c257",
+	"source_uuids": "99da9b6a-146b-4a4d-9929-5fd5c6e2c257",
 	"future_attack_indicators": {
 		"total_source_score": 100,
 		"total_ioc": 100,
