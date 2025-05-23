@@ -100,6 +100,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 
 ## Configure SplunkPy in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -113,7 +114,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Use Splunk Clock Time For Fetch | Whether to use the Splunk clock time from the Splunk server for fetch, or not. | False |
 | Parse Raw Part of Notable Events | Whether to parse the raw part of the Notables, or not. | False |
 | Replace with Underscore in Incident Fields | Whether to replace special characters to underscore when parsing the raw data of the Notables, or not. | False |
-| Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
+| Timezone of the Splunk server, in minutes. For example, if GMT is gmt +3, set timezone to +180. For UTC, set the timezone to 0. When the Splunk server and the integration instance are on the same timezone, set the timezone to 0. This is relevant only for fetching and mirroring notable events. It must be specified when mirroring is enabled. |  | False |
 | First fetch timestamp (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days, 3 months, 1 year) | The amount of time to go back when performing the first fetch, or when creating a mapping using the Select Schema option. | False |
 | Extract Fields - CSV fields that will be parsed out of _raw notable events |  | False |
 | Event Type Field | Used only for mapping with the Select Schema option. The name of the field that contains the type of the event or alert. The default value is "source", which is a good option for notable events. However, you may choose any custom field. | False |
@@ -127,7 +128,6 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Use system proxy settings |  | False |
 | The app context of the namespace |  | False |
 | HEC Token (HTTP Event Collector) |  | False |
-| HEC Token (HTTP Event Collector) |  | False |
 | HEC BASE URL (e.g: https://localhost:8088 or https://example.splunkcloud.com/). |  | False |
 | Enrichment Types | Enrichment types to enrich each fetched notable. If none are selected, the integration will fetch notables as usual \(without enrichment\). Multiple drilldown searches enrichment is supported from Enterprise Security v7.2.0. For more info about enrichment types see [Enriching Notable Events](#enriching-notable-events). | False |
 | Asset enrichment lookup tables | CSV of the Splunk lookup tables from which to take the Asset enrichment data. | False |
@@ -135,6 +135,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Enrichment Timeout (Minutes) | When the selected timeout was reached, notable events that were not enriched will be saved without the enrichment. | False |
 | Number of Events Per Enrichment Type | The limit of how many events to retrieve per each one of the enrichment types \(Drilldown, Asset, and Identity\). In a case of multiple drilldown enrichments the limit will apply for each drilldown search query. To retrieve all events, enter "0" \(not recommended\). | False |
 | Advanced: Extensive logging (for debugging purposes). Do not use this option unless advised otherwise. |  | False |
+| Advanced: Time type to use when fetching events | Defines which timestamp will be used to filter the events:<br/>- creation time: Filters based on when the event actually occurred.<br/>- index time \(Beta\): \*Beta feature\* – Filters based on when the event was ingested into Splunk.  <br/>  This option is still in testing and may not behave as expected in all scenarios.  <br/>  When using this mode, the parameter "Fetch backwards window for the events occurrence time \(minutes\)" should be set to \`0\`\`, as indexing time ensures there are no delay-based gaps.<br/>  The default is "creation time".<br/> |  |
 | Advanced: Fetch backwards window for the events occurrence time (minutes) | The fetch time range will be at least the size specified here. This will support events that have a gap between their occurrence time and their index time in Splunk. To decide how long the backwards window should be, you need to determine the average time between them both in your Splunk environment. | False |
 | Advanced: Unique ID fields | A comma-separated list of fields, which together are a unique identifier for the events to fetch in order to avoid fetching duplicates incidents. | False |
 | Enable user mapping | Whether to enable the user mapping between Cortex XSOAR and Splunk, or not. For more information see https://xsoar.pan.dev/docs/reference/integrations/splunk-py\#configure-user-mapping-between-splunk-and-cortex-xsoar | False |
@@ -144,6 +145,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 | Incidents Fetch Interval |  | False |
 | Comment tag from Splunk | Add this tag to an entry to mirror it as a comment from Splunk. | False |
 | Comment tag to Splunk | Add this tag to an entry to mirror it as a comment to Splunk. | False |
+
 
 **Note:** To use a Splunk Cloud instance, contact Splunk support to request API access. Use a non-SAML account to access the API.
 
