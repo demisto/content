@@ -49,6 +49,43 @@ Create a new search job.
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | in progress |
 
+### anomali-security-analytics-search-job-status
+
+***
+Get the status of one or more search jobs.
+
+#### Base Command
+
+`anomali-security-analytics-search-job-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Unique identifier assigned to a background process or job. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnomaliSecurityAnalytics.SearchJobStatus.job_id | String | Job ID of the search job. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.status | String | Current status of the search job. e.g. RUNNING, DONE. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.progress | Number | Indicates the search progress. Numeric float value between 0 and 1. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.scanned | Number | Number of records scanned by the search query. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.total | Number | Total number of records matched by the search query. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.start_time | Number | Start timestamp of the time interval of the search query, in UNIX timestamp milliseconds. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.end_time | Number | End timestamp of the time interval of the search query, in UNIX timestamp milliseconds. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.bucket_length | Number | Width of each histogram bin depending on the search duration. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.num_of_bucket | Number | Number of buckets in which you receive all the search results. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.is_aggregated | Boolean | Whether the search results are aggregated. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.histogram_buckets | Array | Number of histogram buckets used to bucket the search result. | 
+
+#### Human Readable Output
+**Search Job Status**
+|job_id|status|progress|scanned|total|start_time|end_time|
+|---|---|---|---|---|---|---|
+| 7af7bc62c807446fa4bf7ad12dfbe64b | in progress | 0.5 | 100 | 100 | 1741867250299 | 1741867250299 |
+
 ### anomali-security-analytics-search-job-results
 
 ***

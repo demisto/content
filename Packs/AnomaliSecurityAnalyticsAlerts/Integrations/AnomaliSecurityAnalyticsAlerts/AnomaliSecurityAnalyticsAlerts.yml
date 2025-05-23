@@ -30,6 +30,31 @@ configuration:
   type: 8
   section: Connect
   advanced: true
+- display: Fetch incidents
+  name: isFetch
+  section: Collect
+  type: 8
+  required: false
+- additionalinfo: Maximum number of incidents per fetch. The default value is 200.
+  defaultvalue: '200'
+  display: Maximum incidents to fetch.
+  name: fetch_limit
+  section: Collect
+  type: 0
+  required: false
+- defaultvalue: 3 days
+  display: First fetch time
+  additionalinfo: First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago"
+  section: Collect
+  name: first_fetch
+  type: 0
+  required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
+  section: Collect
 description: The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.
 display: Anomali Security Analytics Alerts
 name: AnomaliSecurityAnalyticsAlerts
@@ -62,6 +87,48 @@ script:
       - contextPath: AnomaliSecurityAnalytics.SearchJob.job_id
         description: Job ID of the search job.
         type: String
+  - name: anomali-security-analytics-search-job-status
+    description: Get the status of one or more search jobs.
+    arguments:
+    - name: job_id
+      description: Unique identifier assigned to a background process or job.
+      required: true
+      isArray: true
+    execution: false
+    outputs:
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.job_id
+      description: Job ID of the search job.
+      type: String
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.status
+      description: Current status of the search job. e.g. RUNNING, DONE.
+      type: String
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.progress
+      description: Indicates the search progress. Numeric float value between 0 and 1.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.scanned
+      description: Number of records scanned by the search query.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.total
+      description: Total number of records matched by the search query.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.start_time
+      description: Start timestamp of the time interval of the search query, in UNIX timestamp milliseconds.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.end_time
+      description: End timestamp of the time interval of the search query, in UNIX timestamp milliseconds.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.bucket_length
+      description: Width of each histogram bin depending on the search duration.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.num_of_bucket
+      description: Number of buckets in which you receive all the search results.
+      type: Number
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.is_aggregated
+      description: Whether the search results are aggregated.
+      type: Boolean
+    - contextPath: AnomaliSecurityAnalytics.SearchJobStatus.histogram_buckets
+      description: Number of histogram buckets used to bucket the search result.
+      type: Array
   - name: anomali-security-analytics-search-job-results
     description: Get search job results.
     arguments:
@@ -119,26 +186,26 @@ script:
       description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
       required: true
     - name: comment
-      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide either 'status' or 'comment' parameter.
+      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide at least one field.
       required: false
     - name: status
-      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide either 'status' or 'comment' parameter.
+      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide at least one field.
       required: false
     - name: assignee
-      description: Assignee of the alert.
+      description: Assignee of the alert. Please provide at least one field.
       required: false
     - name: owner
-      description: Owner of the alert.
+      description: Owner of the alert. Please provide at least one field.
       required: false
     - name: severity
-      description: Severity of the alert.
+      description: Severity of the alert. Please provide at least one field.
       required: false
     execution: false
     outputs:
       - contextPath: AnomaliSecurityAnalytics.UpdateAlert.message
         description: Confirmation message returned after updating the alert status.
         type: String
-  isfetch: false
+  isfetch: true
   runonce: false
   script: '-'
   type: python

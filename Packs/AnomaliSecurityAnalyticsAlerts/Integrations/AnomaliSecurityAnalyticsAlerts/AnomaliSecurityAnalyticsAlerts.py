@@ -14,7 +14,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
+ISO_8601_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 VENDOR_NAME = "Anomali Security Analytics Alerts"
 
 """ CLIENT CLASS """
@@ -146,71 +146,82 @@ def command_create_search_job(client: Client, args: dict) -> CommandResults:
     )
 
 
-def command_get_search_job_results(client: Client, args: dict) -> list[CommandResults]:
+def command_get_search_job_status(client: Client, args: dict) -> list[CommandResults]:
     """
-    Get the search job results if the job status is 'completed'.
-    Otherwise, return a message indicating that the job is still running.
+    Get the status of one or more search jobs.
 
     Args:
-        client (Client): Client object with request.
-        args (dict): Usually demisto.args().
+        client (Client): Client object.
+        args (dict): Contains 'job_id' (comma-separated or list).
 
     Returns:
-        list[CommandResults]: A list of command results for each job id.
+        list[CommandResults]: A list of status results for each job ID.
     """
-    job_ids = argToList(str(args.get("job_id")))
+    job_ids = argToList(args.get("job_id"))
+    command_results: list[CommandResults] = []
+
+    for job_id in job_ids:
+        status_response = client.get_search_job_status(job_id)
+
+        if "error" in status_response:
+            human_readable = f"Failed to retrieve status for Job ID: {job_id}. Error: {status_response.get('error')}"
+        else:
+            human_readable = tableToMarkdown(name=f"Search Job Status - {job_id}", t=status_response, removeNull=True)
+            status_response["job_id"] = job_id
+
+        command_result = CommandResults(
+            outputs_prefix="AnomaliSecurityAnalytics.SearchJobStatus",
+            outputs_key_field="job_id",
+            outputs=status_response,
+            readable_output=human_readable,
+            raw_response=status_response,
+        )
+        command_results.append(command_result)
+
+    return command_results
+
+
+def command_get_search_job_results(client: Client, args: dict) -> list[CommandResults]:
+    """
+    Get results of one or more completed search jobs.
+
+    Args:
+        client (Client): Client object.
+        args (dict): job_id, offset, fetch_size
+
+    Returns:
+        list[CommandResults]
+    """
+    job_ids = argToList(args.get("job_id"))
     offset = arg_to_number(args.get("offset", 0)) or 0
     fetch_size = arg_to_number(args.get("fetch_size", 25)) or 25
     command_results: list[CommandResults] = []
 
     for job_id in job_ids:
-        status_response = client.get_search_job_status(job_id)
-        if "error" in status_response:
-            human_readable = (
-                f"No results found for Job ID: {job_id}. "
-                f"Error message: {status_response.get('error')}. "
-                f"Please verify the Job ID and try again."
-            )
-            command_result = CommandResults(
-                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
-                outputs_key_field="job_id",
-                readable_output=human_readable,
-                raw_response=status_response,
-            )
-            command_results.append(command_result)
-            continue
+        results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
 
-        status_value = status_response.get("status")
-        if status_value and status_value.upper() != "DONE":
-            human_readable = f"Job ID: {job_id} is still running. Current status: {status_value}."
-            command_result = CommandResults(
-                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
-                outputs_key_field="job_id",
-                outputs={"job_id": job_id, "status": status_value},
-                readable_output=human_readable,
-                raw_response=status_response,
-            )
-            command_results.append(command_result)
-        else:
-            results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
-            if "fields" in results_response and "records" in results_response:
-                headers = results_response["fields"]
-                records = results_response["records"]
-                combined_records = [dict(zip(headers, record)) for record in records]
-                results_response.pop("fields")
-                results_response["records"] = combined_records
-                human_readable = tableToMarkdown(name="Search Job Results", t=combined_records, headers=headers, removeNull=True)
-            else:
-                human_readable = tableToMarkdown(name="Search Job Results", t=results_response, removeNull=True)
+        if "fields" in results_response and "records" in results_response:
+            headers = results_response["fields"]
+            records = results_response["records"]
+            combined_records = [dict(zip(headers, record)) for record in records]
+            results_response["records"] = combined_records
             results_response["job_id"] = job_id
-            command_result = CommandResults(
-                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
-                outputs_key_field="job_id",
-                outputs=results_response,
-                readable_output=human_readable,
-                raw_response=results_response,
+
+            human_readable = tableToMarkdown(
+                name=f"Search Job Results - {job_id}", t=combined_records, headers=headers, removeNull=True
             )
-            command_results.append(command_result)
+        else:
+            human_readable = tableToMarkdown(name=f"Search Job Results - {job_id}", t=results_response, removeNull=True)
+
+        command_result = CommandResults(
+            outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
+            outputs_key_field="job_id",
+            outputs=results_response,
+            readable_output=human_readable,
+            raw_response=results_response,
+        )
+        command_results.append(command_result)
+
     return command_results
 
 
@@ -250,6 +261,75 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     )
 
 
+def fetch_incidents(client: Client) -> list:
+    """
+    Fetches new alerts from Anomali Security Analytics and creates incidents in XSOAR.
+
+    Args:
+        client (Client): Client object with request
+
+    Returns:
+        list: List of incident dicts to be sent to XSOAR.
+    """
+    params = demisto.params()
+    first_fetch_datetime = arg_to_datetime(arg=params.get("first_fetch"), arg_name="First fetch time", required=True)
+    if first_fetch_datetime:
+        first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
+    else:
+        first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
+    timestamp_field = params.get("timestamp_field", "event_time")
+    fetch_limit = arg_to_number(params.get("fetch_limit", 200)) or 200
+
+    last_run = demisto.getLastRun()
+    incidents = []
+    fetch_time = last_run.get("last_fetch", first_fetch_time)
+
+    from_dt = arg_to_datetime(fetch_time, arg_name="last_fetch", required=True)
+    to_dt = datetime.now(tz=UTC)
+    if from_dt is None:
+        raise DemistoException("Failed to parse last_fetch timestamp.")
+
+    time_range = {"from": int(from_dt.timestamp() * 1000), "to": int(to_dt.timestamp() * 1000), "timezone": "UTC"}
+    query = "alert"
+    response = client.create_search_job(query=query, source="XSOAR", time_range=time_range)
+    job_id = response.get("job_id", "")
+
+    for _ in range(10):
+        time.sleep(3)
+        status = client.get_search_job_status(job_id)
+        if status.get("status") == "DONE":
+            break
+    else:
+        raise DemistoException(f"Search job {job_id} did not complete in time.")
+
+    results = client.get_search_job_results(job_id, fetch_size=fetch_limit)
+    fields = results.get("fields", [])
+    records = results.get("records", [])
+    incidents_list = [dict(zip(fields, record)) for record in records]
+
+    latest_ts = int(from_dt.timestamp())
+    has_new = False
+    for alert in incidents_list:
+        raw_ts = alert.get(timestamp_field)
+        alert_time = int(raw_ts) // 1000 if raw_ts else int(to_dt.timestamp())
+        if alert_time > latest_ts:
+            latest_ts = alert_time
+            has_new = True
+
+        incident = {
+            "name": f"Anomali Alert - {alert.get('uuid_', 'Unknown')}",
+            "occurred": datetime.fromtimestamp(alert_time, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+            "rawJSON": json.dumps(alert),
+        }
+        incidents.append(incident)
+
+    if not has_new:
+        latest_ts = int(to_dt.timestamp())
+
+    demisto.setLastRun({"last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z")})
+    return incidents
+
+
 def test_module(client: Client) -> str:
     """Tests API connectivity and authentication'
     Perform basic request to check if the connection to service was successful.
@@ -279,6 +359,7 @@ def main():
     base_url = params.get("url")
     verify_certificate = not argToBoolean(params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
+    is_fetch = params.get("isFetch")
 
     command = demisto.command()
 
@@ -289,11 +370,16 @@ def main():
         args = demisto.args()
         commands = {
             "anomali-security-analytics-search-job-create": command_create_search_job,
+            "anomali-security-analytics-search-job-status": command_get_search_job_status,
             "anomali-security-analytics-search-job-results": command_get_search_job_results,
             "anomali-security-analytics-alert-update": command_update_alert,
         }
         if command == "test-module":
             return_results(test_module(client))
+        elif command == "fetch-incidents" and is_fetch:
+            incident_results = fetch_incidents(client)
+            demisto.incidents(incident_results)
+            return_results("Incidents fetched successfully.")
         elif command in commands:
             return_results(commands[command](client, args))
         else:

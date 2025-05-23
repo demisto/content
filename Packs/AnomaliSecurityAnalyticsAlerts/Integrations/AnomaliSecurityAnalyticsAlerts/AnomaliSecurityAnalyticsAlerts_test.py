@@ -1,4 +1,11 @@
-from AnomaliSecurityAnalyticsAlerts import Client, command_create_search_job, command_get_search_job_results, command_update_alert
+from AnomaliSecurityAnalyticsAlerts import (
+    Client,
+    command_create_search_job,
+    command_get_search_job_status,
+    command_get_search_job_results,
+    command_update_alert,
+    fetch_incidents,
+)
 from CommonServerPython import *
 from CommonServerUserPython import *
 from freezegun import freeze_time
@@ -33,34 +40,30 @@ def test_command_create_search_job(mocker):
     assert "Search Job Created" in result.readable_output
 
 
-def test_command_get_search_job_results_running(mocker):
+def test_command_get_search_job_status_running(mocker):
     """
     Given:
-        - A valid job_id with a status that is not DONE.
+        - A job_id whose search job is still RUNNING.
 
     When:
-        - client.get_search_job_status returns a status like "RUNNING".
+        - client.get_search_job_status returns a non-DONE status.
 
     Then:
-        - Validate that command_get_search_job_results returns a CommandResults object
-          with a message indicating that the job is still running.
-
+        - Validate that CommandResults is returned with correct status and job_id.
     """
     client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
 
-    status_response = {"status": "RUNNING"}
+    status_response = {"status": "RUNNING", "progress": 0.5}
     mocker.patch.object(client, "_http_request", return_value=status_response)
 
-    args = {"job_id": "job_running", "offset": 0, "fetch_size": 2}
+    args = {"job_id": "job_running"}
+    results = command_get_search_job_status(client, args)
 
-    results = command_get_search_job_results(client, args)
     assert isinstance(results, list)
     assert len(results) == 1
-    outputs = results[0].outputs
-    assert outputs.get("job_id") == "job_running"
-    assert outputs.get("status") == "RUNNING"
-    readable_output = results[0].readable_output
-    assert "is still running" in readable_output
+    assert results[0].outputs["status"] == "RUNNING"
+    assert results[0].outputs["job_id"] == "job_running"
+    assert "Search Job Status" in results[0].readable_output
 
 
 def test_command_get_search_job_results_completed_with_fields(mocker):
@@ -77,7 +80,6 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     """
     client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
 
-    status_response = {"status": "DONE"}
     results_response = {
         "fields": ["event_time", "sourcetype", "dcid", "src"],
         "records": [
@@ -88,7 +90,7 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
         "result_row_count": 2,
         "status": "DONE",
     }
-    mocker.patch.object(client, "_http_request", side_effect=[status_response, results_response])
+    mocker.patch.object(client, "_http_request", return_value=results_response)
 
     args = {"job_id": "job_done", "offset": 0, "fetch_size": 2}
 
@@ -97,7 +99,7 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
     assert len(results) == 1
     outputs = results[0].outputs
     assert outputs.get("job_id") == "job_done"
-    assert "fields" not in outputs
+
     expected_records = [
         {"event_time": "1727647847687", "sourcetype": "myexamplesourcetype", "dcid": "78", "src": "1.2.3.4"},
         {"event_time": "1727647468096", "sourcetype": "aws_cloudtrail", "dcid": "1", "src": "1.2.3.5"},
@@ -110,32 +112,29 @@ def test_command_get_search_job_results_completed_with_fields(mocker):
         assert header in readable_output
 
 
-def test_command_get_search_job_results_invalid(mocker):
+def test_command_get_search_job_status_invalid(mocker):
     """
     Given:
-        - An invalid job_id.
+        - An invalid job_id
 
     When:
-        - client.get_search_job_status returns a response with an error.
+        - client.get_search_job_status returns an error message
 
     Then:
-        - Validate that command_get_search_job_results returns a CommandResults
-        object with a friendly message and no context data.
+        - Validate that CommandResults is returned with error in readable_output.
     """
     client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
 
-    status_response = {"error": "Invalid Job ID"}
-    mocker.patch.object(client, "_http_request", return_value=status_response)
+    error_response = {"error": "Invalid Job ID"}
+    mocker.patch.object(client, "_http_request", return_value=error_response)
 
-    args = {"job_id": "invalid_job", "offset": 0, "fetch_size": 2}
+    args = {"job_id": "invalid_job"}
+    results = command_get_search_job_status(client, args)
 
-    results = command_get_search_job_results(client, args)
     assert isinstance(results, list)
     assert len(results) == 1
-    readable_output = results[0].readable_output
-    assert "No results found for Job ID: invalid_job" in readable_output
-    assert "Error message: Invalid Job ID" in readable_output
-    assert "Please verify the Job ID and try again." in readable_output
+    assert "Failed to retrieve status" in results[0].readable_output
+    assert "Invalid Job ID" in results[0].readable_output
 
 
 def test_command_get_search_job_results_no_fields_records(mocker):
@@ -153,9 +152,8 @@ def test_command_get_search_job_results_no_fields_records(mocker):
     """
     client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
 
-    status_response = {"status": "DONE"}
     results_response = {"result": "raw data", "complete": True}
-    mocker.patch.object(client, "_http_request", side_effect=[status_response, results_response])
+    mocker.patch.object(client, "_http_request", return_value=results_response)
 
     args = {"job_id": "job_no_fields", "offset": 0, "fetch_size": 2}
 
@@ -254,3 +252,38 @@ def test_command_update_alert_no_uuid(mocker):
     with pytest.raises(DemistoException) as e:
         command_update_alert(client, args)
     assert "Please provide 'uuid' parameter" in str(e.value)
+
+
+def test_fetch_incidents(mocker):
+    """
+    Given:
+        - Valid parameters
+    When:
+        - fetch_incidents is invoked
+    Then:
+        - Validate that fetch_incidents returns a list of incidents
+    """
+    client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
+    mocker.patch.object(client, "create_search_job", return_value={"job_id": "12345"})
+
+    mocker.patch.object(client, "get_search_job_status", return_value={"status": "DONE"})
+
+    mocker.patch.object(
+        client,
+        "get_search_job_results",
+        return_value={"fields": ["uuid_", "event_time", "severity"], "records": [["abc-123", "1727613600000", "high"]]},
+    )
+
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "3 days"})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={})
+    mocker.patch("CommonServerPython.demisto.setLastRun")
+
+    incidents = fetch_incidents(client)
+
+    assert isinstance(incidents, list)
+    assert len(incidents) == 1
+    incident = incidents[0]
+    assert "rawJSON" in incident
+    assert "occurred" in incident
+    assert "name" in incident
+    assert incident["name"].startswith("Anomali Alert")
