@@ -1,0 +1,34 @@
+{
+    "policy_name": "hard",
+    "rules": [
+        {
+            "rule_name": "rule1",
+            "type": "EVERY_MATCHED_CONDITION",
+            "max_matches": "GREATEST_NUMBER",
+            "classifier_details": [
+                {
+                    "selected": "true",
+                    "number_of_matches": 0,
+                    "severity_type": "MEDIUM",
+                    "dup_severity_type": "MEDIUM",
+                    "action_plan": "Audit Only"
+                },
+                {
+                    "selected": "true",
+                    "number_of_matches": 2,
+                    "severity_type": "MEDIUM",
+                    "dup_severity_type": "MEDIUM",
+                    "action_plan": "Audit Only"
+                },
+                {
+                    "selected": "false",
+                    "number_of_matches": 3,
+                    "severity_type": "MEDIUM",
+                    "dup_severity_type": "MEDIUM",
+                    "action_plan": "Audit Only"
+                }
+            ],
+            "risk_adaptive_protection_enabled": "false"
+        }
+    ]
+}
