@@ -50,7 +50,7 @@ class Email:
         self.html = email_object.text_html[0] if email_object.text_html else ""
         self.text = email_object.text_plain[0] if email_object.text_plain else ""
         self.subject = email_object.subject
-        self.headers = email_object.headers
+        self.headers = self.parse_headers(email_object.headers)
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
         self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None  # noqa: UP017
@@ -58,6 +58,34 @@ class Email:
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
+
+    def parse_headers(self, headers):
+        parsed_headers = {}
+        for header_name, raw_header_value in headers.items():
+            try:
+                demisto.debug(f"Starting to parse the header {header_name}")
+                if not isinstance(raw_header_value, str):
+                    demisto.debug(f"Got header {header_name} value not at string, parsing the header data={raw_header_value}")
+                    if header_name in ["From", "To", "Cc", "Delivered-To"]:
+                        header_value_array = []
+                        for sub_header_data in raw_header_value:
+                            if sub_header_data[0]:
+                                header_value_array.append(sub_header_data[0] + " <" + sub_header_data[1] + ">")
+                            else:
+                                header_value_array.append(sub_header_data[1])
+                        parsed_header_value = "; ".join(header_value_array)
+                    else:
+                        parsed_header_value = ", ".join(raw_header_value)
+                else:
+                    parsed_header_value = raw_header_value
+
+                parsed_headers[header_name] = parsed_header_value
+                demisto.debug(f"Parsed header {header_name} as {parsed_header_value=}")
+
+            except TypeError as e:
+                demisto.debug(f"Got {str(e)} when trying to parse header. Will not parse it.")
+
+        return parsed_headers
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
@@ -156,6 +184,8 @@ class Email:
             labels.append(
                 {"type": "Email/attachments", "value": ",".join([attachment["filename"] for attachment in self.attachments])}
             )
+
+        demisto.debug(f"Generated labels: {labels}")
         return labels
 
     def parse_attachments(self, output_to_warroom: bool = False) -> list:
