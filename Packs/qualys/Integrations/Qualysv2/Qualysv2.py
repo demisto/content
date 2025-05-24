@@ -7,7 +7,6 @@ import csv
 import io
 import requests
 import signal
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as ThreadTimeoutError
 import xml.etree.ElementTree as ET
 
 from urllib3 import disable_warnings
@@ -1826,7 +1825,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
             params=params,
-            resp_type='xml',
+            resp_type="xml",
             timeout=60,
             error_handler=self.error_handler,
         )
@@ -1846,7 +1845,7 @@ class Client(BaseClient):
             method="GET",
             url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
             params=params,
-            resp_type='xml',
+            resp_type="xml",
             timeout=60,
             error_handler=self.error_handler,
         )
@@ -3261,12 +3260,10 @@ def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
     root = ET.fromstring(response.content)
 
     # Extract QID(s)
-    qids = [vuln.find('QID').text for vuln in root.findall('.//VULN')]
+    qids = [vuln.find("QID").text for vuln in root.findall(".//VULN")]
 
     return CommandResults(
-        readable_output=f"They are the {qids=} from Qualys for the given {cve=}",
-        outputs=qids,
-        outputs_prefix="Qualys.QID"
+        readable_output=f"They are the {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
     )
 
 
@@ -3284,20 +3281,20 @@ def get_asset_by_qid(client: Client, qid: str):
 
     # Extract host info
     hosts = []
-    for host in root.findall('.//HOST'):
+    for host in root.findall(".//HOST"):
         host_data = {
-            'id': host.findtext('ID'),
-            'ip': host.findtext('IP'),
-            'dns': host.findtext('DNS'),
-            'os': host.findtext('OS'),
-            'tracking_method': host.findtext('TRACKING_METHOD')
+            "id": host.findtext("ID"),
+            "ip": host.findtext("IP"),
+            "dns": host.findtext("DNS"),
+            "os": host.findtext("OS"),
+            "tracking_method": host.findtext("TRACKING_METHOD"),
         }
         hosts.append(host_data)
 
     return CommandResults(
         readable_output=f"They are the {hosts=} from Qualys for the given {qid=}",
         outputs=hosts,
-        outputs_prefix="Qualys.HostDetections"
+        outputs_prefix="Qualys.HostDetections",
     )
 
 
