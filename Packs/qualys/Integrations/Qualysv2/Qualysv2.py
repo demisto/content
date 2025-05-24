@@ -7,6 +7,7 @@ import csv
 import io
 import requests
 import signal
+import xml.etree.ElementTree as ET
 
 from urllib3 import disable_warnings
 
@@ -36,7 +37,6 @@ ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
-
 
 ASSETS_DATE_FORMAT = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
@@ -1813,6 +1813,45 @@ class Client(BaseClient):
 
         return response
 
+    def get_qid_for_cve(self, cve: str) -> requests.Response:
+        """
+        This method retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+        """
+        self._headers.update({"Content-Type": "application/json"})
+
+        params: dict[str, Any] = {"cve": cve}
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list"),
+            params=params,
+            resp_type="xml",
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
+    def get_asset_by_qid(self, qid: str) -> requests.Response:
+        """
+        This method retrieves the Qualys assets associated with a specified qid.
+        """
+
+        self._headers.update({"Content-Type": "application/x-www-form-urlencoded"})
+
+        params: dict[str, Any] = {"qids": qid}
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
+            params=params,
+            resp_type="xml",
+            timeout=60,
+            error_handler=self.error_handler,
+        )
+
+        return response
+
 
 """ HELPER FUNCTIONS """
 
@@ -3209,6 +3248,56 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     return vulnerabilities, new_last_run
 
 
+def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
+    """
+    This function retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+    """
+
+    demisto.debug(f"Start getting qids for the given {cve=}")
+
+    response = client.get_qid_for_cve(cve=cve)
+    # Parse XML response
+    root = ET.fromstring(response.content)
+
+    # Extract QID(s)
+    qids = [vuln.find("QID").text for vuln in root.findall(".//VULN")]
+
+    return CommandResults(
+        readable_output=f"They are the {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
+    )
+
+
+def get_asset_by_qid(client: Client, qid: str):
+    """
+    This function retrieves the Qualys assets associated with a specified qid.
+    """
+
+    demisto.debug(f"Start getting assets for the given QID = {qid}")
+
+    response = client.get_asset_by_qid(qid=qid)
+
+    # Parse XML response
+    root = ET.fromstring(response.content)
+
+    # Extract host info
+    hosts = []
+    for host in root.findall(".//HOST"):
+        host_data = {
+            "id": host.findtext("ID"),
+            "ip": host.findtext("IP"),
+            "dns": host.findtext("DNS"),
+            "os": host.findtext("OS"),
+            "tracking_method": host.findtext("TRACKING_METHOD"),
+        }
+        hosts.append(host_data)
+
+    return CommandResults(
+        readable_output=f"They are the {hosts=} from Qualys for the given {qid=}",
+        outputs=hosts,
+        outputs_prefix="Qualys.HostDetections",
+    )
+
+
 def fetch_events(
     client: Client,
     last_run,
@@ -3787,6 +3876,12 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
             return_results(assets)
+
+        elif command == "qualys-get-quid-by-cve":
+            return_results(get_qid_for_cve(client=client, cve=args["cve"]))
+
+        elif command == "qualys-get-assets-by-qid":
+            get_asset_by_qid(client=client, qid=args["qid"])
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
