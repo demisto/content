@@ -1,19 +1,19 @@
 In order to connect to the Azure Firewall use one of the following methods:
 
-1. *Client Credentials Flow*
-2. *Device Code Flow*.
-3. *Azure Managed Identities Flow*.
+- *Client Credentials Flow*
+- *Device Code Flow*
+- *Azure Managed Identities Flow*
 
 ## Self-Deployed Azure App
 
-To use a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
+Before you connect to Azure Firewall, if using a self-configured Azure application, you need to add a new Azure App Registration in the Azure Portal.
 
-To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps 1-8.
+To add the registration, refer to the following [Microsoft article](https://learn.microsoft.com/en-us/defender-xdr/api-create-app-web?view=o365-worldwide) steps.
 
 ### Required permissions
 
-- Azure Service Management - permission `user_impersonation` of type Delegated
-- Microsoft Graph - permission `User.Read` of type Delegated
+- Azure Service Management - permission: `user_impersonation` of type Delegated
+- Microsoft Graph - permission: `User.Read` of type Delegated
 
 To add a permission:
 
@@ -56,7 +56,7 @@ In order to use the Cortex XSOAR Azure application, use the default application 
 
 You only need to fill in your subscription ID and resource group name.
 
-### Azure Managed Identities Authentication
+### Azure Managed Identities Flow
 ##### Note: This option is relevant only if the integration is running on Azure VM.
 Follow one of these steps for authentication based on Azure Managed Identities:
 
@@ -75,5 +75,7 @@ For information about Azure Managed Identities see [Managed identities for Azure
 
 1. In the Azure portal, select **Resource groups**.
 2. Select your resource group name.
-3. Copy the subscription ID and enter it in the *Subscription ID* parameter.
-4. Copy your resource group name and enter it in the *Resource Group Name* parameter.
+3. Copy the subscription ID and resource group name 
+4. In XSOAR add the Subscription ID and Resource Group Name parameter from step 3.
+
+
