@@ -1,6 +1,7 @@
 Enrich and calculate reputation of a Certificate indicator.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Enrich and calculate reputation of a Certificate indicator.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +20,7 @@ Enrich and calculate reputation of a Certificate indicator.
 | update_indicator | Set validation checks in the indicator |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -60,11 +63,12 @@ Enrich and calculate reputation of a Certificate indicator.
 | DBotScore.Vendor | The vendor used to calculate the score. | String |
 | DBotScore.Score | The actual score. | Number |
 
-
 ## Script Example
+
 ```!CertificateReputation input="fead39be0bc680baaaf282d915b44c803e7ab66e61ff5afc356bcf0d12d73f2c" update_indicator=false```
 
 ## Context Example
+
 ```json
 {
     "Certificate": {
@@ -247,6 +251,8 @@ Enrich and calculate reputation of a Certificate indicator.
 ## Human Readable Output
 
 >Score for fead39be0bc680baaaf282d915b44c803e7ab66e61ff5afc356bcf0d12d73f2c is 2
+>
 >## Notes
+>
 >WILDCARD_CERTIFICATE Certificate contains at least one name with wildcard
 >DOMAIN_CONTROL_VALIDATED Certificate is Domain Control Validated
