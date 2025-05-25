@@ -29,7 +29,7 @@
 /Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
-# /Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 /Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1
@@ -37,9 +37,9 @@
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
 
 # Common Packs
-/Packs/CommonTypes/ @idovandijk
-/Packs/CommonPlaybooks/ @idovandijk
-/Packs/CommonDashboards/ @idovandijk
+/Packs/CommonTypes/ @melamedbn @idovandijk
+/Packs/CommonPlaybooks/ @melamedbn @idovandijk
+/Packs/CommonDashboards/ @melamedbn @idovandijk
 /Packs/ContentManagement/ @talzich
 /Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
 /Packs/CommonTypes/Layouts/* @Ni-Knight
