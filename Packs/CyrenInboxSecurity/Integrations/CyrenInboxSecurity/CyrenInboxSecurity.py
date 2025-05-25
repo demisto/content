@@ -1,7 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 # noqa: F401
 # noqa: F401
 # noqa: F401
@@ -14,18 +13,19 @@ CyrenInboxSecurity Integration for Cortex XSOAR (formerly Demisto)
 """
 
 import json
+
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
 
-''' CONSTANTS '''
+""" CONSTANTS """
 
 
 MAX_INCIDENTS_TO_FETCH = 50
 
-''' CLIENT CLASS '''
+""" CLIENT CLASS """
 
 
 class Client(BaseClient):
@@ -38,50 +38,24 @@ class Client(BaseClient):
     """
 
     def get_token(self, client_id, client_secret):
-        request_params = {
-            'client_id': client_id,
-            'client_secret': client_secret,
-            'grant_type': 'client_credentials'
-        }
+        request_params = {"client_id": client_id, "client_secret": client_secret, "grant_type": "client_credentials"}
 
-        return self._http_request(
-            method='POST',
-            url_suffix='/v1/token',
-            params=request_params
-        )
+        return self._http_request(method="POST", url_suffix="/v1/token", params=request_params)
 
     def get_incidents(self, token, date_from, max_fetch):
-        request_params = {
-            'date_from': date_from,
-            'limit': max_fetch
-        }
+        request_params = {"date_from": date_from, "limit": max_fetch}
 
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
+        headers = {"Authorization": f"Bearer {token}"}
 
-        return self._http_request(
-            method='GET',
-            url_suffix='/v1/incidents',
-            headers=headers,
-            params=request_params
-        )
+        return self._http_request(method="GET", url_suffix="/v1/incidents", headers=headers, params=request_params)
 
     def resolve_and_remediate(self, token, case_id, **kwargs):
+        headers = {"Authorization": f"Bearer {token}"}
 
-        headers = {
-            'Authorization': f'Bearer {token}'
-        }
-
-        return self._http_request(
-            method='PATCH',
-            url_suffix=f'/v1/cases/{case_id}/resolution',
-            headers=headers,
-            json_data=kwargs
-        )
+        return self._http_request(method="PATCH", url_suffix=f"/v1/cases/{case_id}/resolution", headers=headers, json_data=kwargs)
 
 
-''' HELPER FUNCTIONS '''
+""" HELPER FUNCTIONS """
 
 
 def convert_to_demisto_severity(severity):
@@ -98,44 +72,39 @@ def convert_to_demisto_severity(severity):
     :rtype: ``int``
     """
 
-    return {
-        0: IncidentSeverity.LOW,
-        1: IncidentSeverity.MEDIUM,
-        2: IncidentSeverity.HIGH,
-        3: IncidentSeverity.CRITICAL
-    }[severity]
+    return {0: IncidentSeverity.LOW, 1: IncidentSeverity.MEDIUM, 2: IncidentSeverity.HIGH, 3: IncidentSeverity.CRITICAL}[severity]
 
 
-''' COMMAND FUNCTIONS '''
+""" COMMAND FUNCTIONS """
 
 
 def test_module(client, client_id, client_secret):
     """Tests API connectivity and authentication'
 
-        Returning 'ok' indicates that the integration works
-         like it is supposed to.
-        Connection to the service is successful.
-        Raises exceptions if something goes wrong.
+    Returning 'ok' indicates that the integration works
+     like it is supposed to.
+    Connection to the service is successful.
+    Raises exceptions if something goes wrong.
 
-        :type client: ``Client``
-        :param Client: CyrenInboxSecurity client to use
+    :type client: ``Client``
+    :param Client: CyrenInboxSecurity client to use
 
-        :type client_id: ``str``
-        :param client_id: A unique string that identifies the client
+    :type client_id: ``str``
+    :param client_id: A unique string that identifies the client
 
-        :type client_secret: ``str``
-        :param client_secret: A unique string that represent the client secret
+    :type client_secret: ``str``
+    :param client_secret: A unique string that represent the client secret
 
-        :return: 'ok' if test passed, anything else will fail the test.
-        :rtype: ``str``
-        """
+    :return: 'ok' if test passed, anything else will fail the test.
+    :rtype: ``str``
+    """
 
     try:
         client.get_token(client_id, client_secret)
     except DemistoException as e:
         raise e
 
-    return 'ok'
+    return "ok"
 
 
 def simulate_fetch():
@@ -148,7 +117,7 @@ def simulate_fetch():
     if last_run.get("sample_fetched", False):
         return []
     else:
-        demisto.setLastRun({'sample_fetched': True})
+        demisto.setLastRun({"sample_fetched": True})
 
     now_time = datetime.now()
     now_time_timestamp_seconds = int(date_to_timestamp(now_time) / 1000)
@@ -166,63 +135,25 @@ def simulate_fetch():
             "remediation_type": "auto_remediation",
             "remediation": "not_remediated",
             "policy_action": [
-                {
-                    "performed_date": 1625484377,
-                    "messages": None,
-                    "action_type": "ADD_BANNER",
-                    "action_status": "success"
-                },
-                {
-                    "performed_date": 1625484378,
-                    "messages": None,
-                    "action_type": "MOVE_TO_SPAM",
-                    "action_status": "success"
-                },
-                {
-                    "performed_date": 1625484378,
-                    "messages": None,
-                    "action_type": "INCIDENT",
-                    "action_status": "success"
-                }
+                {"performed_date": 1625484377, "messages": None, "action_type": "ADD_BANNER", "action_status": "success"},
+                {"performed_date": 1625484378, "messages": None, "action_type": "MOVE_TO_SPAM", "action_status": "success"},
+                {"performed_date": 1625484378, "messages": None, "action_type": "INCIDENT", "action_status": "success"},
             ],
             "policy_condition": [
-                {
-                    "condition_type": "ORIGIN",
-                    "condition_value": "ALL"
-                },
-                {
-                    "condition_type": "EMAIL_STATE",
-                    "condition_value": "ALL"
-                },
-                {
-                    "condition_type": "REPORTED_BY",
-                    "condition_value": "ALL"
-                }
+                {"condition_type": "ORIGIN", "condition_value": "ALL"},
+                {"condition_type": "EMAIL_STATE", "condition_value": "ALL"},
+                {"condition_type": "REPORTED_BY", "condition_value": "ALL"},
             ],
             "policy_name": "Default Rule",
-            "resolution": "pending"
+            "resolution": "pending",
         },
         "message_details": {
             "internet_message_id": "internetMessageID-" + str(now_time_timestamp_seconds),
-            "targeted_employee": {
-                "name": "user1",
-                "address": "user1@sample.com"
-            },
+            "targeted_employee": {"name": "user1", "address": "user1@sample.com"},
             "other_recipients": [],
-            "sender": {
-                "name": "user2",
-                "address": "user2@sample.com"
-            },
-            "from": {
-                "name": "user2",
-                "address": "user2@sample.com"
-            },
-            "to_recipients": [
-                {
-                    "name": "user1",
-                    "address": "user1@sample.com"
-                }
-            ],
+            "sender": {"name": "user2", "address": "user2@sample.com"},
+            "from": {"name": "user2", "address": "user2@sample.com"},
+            "to_recipients": [{"name": "user1", "address": "user1@sample.com"}],
             "to_cc_recipients": [],
             "to_bcc_recipients": [],
             "reply_to": [],
@@ -242,7 +173,7 @@ def simulate_fetch():
                     "url": "http://phishing.com",
                     "classification_type": "malicious",
                     "is_phishing": True,
-                    "classification": "malicious"
+                    "classification": "malicious",
                 }
             ],
             "user_id": "userID",
@@ -254,49 +185,32 @@ def simulate_fetch():
                     "file_hash": "hash",
                     "file_category": "PHISHING",
                     "aws_key": "key.zip",
-                    "aws_bucket": "bucket"
+                    "aws_bucket": "bucket",
                 }
             ],
-            "folder": "inbox"
+            "folder": "inbox",
         },
         "threat_indicators": [
             {
                 "type": "url",
                 "subType": "malicious_url",
                 "value": "http://phishing.com",
-                "details": {
-                    "categories": [
-                        ""
-                    ],
-                    "family_names": [
-                        "Generic"
-                    ],
-                    "industries": [
-                        ""
-                    ],
-                    "screenshot": "screenshot.png"
-                }
+                "details": {"categories": [""], "family_names": ["Generic"], "industries": [""], "screenshot": "screenshot.png"},
             },
-
             {
                 "type": "attachment",
                 "subType": "attachment_hash",
                 "value": "hash",
-                "details": {
-                    "categories": None,
-                    "family_names": None,
-                    "industries": None,
-                    "screenshot": ""
-                },
+                "details": {"categories": None, "family_names": None, "industries": None, "screenshot": ""},
                 "attachment": {
                     "file_size": 158,
                     "file_name": "attachment.html",
                     "file_hash": "hash",
                     "file_category": "PHISHING",
                     "aws_key": "key.zip",
-                    "aws_bucket": "screenshot"
-                }
-            }
+                    "aws_bucket": "screenshot",
+                },
+            },
         ],
         "feedback": [
             {
@@ -304,29 +218,26 @@ def simulate_fetch():
                 "tx_id": "txID",
                 "feedback_type": "phishing",
                 "created_at": 1625653814,
-                "threat_indicators_type": [
-                    "url"
-                ]
+                "threat_indicators_type": ["url"],
             },
         ],
         "reported_by": "admin@sample.com",
         "confidence": 3,
         "created_at": now_time_timestamp_seconds,
-        "updated_at": now_time_timestamp_seconds
+        "updated_at": now_time_timestamp_seconds,
     }
 
     incidents = []
-    incident_name = 'Cyren Inbox Security Sample - {} ({})'.format(
-        sample_incident.get('threat_type', 'phishing'),
-        sample_incident.get('reported_by', 'System')
+    incident_name = "Cyren Inbox Security Sample - {} ({})".format(
+        sample_incident.get("threat_type", "phishing"), sample_incident.get("reported_by", "System")
     )
     incident_timestamp = now_time_timestamp_seconds
     incident_str_time = timestamp_to_datestring(incident_timestamp * 1000)
     incident = {
-        'name': incident_name,
-        'occurred': incident_str_time,
-        'rawJSON': json.dumps(sample_incident),
-        'severity': convert_to_demisto_severity(1),
+        "name": incident_name,
+        "occurred": incident_str_time,
+        "rawJSON": json.dumps(sample_incident),
+        "severity": convert_to_demisto_severity(1),
     }
 
     incidents.append(incident)
@@ -334,9 +245,7 @@ def simulate_fetch():
     return incidents
 
 
-def fetch_incidents(client, client_id, client_secret, last_run,
-                    first_fetch_time, max_fetch
-                    ):
+def fetch_incidents(client, client_id, client_secret, last_run, first_fetch_time, max_fetch):
     """
     This function will execute each interval (default is 1 minute).
 
@@ -354,7 +263,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     """
     # last run is a dict with last_fetch as a key and
     #  a timestamp in seconds as a value
-    last_fetch = last_run.get('last_fetch')
+    last_fetch = last_run.get("last_fetch")
 
     # Handle first fetch time
     if last_fetch is None:
@@ -367,20 +276,19 @@ def fetch_incidents(client, client_id, client_secret, last_run,
     last_fetched_time = date_from
 
     incidents = []
-    token = client.get_token(client_id, client_secret).\
-        get('data').get('access_token')
+    token = client.get_token(client_id, client_secret).get("data").get("access_token")
     cyren_incidents = client.get_incidents(token, date_from, max_fetch)
-    for ci in cyren_incidents.get('data', []):
-        incident_name = 'Cyren Inbox Security - {} ({})'.format(
-            ci.get('threat_type', 'phishing'), ci.get('reported_by', 'System')
+    for ci in cyren_incidents.get("data", []):
+        incident_name = "Cyren Inbox Security - {} ({})".format(
+            ci.get("threat_type", "phishing"), ci.get("reported_by", "System")
         )
-        incident_timestamp = ci.get('created_at')
+        incident_timestamp = ci.get("created_at")
         incident_str_time = timestamp_to_datestring(incident_timestamp * 1000)
         incident = {
-            'name': incident_name,
-            'occurred': incident_str_time,
-            'rawJSON': json.dumps(ci),
-            'severity': convert_to_demisto_severity(ci.get('confidence', 1)),
+            "name": incident_name,
+            "occurred": incident_str_time,
+            "rawJSON": json.dumps(ci),
+            "severity": convert_to_demisto_severity(ci.get("confidence", 1)),
         }
 
         incidents.append(incident)
@@ -389,9 +297,7 @@ def fetch_incidents(client, client_id, client_secret, last_run,
         if incident_timestamp > last_fetched_time:
             last_fetched_time = incident_timestamp + 1
 
-    demisto.setLastRun({
-        'last_fetch': last_fetched_time
-    })
+    demisto.setLastRun({"last_fetch": last_fetched_time})
 
     return incidents
 
@@ -400,54 +306,45 @@ def resolve_and_remediate_command(client, args, client_id, client_secret):
     """
     Resolve a case and remediate it
     """
-    case_id = args.get('case_id')
-    resolution = args.get('resolution', 'phishing')
-    resolution_reason = args.get('resolution_reason', '')
-    resolution_reason_text = args.get('resolution_reason_text', '')
-    actions = args.get('actions', [])
+    case_id = args.get("case_id")
+    resolution = args.get("resolution", "phishing")
+    resolution_reason = args.get("resolution_reason", "")
+    resolution_reason_text = args.get("resolution_reason_text", "")
+    actions = args.get("actions", [])
     if actions:
-        actions = actions.split(',')
+        actions = actions.split(",")
 
     if client_id == client_secret == "sample":
         resp = {"data": {"status": "ok"}}
     else:
-        token = client.get_token(client_id, client_secret).\
-            get('data').get('access_token')
+        token = client.get_token(client_id, client_secret).get("data").get("access_token")
         resp = client.resolve_and_remediate(
             token,
             case_id,
             resolution=resolution,
             resolution_reason=resolution_reason,
             resolution_reason_text=resolution_reason_text,
-            actions=actions
+            actions=actions,
         )
 
-    readable_output = (
-        tableToMarkdown("cyren-resolve-and-remediate results", resp["data"])
-        + '\n*** end of results ***'
-    )
+    readable_output = tableToMarkdown("cyren-resolve-and-remediate results", resp["data"]) + "\n*** end of results ***"
 
-    return CommandResults(
-        outputs_prefix="Cyren",
-        outputs=resp,
-        readable_output=readable_output
-    )
+    return CommandResults(outputs_prefix="Cyren", outputs=resp, readable_output=readable_output)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
     """
-        PARSE AND VALIDATE INTEGRATION PARAMS
+    PARSE AND VALIDATE INTEGRATION PARAMS
     """
 
-    url = demisto.params().get('url')
-    client_id = demisto.params().get('client_id')
-    client_secret = demisto.params().get('client_secret')
-    first_fetch_time = arg_to_datetime(demisto.params().
-                                       get('first_fetch', '3 days').strip())
-    max_results = arg_to_number(arg=demisto.params().get('max_fetch', 50))
+    url = demisto.params().get("url")
+    client_id = demisto.params().get("client_id")
+    client_secret = demisto.params().get("client_secret")
+    first_fetch_time = arg_to_datetime(demisto.params().get("first_fetch", "3 days").strip())
+    max_results = arg_to_number(arg=demisto.params().get("max_fetch", 50))
 
     if max_results is None:
         max_results = 1
@@ -456,20 +353,16 @@ def main() -> None:
         max_results = MAX_INCIDENTS_TO_FETCH
 
     try:
-        client = Client(
-            base_url=url,
-            verify=True,
-            proxy=False
-        )
+        client = Client(base_url=url, verify=True, proxy=False)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             if url == client_id == client_secret == "sample":
-                return_results('ok')
+                return_results("ok")
             else:
                 result = test_module(client, client_id, client_secret)
                 return_results(result)
 
-        if demisto.command() == 'fetch-incidents':
+        if demisto.command() == "fetch-incidents":
             if url == client_id == client_secret == "sample":
                 incidents = simulate_fetch()
                 demisto.incidents(incidents)
@@ -480,25 +373,21 @@ def main() -> None:
                     client_secret=client_secret,
                     last_run=demisto.getLastRun(),
                     first_fetch_time=first_fetch_time,
-                    max_fetch=max_results
+                    max_fetch=max_results,
                 )
                 demisto.incidents(incidents)
 
-        if demisto.command() == 'cyren-resolve-and-remediate':
-            return_results(resolve_and_remediate_command(
-                client,
-                demisto.args(),
-                client_id=client_id,
-                client_secret=client_secret)
+        if demisto.command() == "cyren-resolve-and-remediate":
+            return_results(
+                resolve_and_remediate_command(client, demisto.args(), client_id=client_id, client_secret=client_secret)
             )
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f'Failed to execute'
-                     f' {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

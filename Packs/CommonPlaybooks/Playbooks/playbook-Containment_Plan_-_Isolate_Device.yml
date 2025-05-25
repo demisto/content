@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -1020
+          "y": -782
         }
       }
     note: false
@@ -40,10 +40,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 9813918f-0c56-4d9f-8128-4012f120247e
+    taskid: ff4cc24f-e458-4eb2-b0d1-b43e70f4504d
     type: regular
     task:
-      id: 9813918f-0c56-4d9f-8128-4012f120247e
+      id: ff4cc24f-e458-4eb2-b0d1-b43e70f4504d
       version: -1
       name: Auto endpoint isolation
       description: Isolates the specified endpoint.
@@ -133,7 +133,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": 490
+          "y": 444
         }
       }
     note: false
@@ -175,8 +175,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": -495
+          "x": 30,
+          "y": -454
         }
       }
     note: false
@@ -188,12 +188,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 967d72b1-110e-4966-884c-8e5f75feb07e
+    taskid: f2c0cd47-a6d1-4b54-baff-9111cc14c054
     type: regular
     task:
-      id: 967d72b1-110e-4966-884c-8e5f75feb07e
+      id: f2c0cd47-a6d1-4b54-baff-9111cc14c054
       version: -1
-      name: Set endpoints ID to isolate
+      name: Set endpoint IDs to isolate
       description: |-
         Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
 
@@ -218,6 +218,34 @@ tasks:
           accessor: endpoint_id
           transformers:
           - operator: uniq
+          filters:
+          - - operator: isNotEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.endpoint_status
+                iscontext: true
+              right:
+                value:
+                  simple: DISCONNECTED
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.is_isolated
+                iscontext: true
+              right:
+                value:
+                  simple: AGENT_UNISOLATED
+              ignorecase: true
+          - - operator: isEqualString
+              left:
+                value:
+                  simple: Core.Endpoint.endpoint_type
+                iscontext: true
+              right:
+                value:
+                  simple: WORKSTATION
+              ignorecase: true
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -302,8 +330,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 490,
-          "y": -320
+          "x": 255,
+          "y": -322
         }
       }
     note: false
@@ -377,6 +405,7 @@ tasks:
       - "10"
       "yes":
       - "24"
+      - "13"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -398,7 +427,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -875
+          "y": -653
         }
       }
     note: false
@@ -423,7 +452,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "13"
+      - "17"
     scriptarguments:
       hostname:
         complex:
@@ -441,7 +470,7 @@ tasks:
       {
         "position": {
           "x": 490,
-          "y": -675
+          "y": -454
         }
       }
     note: false
@@ -507,10 +536,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 1575,
-        "width": 840,
+        "height": 1286,
+        "width": 841,
         "x": 30,
-        "y": -1020
+        "y": -782
       }
     }
   }
@@ -539,3 +568,4 @@ tests:
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform

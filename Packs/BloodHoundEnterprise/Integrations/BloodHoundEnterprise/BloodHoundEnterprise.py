@@ -118,9 +118,7 @@ class Client(BaseClient):
         }
         demisto.debug(f"Got the follow parameters to the query {query_params}")
         remove_nulls_from_dictionary(query_params)
-        response = self._request(
-            method=method, url_suffix=url_suffix, query_params=query_params
-        )
+        response = self._request(method=method, url_suffix=url_suffix, query_params=query_params)
         return response.get("data", {}).get("logs", [])
 
 
@@ -161,14 +159,9 @@ def get_events_command(client: Client, args: dict) -> tuple[List[Dict], CommandR
         tuple[List[Dict], CommandResults]: A list of events and the command results with readable output.
     """
     limit = arg_to_number(args.get("limit", 10))
-    from_date = (
-        args.get("start_date")
-        or (datetime.now().astimezone() - timedelta(minutes=1)).isoformat()
-    )
+    from_date = args.get("start_date") or (datetime.now().astimezone() - timedelta(minutes=1)).isoformat()
     until_date = args.get("end_date") or datetime.now().astimezone().isoformat()
-    events, _ = get_events_with_pagination(
-        client, start_date=from_date, end_date=until_date, max_events=limit
-    )
+    events, _ = get_events_with_pagination(client, start_date=from_date, end_date=until_date, max_events=limit)
     hr = tableToMarkdown(name="Test Event", t=events, removeNull=True)
     return events, CommandResults(readable_output=hr, raw_response=events)
 
@@ -217,9 +210,7 @@ def fetch_events(
     fetch_id = int(last_run.get("fetch_id", 0)) + 1
 
     next_run = {
-        "last_event_date": (
-            events[-1].get("created_at") if events and not skip else from_date
-        ),
+        "last_event_date": (events[-1].get("created_at") if events and not skip else from_date),
         "last_event_id": events[-1].get("id") if events else from_event,
         "fetch_id": fetch_id,
         "offset": skip,
@@ -275,9 +266,7 @@ def get_events_with_pagination(
         demisto.debug(f"Got {len(response)} events before deduplication")
         # Added the offset before the dedup to avoid incorrect offset on the second page
         pagination_offset += len(response)
-        filtered_events = [
-            item for item in response if item.get("id", 0) > last_event_id
-        ]
+        filtered_events = [item for item in response if item.get("id", 0) > last_event_id]
         demisto.debug(f"Got {len(filtered_events)} events after deduplication")
         fetched_events.extend(filtered_events)
     next_skip = offset + len(fetched_events) if len(fetched_events) == max_events else 0

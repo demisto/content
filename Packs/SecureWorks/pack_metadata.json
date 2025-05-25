@@ -2,7 +2,7 @@
     "name": "Secureworks",
     "description": "Provides access to the Secureworks CTP and Taegis XDR systems",
     "support": "partner",
-    "currentVersion": "5.0.10",
+    "currentVersion": "5.0.11",
     "author": "Secureworks",
     "url": "https://ctpx.secureworks.com",
     "email": "support@secureworks.com",
@@ -15,7 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Dell Secureworks"
+    "defaultDataSource": "Dell Secureworks",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

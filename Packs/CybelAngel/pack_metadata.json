@@ -1,11 +1,12 @@
 {
     "name": "CybelAngel",
     "description": "CybelAngel Event Collector receives reports from the CybelAngel platform, which specializes in external attack surface protection and management.",
-    "support": "xsoar",
-    "currentVersion": "1.0.4",
+    "support": "partner",
+    "currentVersion": "1.0.6",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
-    "email": "",
+    "email": "david.neil@cybelangel.com",
+    "defaultDataSource": "CybelAngel",
     "categories": [
         "Data Enrichment & Threat Intelligence"
     ],
@@ -14,6 +15,50 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "dependencies": {
+        "CommonScripts": {
+            "mandatory": true,
+            "minVersion": "1.12.53",
+            "name": "Common Scripts",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "CommonTypes": {
+            "mandatory": true,
+            "minVersion": "3.3.93",
+            "name": "Common Types",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "FiltersAndTransformers": {
+            "mandatory": true,
+            "minVersion": "1.2.41",
+            "name": "Filters And Transformers",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "ThreatIntelReports": {
+            "mandatory": true,
+            "minVersion": "1.0.11",
+            "name": "Threat Intel Reports (BETA)",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        },
+        "rasterize": {
+            "mandatory": true,
+            "minVersion": "1.2.28",
+            "name": "Rasterize",
+            "certification": "certified",
+            "author": "Cortex XSOAR"
+        }
+    },
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

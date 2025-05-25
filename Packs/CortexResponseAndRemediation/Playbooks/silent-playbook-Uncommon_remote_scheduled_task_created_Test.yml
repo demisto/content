@@ -18,6 +18,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-Uncommon remote scheduled task created Test
 outputs: []
 starttaskid: '0'
@@ -1030,7 +1031,7 @@ tasks:
       ip:
         simple: ${Core.OriginalAlert.event.actor_remote_ip}
     separatecontext: false
-    skipunavailable: false
+    skipunavailable: true
     task:
       brand: ''
       description: Checks the reputation of an IP address.

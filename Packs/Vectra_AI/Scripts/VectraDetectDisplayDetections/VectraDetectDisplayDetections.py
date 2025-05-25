@@ -1,8 +1,8 @@
 import json
 import traceback
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
 
 """ CONSTANTS """
 
@@ -19,7 +19,7 @@ def trim_api_version(url: str) -> str:
     Returns:
         str: The trimmed URL.
     """
-    if 'pivot' in url:
+    if "pivot" in url:
         return url
     api_versions = ["/api/v2.5", "/api/v2"]
     for api_version in api_versions:
@@ -65,49 +65,53 @@ def get_detections_list_hr(detections) -> CommandResults:
     """
     hr_dict = []
     if not detections or not json.loads(detections[0]):
-        return CommandResults(readable_output="##### Couldn't find any matching entity detections for "
-                                              "provided filters.")
+        return CommandResults(readable_output="##### Couldn't find any matching entity detections for provided filters.")
     # Process detection_set and create detection_ids field
     for detection in detections:  # type: ignore
         # Trim API version from url
         detection = json.loads(detection)
-        detection['detection_url'] = trim_api_version(detection.get('url')) if detection.get('url') else None
+        detection["detection_url"] = trim_api_version(detection.get("url")) if detection.get("url") else None
         # Convert ID into clickable URL
-        detection['detection_id'] = f"[{detection.get('id')}]({detection.get('detection_url')})"
-        summary = remove_empty_elements(detection.get('summary', {}))
+        detection["detection_id"] = f"[{detection.get('id')}]({detection.get('detection_url')})"
+        summary = remove_empty_elements(detection.get("summary", {}))
         summary = convert_to_string(summary)
 
-        hr_dict.append({
-            'ID': detection.get('detection_id'),
-            'Detection Type': detection.get('detection_type'),
-            'Category': detection.get('detection_category'),
-            'Threat Score': detection.get('threat'),
-            'Certainty Score': detection.get('certainty'),
-            'State': detection.get('state'),
-            'Tags': detection.get('tags'),
-            'Summary': summary,
-        })
-    human_readable = tableToMarkdown("", hr_dict,
-                                     ['ID', 'Detection Type', 'Category', 'Threat Score',
-                                      'Certainty Score', 'State', 'Tags', 'Summary'],
-                                     removeNull=True, json_transform_mapping={'Summary': JsonTransformer()})
+        hr_dict.append(
+            {
+                "ID": detection.get("detection_id"),
+                "Detection Type": detection.get("detection_type"),
+                "Category": detection.get("detection_category"),
+                "Threat Score": detection.get("threat"),
+                "Certainty Score": detection.get("certainty"),
+                "State": detection.get("state"),
+                "Tags": detection.get("tags"),
+                "Summary": summary,
+            }
+        )
+    human_readable = tableToMarkdown(
+        "",
+        hr_dict,
+        ["ID", "Detection Type", "Category", "Threat Score", "Certainty Score", "State", "Tags", "Summary"],
+        removeNull=True,
+        json_transform_mapping={"Summary": JsonTransformer()},
+    )
 
     return CommandResults(readable_output=human_readable)
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main():
     try:
-        detection_details = demisto.incident().get('CustomFields', {}).get('vectradetectiondetails', [])
+        detection_details = demisto.incident().get("CustomFields", {}).get("vectradetectiondetails", [])
         return_results(get_detections_list_hr(detection_details))
     except Exception as ex:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute VectraDetectDisplayDetections. Error: {str(ex)}')
+        return_error(f"Failed to execute VectraDetectDisplayDetections. Error: {ex!s}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

@@ -35,6 +35,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-Scheduled task created with HTTP or FTP reference Test
 outputs: []
 starttaskid: '0'

@@ -648,13 +648,15 @@
                 "name": "16 Session Closed\n",
                 "rawJSON": "{\"username_count\": 1, \"description\": \"Session Closed\\n\", \"rules\": [{\"id\": 100405, \"type\": \"CRE_RULE\"}], \"event_count\": 1, \"flow_count\": 0, \"security_category_count\": 1, \"follow_up\": false, \"source_address_ids\": [10], \"source_count\": 1, \"inactive\": true, \"protected\": false, \"destination_networks\": [\"Net-16-182-192.Net_182_10_0_0\"], \"source_network\": \"other\", \"category_count\": 1, \"remote_destination_count\": 0, \"start_time\": \"2021-02-15T14:24:11.536000+00:00\", \"magnitude\": 1, \"last_updated_time\": \"2021-02-15T14:24:11.536000+00:00\", \"credibility\": 2, \"id\": 16, \"categories\": [\"Session Closed\"], \"severity\": 2, \"policy_category_count\": 0, \"log_sources\": [{\"type_name\": \"WindowsAuthServer\", \"type_id\": 12, \"name\": \"WindowsAuthServer @ 192.168.1.3\", \"id\": 112}], \"device_count\": 1, \"offense_type\": 0, \"relevance\": 0, \"domain_id\": 0, \"offense_source\": \"192.168.1.3\", \"local_destination_address_ids\": [1], \"local_destination_count\": 1, \"status\": \"OPEN\"}",
                 "occurred": "2021-02-15T14:24:11.536000+00:00",
-                "type": null
+                "type": null,
+                "haIntegrationEventID": "16"
             },
             {
                 "name": "15 Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
                 "rawJSON": "{\"username_count\": 1, \"description\": \"Multiple Login Failures for the Same User\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\n\", \"rules\": [{\"id\": 100056, \"type\": \"CRE_RULE\"}], \"event_count\": 15, \"flow_count\": 0, \"security_category_count\": 2, \"follow_up\": false, \"source_address_ids\": [2, 1], \"source_count\": 2, \"inactive\": true, \"protected\": false, \"destination_networks\": [\"Net-16-182-192.Net_182_10_0_0\"], \"source_network\": \"Net-16-182-192.Net_182_10_0_0\", \"category_count\": 2, \"remote_destination_count\": 0, \"start_time\": \"2021-02-15T13:21:36.537000+00:00\", \"magnitude\": 1, \"last_updated_time\": \"2021-02-15T13:21:46.948000+00:00\", \"credibility\": 2, \"id\": 15, \"categories\": [\"General Authentication Failed\", \"User Login Failure\"], \"severity\": 3, \"policy_category_count\": 0, \"log_sources\": [{\"type_name\": \"WindowsAuthServer\", \"type_id\": 12, \"name\": \"WindowsAuthServer @ 192.168.1.3\", \"id\": 112}, {\"type_name\": \"EventCRE\", \"type_id\": 18, \"name\": \"Custom Rule Engine-8 :: ip-162-21-12-77\", \"id\": 63}], \"device_count\": 2, \"offense_type\": 3, \"relevance\": 0, \"domain_id\": 0, \"offense_source\": \"yarden\", \"local_destination_address_ids\": [1], \"local_destination_count\": 1, \"status\": \"OPEN\"}",
                 "occurred": "2021-02-15T13:21:36.537000+00:00",
-                "type": null
+                "type": null,
+                "haIntegrationEventID": "15"
             }
         ],
         "id": 15
@@ -665,13 +667,15 @@
                 "name": "18 Session Closed\n",
                 "rawJSON": "{\"username_count\": 1, \"description\": \"Session Closed\\n\", \"rules\": [{\"id\": 100405, \"type\": \"CRE_RULE\"}], \"event_count\": 1, \"flow_count\": 0, \"security_category_count\": 1, \"follow_up\": false, \"source_address_ids\": [10], \"source_count\": 1, \"inactive\": true, \"protected\": false, \"destination_networks\": [\"Net-16-182-192.Net_182_10_0_0\"], \"source_network\": \"other\", \"category_count\": 1, \"remote_destination_count\": 0, \"start_time\": \"2021-02-15T14:24:11.536000+00:00\", \"magnitude\": 1, \"last_updated_time\": \"2021-02-15T14:24:11.536000+00:00\", \"credibility\": 2, \"id\": 18, \"categories\": [\"Session Closed\"], \"severity\": 2, \"policy_category_count\": 0, \"log_sources\": [{\"type_name\": \"WindowsAuthServer\", \"type_id\": 12, \"name\": \"WindowsAuthServer @ 192.168.1.3\", \"id\": 112}], \"device_count\": 1, \"offense_type\": 0, \"relevance\": 0, \"domain_id\": 0, \"offense_source\": \"192.168.1.3\", \"local_destination_address_ids\": [1], \"local_destination_count\": 1, \"status\": \"OPEN\"}",
                 "occurred": "2021-02-15T14:24:11.536000+00:00",
-                "type": null
+                "type": null,
+                "haIntegrationEventID": "18"
             },
             {
                 "name": "19 Multiple Login Failures for the Same User\n containing Failure Audit: The domain controller failed to validate the credentials for an account\n",
                 "rawJSON": "{\"username_count\": 1, \"description\": \"Multiple Login Failures for the Same User\\n containing Failure Audit: The domain controller failed to validate the credentials for an account\\n\", \"rules\": [{\"id\": 100056, \"type\": \"CRE_RULE\"}], \"event_count\": 15, \"flow_count\": 0, \"security_category_count\": 2, \"follow_up\": false, \"source_address_ids\": [2, 1], \"source_count\": 2, \"inactive\": true, \"protected\": false, \"destination_networks\": [\"Net-16-182-192.Net_182_10_0_0\"], \"source_network\": \"Net-16-182-192.Net_182_10_0_0\", \"category_count\": 2, \"remote_destination_count\": 0, \"start_time\": \"2021-02-15T13:21:36.537000+00:00\", \"magnitude\": 1, \"last_updated_time\": \"2021-02-15T13:21:46.948000+00:00\", \"credibility\": 2, \"id\": 19, \"categories\": [\"General Authentication Failed\", \"User Login Failure\"], \"severity\": 3, \"policy_category_count\": 0, \"log_sources\": [{\"type_name\": \"WindowsAuthServer\", \"type_id\": 12, \"name\": \"WindowsAuthServer @ 192.168.1.3\", \"id\": 112}, {\"type_name\": \"EventCRE\", \"type_id\": 18, \"name\": \"Custom Rule Engine-8 :: ip-162-21-12-77\", \"id\": 63}], \"device_count\": 2, \"offense_type\": 3, \"relevance\": 0, \"domain_id\": 0, \"offense_source\": \"yarden\", \"local_destination_address_ids\": [1], \"local_destination_count\": 1, \"status\": \"OPEN\"}",
                 "occurred": "2021-02-15T13:21:36.537000+00:00",
-                "type": null
+                "type": null,
+                "haIntegrationEventID": "19"
             }
         ],
         "id": 19

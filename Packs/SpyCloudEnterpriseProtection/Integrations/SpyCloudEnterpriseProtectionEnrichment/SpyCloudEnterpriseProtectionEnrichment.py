@@ -1,10 +1,10 @@
+from collections import namedtuple
 from math import ceil
 from typing import Any
-from collections import namedtuple
-import requests
-from urllib3 import disable_warnings
-from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
 
+import requests
+from CommonServerPython import *  # noqa: F401 # pylint: disable=unused-wildcard-import
+from urllib3 import disable_warnings
 
 # Disable insecure warnings
 disable_warnings()  # pylint: disable=no-member
@@ -13,9 +13,7 @@ disable_warnings()  # pylint: disable=no-member
 
 INTEGRATION_CONTEXT_NAME = "SpyCloud"
 INVALID_CREDENTIALS_ERROR_MSG = (
-    "Authorization Error: The provided API Key "
-    "for SpyCloud is invalid. Please provide a "
-    "valid API Key."
+    "Authorization Error: The provided API Key for SpyCloud is invalid. Please provide a valid API Key."
 )
 DEFAULT_PAGE_SIZE = 50
 MAX_RETRIES = 5
@@ -31,9 +29,7 @@ X_AMAZON_ERROR_TYPE = "x-amzn-ErrorType"
 WRONG_API_URL = "Verify that the API URL parameter is correct and that you have access to the server from your host"
 SPYCLOUD_ERROR = "SpyCloud-Error"
 INVALID_IP_MSG = "Kindly contact SpyCloud support to whitelist your IP Address."
-MONTHLY_QUOTA_EXCEED_MSG = (
-    "You have exceeded your monthly quota. Kindly contact SpyCloud support."
-)
+MONTHLY_QUOTA_EXCEED_MSG = "You have exceeded your monthly quota. Kindly contact SpyCloud support."
 COMMAND_PARAMS = namedtuple(
     "COMMAND_PARAMS",
     ["endpoint", "title_string", "context", "key_field", "search_args"],
@@ -58,9 +54,7 @@ class Client(BaseClient):
         )
         self.apikey = apikey
 
-    def query_spy_cloud_api(
-        self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False
-    ) -> dict:
+    def query_spy_cloud_api(self, end_point: str, params: dict[Any, Any] = None, is_retry: bool = False) -> dict:
         """
         Args:
          end_point (str): SpyCloud endpoint.
@@ -153,7 +147,7 @@ def pagination(page: int | None, page_size: int | None, limit: int | None):
 
 
 def get_paginated_results(results: list, offset: int, limit: int) -> list:
-    return results[offset:offset + limit]
+    return results[offset : offset + limit]
 
 
 def test_module(client: Client) -> str:
@@ -184,12 +178,8 @@ def create_spycloud_args(args: dict) -> dict:
     spycloud_args: dict = {}
     since: Any = arg_to_datetime(args.get("since", None), "Since")
     until: Any = arg_to_datetime(args.get("until", None), "Until")
-    since_modification_date: Any = arg_to_datetime(
-        args.get("since_modification_date", None), "Since Modification Date"
-    )
-    until_modification_date: Any = arg_to_datetime(
-        args.get("until_modification_date", None), "Until Modification Date"
-    )
+    since_modification_date: Any = arg_to_datetime(args.get("since_modification_date", None), "Since Modification Date")
+    until_modification_date: Any = arg_to_datetime(args.get("until_modification_date", None), "Until Modification Date")
     if until:
         until = until.strftime("%Y-%m-%d")
     if since:
@@ -201,10 +191,7 @@ def create_spycloud_args(args: dict) -> dict:
     severity_list = argToList(args.get("severity", []))
     for severity in severity_list:
         if severity not in ["2", "5", "25", "20"]:
-            raise DemistoException(
-                "Invalid input Error: supported values for "
-                "severity are: 2, 5, 20, 25"
-            )
+            raise DemistoException("Invalid input Error: supported values for severity are: 2, 5, 20, 25")
     spycloud_args["since"] = since
     spycloud_args["until"] = until
     spycloud_args["type"] = args.get("type", "")
@@ -339,15 +326,12 @@ def command_helper_function(client: Client, args: dict[str, Any], command: str):
                 cursor, results = res.get("cursor"), results + res.get("results", [])
         else:
             return CommandResults(
-                readable_output=f"No data available for page {page}. Total "
-                f"are {ceil(total_records / page_size)}"
+                readable_output=f"No data available for page {page}. Total are {ceil(total_records / page_size)}"
             )
         results = get_paginated_results(results, offset, updated_limit)
     breach_command = ["spycloud-breach-catalog-list", "spycloud-breach-catalog-get"]
     readable_output = (
-        lookup_to_markdown_table(results, title)
-        if command not in breach_command
-        else breaches_lookup_to_markdown(results, title)
+        lookup_to_markdown_table(results, title) if command not in breach_command else breaches_lookup_to_markdown(results, title)
     )
 
     return CommandResults(
@@ -358,9 +342,7 @@ def command_helper_function(client: Client, args: dict[str, Any], command: str):
     )
 
 
-def get_command_title_string(
-    sub_context: str, page: int | None, page_size: int | None, hits: int | None
-) -> str:
+def get_command_title_string(sub_context: str, page: int | None, page_size: int | None, hits: int | None) -> str:
     """
     Define command title
     Args:
@@ -373,10 +355,7 @@ def get_command_title_string(
     """
     if page and page_size and (page > 0 and page_size > 0):
         total_page = ceil(hits / page_size) if hits and hits > 0 else 1
-        return (
-            f"{sub_context} \nCurrent page size: {page_size}\n"
-            f"Showing page {page} out of {total_page}"
-        )
+        return f"{sub_context} \nCurrent page size: {page_size}\nShowing page {page} out of {total_page}"
 
     return f"{sub_context}"
 
@@ -491,7 +470,7 @@ def main():
         else:
             raise NotImplementedError(f"command {command} is not supported")
     except Exception as e:
-        return_error(f"Failed to execute {command} command. Error: {str(e)}")
+        return_error(f"Failed to execute {command} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

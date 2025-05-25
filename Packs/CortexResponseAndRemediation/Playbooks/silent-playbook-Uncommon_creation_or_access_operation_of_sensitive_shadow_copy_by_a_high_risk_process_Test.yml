@@ -15,6 +15,7 @@ inputs: []
 issilent: true
 marketplaces:
 - marketplacev2
+- platform
 name: silent-Uncommon creation or access operation of sensitive shadow copy by a high-risk
   process Test
 outputs: []

@@ -6,66 +6,47 @@ commonfields:
   id: MicrosoftGraphIdentityandAccess
   version: -1
 configuration:
-- defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
+- section: Connect
+  defaultvalue: 597c0375-766f-4e6d-ad2a-f48117044ac5
   display: Application ID (Client ID for Client credentials mode)
   name: app_id
   type: 0
-  section: Connect
   required: false
-- display: Tenant ID (required for Client Credentials mode)
+- section: Connect
+  display: Tenant ID (required for Client Credentials mode)
   name: tenant_id
   type: 0
-  section: Connect
   required: false
-- displaypassword: Client Secret (required for Client Credentials mode)
+- section: Connect
+  displaypassword: Client Secret (required for Client Credentials mode)
   name: credentials
   type: 9
   additionalinfo: "Client Secret. Required for Client Credentials mode)"
   hiddenusername: true
-  section: Connect
   required: false
-- additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
+- section: Connect
+  additionalinfo: Used for certificate authentication. As appears in the "Certificates & secrets" page of the app.
   display: Certificate Thumbprint
   name: creds_certificate
   type: 9
   displaypassword: Private Key
-  section: Connect
   advanced: true
   required: false
-- additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
+- section: Connect
+  additionalinfo: Relevant only if the integration is running on Azure VM. If selected, authenticates based on the value provided for the Azure Managed Identities Client ID field. If no value is provided for the Azure Managed Identities Client ID field, authenticates based on the System Assigned Managed Identity. For additional information, see the Help tab.
   display: Use Azure Managed Identities
   name: use_managed_identities
   type: 8
-  section: Connect
   required: false
-- additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
+- section: Connect
+  additionalinfo: The Managed Identities client ID for authentication - relevant only if the integration is running on Azure VM.
   displaypassword: Azure Managed Identities Client ID
   name: managed_identities_client_id
   hiddenusername: true
   type: 9
-  section: Connect
   required: false
-- name: first_fetch
-  display: First Fetch Time Interval
-  defaultvalue: 1 days
-  type: 0
-  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
-  section: Collect
-  required: false
-- defaultvalue: '50'
-  display: Max fetch interval
-  additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
-  name: max_fetch
-  type: 0
-  section: Collect
-  required: false
-- display: Fetch query
-  name: fetch_filter_expression
-  type: 0
-  section: Collect
-  advanced: true
-  required: false
-- defaultvalue: https://login.microsoftonline.com
+- section: Connect
+  defaultvalue: https://login.microsoftonline.com
   display: Azure AD endpoint
   name: azure_ad_endpoint
   options:
@@ -75,35 +56,71 @@ configuration:
   - https://login.chinacloudapi.cn
   type: 15
   additionalinfo: Azure AD endpoint associated with a national cloud.
-  section: Connect
   advanced: true
   required: false
-- display: Incident type
+- section: Connect
+  display: Incident type
   name: incidentType
   type: 13
-  section: Connect
   required: false
-- additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
+- section: Connect
+  additionalinfo: Use a self-deployed Azure application and authenticate using the Client Credentials flow.
   display: Use Client Credentials Authorization Flow
   name: client_credentials
   type: 8
-  section: Connect
   required: false
-- name: isFetch
-  display: Fetch incidents
-  type: 8
-  section: Collect
-  required: false
-- display: Trust any certificate (not secure)
+- section: Connect
+  display: Trust any certificate (not secure)
   name: insecure
   type: 8
-  section: Connect
   advanced: true
   required: false
-- display: Use system proxy settings
+- section: Connect
+  display: Use system proxy settings
   name: proxy
   type: 8
-  section: Connect
+  advanced: true
+  required: false
+- section: Collect
+  name: isFetch
+  display: Fetch incidents
+  type: 8
+  required: false
+- section: Collect
+  name: first_fetch
+  display: First Fetch Time Interval
+  defaultvalue: 1 days
+  type: 0
+  additionalinfo: The time range to consider for the initial data fetch in the format <number> <unit>. For example, 1 hour, 2 hours, 6 hours, 12 hours, 24 hours, 48 hours, etc.
+  required: false
+- section: Collect
+  defaultvalue: '50'
+  display: Max Fetch Incidents Returned
+  additionalinfo: The maximum number of incidents per request from the Azure Active Directory. Default is 50.
+  name: max_fetch
+  type: 0
+  required: false
+- section: Collect
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+- section: Collect
+  display: Alerts to Fetch
+  name: alerts_to_fetch
+  defaultvalue: Risk Detections
+  type: 15
+  required: false
+  advanced: true
+  options:
+  - Risky Users
+  - Risk Detections
+  additionalinfo: Select what type of Identity alert from MSGraph you want to ingest.
+- section: Collect
+  display: Fetch query
+  name: fetch_filter_expression
+  type: 0
   advanced: true
   required: false
 description: Use the Azure Active Directory Identity And Access integration to manage roles and members.
@@ -455,7 +472,7 @@ script:
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/crypto:1.0.0.114611
+  dockerimage: demisto/crypto:1.0.0.2787132
 fromversion: 5.0.0
 defaultmapperin: Microsoft Graph Identity and Access Incoming Mapper
 defaultclassifier: Microsoft Graph Identity and Access Classifier

@@ -850,3 +850,8 @@ tests:
 - PAN-OS - Block URL - Custom URL Category Test
 contentitemexportablefields:
   contentitemfields: {}
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

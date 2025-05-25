@@ -2,7 +2,7 @@
     "name": "FTP",
     "description": "FTP integration to download or upload file to remote ftp server. Please be noted that FTP transfer is insecure. Please use it with care. ",
     "support": "community",
-    "currentVersion": "1.0.1",
+    "currentVersion": "1.0.2",
     "author": "Jie Liau",
     "url": "",
     "email": "",
@@ -15,9 +15,16 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
     "githubUser": [
         "jieliau"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

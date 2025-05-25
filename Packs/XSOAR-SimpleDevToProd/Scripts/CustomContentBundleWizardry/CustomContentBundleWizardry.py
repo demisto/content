@@ -1,12 +1,13 @@
+import io
+import tarfile
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-import tarfile
-import io
 
 # arguments
-action = demisto.args().get('action')
-entry_id = demisto.args().get('entry_id')
-file_names = demisto.args().get('file_names')
+action = demisto.args().get("action")
+entry_id = demisto.args().get("entry_id")
+file_names = demisto.args().get("file_names")
 
 # handle single file export by ensuring it's still a list
 if not isinstance(file_names, list):
@@ -17,23 +18,19 @@ res = demisto.getFilePath(entry_id)
 if not res:
     return_error(f"Entry {entry_id} not found")
 
-file_path = res.get('path')
+file_path = res.get("path")
 
 # Return a list of custom content in the content bundle
-if action == 'listfiles':
+if action == "listfiles":
     files = []
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         data = f.read()
         tar = tarfile.open(fileobj=io.BytesIO(data))
         files = tar.getnames()
 
     files = [file[1:] for file in files]
     readable = f"Got {len(files)} file names from custom content bundle"
-    results = CommandResults(
-        readable_output=readable,
-        outputs_prefix='CustomContent',
-        outputs=files
-    )
+    results = CommandResults(readable_output=readable, outputs_prefix="CustomContent", outputs=files)
 
     return_results(results)
 
@@ -41,7 +38,7 @@ if action == 'listfiles':
 if action == "exportfiles":
     files = [f"/{file}" for file in file_names]
     exported_files = []
-    with open(file_path, 'rb') as f:
+    with open(file_path, "rb") as f:
         data = f.read()
         tar = tarfile.open(fileobj=io.BytesIO(data))
 
