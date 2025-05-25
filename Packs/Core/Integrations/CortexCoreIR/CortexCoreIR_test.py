@@ -2,8 +2,9 @@ import json
 from unittest.mock import MagicMock
 
 import pytest
-from CommonServerPython import CommandResults
+from CommonServerPython import *
 from CortexCoreIR import core_execute_command_reformat_args
+from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
 STATUS_AMOUNT = 6
@@ -538,3 +539,116 @@ def test_reformat_readable():
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
+@freeze_time("2024-01-01T12:00:00Z")
+def test_parse_expiration_date():
+    """
+    Given:
+        - an expiration to representing a date be parsed.
+    When:
+        - Calling `parse_expiration_date`.
+    Then:
+        - Verify that parsed date comes back as expected.
+    """
+    from CortexCoreIR import parse_expiration_date
+
+    def get_epoch_millis(dt: datetime) -> int:
+        """Convert datetime to epoch milliseconds."""
+        return int(dt.timestamp() * 1000)
+
+    fixed_now = datetime(2024, 1, 1, 12, 0, 0)
+    fixed_now_epoch_milli = get_epoch_millis(fixed_now)
+
+    # Case 1: Epoch time in the past
+    epoch_past = fixed_now_epoch_milli - 100000
+    result = parse_expiration_date(str(epoch_past))
+    assert result == epoch_past
+
+    # Case 2: Epoch time in the future
+    epoch_future = fixed_now_epoch_milli + 100000
+    result = parse_expiration_date(str(epoch_future))
+    assert result == epoch_future
+
+    # Case 3: Relative time: "3 days"
+    result = parse_expiration_date("3 days")
+    expected = get_epoch_millis(fixed_now + timedelta(days=3))
+    assert result == expected  # Tolerance of a few seconds
+
+    # Case 4: ISO time in the past
+    iso_past = "2023-12-31T12:00:00"
+    iso_past_epoch = get_epoch_millis(datetime(2023, 12, 31, 12, 0, 0))
+    result = parse_expiration_date(iso_past)
+    assert result == iso_past_epoch
+
+    # Case 5: ISO time in the future
+    iso_future = "2024-01-03T12:00:00"
+    iso_future_epoch = get_epoch_millis(datetime(2024, 1, 3, 12, 0, 0))
+    result = parse_expiration_date(iso_future)
+    assert result == iso_future_epoch
+
+    # Case 6: "Never"
+    result = parse_expiration_date("Never")
+    assert result == "Never"
+
+    # Case 7: "Broken Never"
+    result = parse_expiration_date("never")
+    assert result == "never"
+
+    # Case 8: "Broken String"
+    result = parse_expiration_date("brokenstring")
+    assert result == "brokenstring"
+
+    # Case 9: None
+    result = parse_expiration_date(None)
+    assert result is None
+
+    # Case 7: None
+
+
+def test_arg_to_datetime():
+    iso_future = "2024-01-03T12:00:00Z"
+    iso_past = "2023-12-31T12:00:00Z"
+    relative = "3 days"
+
+
+    def get_epoch_millis(dt: datetime) -> int:
+        """Convert datetime to epoch milliseconds."""
+        return int(dt.timestamp() * 1000)
+
+    iso_past_epoch = get_epoch_millis(datetime(2023, 12, 31, 12, 0, 0))
+
+    fixed_now = datetime(2024, 1, 1, 12, 0, 0)
+    fixed_now_epoch_milli = get_epoch_millis(fixed_now)
+
+    epoch_future = fixed_now_epoch_milli + 1
+    epoch_past = fixed_now_epoch_milli - 100000
+
+    # result_iso_future = arg_to_datetime(iso_future)
+    # result_iso_past = arg_to_datetime(iso_past)
+    # iso_past_epoch_results = get_epoch_millis(result_iso_past)
+    # result_relative = arg_to_datetime(relative)
+    # result_epoch_future = arg_to_datetime(epoch_future)
+    # result_epoch_past = arg_to_datetime(epoch_past)
+    #
+    # print(result_iso_future)
+    # print(result_iso_past)
+    # print(result_relative)
+    # print(result_epoch_future)
+    # print(result_epoch_past)
+    # print(iso_past_epoch, iso_past_epoch_results)
+    # print(datetime(2023, 12, 31, 12, 0, 0))
+
+    def is_relative_time_format(s: str) -> bool:
+        """
+        Returns True if the input matches a relative time format:
+        'N minutes', 'N hours', 'N days', 'N weeks', 'N months', 'N years'
+        """
+        if not isinstance(s, str):
+            return False
+
+        pattern = r"^\s*\d+\s+(Minutes|Hours|days|Weeks|Months|Years)\s*$"
+        return bool(re.match(pattern, s, flags=re.IGNORECASE))
+
+    s = "3 days"
+    print(f"s is relative: {is_relative_time_format(s)}")
+
