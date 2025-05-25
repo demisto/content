@@ -467,7 +467,8 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
             input_format = 'JSON'
         except json.JSONDecodeError:
             # Not JSON, check if it looks like CSV (very basic check)
-            if ',' in ioc_object and '\n' in ioc_object:
+            if ',' in ioc_object and ('\\n' in ioc_object or '\n' in ioc_object):
+                ioc_object = ioc_object.replace('\\n', '\n')
                 ioc_payload = ioc_object  # Leave as raw string
                 input_format = 'CSV'
             else:
@@ -515,10 +516,11 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         error_string = ", ".join(errors_array)
         raise DemistoException(f"Core Add Indicator Command: post of IOC rule failed: {error_string}")
 
+    ioc_payload_output = prepare_ioc_to_output(ioc_payload, input_format)
     return CommandResults(
-        readable_output=f"IOC {indicator} was successfully added.",
+        readable_output=f"IOC {ioc_payload_output['indicator']} was successfully added.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Indicator",
-        outputs=prepare_ioc_to_output(ioc_payload, input_format),
+        outputs=ioc_payload_output,
         raw_response=response,
     )
 

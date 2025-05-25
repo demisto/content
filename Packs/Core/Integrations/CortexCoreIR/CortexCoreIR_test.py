@@ -774,7 +774,7 @@ class TestCoreAddIndicator:
 
         csv_payload = (
             "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
-            ",class\n"
+            ",class\\n"
             "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
         )
 
