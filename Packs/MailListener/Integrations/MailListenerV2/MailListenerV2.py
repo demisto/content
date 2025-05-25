@@ -71,21 +71,25 @@ class Email:
 
         Returns:
             str: A semicolon-separated string of formatted email addresses.
-                e.g., "Display Name <email@example.com>; <another@example.com>"
+                e.g., "Display Name <email@example.com>; another@example.com"
         """
         formatted_addresses = []
         for address_data in raw_addresses:
-            if not (isinstance(address_data, list | tuple) and len(address_data) == 2 and
-                    isinstance(address_data[0], str) and isinstance(address_data[1], str)):
+            if not (
+                isinstance(address_data, list | tuple)
+                and len(address_data) == 2
+                and isinstance(address_data[0], str)
+                and isinstance(address_data[1], str)
+            ):
                 demisto.debug(f"Unexpected address data format: {address_data}. Skipping.")
                 continue
 
             display_name, email_address = address_data
 
-            if display_name.strip(): # Check if display_name is not empty or just whitespace
+            if display_name.strip():  # Check if display_name is not empty or just whitespace
                 formatted_addresses.append(f"{display_name.strip()} <{email_address.strip()}>")
             else:
-                formatted_addresses.append(f"<{email_address.strip()}>")
+                formatted_addresses.append(f"{email_address.strip()}")
         return "; ".join(formatted_addresses)
 
     def parse_list_header(self, raw_list_values):
