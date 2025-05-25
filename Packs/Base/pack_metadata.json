@@ -1,6 +1,6 @@
 {
     "name": "Base",
-    "description": "The base pack for Cortex XSOAR..",
+    "description": "The base pack for Cortex XSOAR.",
     "support": "xsoar",
     "currentVersion": "1.39.33",
     "author": "Cortex XSOAR",
