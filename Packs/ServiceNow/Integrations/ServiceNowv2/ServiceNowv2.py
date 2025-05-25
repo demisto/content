@@ -1302,6 +1302,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1498,7 +1502,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     else:
         additional_fields_keys = list(args.keys())
 
-    instance_url = demisto.params().get("url", "").rstrip('/')
+    instance_url = client.base_url
     ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
 
@@ -3692,7 +3696,7 @@ def main():
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
         elif command == "servicenow-create-ticket-quick-action":
-            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args)
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
