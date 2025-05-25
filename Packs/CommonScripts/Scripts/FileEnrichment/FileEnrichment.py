@@ -111,7 +111,6 @@ class Command:
         demisto.debug(f"Parsing execution response of command: {self}.")
 
         for result in execution_results:
-
             if is_error(result):
                 readable_command_results.append(self.prepare_human_readable(get_error(result), is_error=True))
                 continue
@@ -267,6 +266,7 @@ def merge_context_outputs(per_command_context: dict[str, Any]) -> dict[str, Any]
     Returns:
         dict[str, Any]: A merged `File` indicator dictionary.
     """
+
     def recursive_merge(target: dict, source: dict):
         for key, value in source.items():
             if isinstance(value, dict) and "Value" in value and "Source" in value:
@@ -454,13 +454,12 @@ def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], v
     except Exception as e:
         demisto.debug(f"Error searching for File indicator with value: {file_hash}. Error: {str(e)}.\n{traceback.format_exc()}")
         readable_command_results = CommandResults(
-            readable_output=f"#### Error for Search Indicators\n{str(e)}",
-            entry_type=EntryType.ERROR,
+            readable_output=f"#### Error for Search Indicators\n{str(e)}", entry_type=EntryType.ERROR
         )
         verbose_command_results.append(readable_command_results)
         return
 
-    iocs = flatten_list([result.get('iocs') or [] for result in search_results])
+    iocs = flatten_list([result.get("iocs") or [] for result in search_results])
     if not iocs:
         demisto.debug(f"Could not find File indicator with value: {file_hash}.")
         readable_command_results = CommandResults(readable_output="#### Result for Search Indicators\nNo Indicators found.")
@@ -605,6 +604,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
     verbose: bool = argToBoolean(args.get("verbose", False))
     file_reputation_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for `!file` reputation command
+    # additional_field: bool = argToBoolean(args.get("additional_fields", False))
 
     file_hash: str = args.get("file_hash", "")
     hash_type: str = get_hash_type(file_hash).casefold()

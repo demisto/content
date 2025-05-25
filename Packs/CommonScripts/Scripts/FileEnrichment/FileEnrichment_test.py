@@ -10,7 +10,7 @@ SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2
 
 
 def util_load_json(path: str):
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -75,13 +75,13 @@ def test_command_has_enabled_instance(command: Command, modules: dict, expected_
         pytest.param(
             "This is a regular message",
             False,
-            "#### Result for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is a regular message",
+            '#### Result for !wildfire-upload-url upload="http://www.example.com"\nThis is a regular message',
             id="Note entry",
         ),
         pytest.param(
             "This is an error message",
             True,
-            "#### Error for !wildfire-upload-url upload=\"http://www.example.com\"\nThis is an error message",
+            '#### Error for !wildfire-upload-url upload="http://www.example.com"\nThis is an error message',
             id="Error Entry",
         ),
     ],
@@ -171,7 +171,7 @@ def test_get_file_from_ioc_custom_fields():
         "Name": ioc_custom_fields["associatedfilenames"][0],
         "Signature": {
             "Authentihash": ioc_custom_fields["signatureauthentihash"],
-        }
+        },
     }
 
 
@@ -500,15 +500,13 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     per_command_context = {
         "file": {"SHA256": SHA_256_HASH, "VTVerdict": "Benign"},
-        "wildfire-report": {"SHA256": SHA_256_HASH, "WFReport": "Success"}
+        "wildfire-report": {"SHA256": SHA_256_HASH, "WFReport": "Success"},
     }
 
     summary_command_results = summarize_command_results(
         file_hash=SHA_256_HASH,
         per_command_context=per_command_context,
-        verbose_command_results=[
-            CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)
-        ],
+        verbose_command_results=[CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)],
         external_enrichment=True,
     )
 
@@ -545,9 +543,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
     summary_command_results = summarize_command_results(
         file_hash=SHA_256_HASH,
         per_command_context={},
-        verbose_command_results=[
-            CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)
-        ],
+        verbose_command_results=[CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)],
         external_enrichment=False,
     )
 
@@ -595,7 +591,7 @@ def test_main_invalid_hash(mocker: MockerFixture):
     [
         pytest.param(True, id="Enabled external enrichment"),
         pytest.param(False, id="Disabled external enrichment"),
-    ]
+    ],
 )
 def test_main_valid_hash(mocker: MockerFixture, external_enrichment: bool):
     """
