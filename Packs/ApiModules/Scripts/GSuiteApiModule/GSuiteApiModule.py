@@ -269,7 +269,7 @@ class GSuiteClient:
         def empty(x):
             return x is None or x == {} or x == [] or x == ""
 
-        if not isinstance(d, (dict, list)):
+        if not isinstance(d, dict | list):
             return d
         elif isinstance(d, list):
             return [value for value in (GSuiteClient.remove_empty_entities(value) for value in d) if not empty(value)]
