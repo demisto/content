@@ -38,7 +38,7 @@ description: |-
   - Terminate the malicious process.
   - Quarantine the malicious process. (Requires analyst approval.)
   - Add the malicious process hash to the block list. (Requires analyst approval.)
-  - Automatically Close the alert.
+  - Automatically close the alert.
 tags:
 - TA0003 - Persistence
 - T1547 - Boot or Logon Autostart Execution
