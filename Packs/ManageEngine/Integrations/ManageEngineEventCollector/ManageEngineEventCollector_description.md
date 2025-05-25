@@ -17,15 +17,15 @@ The APIs on this page are intended for organizations hosted on the **.com** doma
 Note: You can also find out which domain you’re accessing by checking the URL while logged in to Endpoint Central.
 
 
-# Setting Up the Instance
+## Setting Up the Instance
 
-## Step 1: Generate Client ID and Client Secret
+### Step 1: Generate Client ID and Client Secret
 
 1. Register your application as a new client by accessing the developer console.
 2. Choose <Client Type> that suits your application type.
 3. After choosing the client type, provide the required details and click 'Create'. On successful registration, you will be provided with a set of OAuth 2.0 credentials such as <Client_ID> and <Client_Secret> that will be only known to Zoho and your application. (Do not share this credentials anywhere).
 
-## Step 2: Authorization by generating the grant token
+### Step 2: Authorization by generating the grant token
 
 After generating <Client_ID> and <Client_Secret>, a grant code has to be generated. 
 Self Client Method - For Self Client type.

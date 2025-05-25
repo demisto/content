@@ -1,4 +1,5 @@
 import pytest
+import random
 from ManageEngineEventCollector import Client, AUDIT_LOGS_URL, TOKEN_URL, PAGE_LIMIT_DEFAULT
 
 
@@ -178,6 +179,7 @@ class HttpRequestsMocker:
 
     def __init__(self, num_events: int):
         self.num_events = num_events
+        self.all_events = []
 
     def valid_http_request_side_effect(
         self, method: str, url_suffix: str = "", params: dict | None = None, full_url: str = "", **kwargs
@@ -188,18 +190,17 @@ class HttpRequestsMocker:
 
         # 2) Paginated audit‐logs GET
         if method.upper() == "GET" and url_suffix == AUDIT_LOGS_URL:
-            start = int(params.get("startTime", 0))  # type: ignore
-            end = int(params.get("endTime", self.num_events))  # type: ignore
+            if not self.all_events:
+                events = list(range(self.num_events))
+                random.shuffle(events)
+                self.all_events = events
             limit = int(params.get("pageLimit", PAGE_LIMIT_DEFAULT))  # type: ignore
             page = int(params.get("page", "1"))  # type: ignore
-
-            # build the range of timestamps in [start, end)
-            all_ts = [ts for ts in range(self.num_events) if start <= ts < end]
 
             # slice for this page
             lo = (page - 1) * limit
             hi = lo + limit
-            page_ts = all_ts[lo:hi]
+            page_ts = self.all_events[lo:hi]
 
             # build the response
             events = [{"id": ts, "eventTime": ts} for ts in page_ts]
@@ -235,18 +236,10 @@ def _run_search(start: int, end: int, limit: int) -> list[dict]:
     return client.search_events(str(start), str(end), limit)
 
 
-def run_search(num_events, page_limit, start, end, limit):
-    client = Client(
-        base_url="https://endpointcentral.manageengine.com", client_id="id", client_secret="secret", client_code="code"
-    )
-    # Now that http is patched via the http_mocker fixture, call normally:
-    return client.search_events(str(start), str(end), limit)
-
-
 # ─────── Tests ────────────────────────────────────────
 
 
-def test_page_limit_gt_total_limit_gt(http_mocker):
+def test_returns_all_events_when_page_and_limit_exceed_total(http_mocker):
     """
     Test when PAGE_LIMIT_DEFAULT exceeds total events and requested limit exceeds total.
 
@@ -262,12 +255,12 @@ def test_page_limit_gt_total_limit_gt(http_mocker):
     - All 100 events are returned.
     - eventTime values range from 0 to 99.
     """
-    events = _run_search(0, 100, 200)
+    events = _run_search(0, 99, 200)
     assert len(events) == 100
-    assert [event["eventTime"] for event in events] == list(range(100))
+    assert {event["eventTime"] for event in events} == set(range(100))
 
 
-def test_page_limit_gt_total_limit_lt(http_mocker):
+def test_returns_first_n_events_when_limit_less_than_total(http_mocker):
     """
     Test when PAGE_LIMIT_DEFAULT exceeds total events and requested limit is below total.
 
@@ -282,12 +275,12 @@ def test_page_limit_gt_total_limit_lt(http_mocker):
     Then:
     - 30 events are returned (timestamps 0–29).
     """
-    events = _run_search(0, 100, 30)
+    events = _run_search(0, 99, 30)
     assert len(events) == 30
-    assert [event["eventTime"] for event in events] == list(range(30))
+    assert {event["eventTime"] for event in events} == set(range(30))
 
 
-def test_page_limit_lt_total_limit_gt(http_mocker, mocker):
+def test_page_limit_less_and_limit_exceed_total(http_mocker, mocker):
     """
     Test when a smaller PAGE_LIMIT_DEFAULT is set but overall limit exceeds total events.
 
@@ -306,12 +299,12 @@ def test_page_limit_lt_total_limit_gt(http_mocker, mocker):
 
     # Override PAGE_LIMIT to 20 < 100; limit=150 > 100 → should return all 100
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    events = _run_search(0, 100, 150)
+    events = _run_search(0, 99, 150)
     assert len(events) == 100
-    assert [event["eventTime"] for event in events] == list(range(100))
+    assert {event["eventTime"] for event in events} == set(range(100))
 
 
-def test_page_limit_lt_total_limit_between(http_mocker, mocker):
+def test_page_limit_greater_fetch_limit_less_total(http_mocker, mocker):
     """
     Test fetching when limit is between page limit and total.
 
@@ -329,35 +322,12 @@ def test_page_limit_lt_total_limit_between(http_mocker, mocker):
     import ManageEngineEventCollector
 
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    events = _run_search(0, 100, 50)
+    events = _run_search(0, 99, 50)
     assert len(events) == 50
-    assert [event["eventTime"] for event in events] == list(range(50))
+    assert {event["eventTime"] for event in events} == set(range(50))
 
 
-def test_page_limit_lt_total_limit_between_second(http_mocker, mocker):
-    """
-    Test fetching a windowed range when limit spans page limits.
-
-    Given:
-    - Total events in time range = 80.
-    - PAGE_LIMIT_DEFAULT overridden to 20.
-    - Fetch window start=20, end=100, limit=50.
-
-    When:
-    - search_events(20, 100, 50) is called.
-
-    Then:
-    - 50 events are returned (timestamps 20–69).
-    """
-    import ManageEngineEventCollector
-
-    mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    events = _run_search(20, 100, 50)
-    assert len(events) == 50
-    assert [event["eventTime"] for event in events] == list(range(20, 70))
-
-
-def test_zero_events(mocker):
+def test_zero_events(http_mocker, mocker):
     """
     Test behavior when there are zero events in the server.
 

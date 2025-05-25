@@ -8,8 +8,8 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
-VENDOR = "Zoho Corp"
-PRODUCT = "ManageEngine EndpointCentral"
+VENDOR = "manage"
+PRODUCT = "engine"
 TOKEN_URL = "/oauth/v2/token"
 AUDIT_LOGS_URL = "/emsapi/server/auditLogs"
 PAGE_LIMIT_DEFAULT = 5000
@@ -89,6 +89,10 @@ class Client(BaseClient):
             resp_type="json",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
         )
+
+        if "error" in response:
+            demisto.debug("Error creating token")
+            raise DemistoException(response.get("error"))
         new_ctx = {
             "refresh_token": ctx.get("refresh_token") or response.get("refresh_token"),
             "access_token": response.get("access_token"),
@@ -102,6 +106,7 @@ class Client(BaseClient):
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
         """
         Paginate through audit logs.
+        Events return in random order.
 
         Args:
             start_time_ms: UNIX‐ms timestamp to start from.
@@ -109,7 +114,7 @@ class Client(BaseClient):
             limit: Maximum total events to return.
 
         Returns:
-            List of audit‐log dicts (up to `limit`).
+            List of audit‐log dicts (up to `limit`) sorted by eventTime.
         """
         events: List[Dict] = []
         page = 1
@@ -118,8 +123,9 @@ class Client(BaseClient):
             "Accept": "application/auditlogsdata.v1+json",
         }
         params = {"startTime": start_time, "endTime": end_time, "pageLimit": PAGE_LIMIT_DEFAULT}
+        demisto.debug(f"Time intervar: {start_time} --- {end_time}")
 
-        while len(events) < limit:
+        while True:
             params["page"] = str(page)
 
             response = self._http_request(
@@ -149,6 +155,7 @@ class Client(BaseClient):
                 demisto.debug("Not enough events")
                 break
 
+        events.sort(key=lambda e: int(e["eventTime"]))
         return events[:limit]
 
 
@@ -161,6 +168,8 @@ def test_module(client: Client) -> str:
 
     try:
         _ = client.search_events(str(one_min_ago_ts), str(now_ts), 1)
+        demisto.debug("-------------------- END OF TEST --------------------")
+        demisto.debug(demisto.getIntegrationContext())
         return "ok"
     except Exception as e:
         msg = str(e).lower()
@@ -189,13 +198,11 @@ def get_events(client: Client, args: dict) -> CommandResults:
     results = CommandResults(
         readable_output=human_readable,
         outputs_prefix="ManageEngine.Event",
-        outputs_key_field="id",
         outputs=events,
     )
 
     if should_push:
         send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
-
     return results
 
 
@@ -280,9 +287,7 @@ def main() -> None:  # pragma: no cover
             proxy=proxy,
         )
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
-            result = test_module(client)
-            return_results(result)
+            return_results(test_module(client))
 
         elif command == "manage-engine-get-events":
             return_results(get_events(client, demisto.args()))
