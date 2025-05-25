@@ -997,6 +997,100 @@ def test_fetch_notables(mocker):
     assert not incidents[0].get("owner")
 
 
+def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "creation time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the earliest_time and latest_time fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "earliest_time" in call_args
+    assert "latest_time" in call_args
+    assert "index_earliest" not in call_args
+    assert "index_latest" not in call_args
+
+
+def test_fetch_notables_with_index_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "index time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the index_earliest and index_latest fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "index_earliest" in call_args
+    assert "index_latest" in call_args
+    assert "earliest_time" not in call_args
+    assert "latest_time" not in call_args
+
+
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
