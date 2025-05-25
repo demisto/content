@@ -1,7 +1,6 @@
 
 ## Configure Taegis XDR in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Taegis Environment | The environment to utilize | True |
@@ -11,12 +10,10 @@
 | Fetch Incident Type | The type of incident to fetch from Taegis (Alerts or Investigations) | True |
 | Include Assets in Fetch | When using the Investigations fetch type, should assets be included? This can cause API failures or latency and should only be enabled if necessary | False |
 
-
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 
 ### taegis-add-evidence-to-investigation
 
@@ -53,7 +50,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-archive-investigation
 
 #### Base Command
@@ -83,7 +79,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     }
 }
 ```
-
 
 ### taegis-create-comment
 
@@ -115,7 +110,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     }
 }
 ```
-
 
 ### taegis-create-investigation
 
@@ -156,7 +150,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-create-sharelink
 
 #### Base Command
@@ -189,10 +182,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-execute-playbook
 
 #### Base Command
+
 `!taegis-execute-playbook`
 
 #### Inputs
@@ -216,7 +209,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     "id": "UGxheWJvb2tFeGVjdXRpb246NGYwZDZiNGQtNWNiZS00NDkxLTg3YzYtMDZkNjkxYzMwMTg4"
 }
 ```
-
 
 ### taegis-fetch-alerts
 
@@ -258,7 +250,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     }
 }
 ```
-
 
 ### taegis-fetch-assets
 
@@ -329,7 +320,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-comment
 
 #### Base Command
@@ -371,7 +361,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     }
 }
 ```
-
 
 ### taegis-fetch-comments
 
@@ -435,10 +424,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-endpoint
 
 #### Base Command
+
 `!taegis-fetch-endpoint`
 
 #### Inputs
@@ -478,10 +467,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-investigation
 
 #### Base Command
+
 `!taegis-fetch-investigation`
 
 #### Inputs
@@ -525,10 +514,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-investigation-alerts
 
 #### Base Command
+
 `!taegis-fetch-investigation-alerts`
 
 #### Inputs
@@ -562,10 +551,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-playbook-execution
 
 #### Base Command
+
 `!taegis-fetch-playbook-execution`
 
 #### Inputs
@@ -608,10 +597,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-fetch-users
 
 #### Base Command
+
 `!taegis-fetch-users`
 
 #### Inputs
@@ -648,7 +637,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-isolate-asset
 
 #### Base Command
@@ -680,7 +668,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-update-alert-status
 
 #### Base Command
@@ -704,7 +691,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 * TRUE_POSITIVE_MALICIOUS
 * OTHER
 
-
 #### Command Examples
 
 ```
@@ -723,7 +709,6 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
     }
 }
 ```
-
 
 ### taegis-update-comment
 
@@ -756,10 +741,10 @@ At least one of the inputs `alerts`, `events`, or `alert_query` MUST be defined
 }
 ```
 
-
 ### taegis-update-investigation
 
 #### Base Command
+
 `!taegis-update-investigation`
 
 #### Inputs
@@ -809,7 +794,6 @@ Note: At least 1 of the above inputs (in addition to id) must be defined
     }
 }
 ```
-
 
 ### taegis-unarchive-investigation
 

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 7.2.1 of Cisco Secure Ne
 
 ## Configure Cisco Stealthwatch in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | Server URL for Cisco Stealthwatch console e.g.: https://ip:port/. | True |
@@ -12,41 +11,44 @@ This integration was integrated and tested with version 7.2.1 of Cisco Secure Ne
 | Use system proxy settings |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cisco-stealthwatch-query-flows-initialize
+
 ***
 Initializes the flow search based on specified arguments. Must provide a start time, time range, or start time and end time.
-
 
 #### Base Command
 
 `cisco-stealthwatch-query-flows-initialize`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to initialize its flow search. | Required | 
-| start_time | Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time is provided but end_time is not provided, the end_time will be set to the current time. | Optional | 
-| end_time | End time in the format: YYYY-mm-ddTHH:MM:SSZ. . | Optional | 
-| time_range | An optional time range, for example: 3 months, 1 week, 1 day ago, etc. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 20. | Optional | 
-| ip_addresses | The IP address by which to filter the results. | Optional | 
-
+| tenant_id | The ID of the tenant for which to initialize its flow search. | Required |
+| start_time | Start time in the format: YYYY-mm-ddTHH:MM:SSZ. If start_time is provided but end_time is not provided, the end_time will be set to the current time. | Optional |
+| end_time | End time in the format: YYYY-mm-ddTHH:MM:SSZ. . | Optional |
+| time_range | An optional time range, for example: 3 months, 1 week, 1 day ago, etc. | Optional |
+| limit | The maximum number of records to retrieve. Default is 20. | Optional |
+| ip_addresses | The IP address by which to filter the results. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. | 
-| CiscoStealthwatch.FlowStatus.searchJobStatus | str | The search job status of the flow. | 
-| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. | 
-
+| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. |
+| CiscoStealthwatch.FlowStatus.searchJobStatus | str | The search job status of the flow. |
+| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-query-flows-initialize tenant_id=102 limit=3 time_range="1 week"```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -62,40 +64,41 @@ Initializes the flow search based on specified arguments. Must provide a start t
 
 #### Human Readable Output
 
->### Query Flows Initializing Information:
+>### Query Flows Initializing Information
+>
 >|Id|Status|Percent Complete|
 >|---|---|---|
 >| 604f7115e4b0bbedc8c77d8d | IN_PROGRESS | 100.0 |
 
-
 ### cisco-stealthwatch-query-flows-status
+
 ***
 Checks the flow search status.
-
 
 #### Base Command
 
 `cisco-stealthwatch-query-flows-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to check its flow search status. | Required | 
-| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required | 
-
+| tenant_id | The ID of the tenant for which to check its flow search status. | Required |
+| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. | 
-| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. | 
-
+| CiscoStealthwatch.FlowStatus.id | str | The ID of the flow. |
+| CiscoStealthwatch.FlowStatus.percentComplete | str | The percent of the flow that was completed. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-query-flows-status tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -111,46 +114,47 @@ Checks the flow search status.
 
 #### Human Readable Output
 
->### Query Flows Status Information:
+>### Query Flows Status Information
+>
 >|Id|Percent Complete|
 >|---|---|
 >| 604f64afe4b0bbedc8c77a9d | 100.0 |
 
-
 ### cisco-stealthwatch-query-flows-results
+
 ***
 Retrieves the flow search results. Use this command after the search job completes.
-
 
 #### Base Command
 
 `cisco-stealthwatch-query-flows-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to retrieve its flow search results. | Required | 
-| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required | 
-
+| tenant_id | The ID of the tenant for which to retrieve its flow search results. | Required |
+| search_id | The ID of the search from the cisco-stealthwatch-query-flows-initialize command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.FlowResults.id | str | The ID of the flow. | 
-| CiscoStealthwatch.FlowResults.tenantId | str | The tenant ID of the flow. | 
-| CiscoStealthwatch.FlowResults.flowCollectorId | str | The collector ID of the flow. | 
-| CiscoStealthwatch.FlowResults.protocol | str | The protocol of the flow. | 
-| CiscoStealthwatch.FlowResults.serviceId | str | The service ID of the flow. | 
-| CiscoStealthwatch.FlowResults.statistics | str | The statistics of the flow. | 
-| CiscoStealthwatch.FlowResults.peer | str | The peer of the flow. | 
-| CiscoStealthwatch.FlowResults.subject | str | The subject of the flow. | 
-
+| CiscoStealthwatch.FlowResults.id | str | The ID of the flow. |
+| CiscoStealthwatch.FlowResults.tenantId | str | The tenant ID of the flow. |
+| CiscoStealthwatch.FlowResults.flowCollectorId | str | The collector ID of the flow. |
+| CiscoStealthwatch.FlowResults.protocol | str | The protocol of the flow. |
+| CiscoStealthwatch.FlowResults.serviceId | str | The service ID of the flow. |
+| CiscoStealthwatch.FlowResults.statistics | str | The statistics of the flow. |
+| CiscoStealthwatch.FlowResults.peer | str | The peer of the flow. |
+| CiscoStealthwatch.FlowResults.subject | str | The subject of the flow. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-query-flows-results tenant_id=102 search_id=604f64afe4b0bbedc8c77a9d```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -444,41 +448,42 @@ Retrieves the flow search results. Use this command after the search job complet
 
 #### Human Readable Output
 
->### Query Flows Results Information:
+>### Query Flows Results Information
+>
 >|Id|Tenant Id|Flow Collector Id|Protocol|Service Id|Statistics|Peer|Subject|
 >|---|---|---|---|---|---|---|---|
 >| 10142775 | 102 | 121 | UDP | 38 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 21403751<br/>packetCount: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.006382842918235782 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 2055, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 59315, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 21403751<br/>packets: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
 >| 10142776 | 102 | 121 | UDP | 38 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 21403751<br/>packetCount: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.006382842918235782 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 2055, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 52656, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 21403751<br/>packets: 15667<br/>byteRate: 267546.8875<br/>packetRate: 195.8375<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
 >| 10142778 | 102 | 121 | UDP | 73 | activeDuration: 320000<br/>numCombinedFlowRecords: 2<br/>firstActiveTime: 2021-03-15T13:36:15.000+0000<br/>lastActiveTime: 2021-03-15T13:41:35.000+0000<br/>tcpRetransmissions: -1<br/>byteCount: 213807311<br/>packetCount: 173345<br/>byteRate: 2672591.3875<br/>packetRate: 2166.8125<br/>tcpConnections: 0<br/>roundTripTime: 0<br/>serverResponseTime: 0<br/>subjectPeerRatio: 100.0<br/>rttAverage: -1<br/>rttMaximum: -1<br/>rttMinimum: -1<br/>srtAverage: -1<br/>srtMaximum: -1<br/>srtMinimum: -1<br/>flowTimeSinceStart: 240673<br/>tcpRetransmissionsRatio: -0.0005768842481756036 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 514, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 0.0<br/>bytes: 0<br/>packets: 0<br/>byteRate: 0.0<br/>packetRate: 0.0<br/>orientation: server<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 | hostGroupIds: 65534<br/>countryCode: XR<br/>ipAddress: x.x.x.x<br/>natPort: -1<br/>portProtocol: {"port": 48861, "protocol": "UDP", "serviceId": 0}<br/>percentBytes: 100.0<br/>bytes: 213807311<br/>packets: 173345<br/>byteRate: 2672591.3875<br/>packetRate: 2166.8125<br/>orientation: client<br/>finPackets: 0<br/>rstPackets: 0<br/>synPackets: 0<br/>synAckPackets: 0<br/>tlsVersion: NONE<br/>trustSecId: -1 |
 
-
 ### cisco-stealthwatch-list-tags
+
 ***
 Lists the host groups (called tags in the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-list-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to get its tags. | Required | 
-
+| tenant_id | The ID of the tenant for which to get its tags. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tag.id | str | The ID of the tag. | 
-| CiscoStealthwatch.Tag.displayName | str | The display name of the tag. | 
-
+| CiscoStealthwatch.Tag.id | str | The ID of the tag. |
+| CiscoStealthwatch.Tag.displayName | str | The display name of the tag. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-list-tags tenant_id=102```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -654,7 +659,8 @@ Lists the host groups (called tags in the API).
 
 #### Human Readable Output
 
->### Tags for tenant_id: 102:
+>### Tags for tenant_id: 102
+>
 >|Display Name|Id|
 >|---|---|
 >| Internal Host Tags | 1 |
@@ -699,37 +705,37 @@ Lists the host groups (called tags in the API).
 >| Internal Facing Load Balancer VIPs | 50080 |
 >| Catch All | 65534 |
 
-
 ### cisco-stealthwatch-get-tag
+
 ***
 Gets a single host group (called tag in the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-get-tag`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to get its tag. | Required | 
-| tag_id | The tag for which to get more information. | Required | 
-
+| tenant_id | The ID of the tenant for which to get its tag. | Required |
+| tag_id | The tag for which to get more information. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tag.id | str | The name of the tag. | 
-| CiscoStealthwatch.Tag.name | str | The ID of the tag. | 
-| CiscoStealthwatch.Tag.location | str | The location of the tag. | 
-| CiscoStealthwatch.Tag.domainId | str | The domain ID of the tag. | 
-
+| CiscoStealthwatch.Tag.id | str | The name of the tag. |
+| CiscoStealthwatch.Tag.name | str | The ID of the tag. |
+| CiscoStealthwatch.Tag.location | str | The location of the tag. |
+| CiscoStealthwatch.Tag.domainId | str | The domain ID of the tag. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-get-tag tenant_id=102 tag_id=1```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -763,39 +769,40 @@ Gets a single host group (called tag in the API).
 
 #### Human Readable Output
 
->### Tag 1 with tenant id 102 results:
+>### Tag 1 with tenant id 102 results
+>
 >|Id|Name|Location|Domain Id|
 >|---|---|---|---|
 >| 1 | Inside Hosts | INSIDE | 102 |
 
-
 ### cisco-stealthwatch-list-tenants
+
 ***
 Lists all domains if no domain is specified or gets a specified domain (called tenant(s) in the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-list-tenants`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to retrieve information. | Optional | 
-
+| tenant_id | The ID of the tenant for which to retrieve information. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.Tenant.id | str | The ID of the tenant. | 
-| CiscoStealthwatch.Tenant.displayName | str | The display name of the tenant. | 
-
+| CiscoStealthwatch.Tenant.id | str | The ID of the tenant. |
+| CiscoStealthwatch.Tenant.displayName | str | The display name of the tenant. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-list-tenants```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -809,44 +816,45 @@ Lists all domains if no domain is specified or gets a specified domain (called t
 
 #### Human Readable Output
 
->### Tenants:
+>### Tenants
+>
 >|Id|Display Name|
 >|---|---|
 >| 102 | companyname |
 
-
 ### cisco-stealthwatch-get-tag-hourly-traffic-report
+
 ***
 Gets the hourly traffic summary of the byte count for a single host group (called tenant in the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-get-tag-hourly-traffic-report`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to get its host information. | Required | 
-| tag_id | The ID of the tag for which to get its information. | Required | 
-
+| tenant_id | The ID of the tenant for which to get its host information. | Required |
+| tag_id | The ID of the tag for which to get its information. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.TagHourlyTraffic.timestamp | str | Timestamp of the hourly traffic summary for a single host group \(called tag on the API\). | 
-| CiscoStealthwatch.TagHourlyTraffic.inboundByteCount | str | Inbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
-| CiscoStealthwatch.TagHourlyTraffic.outboundByteCount | str | Outbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
-| CiscoStealthwatch.TagHourlyTraffic.withinByteCount | str | Within the byte count of the hourly traffic summary for a single host group \(called tag on the API\). | 
-| CiscoStealthwatch.TagHourlyTraffic.tenant_id | str | The tenant ID of the hourly traffic summary for a single host group \(called tag on the API\). | 
-| CiscoStealthwatch.TagHourlyTraffic.tag_id | str | The tag ID of the hourly traffic summary for a single host group \(called tag on the API\). | 
-
+| CiscoStealthwatch.TagHourlyTraffic.timestamp | str | Timestamp of the hourly traffic summary for a single host group \(called tag on the API\). |
+| CiscoStealthwatch.TagHourlyTraffic.inboundByteCount | str | Inbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). |
+| CiscoStealthwatch.TagHourlyTraffic.outboundByteCount | str | Outbound byte count of the hourly traffic summary for a single host group \(called tag on the API\). |
+| CiscoStealthwatch.TagHourlyTraffic.withinByteCount | str | Within the byte count of the hourly traffic summary for a single host group \(called tag on the API\). |
+| CiscoStealthwatch.TagHourlyTraffic.tenant_id | str | The tenant ID of the hourly traffic summary for a single host group \(called tag on the API\). |
+| CiscoStealthwatch.TagHourlyTraffic.tag_id | str | The tag ID of the hourly traffic summary for a single host group \(called tag on the API\). |
 
 #### Command Example
+
 ```!cisco-stealthwatch-get-tag-hourly-traffic-report tenant_id=102 tag_id=1```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -1058,7 +1066,8 @@ Gets the hourly traffic summary of the byte count for a single host group (calle
 
 #### Human Readable Output
 
->### Hourly Tag Traffic Report for tenant id 102 and tag id 1:
+>### Hourly Tag Traffic Report for tenant id 102 and tag id 1
+>
 >|Timestamp|Inbound Byte Count|Outbound Byte Count|Within Byte Count|
 >|---|---|---|---|
 >| 2021-03-15T14:00:00Z | 0 | 150258936 | 1945701335 |
@@ -1087,37 +1096,37 @@ Gets the hourly traffic summary of the byte count for a single host group (calle
 >| 2021-03-14T15:00:00Z | 0 | 674875684 | 3313179934 |
 >| 2021-03-14T14:00:00Z | 0 | 2049252448 | 3410264173 |
 
-
 ### cisco-stealthwatch-get-top-alarming-tags
+
 ***
 Gets the top alarming host groups (called tags on the API) for a specific domain (called tenant in the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-get-top-alarming-tags`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to get its top alarming hosts. | Required | 
-
+| tenant_id | The ID of the tenant for which to get its top alarming hosts. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.AlarmingTag.ipAddress | str | The IP address of the alarming tag. | 
-| CiscoStealthwatch.AlarmingTag.hostGroupIds | str | The host group IDs of the alarming tag. | 
-| CiscoStealthwatch.AlarmingTag.typeId | str | The type ID of the alarming tag. | 
-| CiscoStealthwatch.AlarmingTag.severity | str | The severity of the alarming tag. | 
-| CiscoStealthwatch.AlarmingTag.alwaysBadCount | str | The always bad count of the alarming tag. | 
-
+| CiscoStealthwatch.AlarmingTag.ipAddress | str | The IP address of the alarming tag. |
+| CiscoStealthwatch.AlarmingTag.hostGroupIds | str | The host group IDs of the alarming tag. |
+| CiscoStealthwatch.AlarmingTag.typeId | str | The type ID of the alarming tag. |
+| CiscoStealthwatch.AlarmingTag.severity | str | The severity of the alarming tag. |
+| CiscoStealthwatch.AlarmingTag.alwaysBadCount | str | The always bad count of the alarming tag. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-get-top-alarming-tags tenant_id=102```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -1716,7 +1725,8 @@ Gets the top alarming host groups (called tags on the API) for a specific domain
 
 #### Human Readable Output
 
->### Top Alarming Tags for tenant id 102:
+>### Top Alarming Tags for tenant id 102
+>
 >|Host Group Ids|Ip Address|
 >|---|---|
 >| 1,<br/>65534 | x.x.x.x |
@@ -1749,38 +1759,38 @@ Gets the top alarming host groups (called tags on the API) for a specific domain
 >| 1,<br/>65534 | x.x.x.x |
 >| 1,<br/>65534 | x.x.x.x |
 
-
 ### cisco-stealthwatch-list-security-events-initialize
+
 ***
 Initializes the list of security events for a domain (called tenant on the API).
-
 
 #### Base Command
 
 `cisco-stealthwatch-list-security-events-initialize`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to initialize its list security events. | Required | 
-| start_time | Start time. Format: YYYY-mm-ddTHH:MM:SSZ. Given only the start_time, the end_time will be set to the current time. | Optional | 
-| end_time | End time. Format: YYYY-mm-ddTHH:MM:SSZ. | Optional | 
-| time_range | An optional time range. For example: 3 months, 1 week, 1 day ago, etc. | Optional | 
-
+| tenant_id | The ID of the tenant for which to initialize its list security events. | Required |
+| start_time | Start time. Format: YYYY-mm-ddTHH:MM:SSZ. Given only the start_time, the end_time will be set to the current time. | Optional |
+| end_time | End time. Format: YYYY-mm-ddTHH:MM:SSZ. | Optional |
+| time_range | An optional time range. For example: 3 months, 1 week, 1 day ago, etc. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
-| CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The status of the search job for the security event. | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. | 
-
+| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. |
+| CiscoStealthwatch.SecurityEventStatus.searchJobStatus | str | The status of the search job for the security event. |
+| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-list-security-events-initialize tenant_id=102 time_range="5 minute"```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -1795,40 +1805,41 @@ Initializes the list of security events for a domain (called tenant on the API).
 
 #### Human Readable Output
 
->### Security Events Initializing Information:
+>### Security Events Initializing Information
+>
 >|Id|Search Job Status|Percent Complete|
 >|---|---|---|
 >| 604f7130e4b0bbedc8c77d92 | IN_PROGRESS | 0 |
 
-
 ### cisco-stealthwatch-list-security-events-status
+
 ***
 Lists the security events status.
-
 
 #### Base Command
 
 `cisco-stealthwatch-list-security-events-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to get its list of security events status. | Required | 
-| search_id | The ID of the search from the initialize command. | Required | 
-
+| tenant_id | The ID of the tenant for which to get its list of security events status. | Required |
+| search_id | The ID of the search from the initialize command. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. | 
-| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. | 
-
+| CiscoStealthwatch.SecurityEventStatus.id | str | The ID of the security event. |
+| CiscoStealthwatch.SecurityEventStatus.percentComplete | str | The percent of the security event that is completed. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-list-security-events-status tenant_id=102 search_id=604f64e1e4b0bbedc8c77aa4```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -1843,49 +1854,50 @@ Lists the security events status.
 
 #### Human Readable Output
 
->### Security Events Status Information:
+>### Security Events Status Information
+>
 >|Id|Percent Complete|
 >|---|---|
 >| 604f64e1e4b0bbedc8c77aa4 | 100.0 |
 
-
 ### cisco-stealthwatch-list-security-events-results
+
 ***
 Lists the security events results. Use this command after the search job completes.
-
 
 #### Base Command
 
 `cisco-stealthwatch-list-security-events-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tenant_id | The ID of the tenant for which to retrieve its list security events results. | Required | 
-| search_id | The ID of the search from the initialize command. | Required | 
-| limit | The maximum number of security events. Default is 50. | Required | 
-
+| tenant_id | The ID of the tenant for which to retrieve its list security events results. | Required |
+| search_id | The ID of the search from the initialize command. | Required |
+| limit | The maximum number of security events. Default is 50. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoStealthwatch.SecurityEventResults.id | str | The ID of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.domainId | str | The domain ID of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.deviceId | str | The device ID of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.securityEventType | str | The type of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.firstActiveTime | str | The first active time of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.lastActiveTime | str | The last active time of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.source | str | The source of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.target | str | The target of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.details | str | The details of the security event. | 
-| CiscoStealthwatch.SecurityEventResults.hitCount | str | The hit count of the security event. | 
-
+| CiscoStealthwatch.SecurityEventResults.id | str | The ID of the security event. |
+| CiscoStealthwatch.SecurityEventResults.domainId | str | The domain ID of the security event. |
+| CiscoStealthwatch.SecurityEventResults.deviceId | str | The device ID of the security event. |
+| CiscoStealthwatch.SecurityEventResults.securityEventType | str | The type of the security event. |
+| CiscoStealthwatch.SecurityEventResults.firstActiveTime | str | The first active time of the security event. |
+| CiscoStealthwatch.SecurityEventResults.lastActiveTime | str | The last active time of the security event. |
+| CiscoStealthwatch.SecurityEventResults.source | str | The source of the security event. |
+| CiscoStealthwatch.SecurityEventResults.target | str | The target of the security event. |
+| CiscoStealthwatch.SecurityEventResults.details | str | The details of the security event. |
+| CiscoStealthwatch.SecurityEventResults.hitCount | str | The hit count of the security event. |
 
 #### Command Example
+
 ```!cisco-stealthwatch-list-security-events-results tenant_id=102 limit=5 search_id=604f64e1e4b0bbedc8c77aa4```
 
 #### Context Example
+
 ```json
 {
     "CiscoStealthwatch": {
@@ -2502,7 +2514,8 @@ Lists the security events results. Use this command after the search job complet
 
 #### Human Readable Output
 
->### Showing 5 Security Events:
+>### Showing 5 Security Events
+>
 >|Id|Domain Id|Device Id|Security Event Type|First Active Time|Last Active Time|Source|Target|Details|Hit Count|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 88195 | 102 | 121 | 310 | 2021-03-15T13:44:29.000+0000 | 2021-03-15T13:44:29.000+0000 | ipAddress: x.x.x.x<br/>port: 0<br/>protocol: udp<br/>tags: {'name': 'Catch All', 'id': 65534} | ipAddress: x.x.x.x<br/>port: 137<br/>protocol: udp<br/>tags: {'name': 'United States', 'id': 61627} | {'key': 'source_host@username', 'value': ''},<br/>{'key': 'source_host@policy_id', 'value': '1'},<br/>{'key': 'source_host@mac_address', 'value': ''},<br/>{'key': 'target_host@username', 'value': ''},<br/>{'key': 'target_host@policy_id', 'value': '0'},<br/>{'key': 'target_host@mac_address', 'value': ''},<br/>{'key': 'category_points@high-concern-index', 'value': '162'},<br/>{'key': 'category_points@high-target-index', 'value': '162'},<br/>{'key': 'category_points@high-recon-index', 'value': '162'},<br/>{'key': 'baseline@baseline', 'value': '0'},<br/>{'key': 'baseline@threshold', 'value': '0'},<br/>{'key': 'baseline@current_value', 'value': '0'},<br/>{'key': 'baseline@tolerance', 'value': '0'},<br/>{'key': 'flow@protocol', 'value': '17'},<br/>{'key': 'flow@service', 'value': '16'},<br/>{'key': 'flow@source_port', 'value': '0'},<br/>{'key': 'flow@target_port', 'value': '137'},<br/>{'key': 'flow@event_port', 'value': '137'},<br/>{'key': 'flow@flow_id', 'value': '0'},<br/>{'key': 'flow@source_is_server', 'value': 'false'},<br/>{'key': 'targetIPAddress', 'value': 'x.x.x.x'},<br/>{'key': 'points', 'value': '162'} | 1 |
