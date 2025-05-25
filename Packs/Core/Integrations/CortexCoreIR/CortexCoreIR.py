@@ -75,9 +75,9 @@ class Client(CoreClient):
         )
         return reply
 
-    def post_indicator_rule(self, request_data: Union[dict, str], suffix : str):
+    def post_indicator_rule(self, request_data: Union[dict, str], suffix: str):
         reply = self._http_request(
-            method="POST", json_data={"request_data": request_data, "validate":True}, headers=self._headers, url_suffix=suffix
+            method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
         )
         return reply
 
@@ -236,7 +236,7 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
         raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
 
 
-def prepare_ioc_to_output(ioc_payload : Union[dict, str], input_format : str) -> dict:
+def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> dict:
     """
     Prepare the IOC data to output:
         if it's a Dictionary - return it, else converts a single-row CSV IOC definition into a JSON object (Python dict).
@@ -255,7 +255,6 @@ def prepare_ioc_to_output(ioc_payload : Union[dict, str], input_format : str) ->
     lines = ioc_payload.strip().splitlines()
     header = lines[0].split(',')
     values = lines[1].split(',')
-
 
     # Map headers to values, collecting all duplicate fields
     # Create a flat mapping, keeping the last occurrence of each header
@@ -426,12 +425,13 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
                     - reliability (str, optional): Reliability rating (A-F). A is most reliable, F is least.
                     - class (str, optional): Indicator classification (e.g., "Malware").
                     - vendor_name (str, optional): Name of the vendor reporting the indicator.
-                    - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD', 'BAD',
+                    - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD',
+                        'BAD',
                      'SUSPICIOUS', 'UNKNOWN'.
-                    - vendor_reliability (str, optional): Vendor reliability rating (A-F). Required if vendor_reputation is provided.
+                    - vendor_reliability (str, optional): Vendor reliability rating (A-F).
+                        Required if vendor_reputation is provided.
                     - input_format (str, optional): Input format. One of: 'CSV', 'JSON'. Defaults to 'JSON'.
                     - ioc_object (str, optional): Full IOC object as JSON or CSV string, depending on input_format.
-                     Required if you prefer raw input instead of individual fields.
 
     Returns:
         CommandResults: Object containing the formatted asset details,
@@ -453,8 +453,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
     vendor_reliability = args.get('vendor_reliability')
     input_format = args.get('input_format', 'JSON')  # Default to 'JSON'
     ioc_object = args.get('ioc_object')
-    ioc_payload : Union[dict, str]
-
+    ioc_payload: Union[dict, str]
 
     # Handle pre-built IOC object
     if ioc_object:
@@ -470,9 +469,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
             else:
                 raise DemistoException("Invalid ioc_object: must be either valid JSON or CSV string.")
     else:
-        # No - go to nex stage
-        # get all the argument that are not none and add them to body/csv according to what is mention there
-        # Case 2: Build payload from individual arguments
+        # Build payload from individual arguments
         ioc_payload = {
             "indicator": indicator,
             "type": indicator_type,
@@ -493,8 +490,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
             }]
         input_format = 'JSON'
 
-    # Final request body
-
+    # Request According to format
     if input_format == 'CSV':
         suffix = "indicators/insert_csv"
     else:
@@ -508,19 +504,20 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
     is_success = response["reply"]["success"]
 
     if not is_success:
+        # Something went wrong in the creation of new IOC rule.
         errors_array = []
-        for error_obj in  response["reply"]["validation_errors"]:
+        for error_obj in response["reply"]["validation_errors"]:
             errors_array.append(error_obj["error"])
         error_string = ", ".join(errors_array)
         raise DemistoException(f"Core Add Indicator Command: post of IOC rule failed: {error_string}")
 
-
     return CommandResults(
-        readable_output=f"Successfully Upload IOC to XSIAM",
+        readable_output=f"IOC {indicator} was successfully added.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Indicator",
         outputs=prepare_ioc_to_output(ioc_payload, input_format),
         raw_response=response,
     )
+
 
 def main():  # pragma: no cover
     """
