@@ -1,7 +1,7 @@
 from copy import deepcopy
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from Packs.ApiModules.Scripts.CoreIRApiModule.CoreIRApiModule import *
+from CoreIRApiModule import *
 
 # Disable insecure warnings
 urllib3.disable_warnings()
