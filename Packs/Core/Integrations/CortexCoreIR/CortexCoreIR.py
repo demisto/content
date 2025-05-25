@@ -183,7 +183,7 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def parse_expiration_date(expiration: Optional[str]) -> Optional[int, str]:
+def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]]:
     """
          Converts relative expiration strings / numbers to epoch milliseconds or returns 'Never'.
 
@@ -202,19 +202,36 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[int, str]:
     if expiration == 'Never':
         return 'Never'
 
-    convert_datetime_to_epoch_milli = lambda x: int(x.timestamp() * 1000)
+    def convert_datetime_to_epoch_milli(dt: datetime) -> int:
+        return int(dt.timestamp() * 1000)
+
+    def is_relative_time_format(s: str) -> bool:
+        """
+        Returns True if the input matches a relative time format:
+        'N minutes', 'N hours', 'N days', 'N weeks', 'N months', 'N years'
+        """
+        if not isinstance(s, str):
+            return False
+
+        pattern = r"^\s*\d+\s+(Minutes|Hours|days|Weeks|Months|Years)\s*$"
+        return bool(re.match(pattern, s, flags=re.IGNORECASE))
 
     now_epoch_milli = convert_datetime_to_epoch_milli(get_current_time())
-    datetime_arg = arg_to_datetime(expiration)
+    try:
+        datetime_arg = arg_to_datetime(expiration)
+    except ValueError:
+        return expiration
+
     if datetime_arg:
-        # Using arg_to_datetime that takes relative time and converts it into datetime (if its relative then in the past)
+        is_relative_time_format_flag = is_relative_time_format(expiration)
         datetime_arg_epoch_milli = convert_datetime_to_epoch_milli(datetime_arg)
-        delta = now_epoch_milli - datetime_arg_epoch_milli
-        if delta > 0:
+        if is_relative_time_format_flag:
+            # Using arg_to_datetime that takes relative time and converts it into datetime (if its relative then in the past)
+            delta = now_epoch_milli - datetime_arg_epoch_milli
             # the arg_to_datetime returned a time in the past
             return now_epoch_milli + delta
         else:
-            return datetime_arg
+            return datetime_arg_epoch_milli
     else:
         raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
 
