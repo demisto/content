@@ -27,5 +27,5 @@ alter
     xdm.event.description = parsed_fields -> description,
     xdm.source.process.command_line = parsed_fields -> COMMAND,
     xdm.source.process.executable.directory = parsed_fields -> PWD,
-    xdm.event.log_level = if(log_level = "ERROR",XDM_CONST.LOG_LEVEL_ALERT, log_level = "WARRNING", XDM_CONST.LOG_LEVEL_WARNING, log_level = "ALERT", XDM_CONST.LOG_LEVEL_ALERT, log_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,log_level = "DEBUG" ,XDM_CONST.LOG_LEVEL_DEBUG, log_level = "EMERGENCY" ,XDM_CONST.LOG_LEVEL_EMERGENCY, log_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "NOTICE" ,XDM_CONST.LOG_LEVEL_NOTICE, log_level),
+    xdm.event.log_level = if(log_level = "ERROR",XDM_CONST.LOG_LEVEL_ERROR, log_level = "WARRNING", XDM_CONST.LOG_LEVEL_WARNING, log_level = "ALERT", XDM_CONST.LOG_LEVEL_ALERT, log_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,log_level = "DEBUG" ,XDM_CONST.LOG_LEVEL_DEBUG, log_level = "EMERGENCY" ,XDM_CONST.LOG_LEVEL_EMERGENCY, log_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "NOTICE" ,XDM_CONST.LOG_LEVEL_NOTICE, log_level),
     xdm.event.outcome = if(operation_status = "success", XDM_CONST.OUTCOME_SUCCESS, operation_status = "failure", XDM_CONST.OUTCOME_FAILED , operation_status);
