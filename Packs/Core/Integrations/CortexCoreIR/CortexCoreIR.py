@@ -213,7 +213,7 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
         if not isinstance(s, str):
             return False
 
-        pattern = r"^\s*\d+\s+(Minutes|Hours|days|Weeks|Months|Years)\s*$"
+        pattern = r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$"
         return bool(re.match(pattern, s, flags=re.IGNORECASE))
 
     now_epoch_milli = convert_datetime_to_epoch_milli(get_current_time())
@@ -261,6 +261,10 @@ def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> d
     field_map = {}
     for i, key in enumerate(header):
         field_map[key] = values[i]  # always overwrite (keep last)
+
+    if "expiration_date" in field_map:
+        int_val_date = int(field_map["expiration_date"])
+        field_map["expiration_date"] = int_val_date
 
     # Extract vendor fields
     vendor_name = field_map.pop('vendor.name', None)
