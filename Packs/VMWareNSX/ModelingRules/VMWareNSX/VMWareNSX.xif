@@ -1,0 +1,31 @@
+[MODEL: dataset = "vmware_nsx_raw"]
+alter 
+    check_audit = parsed_fields -> audit,
+    event_type = parsed_fields -> type,
+    useranme_1 = parsed_fields -> USER,
+    username_2 = parsed_fields -> username,
+    username_3 = parsed_fields -> UserName,
+    src_ipv4_and_port = parsed_fields -> Src,
+    log_level = parsed_fields -> level,
+    operation_status = parsed_fields -> Operationstatus,
+    pid = parsed_fields -> pid,
+    device_model_1 = parsed_fields -> node,
+    device_model_2 = parsed_fields -> component
+| alter
+    auditlogs = if(check_audit = "true", "AUDIT", check_audit),
+    src_ipv4 = arrayindex(regextract(src_ipv4_and_port , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
+    dst_port = arrayindex(regextract(src_ipv4_and_port ,"\:(\d+)"),0)
+| alter 
+    xdm.source.host.hostname = parsed_fields -> hostname,
+    xdm.event.type = coalesce(auditlogs , event_type),
+    xdm.source.user.username = coalesce(useranme_1 , username_2,username_3),
+    xdm.source.ipv4 = src_ipv4,
+    xdm.source.host.device_model = coalesce(device_model_2 , device_model_1),
+    xdm.source.process.pid = to_integer(pid),
+    xdm.target.port = to_integer(dst_port),
+    xdm.event.operation_sub_type = parsed_fields -> Operation,
+    xdm.event.description = parsed_fields -> description,
+    xdm.source.process.command_line = parsed_fields -> COMMAND,
+    xdm.source.process.executable.directory = parsed_fields -> PWD,
+    xdm.event.log_level = if(log_level = "ERROR",XDM_CONST.LOG_LEVEL_ERROR, log_level = "WARRNING", XDM_CONST.LOG_LEVEL_WARNING, log_level = "ALERT", XDM_CONST.LOG_LEVEL_ALERT, log_level = "CRITICAL", XDM_CONST.LOG_LEVEL_CRITICAL,log_level = "DEBUG" ,XDM_CONST.LOG_LEVEL_DEBUG, log_level = "EMERGENCY" ,XDM_CONST.LOG_LEVEL_EMERGENCY, log_level = "INFO", XDM_CONST.LOG_LEVEL_INFORMATIONAL, log_level = "NOTICE" ,XDM_CONST.LOG_LEVEL_NOTICE, log_level),
+    xdm.event.outcome = if(operation_status = "success", XDM_CONST.OUTCOME_SUCCESS, operation_status = "failure", XDM_CONST.OUTCOME_FAILED , operation_status);
