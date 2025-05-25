@@ -2,7 +2,7 @@ commonfields:
   id: a5eea890-b1a3-4f8a-8428-c129f882a2f9
   version: 19
 vcShouldKeepItemLegacyProdMachine: false
-name: GetAlertTasks-backoff
+name: GetAlertTasks-backoffv2
 script: ''
 type: python
 tags:
@@ -21,6 +21,9 @@ args:
   description: The name of the task to search.
 - name: tag
   description: The tag to search.
+- name: retry_attempts
+  description: Number of times to retry on failure.
+  defaultValue: 5
 outputs:
 - contextPath: Tasks
   description: The entire task object.

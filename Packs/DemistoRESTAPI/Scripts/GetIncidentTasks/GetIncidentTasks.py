@@ -16,7 +16,7 @@ TASK_STATES = {
     'willnotbeexecuted': 'WillNotBeExecuted',
     'blocked': 'Blocked'
 }
-RETRY_ATTEMPTS = 5
+RETRY_ATTEMPTS_DEFAULT = 5
 
 ''' STANDALONE FUNCTION '''
 
@@ -97,11 +97,12 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     tag = args.get('tag')
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
+    retry_attempts = arg_to_number(args.get("retry_attempts")) or RETRY_ATTEMPTS_DEFAULT
 
     # Forcing a TimeoutError to be raised if the command doesn't complete in 20 seconds.
     signal.signal(signal.SIGALRM, alarm_handler)
 
-    for attempt in range(RETRY_ATTEMPTS):
+    for attempt in range(retry_attempts):
         signal.alarm(20)
 
         try:
@@ -109,19 +110,19 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
             if not res or isError(res[0]):
                 raise DemistoException(f'Invalid response: {res}')
 
-            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get" incident: "{inc_id}"')
+            demisto.debug(f'Attempt {attempt + 1}/{retry_attempts} successful: "core-api-get" incident: "{inc_id}"')
             break
 
         except TimeoutError:
-            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" incident: "{inc_id} received a TimeoutError.')
+            demisto.debug(f'Attempt {attempt + 1}/{retry_attempts} failed: "core-api-get" incident: "{inc_id} received a TimeoutError.')
             time.sleep(2 ** attempt)
 
         except Exception as e:
-            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" incident: "{inc_id} Error: {e}')
+            demisto.debug(f'Attempt {attempt + 1}/{retry_attempts} failed: "core-api-get" incident: "{inc_id} Error: {e}')
             time.sleep(2 ** attempt)
 
     else:
-        demisto.error(f'All {RETRY_ATTEMPTS} attempts to execute "core-api-get" on incident #"{inc_id} have failed.')
+        demisto.error(f'All {retry_attempts} attempts to execute "core-api-get" on incident #"{inc_id} have failed.')
         raise Exception(res)
 
 
