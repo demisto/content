@@ -59,7 +59,7 @@ class Email:
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
 
-    def parse_email_address_header(self, raw_addresses):
+    def parse_email_address_header(self, raw_addresses: list[tuple[str]] | list[list[str]]):
         """
         Parses a list of email address tuples (e.g., [("Name", "email@example.com")])
         into a formatted string suitable for email headers.
@@ -92,7 +92,7 @@ class Email:
                 formatted_addresses.append(f"{email_address.strip()}")
         return "; ".join(formatted_addresses)
 
-    def parse_list_header(self, raw_list_values):
+    def parse_list_header(self, raw_list_values: list[str]):
         """
         Parses a list of string values into a comma-separated string.
 
@@ -107,7 +107,7 @@ class Email:
         string_values = [str(item).strip() for item in raw_list_values]
         return ", ".join(string_values)
 
-    def parse_headers(self, raw_headers):
+    def parse_headers(self, raw_headers: dict):
         """
         Parses a dictionary of raw header values into a more standardized format.
 
@@ -127,7 +127,7 @@ class Email:
             if isinstance(raw_value, str):
                 parsed_headers[header_name] = raw_value.strip()
 
-            elif isinstance(raw_value, list | tuple):
+            elif isinstance(raw_value, list):
                 if header_name in ["From", "To", "Cc", "Bcc", "Delivered-To", "Reply-To"]:
                     # These headers contain email addresses that need special formatting
                     parsed_headers[header_name] = self.parse_email_address_header(raw_value)

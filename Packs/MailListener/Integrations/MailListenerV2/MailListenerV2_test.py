@@ -215,7 +215,7 @@ def test_generate_labels():
     - Generating mail labels
 
     Then:
-    - Validate all expected labels are in the generated labels
+    - Validate all expected labels are in the generated labels, and are from type string
     """
     from MailListenerV2 import Email
 
