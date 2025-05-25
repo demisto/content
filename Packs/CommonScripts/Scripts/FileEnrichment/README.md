@@ -17,8 +17,9 @@ This script gathers file reputation data from multiple integrations and returns 
 | --- | --- |
 | file_hash | Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. |
 | enrichment_brands | Integrations brands to use for running the file reputation command. If not provided, the command will run for all available integrations that contain the file reputation command.<br/>For multi-select, provide a comma-separated list of integration names. For example: "VirusTotal \(API v3\),WildFire-v2". |
-| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will be containing only summary of the final result. |
-| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in Threat Intelligence \(TIM\) will be retrieved. |
+| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will be containing only summary of the final result. Default is false. |
+| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in Threat Intelligence Module \(TIM\) will be retrieved. Default is false. |
+| additional_fields | Whether to return unmapped File indicator fields from the Threat Intelligence Module \(TIM\) to the context output under the "FileEnrichment.AdditionalFields" path. Default is false. |
 
 ## Outputs
 

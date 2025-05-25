@@ -156,7 +156,7 @@ def test_get_file_from_ioc_custom_fields():
         "associatedfilenames": ["Test Application.zip", "test_installer_x64.zip"],
         "signatureauthentihash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
     }
-    file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
+    file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields, include_additional_fields=False)
 
     assert "stixid" not in file_indicator_context
     assert file_indicator_context == {
@@ -425,7 +425,8 @@ def test_search_file_indicator(mocker: MockerFixture):
     mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
 
     per_command_context, verbose_command_results = {}, []
-    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
+    include_additional_fields = True
+    search_file_indicator(SHA_256_HASH, include_additional_fields, per_command_context, verbose_command_results)
 
     expected_output = util_load_json("test_data/search_file_indicator_expected.json")
     assert per_command_context["findIndicators"] == expected_output["Context"]

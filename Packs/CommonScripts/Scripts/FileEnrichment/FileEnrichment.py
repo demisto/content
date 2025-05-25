@@ -201,14 +201,44 @@ class Command:
 """ HELPER FUNCTIONS """
 
 
-def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict[str, Any]:
+def set_dictionary_value(d: dict[str, Any], path: str, value: Any):
+    """
+    Sets a value in a nested dictionary given a dot-separated path.
+    Creates dictionaries along the path if they do not exist.
+
+    Args:
+        mapping (dict[str, Any]): Dictionary to set nested key in.
+        path (str): A dot-separated key path (e.g "Signature.Copyright")
+        value (Any): Value to set in the dictionary.
+    """
+    # Field in root
+    if "." not in path:
+        d[path] = value
+        return
+
+    # Field nested
+    parts = path.split(".")
+    current = d
+    for i, part in enumerate(parts):
+        if i == len(parts) - 1:  # Last part of the path
+            current[part] = value
+        else:
+            if part not in current:
+                current[part] = {}
+            current = current[part]
+
+
+def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any], include_additional_fields: bool) -> dict[str, Any]:
     """
     Gets the `File` context dictionary using the `CustomFields` value in the Indicator of Compromise (IOC) record.
-    Maps indicator fields in the 'connectedlowercase' format (CLI name) to nested context paths in the 'UpperCamelCase' format.
-    Fields not in the `INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING` are mapped to `AdditionalFields.{field_cli_name}`.
+
+    Maps indicator fields in the `connectedlowercase` format (CLI name) to nested context paths in the `UpperCamelCase` format.
+    Fields not in the `INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING` are mapped to `AdditionalFields.{field_cli_name}` if
+    `include_additional_fields` is True.
 
     Args:
         ioc_custom_fields (dict[str, Any]): The IOC `CustomFields` dictionary.
+        include_additional_fields (bool): Whether to return unmapped IOC custom fields to the `File` context dictionary.
 
     Returns:
         dict: Transformed `File` indicator dictionary.
@@ -218,25 +248,19 @@ def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict[s
 
     for field_cli_name, field_value in ioc_custom_fields.items():
         if field_value in (None, "", [], {}, ()):
-            demisto.debug(f"Ignoring IOC custom field: {field_cli_name} with empty value: {field_value}")
+            demisto.debug(f"Ignoring IOC custom field: {field_cli_name} with empty value: {field_value}.")
             continue
 
-        field_context_path = mapping.get(field_cli_name, f"AdditionalFields.{field_cli_name}")
-        if "." not in field_context_path:
-            output[field_context_path] = field_value
+        # Define fallback path in case mapping is not found
+        fallback_path = f"AdditionalFields.{field_cli_name}" if include_additional_fields else None
+        field_context_path = mapping.get(field_cli_name, fallback_path)
+
+        if not field_context_path:
+            demisto.debug(f"Ignoring IOC custom field: {field_cli_name} with no mapping.")
             continue
 
-        # Handle nested fields like "Signature.Copyright"
-        path_parts = field_context_path.split(".")
-        current_level = output
-        for i, part in enumerate(path_parts, start=1):
-            is_last_part: bool = i == len(path_parts)
-            if is_last_part:
-                current_level[part] = field_value
-            else:
-                if part not in current_level:
-                    current_level[part] = {}
-                current_level = current_level[part]
+        # Handle both root fields (e.g. "Name") and nested fields (e.g. "Signature.Copyright")
+        set_dictionary_value(output, field_context_path, field_value)
 
     return assign_params(**output)
 
@@ -487,7 +511,12 @@ def enrich_with_command(
 """ FLOW STAGES FUNCTIONS """
 
 
-def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], verbose_command_results: list) -> None:
+def search_file_indicator(
+    file_hash: str,
+    include_additional_fields: bool,
+    per_command_context: dict[str, Any],
+    verbose_command_results: list,
+) -> None:
     """
     Searches for the file indicator using the file hash value in the Thread Intelligence Module (TIM). If found, it transforms
     the Indicator of Compromise (IOC) into a standard context output by extracting the `File` dictionary. It also adds source
@@ -495,6 +524,7 @@ def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], v
 
     Args:
         file_hash (str): The hash of the file.
+        include_additional_fields (bool): Whether to return unmapped IOC custom fields to the `File` context dictionary.
         per_command_context (dict[str, Any]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
@@ -522,7 +552,7 @@ def search_file_indicator(file_hash: str, per_command_context: dict[str, Any], v
     ioc_custom_fields = iocs[0].get("CustomFields", {})
 
     # Handle context output
-    file_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
+    file_context = get_file_from_ioc_custom_fields(ioc_custom_fields, include_additional_fields)
     context_output = add_source_brand_to_values(file_context, brand=Brands.TIM)
     per_command_context["findIndicators"] = assign_params(**context_output)
 
@@ -655,7 +685,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
     verbose: bool = argToBoolean(args.get("verbose", False))
     file_reputation_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for `!file` reputation command
-    # additional_field: bool = argToBoolean(args.get("additional_fields", False))
+    include_additional_fields: bool = argToBoolean(args.get("additional_fields", False))
 
     file_hash: str = args.get("file_hash", "")
     hash_type: str = get_hash_type(file_hash).casefold()
@@ -669,6 +699,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     demisto.debug(f"Running Step 1: Search File indicator in TIM with value {file_hash}.")
     search_file_indicator(
         file_hash=file_hash,
+        include_additional_fields=include_additional_fields,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
     )
