@@ -34,7 +34,7 @@ Add the AWS S3 Bucket in EPM
 7. Click Validate Settings to test the connection to your storage site.
 8. Click Save Settings.
  
-For more information <[Link to the official docs](https://docs.beyondtrust.com/epm-wm/docs/welcome-to-endpoint-privilege-management-for-windows-and-mac)>.
+For more information [Link to the official docs](https://docs.beyondtrust.com/epm-wm/docs/welcome-to-endpoint-privilege-management-for-windows-and-mac).
  
 ### Connect Cortex XSIAM to the AWS S3 bucket.
 To connect Cortex XSIAM to the AWS S3 bucket, follow the below steps.
