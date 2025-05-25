@@ -488,7 +488,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
 
         if vendor_name:
             ioc_payload["vendors"] = [{
-                "name": vendor_name,
+                "vendor_name": vendor_name,
                 "reliability": vendor_reliability,
                 "reputation": vendor_reputation
             }]
