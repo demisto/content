@@ -25,7 +25,7 @@ def test_get_access_token_cached(client: Client, mocker):
 
 
 def test_get_access_token_refresh(client: Client, mocker):
-    """Case 2: refresh exists but token expired → does HTTP, requests new tokens."""
+    """Case 2: refresh exists but token expired → requests new access tokens."""
 
     past = "2000-01-01T00:00:00"
     ctx = {"access_token": "old_token", "refresh_token": "rtoken", "expire_date": past}
@@ -149,7 +149,7 @@ def test_fetch_events_all_new_events_updates_to_max(client, mocker):
 
 def test_fetch_events_dedup_one_event_updates_to_max(client, mocker):
     """
-    If no event matches last_run, we keep them all and last_run is the max.
+    One event matches, dedup and return without it.
     """
     from ManageEngineEventCollector import fetch_events
 
@@ -165,6 +165,9 @@ def test_fetch_events_dedup_one_event_updates_to_max(client, mocker):
     assert len(events_returned) == 2
     # last_run is the max timestamp seen: 1005
     assert next_run["last_time"] == "1005"
+
+
+# ─────── Tests fetching logics ─────────────────────────────────────────────────
 
 
 class HttpRequestsMocker:
@@ -205,9 +208,6 @@ class HttpRequestsMocker:
         return {}
 
 
-# — Fixtures —————————————————————————————————————————————————————————————————
-
-
 @pytest.fixture
 def stub_get_access_token(mocker):
     """Only stub get_access_token in tests that ask for it."""
@@ -215,14 +215,14 @@ def stub_get_access_token(mocker):
 
 
 @pytest.fixture
-def http_mocker_100(mocker):
+def http_mocker(mocker):
     """
     Stub out HTTP and auth for a universe of 100 events (0–99).
     """
-    hm = HttpRequestsMocker(100)
-    mocker.patch.object(Client, "_http_request", side_effect=hm.valid_http_request_side_effect)
+    http_mocker = HttpRequestsMocker(100)
+    mocker.patch.object(Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
     mocker.patch.object(Client, "get_access_token", return_value="stub-token")
-    return hm
+    return http_mocker
 
 
 def _run_search(start: int, end: int, limit: int) -> list[dict]:
@@ -235,9 +235,6 @@ def _run_search(start: int, end: int, limit: int) -> list[dict]:
     return client.search_events(str(start), str(end), limit)
 
 
-# — Helpers —————————————————————————————————————————————————————————————————
-
-
 def run_search(num_events, page_limit, start, end, limit):
     client = Client(
         base_url="https://endpointcentral.manageengine.com", client_id="id", client_secret="secret", client_code="code"
@@ -246,66 +243,138 @@ def run_search(num_events, page_limit, start, end, limit):
     return client.search_events(str(start), str(end), limit)
 
 
-# ─────── Tests when PAGE_LIMIT >= total events ─────────────────────────────────
+# ─────── Tests ────────────────────────────────────────
 
 
-def test_page_limit_gt_total_limit_gt(http_mocker_100):
-    # PAGE_LIMIT_DEFAULT (5000) > 100 events, limit=200 > 100 → should return all 100
-    evs = _run_search(0, 100, 200)
-    assert len(evs) == 100
-    assert [e["eventTime"] for e in evs] == list(range(100))
+def test_page_limit_gt_total_limit_gt(http_mocker):
+    """
+    Test when PAGE_LIMIT_DEFAULT exceeds total events and requested limit exceeds total.
+
+    Given:
+    - Total events in time range = 100.
+    - PAGE_LIMIT_DEFAULT (5000) > 100 events.
+    - Requested limit = 200 > total events.
+
+    When:
+    - search_events(0, 100, 200) is called.
+
+    Then:
+    - All 100 events are returned.
+    - eventTime values range from 0 to 99.
+    """
+    events = _run_search(0, 100, 200)
+    assert len(events) == 100
+    assert [event["eventTime"] for event in events] == list(range(100))
 
 
-def test_page_limit_gt_total_limit_lt(http_mocker_100):
-    # PAGE_LIMIT_DEFAULT (5000) > 100, limit=30 < 100 → first 30 only
-    evs = _run_search(0, 100, 30)
-    assert len(evs) == 30
-    assert [e["eventTime"] for e in evs] == list(range(30))
+def test_page_limit_gt_total_limit_lt(http_mocker):
+    """
+    Test when PAGE_LIMIT_DEFAULT exceeds total events and requested limit is below total.
+
+    Given:
+    - Total events in time range = 100.
+    - PAGE_LIMIT_DEFAULT (5000) > 100 events.
+    - Requested limit = 30 < total events.
+
+    When:
+    - search_events(0, 100, 30) is called.
+
+    Then:
+    - 30 events are returned (timestamps 0–29).
+    """
+    events = _run_search(0, 100, 30)
+    assert len(events) == 30
+    assert [event["eventTime"] for event in events] == list(range(30))
 
 
-def test_page_limit_lt_total_limit_gt(http_mocker_100, mocker):
+def test_page_limit_lt_total_limit_gt(http_mocker, mocker):
+    """
+    Test when a smaller PAGE_LIMIT_DEFAULT is set but overall limit exceeds total events.
+
+    Given:
+    - Total events in time range = 100.
+    - PAGE_LIMIT_DEFAULT overridden to 20.
+    - Requested limit = 150 > total events.
+
+    When:
+    - search_events(0, 100, 150) is called.
+
+    Then:
+    - All 100 events are returned despite the lower page limit.
+    """
     import ManageEngineEventCollector
 
     # Override PAGE_LIMIT to 20 < 100; limit=150 > 100 → should return all 100
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    evs = _run_search(0, 100, 150)
-    assert len(evs) == 100
-    assert [e["eventTime"] for e in evs] == list(range(100))
+    events = _run_search(0, 100, 150)
+    assert len(events) == 100
+    assert [event["eventTime"] for event in events] == list(range(100))
 
 
-def test_page_limit_lt_total_limit_between(http_mocker_100, mocker):
+def test_page_limit_lt_total_limit_between(http_mocker, mocker):
+    """
+    Test fetching when limit is between page limit and total.
+
+    Given:
+    - Total events in time range = 100.
+    - PAGE_LIMIT_DEFAULT overridden to 20.
+    - Requested limit = 50 (20 < 50 < 100).
+
+    When:
+    - search_events(0, 100, 50) is called.
+
+    Then:
+    - 50 events are returned (timestamps 0–49).
+    """
     import ManageEngineEventCollector
 
-    # Override PAGE_LIMIT=20; limit=50 > 20 but < 100 → should return 50
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    evs = _run_search(0, 100, 50)
-    assert len(evs) == 50
-    assert [e["eventTime"] for e in evs] == list(range(50))
+    events = _run_search(0, 100, 50)
+    assert len(events) == 50
+    assert [event["eventTime"] for event in events] == list(range(50))
 
 
-def test_page_limit_lt_total_limit_between_second(http_mocker_100, mocker):
+def test_page_limit_lt_total_limit_between_second(http_mocker, mocker):
+    """
+    Test fetching a windowed range when limit spans page limits.
+
+    Given:
+    - Total events in time range = 80.
+    - PAGE_LIMIT_DEFAULT overridden to 20.
+    - Fetch window start=20, end=100, limit=50.
+
+    When:
+    - search_events(20, 100, 50) is called.
+
+    Then:
+    - 50 events are returned (timestamps 20–69).
+    """
     import ManageEngineEventCollector
 
-    # Override PAGE_LIMIT=20; limit=50 > 20 but < 100 → should return 50
     mocker.patch.object(ManageEngineEventCollector, "PAGE_LIMIT_DEFAULT", 20)
-    evs = _run_search(20, 100, 50)
-    assert len(evs) == 50
-    assert [e["eventTime"] for e in evs] == list(range(20, 70))
+    events = _run_search(20, 100, 50)
+    assert len(events) == 50
+    assert [event["eventTime"] for event in events] == list(range(20, 70))
 
 
 def test_zero_events(mocker):
-    # A universe of 0 events → always returns []
-    hm0 = HttpRequestsMocker(0)
-    mocker.patch.object(Client, "_http_request", side_effect=hm0.valid_http_request_side_effect)
+    """
+    Test behavior when there are zero events in the server.
+
+    Given:
+    - No events in the server.
+
+    When:
+    - search_events is called with any range and limit.
+
+    Then:
+    - An empty list is returned.
+    """
+    http_mocker = HttpRequestsMocker(0)
+    mocker.patch.object(Client, "_http_request", side_effect=http_mocker.valid_http_request_side_effect)
     mocker.patch.object(Client, "get_access_token", return_value="stub-token")
 
-    evs = Client(
+    events = Client(
         base_url="https://endpointcentral.manageengine.com", client_id="id", client_secret="secret", client_code="code"
     ).search_events("0", "100", 10)
-    assert evs == []
-
-
-def test_start_after_end(http_mocker_100):
-    # startTime > endTime → should return []
-    evs = _run_search(50, 20, 10)
-    assert evs == []
+    assert events == []
