@@ -199,15 +199,18 @@ def get_full_timeline(detection_id, per_page=100):
 
 def process_timeline(detection_id):
     res = get_full_timeline(detection_id)
-    demisto.debug(f'The full process timeline: {res}')
+    demisto.debug(f"The full process timeline: {res}")
     activities = []
     domains = []
     files = []
     ips = []
     processes = []
     for activity in res:
-        if activity.get("type") not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred",
-                                        "activity_timelines.ActivityOccurred"]:
+        if activity.get("type") not in [
+            "activity_timelines.LatestIndicationSeen",
+            "activity_timelines.EventActivityOccurred",
+            "activity_timelines.ActivityOccurred",
+        ]:
             continue
         activity_time = get_time_str(get_time_obj(activity["attributes"]["occurred_at"]))
         notes = activity["attributes"]["analyst_notes"]

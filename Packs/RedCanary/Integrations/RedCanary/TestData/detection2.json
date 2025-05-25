@@ -40,12 +40,12 @@
         },
         "associated_releasable_intelligence_profiles": []
     },
-    "hostname": "5cg32173jf",
-    "username": "5cg32173jf$",
+    "hostname": "hostname",
+    "username": "username",
     "relationships": {
         "affected_endpoint": {
             "links": {
-                "related": "https://example.my.redcanary.co/openapi/v3/endpoints/100000157602956"
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoints/100000157601234"
             },
             "data": {
                 "type": "endpoint",
@@ -57,14 +57,14 @@
                     "endpoint_operating_system": "Windows 11"
                 },
                 "network_addresses": [
-                    "10.254.110.86",
-                    "182.71.159.179"
+                    "1.2.3.4",
+                    "1.1.1.1"
                 ]
             }
         },
         "related_endpoint_user": {
             "links": {
-                "related": "https://example.my.redcanary.co/openapi/v3/endpoint_users/100000360241649"
+                "related": "https://example.my.redcanary.co/openapi/v3/endpoint_users/100000360241234"
             },
             "data": {
                 "type": "endpoint_user",

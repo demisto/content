@@ -30,14 +30,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "c85675939ccbbc8a99bb8d4a30e12345",
-                                        "sha256": "19ee7d44b37e28cb77014f80f6899c07f911e7837fc81479992dfebd42412345",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulator\\simulator.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "c85675939ccbbc8a99bb8d4a30e12345",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -88,14 +88,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "2d4fb75b7aa68c8a006506713a6e1234",
-                                        "sha256": "efe3da1e2d7958d4aa4f6ba1de7d79265dfe9e7256c711c3c4c3224f9d221234",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "2d4fb75b7aa68c8a006506713a6e5491",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -148,14 +148,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "451356b3b125d6b8f8cbbe09513a1111",
-                                        "sha256": "137e8a41fb9417fe83a41a51359114669d682642b3da1f74575b898384b41111",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "451356451356b3b125d6b8f8cbbe09513a1111",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -222,14 +222,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "8bfdfbdfc7ecd11806f7b35bc6e66666",
-                                        "sha256": "f9eb293f29b49c19dddf5687cdea6e9ba4e0e098686a8c276ccc6f49fd7sha256",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "88bfdfbdfc7ecd11806f7b35bc6e66666661",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -302,14 +302,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "2d752e86ea260c00fa83b5a4b3649d1c",
-                                        "sha256": "abf5d10f498ebf881059811238e731d8d6c6c4ebb084da07e20a18f3f050000",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "2d752e86ea260c00fa83b5a4b3649d1c",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -362,14 +362,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "451356b3b125d6b8f8cbbe09513a2a72",
-                                        "sha256": "137e8a41fb9417fe83a41a51359114669d682642b3da1f74575b898384b5555",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "451356b3b125d6b8f8cbbe09513a2a72",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -436,14 +436,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "115da64090c9e5a9e2f150b68112345",
-                                        "sha256": "5757a6e4239d50dd2f780b69e0aa784c735c55282e64f874e4988d96112345",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "115da64090c9e5a9e2f150b681bda038",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -496,14 +496,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "451356b3b125d6b8f8cbbe095131111",
-                                        "sha256": "137e8a41fb9417fe83a41a51359114669d682642b3da1f74575b898384b4111",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "451356b3b125d6b8f8cbbe095131111",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -570,14 +570,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "9c660503a27ee798f31dfc6579062222",
-                                        "sha256": "4b312b6b77f207883bdb3b5b3299ee3a371962eea70bad7f1ea9a2ed7f4eeeee",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "9c660503a27ee798f31dfc6579062222",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -630,14 +630,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "451356b3b125d6b8f8cbbe09513a2222",
-                                        "sha256": "137e8a41fb9417fe83a41a51359114669d682642b3da1f74575b898384b42222",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Windows\\System32\\cmd.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "451356b3b125d6b8f8cbbe09513a2222",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -704,14 +704,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "ec77e6eaa38a8b2b7a276f5060144444",
-                                        "sha256": "676bf132d911e6e5a3b03db5bbab93db46dbb5e4ea52df21b98a6e4b48d54444",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume3\\Program Files\\SomeFile\\SomeFile Endpoint Simulator\\app\\1.2.3\\simulation\\random_gold.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "ec77e6eaa38a8b2b7a276f5060144444",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
@@ -771,14 +771,14 @@
                                 "image": {
                                     "type": "primitives.File",
                                     "attributes": {
-                                        "md5": "451356b3b125d6b8f8cbbe095112345",
-                                        "sha256": "137e8a41fb9417fe83a41a51359114669d682642b3da1f74575b8983812345",
+                                        "md5": "md5",
+                                        "sha256": "somesha256",
                                         "path": "\\Device\\HarddiskVolume\\Windows\\System32\\cmd.exe",
                                         "file_type": null,
                                         "binary": {
                                             "type": "primitives.Binary",
                                             "attributes": {
-                                                "md5": "451356b3b125d6b8f8cbbe0951123456",
+                                                "md5": "md5",
                                                 "sha256": null,
                                                 "digital_signature": {
                                                     "type": "primitives.BinaryDigitalSignature",
