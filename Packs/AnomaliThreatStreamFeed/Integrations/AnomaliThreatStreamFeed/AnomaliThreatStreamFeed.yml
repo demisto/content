@@ -130,7 +130,6 @@ script:
       - 'md5'
       - 'url'
       - 'email'
-      - 'string'
     - name: limit
       default: false
       description: Maximum number of objects to return (default is 10)
