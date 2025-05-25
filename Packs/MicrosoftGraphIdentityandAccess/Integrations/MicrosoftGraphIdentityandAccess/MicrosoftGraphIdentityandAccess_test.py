@@ -312,17 +312,6 @@ def test_list_role_members_command(mocker):
             "MSGraphIdentity.ConditionalAccessPolicy",
             "ID",
         ),
-        # Case 3: all_results=False (default limit = 50)
-        (
-            {"all_results": "false"},
-            [{"id": f"policy{i}", "displayName": f"Policy {i}", "state": "enabled"} for i in range(1, 55)],
-            [{"id": f"policy{i}", "displayName": f"Policy {i}", "state": "enabled"} for i in range(1, 51)],
-            "Policy 1",
-            "MSGraphIdentity.ConditionalAccessPolicy",
-            "ID",
-        ),
-        # Case 4: Empty policies list
-        ({}, [], None, "No Conditional Access policies found", None, None),
     ],
 )
 def test_list_conditional_access_policies_command_scenarios(
@@ -333,14 +322,11 @@ def test_list_conditional_access_policies_command_scenarios(
         - Different cases for listing conditional access policies:
           - Multiple policies with limit
           - Filter query
-          - Multiple policies with default limiting
-          - Empty policies list
     When:
         - Calling list_conditional_access_policies_command
     Then:
         - Verify correct outputs and readable output are generated
         - Verify the correct number of policies are returned based on limits
-        - Verify empty response is handled correctly
     """
     from MicrosoftGraphIdentityandAccess import Client, list_conditional_access_policies_command
 
@@ -348,15 +334,6 @@ def test_list_conditional_access_policies_command_scenarios(
     mock_client.list_conditional_access_policies.return_value = policies_response
 
     result = list_conditional_access_policies_command(mock_client, args)
-
-    # Check that we got a CommandResults object
-    assert isinstance(result, CommandResults)
-
-    # Check for empty policies case
-    if not policies_response:
-        assert expected_readable_output in result.readable_output
-        assert result.outputs is None
-        return
 
     # Check outputs match expected
     assert result.outputs == expected_outputs
@@ -367,6 +344,68 @@ def test_list_conditional_access_policies_command_scenarios(
 
     # Check readable output contains expected policy names
     assert expected_readable_output in result.readable_output
+
+
+def test_list_conditional_access_policies_command_default_limit(mocker):
+    """
+    Given:
+        - Case for listing conditional access policies with default limit (50)
+        - all_results=False (default limit = 50)
+    When:
+        - Calling list_conditional_access_policies_command
+    Then:
+        - Verify correct outputs and readable output are generated
+        - Verify the correct number of policies are returned based on default limit
+    """
+    from MicrosoftGraphIdentityandAccess import Client, list_conditional_access_policies_command
+
+    args = {"all_results": "false"}
+    policies_response = [{"id": f"policy{i}", "displayName": f"Policy {i}", "state": "enabled"} for i in range(1, 55)]
+    expected_outputs = [{"id": f"policy{i}", "displayName": f"Policy {i}", "state": "enabled"} for i in range(1, 51)]
+    expected_readable_output = "Policy 1"
+    expected_prefix = "MSGraphIdentity.ConditionalAccessPolicy"
+    expected_key_field = "ID"
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.list_conditional_access_policies.return_value = policies_response
+
+    result = list_conditional_access_policies_command(mock_client, args)
+
+    # Check outputs match expected
+    assert result.outputs == expected_outputs
+
+    # Verify result contains exactly 50 results
+
+    assert isinstance(result.outputs, list)
+    assert len(result.outputs) == 50
+
+    # Check prefix and key field
+    assert result.outputs_prefix == expected_prefix
+    assert result.outputs_key_field == expected_key_field
+
+    # Check readable output contains expected policy names
+    assert expected_readable_output in result.readable_output
+
+
+def test_list_conditional_access_policies_command_empty_policies(mocker):
+    """
+    Given:
+        - Empty policies list returned from API
+    When:
+        - Calling list_conditional_access_policies_command
+    Then:
+        - Verify empty response is handled correctly
+    """
+    from MicrosoftGraphIdentityandAccess import Client, list_conditional_access_policies_command
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.list_conditional_access_policies.return_value = []
+
+    result = list_conditional_access_policies_command(mock_client, {})
+
+    expected_readable_output = "No Conditional Access policies found"
+    assert expected_readable_output in result.readable_output
+    assert result.outputs is None
 
 
 @pytest.mark.parametrize(
@@ -398,140 +437,164 @@ def test_list_conditional_access_policies_command_invalid_args(mocker, args, exp
     assert expected_exception_message in str(e.value)
 
 
-@pytest.mark.parametrize(
-    "args, expected_policy, mock_response, expected_output",
-    [
-        # Case: Only JSON policy provided
-        (
-            {"policy": '{"displayName": "Test Policy", "state": "enabled"}'},
-            {"displayName": "Test Policy", "state": "enabled"},
-            CommandResults(
-                readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
-            ),
-            "Conditional Access policy policy123 was successfully created.",
-        ),
-        # Case: JSON policy with empty elements that should be removed
-        (
-            {
-                "policy": (
-                    "{"
-                    '"displayName": "Clean Policy", '
-                    '"state": "enabled", '
-                    '"conditions": {'
-                    '"users": {'
-                    '"includeUsers": [], '
-                    '"excludeUsers": null'
-                    "}"
-                    "}"
-                    "}"
-                )
-            },
-            {"displayName": "Clean Policy", "state": "enabled", "conditions": {"users": {"includeUsers": []}}},
-            CommandResults(
-                readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
-            ),
-            "Conditional Access policy policy123 was successfully created.",
-        ),
-        # Case: Build policy from structured args
-        (
-            {
-                "policy_name": "Structured Policy",
-                "state": "enabled",
-                "client_app_types": "browser,mobileAppsAndDesktopClients",
-                "include_users": "user1,user2",
-                "include_groups": "group1",
-                "exclude_users": "admin1",
-                "sign_in_risk_levels": "high",
-                "user_risk_levels": "medium",
-                "platform_include": "android,iOS",
-                "grant_controls_operator": "AND",
-                "grant_controls": "block",
-                "session_controls": "cloudAppSecurity",
-            },
-            {
-                "displayName": "Structured Policy",
-                "state": "enabled",
-                "conditions": {
-                    "clientAppTypes": ["browser", "mobileAppsAndDesktopClients"],
-                    "users": {"includeUsers": ["user1", "user2"], "includeGroups": ["group1"], "excludeUsers": ["admin1"]},
-                    "signInRiskLevels": ["high"],
-                    "userRiskLevels": ["medium"],
-                    "platforms": {"includePlatforms": ["android", "iOS"]},
-                },
-                "grantControls": {"operator": "AND", "builtInControls": ["block"]},
-                "sessionControls": {"cloudAppSecurity": {}},
-            },
-            CommandResults(
-                readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
-            ),
-            "Conditional Access policy policy123 was successfully created.",
-        ),
-        # Case: Invalid JSON string in policy argument
-        (
-            {"policy": "{displayName: Test Policy, state: enabled}"},  # Missing quotes
-            None,
-            None,
-            "The provided policy string is not a valid JSON",
-        ),
-        # Case: Empty policy argument but missing required fields for building policy
-        (
-            {"policy_name": "Missing Fields Policy", "state": "enabled", "sign_in_risk_levels": "low", "user_risk_levels": "low"},
-            None,
-            None,
-            "Missing required field(s): client_app_types",
-        ),
-    ],
-)
-def test_create_conditional_access_policy_command(mocker, args, expected_policy, mock_response, expected_output):
+def test_create_conditional_access_policy_command_json_policy(mocker):
     """
-    Tests the create_conditional_access_policy_command function with various inputs.
+    Given:
+        - JSON policy string containing a valid conditional access policy
+    When:
+        - Calling create_conditional_access_policy_command
+    Then:
+        - Verify the policy is created successfully
+    """
+    from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
 
-    Tests:
-    - Providing a JSON policy directly
-    - Providing a JSON policy with empty elements that should be cleaned
-    - Building policy from structured arguments
-    - Invalid JSON string handling
-    - Missing required fields for policy building
+    mock_client = mocker.Mock(spec=Client)
+    args = {"policy": '{"displayName": "Test Policy", "state": "enabled"}'}
+    expected_policy = {"displayName": "Test Policy", "state": "enabled"}
+    mock_response = CommandResults(
+        readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
+    )
+    expected_output = "Conditional Access policy policy123 was successfully created."
+
+    mock_client.create_conditional_access_policy.return_value = mock_response
+    mocker.patch("MicrosoftGraphIdentityandAccess.remove_empty_elements", return_value=expected_policy)
+
+    result = create_conditional_access_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert expected_output in result.readable_output
+    mock_client.create_conditional_access_policy.assert_called_once()
+
+
+def test_create_conditional_access_policy_command_clean_json_policy(mocker):
+    """
+    Given:
+        - JSON policy string containing a valid conditional access policy with empty elements
+    When:
+        - Calling create_conditional_access_policy_command
+    Then:
+        - Verify the policy is created successfully after empty elements are removed
+    """
+    from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {
+        "policy": (
+            "{"
+            '"displayName": "Clean Policy", '
+            '"state": "enabled", '
+            '"conditions": {'
+            '"users": {'
+            '"includeUsers": [], '
+            '"excludeUsers": null'
+            "}"
+            "}"
+            "}"
+        )
+    }
+    expected_policy = {"displayName": "Clean Policy", "state": "enabled", "conditions": {"users": {"includeUsers": []}}}
+    mock_response = CommandResults(
+        readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
+    )
+    expected_output = "Conditional Access policy policy123 was successfully created."
+
+    mock_client.create_conditional_access_policy.return_value = mock_response
+    mocker.patch("MicrosoftGraphIdentityandAccess.remove_empty_elements", return_value=expected_policy)
+
+    result = create_conditional_access_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert expected_output in result.readable_output
+    mock_client.create_conditional_access_policy.assert_called_once()
+
+
+def test_create_conditional_access_policy_command_from_structured_args(mocker):
+    """
+    Given:
+        - Structured arguments for creating a conditional access policy
+    When:
+        - Calling create_conditional_access_policy_command
+    Then:
+        - Verify the policy is created successfully with the correct parameters
+    """
+    from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    args = {
+        "policy_name": "Structured Policy",
+        "state": "enabled",
+        "client_app_types": "browser,mobileAppsAndDesktopClients",
+        "include_users": "user1,user2",
+        "include_groups": "group1",
+        "exclude_users": "admin1",
+        "sign_in_risk_levels": "high",
+        "user_risk_levels": "medium",
+        "platform_include": "android,iOS",
+        "grant_controls_operator": "AND",
+        "grant_controls": "block",
+        "session_controls": "cloudAppSecurity",
+    }
+    expected_policy = {
+        "displayName": "Structured Policy",
+        "state": "enabled",
+        "conditions": {
+            "clientAppTypes": ["browser", "mobileAppsAndDesktopClients"],
+            "users": {"includeUsers": ["user1", "user2"], "includeGroups": ["group1"], "excludeUsers": ["admin1"]},
+            "signInRiskLevels": ["high"],
+            "userRiskLevels": ["medium"],
+            "platforms": {"includePlatforms": ["android", "iOS"]},
+        },
+        "grantControls": {"operator": "AND", "builtInControls": ["block"]},
+        "sessionControls": {"cloudAppSecurity": {}},
+    }
+    mock_response = CommandResults(
+        readable_output="Conditional Access policy policy123 was successfully created.", outputs={"id": "policy123"}
+    )
+    expected_output = "Conditional Access policy policy123 was successfully created."
+
+    mock_client.create_conditional_access_policy.return_value = mock_response
+    mocker.patch("MicrosoftGraphIdentityandAccess.build_policy", return_value=expected_policy)
+    mocker.patch("MicrosoftGraphIdentityandAccess.remove_empty_elements", return_value=expected_policy)
+
+    result = create_conditional_access_policy_command(mock_client, args)
+    assert isinstance(result, CommandResults)
+    assert expected_output in result.readable_output
+    mock_client.create_conditional_access_policy.assert_called_once_with(expected_policy)
+
+
+def test_create_conditional_access_policy_command_invalid_json(mocker):
+    """
+    Given:
+        - Invalid JSON string in policy argument
+    When:
+        - Calling create_conditional_access_policy_command
+    Then:
+        - Verify a DemistoException is raised with the expected error message
     """
     from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client, DemistoException
 
     mock_client = mocker.Mock(spec=Client)
+    args = {"policy": "{displayName: Test Policy, state: enabled}"}  # Missing quotes
+    expected_output = "The provided policy string is not a valid JSON"
 
-    if expected_policy:
-        # For successful cases, mock the client method
-        mock_client.create_conditional_access_policy.return_value = mock_response
+    with pytest.raises(DemistoException) as e:
+        create_conditional_access_policy_command(mock_client, args)
+    assert expected_output in str(e.value)
 
-        # If this is a case where build_policy should be called
-        if "policy" not in args or not args["policy"]:
-            mocker.patch("MicrosoftGraphIdentityandAccess.build_policy", return_value=expected_policy)
 
-        mocker.patch("MicrosoftGraphIdentityandAccess.remove_empty_elements", return_value=expected_policy)
+def test_create_conditional_access_policy_command_missing_required_fields(mocker):
+    """
+    Tests error handling when missing required fields for building a policy.
+    """
+    from MicrosoftGraphIdentityandAccess import create_conditional_access_policy_command, Client, DemistoException
 
-        result = create_conditional_access_policy_command(mock_client, args)
-        assert isinstance(result, CommandResults)
-        assert expected_output in result.readable_output
+    mock_client = mocker.Mock(spec=Client)
+    args = {"policy_name": "Missing Fields Policy", "state": "enabled", "sign_in_risk_levels": "low", "user_risk_levels": "low"}
+    expected_output = "Missing required field(s): client_app_types"
 
-        # Verify client was called with the right policy
-        if "policy" in args and args["policy"] and isinstance(args["policy"], str):
-            # If policy is a JSON string, it should be parsed then passed
-            mock_client.create_conditional_access_policy.assert_called_once()
-            # We can't easily verify the exact arg value since it depends on the json parsing
-        else:
-            # For structured args, verify build_policy was called
-            mock_client.create_conditional_access_policy.assert_called_once_with(expected_policy)
-    else:
-        # For error cases
-        if "policy" in args and args["policy"] and isinstance(args["policy"], str) and "Invalid JSON" in expected_output:
-            # Invalid JSON string case
-            with pytest.raises(DemistoException) as e:
-                create_conditional_access_policy_command(mock_client, args)
-            assert expected_output in str(e.value)
-        else:
-            # Missing required fields case
-            mocker.patch("MicrosoftGraphIdentityandAccess.build_policy", side_effect=DemistoException(expected_output))
-            with pytest.raises(DemistoException) as e:
-                create_conditional_access_policy_command(mock_client, args)
-            assert expected_output in str(e.value)
+    mocker.patch("MicrosoftGraphIdentityandAccess.build_policy", side_effect=DemistoException(expected_output))
+
+    with pytest.raises(DemistoException) as e:
+        create_conditional_access_policy_command(mock_client, args)
+    assert expected_output in str(e.value)
 
 
 @pytest.mark.parametrize(
@@ -616,10 +679,19 @@ def test_merge_policy_section(mocker, base_existing, new_dict, expected_messages
     """
     Tests the merge_policy_section function with various test cases.
 
-    Tests:
-    - Merging list fields at different nesting levels
-    - Handling fields that don't exist in the base
-    - Empty dictionaries in the path
+    Given:
+    - Different policy structures with varying levels of nesting
+    - Policies with non-matching fields or empty dictionaries
+    - Fields of different types (lists vs scalar values)
+
+    When:
+    - The merge_policy_section function is called to merge these policies
+
+    Then:
+    - List fields are properly merged at different nesting levels
+    - Fields that don't exist in the base are handled correctly
+    - Empty dictionaries in the path are properly processed
+    - Appropriate messages are generated for each merge scenario
     """
     from MicrosoftGraphIdentityandAccess import merge_policy_section
 
@@ -644,14 +716,22 @@ def test_merge_policy_section(mocker, base_existing, new_dict, expected_messages
     assert new_copy == expected_new
 
 
-def test_merge_policy_section_with_actual_resolve_logic(mocker):
+def test_merge_policy_section_with_actual_resolve_logic():
     """
     Tests the merge_policy_section function with the actual resolve_merge_value logic.
-    This test verifies that:
-    1. Lists in nested structures are properly merged (includeUsers, excludeUsers)
-    2. The merge operation correctly combines values from both dictionaries
-    3. No error messages are generated during a standard merge operation
-    4. The integrated behavior of merge_policy_section and resolve_merge_value functions works as expected
+
+    Given:
+    - A base policy with user inclusions and exclusions
+    - A new policy with additional user inclusions and exclusions
+
+    When:
+    - The merge_policy_section function is called to merge these policies
+
+    Then:
+    - The lists in nested structures are properly merged (includeUsers, excludeUsers)
+    - The merge operation correctly combines values from both dictionaries
+    - No error messages are generated during a standard merge operation
+    - The integrated behavior of merge_policy_section and resolve_merge_value functions works as expected
     """
 
     from MicrosoftGraphIdentityandAccess import merge_policy_section
@@ -681,14 +761,21 @@ def test_merge_policy_section_with_actual_resolve_logic(mocker):
     assert len(messages) == 0
 
 
-def test_merge_policy_section_with_special_values(mocker):
+def test_merge_policy_section_with_special_values():
     """
-    Tests the merge_policy_section function when special values like 'All' are present in lists.
-    This verifies that special values are preserved during merging and appropriate messages are generated.
-    The test checks that:
-    1. When 'All' is in includeUsers, it remains and is not merged with other values
-    2. Regular lists (like excludeUsers) are properly merged
-    3. A warning message is generated when a special value is encountered
+    Tests that merge_policy_section correctly handles special values like 'All' in lists.
+
+    Given:
+    - A base policy with 'All' in includeUsers list and a regular value in excludeUsers
+    - A new policy with a regular value in includeUsers and another value in excludeUsers
+
+    When:
+    - The merge_policy_section function is called to merge these policies
+
+    Then:
+    - The special value 'All' is preserved in the includeUsers list and not merged with other values
+    - Regular lists like excludeUsers are properly merged
+    - A warning message is generated about the special value
     """
     from MicrosoftGraphIdentityandAccess import merge_policy_section
 
@@ -822,11 +909,15 @@ def test_merge_policy_section_with_special_values(mocker):
 )
 def test_build_policy(args, expected_policy):
     """
-    Tests the build_policy function with various input sets.
+    Given:
+    - A set of arguments for policy creation
 
-    This test covers:
-    - Only some of the fields populated
-    - Full policy with all options populated
+    When:
+    - The build_policy function is called with these arguments
+
+    Then:
+    - The function should return a properly formatted policy object
+    - The returned policy should match the expected policy structure
     """
     from MicrosoftGraphIdentityandAccess import build_policy
 
@@ -835,52 +926,65 @@ def test_build_policy(args, expected_policy):
 
 
 @pytest.mark.parametrize(
-    "policy_id, response_mock, expected_output, expected_exception",
+    "policy_id, response_mock, expected_output",
     [
         # Case 1: Successful deletion
-        ("policy123", {"status_code": 204, "text": ""}, "Conditional Access policy policy123 was successfully deleted.", None),
-        # Case 2: Policy not found
-        (
-            "nonexistent",
-            DemistoException("Error deleting Conditional Access policy nonexistent."),
-            None,
-            DemistoException("Error deleting Conditional Access policy nonexistent."),
-        ),
+        ("policy123", {"status_code": 204, "text": ""}, "Conditional Access policy policy123 was successfully deleted."),
     ],
 )
-def test_delete_conditional_access_policy_command(mocker, policy_id, response_mock, expected_output, expected_exception):
+def test_delete_conditional_access_policy_command_success(mocker, policy_id, response_mock, expected_output):
     """
-    Tests the delete_conditional_access_policy_command function with various input sets.
-
-    This test covers:
-    - Successful policy deletion
-    - Policy not found scenarios
+    Given:
+    - a valid policy_id
+    When:
+    - the delete_conditional_access_policy_command is called
+    Then:
+    - it should successfully delete the policy and return the expected output
     """
     from MicrosoftGraphIdentityandAccess import delete_conditional_access_policy_command, Client
 
     mock_client = mocker.Mock(spec=Client)
+    mock_response = mocker.Mock()
+    if response_mock:
+        mock_response.status_code = response_mock["status_code"]
+        mock_response.text = response_mock["text"]
+    mock_client.delete_conditional_access_policy.return_value = CommandResults(readable_output=expected_output)
 
-    if isinstance(response_mock, DemistoException):
-        mock_client.delete_conditional_access_policy.side_effect = response_mock
-    else:
-        mock_response = mocker.Mock()
-        if response_mock:
-            mock_response.status_code = response_mock["status_code"]
-            mock_response.text = response_mock["text"]
-        mock_client.delete_conditional_access_policy.return_value = CommandResults(readable_output=expected_output)
+    result = delete_conditional_access_policy_command(mock_client, {"policy_id": policy_id})
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == expected_output
 
-    if expected_exception:
-        with pytest.raises(type(expected_exception)) as e:
-            delete_conditional_access_policy_command(mock_client, {"policy_id": policy_id})
-        assert str(e.value) == str(expected_exception)
-    else:
-        result = delete_conditional_access_policy_command(mock_client, {"policy_id": policy_id})
-        assert isinstance(result, CommandResults)
-        assert result.readable_output == expected_output
+    # Verify client was called correctly
+    mock_client.delete_conditional_access_policy.assert_called_once_with(policy_id)
 
-        # If no exception, verify client was called correctly
-        if policy_id and not isinstance(response_mock, DemistoException):
-            mock_client.delete_conditional_access_policy.assert_called_once_with(policy_id)
+
+@pytest.mark.parametrize(
+    "policy_id, expected_exception",
+    [
+        # Case 2: Policy not found
+        (
+            "nonexistent",
+            DemistoException("Error deleting Conditional Access policy nonexistent."),
+        ),
+    ],
+)
+def test_delete_conditional_access_policy_command_failure(mocker, policy_id, expected_exception):
+    """
+    Given:
+    - a non-existent policy_id
+    When:
+    - the delete_conditional_access_policy_command is called
+    Then:
+    - it should raise an exception with appropriate error message
+    """
+    from MicrosoftGraphIdentityandAccess import delete_conditional_access_policy_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.delete_conditional_access_policy.side_effect = expected_exception
+
+    with pytest.raises(type(expected_exception)) as e:
+        delete_conditional_access_policy_command(mock_client, {"policy_id": policy_id})
+    assert str(e.value) == str(expected_exception)
 
 
 @pytest.mark.parametrize(
@@ -909,46 +1013,28 @@ def test_delete_conditional_access_policy_command(mocker, policy_id, response_mo
             "Field 'includeUsers' kept as 'All' (special value cannot be merged).\n"
             "To update this field, use update_action='override'.",
         ),
-        # Case 3: Override mode
-        (
-            {"policy_id": "policy123", "update_action": "override", "include_users": "user3", "state": "enabled"},
-            [],  # Not used in override mode
-            {"state": "enabled", "conditions": {"users": {"includeUsers": ["user3"]}}},
-            CommandResults(readable_output="Conditional Access policy policy123 was successfully updated."),
-            [],
-            "Conditional Access policy policy123 was successfully updated.",
-        ),
-        # Case 4: Direct policy provided as JSON string
-        (
-            {"policy_id": "policy123", "policy": '{"state": "enabled", "conditions": {"users": {"includeUsers": ["user3"]}}}'},
-            [],  # Not used when direct policy is provided
-            {},  # Not used when direct policy is provided
-            CommandResults(readable_output="Conditional Access policy policy123 was successfully updated."),
-            [],
-            "Conditional Access policy policy123 was successfully updated.",
-        ),
     ],
 )
-def test_update_conditional_access_policy_command(
+def test_update_conditional_access_policy_command_append(
     mocker, args, existing_policy, new_policy_built, mock_result, expected_messages, expected_output
 ):
     """
-    Parametrized test for update_conditional_access_policy_command function.
+    Given:
+    - Command arguments for updating a conditional access policy in append mode
+    - Mock existing policy data
+    - Mock new policy data to be built
+    - Mock command result
+    - Expected warning messages
+    - Expected command output
 
-    Tests different scenarios for updating conditional access policies:
-    - Case 1: Append mode with modifying excludes
-    - Case 2: Append mode with special value handling
-    - Case 3: Override mode
-    - Case 4: Direct policy provided as JSON string
+    When:
+    - The update_conditional_access_policy_command function is called with append mode
 
-    Args:
-        mocker: pytest fixture for mocking
-        args: command arguments for the function under test
-        existing_policy: policy to be returned by list_conditional_access_policies
-        new_policy_built: policy returned by build_policy
-        mock_result: mock result to be returned by update_conditional_access_policy
-        expected_messages: messages expected to be added during policy merging
-        expected_output: expected human-readable output in CommandResults
+    Then:
+    - Function correctly handles append mode scenarios
+    - Proper warning messages are generated for special values
+    - The expected output is returned in the command results
+    - Client methods are called with correct parameters for append mode
     """
     from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, Client
 
@@ -976,19 +1062,105 @@ def test_update_conditional_access_policy_command(
     assert isinstance(result, CommandResults)
     assert result.readable_output == expected_output
 
-    # Check client method calls based on the scenario
-    if "policy" in args:
-        # For direct policy JSON case
-        mock_client.update_conditional_access_policy.assert_called_once()
-        assert mock_client.list_conditional_access_policies.call_count == 0
-    elif args.get("update_action") == "append":
-        # For append mode
-        mock_client.list_conditional_access_policies.assert_called_once_with(args["policy_id"])
-        mock_client.update_conditional_access_policy.assert_called_once_with(args["policy_id"], new_policy_built)
-    else:
-        # For override mode
-        assert mock_client.list_conditional_access_policies.call_count == 0
-        mock_client.update_conditional_access_policy.assert_called_once_with(args["policy_id"], new_policy_built)
+    # For append mode
+    mock_client.list_conditional_access_policies.assert_called_once_with(args["policy_id"])
+    mock_client.update_conditional_access_policy.assert_called_once_with(args["policy_id"], new_policy_built)
+
+
+@pytest.mark.parametrize(
+    "args, new_policy_built, mock_result, expected_output",
+    [
+        # Case 3: Override mode
+        (
+            {"policy_id": "policy123", "update_action": "override", "include_users": "user3", "state": "enabled"},
+            {"state": "enabled", "conditions": {"users": {"includeUsers": ["user3"]}}},
+            CommandResults(readable_output="Conditional Access policy policy123 was successfully updated."),
+            "Conditional Access policy policy123 was successfully updated.",
+        ),
+    ],
+)
+def test_update_conditional_access_policy_command_override(mocker, args, new_policy_built, mock_result, expected_output):
+    """
+    Given:
+    - Command arguments for updating a conditional access policy in override mode
+    - Mock new policy data to be built
+    - Mock command result
+    - Expected command output
+
+    When:
+    - The update_conditional_access_policy_command function is called with override mode
+
+    Then:
+    - Function correctly handles override mode scenario
+    - The expected output is returned in the command results
+    - Client methods are called with correct parameters for override mode
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_conditional_access_policy.return_value = mock_result
+
+    # Mock build_policy to return our predefined policy
+    mocker.patch("MicrosoftGraphIdentityandAccess.build_policy", return_value=new_policy_built)
+
+    # Mock remove_empty_elements to return the same policy (no empty elements)
+    mocker.patch("MicrosoftGraphIdentityandAccess.remove_empty_elements", return_value=new_policy_built)
+
+    # Mock return_results to avoid affecting test output
+    mocker.patch("MicrosoftGraphIdentityandAccess.return_results")
+
+    result = update_conditional_access_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == expected_output
+
+    # For override mode
+    assert mock_client.list_conditional_access_policies.call_count == 0
+    mock_client.update_conditional_access_policy.assert_called_once_with(args["policy_id"], new_policy_built)
+
+
+@pytest.mark.parametrize(
+    "args, mock_result, expected_output",
+    [
+        # Case 4: Direct policy provided as JSON string
+        (
+            {"policy_id": "policy123", "policy": '{"state": "enabled", "conditions": {"users": {"includeUsers": ["user3"]}}}'},
+            CommandResults(readable_output="Conditional Access policy policy123 was successfully updated."),
+            "Conditional Access policy policy123 was successfully updated.",
+        ),
+    ],
+)
+def test_update_conditional_access_policy_command_direct_json(mocker, args, mock_result, expected_output):
+    """
+    Given:
+    - Command arguments with a direct policy JSON string
+    - Mock command result
+    - Expected command output
+
+    When:
+    - The update_conditional_access_policy_command function is called with direct policy JSON
+
+    Then:
+    - Function correctly handles direct policy JSON scenario
+    - The expected output is returned in the command results
+    - Client methods are called with correct parameters for direct policy JSON
+    """
+    from MicrosoftGraphIdentityandAccess import update_conditional_access_policy_command, Client
+
+    mock_client = mocker.Mock(spec=Client)
+    mock_client.update_conditional_access_policy.return_value = mock_result
+
+    # Mock return_results to avoid affecting test output
+    mocker.patch("MicrosoftGraphIdentityandAccess.return_results")
+
+    result = update_conditional_access_policy_command(mock_client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.readable_output == expected_output
+
+    # For direct policy JSON case
+    mock_client.update_conditional_access_policy.assert_called_once()
+    assert mock_client.list_conditional_access_policies.call_count == 0
 
 
 @pytest.mark.parametrize(
@@ -1018,19 +1190,18 @@ def test_update_conditional_access_policy_command(
 )
 def test_deep_get(root, path, expected):
     """
-    Test the deep_get function with various inputs.
+    Given:
+    - A root dictionary to search in
+    - A path represented as a list of keys to traverse
+    - An expected result value
 
-    Tests:
-    - Basic dictionary traversal
-    - Handling of non-existent keys
-    - Empty path
-    - Non-existent root keys
-    - Accessing different data types
-    - Empty dictionaries
-    - Paths longer than the nesting
-    - Numerical keys
-    - Handling None values
-    - Special characters in keys
+    When:
+    - The deep_get function is called with the root and path
+
+    Then:
+    - It correctly retrieves values from nested dictionaries
+    - It returns None for non-existent paths
+    - It handles special cases like empty paths, numerical keys, and special characters
     """
     from MicrosoftGraphIdentityandAccess import deep_get
 
@@ -1057,8 +1228,6 @@ def test_deep_get(root, path, expected):
         ({}, ["a", "b"], None, {"a": {"b": None}}),
         # Test with mixed key types (though not recommended, it's technically possible)
         ({"a": {}}, ["a", 1], "value", {"a": {1: "value"}}),
-        # Test with empty path - not practical but edge case handling
-        ({}, [], ValueError, {}),
     ],
 )
 def test_deep_set(root, path, value, expected):
@@ -1075,14 +1244,30 @@ def test_deep_set(root, path, value, expected):
 
     Then:
     - The dictionary is updated correctly for valid inputs
-    - For invalid inputs (like empty path), an error is raised
     """
     # Make a copy of the root to avoid modifying the test data
     root_copy = root.copy()
 
-    if value is ValueError:
-        with pytest.raises(IndexError):
-            MicrosoftGraphIdentityandAccess.deep_set(root_copy, path, "any_value")
-    else:
-        MicrosoftGraphIdentityandAccess.deep_set(root_copy, path, value)
-        assert root_copy == expected
+    MicrosoftGraphIdentityandAccess.deep_set(root_copy, path, value)
+    assert root_copy == expected
+
+
+def test_deep_set_empty_path():
+    """
+    Tests that deep_set raises an error with empty path.
+
+    Given:
+    - A root dictionary
+    - An empty path
+
+    When:
+    - deep_set is called with these parameters
+
+    Then:
+    - An IndexError is raised
+    """
+    root = {}
+    path = []
+
+    with pytest.raises(IndexError):
+        MicrosoftGraphIdentityandAccess.deep_set(root, path, "any_value")

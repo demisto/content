@@ -353,17 +353,18 @@ class Client:  # pragma: no cover
         Retrieve Conditional Access policies, or a specific one by ID.
 
         Args:
-            policy_id (str, optional): The ID of the policy to retrieve. If not provided, lists all.
-            filter_query (str, optional]): An OData filter query to apply when listing policies
+            policy_id (str): The ID of the policy to retrieve. If not provided, lists all.
+            filter_query (str, optional): An OData filter query to apply when listing policies
                                             (only relevant when policy_id is not provided).
 
         Returns:
-            list: The retrieved policy, or list of policies.
+            list: A list containing the retrieved policy or policies.
+                - If policy_id is provided, returns a list with a single policy.
+                - If policy_id is not provided, returns a list of all policies.
+                - If no policies are found, returns an empty list.
 
-        Union[List[Dict[str, Any]], CommandResults]:
-            - If `policy_id` is given and found, returns a single policy as a dictionary.
-            - If no `policy_id` is given, returns a list of policies.
-            - If an error occurs (e.g., network failure, invalid response), returns a CommandResults object with error details.
+        Raises:
+            DemistoException: If an error occurs during the API request.
         """
         if policy_id:
             url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
@@ -372,17 +373,14 @@ class Client:  # pragma: no cover
             if filter_query:
                 url_suffix += f"?$filter={filter_query}"
 
-        try:
-            res = self.ms_client.http_request(method="GET", url_suffix=url_suffix, resp_type="json")
-            # if a single policy is returned (dict), make it a list to standardize the structure
-            if not res:
-                return []
-            if not policy_id:
-                return res.get("value") or []
-            else:
-                return [res]
-        except Exception as e:
-            raise DemistoException(f"Error occurred while fetching policies:\n{str(e)}")
+        res = self.ms_client.http_request(method="GET", url_suffix=url_suffix, resp_type="json")
+        # if a single policy is returned (dict), make it a list to standardize the structure
+        if not res:
+            return []
+        if not policy_id:
+            return res.get("value") or []
+        else:
+            return [res]
 
     def delete_conditional_access_policy(self, policy_id: str) -> CommandResults:
         """
@@ -395,26 +393,18 @@ class Client:  # pragma: no cover
             CommandResults: Success message or error information.
         """
         url_suffix = f"v1.0/identity/conditionalAccess/policies/{policy_id}"
+        res = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
 
-        try:
-            res = self.ms_client.http_request(method="DELETE", url_suffix=url_suffix, resp_type="response")
-
-            if res.status_code == 204:
-                demisto.info(f"Conditional Access policy {policy_id} was successfully deleted.")
-                return CommandResults(readable_output=f"Conditional Access policy {policy_id} was successfully deleted.")
-            else:
-                demisto.error(
-                    f"Failed to delete Conditional Access policy {policy_id}. Status code: {res.status_code},"
-                    f" Response: {res.text}"
-                )
-                raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.\n{res}")
-
-        except Exception as e:
+        if res.status_code != 204:
             demisto.error(
                 f"Failed to delete Conditional Access policy {policy_id}. Status code: {res.status_code},"
                 f" Response: {res.text}"
             )
-            raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n {str(e)}")
+            raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n{str(res)}")
+
+        demisto.info(f"Conditional Access policy {policy_id} was successfully deleted.")
+
+        return CommandResults(readable_output=f"Conditional Access policy {policy_id} was successfully deleted.")
 
     def create_conditional_access_policy(self, policy: Dict[str, Any]) -> CommandResults:
         """
@@ -427,29 +417,25 @@ class Client:  # pragma: no cover
             CommandResults: Results containing the created policy (context) and
             success message or error information.
         """
-        try:
-            res = self.ms_client.http_request(
-                method="POST",
-                url_suffix="v1.0/identity/conditionalAccess/policies",
-                json_data=policy,
-            )
+        res = self.ms_client.http_request(
+            method="POST",
+            url_suffix="v1.0/identity/conditionalAccess/policies",
+            json_data=policy,
+        )
 
-            if res.get("id"):
-                policy_id = res.get("id")
-                demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
-                return CommandResults(
-                    outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
-                    outputs=res,
-                    readable_output=f"Conditional Access policy {policy_id} was successfully created.",
-                    raw_response=res,
-                )
-            else:
-                demisto.error(f"Error creating Conditional Access policy:\n{str(res)}")
-                raise DemistoException(f"Error creating Conditional Access policy:\n{str(res)}")
+        if not res.get("id"):
+            demisto.error(f"Error creating Conditional Access policy:\n{str(res)}")
+            raise DemistoException(f"Error creating Conditional Access policy:\n{str(res)}")
 
-        except Exception as e:
-            demisto.error(f"Error creating Conditional Access policy:\n{str(e)}")
-            raise DemistoException(f"Error creating Conditional Access policy:\n{str(e)}")
+        policy_id = res.get("id")
+        demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
+
+        return CommandResults(
+            outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
+            outputs=res,
+            readable_output=f"Conditional Access policy {policy_id} was successfully created.",
+            raw_response=res,
+        )
 
     def update_conditional_access_policy(self, policy_id: str, policy: Union[dict, str]) -> CommandResults:
         """
@@ -462,27 +448,24 @@ class Client:  # pragma: no cover
         Returns:
             CommandResults: Object containing the operation outcome.
         """
-        try:
-            res = self.ms_client.http_request(
-                method="PATCH",
-                url_suffix=f"v1.0/identity/conditionalAccess/policies/{policy_id}",
-                json_data=policy,
-                resp_type="response",
-            )
-            if res.status_code == 204:
-                demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
-                return CommandResults(
-                    readable_output=f"Conditional Access policy {policy_id} was successfully updated.",
-                )
-            else:
-                demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
-                raise DemistoException(f"An error occurred while updating Conditional Access policy '{policy_id}':\n{res}")
+        res = self.ms_client.http_request(
+            method="PATCH",
+            url_suffix=f"v1.0/identity/conditionalAccess/policies/{policy_id}",
+            json_data=policy,
+            resp_type="response",
+        )
 
-        except Exception as e:
-            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{str(e)}")
+        if res.status_code != 204:
+            demisto.error(f"Conditional Access policy {policy_id} could not be updated:\n{res}")
             raise DemistoException(
-                f"Conditional Access policy {policy_id} could not be updated:\n{str(e)}",
+                f"Conditional Access policy {policy_id} could not be updated:\n{res}",
             )
+
+        demisto.info(f"Conditional Access policy {policy_id} was successfully updated:\n {res}")
+
+        return CommandResults(
+            readable_output=f"Conditional Access policy {policy_id} was successfully updated.",
+        )
 
 
 """ UTILITIES"""
@@ -1312,7 +1295,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     policies: list[dict[str, Any]] = client.list_conditional_access_policies(policy_id, filter_query)
 
     if len(policies) == 0:
-        demisto.info("No Conditional Access policies found.")
+        demisto.info("no conditional policies has found")
         return CommandResults(readable_output="No Conditional Access policies found.")
     elif limit:
         max_items = int(limit)
@@ -1394,17 +1377,20 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
             policy = json.loads(policy)
     except json.JSONDecodeError as e:
         raise DemistoException(f"The provided policy string is not a valid JSON.\nError: {e}")
+
     if not policy:
         required_fields = ["policy_name", "state", "sign_in_risk_levels", "user_risk_levels", "client_app_types"]
         missing_fields = [field for field in required_fields if not args.get(field)]
 
         if missing_fields:
             missing_list = ", ".join(missing_fields)
+            demisto.debug(f"Missing required field(s): {missing_list}.")
             raise DemistoException(f"Missing required field(s): {missing_list}.")
 
         policy = build_policy(args)
 
     policy = cast(Dict[str, Any], remove_empty_elements(policy))
+
     return client.create_conditional_access_policy(policy)
 
 
@@ -1433,9 +1419,10 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
     if policy:
         try:
             policy = json.loads(policy)
-            return client.update_conditional_access_policy(policy_id, policy)
         except json.JSONDecodeError as e:
             raise ValueError(f"The provided policy string is not a valid JSON. {str(e)}")
+
+        return client.update_conditional_access_policy(policy_id, policy)
 
     new_policy = build_policy(args)
 
@@ -1443,6 +1430,10 @@ def update_conditional_access_policy_command(client: Client, args: Dict[str, Any
 
     if update_action == "append":
         existing_policy = client.list_conditional_access_policies(policy_id)
+
+        if not existing_policy:
+            demisto.info(f"No existing policy found with ID: {policy_id}")
+            raise DemistoException(f"No existing policy found with ID: {policy_id}")
 
         merge_policy_section(existing_policy[0], new_policy, messages)
         new_policy = cast(Dict[str, Any], remove_empty_elements(new_policy))
