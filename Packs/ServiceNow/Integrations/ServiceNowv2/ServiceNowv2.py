@@ -232,6 +232,44 @@ class QuickActionPreview:
             dict: Dictionary representation of the QuickActionPreview.
         """
         return asdict(self)
+      
+    
+@dataclass
+class MirrorObject:
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    Fields:
+        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        ticket_id (Optional[str]): Unique identifier of the created ticket.
+
+    ### TODO: We will need this class in common server python,
+    but due to known performance issues, we are keeping it here for now.
+    """
+    ticket_url: Optional[str] = None
+    ticket_id: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = []
+        if not self.ticket_url:
+            missing_fields.append('ticket_url')
+        if not self.ticket_id:
+            missing_fields.append('ticket_id')
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+
+        Returns:
+            dict: Dictionary representation of the MirrorObject.
+        """
+        return asdict(self)
 
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
@@ -1306,6 +1344,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1435,12 +1477,13 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
+        is_quick_action: Whether the command is a quick action
 
     Returns:
         Demisto Outputs.
@@ -1501,11 +1544,20 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = client.base_url
+    ticket_type = ticket.get("sys_class_name")
+    ticket_sys_id = ticket.get("sys_id")
+
+    ticket_url = f"{instance_url}/nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id)
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
+    if is_quick_action:
+        entry_context["MirrorObject"] = mirror_obj.to_context()
 
     return human_readable, entry_context, result, True
 
@@ -3700,7 +3752,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-create-ticket-quick-action": create_ticket_command,
             "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
@@ -3749,6 +3800,9 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
+        elif command == "servicenow-create-ticket-quick-action":
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)

@@ -816,7 +816,10 @@ def test_commands(command, args, response, expected_result, expected_auto_extrac
         display_date_format="yyyy-MM-dd",
     )
     mocker.patch.object(client, "send_request", return_value=response)
-    result = command(client, args)
+    if command == create_ticket_command:
+        result = command(client, args, is_quick_action=True)
+    else:
+        result = command(client, args)
     assert expected_result == result[1]  # entry context is found in the 2nd place in the result of the command
     assert expected_auto_extract == result[3]  # ignore_auto_extract is in the 4th place in the result of the command
 
