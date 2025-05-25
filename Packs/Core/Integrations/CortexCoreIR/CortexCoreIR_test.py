@@ -602,7 +602,73 @@ def test_parse_expiration_date():
     result = parse_expiration_date(None)
     assert result is None
 
-    # Case 7: None
+
+def test_prepare_ioc_to_output():
+    """
+    Given:
+        - an ioc params that had been sent to XSIAM create IOC API.
+    When:
+        - Calling `prepare_ioc_to_output`.
+    Then:
+        - Verify that parsed data come back as dictionary to be sent to XSIAM Context.
+    """
+
+    from CortexCoreIR import prepare_ioc_to_output
+    # Case 1: input_format is JSON → return as-is
+    json_input = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH"
+    }
+    assert prepare_ioc_to_output(json_input, "JSON") == json_input
+
+    # Case 2: input_format is CSV → single vendor, return as dict
+    csv_input_single_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+    )
+    expected_output_single = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": "1794894791000",
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{
+            "vendor_name": "VirusTotal",
+            "reliability": "A",
+            "reputation": "GOOD"
+        }]
+    }
+    assert prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
+
+    # Case 3: input_format is CSV → multiple vendors, only last one taken
+    csv_input_multi_vendor = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,"
+        "vendor.name,vendor.reliability,vendor.reputation,"
+        "vendor.name,vendor.reliability,vendor.reputation,class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,"
+        "VirusTotalV3,A,GOOD,"
+        "VirusTotalV5,B,SUSPICIOUS,Malware"
+    )
+    expected_output_multi = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": "1794894791000",
+        "comment": "test",
+        "reputation": "SUSPICIOUS",
+        "reliability": "D",
+        "class": "Malware",
+        "vendors": [{
+            "vendor_name": "VirusTotalV5",
+            "reliability": "B",
+            "reputation": "SUSPICIOUS"
+        }]
+    }
+    assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
 
 
 def test_arg_to_datetime():
