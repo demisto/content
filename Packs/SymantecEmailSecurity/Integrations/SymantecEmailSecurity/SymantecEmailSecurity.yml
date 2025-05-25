@@ -1,4 +1,7 @@
 category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Symantec Email Security Cloud
   version: -1
@@ -51,6 +54,7 @@ configuration:
 - name: incidentType
   display: Incident type
   type: 13
+  section: Collect
 - name: max_fetch
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 200.
