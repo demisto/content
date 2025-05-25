@@ -4238,9 +4238,33 @@ script:
                         Adding the same indicator with different parameters will result in an update to the existing rule."
       name: core-add-indicator
       outputs:
-        - contextPath: Core.Indicator
-        - description: A list of all of the Indicators of Compromise (IOC) Rules.
-        - type: List
+        - contextPath: Core.Indicator.indicator
+          description:  String that identifies the indicator that was insert into Cortex.
+          type: String
+        - contextPath: Core.Indicator.type
+          description: Keyword identifying the type of indicator.
+          type: String
+        - contextPath: Core.Indicator.severity
+          description: Keyword identifying the indicator's severity.
+          type: String
+        - contextPath: Core.Indicator.expiration_date
+          description: Integer representing the indicator's expiration timestamp.
+          type: Number
+        - contextPath: Core.Indicator.comment
+          description: Comment string.
+          type: String
+        - contextPath: Core.Indicator.reputation
+          description: Keyword representing the indicator's reputation.
+          type: String
+        - contextPath: Core.Indicator.reliability
+          description: Keyword representing the indicator's reliability rating.
+          type: String
+        - contextPath: Core.Indicator.class
+          description: String representing the indicator class.
+          type: String
+        - contextPath: Core.Indicator.vendors
+          description: List representing the vendors who reported this indicator.
+          type: List
   runonce: false
   script: '-'
   subtype: python3

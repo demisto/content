@@ -75,7 +75,7 @@ class Client(CoreClient):
         )
         return reply
 
-    def post_indicator(self, request_data: Union[dict, str], suffix : str):
+    def post_indicator_rule(self, request_data: Union[dict, str], suffix : str):
         reply = self._http_request(
             method="POST", json_data={"request_data": request_data, "validate":True}, headers=self._headers, url_suffix=suffix
         )
@@ -335,6 +335,49 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
     return script_res
 
 
+def prepare_ioc_to_output(ioc_payload : Union[dict, str], input_format : str) -> dict:
+    """
+    Prepare the IOC data to output:
+        if it's a Dictionary - return it, else converts a single-row CSV IOC definition into a JSON object (Python dict).
+
+    Args:
+        ioc_payload Union[dict, str]: the data contained in the IOC payload.
+        input_format str: representing what is the input format.
+
+    Returns:
+        dict: Parsed JSON-style IOC object.
+    """
+    if input_format == 'JSON':
+        return ioc_payload
+
+    # Split CSV string into lines
+    lines = ioc_payload.strip().splitlines()
+    header = lines[0].split(',')
+    values = lines[1].split(',')
+
+
+    # Map headers to values, collecting all duplicate fields
+    # Create a flat mapping, keeping the last occurrence of each header
+    field_map = {}
+    for i, key in enumerate(header):
+        field_map[key] = values[i]  # always overwrite (keep last)
+
+    # Extract vendor fields
+    vendor_name = field_map.pop('vendor.name', None)
+    vendor_reliability = field_map.pop('vendor.reliability', None)
+    vendor_reputation = field_map.pop('vendor.reputation', None)
+
+    # Attach vendor only if name exists
+    if vendor_name:
+        field_map['vendors'] = [{
+            "vendor_name": vendor_name,
+            "reliability": vendor_reliability,
+            "reputation": vendor_reputation
+        }]
+
+    return field_map
+
+
 def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
     """
     Add Indicator Rule to XSIAM command.
@@ -405,7 +448,6 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
             "type": indicator_type,
             "severity": severity
         }
-        # TODO: Fix this param its not correct
         parsed_expiration_date = parse_expiration_date(expiration_date)
         ioc_payload["expiration_date"] = parsed_expiration_date
         ioc_payload["comment"] = comment
@@ -419,7 +461,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
                 "reliability": vendor_reliability,
                 "reputation": vendor_reputation
             }]
-        input_format = 'JSON'  # Default format for this path
+        input_format = 'JSON'
 
     # Final request body
 
@@ -429,7 +471,7 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         suffix = "indicators/insert_jsons"
 
     try:
-        response = client.post_indicator(ioc_payload, suffix=suffix)
+        response = client.post_indicator_rule(ioc_payload, suffix=suffix)
     except DemistoException as error:
         raise DemistoException(f"Core Add Indicator Command: During post, exception occurred {str(error)}")
 
@@ -443,9 +485,12 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         raise DemistoException(f"Core Add Indicator Command: post of IOC rule failed: {error_string}")
 
 
-    # the call was good:
-        # return Outputresults
-
+    return CommandResults(
+        readable_output=f"Successfully Upload IOC to XSIAM",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Indicator",
+        outputs=prepare_ioc_to_output(ioc_payload, input_format),
+        raw_response=response,
+    )
 
 def main():  # pragma: no cover
     """
