@@ -6037,7 +6037,6 @@
         "IAMInitOktaUser - Test": "CIAC-12093",
         "TAXII2 Server Performance Test": "CIAC-9768",
         "BoxV2_TestPlaybook": "CRTX-145174",
-        "PaloAltoNetworksAIOps-Test": "API issue DIT-52386",
         "HPEArubaClearPass_TestPlaybook": "The creds were expired CIAC-13175",
         "PaloAltoNetworks_PrismaCloudCompute-Test": "The creds were expired CIAC-13447",
         "PAN-OS URL Filtering enrichment - Test": "The creds were expired CIAC-11260",
@@ -6186,7 +6185,8 @@
         "Aha": "No instance",
         "SlackV2": "Integration slackV2 is deprecated.",
         "DSPM": "No instance",
-        "Symantec Email Security Cloud": "No instance"
+        "Symantec Email Security Cloud": "No instance",
+        "Absolute": "No instance"
     },
     "native_nightly_packs": [
         "Palo_Alto_Networks_WildFire",

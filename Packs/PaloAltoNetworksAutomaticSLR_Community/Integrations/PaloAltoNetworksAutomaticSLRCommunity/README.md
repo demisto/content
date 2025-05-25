@@ -2,6 +2,7 @@
 Use the Palo Alto Networks NGFW API to automatically generate a Security Lifecycle Review (SLR) Report.
 
 ## Configure Automatic SLR on XSOAR
+
 ---
 
 1. Navigate to __Settings__ > __Integrations__ > __Utilities__.
@@ -31,13 +32,12 @@ Use the Palo Alto Networks NGFW API to automatically generate a Security Lifecyc
     | Requested By | Set the email address of the person who generated the report |
     | Send To | Set the email address of the receipient who will receive the report |
 
-
 4. Click __Test__ to validate integration can communicate with the firewall.
 
 __NOTE:__ The test command does not function when `Enable Verbose Output` is set to enabled/true.
 
-
 ## Step-by-step configuration
+
 ---
 
 This section will cover how to retrieve the Palo Alto Networks Customer Support Portal (CSP) and PAN-OS API key's
@@ -68,6 +68,7 @@ Alternatively, open a browser window and navigate to: `https://<firewall>/api/?t
 ```
 
 #### Reference Material
+
 How-to generate an API Key: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-panorama-api/get-started-with-the-pan-os-xml-api/get-your-api-key.html
 
 ### Customer Support Portal (CSP) API Key
@@ -83,18 +84,21 @@ Under the "Roles" column you should have "Super User" assigned.
 
 4. If a key does exist, click `Generate` to generate a new API key
 
-**NOTE:** Pay attention to the expiry date and extend/regenerate the key as neccesary.
+__NOTE:__ Pay attention to the expiry date and extend/regenerate the key as neccesary.
 
 #### Reference Material
+
 Customer Support Portal Roles: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000ClaTCAS
 How-to Generate the API Key: https://docs.paloaltonetworks.com/vm-series/10-0/vm-series-deployment/license-the-vm-series-firewall/licensing-api/manage-the-licensing-api-key.html
 
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Dump Integration Parameters
+
 ---
 In some circumstances, it may be required to get visbility of all currently configured parameters dumped to the context for troubleshooting.
 
@@ -108,7 +112,7 @@ There are no input arguments for this command.
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.params.csp_host | The CSP base URL | String |
 | AutoSLR.params.csp_proxy | Enable/disable system proxy for CSP communications | Boolean |
@@ -134,6 +138,7 @@ There are no input arguments for this command.
 | AutoSLR.params.system_verbose | Global enable/disable the verbose/debugging output | String |
 
 ### Retrieve "show system info" Output
+
 ---
 This command will retrieve certain information about the target firewall for use within other functions.
 
@@ -147,13 +152,14 @@ There are no input arguments for this command.
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.ngfw_system_info.hostname | The hostname of the target firewall | String |
 | AutoSLR.ngfw_system_info.serial | The serial number of the target firewall | String |
 | AutoSLR.ngfw_system_info.software | The PAN-OS software version of the target firewall | String |
 
 ### Initiate SLR Generation
+
 ---
 This command will initiate the *-stats_dump.tar.gz generation job on the target firewall
 
@@ -167,11 +173,12 @@ There are no input arguments for this command.
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.generate.job_id | The Job ID of the generation task | Integer |
 
 ### Check SLR Generation Status
+
 ---
 This command will check the *-stats_dump.tar.gz generation job on the target firewall
 
@@ -181,17 +188,18 @@ This command will check the *-stats_dump.tar.gz generation job on the target fir
 
 ##### Arguments
 
-| **Argument** | **Description** | **Type** |
+| __Argument__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | job_id | The Job ID of the generation task | Integer |
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.generate.job_status | The Job status of the generation task | Boolean |
 
 ### Download *-stats_dump.tar.gz from the firewall
+
 ---
 This command will download the *-stats_dump.tar.gz from the target firewall
 
@@ -201,13 +209,13 @@ This command will download the *-stats_dump.tar.gz from the target firewall
 
 ##### Arguments
 
-| **Argument** | **Description** | **Type** |
+| __Argument__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | job_id | The Job ID of the generation task | Integer |
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.generate.file_name | The human readable filename of the downloaded file | String |
 | InfoFile.EntryID | The EntryID of the downloaded file | String |
@@ -215,6 +223,7 @@ This command will download the *-stats_dump.tar.gz from the target firewall
 __Note:__ In the default playbook supplied with the content pack, `InfoFile.EntryID` is copied to `AutoSLR.generate.EntryID` for use in the upload function.
 
 ### Upload *-stats_dump.tar.gz to Palo Alto Networks
+
 ---
 This command will upload the *-stats_dump.tar.gz file to Palo Alto Networks for report generation
 
@@ -224,13 +233,13 @@ This command will upload the *-stats_dump.tar.gz file to Palo Alto Networks for 
 
 ##### Arguments
 
-| **Argument** | **Description** | **Type** |
+| __Argument__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | input_file | The EntryID of the file to upload | String |
 
 ##### Context Output
 
-| **Context Key** | **Description** | **Type** |
+| __Context Key__ | __Description__ | __Type__ |
 | --- | --- | --- |
 | AutoSLR.upload.id | The SLR Reference ID returned by the CSP API | String |
 | AutoSLR.upload.send_to | The email address the completed report will be sent to | String |
