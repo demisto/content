@@ -2377,7 +2377,8 @@
         },
         {
             "integrations": "PrismaCloud v2",
-            "playbookID": "Prisma Cloud V2 Test"
+            "playbookID": "Prisma Cloud V2 Test",
+            "memory_threshold": 250
         },
         {
             "integrations": "Symantec Messaging Gateway",
