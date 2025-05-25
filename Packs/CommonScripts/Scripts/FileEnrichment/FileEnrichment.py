@@ -20,6 +20,51 @@ class Brands(Enum):
         return self.value
 
 
+# All File indicator context fields in CommonServerPython
+INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING = {
+    "name": "Name",
+    "hashes": "Hashes",
+    "entryid": "EntryID",
+    "size": "Size",
+    "md5": "MD5",
+    "sha1": "SHA1",
+    "sha256": "SHA256",
+    "sha512": "SHA512",
+    "ssdeep": "SSDeep",
+    "fileextension": "Extension",
+    "filetype": "Type",
+    "hostname": "Hostname",
+    "path": "Path",
+    "company": "Company",
+    "actor": "Actor",
+    "tags": "Tags",
+    "feedrelatedindicators": "FeedRelatedIndicators",
+    "malwarefamily": "MalwareFamily",
+    "campaign": "Campaign",
+    "trafficlightprotocol": "TrafficLightProtocol",
+    "communitynotes": "CommunityNotes",
+    "publications": "Publications",
+    "threattypes": "ThreatTypes",
+    "imphash": "Imphash",
+    "quarantined": "Quarantined",
+    "organization": "Organization",
+    "associatedfilenames": "AssociatedFileNames",
+    "behavior": "Behavior",
+    "organizationprevalence": "OrganizationPrevalence",
+    "globalprevalence": "GlobalPrevalence",
+    "organizationfirstseen": "OrganizationFirstSeen",
+    "organizationlastseen": "OrganizationLastSeen",
+    "firstseenbysource": "FirstSeenBySource",
+    "lastseenbysource": "LastSeenBySource",
+    "signatureauthentihash": "Signature.Authentihash",
+    "signaturecopyright": "Signature.Copyright",
+    "signaturedescription": "Signature.Description",
+    "signaturefileversion": "Signature.FileVersion",
+    "signatureinternalname": "Signature.InternalName",
+    "signatureoriginalname": "Signature.OriginalName",
+}
+
+
 class ContextPaths(Enum):
     DBOT_SCORE = Common.DBotScore.CONTEXT_PATH
     FILE = Common.File.CONTEXT_PATH
@@ -156,10 +201,11 @@ class Command:
 """ HELPER FUNCTIONS """
 
 
-def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict:
+def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict[str, Any]:
     """
     Gets the `File` context dictionary using the `CustomFields` value in the Indicator of Compromise (IOC) record.
-    Maps indicator fields in the 'connectedlowercase' format to context paths in the 'UpperCamelCase' format.
+    Maps indicator fields in the 'connectedlowercase' format (CLI name) to nested context paths in the 'UpperCamelCase' format.
+    Fields not in the `INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING` are mapped to `AdditionalFields.{field_cli_name}`.
 
     Args:
         ioc_custom_fields (dict[str, Any]): The IOC `CustomFields` dictionary.
@@ -167,27 +213,32 @@ def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict:
     Returns:
         dict: Transformed `File` indicator dictionary.
     """
-    return assign_params(
-        Name=next(iter(ioc_custom_fields.get("associatedfilenames", [])), None),
-        AssociatedFileNames=ioc_custom_fields.get("associatedfilenames"),
-        Extension=ioc_custom_fields.get("fileextension"),
-        Type=ioc_custom_fields.get("filetype"),
-        MD5=ioc_custom_fields.get("md5"),
-        SHA1=ioc_custom_fields.get("sha1"),
-        SHA256=ioc_custom_fields.get("sha256"),
-        SHA512=ioc_custom_fields.get("sha512"),
-        Size=ioc_custom_fields.get("size"),
-        Signature=assign_params(
-            Authentihash=ioc_custom_fields.get("signatureauthentihash"),
-            Copyright=ioc_custom_fields.get("signaturecopyright"),
-            Description=ioc_custom_fields.get("signaturedescription"),
-            FileVersion=ioc_custom_fields.get("signaturefileversion"),
-            InternalName=ioc_custom_fields.get("signatureinternalname"),
-            OriginalName=ioc_custom_fields.get("signatureoriginalname"),
-        ),
-        SSDeep=ioc_custom_fields.get("ssdeep"),
-        Tags=ioc_custom_fields.get("tags"),
-    )
+    mapping = INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING
+    output: dict[str, Any] = {}
+
+    for field_cli_name, field_value in ioc_custom_fields.items():
+        if field_value in (None, "", [], {}, ()):
+            demisto.debug(f"Ignoring IOC custom field: {field_cli_name} with empty value: {field_value}")
+            continue
+
+        field_context_path = mapping.get(field_cli_name, f"AdditionalFields.{field_cli_name}")
+        if "." not in field_context_path:
+            output[field_context_path] = field_value
+            continue
+
+        # Handle nested fields like "Signature.Copyright"
+        path_parts = field_context_path.split(".")
+        current_level = output
+        for i, part in enumerate(path_parts, start=1):
+            is_last_part: bool = i == len(path_parts)
+            if is_last_part:
+                current_level[part] = field_value
+            else:
+                if part not in current_level:
+                    current_level[part] = {}
+                current_level = current_level[part]
+
+    return assign_params(**output)
 
 
 def get_from_context(entry_context_item: dict, context_path: ContextPaths) -> list:

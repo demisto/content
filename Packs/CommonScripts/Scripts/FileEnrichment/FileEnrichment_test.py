@@ -152,6 +152,7 @@ def test_get_file_from_ioc_custom_fields():
         "ssdeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
         "tags": ["checks-cpu-name", "checks-hostname"],
         "stixid": None,  # expect to be removed (empty value)
+        "name": "Test Application.zip",
         "associatedfilenames": ["Test Application.zip", "test_installer_x64.zip"],
         "signatureauthentihash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
     }
@@ -168,7 +169,7 @@ def test_get_file_from_ioc_custom_fields():
         "SSDeep": ioc_custom_fields["ssdeep"],
         "Tags": ioc_custom_fields["tags"],
         "AssociatedFileNames": ioc_custom_fields["associatedfilenames"],
-        "Name": ioc_custom_fields["associatedfilenames"][0],
+        "Name": ioc_custom_fields["name"],
         "Signature": {
             "Authentihash": ioc_custom_fields["signatureauthentihash"],
         },
