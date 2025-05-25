@@ -1,4 +1,5 @@
 import json
+from symtable import Class
 from unittest.mock import MagicMock
 
 import pytest
@@ -682,156 +683,204 @@ def get_mock_client():
         timeout=10
     )
 
+class TestCoreAddIndicator:
+    def test_core_add_indicator_json(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
 
-def test_core_add_indicator_json(mocker):
-    """
-    Given:
-        - A mock Client to make API calls.
-        - Arguments for the command.
-    When:
-        - Calling `core_add_indicator`.
-        - Receiving successful response.
-    Then:
-        - Verify that results were correctly parsed.
-        - Verify that the API call was sent with the correct params.
-    """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+            "reply": {"success": True, "validation_errors": []}
+        })
 
-    client = get_mock_client()
-    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-        "reply": {"success": True, "validation_errors": []}
-    })
-
-    args = {
-        "indicator": "1.2.3.4",
-        "type": "IP",
-        "severity": "HIGH",
-        "expiration_date": "3 days",
-        "comment": "test comment",
-        "reputation": "SUSPICIOUS",
-        "reliability": "A",
-        "class": "Malware",
-        "vendor_name": "VirusTotal",
-        "vendor_reliability": "A",
-        "vendor_reputation": "GOOD",
-        "input_format": "JSON"
-    }
-
-    result = core_add_indicator_command(client, args)
-
-    assert isinstance(result, CommandResults)
-    assert "IOC 1.2.3.4 was successfully added." in result.readable_output
-    assert result.outputs["indicator"] == "1.2.3.4"
-    mock_post.assert_called_once()
-    _, kwargs = mock_post.call_args
-    assert kwargs["suffix"] == "indicators/insert_jsons"
-
-
-def test_core_add_indicator_csv(mocker):
-    """
-    Given:
-        - A mock Client to make API calls.
-        - Arguments for the command.
-        - IOC object argument
-    When:
-        - Calling `core_add_indicator`.
-        - Receiving successful response.
-    Then:
-        - Verify that results were correctly parsed.
-        - Verify that the API call was sent with the correct params.
-    """
-    client = get_mock_client()
-    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-        "reply": {"success": True, "validation_errors": []}
-    })
-
-    csv_payload = (
-        "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
-        ",class\n"
-        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
-    )
-
-    args = {
-        "ioc_object": csv_payload,
-        "input_format": "JSON",
-        "indicator": "ignored",
-        "type": "ignored",
-        "severity": "ignored"
-    }
-
-    result = core_add_indicator_command(client, args)
-
-    assert isinstance(result, CommandResults)
-    assert result.outputs["indicator"] == "1.2.3.4"
-    mock_post.assert_called_once()
-    _, kwargs = mock_post.call_args
-    assert kwargs["suffix"] == "indicators/insert_csv"
-
-
-def test_core_add_indicator_ioc_object_precedence(mocker):
-    """
-    Given:
-        - A mock Client to make API calls.
-        - Arguments for the command.
-        - IOC object argument
-    When:
-        - Calling `core_add_indicator`.
-        - Receiving successful response.
-    Then:
-        - Verify that results were correctly parsed.
-        - Verify that the API call was sent with the correct params.
-    """
-    client = get_mock_client()
-    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-        "reply": {"success": True, "validation_errors": []}
-    })
-
-    args = {
-        "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
-        "input_format": "JSON",
-        "indicator": "should_not_use_this",
-        "type": "should_not_use_this",
-        "severity": "should_not_use_this"
-    }
-
-    result = core_add_indicator_command(client, args)
-
-    assert isinstance(result, CommandResults)
-    assert result.outputs["indicator"] == "5.5.5.5"
-    mock_post.assert_called_once()
-    _, kwargs = mock_post.call_args
-    assert kwargs["suffix"] == "indicators/insert_jsons"
-
-
-def test_core_add_indicator_failure_response(mocker):
-    """
-    Given:
-        - A mock Client to make API calls.
-        - Arguments for the command.
-    When:
-        - Calling `core_add_indicator`.
-        - Receiving bad response.
-    Then:
-        - Verify an error has been raised and that the error message is correct.
-    """
-    client = get_mock_client()
-    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-        "reply": {
-            "success": False,
-            "validation_errors": [
-                {"indicator": "dummy", "error": "error1"},
-                {"indicator": "dummy", "error": "error2"}
-            ]
+        args = {
+            "indicator": "1.2.3.4",
+            "type": "IP",
+            "severity": "HIGH",
+            "expiration_date": "3 days",
+            "comment": "test comment",
+            "reputation": "SUSPICIOUS",
+            "reliability": "A",
+            "class": "Malware",
+            "vendor_name": "VirusTotal",
+            "vendor_reliability": "A",
+            "vendor_reputation": "GOOD",
+            "input_format": "JSON"
         }
-    })
 
-    args = {
-        "indicator": "dummy",
-        "type": "IP",
-        "severity": "HIGH"
-    }
+        result = core_add_indicator_command(client, args)
 
-    with pytest.raises(DemistoException) as exc_info:
-        core_add_indicator_command(client, args)
+        assert isinstance(result, CommandResults)
+        assert "IOC 1.2.3.4 was successfully added." in result.readable_output
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
 
-    assert "Core Add Indicator Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
-    mock_post.assert_called_once()
+
+    def test_core_add_indicator_success_minimal_args(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command - the minimal required arguments.
+        When:
+            - Calling `core_add_indicator`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+        """
+        client = get_mock_client()
+        mocker.patch.object(client, "post_indicator_rule", return_value={
+            "reply": {"success": True, "validation_errors": []}
+        })
+
+        args = {
+            "indicator": "example.com",
+            "type": "DOMAIN_NAME",
+            "severity": "LOW"
+        }
+
+        result = core_add_indicator_command(client, args)
+        assert isinstance(result, CommandResults)
+        assert "example.com" in result.readable_output
+
+
+    def test_core_add_indicator_csv(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+            "reply": {"success": True, "validation_errors": []}
+        })
+
+        csv_payload = (
+            "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
+            ",class\n"
+            "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+        )
+
+        args = {
+            "ioc_object": csv_payload,
+            "input_format": "JSON",
+            "indicator": "ignored",
+            "type": "ignored",
+            "severity": "ignored"
+        }
+
+        result = core_add_indicator_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "1.2.3.4"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_csv"
+
+
+    def test_core_add_indicator_ioc_object_precedence(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument
+        When:
+            - Calling `core_add_indicator`.
+            - Receiving successful response.
+        Then:
+            - Verify that results were correctly parsed.
+            - Verify that the API call was sent with the correct params.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+            "reply": {"success": True, "validation_errors": []}
+        })
+
+        args = {
+            "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
+            "input_format": "JSON",
+            "indicator": "should_not_use_this",
+            "type": "should_not_use_this",
+            "severity": "should_not_use_this"
+        }
+
+        result = core_add_indicator_command(client, args)
+
+        assert isinstance(result, CommandResults)
+        assert result.outputs["indicator"] == "5.5.5.5"
+        mock_post.assert_called_once()
+        _, kwargs = mock_post.call_args
+        assert kwargs["suffix"] == "indicators/insert_jsons"
+
+
+    def test_core_add_indicator_invalid_ioc_object_raises_error(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+            - IOC object argument malformed
+        When:
+            - Calling `core_add_indicator`.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        args = {
+            "ioc_object": "not a json or csv string",
+            "input_format": "JSON",
+            "indicator": "x", "type": "x", "severity": "x"
+        }
+        with pytest.raises(DemistoException, match="Invalid ioc_object: must be either valid JSON or CSV string."):
+            core_add_indicator_command(client, args)
+
+
+    def test_core_add_indicator_failure_response(self, mocker):
+        """
+        Given:
+            - A mock Client to make API calls.
+            - Arguments for the command.
+        When:
+            - Calling `core_add_indicator`.
+            - Receiving bad response.
+        Then:
+            - Verify an error has been raised and that the error message is correct.
+        """
+        client = get_mock_client()
+        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+            "reply": {
+                "success": False,
+                "validation_errors": [
+                    {"indicator": "dummy", "error": "error1"},
+                    {"indicator": "dummy", "error": "error2"}
+                ]
+            }
+        })
+
+        args = {
+            "indicator": "dummy",
+            "type": "IP",
+            "severity": "HIGH"
+        }
+
+        with pytest.raises(DemistoException) as exc_info:
+            core_add_indicator_command(client, args)
+
+        assert "Core Add Indicator Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+        mock_post.assert_called_once()
