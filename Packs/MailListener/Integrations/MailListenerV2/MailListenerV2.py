@@ -140,6 +140,8 @@ class Email:
                 demisto.debug(f"Header '{header_name}' has unexpected type {type(raw_value)}. Converting to string.")
                 parsed_headers[header_name] = str(raw_value).strip()
 
+        return parsed_headers
+
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
         def get_attachment_payload(part: Message) -> bytes:
