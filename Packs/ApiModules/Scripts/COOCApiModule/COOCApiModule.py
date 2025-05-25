@@ -19,16 +19,26 @@ GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
 
-def get_access_token(cloud_type: str, scopes: list = None) -> str:
+def get_cloud_credentials(cloud_type: str, scopes: list = None) -> dict:
     """
-    Retrieves a valid access token for the specified cloud provider from CTS.
+    Retrieves valid credentials for the specified cloud provider from CTS.
 
     Args:
         cloud_type (str): Cloud provider type ("GCP", "AWS", "AZURE", "OCI").
-        scopes (list, optional): Authorization scopes. Defaults to an empty list.
+        scopes (list, optional): Authorization scopes. Defaults to None.
 
     Returns:
-        str: Access token for the specified cloud provider.
+        dict: Credentials dictionary for the specified cloud provider. The structure varies by cloud type:
+            - For all providers:
+                - 'expiration_time' (int): Expiration time in epoch time (milliseconds)
+            - For GCP:
+                - 'access_token' (str): Bearer token
+            - For AWS:
+                - 'access_token' (str): SecretAccessKey
+                - 'session_token' (str): SessionToken
+                - 'key' (str): AccessKeyId
+            - For AZURE:
+                - 'access_token' (str): JWT
 
     Raises:
         DemistoException: If token retrieval fails or response parsing fails.
@@ -36,7 +46,7 @@ def get_access_token(cloud_type: str, scopes: list = None) -> str:
     context = demisto.callingContext.get("context", {})
     cloud_info = context.get("CloudIntegrationProviderInfo", {})
 
-    demisto.info(f"Access token request context: {context}")
+    demisto.info(f"Cloud credentials request context: {context}")
 
     request_data = {
         "connector_id": cloud_info.get("connectorID"),
@@ -51,7 +61,7 @@ def get_access_token(cloud_type: str, scopes: list = None) -> str:
     if cloud_type == CloudTypes.AWS.value and context.get("region_name"):
         request_data["region_name"] = context["region_name"]
 
-    demisto.info(f"Request data for token retrieval: {request_data}")
+    demisto.info(f"Request data for credentials retrieval: {request_data}")
 
     response = demisto._platformAPICall(path=GET_CTS_ACCOUNTS_TOKEN, method="POST", data={"request_data": request_data})
 
@@ -59,18 +69,23 @@ def get_access_token(cloud_type: str, scopes: list = None) -> str:
     if status_code != 200:
         error_detail = response.get("data", "No error message provided")
         raise DemistoException(
-            f"Failed to get token from CTS for {cloud_type}. " f"Status code: {status_code}. Error: {error_detail}"
+            f"Failed to get credentials from CTS for {cloud_type}. Status code: {status_code}. Error: {error_detail}"
         )
 
     try:
         res_json = json.loads(response["data"])
-        token_data = res_json.get("data", {})
-        access_token = token_data["access_token"]
-        expiration_time = token_data.get("expiration_time")
-        demisto.info(f"Received access token. Expiration time: {expiration_time}")
-        return access_token
-    except (json.JSONDecodeError, KeyError, TypeError) as e:
-        raise DemistoException(f"Failed to parse access token from CTS response for {cloud_type}.") from e
+        credentials = res_json.get("data")
+        if not credentials:
+            raise KeyError("Did not receive any credentials from CTS.")
+        expiration_time = credentials.get("expiration_time")
+        demisto.info(f"Received credentials. Expiration time: {expiration_time}")
+        return credentials
+    except (
+        json.JSONDecodeError,
+        KeyError,
+        TypeError,
+    ) as e:
+        raise DemistoException(f"Failed to parse credentials from CTS response for {cloud_type}.") from e
 
 
 def get_cloud_entities(connector_id: str = None, account_id: str = None) -> dict:
@@ -105,7 +120,7 @@ def get_cloud_entities(connector_id: str = None, account_id: str = None) -> dict
     if status_code != 200:
         error_detail = response.get("data") or "No error message provided"
         raise DemistoException(
-            f"Failed to get {entity_type}s for ID '{entity_id}'. " f"Status code: {status_code}. Detail: {error_detail}"
+            f"Failed to get {entity_type}s for ID '{entity_id}'. Status code: {status_code}. Detail: {error_detail}"
         )
 
     return response

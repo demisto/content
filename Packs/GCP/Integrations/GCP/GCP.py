@@ -467,7 +467,9 @@ def main():
             args["project_id"] = service_account_info.get("project_id")
             demisto.debug("Using service account credentials")
         if not creds:
-            token = get_access_token(CloudTypes.GCP.value)
+            token = get_cloud_credentials(CloudTypes.GCP.value).get("access_token")
+            if not token:
+                raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
             creds = Credentials(token=token)
             demisto.debug("Using token-based credentials")
 
