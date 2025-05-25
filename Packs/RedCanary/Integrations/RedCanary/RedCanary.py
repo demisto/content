@@ -206,7 +206,8 @@ def process_timeline(detection_id):
     ips = []
     processes = []
     for activity in res:
-        if activity.get("type") not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred"]:
+        if activity.get("type") not in ["activity_timelines.LatestIndicationSeen", "activity_timelines.EventActivityOccurred",
+                                        "activity_timelines.ActivityOccurred"]:
             continue
         activity_time = get_time_str(get_time_obj(activity["attributes"]["occurred_at"]))
         notes = activity["attributes"]["analyst_notes"]
