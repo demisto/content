@@ -1,18 +1,20 @@
 import json
 from unittest.mock import patch
 
-import demistomock as demisto
-import pytest
-import requests
-import requests_mock
 from HTTPFeedApiModule import (
+    get_indicators_command,
     Client,
     datestring_to_server_format,
     feed_main,
     fetch_indicators_command,
-    get_indicators_command,
     get_no_update_value,
+    convert_cidr32_to_ip,
+    is_cidr_32,
 )
+import requests_mock
+import demistomock as demisto
+import pytest
+import requests
 
 
 def test_get_indicators():
@@ -138,6 +140,36 @@ def test_datestring_to_server_format():
     assert datestring_to_server_format(datestring4) == "2020-02-10T13:39:14Z"
     assert datestring_to_server_format(datestring5) == "2020-02-10T13:39:14Z"
     assert datestring_to_server_format(datestring6) == "2020-11-01T08:16:13Z"
+
+
+def test_is_cidr_32():
+    """
+    Test function for is_cidr_32.
+    """
+    test_cases = [
+        ("192.0.2.1/32", True),
+        ("192.0.2.1/24", False),
+        ("192.0.2.1/33", False),
+        ("invalid", False),
+        (123, False),
+    ]
+    for input_value, expected_output in test_cases:
+        actual_output = is_cidr_32(input_value)
+        assert actual_output == expected_output
+
+
+def test_convert_cidr32_to_ip():
+    """
+    Test function for convert_cidr32_to_ip.
+    """
+    test_cases = [
+        ("192.0.2.1/32", "192.0.2.1"),
+        ("192.0.2.1/24", None),
+        ("192.0.2.1/abc", None),
+    ]
+    for input_value, expected_output in test_cases:
+        actual_output = convert_cidr32_to_ip(input_value)
+        assert actual_output == expected_output
 
 
 def test_get_feed_config():
@@ -513,38 +545,49 @@ def test_fetch_indicators_ip_ranges_to_cidrs():
         assert indicators == expected_res
 
 
-def test_fetch_indicators_ip_ranges_to_cidrs():
+def test_fetch_indicators_ip_ranges_to_cidrs_convert_32_to_ip():
     """
     Given:
-        - Text containing incidicators as IP ranges.
+        - Text containing indicators as IP ranges
+        - marking cidr_to_32_ip - returning 32 CIDR also as IP as true
     When:
         - Calling the fetch_indicators_command
     Then:
-        - CIDR indicators should be returned.
+        - CIDR indicators should be returned and CIDR  should also be returned as IP.
     """
     feed_url_to_config = {
-        'https://www.spamhaus.org/drop/asndrop.txt': {
-            "indicator_type": 'CIDR',
-            "indicator": {
-                "regex": r"^(\S+)-(\S+)$",
-                "transform": "\\1-\\2"
-            }
+        "https://www.spamhaus.org/drop/asndrop.txt": {
+            "indicator_type": "CIDR",
+            "indicator": {"regex": r"^(\S+)-(\S+)$", "transform": "\\1-\\2"},
         }
     }
-    with open('test_data/expected_cidr_result.json') as expected_cidr_result:
+    with open("test_data/expected_cidr_result.json") as expected_cidr_result:
         expected_res = (json.loads(expected_cidr_result.read()), True)
 
-    ip_ranges = '14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255' \
-                '\nfe80::c000-fe80::cfff\n12.12.12.12'
+    cidr_as_ip_entry = {
+        "fields": {"tags": []},
+        "rawJSON": {"tags": [], "type": "IP", "value": "14.14.14.14"},
+        "type": "IP",
+        "value": "14.14.14.14",
+    }
+
+    # Insert as the second item (index 1)
+    expected_res[0].insert(1, cidr_as_ip_entry)
+
+    ip_ranges = (
+        "14.14.14.14-14.14.14.14\n12.12.12.24-12.12.12.255\n198.51.100.0-198.51.100.255\nfe80::c000-fe80::cfff\n12.12.12.12"
+    )
     with requests_mock.Mocker() as m:
-        m.get('https://www.spamhaus.org/drop/asndrop.txt', content=ip_ranges.encode('utf-8'))
+        m.get("https://www.spamhaus.org/drop/asndrop.txt", content=ip_ranges.encode("utf-8"))
         client = Client(
             url="https://www.spamhaus.org/drop/asndrop.txt",
-            source_name='spamhaus',
+            source_name="spamhaus",
             feed_url_to_config=feed_url_to_config,
-            indicator_type='CIDR'
+            indicator_type="CIDR",
         )
-        indicators = fetch_indicators_command(client, feed_tags=[], tlp_color=[], itype='CIDR', auto_detect=False)
+        indicators = fetch_indicators_command(
+            client, feed_tags=[], tlp_color=[], itype="CIDR", auto_detect=False, cidr_32_to_ip=True
+        )
 
         assert indicators == expected_res
 
@@ -676,8 +719,8 @@ def test_get_no_update_value_without_headers(mocker):
     no_update = get_no_update_value(MockResponse(), "https://www.spamhaus.org/drop/asndrop.txt")
     assert not no_update
     assert (
-        demisto.debug.call_args[0][0] == "Last-Modified and Etag headers are not exists,createIndicators"
-        " will be executed with noUpdate=False."
+        demisto.debug.call_args[0][0] == "Last-Modified and Etag headers are not exists,"
+        "createIndicators will be executed with noUpdate=False."
     )
 
 
