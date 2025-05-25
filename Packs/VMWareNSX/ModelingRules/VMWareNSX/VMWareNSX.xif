@@ -10,9 +10,9 @@ alter
     operation_status = parsed_fields -> Operationstatus,
     pid = parsed_fields -> pid,
     device_model_1 = parsed_fields -> node,
-    device_model_2 = parsed_fields -> `comp` 
+    device_model_2 = parsed_fields -> component
 | alter
-    auditlogs = if(check_audit = "true", "Audit", check_audit),
+    auditlogs = if(check_audit = "true", "AUDIT", check_audit),
     src_ipv4 = arrayindex(regextract(src_ipv4_and_port , "(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})"),0),
     dst_port = arrayindex(regextract(src_ipv4_and_port ,"\:(\d+)"),0)
 | alter 
