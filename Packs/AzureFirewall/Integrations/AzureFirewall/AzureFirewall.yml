@@ -1,6 +1,3 @@
-sectionOrder:
-- Connect
-- Collect
 category: IT Services
 commonfields:
   id: Azure Firewall
@@ -1100,3 +1097,6 @@ script:
 fromversion: 6.1.0
 tests:
 - No tests (auto formatted)
+sectionOrder:
+- Connect
+- Collect
