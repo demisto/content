@@ -1,14 +1,14 @@
 import json
 import pytest
 from CommonServerPython import DemistoException
-from COOCApiModule import CloudTypes, get_access_token, get_cloud_entities
+from COOCApiModule import CloudTypes, get_cloud_credentials, get_cloud_entities
 
 
-def test_get_access_token_success(mocker):
+def test_get_cloud_credentials_success(mocker):
     """
     Given: A valid cloud type and calling context with required cloud information.
-    When: The get_access_token function is called.
-    Then: Function successfully returns the access token from the platform API response.
+    When: The get_cloud_credentials function is called.
+    Then: Function successfully returns the credentials dictionary from the platform API response.
     """
     # Import needed to avoid the ModuleNotFoundError
     import demistomock as demisto
@@ -21,18 +21,19 @@ def test_get_access_token_success(mocker):
     mocker.patch.object(demisto, "callingContext", return_value={"context": mock_context})
     mocker.patch.object(demisto, "info")
 
-    # Mock platform API response
+    # Mock platform API response with credentials
+    credentials = {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}
     api_response = {
         "status": 200,
-        "data": json.dumps({"data": {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}}),
+        "data": json.dumps({"data": credentials}),
     }
     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
     # Call the function
-    result = get_access_token(CloudTypes.AWS.value)
+    result = get_cloud_credentials(CloudTypes.AWS.value)
 
     # Verify result
-    assert result == "test-access-token"
+    assert result == credentials
 
     # Verify API call was made with correct parameters
     assert demisto._platformAPICall.called
@@ -43,10 +44,10 @@ def test_get_access_token_success(mocker):
     assert call_args["data"]["request_data"]["cloud_type"] == "AWS"
 
 
-def test_get_access_token_with_scopes(mocker):
+def test_get_cloud_credentials_with_scopes(mocker):
     """
     Given: A valid cloud type and a list of scopes.
-    When: The get_access_token function is called with scopes parameter.
+    When: The get_cloud_credentials function is called with scopes parameter.
     Then: The scopes are included in the API request.
     """
     # Import needed to avoid the ModuleNotFoundError
@@ -59,18 +60,19 @@ def test_get_access_token_with_scopes(mocker):
     mocker.patch.object(demisto, "info")
 
     # Mock platform API response
+    credentials = {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}
     api_response = {
         "status": 200,
-        "data": json.dumps({"data": {"access_token": "test-access-token", "expiration_time": "2023-01-01T00:00:00Z"}}),
+        "data": json.dumps({"data": credentials}),
     }
     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
     # Call the function with scopes
     test_scopes = ["scope1", "scope2"]
-    result = get_access_token(CloudTypes.GCP.value, scopes=test_scopes)
+    result = get_cloud_credentials(CloudTypes.GCP.value, scopes=test_scopes)
 
     # Verify result
-    assert result == "test-access-token"
+    assert result == credentials
 
     # Verify API call was made with correct parameters
     call_args = demisto._platformAPICall.call_args[1]
@@ -79,10 +81,10 @@ def test_get_access_token_with_scopes(mocker):
     assert request_data["scopes"] == test_scopes
 
 
-def test_get_access_token_api_error(mocker):
+def test_get_cloud_credentials_api_error(mocker):
     """
     Given: A valid cloud type but the API returns an error.
-    When: The get_access_token function is called.
+    When: The get_cloud_credentials function is called.
     Then: A DemistoException is raised with the error details.
     """
     # Import needed to avoid the ModuleNotFoundError
@@ -100,18 +102,18 @@ def test_get_access_token_api_error(mocker):
 
     # Call the function and expect an exception
     with pytest.raises(DemistoException) as excinfo:
-        get_access_token(CloudTypes.AZURE.value)
+        get_cloud_credentials(CloudTypes.AZURE.value)
 
     # Verify exception message
-    assert "Failed to get token from CTS for AZURE" in str(excinfo.value)
+    assert "Failed to get credentials from CTS for AZURE" in str(excinfo.value)
     assert "Status code: 400" in str(excinfo.value)
     assert "Error: Bad request" in str(excinfo.value)
 
 
-def test_get_access_token_parse_error(mocker):
+def test_get_cloud_credentials_parse_error(mocker):
     """
     Given: A valid cloud type but the API returns a malformed response.
-    When: The get_access_token function is called.
+    When: The get_cloud_credentials function is called.
     Then: A DemistoException is raised due to parsing failure.
     """
     # Import needed to avoid the ModuleNotFoundError
@@ -129,10 +131,10 @@ def test_get_access_token_parse_error(mocker):
 
     # Call the function and expect an exception
     with pytest.raises(DemistoException) as excinfo:
-        get_access_token(CloudTypes.OCI.value)
+        get_cloud_credentials(CloudTypes.OCI.value)
 
     # Verify exception message
-    assert "Failed to parse access token from CTS response for OCI" in str(excinfo.value)
+    assert "Failed to parse credentials from CTS response for OCI" in str(excinfo.value)
 
 
 def test_get_cloud_entities_with_connector_id(mocker):
