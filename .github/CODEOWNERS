@@ -11,7 +11,7 @@
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
 # Test Collection
-/Tests/conf.json @sapirshuker
+/Tests/conf.json @merit-maita
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
