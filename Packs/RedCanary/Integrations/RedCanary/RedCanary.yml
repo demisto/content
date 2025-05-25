@@ -1,8 +1,8 @@
 commonfields:
-  id: RedCanaryLogs
+  id: RedCanary
   version: -1
-name: RedCanaryLogs
-display: Red Canary Logs
+name: RedCanary
+display: Red Canary
 category: Deception & Breach Simulation
 sectionorder:
 - Connect
