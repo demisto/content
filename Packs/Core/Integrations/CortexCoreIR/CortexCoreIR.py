@@ -183,8 +183,20 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
     )
 
 
-def parse_expiration_date(expiration: str) -> Optional[int, str]:
-    """Converts relative expiration strings to epoch milliseconds or returns 'Never'."""
+def parse_expiration_date(expiration: Optional[str]) -> Optional[int, str]:
+    """
+         Converts relative expiration strings / numbers to epoch milliseconds or returns 'Never'.
+
+        Args:
+            expiration Optional[str]: The input from the command argument
+
+        Returns:
+            Optional[int, str]: The valiue that represent the expiration date of the IOC rule:
+                None: the rule get a default value.
+                str: "Never" - The rule has no expiration date.
+                int: epoch milliseconds of the expiration date.
+        """
+
     if not expiration:
         return None
     if expiration == 'Never':
@@ -195,6 +207,7 @@ def parse_expiration_date(expiration: str) -> Optional[int, str]:
     now_epoch_milli = convert_datetime_to_epoch_milli(get_current_time())
     datetime_arg = arg_to_datetime(expiration)
     if datetime_arg:
+        # Using arg_to_datetime that takes relative time and converts it into datetime (if its relative then in the past)
         datetime_arg_epoch_milli = convert_datetime_to_epoch_milli(datetime_arg)
         delta = now_epoch_milli - datetime_arg_epoch_milli
         if delta > 0:
@@ -204,6 +217,49 @@ def parse_expiration_date(expiration: str) -> Optional[int, str]:
             return datetime_arg
     else:
         raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
+
+
+def prepare_ioc_to_output(ioc_payload : Union[dict, str], input_format : str) -> dict:
+    """
+    Prepare the IOC data to output:
+        if it's a Dictionary - return it, else converts a single-row CSV IOC definition into a JSON object (Python dict).
+
+    Args:
+        ioc_payload Union[dict, str]: the data contained in the IOC payload.
+        input_format str: representing what is the input format.
+
+    Returns:
+        dict: Parsed JSON-style IOC object.
+    """
+    if input_format == 'JSON':
+        return ioc_payload
+
+    # Split CSV string into lines
+    lines = ioc_payload.strip().splitlines()
+    header = lines[0].split(',')
+    values = lines[1].split(',')
+
+
+    # Map headers to values, collecting all duplicate fields
+    # Create a flat mapping, keeping the last occurrence of each header
+    field_map = {}
+    for i, key in enumerate(header):
+        field_map[key] = values[i]  # always overwrite (keep last)
+
+    # Extract vendor fields
+    vendor_name = field_map.pop('vendor.name', None)
+    vendor_reliability = field_map.pop('vendor.reliability', None)
+    vendor_reputation = field_map.pop('vendor.reputation', None)
+
+    # Attach vendor only if name exists
+    if vendor_name:
+        field_map['vendors'] = [{
+            "vendor_name": vendor_name,
+            "reliability": vendor_reliability,
+            "reputation": vendor_reputation
+        }]
+
+    return field_map
 
 
 def core_execute_command_reformat_readable_output(script_res: list) -> str:
@@ -333,49 +389,6 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         # delete ScriptRun from context data
         script_res.outputs = None
     return script_res
-
-
-def prepare_ioc_to_output(ioc_payload : Union[dict, str], input_format : str) -> dict:
-    """
-    Prepare the IOC data to output:
-        if it's a Dictionary - return it, else converts a single-row CSV IOC definition into a JSON object (Python dict).
-
-    Args:
-        ioc_payload Union[dict, str]: the data contained in the IOC payload.
-        input_format str: representing what is the input format.
-
-    Returns:
-        dict: Parsed JSON-style IOC object.
-    """
-    if input_format == 'JSON':
-        return ioc_payload
-
-    # Split CSV string into lines
-    lines = ioc_payload.strip().splitlines()
-    header = lines[0].split(',')
-    values = lines[1].split(',')
-
-
-    # Map headers to values, collecting all duplicate fields
-    # Create a flat mapping, keeping the last occurrence of each header
-    field_map = {}
-    for i, key in enumerate(header):
-        field_map[key] = values[i]  # always overwrite (keep last)
-
-    # Extract vendor fields
-    vendor_name = field_map.pop('vendor.name', None)
-    vendor_reliability = field_map.pop('vendor.reliability', None)
-    vendor_reputation = field_map.pop('vendor.reputation', None)
-
-    # Attach vendor only if name exists
-    if vendor_name:
-        field_map['vendors'] = [{
-            "vendor_name": vendor_name,
-            "reliability": vendor_reliability,
-            "reputation": vendor_reputation
-        }]
-
-    return field_map
 
 
 def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
