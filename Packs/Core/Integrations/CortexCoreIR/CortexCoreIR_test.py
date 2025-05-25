@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from CommonServerPython import *
-from CortexCoreIR import core_execute_command_reformat_args
+from CortexCoreIR import core_execute_command_reformat_args, core_add_indicator_command, Client
 from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
@@ -366,6 +366,7 @@ def test_get_distribution_url_command_without_download_not_supported_type():
     client.get_distribution_url.assert_called_once_with("12345", "sh")
     assert e.value.message == "`download_package` argument can be used only for package_type 'x64' or 'x86'."
 
+
 # tests for core_execute_command_command
 
 
@@ -483,7 +484,7 @@ def test_reformat_output():
                         "command_output": ["hello"],
                         "execution_status": "COMPLETED_SUCCESSFULLY",
                     }
-            ]
+                ]
         },
         {
             "endpoint_name": "name2",
@@ -492,26 +493,26 @@ def test_reformat_output():
             "domain": "",
             "endpoint_id": "dummy_id2",
             "executed_command":
-            [
-                {
-                    "command": "echo",
-                    "failed_files": 0,
-                    "retention_date": None,
-                    "retrieved_files": 0,
-                    "standard_output": "out",
-                    "command_output": [],
-                    "execution_status": "COMPLETED_SUCCESSFULLY",
-                },
-                {
-                    "command": "echo hello",
-                    "failed_files": 0,
-                    "retention_date": None,
-                    "retrieved_files": 0,
-                    "standard_output": "output",
-                    "command_output": ["hello"],
-                    "execution_status": "COMPLETED_SUCCESSFULLY",
-                }
-            ]
+                [
+                    {
+                        "command": "echo",
+                        "failed_files": 0,
+                        "retention_date": None,
+                        "retrieved_files": 0,
+                        "standard_output": "out",
+                        "command_output": [],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
+                    },
+                    {
+                        "command": "echo hello",
+                        "failed_files": 0,
+                        "retention_date": None,
+                        "retrieved_files": 0,
+                        "standard_output": "output",
+                        "command_output": ["hello"],
+                        "execution_status": "COMPLETED_SUCCESSFULLY",
+                    }
+                ]
         }
     ]
     assert reformatted_outputs == excepted_output
@@ -539,6 +540,7 @@ def test_reformat_readable():
 | dummy_id2 | echo hello | hello | 11.11.11.11 | name2 | STATUS_010_CONNECTED |
 """
     assert reformatted_readable_output == excepted_output
+
 
 @freeze_time("2024-01-01T12:00:00Z")
 def test_parse_expiration_date():
@@ -671,50 +673,165 @@ def test_prepare_ioc_to_output():
     assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
 
 
-def test_arg_to_datetime():
-    iso_future = "2024-01-03T12:00:00Z"
-    iso_past = "2023-12-31T12:00:00Z"
-    relative = "3 days"
+def get_mock_client():
+    return Client(
+        base_url="https://dummy.url",
+        proxy=False,
+        verify=False,
+        headers={"Authorization": "Bearer dummy"},
+        timeout=10
+    )
 
 
-    def get_epoch_millis(dt: datetime) -> int:
-        """Convert datetime to epoch milliseconds."""
-        return int(dt.timestamp() * 1000)
+def test_core_add_indicator_json(mocker):
+    """
+    Given:
+        - A mock Client to make API calls.
+        - Arguments for the command.
+    When:
+        - Calling `core_add_indicator`.
+        - Receiving successful response.
+    Then:
+        - Verify that results were correctly parsed.
+        - Verify that the API call was sent with the correct params.
+    """
 
-    iso_past_epoch = get_epoch_millis(datetime(2023, 12, 31, 12, 0, 0))
+    client = get_mock_client()
+    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+        "reply": {"success": True, "validation_errors": []}
+    })
 
-    fixed_now = datetime(2024, 1, 1, 12, 0, 0)
-    fixed_now_epoch_milli = get_epoch_millis(fixed_now)
+    args = {
+        "indicator": "1.2.3.4",
+        "type": "IP",
+        "severity": "HIGH",
+        "expiration_date": "3 days",
+        "comment": "test comment",
+        "reputation": "SUSPICIOUS",
+        "reliability": "A",
+        "class": "Malware",
+        "vendor_name": "VirusTotal",
+        "vendor_reliability": "A",
+        "vendor_reputation": "GOOD",
+        "input_format": "JSON"
+    }
 
-    epoch_future = fixed_now_epoch_milli + 1
-    epoch_past = fixed_now_epoch_milli - 100000
+    result = core_add_indicator_command(client, args)
 
-    # result_iso_future = arg_to_datetime(iso_future)
-    # result_iso_past = arg_to_datetime(iso_past)
-    # iso_past_epoch_results = get_epoch_millis(result_iso_past)
-    # result_relative = arg_to_datetime(relative)
-    # result_epoch_future = arg_to_datetime(epoch_future)
-    # result_epoch_past = arg_to_datetime(epoch_past)
-    #
-    # print(result_iso_future)
-    # print(result_iso_past)
-    # print(result_relative)
-    # print(result_epoch_future)
-    # print(result_epoch_past)
-    # print(iso_past_epoch, iso_past_epoch_results)
-    # print(datetime(2023, 12, 31, 12, 0, 0))
+    assert isinstance(result, CommandResults)
+    assert "IOC 1.2.3.4 was successfully added." in result.readable_output
+    assert result.outputs["indicator"] == "1.2.3.4"
+    mock_post.assert_called_once()
+    _, kwargs = mock_post.call_args
+    assert kwargs["suffix"] == "indicators/insert_jsons"
 
-    def is_relative_time_format(s: str) -> bool:
-        """
-        Returns True if the input matches a relative time format:
-        'N minutes', 'N hours', 'N days', 'N weeks', 'N months', 'N years'
-        """
-        if not isinstance(s, str):
-            return False
 
-        pattern = r"^\s*\d+\s+(Minutes|Hours|days|Weeks|Months|Years)\s*$"
-        return bool(re.match(pattern, s, flags=re.IGNORECASE))
+def test_core_add_indicator_csv(mocker):
+    """
+    Given:
+        - A mock Client to make API calls.
+        - Arguments for the command.
+        - IOC object argument
+    When:
+        - Calling `core_add_indicator`.
+        - Receiving successful response.
+    Then:
+        - Verify that results were correctly parsed.
+        - Verify that the API call was sent with the correct params.
+    """
+    client = get_mock_client()
+    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+        "reply": {"success": True, "validation_errors": []}
+    })
 
-    s = "3 days"
-    print(f"s is relative: {is_relative_time_format(s)}")
+    csv_payload = (
+        "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
+        ",class\n"
+        "1.2.3.4,IP,HIGH,1794894791000,test,SUSPICIOUS,D,VirusTotal,A,GOOD,Malware"
+    )
 
+    args = {
+        "ioc_object": csv_payload,
+        "input_format": "JSON",
+        "indicator": "ignored",
+        "type": "ignored",
+        "severity": "ignored"
+    }
+
+    result = core_add_indicator_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["indicator"] == "1.2.3.4"
+    mock_post.assert_called_once()
+    _, kwargs = mock_post.call_args
+    assert kwargs["suffix"] == "indicators/insert_csv"
+
+
+def test_core_add_indicator_ioc_object_precedence(mocker):
+    """
+    Given:
+        - A mock Client to make API calls.
+        - Arguments for the command.
+        - IOC object argument
+    When:
+        - Calling `core_add_indicator`.
+        - Receiving successful response.
+    Then:
+        - Verify that results were correctly parsed.
+        - Verify that the API call was sent with the correct params.
+    """
+    client = get_mock_client()
+    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+        "reply": {"success": True, "validation_errors": []}
+    })
+
+    args = {
+        "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
+        "input_format": "JSON",
+        "indicator": "should_not_use_this",
+        "type": "should_not_use_this",
+        "severity": "should_not_use_this"
+    }
+
+    result = core_add_indicator_command(client, args)
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs["indicator"] == "5.5.5.5"
+    mock_post.assert_called_once()
+    _, kwargs = mock_post.call_args
+    assert kwargs["suffix"] == "indicators/insert_jsons"
+
+
+def test_core_add_indicator_failure_response(mocker):
+    """
+    Given:
+        - A mock Client to make API calls.
+        - Arguments for the command.
+    When:
+        - Calling `core_add_indicator`.
+        - Receiving bad response.
+    Then:
+        - Verify an error has been raised and that the error message is correct.
+    """
+    client = get_mock_client()
+    mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
+        "reply": {
+            "success": False,
+            "validation_errors": [
+                {"indicator": "dummy", "error": "error1"},
+                {"indicator": "dummy", "error": "error2"}
+            ]
+        }
+    })
+
+    args = {
+        "indicator": "dummy",
+        "type": "IP",
+        "severity": "HIGH"
+    }
+
+    with pytest.raises(DemistoException) as exc_info:
+        core_add_indicator_command(client, args)
+
+    assert "Core Add Indicator Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+    mock_post.assert_called_once()
