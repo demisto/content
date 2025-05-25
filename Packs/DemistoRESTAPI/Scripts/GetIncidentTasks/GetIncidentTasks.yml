@@ -1,10 +1,10 @@
 commonfields:
-  id: GetAlertTasks-retry-v3
-  version: -1
-name: GetAlertTasks-retry-v3
+  id: a5eea890-b1a3-4f8a-8428-c129f882a2f9
+  version: 19
+vcShouldKeepItemLegacyProdMachine: false
+name: GetAlertTasks-backoff
 script: ''
 type: python
-subtype: python3
 tags:
 - Utility
 comment: Get all tasks for a specific alert by the given state, name and/or tag.
@@ -15,12 +15,12 @@ args:
   default: true
   description: Alert ID to get tasks from.
 - name: states
-  isArray: true
   description: 'Comma-separated list of states. Possible values: New, InProgress, Completed, Waiting, Error, LoopError, Skipped, Blocked. (Leave empty to get all tasks).'
+  isArray: true
 - name: name
-  description: 'The name of the task to search.'
+  description: The name of the task to search.
 - name: tag
-  description: 'The tag to search.'
+  description: The tag to search.
 outputs:
 - contextPath: Tasks
   description: The entire task object.
@@ -58,8 +58,10 @@ outputs:
   description: Task completed by (username).
   type: string
 scripttarget: 0
-sensitive: true
+subtype: python3
+pswd: ''
+runonce: false
 dockerimage: demisto/python3:3.11.10.115186
-tests:
-- No test
-fromversion: 6.10.0
+runas: DBotWeakRole
+engineinfo: {}
+mainengineinfo: {}

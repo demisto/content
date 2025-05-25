@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+import signal
 
 from typing import Any
 
@@ -16,7 +17,6 @@ TASK_STATES = {
     'blocked': 'Blocked'
 }
 RETRY_ATTEMPTS = 5
-
 
 ''' STANDALONE FUNCTION '''
 
@@ -86,6 +86,9 @@ def is_task_match(task: dict, name: str | None, tag: str | None, states: list[st
     return name_match and tag_match and state_match
 
 
+def alarm_handler(signum, frame):
+    raise TimeoutError
+
 ''' COMMAND FUNCTION '''
 
 
@@ -95,21 +98,32 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
 
+    # Forcing a TimeoutError to be raised if the command doesn't complete in 20 seconds.
+    signal.signal(signal.SIGALRM, alarm_handler)
+
     for attempt in range(RETRY_ATTEMPTS):
+        signal.alarm(20)
+
         try:
             res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
             if not res or isError(res[0]):
                 raise DemistoException(f'Invalid response: {res}')
 
-            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get"')
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} successful: "core-api-get" incident: "{inc_id}"')
             break
 
-        except Exception as e:
-            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" Error: {e}')
+        except TimeoutError:
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" incident: "{inc_id} received a TimeoutError.')
             time.sleep(2 ** attempt)
+
+        except Exception as e:
+            demisto.debug(f'Attempt {attempt + 1}/{RETRY_ATTEMPTS} failed: "core-api-get" incident: "{inc_id} Error: {e}')
+            time.sleep(2 ** attempt)
+
     else:
-        demisto.error(f'All {RETRY_ATTEMPTS} attempts to execute "core-api-get" have failed.')
+        demisto.error(f'All {RETRY_ATTEMPTS} attempts to execute "core-api-get" on incident #"{inc_id} have failed.')
         raise Exception(res)
+
 
     tasks: dict = dict_safe_get(res[0], ['Contents', 'response', 'invPlaybook', 'tasks'], {})
     if not tasks:
