@@ -65,6 +65,11 @@ configuration:
   name: incidentType
   type: 13
   required: false
+- defaultvalue: '1'
+  display: Incidents Fetch Interval
+  name: incidentFetchInterval
+  required: false
+  type: 19
 description: Grafana alerting service.
 display: Grafana
 name: Grafana
@@ -654,14 +659,12 @@ script:
     - contextPath: Grafana.Organization.address
       description: Organization address.
       type: Unknown
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
 tests:
 - Grafana-Test
-defaultmapperin: Grafana Alert Mapper
-defaultclassifier: Grafana Alert
 fromversion: 6.0.0
