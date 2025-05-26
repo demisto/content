@@ -46,17 +46,6 @@ repos:
     parallel: false
     min_py_version: '3.7'
     args:
-    - --fix
-    args:nightly:
-    - --config=nightly_ruff.toml
-    args:ci:
-    - --config=nightly_ruff.toml
-    args:docker_autoupdate:
-    - --config=nightly_ruff.toml
-  - id: ruff
-    parallel: false
-    min_py_version: '3.7'
-    args:
     - --version
     args:nightly:
     - --config=nightly_ruff.toml
