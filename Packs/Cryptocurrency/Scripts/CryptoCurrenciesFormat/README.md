@@ -1,7 +1,7 @@
 Verifies that a cryptocurrency address is valid and only returns the address if it is valid.
- 
- 
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,10 +10,12 @@ Verifies that a cryptocurrency address is valid and only returns the address if 
 | Tags |  |
 | Cortex XSOAR Version | 5.0.0 |
 
-####Supported cryptocurrencies:
+#### Supported cryptocurrencies:
+
 * Bitcoin
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,12 +23,14 @@ Verifies that a cryptocurrency address is valid and only returns the address if 
 | input | The Cryptocurrency address to check. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Script Example
+
 ```!CryptoCurrenciesFormat address=1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i```
 
-
 ## Human Readable Output
+
 1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i

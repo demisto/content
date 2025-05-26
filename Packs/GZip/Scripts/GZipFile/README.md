@@ -1,6 +1,7 @@
 GZip a file and upload to war room
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ GZip a file and upload to war room
 | Tags | Utility, file |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ GZip a file and upload to war room
 | entryID | CSV list of entry ids for the files to gzip. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

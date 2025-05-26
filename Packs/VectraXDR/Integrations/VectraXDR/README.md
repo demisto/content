@@ -64,7 +64,7 @@ To fetch Vectra XDR Entity follow the next steps:
 9. Enter the relevant tag name for mirror notes.
 **Note:** This value is mapped to the dbotMirrorTags incident field in Cortex XSOAR, which defines how Cortex XSOAR handles notes when you tag them in the War Room. This is required for mirroring notes from Cortex XSOAR to Vectra XDR.
 10. Provide appropriate values for filtering Entities, such as Entity Type, Prioritization, and Tags. Additionally, specify filters for detections, including  Detection Category and Detection Type.
-**Note:** Filters for Entities and Detections are combined using 'OR' logic, while filters within the same category(Entity, Detections) are combined using 'AND'. 
+**Note:** Filters for Entities and Detections are combined using 'OR' logic, while filters within the same category(Entity, Detections) are combined using 'AND'.
 11. Adjust the Urgency Score to categorize Entity severity in Cortex XSOAR. There are three fields for this mapping:
     1. Input a value for 'Low' severity. Scores up to this limit are labelled as Low.
     2. The next value is for 'Medium' severity. Scores up to this limit are labelled as Medium.
@@ -151,26 +151,28 @@ Returns a list of users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| username | Filter by username. | Optional | 
-| role | Filter users with the specified role. Possible values are: Admin, Read-Only, Restricted Admin, Security Analyst, Setting Admin, Super Admin. | Optional | 
-| last_login_timestamp | Return only the users which have a last login timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
+| username | Filter by username. | Optional |
+| role | Filter users with the specified role. Possible values are: Admin, Read-Only, Restricted Admin, Security Analyst, Setting Admin, Super Admin. | Optional |
+| last_login_timestamp | Return only the users which have a last login timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.User.id | Number | The ID of the User. | 
-| Vectra.User.user_id | Number | The ID of the User. | 
-| Vectra.User.username | String | Username of the user. | 
-| Vectra.User.email | String | The email associated with the user. | 
-| Vectra.User.role | String | The role associated with the user. | 
-| Vectra.User.last_login_timestamp | String | Last login timestamp in UTC format of the user. | 
-| Vectra.User.last_login | String | Last login timestamp of the user. | 
-
+| Vectra.User.id | Number | The ID of the User. |
+| Vectra.User.user_id | Number | The ID of the User. |
+| Vectra.User.username | String | Username of the user. |
+| Vectra.User.email | String | The email associated with the user. |
+| Vectra.User.role | String | The role associated with the user. |
+| Vectra.User.last_login_timestamp | String | Last login timestamp in UTC format of the user. |
+| Vectra.User.last_login | String | Last login timestamp of the user. |
 
 #### Command example
+
 ```!vectra-user-list```
+
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -208,12 +210,12 @@ Returns a list of users.
 #### Human Readable Output
 
 >### Users Table
+>
 >|User ID|User Name|Role|Last Login Timestamp|
 >|---|---|---|---|
 >| 59 | user.name1 | Security Analyst | 2023-08-22T09:24:44Z |
 >| 32 | user.name2 | Super Admin | 2023-07-02T18:41:19Z |
 >| 23 | vectra_mdr | Vectra MDR |  |
-
 
 ### vectra-entity-list
 
@@ -228,51 +230,54 @@ Returns a list of entities.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| prioritized | Fetch only entities whose priority score is above the configured priority threshold will be included in the response. Possible values are: true, false. | Optional | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Optional | 
-| tags | Filter by a tag or a comma-separated list of tags. | Optional | 
-| state | Filter on entity activation state. Possible values are: active, inactive. | Optional | 
-| ordering | Orders records by last timestamp or urgency score. Default sorting is by urgency score in descending order. Use the minus symbol (-) to sort scores in descending order. Multiple ordering fields can be specified with a comma-separated list (e.g., ordering=urgency_score,-name). | Optional | 
-| last_detection_timestamp | Return only the entities which have a last detection timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
-| page | Enables the caller to specify a particular page of results. Default is 1. | Optional | 
-| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional | 
-| last_modified_timestamp | Return only the entities which have a last modified timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
+| prioritized | Fetch only entities whose priority score is above the configured priority threshold will be included in the response. Possible values are: true, false. | Optional |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Optional |
+| tags | Filter by a tag or a comma-separated list of tags. | Optional |
+| state | Filter on entity activation state. Possible values are: active, inactive. | Optional |
+| ordering | Orders records by last timestamp or urgency score. Default sorting is by urgency score in descending order. Use the minus symbol (-) to sort scores in descending order. Multiple ordering fields can be specified with a comma-separated list (e.g., ordering=urgency_score,-name). | Optional |
+| last_detection_timestamp | Return only the entities which have a last detection timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional |
+| page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
+| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional |
+| last_modified_timestamp | Return only the entities which have a last modified timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.id | Number | ID of the entity. | 
-| Vectra.Entity.name | String | Name of the entity. | 
-| Vectra.Entity.breadth_contrib | Number | Breadth contribution of the entity. | 
-| Vectra.Entity.importance | Number | Entity importance. | 
-| Vectra.Entity.type | String | Type of the entity. | 
-| Vectra.Entity.is_prioritized | Boolean | Entity is prioritized or not. | 
-| Vectra.Entity.severity | String | Severity of the entity. | 
-| Vectra.Entity.urgency_score | Number | Urgency score of the entity. | 
-| Vectra.Entity.velocity_contrib | Number | Velocity contribution of the entity. | 
-| Vectra.Entity.detection_set | String | Set of detections related to entity. | 
-| Vectra.Entity.last_detection_timestamp | Date | Time of the last detection activity related to entity. | 
-| Vectra.Entity.notes.id | String | Notes of the entity. | 
-| Vectra.Entity.notes.dateCreated | String | Created date of the Note. | 
-| Vectra.Entity.notes.dateModified | String | Modified date of the Note. | 
-| Vectra.Entity.notes.createdBy | String | Created user of the Note. | 
-| Vectra.Entity.notes.ModifiedBy | String | Modified user of the Note. | 
-| Vectra.Entity.notes.note | String | Note of the entity. | 
-| Vectra.Entity.attack_rating | Number | Attack Ratting of the entity. | 
-| Vectra.Entity.privilege_level | String | Privilege Level of the entity. | 
-| Vectra.Entity.privilege_category | String | Privilege Category of the entity. | 
-| Vectra.Entity.attack_profile | String | Attack Profile of the entity. | 
-| Vectra.Entity.sensors | Unknown | Sensors of the entity. | 
-| Vectra.Entity.state | String | State of the entity. | 
-| Vectra.Entity.tags | Unknown | Tags of the entity. | 
-| Vectra.Entity.url | String | Url link of the entity. | 
-| Vectra.Entity.host_type | Unknown | Host type of the entity. | 
+| Vectra.Entity.id | Number | ID of the entity. |
+| Vectra.Entity.name | String | Name of the entity. |
+| Vectra.Entity.breadth_contrib | Number | Breadth contribution of the entity. |
+| Vectra.Entity.importance | Number | Entity importance. |
+| Vectra.Entity.type | String | Type of the entity. |
+| Vectra.Entity.is_prioritized | Boolean | Entity is prioritized or not. |
+| Vectra.Entity.severity | String | Severity of the entity. |
+| Vectra.Entity.urgency_score | Number | Urgency score of the entity. |
+| Vectra.Entity.velocity_contrib | Number | Velocity contribution of the entity. |
+| Vectra.Entity.detection_set | String | Set of detections related to entity. |
+| Vectra.Entity.last_detection_timestamp | Date | Time of the last detection activity related to entity. |
+| Vectra.Entity.notes.id | String | Notes of the entity. |
+| Vectra.Entity.notes.dateCreated | String | Created date of the Note. |
+| Vectra.Entity.notes.dateModified | String | Modified date of the Note. |
+| Vectra.Entity.notes.createdBy | String | Created user of the Note. |
+| Vectra.Entity.notes.ModifiedBy | String | Modified user of the Note. |
+| Vectra.Entity.notes.note | String | Note of the entity. |
+| Vectra.Entity.attack_rating | Number | Attack Ratting of the entity. |
+| Vectra.Entity.privilege_level | String | Privilege Level of the entity. |
+| Vectra.Entity.privilege_category | String | Privilege Category of the entity. |
+| Vectra.Entity.attack_profile | String | Attack Profile of the entity. |
+| Vectra.Entity.sensors | Unknown | Sensors of the entity. |
+| Vectra.Entity.state | String | State of the entity. |
+| Vectra.Entity.tags | Unknown | Tags of the entity. |
+| Vectra.Entity.url | String | Url link of the entity. |
+| Vectra.Entity.host_type | Unknown | Host type of the entity. |
 | Vectra.Entity.account_type | String | Account type of the entity. |
 
 #### Command example
+
 ```!vectra-entity-list entity_type=account page=1 page_size=4 tags=test,test1 prioritized=true state=active```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity(val.id && val.id == obj.id)": [
@@ -410,13 +415,13 @@ Returns a list of entities.
 #### Human Readable Output
 
 >### Entities Table (Showing Page 1 out of 1)
+>
 >|ID|Name|Entity Type|Urgency Score|Entity Importance|Last Detection Timestamp|Last Modified Timestamp|Detections IDs|Prioritize|State|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [334](http://server_url.com/accounts/334) | account_name | account | 100 | High | 2023-05-15T09:39:24Z | 2023-07-18T09:44:24Z | [1933](http://server_url.com/detections/1933), [1934](http://server_url.com/detections/1934) | true | active | test |
 >| [335](http://server_url.com/accounts/335) | account_name_1 | account | 80 | High | 2023-05-15T09:41:24Z | 2023-07-17T09:44:24Z | [1935](http://server_url.com/detections/1935), [1937](http://server_url.com/detections/1937) | true | active | test, test1 |
 >| [337](http://server_url.com/accounts/337) | account_name_2 | account | 40 | Medium | 2023-05-15T09:40:24Z | 2023-07-16T09:44:24Z | [1835](http://server_url.com/detections/1835), [1837](http://server_url.com/detections/1837) | true | active | test1 |
 >| [339](http://server_url.com/accounts/339) | account_name_3 | account | 21 | High | 2023-05-15T09:44:24Z | 2023-07-15T09:44:24Z | [1735](http://server_url.com/detections/1735), [1737](http://server_url.com/detections/1737) | true | active | test |
-
 
 ### vectra-entity-describe
 
@@ -431,45 +436,48 @@ Describes an entity by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: host and account. | Required | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host and account. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.id | Number | ID of the entity. | 
-| Vectra.Entity.name | String | Name of the entity. | 
-| Vectra.Entity.breadth_contrib | Number | Breadth contribution of the entity. | 
-| Vectra.Entity.importance | Number | Entity importance. | 
-| Vectra.Entity.type | String | Type of the entity. | 
-| Vectra.Entity.is_prioritized | Boolean | Entity is prioritized or not. | 
-| Vectra.Entity.severity | String | Severity of the entity. | 
-| Vectra.Entity.urgency_score | Number | Urgency score of the entity. | 
-| Vectra.Entity.velocity_contrib | Number | Velocity contribution of the entity. | 
-| Vectra.Entity.detection_set | String | Set of detections related to the entity. | 
-| Vectra.Entity.last_detection_timestamp | Date | Time of the last detection activity related to the entity. | 
-| Vectra.Entity.last_modified_timestamp | Date | Time of the last modification activity related to the entity. | 
-| Vectra.Entity.notes.id | String | Notes of the entity. | 
-| Vectra.Entity.notes.dateCreated | String | Created date of the Note. | 
-| Vectra.Entity.notes.dateModified | String | Modified date of the Note. | 
-| Vectra.Entity.notes.createdBy | String | Created user of the Note. | 
-| Vectra.Entity.notes.ModifiedBy | String | Modified user of the Note. | 
-| Vectra.Entity.notes.note | String | Note of the entity. | 
-| Vectra.Entity.attack_rating | Number | Attack Ratting of the entity. | 
-| Vectra.Entity.privilege_level | String | Privilege Level of the entity. | 
-| Vectra.Entity.privilege_category | String | Privilege Category of the entity. | 
-| Vectra.Entity.attack_profile | String | Attack Profile of the entity. | 
-| Vectra.Entity.sensors | Unknown | Sensors of the entity. | 
-| Vectra.Entity.state | String | State of the entity. | 
-| Vectra.Entity.tags | Unknown | Tags of the entity. | 
-| Vectra.Entity.url | String | Url link of the entity. | 
-| Vectra.Entity.host_type | Unknown | Host type of the entity. | 
-| Vectra.Entity.account_type | Unknown | Account type of the entity. | 
+| Vectra.Entity.id | Number | ID of the entity. |
+| Vectra.Entity.name | String | Name of the entity. |
+| Vectra.Entity.breadth_contrib | Number | Breadth contribution of the entity. |
+| Vectra.Entity.importance | Number | Entity importance. |
+| Vectra.Entity.type | String | Type of the entity. |
+| Vectra.Entity.is_prioritized | Boolean | Entity is prioritized or not. |
+| Vectra.Entity.severity | String | Severity of the entity. |
+| Vectra.Entity.urgency_score | Number | Urgency score of the entity. |
+| Vectra.Entity.velocity_contrib | Number | Velocity contribution of the entity. |
+| Vectra.Entity.detection_set | String | Set of detections related to the entity. |
+| Vectra.Entity.last_detection_timestamp | Date | Time of the last detection activity related to the entity. |
+| Vectra.Entity.last_modified_timestamp | Date | Time of the last modification activity related to the entity. |
+| Vectra.Entity.notes.id | String | Notes of the entity. |
+| Vectra.Entity.notes.dateCreated | String | Created date of the Note. |
+| Vectra.Entity.notes.dateModified | String | Modified date of the Note. |
+| Vectra.Entity.notes.createdBy | String | Created user of the Note. |
+| Vectra.Entity.notes.ModifiedBy | String | Modified user of the Note. |
+| Vectra.Entity.notes.note | String | Note of the entity. |
+| Vectra.Entity.attack_rating | Number | Attack Ratting of the entity. |
+| Vectra.Entity.privilege_level | String | Privilege Level of the entity. |
+| Vectra.Entity.privilege_category | String | Privilege Category of the entity. |
+| Vectra.Entity.attack_profile | String | Attack Profile of the entity. |
+| Vectra.Entity.sensors | Unknown | Sensors of the entity. |
+| Vectra.Entity.state | String | State of the entity. |
+| Vectra.Entity.tags | Unknown | Tags of the entity. |
+| Vectra.Entity.url | String | Url link of the entity. |
+| Vectra.Entity.host_type | Unknown | Host type of the entity. |
+| Vectra.Entity.account_type | Unknown | Account type of the entity. |
 
 #### Command example
+
 ```!vectra-entity-describe entity_type=account entity_id=334```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity(val.id && val.id == obj.id && val.type && val.type == obj.type)": {
@@ -510,12 +518,13 @@ Describes an entity by ID.
 
 #### Human Readable Output
 
->### Entity detail:
+>### Entity detail
+>
 >#### Entity ID: [334](http://server_url.com/accounts/334)
+>
 >|Name|Entity Type|Urgency Score|Entity Importance|Last Detection Timestamp|Last Modified Timestamp|Detections IDs|Prioritize|State|Tags|
 >|---|---|---|---|---|---|---|---|---|---|
 >| account_name | account | 100 | High | 2023-05-15T09:39:24Z | 2023-07-28T05:25:47Z | [1933](http://server_url.com/detections/1933), [1934](http://server_url.com/detections/1934) | true | active | test |
-
 
 ### vectra-entity-detection-list
 
@@ -530,95 +539,98 @@ Returns a list of detections for a specified entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
-| page | Enables the caller to specify a particular page of results. Default is 1. | Optional | 
-| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional | 
-| detection_category | The category of the detection. Possible values are: Command &amp; Control, Botnet, Reconnaissance, Lateral Movement, Exfiltration, Info. | Optional | 
-| detection_type | Filter by detection type. | Optional | 
-| last_timestamp | Return only the detections which have a last timestamp equal to or after the given timestamp. <br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional | 
-| detection_name | Filter by detection name. | Optional | 
-| state | Filter by state. Default is active. | Optional | 
-| tags | Filter by a tag or a comma-separated list of tags. | Optional | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
+| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional |
+| detection_category | The category of the detection. Possible values are: Command &amp; Control, Botnet, Reconnaissance, Lateral Movement, Exfiltration, Info. | Optional |
+| detection_type | Filter by detection type. | Optional |
+| last_timestamp | Return only the detections which have a last timestamp equal to or after the given timestamp. <br/>Formats: YYYY-MM-ddTHH:mm:ssZ, YYYY-MM-dd, N days, N hours.<br/>Example: 2023-04-25T00:00:00Z, 2023-04-25, 2 days, 5 hours, 01 Mar 2023, 01 Feb 2023 04:45:33, 15 Jun. | Optional |
+| detection_name | Filter by detection name. | Optional |
+| state | Filter by state. Default is active. | Optional |
+| tags | Filter by a tag or a comma-separated list of tags. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Detections.id | Number | Entity detection ID. | 
-| Vectra.Entity.Detections.assigned_date | Unknown | Date assigned to the detection. | 
-| Vectra.Entity.Detections.assigned_to | Unknown | User or entity assigned to the detection. | 
-| Vectra.Entity.Detections.category | String | Category of the detection. | 
-| Vectra.Entity.Detections.certainty | Number | Certainty level of the detection. | 
-| Vectra.Entity.Detections.c_score | Number | Confidence score of the detection. | 
-| Vectra.Entity.Detections.description | String | Description of the detection. | 
-| Vectra.Entity.Detections.detection | String | Detection information. | 
-| Vectra.Entity.Detections.detection_category | String | Category of the detection. | 
-| Vectra.Entity.Detections.detection_type | String | Type of the detection. | 
-| Vectra.Entity.Detections.grouped_details.external_target.ip | String | IP address of the external target in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.external_target.name | String | Name of the external target in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.num_sessions | Number | Number of sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.bytes_received | Number | Total bytes received in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.bytes_sent | Number | Total bytes sent in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.ja3_hashes | String | JA3 hashes in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.ja3s_hashes | String | JA3S hashes in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.tunnel_type | String | Tunnel type used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.protocol | String | Protocol used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.app_protocol | String | Application protocol used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_port | Number | Destination port in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_ip | String | Destination IP address in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.bytes_received | Number | Total bytes received in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.bytes_sent | Number | Total bytes sent in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.first_timestamp | Date | First timestamp of the sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.last_timestamp | Date | Last timestamp of the sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo | Unknown | Geolocation of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat | Unknown | Latitude of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon | Unknown | Longitude of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.first_timestamp | Date | First timestamp of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.last_timestamp | Date | Last timestamp of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.dst_ips | String | Destination IP addresses in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.dst_ports | Number | Destination ports in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.target_domains | String | Target domains in the detection group. | 
-| Vectra.Entity.Detections.is_targeting_key_asset | Boolean | Indicates if the detection is targeting a key asset. | 
-| Vectra.Entity.Detections.last_timestamp | Date | Last timestamp of the detection. | 
-| Vectra.Entity.Detections.note | Unknown | Note associated with the detection. | 
-| Vectra.Entity.Detections.note_modified_by | Unknown | User or entity who last modified the note. | 
-| Vectra.Entity.Detections.note_modified_timestamp | Unknown | Timestamp when the note was last modified. | 
-| Vectra.Entity.Detections.notes | Unknown | Additional notes related to the detection. | 
-| Vectra.Entity.Detections.sensor_name | String | Name of the sensor associated with the detection. | 
-| Vectra.Entity.Detections.src_account.id | Number | ID of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.name | String | Name of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.url | String | URL of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.threat | Number | Threat level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.certainty | Number | Certainty level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.privilege_level | Number | Privilege level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.privilege_category | String | Privilege category of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_host.id | Number | ID of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.ip | String | IP address of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.name | String | Name of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.url | String | URL associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.is_key_asset | Boolean | Indicates if the source host is a key asset. | 
-| Vectra.Entity.Detections.src_host.groups | Unknown | Groups associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.threat | Number | Threat level associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.certainty | Number | Certainty level associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_ip | String | Source IP address in the detection. | 
-| Vectra.Entity.Detections.state | String | State of the detection. | 
+| Vectra.Entity.Detections.id | Number | Entity detection ID. |
+| Vectra.Entity.Detections.assigned_date | Unknown | Date assigned to the detection. |
+| Vectra.Entity.Detections.assigned_to | Unknown | User or entity assigned to the detection. |
+| Vectra.Entity.Detections.category | String | Category of the detection. |
+| Vectra.Entity.Detections.certainty | Number | Certainty level of the detection. |
+| Vectra.Entity.Detections.c_score | Number | Confidence score of the detection. |
+| Vectra.Entity.Detections.description | String | Description of the detection. |
+| Vectra.Entity.Detections.detection | String | Detection information. |
+| Vectra.Entity.Detections.detection_category | String | Category of the detection. |
+| Vectra.Entity.Detections.detection_type | String | Type of the detection. |
+| Vectra.Entity.Detections.grouped_details.external_target.ip | String | IP address of the external target in the detection group. |
+| Vectra.Entity.Detections.grouped_details.external_target.name | String | Name of the external target in the detection group. |
+| Vectra.Entity.Detections.grouped_details.num_sessions | Number | Number of sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.bytes_received | Number | Total bytes received in the detection group. |
+| Vectra.Entity.Detections.grouped_details.bytes_sent | Number | Total bytes sent in the detection group. |
+| Vectra.Entity.Detections.grouped_details.ja3_hashes | String | JA3 hashes in the detection group. |
+| Vectra.Entity.Detections.grouped_details.ja3s_hashes | String | JA3S hashes in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.tunnel_type | String | Tunnel type used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.protocol | String | Protocol used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.app_protocol | String | Application protocol used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_port | Number | Destination port in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_ip | String | Destination IP address in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.bytes_received | Number | Total bytes received in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.bytes_sent | Number | Total bytes sent in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.first_timestamp | Date | First timestamp of the sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.last_timestamp | Date | Last timestamp of the sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo | Unknown | Geolocation of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat | Unknown | Latitude of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon | Unknown | Longitude of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.first_timestamp | Date | First timestamp of the detection group. |
+| Vectra.Entity.Detections.grouped_details.last_timestamp | Date | Last timestamp of the detection group. |
+| Vectra.Entity.Detections.grouped_details.dst_ips | String | Destination IP addresses in the detection group. |
+| Vectra.Entity.Detections.grouped_details.dst_ports | Number | Destination ports in the detection group. |
+| Vectra.Entity.Detections.grouped_details.target_domains | String | Target domains in the detection group. |
+| Vectra.Entity.Detections.is_targeting_key_asset | Boolean | Indicates if the detection is targeting a key asset. |
+| Vectra.Entity.Detections.last_timestamp | Date | Last timestamp of the detection. |
+| Vectra.Entity.Detections.note | Unknown | Note associated with the detection. |
+| Vectra.Entity.Detections.note_modified_by | Unknown | User or entity who last modified the note. |
+| Vectra.Entity.Detections.note_modified_timestamp | Unknown | Timestamp when the note was last modified. |
+| Vectra.Entity.Detections.notes | Unknown | Additional notes related to the detection. |
+| Vectra.Entity.Detections.sensor_name | String | Name of the sensor associated with the detection. |
+| Vectra.Entity.Detections.src_account.id | Number | ID of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.name | String | Name of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.url | String | URL of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.threat | Number | Threat level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.certainty | Number | Certainty level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.privilege_level | Number | Privilege level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.privilege_category | String | Privilege category of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_host.id | Number | ID of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.ip | String | IP address of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.name | String | Name of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.url | String | URL associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.is_key_asset | Boolean | Indicates if the source host is a key asset. |
+| Vectra.Entity.Detections.src_host.groups | Unknown | Groups associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.threat | Number | Threat level associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.certainty | Number | Certainty level associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_ip | String | Source IP address in the detection. |
+| Vectra.Entity.Detections.state | String | State of the detection. |
 | Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. |
-| Vectra.Entity.Detections.summary.bytes_received | Number | Total bytes received in the detection summary. | 
-| Vectra.Entity.Detections.summary.bytes_sent | Number | Total bytes sent in the detection summary. | 
-| Vectra.Entity.Detections.summary.cnc_server | String | CNC server associated with the detection summary. | 
-| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. | 
-| Vectra.Entity.Detections.summary.probable_owner | Unknown | Probable owner of the detection summary. | 
-| Vectra.Entity.Detections.summary.sessions | Number | Total sessions in the detection summary. | 
-| Vectra.Entity.Detections.tags | Unknown | Tags associated with the detection. | 
-| Vectra.Entity.Detections.threat | Number | Threat level of the detection. | 
-| Vectra.Entity.Detections.t_score | Number | T-score of the detection. | 
-| Vectra.Entity.Detections.type | String | Type of the detection. | 
-| Vectra.Entity.Detections.url | String | URL associated with the detection. | 
+| Vectra.Entity.Detections.summary.bytes_received | Number | Total bytes received in the detection summary. |
+| Vectra.Entity.Detections.summary.bytes_sent | Number | Total bytes sent in the detection summary. |
+| Vectra.Entity.Detections.summary.cnc_server | String | CNC server associated with the detection summary. |
+| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. |
+| Vectra.Entity.Detections.summary.probable_owner | Unknown | Probable owner of the detection summary. |
+| Vectra.Entity.Detections.summary.sessions | Number | Total sessions in the detection summary. |
+| Vectra.Entity.Detections.tags | Unknown | Tags associated with the detection. |
+| Vectra.Entity.Detections.threat | Number | Threat level of the detection. |
+| Vectra.Entity.Detections.t_score | Number | T-score of the detection. |
+| Vectra.Entity.Detections.type | String | Type of the detection. |
+| Vectra.Entity.Detections.url | String | URL associated with the detection. |
 
 #### Command example
+
 ```!vectra-entity-detection-list entity_id=1```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Detections(val.id && val.id == obj.id)": [
@@ -855,12 +867,12 @@ Returns a list of detections for a specified entity.
 #### Human Readable Output
 
 >### Detections Table (Showing Page 1 out of 1)
+>
 >|ID|Detection Name|Detection Type|Category|Account Name|Src IP|Threat Score|Certainty Score|Number Of Events|State|Last Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [132](http://server_url.com/detections/132) | Data Smuggler | smuggler | exfiltration | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 80 | 70 | 0 | active | 2023-06-06T17:01:04Z |
 >| [135](http://server_url.com/detections/135) | AWS Suspect Admin Privilege Granting | aws_admin_privilege_granted | lateral_movement | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 60 | 50 | 0 | fixed | 2023-06-06T17:00:46Z |
 >| [140](http://server_url.com/detections/140) | RPC Targeted Recon | rpc_recon_1to1 | reconnaissance | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 60 | 40 | 0 | fixed | 2023-06-06T15:46:28Z |
-
 
 ### vectra-detection-describe
 
@@ -875,89 +887,91 @@ Returns a list of detections for the specified detection ID(s).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_ids | Specify the ID(s) of the detections. | Required | 
-| page | Enables the caller to specify a particular page of results. Default is 1. | Optional | 
-| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional | 
+| detection_ids | Specify the ID(s) of the detections. | Required |
+| page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
+| page_size | Specify the desired page size for the request. Maximum is 5000. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Detections.id | Number | Entity detection ID. | 
-| Vectra.Entity.Detections.assigned_date | Unknown | Date assigned to the detection. | 
-| Vectra.Entity.Detections.assigned_to | Unknown | User or entity assigned to the detection. | 
-| Vectra.Entity.Detections.category | String | Category of the detection. | 
-| Vectra.Entity.Detections.certainty | Number | Certainty level of the detection. | 
-| Vectra.Entity.Detections.c_score | Number | Confidence score of the detection. | 
-| Vectra.Entity.Detections.description | String | Description of the detection. | 
-| Vectra.Entity.Detections.detection | String | Detection information. | 
-| Vectra.Entity.Detections.detection_category | String | Category of the detection. | 
-| Vectra.Entity.Detections.detection_type | String | Type of the detection. | 
-| Vectra.Entity.Detections.grouped_details.external_target.ip | String | IP address of the external target in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.external_target.name | String | Name of the external target in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.num_sessions | Number | Number of sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.bytes_received | Number | Total bytes received in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.bytes_sent | Number | Total bytes sent in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.ja3_hashes | String | JA3 hashes in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.ja3s_hashes | String | JA3S hashes in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.tunnel_type | String | Tunnel type used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.protocol | String | Protocol used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.app_protocol | String | Application protocol used in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_port | Number | Destination port in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_ip | String | Destination IP address in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.bytes_received | Number | Total bytes received in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.bytes_sent | Number | Total bytes sent in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.first_timestamp | Date | First timestamp of the sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.last_timestamp | Date | Last timestamp of the sessions in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo | Unknown | Geolocation of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat | Unknown | Latitude of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon | Unknown | Longitude of the destination IP in the sessions of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.first_timestamp | Date | First timestamp of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.last_timestamp | Date | Last timestamp of the detection group. | 
-| Vectra.Entity.Detections.grouped_details.dst_ips | String | Destination IP addresses in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.dst_ports | Number | Destination ports in the detection group. | 
-| Vectra.Entity.Detections.grouped_details.target_domains | String | Target domains in the detection group. | 
-| Vectra.Entity.Detections.is_targeting_key_asset | Boolean | Indicates if the detection is targeting a key asset. | 
-| Vectra.Entity.Detections.last_timestamp | Date | Last timestamp of the detection. | 
-| Vectra.Entity.Detections.note | Unknown | Note associated with the detection. | 
-| Vectra.Entity.Detections.note_modified_by | Unknown | User or entity who last modified the note. | 
-| Vectra.Entity.Detections.note_modified_timestamp | Unknown | Timestamp when the note was last modified. | 
-| Vectra.Entity.Detections.notes | Unknown | Additional notes related to the detection. | 
-| Vectra.Entity.Detections.sensor_name | String | Name of the sensor associated with the detection. | 
-| Vectra.Entity.Detections.src_account.id | Number | ID of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.name | String | Name of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.url | String | URL of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.threat | Number | Threat level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.certainty | Number | Certainty level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.privilege_level | Number | Privilege level of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_account.privilege_category | String | Privilege category of the source account associated with the detection. | 
-| Vectra.Entity.Detections.src_host.id | Number | ID of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.ip | String | IP address of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.name | String | Name of the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.url | String | URL associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.is_key_asset | Boolean | Indicates if the source host is a key asset. | 
-| Vectra.Entity.Detections.src_host.groups | Unknown | Groups associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.threat | Number | Threat level associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_host.certainty | Number | Certainty level associated with the source host in the detection. | 
-| Vectra.Entity.Detections.src_ip | String | Source IP address in the detection. | 
+| Vectra.Entity.Detections.id | Number | Entity detection ID. |
+| Vectra.Entity.Detections.assigned_date | Unknown | Date assigned to the detection. |
+| Vectra.Entity.Detections.assigned_to | Unknown | User or entity assigned to the detection. |
+| Vectra.Entity.Detections.category | String | Category of the detection. |
+| Vectra.Entity.Detections.certainty | Number | Certainty level of the detection. |
+| Vectra.Entity.Detections.c_score | Number | Confidence score of the detection. |
+| Vectra.Entity.Detections.description | String | Description of the detection. |
+| Vectra.Entity.Detections.detection | String | Detection information. |
+| Vectra.Entity.Detections.detection_category | String | Category of the detection. |
+| Vectra.Entity.Detections.detection_type | String | Type of the detection. |
+| Vectra.Entity.Detections.grouped_details.external_target.ip | String | IP address of the external target in the detection group. |
+| Vectra.Entity.Detections.grouped_details.external_target.name | String | Name of the external target in the detection group. |
+| Vectra.Entity.Detections.grouped_details.num_sessions | Number | Number of sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.bytes_received | Number | Total bytes received in the detection group. |
+| Vectra.Entity.Detections.grouped_details.bytes_sent | Number | Total bytes sent in the detection group. |
+| Vectra.Entity.Detections.grouped_details.ja3_hashes | String | JA3 hashes in the detection group. |
+| Vectra.Entity.Detections.grouped_details.ja3s_hashes | String | JA3S hashes in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.tunnel_type | String | Tunnel type used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.protocol | String | Protocol used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.app_protocol | String | Application protocol used in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_port | Number | Destination port in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_ip | String | Destination IP address in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.bytes_received | Number | Total bytes received in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.bytes_sent | Number | Total bytes sent in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.first_timestamp | Date | First timestamp of the sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.last_timestamp | Date | Last timestamp of the sessions in the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo | Unknown | Geolocation of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lat | Unknown | Latitude of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.sessions.dst_geo_lon | Unknown | Longitude of the destination IP in the sessions of the detection group. |
+| Vectra.Entity.Detections.grouped_details.first_timestamp | Date | First timestamp of the detection group. |
+| Vectra.Entity.Detections.grouped_details.last_timestamp | Date | Last timestamp of the detection group. |
+| Vectra.Entity.Detections.grouped_details.dst_ips | String | Destination IP addresses in the detection group. |
+| Vectra.Entity.Detections.grouped_details.dst_ports | Number | Destination ports in the detection group. |
+| Vectra.Entity.Detections.grouped_details.target_domains | String | Target domains in the detection group. |
+| Vectra.Entity.Detections.is_targeting_key_asset | Boolean | Indicates if the detection is targeting a key asset. |
+| Vectra.Entity.Detections.last_timestamp | Date | Last timestamp of the detection. |
+| Vectra.Entity.Detections.note | Unknown | Note associated with the detection. |
+| Vectra.Entity.Detections.note_modified_by | Unknown | User or entity who last modified the note. |
+| Vectra.Entity.Detections.note_modified_timestamp | Unknown | Timestamp when the note was last modified. |
+| Vectra.Entity.Detections.notes | Unknown | Additional notes related to the detection. |
+| Vectra.Entity.Detections.sensor_name | String | Name of the sensor associated with the detection. |
+| Vectra.Entity.Detections.src_account.id | Number | ID of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.name | String | Name of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.url | String | URL of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.threat | Number | Threat level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.certainty | Number | Certainty level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.privilege_level | Number | Privilege level of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_account.privilege_category | String | Privilege category of the source account associated with the detection. |
+| Vectra.Entity.Detections.src_host.id | Number | ID of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.ip | String | IP address of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.name | String | Name of the source host in the detection. |
+| Vectra.Entity.Detections.src_host.url | String | URL associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.is_key_asset | Boolean | Indicates if the source host is a key asset. |
+| Vectra.Entity.Detections.src_host.groups | Unknown | Groups associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.threat | Number | Threat level associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_host.certainty | Number | Certainty level associated with the source host in the detection. |
+| Vectra.Entity.Detections.src_ip | String | Source IP address in the detection. |
 | Vectra.Entity.Detections.state | String | State of the detection. |
-| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. | 
-| Vectra.Entity.Detections.summary.bytes_received | Number | Total bytes received in the detection summary. | 
-| Vectra.Entity.Detections.summary.bytes_sent | Number | Total bytes sent in the detection summary. | 
-| Vectra.Entity.Detections.summary.cnc_server | String | CNC server associated with the detection summary. | 
-| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. | 
-| Vectra.Entity.Detections.summary.probable_owner | Unknown | Probable owner of the detection summary. | 
-| Vectra.Entity.Detections.summary.sessions | Number | Total sessions in the detection summary. | 
-| Vectra.Entity.Detections.tags | Unknown | Tags associated with the detection. | 
-| Vectra.Entity.Detections.threat | Number | Threat level of the detection. | 
-| Vectra.Entity.Detections.t_score | Number | T-score of the detection. | 
-| Vectra.Entity.Detections.type | String | Type of the detection. | 
-| Vectra.Entity.Detections.url | String | URL associated with the detection. | 
-
+| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. |
+| Vectra.Entity.Detections.summary.bytes_received | Number | Total bytes received in the detection summary. |
+| Vectra.Entity.Detections.summary.bytes_sent | Number | Total bytes sent in the detection summary. |
+| Vectra.Entity.Detections.summary.cnc_server | String | CNC server associated with the detection summary. |
+| Vectra.Entity.Detections.summary.num_events | Number | Total number of events related to the detection. |
+| Vectra.Entity.Detections.summary.probable_owner | Unknown | Probable owner of the detection summary. |
+| Vectra.Entity.Detections.summary.sessions | Number | Total sessions in the detection summary. |
+| Vectra.Entity.Detections.tags | Unknown | Tags associated with the detection. |
+| Vectra.Entity.Detections.threat | Number | Threat level of the detection. |
+| Vectra.Entity.Detections.t_score | Number | T-score of the detection. |
+| Vectra.Entity.Detections.type | String | Type of the detection. |
+| Vectra.Entity.Detections.url | String | URL associated with the detection. |
 
 #### Command example
+
 ```!vectra-detection-describe detection_ids=132,135,140```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Detections(val.id && val.id == obj.id)": [
@@ -1196,12 +1210,12 @@ Returns a list of detections for the specified detection ID(s).
 #### Human Readable Output
 
 >### Detections Table (Showing Page 1 out of 1)
+>
 >|ID|Detection Name|Detection Type|Category|Account Name|Src IP|Threat Score|Certainty Score|Number Of Events|State|Last Timestamp|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| [132](http://server_url.com/detections/132) | Data Smuggler | smuggler | exfiltration | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 80 | 70 | 0 | active | 2023-06-06T17:01:04Z |
 >| [135](http://server_url.com/detections/135) | AWS Suspect Admin Privilege Granting | aws_admin_privilege_granted | lateral_movement | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 60 | 50 | 0 | fixed | 2023-06-06T17:00:46Z |
 >| [140](http://server_url.com/detections/140) | RPC Targeted Recon | rpc_recon_1to1 | reconnaissance | [account_name](http://server_url.com/accounts/21) | 0.0.0.0 | 60 | 40 | 0 | fixed | 2023-06-06T15:46:28Z |
-
 
 ### vectra-entity-note-add
 
@@ -1216,25 +1230,28 @@ Add a note to the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
-| note | Note to be added in the specified entity_id. | Required | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| note | Note to be added in the specified entity_id. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Notes.entity_id | String | The ID of the entity associated with the note. | 
-| Vectra.Entity.Notes.note_id | Number | The ID of the note. | 
-| Vectra.Entity.Notes.date_created | Date | The date when the note was created. | 
-| Vectra.Entity.Notes.date_modified | Unknown | The date when the note was last modified. | 
-| Vectra.Entity.Notes.created_by | String | The user who created the note. | 
-| Vectra.Entity.Notes.modified_by | Unknown | The user who last modified the note. | 
-| Vectra.Entity.Notes.note | String | The content of the note. | 
+| Vectra.Entity.Notes.entity_id | String | The ID of the entity associated with the note. |
+| Vectra.Entity.Notes.note_id | Number | The ID of the note. |
+| Vectra.Entity.Notes.date_created | Date | The date when the note was created. |
+| Vectra.Entity.Notes.date_modified | Unknown | The date when the note was last modified. |
+| Vectra.Entity.Notes.created_by | String | The user who created the note. |
+| Vectra.Entity.Notes.modified_by | Unknown | The user who last modified the note. |
+| Vectra.Entity.Notes.note | String | The content of the note. |
 
 #### Command example
+
 ```!vectra-entity-note-add entity_id=1 entity_type=account note="test note"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.note_id && val.note_id == obj.note_id)": {
@@ -1249,9 +1266,9 @@ Add a note to the entity.
 
 #### Human Readable Output
 
->##### The note has been successfully added to the entity.
+>##### The note has been successfully added to the entity
+>
 >Returned Note ID: **19**
-
 
 ### vectra-entity-note-update
 
@@ -1266,26 +1283,29 @@ Update a note in the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
-| note_id | Specify the ID of the note. | Required | 
-| note | Note to be updated for the specified note_id. | Required | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| note_id | Specify the ID of the note. | Required |
+| note | Note to be updated for the specified note_id. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Notes.entity_id | String | ID of the entity associated with the note. | 
-| Vectra.Entity.Notes.note_id | Number | ID of the note. | 
-| Vectra.Entity.Notes.date_created | Date | Date when the note was created. | 
-| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. | 
-| Vectra.Entity.Notes.created_by | String | User who created the note. | 
-| Vectra.Entity.Notes.modified_by | Unknown | User who last modified the note. | 
-| Vectra.Entity.Notes.note | String | Content of the note. | 
+| Vectra.Entity.Notes.entity_id | String | ID of the entity associated with the note. |
+| Vectra.Entity.Notes.note_id | Number | ID of the note. |
+| Vectra.Entity.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. |
+| Vectra.Entity.Notes.created_by | String | User who created the note. |
+| Vectra.Entity.Notes.modified_by | Unknown | User who last modified the note. |
+| Vectra.Entity.Notes.note | String | Content of the note. |
 
 #### Command example
+
 ```!vectra-entity-note-update entity_id=1 entity_type=account note_id=1 note="note modified"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Notes(val.entity_id && val.entity_id == obj.entity_id && val.note_id && val.note_id == obj.note_id)": {
@@ -1302,8 +1322,7 @@ Update a note in the entity.
 
 #### Human Readable Output
 
->##### The note has been successfully updated in the entity.
-
+>##### The note has been successfully updated in the entity
 
 ### vectra-entity-note-remove
 
@@ -1318,25 +1337,27 @@ Remove a note from the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the ID of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
-| note_id | Specify the ID of the note. | Required | 
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| note_id | Specify the ID of the note. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-entity-note-remove entity_id=1 entity_type=account note_id=1"```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
->##### The note has been successfully removed from the entity.
-
+>##### The note has been successfully removed from the entity
 
 ### vectra-entity-tag-add
 
@@ -1351,22 +1372,25 @@ Add tags in the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required | 
-| tags | Comma-separated values of tags to be included in the entity. | Required | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
+| tags | Comma-separated values of tags to be included in the entity. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. | 
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. | 
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. | 
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
 
 #### Command example
+
 ```!vectra-entity-tag-add entity_id=1 entity_type=host tags="tag1, tag2"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type)": {
@@ -1383,9 +1407,9 @@ Add tags in the entity.
 
 #### Human Readable Output
 
->##### Tags have been successfully added to the entity.
+>##### Tags have been successfully added to the entity
+>
 >Updated list of tags: **tag1**, **tag2**
-
 
 ### vectra-entity-tag-list
 
@@ -1400,21 +1424,24 @@ Returns a list of tags for a specified entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
+| entity_id | Specify the id of the entity. | Required |
 | entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. | 
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. | 
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. | 
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
 
 #### Command example
+
 ```!vectra-entity-tag-list entity_id=1 entity_type=host```
+
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -1437,7 +1464,6 @@ Returns a list of tags for a specified entity.
 
 >##### List of tags: **tag1**, **tag2**
 
-
 ### vectra-entity-tag-remove
 
 ***
@@ -1451,22 +1477,25 @@ Remove tags from the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the id of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required | 
+| entity_id | Specify the id of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
 | tags | Comma-separated values of tags to be removed from the entity. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Tags.tag_id | String | ID of the tag. | 
-| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. | 
-| Vectra.Entity.Tags.entity_type | String | Type of the entity. | 
-| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. | 
+| Vectra.Entity.Tags.tag_id | String | ID of the tag. |
+| Vectra.Entity.Tags.entity_id | String | ID of the entity associated with the tag. |
+| Vectra.Entity.Tags.entity_type | String | Type of the entity. |
+| Vectra.Entity.Tags.tags | Unknown | A list of tags linked to an entity. |
 
 #### Command example
+
 ```!vectra-entity-tag-remove entity_id=1 entity_type=host tags="tag2"```
+
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Tags(val.tag_id && val.tag_id == obj.tag_id && val.entity_type && val.entity_type == obj.entity_type && val.entity_id && val.entity_id == obj.entity_id)": {
@@ -1480,9 +1509,9 @@ Remove tags from the entity.
 
 #### Human Readable Output
 
->##### Specified tags have been successfully removed for the entity.
+>##### Specified tags have been successfully removed for the entity
+>
 >Updated list of tags: **tag1**
-
 
 ### vectra-detections-mark-fixed
 
@@ -1497,23 +1526,25 @@ Mark detection as fixed with provided detection IDs in argument.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required | 
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-detections-mark-fixed detection_ids=1,2,3```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
->##### The provided detection IDs have been successfully marked as fixed.
-
+>##### The provided detection IDs have been successfully marked as fixed
 
 ### vectra-detections-unmark-fixed
 
@@ -1528,23 +1559,25 @@ Unmark detection as fixed with provided detection IDs in argument.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required | 
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-detections-unmark-fixed detection_ids=1,2,3```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
->##### The provided detection IDs have been successfully unmarked as fixed.
-
+>##### The provided detection IDs have been successfully unmarked as fixed
 
 ### vectra-entity-assignment-add
 
@@ -1559,44 +1592,46 @@ Add an assignment for the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the ID of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
-| user_id | Specify the ID of the user. | Required | 
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
+| user_id | Specify the ID of the user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Assignments.id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. | 
-| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. | 
-| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. | 
-| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. | 
-| Vectra.Entity.Assignments.events.event_type | String | Type of assignment event. | 
-| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. | 
-| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainnity score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.outcome.id | String | ID of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.builtin | String | Whether the assignment outcome is builtin or not. | 
-| Vectra.Entity.Assignments.outcome.user_selectable | String | Whether the assignment outcome is user selectable or not.. | 
-| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. | 
-| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.triaged_detections | Unknown | Number of detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. | 
-| Vectra.Entity.Assignments.account_id | Unknown | ID of the account that the entity is associated with. | 
-| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. | 
-| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
+| Vectra.Entity.Assignments.id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. |
+| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. |
+| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. |
+| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. |
+| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. |
+| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. |
+| Vectra.Entity.Assignments.events.event_type | String | Type of assignment event. |
+| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. |
+| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainnity score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.outcome.id | String | ID of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.builtin | String | Whether the assignment outcome is builtin or not. |
+| Vectra.Entity.Assignments.outcome.user_selectable | String | Whether the assignment outcome is user selectable or not.. |
+| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. |
+| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. |
+| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. |
+| Vectra.Entity.Assignments.triaged_detections | Unknown | Number of detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. |
+| Vectra.Entity.Assignments.account_id | Unknown | ID of the account that the entity is associated with. |
+| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. |
+| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. |
 
 #### Command Example
+
 ```!vectra-entity-assignment-add entity_id=1 entity_type=account user_id=1```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1628,14 +1663,16 @@ Add an assignment for the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
->##### The assignment has been successfully created.
+>##### The assignment has been successfully created
+>
 >### Assignment detail
+>
 >|Assignment ID|Assigned By|Assigned Date|Assigned To|Event Type|
 >|---|---|---|---|---|
 >| 1 | test_user_2 | 2023-07-24T08:52:59.367115Z | test.user@mail.com | created |
-
 
 ### vectra-entity-assignment-update
 
@@ -1650,44 +1687,46 @@ Update an assignment in the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assignment_id | Specify the ID of the assignment. | Required | 
-| user_id | Specify the ID of the user. | Required | 
+| assignment_id | Specify the ID of the assignment. | Required |
+| user_id | Specify the ID of the user. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Assignments.id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. | 
-| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. | 
-| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. | 
-| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. | 
-| Vectra.Entity.Assignments.events.event_type | String | Type of assignment event. | 
-| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. | 
-| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.from | Number | ID of the entity that was assigned. | 
-| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.outcome.id | String | ID of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.builtin | String | Whether the assignment outcome is builtin or not. | 
-| Vectra.Entity.Assignments.outcome.user_selectable | String | Whether the assignment outcome is user selectable or not.. | 
-| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. | 
-| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.triaged_detections | Unknown | Number of detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. | 
-| Vectra.Entity.Assignments.account_id | Unknown | ID of the account that the entity is associated with. | 
-| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. | 
-| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
+| Vectra.Entity.Assignments.id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. |
+| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. |
+| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. |
+| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. |
+| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. |
+| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. |
+| Vectra.Entity.Assignments.events.event_type | String | Type of assignment event. |
+| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. |
+| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.from | Number | ID of the entity that was assigned. |
+| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.outcome.id | String | ID of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.builtin | String | Whether the assignment outcome is builtin or not. |
+| Vectra.Entity.Assignments.outcome.user_selectable | String | Whether the assignment outcome is user selectable or not.. |
+| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. |
+| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. |
+| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. |
+| Vectra.Entity.Assignments.triaged_detections | Unknown | Number of detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. |
+| Vectra.Entity.Assignments.account_id | Unknown | ID of the account that the entity is associated with. |
+| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. |
+| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. |
 
 #### Command Example
+
 ```!vectra-entity-assignment-update assignment_id=1 user_id=2```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1731,14 +1770,16 @@ Update an assignment in the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
->##### The assignment has been successfully updated.
+>##### The assignment has been successfully updated
+>
 >### Assignment detail
+>
 >|Assignment ID|Assigned By|Assigned Date|Assigned To|Event Type|
 >|---|---|---|---|---|
 >| 1 | api_client | 2023-07-21T12:44:10Z | test_user_2 | reassigned |
-
 
 ### vectra-entity-assignment-resolve
 
@@ -1753,50 +1794,52 @@ Resolve an assignment in the entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| assignment_id | Specify the ID of the assignment. | Required | 
-| outcome | Specify the Outcome for resolving an assignment in the entity. The custom outcome is allowed. Possible values are: Benign True Positive, Malicious True Positive, False Positive. | Required | 
-| note | A note to be added for resolving an assignment in the entity. Default is Updated by XSOAR. | Optional | 
-| triage_as | Triage rule for resolving an assignment in the entity. | Optional | 
-| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Optional | 
+| assignment_id | Specify the ID of the assignment. | Required |
+| outcome | Specify the Outcome for resolving an assignment in the entity. The custom outcome is allowed. Possible values are: Benign True Positive, Malicious True Positive, False Positive. | Required |
+| note | A note to be added for resolving an assignment in the entity. Default is Updated by XSOAR. | Optional |
+| triage_as | Triage rule for resolving an assignment in the entity. | Optional |
+| detection_ids | Provide a list of detection IDs separated by commas or a single detection ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Assignments.id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. | 
-| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. | 
-| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. | 
-| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. | 
-| Vectra.Entity.Assignments.events.event_type | String | Type of the assignment event. | 
-| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. | 
-| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.triage_as | String | Triage status of the entity. | 
-| Vectra.Entity.Assignments.events.context.triaged_detection_ids | Array | IDs of the detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.events.context.fixed_detection_ids | Array | IDs of the detections that have been fixed. | 
-| Vectra.Entity.Assignments.events.context.created_rule_ids | Array | IDs of the rules that have been created for the entity. | 
-| Vectra.Entity.Assignments.outcome.id | Number | ID of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.builtin | Boolean | Whether the assignment outcome is builtin or not. | 
-| Vectra.Entity.Assignments.outcome.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. | 
-| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. | 
-| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.triaged_detections | Array | Number of detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.host_id | Number | ID of the account that the entity is associated with. | 
-| Vectra.Entity.Assignments.account_id | Number | ID of the host that the entity is associated with. | 
-| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. | 
-| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
+| Vectra.Entity.Assignments.id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. |
+| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. |
+| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. |
+| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. |
+| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. |
+| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. |
+| Vectra.Entity.Assignments.events.event_type | String | Type of the assignment event. |
+| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. |
+| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.triage_as | String | Triage status of the entity. |
+| Vectra.Entity.Assignments.events.context.triaged_detection_ids | Array | IDs of the detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.events.context.fixed_detection_ids | Array | IDs of the detections that have been fixed. |
+| Vectra.Entity.Assignments.events.context.created_rule_ids | Array | IDs of the rules that have been created for the entity. |
+| Vectra.Entity.Assignments.outcome.id | Number | ID of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.builtin | Boolean | Whether the assignment outcome is builtin or not. |
+| Vectra.Entity.Assignments.outcome.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. |
+| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. |
+| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. |
+| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. |
+| Vectra.Entity.Assignments.triaged_detections | Array | Number of detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.host_id | Number | ID of the account that the entity is associated with. |
+| Vectra.Entity.Assignments.account_id | Number | ID of the host that the entity is associated with. |
+| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. |
+| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. |
 
 #### Command Example
-```!vectra-entity-assignment-resolve assignment_id=116 outcome="Custom outcome" detection_ids=1431,1432,1433 triage_as="triage rule" ```
+
+```!vectra-entity-assignment-resolve assignment_id=116 outcome="Custom outcome" detection_ids=1431,1432,1433 triage_as="triage rule"```
 
 #### Context Example
+
 ```json
 {
   "Vectra.Entity.Assignments(val.assignment_id && val.assignment_id == obj.assignment_id)": {
@@ -1865,10 +1908,10 @@ Resolve an assignment in the entity.
   }
 }
 ```
+
 #### Human Readable Output
 
->##### The assignment has been successfully resolved.
-
+>##### The assignment has been successfully resolved
 
 ### vectra-entity-detections-mark-fixed
 
@@ -1883,24 +1926,26 @@ Mark the detections of the entity as fixed with the provided entity ID in the ar
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the ID of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Required | 
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vectra-entity-detections-mark-fixed entity_id=1 entity_type="account"```
 
 #### Context Example
+
 ```json
 {}
 ```
+
 #### Human Readable Output
 
->##### The detections  (1431, 1432) of the provided entity ID have been successfully marked as fixed.
-
+>##### The detections  (1431, 1432) of the provided entity ID have been successfully marked as fixed
 
 ### vectra-detection-pcap-download
 
@@ -1915,28 +1960,30 @@ Download pcap of the detection.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| detection_id | Specify the ID of the detection. | Required | 
+| detection_id | Specify the ID of the detection. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.Size | Number | The size of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.SHA512 | String | The SHA512 hash of the file. | 
-| File.Name | String | The name of the file. | 
-| File.SSDeep | String | The SSDeep hash of the file. | 
-| File.EntryID | String | The entry ID of the file. | 
-| File.Info | String | File information. | 
-| File.Type | String | The file type. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.Extension | String | The file extension. | 
+| File.Size | Number | The size of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.SHA512 | String | The SHA512 hash of the file. |
+| File.Name | String | The name of the file. |
+| File.SSDeep | String | The SSDeep hash of the file. |
+| File.EntryID | String | The entry ID of the file. |
+| File.Info | String | File information. |
+| File.Type | String | The file type. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.Extension | String | The file extension. |
 
 #### Command Example
+
 ```!vectra-detection-pcap-download detection_id="116"```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -1954,14 +2001,14 @@ Download pcap of the detection.
   }
 }
 ```
+
 #### Human Readable Output
 
 >Uploaded file: IP-192.168.55.10_hidden_dns_tunnel_1382.pcap
 >
 >|Property|Type|Size|Info|MD5|SHA1|SHA256|SHA512|SSDeep|
 >|---|---|---|---|---|---|---|---|---|
->| Value | application/vnd.tcpdump.pcap | 23,988 bytes | pcap-ng capture file - version 1.0 | 709db6e1f8f5054ca57caf43ba248ed6 | 49fe55c6aef85549261b46dd2e54f8d485306ee5 | 8615bde9332584b4fd4fe4dc2cc6fc4c75504f6d44667814456c089fd413aa4d | 3fa29be0e20884c850b62d2a99aa09b24488289ba0bc9aff37ebe982c21d3a78fb26d9c9ac7fbf2a0839ba649dc0a845f30e7f13de3a0c6284c3c2ac54102143 | 	384:dN+Pm11R0XPmts64kZog9ZaikYngk+SnRxFyeyCEyuAOasucOcakca0/rHfcjOUI:dI+t25caEPjRSnmuNasxRana4DgOUDcX |
-
+>| Value | application/vnd.tcpdump.pcap | 23,988 bytes | pcap-ng capture file - version 1.0 | 709db6e1f8f5054ca57caf43ba248ed6 | 49fe55c6aef85549261b46dd2e54f8d485306ee5 | 8615bde9332584b4fd4fe4dc2cc6fc4c75504f6d44667814456c089fd413aa4d | 3fa29be0e20884c850b62d2a99aa09b24488289ba0bc9aff37ebe982c21d3a78fb26d9c9ac7fbf2a0839ba649dc0a845f30e7f13de3a0c6284c3c2ac54102143 |  384:dN+Pm11R0XPmts64kZog9ZaikYngk+SnRxFyeyCEyuAOasucOcakca0/rHfcjOUI:dI+t25caEPjRSnmuNasxRana4DgOUDcX |
 
 ### vectra-assignment-list
 
@@ -1976,53 +2023,55 @@ Returns a list of all assignments.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_ids | Specify the IDs of the entities. Comma-separated values supported. | Optional | 
-| entity_type | Specify the type of the entity. Possible values are: account, host. | Optional | 
-| resolved | Filter by resolved status. Possible values are: True, False. | Optional | 
-| assignees | Filter by user ids of the assignment. Comma-separated values supported. | Optional | 
-| resolution | Filter by outcome ids of the resolution. Comma-separated values supported. | Optional | 
-| created_after | Filter by created after the timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/>    <br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional | 
-| page | Enables the caller to specify a particular page of results. Default is 1. | Optional | 
-| page_size | Specify the desired page size for the request. Default is 50. | Optional | 
+| entity_ids | Specify the IDs of the entities. Comma-separated values supported. | Optional |
+| entity_type | Specify the type of the entity. Possible values are: account, host. | Optional |
+| resolved | Filter by resolved status. Possible values are: True, False. | Optional |
+| assignees | Filter by user ids of the assignment. Comma-separated values supported. | Optional |
+| resolution | Filter by outcome ids of the resolution. Comma-separated values supported. | Optional |
+| created_after | Filter by created after the timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/>    <br/>For example: 01 May 2023, 01 Mar 2021 04:45:33, 2022-04-17T14:05:44Z. | Optional |
+| page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
+| page_size | Specify the desired page size for the request. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Assignments.id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. | 
-| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. | 
-| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. | 
-| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. | 
-| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. | 
-| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. | 
-| Vectra.Entity.Assignments.events.event_type | String | Type of the assignment event. | 
-| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. | 
-| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. | 
-| Vectra.Entity.Assignments.events.context.triage_as | String | Triage status of the entity. | 
-| Vectra.Entity.Assignments.events.context.triaged_detection_ids | Array | IDs of the detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.events.context.fixed_detection_ids | Array | IDs of the detections that have been fixed. | 
-| Vectra.Entity.Assignments.events.context.created_rule_ids | Array | IDs of the rules that have been created for the entity. | 
-| Vectra.Entity.Assignments.outcome.id | Number | ID of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.builtin | Boolean | Whether the assignment outcome is builtin or not. | 
-| Vectra.Entity.Assignments.outcome.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. | 
-| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. | 
-| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. | 
-| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. | 
-| Vectra.Entity.Assignments.triaged_detections | Array | Number of detections that have been triaged for the entity. | 
-| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. | 
-| Vectra.Entity.Assignments.account_id | Number | ID of the account that the entity is associated with. | 
-| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. | 
-| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. | 
+| Vectra.Entity.Assignments.id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assignment_id | Number | ID of the assignment. |
+| Vectra.Entity.Assignments.assigned_by.id | Number | ID of the user who assigned the entity. |
+| Vectra.Entity.Assignments.assigned_by.username | String | Username of the user who assigned the entity. |
+| Vectra.Entity.Assignments.date_assigned | Date | Date when the entity was assigned. |
+| Vectra.Entity.Assignments.date_resolved | Date | Date when the entity was resolved. |
+| Vectra.Entity.Assignments.events.assignment_id | Number | ID of the assignment event. |
+| Vectra.Entity.Assignments.events.actor | Number | ID of the actor who performed the assignment event. |
+| Vectra.Entity.Assignments.events.event_type | String | Type of the assignment event. |
+| Vectra.Entity.Assignments.events.datetime | Date | Date of the assignment event. |
+| Vectra.Entity.Assignments.events.context.to | Number | ID of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_t_score | Number | Threat score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.entity_c_score | Number | Certainty score of the entity that was assigned to. |
+| Vectra.Entity.Assignments.events.context.triage_as | String | Triage status of the entity. |
+| Vectra.Entity.Assignments.events.context.triaged_detection_ids | Array | IDs of the detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.events.context.fixed_detection_ids | Array | IDs of the detections that have been fixed. |
+| Vectra.Entity.Assignments.events.context.created_rule_ids | Array | IDs of the rules that have been created for the entity. |
+| Vectra.Entity.Assignments.outcome.id | Number | ID of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.builtin | Boolean | Whether the assignment outcome is builtin or not. |
+| Vectra.Entity.Assignments.outcome.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. |
+| Vectra.Entity.Assignments.outcome.title | String | Title of the assignment outcome. |
+| Vectra.Entity.Assignments.outcome.category | String | Category of the assignment outcome. |
+| Vectra.Entity.Assignments.resolved_by.id | Number | ID of the user who resolved the entity. |
+| Vectra.Entity.Assignments.resolved_by.username | String | Username of the user who resolved the entity. |
+| Vectra.Entity.Assignments.triaged_detections | Array | Number of detections that have been triaged for the entity. |
+| Vectra.Entity.Assignments.host_id | Number | ID of the host that the entity is associated with. |
+| Vectra.Entity.Assignments.account_id | Number | ID of the account that the entity is associated with. |
+| Vectra.Entity.Assignments.assigned_to.id | Number | ID of the user who is currently assigned to the entity. |
+| Vectra.Entity.Assignments.assigned_to.username | String | Username of the user who is currently assigned to the entity. |
 
 #### Command Example
+
 ```!vectra-assignment-list```
 
 #### Context Example
+
 ```json
 {
     "Vectra": {
@@ -2134,14 +2183,15 @@ Returns a list of all assignments.
   }
 
 ```
+
 #### Human Readable Output
 
 >### Assignments Table (Showing Page 1 out of 1)
+>
 >|Account ID|Host ID|Assignment ID|Assigned By|Assigned To|Date Assigned|Resolved By|Date Resolved|Outcome ID|Outcome|
 >|---|---|---|---|---|---|---|---|---|---|
 >|  | 220 | 214 | test.user4@mail.com | test.user2@mail.com | 2023-08-18T10:55:29Z |  |  |  |  |
 >| 108 |  | 212 | test.user4@mail.com | test.user1@mail.com | 2023-08-18T06:29:56Z | test.user4@mail.com | 2023-08-18T06:32:09Z | 1 | Benign True Positive |
-
 
 ### vectra-assignment-outcome-list
 
@@ -2156,23 +2206,25 @@ Returns a list of all entity assignment outcomes.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| page | Enables the caller to specify a particular page of results. Default is 1. | Optional | 
-| page_size | Specify the desired page size for the request. Default is 50. | Optional | 
+| page | Enables the caller to specify a particular page of results. Default is 1. | Optional |
+| page_size | Specify the desired page size for the request. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Assignments.Outcomes.id | Number | ID of the assignment outcome. | 
-| Vectra.Entity.Assignments.Outcomes.builtin | Boolean | Whether the assignment outcome is builtin or not. | 
-| Vectra.Entity.Assignments.Outcomes.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. | 
-| Vectra.Entity.Assignments.Outcomes.title | String | Title of the assignment outcome. | 
-| Vectra.Entity.Assignments.Outcomes.category | String | Category of the assignment outcome. | 
+| Vectra.Entity.Assignments.Outcomes.id | Number | ID of the assignment outcome. |
+| Vectra.Entity.Assignments.Outcomes.builtin | Boolean | Whether the assignment outcome is builtin or not. |
+| Vectra.Entity.Assignments.Outcomes.user_selectable | Boolean | Whether the assignment outcome is user selectable or not. |
+| Vectra.Entity.Assignments.Outcomes.title | String | Title of the assignment outcome. |
+| Vectra.Entity.Assignments.Outcomes.category | String | Category of the assignment outcome. |
 
 #### Command Example
+
 ```!vectra-assignment-outcome-list page=1 page_size=5```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2221,9 +2273,11 @@ Returns a list of all entity assignment outcomes.
 }
 
 ```
+
 #### Human Readable Output
 
 >### Assignment Outcomes Table (Showing Page 1 out of 1)
+>
 >|ID|Title|Category|Built IN|User Selectable|
 >|---|---|---|---|---|
 >| 1 | Benign True Positive | benign_true_positive | true | true |
@@ -2231,8 +2285,6 @@ Returns a list of all entity assignment outcomes.
 >| 3 | False Positive | false_positive | true | true |
 >| 6 | Custom outcome | benign_true_positive | false | true |
 >| 7 | Custom outcome1 | benign_true_positive | false | true |
-
-
 
 ### vectra-entity-note-list
 
@@ -2247,27 +2299,29 @@ Returns a list of notes for a specified entity.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity_id | Specify the ID of the entity. | Required | 
-| entity_type | Specify the type of the entity. Possible values are: host, account. | Required | 
+| entity_id | Specify the ID of the entity. | Required |
+| entity_type | Specify the type of the entity. Possible values are: host, account. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Entity.Notes.note_id | Number | ID of the note. | 
-| Vectra.Entity.Notes.id | Number | ID of the note. | 
-| Vectra.Entity.Notes.date_created | Date | Date when the note was created. | 
-| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. | 
-| Vectra.Entity.Notes.created_by | String | User who created the note. | 
-| Vectra.Entity.Notes.modified_by | Unknown | User who last modified the note. | 
-| Vectra.Entity.Notes.note | String | Content of the note. | 
-| Vectra.Entity.Notes.entity_id | String | ID of the entity associated with the note. | 
-| Vectra.Entity.Notes.entity_type | String | Type of the entity associated with the note. | 
+| Vectra.Entity.Notes.note_id | Number | ID of the note. |
+| Vectra.Entity.Notes.id | Number | ID of the note. |
+| Vectra.Entity.Notes.date_created | Date | Date when the note was created. |
+| Vectra.Entity.Notes.date_modified | Unknown | Date when the note was last modified. |
+| Vectra.Entity.Notes.created_by | String | User who created the note. |
+| Vectra.Entity.Notes.modified_by | Unknown | User who last modified the note. |
+| Vectra.Entity.Notes.note | String | Content of the note. |
+| Vectra.Entity.Notes.entity_id | String | ID of the entity associated with the note. |
+| Vectra.Entity.Notes.entity_type | String | Type of the entity associated with the note. |
 
 #### Command Example
+
 ```!vectra-entity-note-list entity_id="107" entity_type="account"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2308,15 +2362,16 @@ Returns a list of notes for a specified entity.
 }
 
 ```
+
 #### Human Readable Output
 
 >### Entity Notes Table
+>
 >|Note ID|Note|Created By|Created Date|Modified By|Modified Date|
 >|---|---|---|---|---|---|
 >| 1070 | From XSOAR | test_user@mail.com | 2023-08-25T07:09:08Z | test_user@mail.com | 2023-08-25T08:10:08Z |
 >| 1069 | Test note | test_user@mail.com | 2023-08-25T07:08:58Z | test_user@mail.com | 2023-08-25T08:10:08Z |
 >| 922 | [Mirrored From XSOAR] XSOAR Incident ID: 14228<br>Note:XSOAR note<br>Added By: admin | api_client | 2023-08-16T05:23:33Z |  |  |
-
 
 ### vectra-group-list
 
@@ -2331,45 +2386,47 @@ Returns a list of all groups.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_type | Filter by group type. Possible values are: account, host, ip, domain. | Optional | 
-| account_names | Filter by Account Names. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "account". | Optional | 
-| domains | Filter by Domains. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "domain". | Optional | 
-| host_ids | Filter by Host IDs. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "host". | Optional | 
-| host_names | Filter by Host Names. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "host". | Optional | 
-| importance | Filter by group importance. Possible values are: high, medium, low, never_prioritize. | Optional | 
-| ips | Filter by IPs. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "ip". | Optional | 
-| description | Filter by group description. | Optional | 
-| last_modified_timestamp | Return only the groups which have a last modification timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z. | Optional | 
-| last_modified_by | Filters by the user id who made the most recent modification to the group. | Optional | 
-| group_name | Filters by group name. | Optional | 
+| group_type | Filter by group type. Possible values are: account, host, ip, domain. | Optional |
+| account_names | Filter by Account Names. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "account". | Optional |
+| domains | Filter by Domains. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "domain". | Optional |
+| host_ids | Filter by Host IDs. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "host". | Optional |
+| host_names | Filter by Host Names. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "host". | Optional |
+| importance | Filter by group importance. Possible values are: high, medium, low, never_prioritize. | Optional |
+| ips | Filter by IPs. Supports comma-separated values.<br/><br/>Note: Only valid when the group_type parameter is set to "ip". | Optional |
+| description | Filter by group description. | Optional |
+| last_modified_timestamp | Return only the groups which have a last modification timestamp equal to or after the given timestamp.<br/><br/>Supported formats: 2 minutes, 2 hours, 2 days, 2 weeks, 2 months, 2 years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ.<br/><br/>For example: 01 May 2023, 01 Mar 2023 04:45:33, 2023-04-17T14:05:44Z. | Optional |
+| last_modified_by | Filters by the user id who made the most recent modification to the group. | Optional |
+| group_name | Filters by group name. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Group.group_id | Number | ID of the group. | 
-| Vectra.Group.id | Number | ID of the group. | 
-| Vectra.Group.name | String | Name of the group. | 
-| Vectra.Group.description | String | Description of the group. | 
-| Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
-| Vectra.Group.type | String | Type of the group. | 
-| Vectra.Group.members | Unknown | Members of the group. | 
-| Vectra.Group.members.id | Number | Entity ID of member. | 
-| Vectra.Group.members.name | String | Entity name of member. | 
-| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. | 
-| Vectra.Group.members.url | String | Entity URL of member. | 
-| Vectra.Group.members.uid | String | Entity UID of member. | 
-| Vectra.Group.rules.triage_category | String | Triage category of rule. | 
-| Vectra.Group.rules.id | Number | Id of the rule. | 
-| Vectra.Group.rules.description | String | Description of the rule. | 
-| Vectra.Group.importance | String | Importance level of the group. | 
-| Vectra.Group.cognito_managed | Boolean | Whether the group is managed by Cognito or not. | 
+| Vectra.Group.group_id | Number | ID of the group. |
+| Vectra.Group.id | Number | ID of the group. |
+| Vectra.Group.name | String | Name of the group. |
+| Vectra.Group.description | String | Description of the group. |
+| Vectra.Group.last_modified | Date | Date when the group was last modified. |
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. |
+| Vectra.Group.type | String | Type of the group. |
+| Vectra.Group.members | Unknown | Members of the group. |
+| Vectra.Group.members.id | Number | Entity ID of member. |
+| Vectra.Group.members.name | String | Entity name of member. |
+| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. |
+| Vectra.Group.members.url | String | Entity URL of member. |
+| Vectra.Group.members.uid | String | Entity UID of member. |
+| Vectra.Group.rules.triage_category | String | Triage category of rule. |
+| Vectra.Group.rules.id | Number | Id of the rule. |
+| Vectra.Group.rules.description | String | Description of the rule. |
+| Vectra.Group.importance | String | Importance level of the group. |
+| Vectra.Group.cognito_managed | Boolean | Whether the group is managed by Cognito or not. |
 
 #### Command Example
+
 ```!vectra-group-list```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2469,9 +2526,11 @@ Returns a list of all groups.
   }
 }
 ```
+
 #### Human Readable Output
 
 >### Groups Table
+>
 >|Group ID|Name|Group Type|Description|Importance|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|---|
 >| 1 | Cognito - Box | domain | Domains used by the Box service | medium | \*\.abc\.com, \*\.xyz\.net | 2023-05-31T13:57:53Z |
@@ -2492,34 +2551,36 @@ Assign members to the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to assign members. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains" . | Required | 
+| group_id | Specify Group ID to assign members. | Required |
+| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains" . | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Group.group_id | Number | ID of the group. | 
-| Vectra.Group.id | Number | ID of the group. | 
-| Vectra.Group.name | String | Name of the group. | 
-| Vectra.Group.description | String | Description of the group. | 
-| Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
-| Vectra.Group.type | String | Type of the group. | 
-| Vectra.Group.members | Unknown | Members of the group. | 
-| Vectra.Group.members.id | Number | Entity ID of member. | 
-| Vectra.Group.members.name | String | Entity name of member. | 
-| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. | 
-| Vectra.Group.members.url | String | Entity URL of member. | 
-| Vectra.Group.members.uid | String | Entity UID of member. | 
-| Vectra.Group.rules.triage_category | String | Triage category of rule. | 
-| Vectra.Group.rules.id | Number | Id of the rule. | 
-| Vectra.Group.rules.description | String | Description of the rule. | 
+| Vectra.Group.group_id | Number | ID of the group. |
+| Vectra.Group.id | Number | ID of the group. |
+| Vectra.Group.name | String | Name of the group. |
+| Vectra.Group.description | String | Description of the group. |
+| Vectra.Group.last_modified | Date | Date when the group was last modified. |
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. |
+| Vectra.Group.type | String | Type of the group. |
+| Vectra.Group.members | Unknown | Members of the group. |
+| Vectra.Group.members.id | Number | Entity ID of member. |
+| Vectra.Group.members.name | String | Entity name of member. |
+| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. |
+| Vectra.Group.members.url | String | Entity URL of member. |
+| Vectra.Group.members.uid | String | Entity UID of member. |
+| Vectra.Group.rules.triage_category | String | Triage category of rule. |
+| Vectra.Group.rules.id | Number | Id of the rule. |
+| Vectra.Group.rules.description | String | Description of the rule. |
 
 #### Command Example
+
 ```!vectra-group-assign group_id=23 members="*.domain4.com,*.domain5.com"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2543,14 +2604,16 @@ Assign members to the specified group.
   }
 }
 ```
+
 #### Human Readable Output
 
->### Member(s) \*.domain4.com, \*.domain5.com have been assigned to the group.
->### Updated group details:
+>### Member(s) \*.domain4.com, \*.domain5.com have been assigned to the group
+>
+>### Updated group details
+>
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
 >| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com, \*\.domain4\.com, \*\.domain5\.com | 2023-09-04T06:30:01Z |
-
 
 ### vectra-group-unassign
 
@@ -2565,34 +2628,36 @@ Unassign members from the specified group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_id | Specify Group ID to unassign members. | Required | 
-| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains" . | Required | 
+| group_id | Specify Group ID to unassign members. | Required |
+| members | Member values based on the group type. Supports comma-separated values.<br/><br/>Note:<br/>If the group type is host, then the "Host IDs". <br/>If the group type is account, then "Account Names".<br/>If the group type is ip, then the list of "IPs".<br/>If the group type is domain, then the list of "Domains" . | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Vectra.Group.group_id | Number | ID of the group. | 
-| Vectra.Group.id | Number | ID of the group. | 
-| Vectra.Group.name | String | Name of the group. | 
-| Vectra.Group.description | String | Description of the group. | 
-| Vectra.Group.last_modified | Date | Date when the group was last modified. | 
-| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. | 
-| Vectra.Group.type | String | Type of the group. | 
-| Vectra.Group.members | Unknown | Members of the group. | 
-| Vectra.Group.members.id | Number | Entity ID of member. | 
-| Vectra.Group.members.name | String | Entity name of member. | 
-| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. | 
-| Vectra.Group.members.url | String | Entity URL of member. | 
-| Vectra.Group.members.uid | String | Entity UID of member. | 
-| Vectra.Group.rules.triage_category | String | Triage category of rule. | 
-| Vectra.Group.rules.id | Number | Id of the rule. | 
-| Vectra.Group.rules.description | String | Description of the rule. | 
+| Vectra.Group.group_id | Number | ID of the group. |
+| Vectra.Group.id | Number | ID of the group. |
+| Vectra.Group.name | String | Name of the group. |
+| Vectra.Group.description | String | Description of the group. |
+| Vectra.Group.last_modified | Date | Date when the group was last modified. |
+| Vectra.Group.last_modified_by | String | Name of the user who last modified the group. |
+| Vectra.Group.type | String | Type of the group. |
+| Vectra.Group.members | Unknown | Members of the group. |
+| Vectra.Group.members.id | Number | Entity ID of member. |
+| Vectra.Group.members.name | String | Entity name of member. |
+| Vectra.Group.members.is_key_asset | Boolean | Indicates key asset. |
+| Vectra.Group.members.url | String | Entity URL of member. |
+| Vectra.Group.members.uid | String | Entity UID of member. |
+| Vectra.Group.rules.triage_category | String | Triage category of rule. |
+| Vectra.Group.rules.id | Number | Id of the rule. |
+| Vectra.Group.rules.description | String | Description of the rule. |
 
 #### Command Example
+
 ```!vectra-group-unassign group_id=23 members="*.domain4.com,*.domain5.com"```
 
 #### Context Example
+
 ```json
 {
   "Vectra": {
@@ -2610,10 +2675,13 @@ Unassign members from the specified group.
   }
 }
 ```
+
 #### Human Readable Output
 
->### Member(s) \*.domain4.com, \*.domain5.com have been unassigned from the group.
->### Updated group details:
+>### Member(s) \*.domain4.com, \*.domain5.com have been unassigned from the group
+>
+>### Updated group details
+>
 >|Group ID|Name|Group Type|Description|Members|Last Modified Timestamp|
 >|---|---|---|---|---|---|
 >| 1 | xsoar-group-accout-test | domain | xsoar-group-accout-test | \*\.domain1\.net, \*\.domain2\.com, \*\.domain3\.com | 2023-09-04T07:30:01Z |

@@ -1,0 +1,12 @@
+{
+  "vmware_nsx_raw": {
+    "_raw_log": {
+      "type": "string",
+      "is_array": false
+    },
+    "parsed_fields": {
+      "type": "string",
+      "is_array": false
+    }
+  }
+}

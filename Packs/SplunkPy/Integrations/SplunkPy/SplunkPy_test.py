@@ -8,7 +8,7 @@ import SplunkPy as splunk
 from CommonServerPython import *
 from pytest_mock import MockerFixture
 from splunklib import client, results
-from splunklib.binding import AuthenticationError
+from splunklib.binding import AuthenticationError, HTTPError
 
 RETURN_ERROR_TARGET = "SplunkPy.return_error"
 
@@ -46,57 +46,57 @@ LIST_RAW = (
 RAW_WITH_MESSAGE = (
     '{"@timestamp":"2019-10-15T13:30:08.578-04:00","message":"{"TimeStamp":"2019-10-15 13:30:08",'
     '"CATEGORY_1":"CONTACT","ASSOCIATEOID":"G2N2TJETBRAAX68V","HOST":'
-    '"step-up-authentication-api.gslb.es.oneadp.com","SCOPE[4]":"PiSvcsProvider\/payroll","SCOPE[19]":'
-    '"\/api\/events\/core\/v1\/user-status","CONTEXT":"\/smsstepup","FLOW":"API","X-REAL-IP":'
+    '"step-up-authentication-api.gslb.es.oneadp.com","SCOPE[4]":"PiSvcsProvider\\/payroll","SCOPE[19]":'
+    '"\\/api\\/events\\/core\\/v1\\/user-status","CONTEXT":"\\/smsstepup","FLOW":"API","X-REAL-IP":'
     '"2.2.2.2","PRODUCT_CODE":"WFNPortal","X-FORWARDED-PROTO":"http","ERROR_ID":"4008",'
-    '"SCOPE[23]":"\/security\/notification-communication-response-value.accept","REQ_URL":'
-    '"http:\/\/step-up-authentication-api.gslb.es.blabla.com\/smsstepup\/events\/core\/v1\/step-up-'
-    'user-authorization-request.evaluate","SCOPE[35]":"autopay\/payroll\/v1\/cafeteria-plan-'
-    'configurations\/{configurationItemID}","SCOPE_MATCHED":"Y","SCOPE[43]":"communication\/n'
-    'otification-message-template.add","SCOPE[11]":"\/ISIJWSUserSecurity","SCOPE[27]":"autopay\/events'
-    '\/payroll\/v1\/earning-configuration.add","ORGOID":"G2SY6MR3ATKA232T","SCOPE[8]":"\/'
-    'ISIJWSAssociatesService","SCOPE[39]":"autopay\/payroll\/v1\/earning-configurations",'
-    '"SETUP_SELF":"N","SCOPE[47]":"communication\/notification.publish","SCOPE[15]":"'
-    '\/OrganizationSoftPurge","X-FORWARDED-HOST":"step-up-authentication-api.gslb.es.blabla.com",'
+    '"SCOPE[23]":"\\/security\\/notification-communication-response-value.accept","REQ_URL":'
+    '"http:\\/\\/step-up-authentication-api.gslb.es.blabla.com\\/smsstepup\\/events\\/core\\/v1\\/step-up-'
+    'user-authorization-request.evaluate","SCOPE[35]":"autopay\\/payroll\\/v1\\/cafeteria-plan-'
+    'configurations\\/{configurationItemID}","SCOPE_MATCHED":"Y","SCOPE[43]":"communication\\/n'
+    'otification-message-template.add","SCOPE[11]":"\\/ISIJWSUserSecurity","SCOPE[27]":"autopay\\/events'
+    '\\/payroll\\/v1\\/earning-configuration.add","ORGOID":"G2SY6MR3ATKA232T","SCOPE[8]":"\\/'
+    'ISIJWSAssociatesService","SCOPE[39]":"autopay\\/payroll\\/v1\\/earning-configurations",'
+    '"SETUP_SELF":"N","SCOPE[47]":"communication\\/notification.publish","SCOPE[15]":"'
+    '\\/OrganizationSoftPurge","X-FORWARDED-HOST":"step-up-authentication-api.gslb.es.blabla.com",'
     '"ADP-MESSAGEID":"a1d57ed2-1fe6-4800-be7a-26cd89bhello","CNAME":"JRJG INC","CONTENT-LENGTH":'
-    '"584","SCOPE[31]":"autopay\/events\/payroll\/v1\/earning-configuration.remove","CID":"BSTAR00044"'
+    '"584","SCOPE[31]":"autopay\\/events\\/payroll\\/v1\\/earning-configuration.remove","CID":"BSTAR00044"'
     ',"ACTOR_UID":"ABinters@BSTAR00044","SECURE_API_MODE":"HTTPS_SECURE","X-REQUEST-ID":'
-    '"2473a981bef27bc8444e510adc12234a","SCOPE[1]":"AVSSCP\/Docstash\/Download","SCOPE[18]":'
-    '"\/api\/events\/core\/v1\/product-role.assign","BLOCK_SESSION":"Y","CONSUMER_ID":'
-    '"ab2e715e-41c4-43d6-bff7-fc2d713hello","SCOPE[34]":"autopay\/payroll\/v1\/cafeteria-plan-'
-    'configurations","SCOPE[46]":"communication\/notification-message-template.remove","MODULE":'
-    '"STEPUP_API","SCOPE[9]":"\/ISIJWSClientService","SCOPE[10]":"\/ISIJWSJobsService","SCOPE[22]":'
-    '"\/api\/person-account-registration","SCOPE[38]":"autopay\/payroll\/v1\/deposit-configurations",'
-    '"SUBJECT_ORGOID":"G2SY6MR3ATKA232T","SCOPE[5]":"\/Associate","SCOPE[14]":"\/Organization",'
-    '"SCOPE[26]":"WFNSvcsProvider\/payrollPi","EVENT_ID":"9ea87118-5679-5b0e-a67f-1abd8ccabcde",'
-    '"SCOPE[30]":"autopay\/events\/payroll\/v1\/earning-configuration.payroll-accumulators.modify",'
-    '"X-FORWARDED-PORT":"80","SCOPE[42]":"autopay\/payroll\/v1\/worker-employment-records","JTI":'
+    '"2473a981bef27bc8444e510adc12234a","SCOPE[1]":"AVSSCP\\/Docstash\\/Download","SCOPE[18]":'
+    '"\\/api\\/events\\/core\\/v1\\/product-role.assign","BLOCK_SESSION":"Y","CONSUMER_ID":'
+    '"ab2e715e-41c4-43d6-bff7-fc2d713hello","SCOPE[34]":"autopay\\/payroll\\/v1\\/cafeteria-plan-'
+    'configurations","SCOPE[46]":"communication\\/notification-message-template.remove","MODULE":'
+    '"STEPUP_API","SCOPE[9]":"\\/ISIJWSClientService","SCOPE[10]":"\\/ISIJWSJobsService","SCOPE[22]":'
+    '"\\/api\\/person-account-registration","SCOPE[38]":"autopay\\/payroll\\/v1\\/deposit-configurations",'
+    '"SUBJECT_ORGOID":"G2SY6MR3ATKA232T","SCOPE[5]":"\\/Associate","SCOPE[14]":"\\/Organization",'
+    '"SCOPE[26]":"WFNSvcsProvider\\/payrollPi","EVENT_ID":"9ea87118-5679-5b0e-a67f-1abd8ccabcde",'
+    '"SCOPE[30]":"autopay\\/events\\/payroll\\/v1\\/earning-configuration.payroll-accumulators.modify",'
+    '"X-FORWARDED-PORT":"80","SCOPE[42]":"autopay\\/payroll\\/v1\\/worker-employment-records","JTI":'
     '"867b6d06-47cf-40ab-8dd7-bd0d57babcde","X-DOMAIN":"secure.api.es.abc.com","SOR_CODE":'
-    '"WFNPortal","SCOPE[29]":"autopay\/events\/payroll\/v1\/earning-configuration.configuration'
-    '-tags.modify","SCOPE[2]":"AVSSCP\/Docstash\/Get","OUTPUT_TYPE":"FAIL","ERR_MSG":"BLOCK_SESSION",'
-    '"TRANS_ID":"3AF-D30-7CTTCQ","SCOPE[45]":"communication\/notification-message-template.read",'
-    '"USE_HISTORY":"Y","SCHEME":"http","SCOPE[13]":"\/ISIJWSUsersService","SCOPE[21]":"\/api\/person",'
-    '"SCOPE[33]":"autopay\/events\/payroll\/v1\/worker-insurable-payments.modify","X-FORWARDED-FOR":'
-    '"8.8.8.8, 10.10.10.10, 1.2.3.4, 5.6.7.8","SCOPE[17]":"\/api\/core\/v1\/organization",'
-    '"SCOPE[25]":"\/step-up-user-authorization.initiate","SCOPE[6]":"\/Associate\/PIC","SCOPE[37]":'
-    '"autopay\/payroll\/v1\/cafeteria-plan-configurations\/{configurationItemID}\/'
-    'payroll-item-configurations\/{payrollItemID}","FLOW_TYPE":"REST","SCOPE[41]":'
-    '"autopay\/payroll\/v1\/payroll-output","CONSUMERAPPOID":"WFNPortal","RESOURCE":'
-    '"\/events\/core\/v1\/step-up-user-authorization-request.evaluate","USER-AGENT":'
-    '"Apache-HttpClient\/4.5.5 (Java\/10.0.1)","SCOPE[3]":"AVSSCP\/Docstash\/List",'
+    '"WFNPortal","SCOPE[29]":"autopay\\/events\\/payroll\\/v1\\/earning-configuration.configuration'
+    '-tags.modify","SCOPE[2]":"AVSSCP\\/Docstash\\/Get","OUTPUT_TYPE":"FAIL","ERR_MSG":"BLOCK_SESSION",'
+    '"TRANS_ID":"3AF-D30-7CTTCQ","SCOPE[45]":"communication\\/notification-message-template.read",'
+    '"USE_HISTORY":"Y","SCHEME":"http","SCOPE[13]":"\\/ISIJWSUsersService","SCOPE[21]":"\\/api\\/person",'
+    '"SCOPE[33]":"autopay\\/events\\/payroll\\/v1\\/worker-insurable-payments.modify","X-FORWARDED-FOR":'
+    '"8.8.8.8, 10.10.10.10, 1.2.3.4, 5.6.7.8","SCOPE[17]":"\\/api\\/core\\/v1\\/organization",'
+    '"SCOPE[25]":"\\/step-up-user-authorization.initiate","SCOPE[6]":"\\/Associate\\/PIC","SCOPE[37]":'
+    '"autopay\\/payroll\\/v1\\/cafeteria-plan-configurations\\/{configurationItemID}\\/'
+    'payroll-item-configurations\\/{payrollItemID}","FLOW_TYPE":"REST","SCOPE[41]":'
+    '"autopay\\/payroll\\/v1\\/payroll-output","CONSUMERAPPOID":"WFNPortal","RESOURCE":'
+    '"\\/events\\/core\\/v1\\/step-up-user-authorization-request.evaluate","USER-AGENT":'
+    '"Apache-HttpClient\\/4.5.5 (Java\\/10.0.1)","SCOPE[3]":"AVSSCP\\/Docstash\\/List",'
     '"SUB_CATEGORY_1":"worker.businessCommunication.email.change","TIME":"9","X-SCHEME":'
     '"http","ADP-CONVERSATIONID":"stY46PpweABoT5JX04CZGCeBbX8=","SCOPE[12]":'
-    '"\/ISIJWSUserSecurityService","SCOPE[24]":"\/step-up-user-authorization-request.evaluate",'
-    '"SCOPE[32]":"autopay\/events\/payroll\/v1\/retro-pay-request.add","SCOPE[44]":'
-    '"communication\/notification-message-template.change","ACTION":"POST","SCOPE[7]":'
-    '"\/AssociateSoftPurge","SCOPE[16]":"\/api\/authentication","X-ORIGINAL-URI":'
-    '"\/smsstepup\/events\/core\/v1\/step-up-user-authorization-request.evaluate","SCOPE[28]":'
-    '"autopay\/events\/payroll\/v1\/earning-configuration.change","SCOPE[36]":'
-    '"autopay\/payroll\/v1\/cafeteria-plan-configurations\/{configurationItemID}\/payroll-item'
+    '"\\/ISIJWSUserSecurityService","SCOPE[24]":"\\/step-up-user-authorization-request.evaluate",'
+    '"SCOPE[32]":"autopay\\/events\\/payroll\\/v1\\/retro-pay-request.add","SCOPE[44]":'
+    '"communication\\/notification-message-template.change","ACTION":"POST","SCOPE[7]":'
+    '"\\/AssociateSoftPurge","SCOPE[16]":"\\/api\\/authentication","X-ORIGINAL-URI":'
+    '"\\/smsstepup\\/events\\/core\\/v1\\/step-up-user-authorization-request.evaluate","SCOPE[28]":'
+    '"autopay\\/events\\/payroll\\/v1\\/earning-configuration.change","SCOPE[36]":'
+    '"autopay\\/payroll\\/v1\\/cafeteria-plan-configurations\\/{configurationItemID}\\/payroll-item'
     '-configurations","SESSION_ID":"f50be909-9e4f-408d-bf77-68499012bc35","SCOPE[20]":'
-    '"\/api\/events\/core\/v1\/user.provision","SUBJECT_AOID":"G370XX6XYCABCDE",'
+    '"\\/api\\/events\\/core\\/v1\\/user.provision","SUBJECT_AOID":"G370XX6XYCABCDE",'
     '"X-ORIGINAL-FORWARDED-FOR":"1.1.1.1, 3.3.3.3, 4.4.4.4","SCOPE[40]":'
-    '"autopay\/payroll\/v1\/employer-details"}","TXID":"3AF-D30-ABCDEF","ADP-MessageID":'
+    '"autopay\\/payroll\\/v1\\/employer-details"}","TXID":"3AF-D30-ABCDEF","ADP-MessageID":'
     '"a1d57ed2-1fe6-4800-be7a-26cd89bf686d","SESSIONID":"stY46PpweFToT5JX04CZGMeCvP8=","ORGOID":'
     '"G2SY6MR3ATKA232T","AOID":"G2N2TJETBRAAXAAA","MSGID":"a1d57ed2-1fe6-0000-be7a-26cd89bf686d"}'
 )
@@ -352,7 +352,7 @@ def test_raw_to_dict():
     assert response == EXPECTED
     assert response_with_message == EXPECTED_WITH_MESSAGE_ID
     assert list_response == {}
-    assert raw_message.get("SCOPE[29]") == "autopay\/events\/payroll\/v1\/earning-configuration.configuration-tags.modify"
+    assert raw_message.get("SCOPE[29]") == "autopay\\/events\\/payroll\\/v1\\/earning-configuration.configuration-tags.modify"
     assert isinstance(raw_message, dict)
     assert empty == {}
     assert url_test == URL_TESTING_OUT
@@ -997,6 +997,100 @@ def test_fetch_notables(mocker):
     assert not incidents[0].get("owner")
 
 
+def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "creation time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the earliest_time and latest_time fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "earliest_time" in call_args
+    assert "latest_time" in call_args
+    assert "index_earliest" not in call_args
+    assert "index_latest" not in call_args
+
+
+def test_fetch_notables_with_index_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "index time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the index_earliest and index_latest fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "index_earliest" in call_args
+    assert "index_latest" in call_args
+    assert "earliest_time" not in call_args
+    assert "latest_time" not in call_args
+
+
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
@@ -1202,27 +1296,27 @@ def test_get_notable_field_and_value(raw_field, notable_data, expected_field, ex
         ),
         ({}, "Test query name", {}, True, "Test query name"),
         (
-            {"user": "test\crusher"},
+            {"user": "test\\crusher"},
             'index="test" | where user = $user|s$',
             {},
             False,
             'index="test" | where user="test\\\\crusher"',
         ),
         (
-            {"user": "test\crusher"},
+            {"user": "test\\crusher"},
             'index="test" | where user = "$user|s$"',
             {},
             False,
             'index="test" | where user="test\\\\crusher"',
         ),
         (
-            {"countryNameA": '"test\country"', "countryNameB": '""'},
+            {"countryNameA": '"test\\country"', "countryNameB": '""'},
             'search countryA="$countryNameA|s$" countryB=$countryNameB|s$',
             {},
             False,
-            'search countryA="test\country" countryB=""',
+            'search countryA="test\\country" countryB=""',
         ),
-        ({"test": "test_user"}, "search countryA=\$this is a test\$", {}, False, "search countryA=\$this is a test\$"),
+        ({"test": "test_user"}, "search countryA=\\$this is a test\\$", {}, False, "search countryA=\\$this is a test\\$"),
     ],
     ids=[
         "search query fields in notables data and raw data",
@@ -3947,3 +4041,162 @@ def test_splunk_job_create_command(mocker, query, expected_query):
     args = {"query": query}
     splunk.splunk_job_create_command(mocked_service, args)
     mocked_create_job.assert_called_once_with(expected_query, exec_mode="normal", app="")
+
+
+def mock_service_job(sid):
+    class MockJob:
+        def __init__(self, state):
+            self.state = MagicMock()
+            self.state.content = {"dispatchState": state}
+
+    class MockResponse:
+        def __init__(self, status, reason, body):
+            self.status = status
+            self.reason = reason
+            self.body = body
+            self.headers = {}
+
+    class MockBody:
+        def __init__(self, message):
+            self.message = message
+
+        def read(self):
+            return self.message
+
+    if sid == "valid_sid":
+        return MockJob("DONE")
+    elif sid == "running_sid":
+        return MockJob("RUNNING")
+    elif sid == "error_sid":
+        raise HTTPError(MockResponse("418", "I'm a teapot", MockBody("I won't brew coffee.")))
+    else:
+        raise HTTPError(MockResponse("404", "Not Found", MockBody("Unknown sid.")))
+
+
+@patch("SplunkPy.client.Service")
+def test_splunk_job_status_valid(mock_service):
+    mock_service.job.side_effect = mock_service_job
+
+    service = mock_service
+    args = {"sid": "valid_sid"}
+    result = splunk.splunk_job_status(service, args)
+
+    assert len(result) == 1
+    assert result[0].outputs == {"SID": "valid_sid", "Status": "DONE"}
+    assert "Splunk Job Status" in result[0].readable_output
+
+
+@patch("SplunkPy.client.Service")
+def test_splunk_job_status_running(mock_service):
+    mock_service.job.side_effect = mock_service_job
+
+    service = mock_service
+    args = {"sid": "running_sid"}
+    result = splunk.splunk_job_status(service, args)
+
+    assert len(result) == 1
+    assert result[0].outputs == {"SID": "running_sid", "Status": "RUNNING"}
+    assert "Splunk Job Status" in result[0].readable_output
+
+
+@patch("SplunkPy.client.Service")
+def test_splunk_job_status_not_found(mock_service):
+    mock_service.job.side_effect = mock_service_job
+
+    service = mock_service
+    args = {"sid": "invalid_sid"}
+    result = splunk.splunk_job_status(service, args)
+
+    assert len(result) == 1
+    assert result[0].readable_output == "Not found job for SID: invalid_sid"
+
+
+@patch("SplunkPy.client.Service")
+def test_splunk_job_status_418_error(mock_service):
+    mock_service.job.side_effect = mock_service_job
+
+    service = mock_service
+    args = {"sid": "error_sid"}
+    result = splunk.splunk_job_status(service, args)
+
+    assert len(result) == 1
+    assert (
+        "Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
+        in result[0].readable_output
+    )
+
+
+@patch("SplunkPy.client.Service")
+def test_splunk_job_status_multiple_sids(mock_service):
+    mock_service.job.side_effect = mock_service_job
+
+    service = mock_service
+    args = {"sid": "valid_sid,running_sid,invalid_sid"}
+    result = splunk.splunk_job_status(service, args)
+
+    assert len(result) == 3
+    assert result[0].outputs == {"SID": "valid_sid", "Status": "DONE"}
+    assert result[1].outputs == {"SID": "running_sid", "Status": "RUNNING"}
+    assert result[2].readable_output == "Not found job for SID: invalid_sid"
+
+
+def test_splunk_search_parse_bad_chars():
+    """
+    Given:
+        The splunk search output contains a json string with invalid chars. (e.g. 0xa0, 0xd1 etc.)
+    When:
+        Attempting to parse the results from splunk search.
+    Then:
+        The parsing removes the bad chars and proceeds successfully.
+    """
+    import io
+
+    bad_search_output = b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
+{"name": "_cd"}, {"name": "_indextime"}, {"name": "_pre_msg"}, {"name": "_raw"}, {"name": "_serial"}, {"name": "_si"}, \
+{"name": "_sourcetype"}, {"name": "_time"}, {"name": "host"}, {"name": "index"}, {"name": "linecount"}, \
+{"name": "source"}, {"name": "sourcetype"}, {"name": "splunk_server"}], \
+"results": [{"Message": "Service \xd1started\xa0 successfully.", "_bkt": "main~1111~00000000-0000-0000-0000-000000000000", \
+"_cd": "1111:0000000", "_indextime": "5555555555", "_pre_msg": "04/23/2025 08:04:41 AM\\nLogName=Test log\\n\
+SourceName=Server\\nEventCode=0\\nEventType=4\\nType=Information\xa0\\nComputerName=#COMPUTERNAME#\\nTaskCategory=\
+Test log Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic", "_raw": "04/23/2025 08:04:41 AM\\nLogName=Test log\\n\
+SourceName=Server\\nEventCode=0\\nEventType=4\\nType=Information\xa0\\nComputerName=#COMPUTERNAME#\\nTaskCategory=Test log \
+Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service started successfully.\\n", "_serial": "1", \
+"_si": ["ip-000-00-00-000", "main"], "_sourcetype": "WinEventLog", "_time": "2025-04-23T05:04:41.000-03:00", \
+"host": "127.0.0.1", "index": "main", "linecount": "13", "source": "WinEventLog:Server", "sourcetype": "WinEventLog", \
+"splunk_server": "ip-000-00-00-000"}], "highlighted": {}}'
+
+    expected_res = (
+        [
+            {
+                "Message": "Service started successfully.",
+                "_bkt": "main~1111~00000000-0000-0000-0000-000000000000",
+                "_cd": "1111:0000000",
+                "_indextime": "5555555555",
+                "_pre_msg": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic"
+                ),
+                "_raw": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n"
+                    "Message=Service started successfully.\n"
+                ),
+                "_serial": "1",
+                "_si": ["ip-000-00-00-000", "main"],
+                "_sourcetype": "WinEventLog",
+                "_time": "2025-04-23T05:04:41.000-03:00",
+                "host": "127.0.0.1",
+                "index": "main",
+                "linecount": "13",
+                "source": "WinEventLog:Server",
+                "sourcetype": "WinEventLog",
+                "splunk_server": "ip-000-00-00-000",
+            }
+        ],
+        [{"Indicator": "127.0.0.1", "Type": "hostname", "Vendor": "Splunk", "Score": 0, "isTypedIndicator": True}],
+    )
+    mock_result_batch = io.BytesIO(bad_search_output)
+
+    res = splunk.parse_batch_of_results(mock_result_batch, 10, "")
+
+    assert res == expected_res
