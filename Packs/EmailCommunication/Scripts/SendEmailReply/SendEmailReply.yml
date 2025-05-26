@@ -59,6 +59,10 @@ tests:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
+dependson:
+  must:
+  - core-api-post
+  - core-api-download
 tags: []
 scripttarget: 0
 runas: DBotWeakRole
