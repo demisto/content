@@ -41,7 +41,7 @@ configuration:
   display: Max Detections to Fetch
   type: 0
   required: false
-  additionalinfo: Maximum number of detections to fetch per run. Note that XSOAR fetch process has a 5-minute timeout, so fetching large numbers of detections may cause timeouts. Recommended range is 10-1000.
+  additionalinfo: 'Maximum number of detections to fetch per run. Note that XSOAR fetch process has a 5-minute timeout, so fetching large numbers of detections may cause timeouts. Recommended range is 10-1000.'
   section: Collect
 - name: severity
   additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
