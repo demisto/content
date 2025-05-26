@@ -53,6 +53,17 @@ repos:
     - --config=nightly_ruff.toml
     args:docker_autoupdate:
     - --config=nightly_ruff.toml
+  - id: ruff
+    parallel: false
+    min_py_version: '3.7'
+    args:
+    - --version
+    args:nightly:
+    - --config=nightly_ruff.toml
+    args:ci:
+    - --config=nightly_ruff.toml
+    args:docker_autoupdate:
+    - --config=nightly_ruff.toml
 - repo: https://github.com/pre-commit/mirrors-mypy
   rev: v0.982
   hooks:
