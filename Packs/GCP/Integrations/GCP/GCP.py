@@ -4,12 +4,10 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import urllib3
+import enum
 from COOCApiModule import *
 
 urllib3.disable_warnings()
-
-# API versions
-import enum
 
 
 class GcpService(enum.Enum):
