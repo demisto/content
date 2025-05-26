@@ -1,6 +1,7 @@
 Runs a `process list` command on a remote Carbon Black sensor.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,14 +9,16 @@ Runs a `process list` command on a remote Carbon Black sensor.
 | Script Type | javascript |
 | Tags | carbon-black, endpoint |
 
-
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * cb-command-info
 * cb-command-create
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -23,5 +26,6 @@ This script uses the following commands and scripts.
 | sessionid | The ID of an active Carbon Black session. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

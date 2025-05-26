@@ -1,6 +1,7 @@
 Use rakyll/hey to test a web application with a load of requests.
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +21,7 @@ Use rakyll/hey to test a web application with a load of requests.
 | disable_redirects | Disable following of HTTP redirects. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

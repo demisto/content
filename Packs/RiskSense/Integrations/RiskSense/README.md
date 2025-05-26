@@ -2980,9 +2980,11 @@ Name: Default Group
 | RR_Crit_Test | Custom | 2019-11-19T23:41:36 | 2019-11-19T23:41:36 |
 
 ### Manual Finding Report(s) (0)
+
 __No entries.__
 
 ### Ticket(s) (0)
+
 __No entries.__
 
 ### Assessment(s) (1)
@@ -3224,6 +3226,7 @@ Gets in-depth details of a single application. The command accepts an applicatio
 |  |  |  |  |  |
 
 ### Ticket(s) (0)
+
 __No entries.__
 
 ### 8. risksense-apply-tag

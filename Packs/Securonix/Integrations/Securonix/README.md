@@ -103,6 +103,7 @@ Below Parameters are required if this option is checked:
 12. Enter the relevant values for Securonix Retry parameters "Count", "Delay" & "Delay Type".
 
 **Notes for mirroring:**
+
 - This feature is compliant with XSOAR version 6.0 and above.
 - When mirroring incidents, you can make changes in Securonix that will be reflected in Cortex XSOAR, or vice versa. You can also attach files in Securonix Incident which will then be available in the XSOAR incident.
 - The mirroring settings apply only for incidents that are fetched after applying the settings. Pre-existing comments are not fetched/mirrored at the time of incident creation.
@@ -735,7 +736,7 @@ Gets a list of activity data for the specified resource group.
 | Securonix.ActivityData.Week                      | String | Week. |
 | Securonix.ActivityData.Year                      | String | Year. |
 | Securonix.ActivityData._Indexed_At_Tdt           | String | Indexed at TDT. |
-| Securonix.ActivityData._Version_                 | String | Activity version. |
+| Securonix.ActivityData.*Version*                 | String | Activity version. |
 | Securonix.Activity.totalDocuments                | Number | Total number of events. |
 | Securonix.Activity.message                       | String | Message from the API. |
 | Securonix.Activity.queryId                       | String | Query Id for the pagination. |

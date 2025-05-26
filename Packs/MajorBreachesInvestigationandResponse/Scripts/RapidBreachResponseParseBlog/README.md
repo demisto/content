@@ -1,6 +1,7 @@
 Parse Volexity request blog
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Parse Volexity request blog
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Parse Volexity request blog
 | url | The requested URL |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

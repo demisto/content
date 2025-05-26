@@ -230,8 +230,8 @@ Fetch details of a single incident from the CyberBlindspot platform.
 | CyberBlindspot.RemoteIncident.executive_name | unknown | Executive member's name related to the breached data. |
 | CyberBlindspot.RemoteIncident.confirmation_time | unknown | The time of infringement confirmation. |
 | CyberBlindspot.RemoteIncident.risks | unknown | The potential difficulties carried by the infringement. |
-| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. | 
-| CyberBlindspot.RemoteIncident.screenshots | unknown | The screenshot evidence if available. | 
+| CyberBlindspot.RemoteIncident.incident_status | unknown | The status of the infringement incident. |
+| CyberBlindspot.RemoteIncident.screenshots | unknown | The screenshot evidence if available. |
 
 ### ctm360-cbs-incident-retrieve-screenshots
 
@@ -246,17 +246,17 @@ Retrieves screenshot evidence if available.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| files | The files to retrieve. | Required | 
+| files | The files to retrieve. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | FileName. | 
-| InfoFile.EntryID | string | The EntryID of the report. | 
-| InfoFile.Size | number | File Size. | 
-| InfoFile.Type | string | File type e.g. "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
+| InfoFile.Name | string | FileName. |
+| InfoFile.EntryID | string | The EntryID of the report. |
+| InfoFile.Size | number | File Size. |
+| InfoFile.Type | string | File type e.g. "PE". |
+| InfoFile.Info | string | Basic information of the file. |
 
 ### get-remote-data
 

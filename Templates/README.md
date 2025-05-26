@@ -1,24 +1,31 @@
-## Using the templates:
+## Using the templates
+
 Every category of integration has a unique, corresponding template. Copy the integration from its folder to a new folder under `Integrations`.
 Each template contains standard commands (such as `!ip` and `!file`), outputs (such as DBotScore, IP, Email, etc.).
 
 It also contains examples of how to use basic Demisto functions (such as return_outputs and assign_params) and Demisto code conventions.
 
 Use the template as a guideline and feel free to modify as needed.
-## Using the BaseClient:
+
+## Using the BaseClient
+
 ### Overview
+
 The BaseClient class is meant to contain all of the HTTP requests made to the API. It is used as a wrapper to the API. **Do not use the BaseClient as it is, use a new `Client` class as demonstrated below**.
 Commands in the BaseClient should call the private `BaseClient._http_request` method.
+
 ### Initiate the BaseClient
-##### Parameters:
+
+##### Parameters
+
 * *base_url (str)* **required**:  
     Base server address with suffix, for example: https://example.com/api/v2/.
-* *verify (bool)*: 
+* *verify (bool)*:
     Whether the request should verify the SSL certificate. **Default is `True`**.
-* *proxy (bool)*: 
+* *proxy (bool)*:
     Whether to run the integration using the system proxy. **Default is `False`**.
 * *ok_codes (tuple)*:
-    The request codes to accept as OK, for example: (200, 201, 204). 
+    The request codes to accept as OK, for example: (200, 201, 204).
     If you specify `None`, will use requests.Response.ok. **Default is `None`**
 * *headers (dict)*:
     The request headers, for example: `{'Accept': 'application/json'}`.
@@ -26,7 +33,9 @@ Commands in the BaseClient should call the private `BaseClient._http_request` me
 * *auth (dict or tuple)*:
     The request authorization, for example: (username, password).
     **Default is `None`**
-##### Example:
+
+##### Example
+
 ```python
 base_client = BaseClient(
     'https://example.com/api/v2/',
@@ -38,8 +47,11 @@ base_client = BaseClient(
 ```
 
 #### **the _http_request method**
+
 _http_request is a universal method that can handle any request and throw standard errors if needed. The format is such that users (and the developers) can understand.
-##### Parameters:
+
+##### Parameters
+
 * method (str) **required**:
     The HTTP method, for example, GET, POST, and so on.
 
@@ -85,9 +97,12 @@ _http_request is a universal method that can handle any request and throw standa
 The method returns depends on the resp_type parameter
 can be ``dict``, ``str``, ``requests.Response`` or ``ElemntTree``
 
-## How to use in integration:
+## How to use in integration
+
 Never use raw `BaseClient`. Base client is meant to be inherited from.
-#### Example:
+
+#### Example
+
 ```python
 class Client(BaseClient):
     def get_something(self, id_of_something: str) -> dict:
@@ -128,14 +143,18 @@ if __name__ == 'builtins':
     main()
 ```
 
-#### Break in to code flow:
+#### Break in to code flow
+
 1. **Running main:**
+
    ```python
     # Runs main when running command in Demisto
     if __name__ == 'builtins':
         main()
     ```
+
 2. **Setting up enviroment in main function:**
+
    ```python
    def main():
         # Gets command name from demisto, lets say command is 'get-something'
@@ -163,7 +182,9 @@ if __name__ == 'builtins':
         # Run the command 
         return_outputs(*commands[command](client, demisto.args()))
     ```
+
 3. **Running the desired command:**
+
    ```python
    def get_something_command(client: Client, args: Dict) -> Tuple(str, dict, dict):
         # Gets argument from args
@@ -176,7 +197,9 @@ if __name__ == 'builtins':
             return readable_output, outputs, raw_response
         return f'No results for something ID: {id_of_something}', None, None
     ```
+
 4. **Setting up arguments for `_http_request` and running function:**
+
    ```python
        def get_something(self, id_of_something: str) -> dict:
         suffix = 'something'
@@ -185,4 +208,5 @@ if __name__ == 'builtins':
         }
         return self._http_request('GET', suffix, params=params)
     ```
+
 5. **Collapsing back to the `return_outputs` function**

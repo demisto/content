@@ -626,9 +626,10 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 
 #### Human Readable Output
 <!-- markdownlint-disable MD005 -->
-># 123.123.123.123 -  SUCCESS 
->  * net_api: cliconf
->  * net_config: !
+># 123.123.123.123 -  SUCCESS
+>
+> * net_api: cliconf
+> * net_config: !
 >! Last configuration change at 08:56:26 UTC Sun Jul 11 2021 by admin
 >!
 >version 15.7
@@ -801,120 +802,128 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >   * net_system: ios
 >   * net_version: 15.7(3)M3
 >   * discovered_interpreter_python: /usr/local/bin/python
->  > * ## Net_All_Ipv4_Addresses
+>  >
+> > * ## Net_All_Ipv4_Addresses
 >
->   * 0: 123.123.123.123
->    * 1: 192.168.0.2
->  > * ## Net_All_Ipv6_Addresses
+> * 0: 123.123.123.123
+> * 1: 192.168.0.2
+>  >
+> > * ## Net_All_Ipv6_Addresses
 >
->   * 0: 1:11:11:11
+> * 0: 1:11:11:11
 >
->   * ## Net_Filesystems>
->    * 0: flash0:
->  > * ## Net_Filesystems_Info
+> * ## Net_Filesystems>
 >
->   * ### Flash0
+> * 0: flash0:
+>  >
+> > * ## Net_Filesystems_Info
 >
->     * spacefree_kb: 1941968.0
->      * spacetotal_kb: 2092496.0
->  > * ## Net_Gather_Network_Resources
->  > * ## Net_Gather_Subset
+> * ### Flash0
 >
->   * 0: interfaces
->    * 1: default
->    * 2: hardware
->    * 3: config
->  > * ## Net_Interfaces
+>   * spacefree_kb: 1941968.0
+>   * spacetotal_kb: 2092496.0
+>  >
+> > * ## Net_Gather_Network_Resources
+>  >
+> > * ## Net_Gather_Subset
 >
->   * ### Gigabitethernet0/0
+> * 0: interfaces
+> * 1: default
+> * 2: hardware
+> * 3: config
+>  >
+> > * ## Net_Interfaces
 >
->     * bandwidth: 1000000
->     * description: None
->     * duplex: Auto
->     * lineprotocol: up
->     * macaddress: 0c05.2bf9.3e00
->     * mediatype: RJ45
->     * mtu: 1500
->     * operstatus: up
->     * type: iGbE
+> * ### Gigabitethernet0/0
 >
->     * #### Ipv4
+>   * bandwidth: 1000000
+>   * description: None
+>   * duplex: Auto
+>   * lineprotocol: up
+>   * macaddress: 0c05.2bf9.3e00
+>   * mediatype: RJ45
+>   * mtu: 1500
+>   * operstatus: up
+>   * type: iGbE
 >
->     * #### List
+>   * #### Ipv4
 >
->       * address: 123.123.123.123
->       * subnet: 24
+>   * #### List
 >
->   * ### Gigabitethernet0/1
+>     * address: 123.123.123.123
+>     * subnet: 24
 >
->     * bandwidth: 1000000
->     * description: None
->     * duplex: Auto
->     * lineprotocol: down
->     * macaddress: 0c05.2bf9.3e01
->     * mediatype: RJ45
->     * mtu: 1500
->     * operstatus: administratively down
->     * type: iGbE
+> * ### Gigabitethernet0/1
 >
->     * #### Ipv4
+>   * bandwidth: 1000000
+>   * description: None
+>   * duplex: Auto
+>   * lineprotocol: down
+>   * macaddress: 0c05.2bf9.3e01
+>   * mediatype: RJ45
+>   * mtu: 1500
+>   * operstatus: administratively down
+>   * type: iGbE
 >
->   * ### Gigabitethernet0/2
+>   * #### Ipv4
 >
->     * bandwidth: 1000000
->     * description: Configured and Merged by Ansible Network
->     * duplex: Auto
->     * lineprotocol: down
->     * macaddress: 0c05.2bf9.3e02
->     * mediatype: RJ45
->     * mtu: 1500
->     * operstatus: down
->     * type: iGbE
+> * ### Gigabitethernet0/2
 >
->     * #### Ipv4
+>   * bandwidth: 1000000
+>   * description: Configured and Merged by Ansible Network
+>   * duplex: Auto
+>   * lineprotocol: down
+>   * macaddress: 0c05.2bf9.3e02
+>   * mediatype: RJ45
+>   * mtu: 1500
+>   * operstatus: down
+>   * type: iGbE
 >
->     * #### List
+>   * #### Ipv4
 >
->       * address: 192.168.0.2
->       * subnet: 24
+>   * #### List
 >
->   * ### Gigabitethernet0/3
+>     * address: 192.168.0.2
+>     * subnet: 24
 >
->     * bandwidth: 100000
->     * description: Configured and Merged by Ansible Network
->     * duplex: Full
->     * lineprotocol: down
->     * macaddress: 0c05.2bf9.3e03
->     * mediatype: RJ45
->     * mtu: 2800
->     * operstatus: administratively down
->     * type: iGbE
+> * ### Gigabitethernet0/3
 >
->     * #### Ipv4
+>   * bandwidth: 100000
+>   * description: Configured and Merged by Ansible Network
+>   * duplex: Full
+>   * lineprotocol: down
+>   * macaddress: 0c05.2bf9.3e03
+>   * mediatype: RJ45
+>   * mtu: 2800
+>   * operstatus: administratively down
+>   * type: iGbE
 >
->     * #### Ipv6
+>   * #### Ipv4
 >
->     * #### List
+>   * #### Ipv6
 >
->       * address: 1:11:11:11
->       * subnet: 11:11:11:11:11:11:11:11/64 [TEN]
+>   * #### List
 >
->   * ### Gigabitethernet0/3.100
+>     * address: 1:11:11:11
+>     * subnet: 11:11:11:11:11:11:11:11/64 [TEN]
 >
->     * bandwidth: 100000
->     * description: None
->     * duplex: None
->     * lineprotocol: down
->     * macaddress: 0c05.2bf9.3e03
->     * mediatype: None
->     * mtu: 2800
->     * operstatus: administratively down
->     * type: iGbE
+> * ### Gigabitethernet0/3.100
 >
->     * #### Ipv4
+>   * bandwidth: 100000
+>   * description: None
+>   * duplex: None
+>   * lineprotocol: down
+>   * macaddress: 0c05.2bf9.3e03
+>   * mediatype: None
+>   * mtu: 2800
+>   * operstatus: administratively down
+>   * type: iGbE
 >
->   * ## Net_Neighbors>
->   * ## Network_Resources
+>   * #### Ipv4
+>
+> * ## Net_Neighbors>
+>
+> * ## Network_Resources
 
 <!-- markdownlint-enable MD005 -->
 

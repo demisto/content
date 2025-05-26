@@ -1,6 +1,7 @@
 Aggregate entries from multiple sources into AttributionUser
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Aggregate entries from multiple sources into AttributionUser
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Expanse Attribution Subplaybook
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,6 +29,7 @@ This script is used in the following playbooks and scripts.
 | sightings_fields | Comma separated list of field names to be considered sighting counts. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

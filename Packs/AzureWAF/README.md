@@ -1,24 +1,20 @@
-# Azure Web Application Firewall 
-
+# Azure Web Application Firewall
 
 <~XSOAR> [Azure WAF Integration](https://xsoar.pan.dev/docs/reference/integrations/azure-waf) </~XSOAR>
 
 ## Overview
 
-Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting. 
+Azure Web Application Firewall (WAF) is designed to actively shield your web applications from common web exploits and vulnerabilities, such as SQL injection and cross-site scripting.
 
-It operates as an application-level firewall, focusing on web application traffic. 
+It operates as an application-level firewall, focusing on web application traffic.
 
 Azure WAF integrates with Azure services like Azure Application Gateway, Azure Front Door, and Azure CDN.
 
-
-
 <~XSIAM>
 
-### This pack includes:
+### This pack includes
 
 - Log Normalization - XDM mapping for key event types.
-
 
 ### Supported log categories
 
@@ -29,18 +25,14 @@ Azure WAF integrates with Azure services like Azure Application Gateway, Azure F
 | FrontDoorAccessLog | [Frontdoor Access Log](https://learn.microsoft.com/en-us/azure/frontdoor/monitor-front-door?pivots=front-door-standard-premium#access-log) |
 | FrontDoorWebApplicationFirewallLog | [Frontdoor Web Application Firewall Log](https://learn.microsoft.com/en-us/azure/web-application-firewall/afds/waf-front-door-monitor?pivots=front-door-standard-premium) |
 
-
-
-### Supported Timestamp Formats:
+### Supported Timestamp Formats
 
 1. MMM dd yyyy HH:mm:ss
 2. yyyy-MM-ddThh:mm:ssEz
 3. yyyy-MM-ddThh:mm:ssZ
 4. yyyy-MM-ddThh:mm:ss.E7SZ
 
-
-For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone. 
-
+For *msft_azure_waf_raw*, timestamp ingestion is according to the fields below in UTC (00:00) time zone.
 
 - timeStamp
 - timeStamp_t
@@ -54,11 +46,9 @@ Examples:
 - 2025-05-03T00:27:53Z
 - 2025-05-02T13:26:25.3391768Z
 
-
-#### Time offsets from UTC is supported. 
+#### Time offsets from UTC is supported
 
 See [RFC 3339](https://datatracker.ietf.org/doc/html/rfc3339) for more information.
-
 
 ***
 
@@ -77,7 +67,7 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 
 1. Sign in to the **Microsoft Entra admin center**.
 2. Navigate to **Identity** &rarr; **Monitoring & health** &rarr; **Diagnostic settings**.
-    - To stream Front Door logs, select the relevant Front Door profile 
+    - To stream Front Door logs, select the relevant Front Door profile
     - Within the profile, navigate to **Monitoring**, and select **Diagnostic Setting**.
     - Select the log options for FrontDoorAccessLog and FrontDoorWebApplicationFirewallLog.
 3. Select **+ Add diagnostic setting** to create a new integration or select **Edit setting** for an existing integration.
@@ -85,24 +75,22 @@ To configure Microsoft Azure WAF to send logs to Cortex XSIAM, follow the below 
 5. Select the log categories that you want to stream. Refer to the **Log Normalization** section for the supported log categories for normalization.
 6. Select the streaming and storing method.
 
-   6.1. For Event Hub: 
+   6.1. For Event Hub:
    - Click the **Stream to an event hub** checkbox.
    - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
    - Under **Subscription** choose the relevant Azure subscription.
    - Under **Event Hub Namespace** select the event hub namespace.
    - (Optional) Select event hub name.
-   
+
    6.2. For Log Analytics:
-   - Click the **Send To Log Analytics** checkbox. 
+   - Click the **Send To Log Analytics** checkbox.
    - (Optional) Click **Archive to a storage account** to save the diagnostic logs.
    - Under **Subscription** choose the relevant Azure subscription.
    - Under **Log Analytics Workspace** select the Log Analytics workspace to store the logs.
 
-
 For more information, refer to Microsoft's official [documentation](https://learn.microsoft.com/en-us/entra/identity/monitoring-health/howto-stream-logs-to-event-hub).
 
 For more information on creating a Log Analytics workspace, see [Create a Log Analytics workspace](https://learn.microsoft.com/en-us/azure/azure-monitor/logs/quick-create-workspace?tabs=azure-portal).
-
 
 ### Cortex XSIAM side
 
