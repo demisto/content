@@ -1,4 +1,4 @@
-TBD.
+The Cortex Platform Core integration uses the Cortex API to provide commands for accessing essential services and capabilities of the Cortex Platform.
 
 ## Configure Cortex Platform Core in Cortex
 
