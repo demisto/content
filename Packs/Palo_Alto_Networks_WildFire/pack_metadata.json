@@ -2,7 +2,7 @@
     "name": "WildFire by Palo Alto Networks",
     "description": "Perform malware dynamic analysis",
     "support": "xsoar",
-    "currentVersion": "2.1.58",
+    "currentVersion": "2.1.59",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -21,7 +21,7 @@
         "platform"
     ],
     "supportedModules": [
-        "C3",        
+        "C3",
         "X0",
         "X1",
         "X3",
