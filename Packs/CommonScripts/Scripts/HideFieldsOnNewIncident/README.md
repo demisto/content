@@ -1,5 +1,7 @@
 Hides incident fields for new incidents (post application of the script), and displays it in edit mode.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Hides incident fields for new incidents (post application of the script), and di
 | Cortex XSOAR Version | 3.6.0+ |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +20,6 @@ Hides incident fields for new incidents (post application of the script), and di
 | field | The field definition object. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
