@@ -297,15 +297,19 @@ def get_events(client_function: Callable, event_type: str, last_run_per_id: dict
 def get_events_command(client: Client, event_type: str, last_run: dict, limit: int) -> tuple[list, CommandResults]:
     if event_type == "admin_audits":
         results = get_admin_audits(client, last_run, limit)  # type: ignore
+        demisto.debug(f"[test] get_admin_audits {results=}")
         events_list = list(chain(*results.values()))
     else:
         if event_type == "policy_audits":
             results = get_events(client.get_policy_audits, "policy_audits", last_run, limit)  # type: ignore
+            demisto.debug(f"[test] policy_audits {results=}")
         if event_type == "detailed_events":
             results = get_events(client.get_events, "detailed_events", last_run, limit)  # type: ignore
+            demisto.debug(f"[test] detailed_events {results=}")
         events_list_of_lists = [value.get("events", []) for value in results.values()]  # type: ignore
         events_list = list(chain(*events_list_of_lists))
 
+        demisto.debug(f"[test] {events_list=}")
     human_readable = tableToMarkdown(string_to_table_header(event_type), events_list)
 
     return events_list, CommandResults(readable_output=human_readable, raw_response=events_list)
@@ -328,7 +332,7 @@ def fetch_events(
     """
     events: list = []
     demisto.info(f"Start fetching last run: {last_run}")
-
+    demisto.debug(f"Start fetching last run: {last_run}")
     if enable_admin_audits:
         get_admin_audits_items = get_admin_audits(client, last_run, max_fetch).items()
         demisto.debug(f"[test] {get_admin_audits_items=}")
@@ -352,7 +356,7 @@ def fetch_events(
             events.extend(detailed_events)
 
     demisto.info(f"Sending len {len(events)} to XSIAM. updated_next_run={last_run}.")
-
+    demisto.debug(f"Sending len {len(events)} to XSIAM. updated_next_run={last_run}.")
     return events, last_run
 
 
@@ -394,13 +398,13 @@ def main():  # pragma: no cover
     proxy = params.get("proxy", False)
     max_fetch = arg_to_number(args.get("limit") or params.get("max_fetch") or DEFAULT_LIMIT)
     max_limit = arg_to_number(args.get("limit", 5))
-
+    demisto.debug(f"[test] {verify_certificate=}, {proxy=}, {max_fetch=}, {max_limit=}")
     if not 0 < max_fetch <= MAX_FETCH:  # type: ignore
         demisto.debug(f"`max_fetch` is not in the correct value, setting it to {DEFAULT_LIMIT}.")
         max_fetch = DEFAULT_LIMIT
 
     demisto.info(f"Command being called is {command}")
-
+    demisto.debug(f"Command being called is {command}")
     try:
         client = Client(
             base_url=base_url,
@@ -416,11 +420,15 @@ def main():  # pragma: no cover
         )
 
         set_ids = get_set_ids_by_set_names(client, set_names)
+        demisto.debug(f"[test] {set_ids=}")
         if command != "fetch-events" or not demisto.getLastRun():
+            demisto.debug("[test] command is not fetch-events or not getlastrun")
             from_date = args.get("from_date") or datetime.now() - timedelta(hours=3)
             last_run = create_last_run(set_ids, prepare_datetime(from_date))
+            demisto.debug(f"[test] #1 {last_run=}")
         else:
             last_run = demisto.getLastRun()
+            demisto.debug(f"[test] #2 {last_run=}")
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -447,8 +455,11 @@ def main():  # pragma: no cover
 
         elif command in "fetch-events":
             events, next_run = fetch_events(client, last_run, max_fetch, enable_admin_audits)  # type: ignore
+            demisto.debug(f"[test] after fetch_events {events=}, {next_run=}")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f"[test] successfully sent events to xsiam")
             demisto.setLastRun(next_run)
+            demisto.debug(f"[test] successfully set last run")
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
