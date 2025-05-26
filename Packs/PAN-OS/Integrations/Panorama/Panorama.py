@@ -149,15 +149,25 @@ PAN_OS_ERROR_DICT = {
     "22": "Session timed out - The session for this query timed out.",
 }
 OBJ_NOT_FOUND_ERR = "Object was not found"
-# was taken from here: https://knowledgebase.paloaltonetworks.com/KCSArticleDetail?id=kA10g000000Cm5hCAC
+# was taken from here: https://docs.paloaltonetworks.com/advanced-url-filtering/administration/url-filtering-basics/url-categories
 PAN_DB_URL_FILTERING_CATEGORIES = {
     "abortion",
     "abused-drugs",
     "adult",
+    "ai-code-assistant",
+    "ai-conversational-assistant",
+    "ai-data-and-workflow-optimizer",
+    "ai-media-service",
+    "ai-meeting-assistant",
+    "ai-platform-service",
+    "ai-website-generator",
+    "ai-writing-assistant",
     "alcohol-and-tobacco",
+    "artificial-intelligence",
     "auctions",
     "business-and-economy",
     "command-and-control",
+    "compromised-website",
     "computer-and-internet-info",
     "content-delivery-networks",
     "copyright-infringement",
@@ -165,6 +175,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "dating",
     "dynamic-dns",
     "educational-institutions",
+    "encrypted-dns",
     "entertainment-and-arts",
     "extremism",
     "financial-services",
@@ -182,6 +193,7 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "job-search",
     "legal",
     "malware",
+    "marijuana",
     "military",
     "motor-vehicles",
     "music",
@@ -201,6 +213,8 @@ PAN_DB_URL_FILTERING_CATEGORIES = {
     "recreation-and-hobbies",
     "reference-and-research",
     "religion",
+    "remote-access",
+    "scanning-activity",
     "search-engines",
     "sex-education",
     "shareware-and-freeware",
@@ -516,6 +530,12 @@ def http_request(
             raise Exception("Request Failed.\n" + str(json_result["response"]))
 
     return json_result
+
+
+def convert_to_list(obj: Any):
+    if isinstance(obj, list):
+        return obj
+    return [obj]
 
 
 def parse_pan_os_un_committed_data(dictionary, keys_to_remove):
@@ -2176,10 +2196,10 @@ def panorama_edit_address_group_command(args: dict):
                 "Please specify exactly one of the following: element_to_add, element_to_remove."
             )
         address_group_prev = panorama_get_address_group(address_group_name)
-        address_group_list: List[str] = []
-        if "static" in address_group_prev:
-            if address_group_prev["static"]:
-                address_group_list = argToList(address_group_prev["static"]["member"])
+        address_group_list: list[str] = [
+            (address["#text"] if isinstance(address, dict) else address)  # in pan-os versions >11 the "address" var is a dict
+            for address in convert_to_list(dict_safe_get(address_group_prev, ["static", "member"], []))
+        ]
         if element_to_add:
             addresses = list(set(element_to_add + address_group_list))
         else:
@@ -4031,6 +4051,9 @@ def build_audit_comment_cmd(xpath, audit_comment, xml_type="set") -> str:
     """
     Builds up the needed `cmd` param to get or update the audit comment of a policy rule.
     """
+    audit_comment = html.escape(
+        html.escape(audit_comment)
+    )  # special characters need to be escaped twice to be properly stored on PANOS side.
     if xml_type == "set":
         return f"<set><audit-comment><xpath>{xpath}</xpath><comment>{audit_comment}</comment></audit-comment></set>"
     elif xml_type == "show":
@@ -9257,6 +9280,8 @@ class Topology:
                 device.timeout = DEVICE_TIMEOUT
                 topology.add_device_object(device)
             except (panos.errors.PanURLError, panos.errors.PanXapiError, HTTPError) as e:
+                if isinstance(e, panos.errors.PanURLError) and "403" in e.message:
+                    raise Exception("Request Failed. Invalid Credentials.")
                 demisto.debug(f"Failed to connected to {hostname}, {e}")
                 # If a device fails to respond, don't add it to the topology.
 

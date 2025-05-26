@@ -47,7 +47,12 @@ def executeCommand(command, args=None):
         return None
     elif command == "UnEscapeURLs":
         url = args.get("input")
-        return [{"Contents": url[0]}] if url else None
+        if not url:
+            return None
+
+        output = url[0] if url[0].startswith(('http', 'https')) else f'http://{url[0]}' # UnEscapeURLs usually adds http prefix
+        return [{"Contents": output}]
+
     return None
 
 
@@ -336,5 +341,37 @@ def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
     mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
     model_example = Model()
     model_example.top_domains = {}
-    urls, _ = get_urls_to_run("", "", ["www.google.com"], 0, model_example, [""], False)
+    urls, _, _ = get_urls_to_run("", "", ["www.google.com"], 0, model_example, [""], False)
     assert urls == []
+
+@pytest.mark.parametrize("input_url", ["http://www.example.com", "https://example.org", "example.net"])
+def test_output_url_match_requested_url(mocker, input_url):
+    """
+    Given: Some url.
+    When: Requesting to generate a prediction for that url.
+    Then: The returned prediction is for the requested url without modification.
+    """
+    model_prediction = {
+        MODEL_KEY_URL_SCORE: 0.9,
+        MODEL_KEY_LOGO_FOUND: True,
+        MODEL_KEY_SEO: True,
+        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+        MODEL_KEY_LOGIN_FORM: True,
+    }
+    model_mock = PhishingURLModelMock()
+    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
+    mocker.patch.object(demisto, 'args', return_value={'urls': input_url, 'numberDetailedReports': '1'})
+    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
+    mocker.patch.object(model_mock, 'major', return_value=0, create=True)
+    mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
+    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
+    general_summary, detailed_summary, msg_list = main()
+    assert general_summary[0][KEY_CONTENT_URL] == input_url
+    assert detailed_summary[0][KEY_CONTENT_URL] == input_url
+
+    # Check indicator matches requested url
+    entry_context = return_results_mock.mock_calls[1].args[0]["EntryContext"]
+    assert entry_context[KEY_CONTENT_DBOT_SCORE]["Indicator"] == input_url
