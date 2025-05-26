@@ -1,9 +1,9 @@
 category: Cloud Services
 description: The AWS Integration automates management and security configurations across core AWS services—including S3, EC2, EKS, RDS, IAM, and related resources.
-display: AWS
-name: AWS
+display: AWS - DEV
+name: AWS - DEV
 commonfields:
-  id: AWS
+  id: AWS - DEV
   version: -1
 configuration:
 - display: Main Role
@@ -33,14 +33,14 @@ configuration:
   additionalinfo: Max role session duration
 - display: Default AWS Access Key ID
   name: access_key_id
-  additionalinfo: "* TODO * - Requires 'Default AWS Secret Access Key' to be provided."
+  additionalinfo: "AWS Access Key ID used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Secret Access Key'. If provided, these credentials will be used as a fallback when role assumption fails."
   type: 0
   section: Connect
   advanced: true
   required: false
 - display: Default AWS Secret Access Key
   name: secret_access_key
-  additionalinfo: "* TODO * -  Requires 'Default AWS Access Key' to be provided."
+  additionalinfo: "AWS Secret Access Key used for authentication when role-based authentication is not available. Must be used together with 'Default AWS Access Key ID'. If provided, these credentials will be used as a fallback when role assumption fails."
   type: 9
   section: Connect
   advanced: true
@@ -48,47 +48,45 @@ configuration:
 - display: Default AWS region.
   name: region
   required: false
-  additionalinfo: "* TODO *"
+  additionalinfo: "The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands."
 - display: Timeout
   name: timeout
-  type: 0
-  section: Connect
-  advanced: true
-  required: false
   additionalinfo: The time in seconds till a timeout exception is reached. You can specify just the read timeout (for example 60) or also the connect timeout followed after a comma (for example 60,10). If a connect timeout is not specified, a default of 10 second will be used.
   defaultvalue: 60,10
-- display: Retries
-  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
-  name: retries
   type: 0
   section: Connect
   advanced: true
   required: false
+- display: Retries
+  name: retries
   defaultvalue: 5
+  additionalinfo: "The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time."
+  type: 0
+  section: Connect
+  advanced: true
+  required: false
 - display: PrivateLink service URL.
   name: endpoint_url
   type: 0
   section: Connect
   advanced: true
   required: false
-  additionalinfo: "* TODO *"
 - display: STS PrivateLink URL.
   name: sts_endpoint_url
   type: 0
   section: Connect
   advanced: true
   required: false
-  additionalinfo: "* TODO *"
 - display: AWS STS Regional Endpoints
+  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
   name: sts_regional_endpoint
+  options:
+  - legacy
+  - regional
   type: 15
   section: Connect
   advanced: true
   required: false
-  additionalinfo: Sets the AWS_STS_REGIONAL_ENDPOINTS environment variable to specify the AWS STS endpoint resolution logic. By default, this option is set to “legacy” in AWS. Leave empty if the environment variable is already set using server configuration.
-  options:
-  - legacy
-  - regional
 - display: Role name for cross-organization account access
   name: access_role_name
   type: 0
@@ -96,25 +94,22 @@ configuration:
   advanced: true
   required: false
   additionalinfo: The role name used to access accounts in the organization. This role name must exist in the accounts provided in "AWS Organization accounts" and be assumable with the credentials provided.
-
 - display: Use system proxy settings
   name: proxy
   type: 8
   section: Connect
   advanced: true
   required: false
-
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   section: Connect
   advanced: true
   required: false
-
 script:
   commands:
   - name: aws-s3-public-access-block-put
-    description: Creates or modifies the PublicAccessBlock configuration for an Amazon S3 bucket.
+    description: Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -183,14 +178,15 @@ script:
       predefined:
       - 'true'
       - 'false'
+  
   - name: aws-s3-bucket-acl-put
     description: Sets the access control list (ACL) permissions for an existing Amazon S3 bucket. This command allows you to define who can access the bucket and what actions they can perform, using predefined ACLs.
     arguments:
-    - description: 'The AWS account ID.'
+    - description: The AWS account ID.
       name: account_id
       required: true
     - name: region
-      description: 'The AWS region.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -242,10 +238,10 @@ script:
   - name: aws-s3-bucket-logging-put
     description: Configure logging settings for an AWS S3 bucket, allowing to monitor access to the bucket through detailed access logs that are delivered to a designated target bucket.
     arguments:
-    - description: 'The AWS account ID.'
+    - description: The AWS account ID.
       name: account_id
       required: true
-    - description: 'The AWS region.'
+    - description: The AWS region.
       name: region
       required: true
       auto: PREDEFINED
@@ -285,20 +281,20 @@ script:
     - description: 'The name of the bucket for which to set the logging parameters.'
       name: bucket
       required: true
-    - name: target-bucket
+    - name: target_bucket
       description: 'The name of the bucket where server access logs should be delivered. If this is NOT provided, logging will be disabled.'
       required: false
-    - name: target-prefix
+    - name: target_prefix
       description: 'The prefix to be used for log object keys (e.g., "logs/"). Objects will be stored as: targetBucket/targetPrefix/sourceBucket/YYYY-MM-DD-HH-MM-SS-UniqueString.'
       required: false
 
   - name: aws-s3-bucket-versioning-put
     description: Sets the versioning state of an existing bucket.
     arguments:
-    - description: 'The AWS account ID.'
+    - description: The AWS account ID.
       name: account_id
       required: true
-    - description: 'The AWS region.'
+    - description: The AWS region.
       name: region
       required: true
       auto: PREDEFINED
@@ -348,15 +344,15 @@ script:
       - 'Enabled'
       - 'Suspended'
       required: true
-  
-  - name: aws-rds-db-cluster-modify
-    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+
+  - name: aws-s3-bucket-policy-put
+    description: Applies an Amazon S3 bucket policy to an Outposts bucket.
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -392,109 +388,15 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - name: db-cluster-identifier
-      description: 'The DB cluster identifier for the cluster being modified. This parameter isn’t case-sensitive. Valid for Cluster Type: Aurora DB clusters and Multi-AZ DB clusters Constraints: Must match the identifier of an existing DB cluster.'
+    - name: bucket
+      description: 'The name of the bucket to which the policy will be applied.'
       required: true
-    - name: deletion-protection
-      description: 'Specifies whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
-    - name: enable-iam-database-authentication
-      description: 'Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
-
-  - name: aws-rds-db-cluster-snapshot-attribute-modify
-    description: Modifies the attributes associated with a DB cluster snapshot.
-    arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+    - name: policy
+      description: 'The bucket policy to apply as a JSON string.'
       required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
-      required: true
-      auto: PREDEFINED
-      predefined:
-    - name: db-cluster-snapshot-identifier
-      description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
-      required: true
-    - name: attribute-name
-      description: 'The name of the DB cluster snapshot attribute to modify.'
-      required: true
-    - name: values-to-remove
-      description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default Value all.'
-      required: false
-    - name: values-to-add
-      description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
-      required: false
-
-  - name: aws-rds-db-instance-modify
-    description: Modifies an Amazon RDS DB instance. Allows to change various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
-
-    arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
-      required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
-      required: true
-      auto: PREDEFINED
-      predefined:
-    - name: db-instance-identifier
-      description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
-      required: true
-    - name: publicly-accessible
-      description: 'Specifies whether the DB instance is publicly accessible.'
-      required: false
-      type: boolean
-
-    - name: apply-immediately
-      description: 'Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
-      required: false
-      type: boolean
-
-    - name: copy-tags-to-snapshot
-      description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
-      required: false
-    - name: backup-retention-period
-      description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
-      required: false
-    - name: enable-iam-database-authentication
-      description: 'Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
-      required: false
-    - name: deletion-protection
-      description: 'Specifies whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
-      required: false
-    - name: auto-minor-version-upgrade
-      description: 'Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
-      required: false
-    - name: multi-az
-      description: 'Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
-      required: false
-
-
-  - name: aws-rds-db-snapshot-attribute-modify
-    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
-    arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
-      required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
-      required: true
-      auto: PREDEFINED
-      predefined:
-    - name: db-snapshot-identifier
-      description: 'The identifier for the DB snapshot to modify the attributes for.'
-      required: true
-    - name: attribute-name
-      description: 'The name of the DB snapshot attribute to modify.'
-      required: true
-    - name: values-to-add
-      description: 'A list of DB snapshot attributes to add to the attribute specified by AttributeName.'
-      required: false
-    - name: values-to-remove
-      description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
-      required: false
 
   - name: aws-iam-account-password-policy-get
-    description: Get AWS account's password policy.
+    description: Get AWS account password policy.
     arguments:
     - description: The AWS account ID.
       name: account_id
@@ -531,65 +433,12 @@ script:
       description: Specifies whether IAM users are prevented from setting a new password via the Amazon Web Services Management Console after their password has expired.
       type: boolean
 
-  - name: aws-iam-account-password-policy-update
-    description: Create/update password policy.
-    execution: true
+  - name: aws-ec2-instance-metadata-options-modify
+    description: Modify the EC2 instance metadata parameters on a running or stopped instance.
     arguments:
     - description: The AWS account ID.
       name: account_id
       required: true
-    - description: The minimum number of characters allowed in an IAM user password.
-      name: minimum_password_length
-      predefined:
-      - ''
-    - auto: PREDEFINED
-      description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
-      name: require_symbols
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
-      name: require_numbers
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
-      name: require_uppercase_characters
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
-      name: require_lowercase_characters
-      predefined:
-      - 'true'
-      - 'false'
-    - auto: PREDEFINED
-      description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
-      name: allow_users_to_change_password
-      predefined:
-      - 'true'
-      - 'false'
-    - description: The number of days that an IAM user password is valid.
-      name: max_password_age
-      predefined:
-      - ''
-    - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
-      name: password_reuse_prevention
-      predefined:
-      - ''
-    - auto: PREDEFINED
-      description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
-      name: hard_expiry
-      predefined:
-      - 'true'
-      - 'false'
-
-  - name: aws-ec2-instance-metadata-options-modify
-    description: Modify the EC2 instance metadata parameters on a running or stopped instance.
-    arguments:
     - description: The AWS region.
       name: region
       required: true
@@ -642,14 +491,65 @@ script:
       predefined:
       - 'disabled'
       - 'enabled'
-  - name: aws-s3-bucket-policy-put
-    description: Applies an Amazon S3 bucket policy to an Outposts bucket.
+
+  - name: aws-iam-account-password-policy-update
+    description: Create or Update AWS account password policy.
+    execution: true
+    arguments:
+    - description: The AWS account ID.
+      name: account_id
+      required: true
+    - description: The minimum number of characters allowed in an IAM user password.
+      name: minimum_password_length
+    - auto: PREDEFINED
+      description: Specifies whether IAM user passwords must contain at least one of the non-alphanumeric characters. Can be "True" or "False".
+      name: require_symbols
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specifies whether IAM user passwords must contain at least one numeric character (0 to 9). Can be "True" or "False".
+      name: require_numbers
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specifies whether IAM user passwords must contain at least one uppercase character from the ISO basic Latin alphabet (A to Z). Can be "True" or "False".
+      name: require_uppercase_characters
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Specifies whether IAM user passwords must contain at least one lowercase character from the ISO basic Latin alphabet (a to z). Can be "True" or "False".
+      name: require_lowercase_characters
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      description: Allows all IAM users in your account to use the AWS Management Console to change their own passwords. Can be "True" or "False".
+      name: allow_users_to_change_password
+      predefined:
+      - 'true'
+      - 'false'
+    - description: The number of days that an IAM user password is valid.
+      name: max_password_age
+    - description: Specifies the number of previous passwords that IAM users are prevented from reusing.
+      name: password_reuse_prevention
+    - auto: PREDEFINED
+      description: Prevents IAM users from setting a new password after their password has expired. Can be "True" or "False".
+      name: hard_expiry
+      predefined:
+      - 'true'
+      - 'false'
+
+  - name: aws-eks-cluster-config-update
+    description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
     arguments:
     - name: account_id
-      description: AWS account ID. Will be taken from the "account" field on the asset/issue.
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
@@ -685,25 +585,298 @@ script:
       - me-south-1
       - me-central-1
       - sa-east-1
-    - name: bucket
-      description: 'The name of the bucket to which the policy will be applied.'
+    - name: cluster_name
+      description: 'The name of the Amazon EKS cluster to update.'
       required: true
-    - name: policy
-      description: 'The bucket policy to apply as a JSON string.'
-      required: true
+    - name: logging
+      description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs . By default, cluster control plane logs aren’t exported to CloudWatch Logs . e.g. \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
+      required: false
+    - name: resources_vpc_config
+      description: "A JSON representation of the VPC configuration used by the cluster control plane. e.g. \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
+      required: false
 
-    # TODO - Verify
+  - name: aws-rds-db-cluster-modify
+    description: Modifies settings for an Amazon RDS DB cluster. Allows you to update cluster settings such as port, master credentials, VPC security groups, deletion protection, and other configuration options.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: db_cluster_identifier
+      description: 'The DB cluster identifier for the cluster being modified. This parameter isn’t case-sensitive. Valid for Cluster Type: Aurora DB clusters and Multi-AZ DB clusters Constraints: Must match the identifier of an existing DB cluster.'
+      required: true
+    - name: deletion_protection
+      description: 'Specifies whether the DB cluster has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled.'
+    - name: enable_iam_database_authentication
+      description: 'Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+  
+  - name: aws-rds-db-cluster-snapshot-attribute-modify
+    description: Modifies the attributes associated with a DB cluster snapshot.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: db-cluster-snapshot-identifier
+      description: 'The identifier for the DB cluster snapshot to modify the attributes for.'
+      required: true
+    - name: attribute_name
+      description: 'The name of the DB cluster snapshot attribute to modify.'
+      required: true
+    - name: values_to_remove
+      description: 'A CSV list of DB cluster snapshot attributes to remove from the attribute specified by AttributeName. Default Value all.'
+      required: false
+    - name: values_to_add
+      description: 'A CSV list of DB cluster snapshot attributes to add to the attribute specified by AttributeName.'
+      required: false
+
+  - name: aws-rds-db-instance-modify
+    description: Modifies an Amazon RDS DB instance. Allows to change various settings of an existing DB instance, such as instance class, storage capacity, security groups, and other configuration parameters.
+
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
+    - name: db_instance_identifier
+      description: 'The identifier of DB instance to modify. This value is stored as a lowercase string.'
+      required: true
+    - name: publicly_accessible
+      description: 'Specifies whether the DB instance is publicly accessible.'
+      required: false
+      type: boolean
+    - name: apply_immediately
+      description: 'Specifies whether the modifications in this request and any pending modifications are asynchronously applied as soon as possible, regardless of the PreferredMaintenanceWindow setting for the DB instance. By default, this parameter is disabled. If this parameter is disabled, changes to the DB instance are applied during the next maintenance window. Some parameter changes can cause an outage and are applied on the next call to RebootDBInstance , or the next failure reboot.'
+      required: false
+      type: boolean
+    - name: copy_tags_to_snapshot
+      description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
+      required: false
+    - name: backup_retention_period
+      description: 'The number of days to retain automated backups. Setting this parameter to a positive number enables backups. Setting this parameter to 0 disables automated backups.'
+      required: false
+    - name: enable_iam_database_authentication
+      description: 'Specifies whether to enable mapping of Amazon Web Services Identity and Access Management (IAM) accounts to database accounts. By default, mapping isn’t enabled.'
+      required: false
+    - name: deletion_protection
+      description: 'Specifies whether the DB instance has deletion protection enabled. The database can’t be deleted when deletion protection is enabled. By default, deletion protection isn’t enabled. For more information, see Deleting a DB Instance.'
+      required: false
+    - name: auto_minor_version_upgrade
+      description: 'Specifies whether minor version upgrades are applied automatically to the DB instance during the maintenance window. An outage occurs when all the following conditions are met: The automatic upgrade is enabled for the maintenance window. A newer minor version is available. RDS has enabled automatic patching for the engine version. If any of the preceding conditions isn’t met, Amazon RDS applies the change as soon as possible and doesn’t cause an outage. For an RDS Custom DB instance, don’t enable this setting. Otherwise, the operation returns an error.'
+      required: false
+    - name: multi_az
+      description: 'Specifies whether the DB instance is a Multi-AZ deployment. Changing this parameter doesn’t result in an outage. The change is applied during the next maintenance window unless the ApplyImmediately parameter is enabled for this request. This setting doesn’t apply to RDS Custom DB instances.'
+      required: false
+
+  - name: aws-rds-db-snapshot-attribute-modify
+    description: Adds or removes permission for the specified AWS account ID to restore the specified DB snapshot.
+    arguments:
+    - name: account_id
+      description: The AWS account ID.
+      required: true
+    - name: region
+      description: The AWS region.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    - name: db_snapshot_identifier
+      description: 'The identifier for the DB snapshot to modify the attributes for.'
+      required: true
+    - name: attribute_name
+      description: 'The name of the DB snapshot attribute to modify.'
+      required: true
+    - name: values_to_add
+      description: 'A list of DB snapshot attributes to add to the attribute specified by AttributeName.'
+      required: false
+    - name: values_to_remove
+      description: 'A list of DB snapshot attributes to remove from the attribute specified by AttributeName.'
+      required: false
+
   - name: aws-ec2-security-group-ingress-revoke
     description: 'Revokes one or more ingress rules in a security group.'
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
     - name: group_id
       description: 'The ID of the security group.'
       required: true
@@ -715,13 +888,46 @@ script:
     description: 'Revokes one or more egress rules in a security group.'
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
     - name: group_id
       description: 'The ID of the security group.'
       required: true
@@ -733,13 +939,46 @@ script:
     description: 'Adds or removes permission settings for the specified snapshot.'
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
     - name: snapshot_id
       description: 'The ID of the snapshot.'
       required: true
@@ -770,13 +1009,46 @@ script:
     description: 'Modifies a single attribute of an instance.'
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
     - name: instance_id
       description: 'The ID of the instance.'
       required: true
@@ -808,13 +1080,46 @@ script:
     description: 'Modifies the specified attribute of the specified AMI.'
     arguments:
     - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
+      description: The AWS account ID.
       required: true
     - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
+      description: The AWS region.
       required: true
       auto: PREDEFINED
       predefined:
+      - us-east-1
+      - us-east-2
+      - us-west-1
+      - us-west-2
+      - af-south-1
+      - ap-east-1
+      - ap-south-2
+      - ap-southeast-3
+      - ap-southeast-5
+      - ap-southeast-4
+      - ap-south-1
+      - ap-northeast-3
+      - ap-northeast-2
+      - ap-southeast-1
+      - ap-southeast-2
+      - ap-southeast-7
+      - ap-northeast-1
+      - ca-central-1
+      - ca-west-1
+      - eu-central-1
+      - eu-west-1
+      - eu-west-2
+      - eu-south-1
+      - eu-west-3
+      - eu-south-2
+      - eu-north-1
+      - eu-central-2
+      - il-central-1
+      - mx-central-1
+      - me-south-1
+      - me-central-1
+      - sa-east-1
+    
     - name: image_id
       description: 'The ID of the AMI.'
       required: true
@@ -842,35 +1147,16 @@ script:
       description: 'A new description for the AMI.'
       required: false
 
-  - name: aws-eks-cluster-config-update
-    description: 'Updates an Amazon EKS cluster configuration. Only a single type of update can (logging / resources_vpc_config) is allowed per call.'
-    arguments:
-    - name: account_id
-      description: 'Will be taken from the "account" field on the asset/issue.'
-      required: true
-    - name: region
-      description: 'Will be taken from the "region" field on the asset/issue.'
-      required: true
-      auto: PREDEFINED
-      predefined:
-    - name: cluster_name
-      description: 'The name of the Amazon EKS cluster to update.'
-      required: true
-    - name: logging
-      description: "Enable or disable exporting the Kubernetes control plane logs for your cluster to CloudWatch Logs . By default, cluster control plane logs aren’t exported to CloudWatch Logs . e.g. \"{'clusterLogging': [{'types': ['api', 'audit', 'authenticator', 'controllerManager', 'scheduler'], 'enabled': true}]}\"."
-      required: false
-    - name: resources_vpc_config
-      description: "A JSON representation of the VPC configuration used by the cluster control plane. e.g. \"{'subnetIds': ['string'], 'securityGroupIds': ['string'], 'endpointPublicAccess': True, 'endpointPrivateAccess': True, 'publicAccessCidrs': ['string']}\"."
-      required: false
-
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
   dockerimage: demisto/boto3py3:1.0.0.3273145
-fromversion: 8.10.0
+fromversion: 5.5.0
 tests:
-- No tests (auto formatted)
-supportsquickactions: true
-isCloudProviderIntegration: true
+- No test - No playbook part of this release.
+sectionOrder:
+- Connect
+- Collect
+  
