@@ -391,4 +391,3 @@ repos:
     - id: markdownlint-cli2
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
-      exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
