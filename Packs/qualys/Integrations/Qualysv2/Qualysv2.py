@@ -1832,21 +1832,22 @@ class Client(BaseClient):
 
         return response
 
-    def get_asset_by_qid(self, qid: str) -> requests.Response:
+    def get_asset_by_qid(self, qid: str) -> str:
         """
         This method retrieves the Qualys assets associated with a specified qid.
         """
 
         self._headers.update({"Content-Type": "application/x-www-form-urlencoded"})
 
+        # params: dict[str, Any] = {"ids": "810146609", "qids": qid}
         params: dict[str, Any] = {"qids": qid}
 
         response = self._http_request(
             method="GET",
             url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
             params=params,
-            resp_type="xml",
-            timeout=60,
+            resp_type="text",
+            timeout=120,
             error_handler=self.error_handler,
         )
 
@@ -3267,7 +3268,7 @@ def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
     )
 
 
-def get_asset_by_qid(client: Client, qid: str):
+def get_asset_by_qid(client: Client, qid: str) -> CommandResults:
     """
     This function retrieves the Qualys assets associated with a specified qid.
     """
@@ -3276,25 +3277,14 @@ def get_asset_by_qid(client: Client, qid: str):
 
     response = client.get_asset_by_qid(qid=qid)
 
-    # Parse XML response
-    root = ET.fromstring(response.content)
-
-    # Extract host info
-    hosts = []
-    for host in root.findall(".//HOST"):
-        host_data = {
-            "id": host.findtext("ID"),
-            "ip": host.findtext("IP"),
-            "dns": host.findtext("DNS"),
-            "os": host.findtext("OS"),
-            "tracking_method": host.findtext("TRACKING_METHOD"),
-        }
-        hosts.append(host_data)
+    response_requested_value, _ = handle_host_list_detection_result(response)
+    assets, _ = get_detections_from_hosts(response_requested_value)
 
     return CommandResults(
-        readable_output=f"They are the {hosts=} from Qualys for the given {qid=}",
-        outputs=hosts,
-        outputs_prefix="Qualys.HostDetections",
+        readable_output=f"{len(assets)} assets are found related to the given {qid=}",
+        outputs=assets,
+        outputs_prefix="Qualys.Assets",
+        outputs_key_field="ID"
     )
 
 
@@ -3881,7 +3871,7 @@ def main():  # pragma: no cover
             return_results(get_qid_for_cve(client=client, cve=args["cve"]))
 
         elif command == "qualys-get-assets-by-qid":
-            get_asset_by_qid(client=client, qid=args["qid"])
+            return_results(get_asset_by_qid(client=client, qid=args["qid"]))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
