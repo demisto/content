@@ -1115,6 +1115,8 @@ script:
   isremotesyncin: true
   isremotesyncout: true
   ismappable: true
+defaultmapperin: Forcepoint DLP Incoming Mapper
+defaultmapperout: Forcepoint DLP Outgoing Mapper
 fromversion: 6.10.0
 tests:
   - No tests (auto formatted)
