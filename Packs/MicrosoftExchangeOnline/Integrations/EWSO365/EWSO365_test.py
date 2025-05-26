@@ -1203,18 +1203,23 @@ def test_get_items_from_folder(mocker):
     Then:
         // is added before the + for a correct hr.
     """
+
     class item:
         def __init__(self) -> None:
             self.attachments = []
+
     import EWSO365
+
     client = MagicMock()
-    mocker.patch.object(client, 'get_account', return_value=MagicMock())
-    mocker.patch.object(client, 'is_default_folder', return_value={})
-    mocker.patch.object(client, 'get_folder_by_path', return_value=MagicMock())
-    mocker.patch.object(client, 'folder.filter().order_by', return_value={})
-    mocker.patch.object(EWSO365, 'get_limited_number_of_messages_from_qs', return_value=[item()])
-    mocker.patch.object(EWSO365, 'parse_item_as_dict', return_value={'itemId': '11111+_-+'})
-    result = EWSO365.get_items_from_folder(client, 'Inbox')
-    assert result[0] == ('### Items in folder Inbox\n|sender|subject|hasAttachments|datetimeReceived'
-                         '|receivedBy|author|toRecipients'
-                         '|itemId|\n|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  | 11111\\+_-\\+ |\n')
+    mocker.patch.object(client, "get_account", return_value=MagicMock())
+    mocker.patch.object(client, "is_default_folder", return_value={})
+    mocker.patch.object(client, "get_folder_by_path", return_value=MagicMock())
+    mocker.patch.object(client, "folder.filter().order_by", return_value={})
+    mocker.patch.object(EWSO365, "get_limited_number_of_messages_from_qs", return_value=[item()])
+    mocker.patch.object(EWSO365, "parse_item_as_dict", return_value={"itemId": "11111+_-+"})
+    result = EWSO365.get_items_from_folder(client, "Inbox")
+    assert result[0] == (
+        "### Items in folder Inbox\n|sender|subject|hasAttachments|datetimeReceived"
+        "|receivedBy|author|toRecipients"
+        "|itemId|\n|---|---|---|---|---|---|---|---|\n|  |  |  |  |  |  |  | 11111\\+_-\\+ |\n"
+    )

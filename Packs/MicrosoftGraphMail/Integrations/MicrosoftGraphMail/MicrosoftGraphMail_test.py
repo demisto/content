@@ -1575,10 +1575,10 @@ def test_file_result_creator(monkeypatch, raw_attachment, legacy_name, expected_
             GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
     else:
         result = GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
-        assert result['File'] == expected_name
+        assert result["File"] == expected_name
 
 
-@pytest.mark.parametrize('client', [oproxy_client(), self_deployed_client()])
+@pytest.mark.parametrize("client", [oproxy_client(), self_deployed_client()])
 def test_get_message_command(mocker, client):
     """
     Given:
@@ -1589,19 +1589,25 @@ def test_get_message_command(mocker, client):
         // is added before the + for a correct hr.
     """
     from MicrosoftGraphMailApiModule import get_message_command
-    mocker.patch('MicrosoftGraphMail.GraphMailUtils.prepare_args', return_value={'message_id': '1234565+2345678_+-'})
-    mocker.patch('MicrosoftGraphMail.GraphMailUtils.build_mail_object', return_value={
-        "ID": 123,
-        "Subject": 123,
-        "SendTime": 123,
-        "Sender": 123,
-        "From": 123,
-        "Recipients": 123,
-        "HasAttachments": False,
-        "Body": None
-    })
-    mocker.patch.object(client, 'get_message', return_value={'userId': "1234"})
+
+    mocker.patch("MicrosoftGraphMail.GraphMailUtils.prepare_args", return_value={"message_id": "1234565+2345678_+-"})
+    mocker.patch(
+        "MicrosoftGraphMail.GraphMailUtils.build_mail_object",
+        return_value={
+            "ID": 123,
+            "Subject": 123,
+            "SendTime": 123,
+            "Sender": 123,
+            "From": 123,
+            "Recipients": 123,
+            "HasAttachments": False,
+            "Body": None,
+        },
+    )
+    mocker.patch.object(client, "get_message", return_value={"userId": "1234"})
     result = get_message_command(client, {})
-    assert result.readable_output == ('### Results for message ID 1234565\\+2345678_\\+-\n|ID|Subject|SendTime|Sender|From|'
-                                      'Recipients|HasAttachments|Body|\n|---|---|---|---|---|---|---|---|\n| 123 | 123 | 123 '
-                                      '| 123 | 123 | 123 | false |  |\n')
+    assert result.readable_output == (
+        "### Results for message ID 1234565\\+2345678_\\+-\n|ID|Subject|SendTime|Sender|From|"
+        "Recipients|HasAttachments|Body|\n|---|---|---|---|---|---|---|---|\n| 123 | 123 | 123 "
+        "| 123 | 123 | 123 | false |  |\n"
+    )
