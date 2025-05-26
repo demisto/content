@@ -40,9 +40,6 @@ configuration:
   - Email
   - URL
   - File
-  - File MD5
-  - File SHA256
-  - File SHA1
   - Account
   - CVE
   - Host
