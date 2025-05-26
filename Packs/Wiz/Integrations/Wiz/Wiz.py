@@ -1826,19 +1826,19 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
             return "Resource not found."
 
     if severity:
-        if 'filterBy' not in issue_variables:
-            issue_variables['filterBy'] = {"severity": []}
-            issue_variables['first'] = limit
-        if severity.upper() == 'CRITICAL':
-            issue_variables['filterBy']['severity'] = ['CRITICAL']
-        elif severity.upper() == 'HIGH':
-            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH']
-        elif severity.upper() == 'MEDIUM':
-            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM']
-        elif severity.upper() == 'LOW':
-            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW']
-        elif severity.upper() == 'INFORMATIONAL':
-            issue_variables['filterBy']['severity'] = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFORMATIONAL']
+        if "filterBy" not in issue_variables:
+            issue_variables["filterBy"] = {"severity": []}
+            issue_variables["first"] = limit
+        if severity.upper() == "CRITICAL":
+            issue_variables["filterBy"]["severity"] = ["CRITICAL"]
+        elif severity.upper() == "HIGH":
+            issue_variables["filterBy"]["severity"] = ["CRITICAL", "HIGH"]
+        elif severity.upper() == "MEDIUM":
+            issue_variables["filterBy"]["severity"] = ["CRITICAL", "HIGH", "MEDIUM"]
+        elif severity.upper() == "LOW":
+            issue_variables["filterBy"]["severity"] = ["CRITICAL", "HIGH", "MEDIUM", "LOW"]
+        elif severity.upper() == "INFORMATIONAL":
+            issue_variables["filterBy"]["severity"] = ["CRITICAL", "HIGH", "MEDIUM", "LOW", "INFORMATIONAL"]
         else:
             demisto.info(
                 "You should only use these severity types: CRITICAL, HIGH, MEDIUM, LOW or INFORMATIONAL "

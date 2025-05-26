@@ -5,21 +5,21 @@ from CommonServerPython import *
 import demistomock as demisto
 from urllib import parse
 
-WIZ_VERSION = '1.0.0'
-WIZ_DEFEND = 'wiz_defend'
-WIZ_DEFEND_INCIDENT_TYPE = 'WizDefend Detection'
-USER_AGENT_NAME = 'xsoar_defend'
-INTEGRATION_GUID = '8864e131-72db-4928-1293-e292f0ed699f'
-WIZ_DOMAIN_URL = ''
+WIZ_VERSION = "1.0.0"
+WIZ_DEFEND = "wiz_defend"
+WIZ_DEFEND_INCIDENT_TYPE = "WizDefend Detection"
+USER_AGENT_NAME = "xsoar_defend"
+INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
+WIZ_DOMAIN_URL = ""
 
-DEMISTO_OCCURRED_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_LIMIT = 250
 API_MIN_FETCH = 10
 API_MAX_FETCH = 1000
 MAX_DAYS_FIRST_FETCH_DETECTIONS = 5
 FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
-DEFAULT_FETCH_BACK = '12 hours'
+DEFAULT_FETCH_BACK = "12 hours"
 
 # Threats
 THREATS_DAYS_MIN = 1
@@ -28,177 +28,178 @@ THREATS_DAYS_DEFAULT = 5
 
 
 class WizInputParam:
-    DETECTION_ID = 'detection_id'
-    ISSUE_ID = 'issue_id'
-    TYPE = 'type'
-    PLATFORM = 'platform'
-    ORIGIN = 'origin'
-    CLOUD_ACCOUNT_OR_CLOUD_ORG = 'cloud_account_or_cloud_organization'
-    RESOURCE_ID = 'resource_id'
-    SEVERITY = 'severity'
-    STATUS = 'status'
-    CREATION_MINUTES_BACK = 'creation_minutes_back'
-    CREATION_DAYS_BACK = 'creation_days_back'
-    RULE_MATCH_ID = 'rule_match_id'
-    RULE_MATCH_NAME = 'rule_match_name'
-    PROJECT_ID = 'project'
+    DETECTION_ID = "detection_id"
+    ISSUE_ID = "issue_id"
+    TYPE = "type"
+    PLATFORM = "platform"
+    ORIGIN = "origin"
+    CLOUD_ACCOUNT_OR_CLOUD_ORG = "cloud_account_or_cloud_organization"
+    RESOURCE_ID = "resource_id"
+    SEVERITY = "severity"
+    STATUS = "status"
+    CREATION_MINUTES_BACK = "creation_minutes_back"
+    CREATION_DAYS_BACK = "creation_days_back"
+    RULE_MATCH_ID = "rule_match_id"
+    RULE_MATCH_NAME = "rule_match_name"
+    PROJECT_ID = "project"
 
 
 class WizApiResponse:
-    DATA = 'data'
-    DETECTIONS = 'detections'
-    ISSUES = 'issues'
-    NODES = 'nodes'
-    PAGE_INFO = 'pageInfo'
-    HAS_NEXT_PAGE = 'hasNextPage'
-    END_CURSOR = 'endCursor'
-    ACCESS_TOKEN = 'access_token'
-    FILTER_BY = 'filterBy'
-    TYPE = 'type'
-    ERRORS = 'errors'
-    MESSAGE = 'message'
+    DATA = "data"
+    DETECTIONS = "detections"
+    ISSUES = "issues"
+    NODES = "nodes"
+    PAGE_INFO = "pageInfo"
+    HAS_NEXT_PAGE = "hasNextPage"
+    END_CURSOR = "endCursor"
+    ACCESS_TOKEN = "access_token"
+    FILTER_BY = "filterBy"
+    TYPE = "type"
+    ERRORS = "errors"
+    MESSAGE = "message"
 
 
 class WizApiInputFields:
-    API_ENDPOINT = 'api_endpoint'
-    AUTH_ENDPOINT = 'auth_endpoint'
-    CLIENT_ID = 'client_id'
-    CLIENT_SECRET = 'client_secret'
+    API_ENDPOINT = "api_endpoint"
+    AUTH_ENDPOINT = "auth_endpoint"
+    CLIENT_ID = "client_id"
+    CLIENT_SECRET = "client_secret"
 
 
 class DemistoParams:
-    CREDENTIALS = 'credentials'
-    IDENTIFIER = 'identifier'
-    PASSWORD = 'password'
-    AUTH_ENDPOINT = 'auth_endpoint'
-    API_ENDPOINT = 'api_endpoint'
-    MAX_FETCH = 'max_fetch'
-    FIRST_FETCH = 'first_fetch'
-    TIME = 'time'
-    NAME = 'name'
-    OCCURRED = 'occurred'
-    RAW_JSON = 'rawJSON'
-    SEVERITY = 'severity'
-    MIRROR_ID = 'dbotMirrorId'
-    AFTER_TIME = 'after_time'
-    URL = 'url'
-    IS_FETCH = 'isFetch'
-    INCIDENT_FETCH_INTERVAL = 'incidentFetchInterval'
-    INCIDENT_TYPE = 'incidentType'
+    CREDENTIALS = "credentials"
+    IDENTIFIER = "identifier"
+    PASSWORD = "password"
+    AUTH_ENDPOINT = "auth_endpoint"
+    API_ENDPOINT = "api_endpoint"
+    MAX_FETCH = "max_fetch"
+    FIRST_FETCH = "first_fetch"
+    TIME = "time"
+    NAME = "name"
+    OCCURRED = "occurred"
+    RAW_JSON = "rawJSON"
+    SEVERITY = "severity"
+    MIRROR_ID = "dbotMirrorId"
+    AFTER_TIME = "after_time"
+    URL = "url"
+    IS_FETCH = "isFetch"
+    INCIDENT_FETCH_INTERVAL = "incidentFetchInterval"
+    INCIDENT_TYPE = "incidentType"
 
 
 class WizApiVariables:
-    FIRST = 'first'
-    AFTER = 'after'
-    FILTER_BY = 'filterBy'
-    FILTER_SCOPE = 'filterScope'
-    ORDER_BY = 'orderBy'
-    STATUS = 'status'
-    CREATED_AT = 'createdAt'
-    AFTER_TIME = 'after'
-    FIELD = 'field'
-    DIRECTION = 'direction'
-    TYPE = 'type'
-    PROVIDER_UNIQUE_ID = 'providerUniqueId'
-    RELATED_ENTITY = 'relatedEntity'
-    CLOUD_PLATFORM = 'cloudPlatform'
-    ID = 'id'
-    ISSUE_ID = 'issueId'
-    EQUALS = 'equals'
-    SEVERITY = 'severity'
-    IN_LAST = 'inLast'
-    AMOUNT = 'amount'
-    UNIT = 'unit'
-    RESOURCE = 'resource'
-    MATCHED_RULE = 'matchedRule'
-    MATCHED_RULE_NAME = 'matchedRuleName'
-    PROJECT_ID = 'projectId'
-    PROJECT = 'project'
-    NAME = 'name'
-    RULE = 'rule'
-    RULE_MATCH = 'ruleMatch'
-    ORIGIN = 'origin'
-    EVENT_ORIGIN = 'eventOrigin'
-    CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID = 'cloudAccountOrCloudOrganizationId'
-    URL = 'url'
-    THREAT_RESOURCE = 'threatResource'
-    IDS = 'ids'
-    FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = 'fetchCloudAccountsAndCloudOrganizations'
+    FIRST = "first"
+    AFTER = "after"
+    FILTER_BY = "filterBy"
+    FILTER_SCOPE = "filterScope"
+    ORDER_BY = "orderBy"
+    STATUS = "status"
+    CREATED_AT = "createdAt"
+    AFTER_TIME = "after"
+    FIELD = "field"
+    DIRECTION = "direction"
+    TYPE = "type"
+    PROVIDER_UNIQUE_ID = "providerUniqueId"
+    RELATED_ENTITY = "relatedEntity"
+    CLOUD_PLATFORM = "cloudPlatform"
+    ID = "id"
+    ISSUE_ID = "issueId"
+    EQUALS = "equals"
+    SEVERITY = "severity"
+    IN_LAST = "inLast"
+    AMOUNT = "amount"
+    UNIT = "unit"
+    RESOURCE = "resource"
+    MATCHED_RULE = "matchedRule"
+    MATCHED_RULE_NAME = "matchedRuleName"
+    PROJECT_ID = "projectId"
+    PROJECT = "project"
+    NAME = "name"
+    RULE = "rule"
+    RULE_MATCH = "ruleMatch"
+    ORIGIN = "origin"
+    EVENT_ORIGIN = "eventOrigin"
+    CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID = "cloudAccountOrCloudOrganizationId"
+    URL = "url"
+    THREAT_RESOURCE = "threatResource"
+    IDS = "ids"
+    FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = "fetchCloudAccountsAndCloudOrganizations"
 
 
 class WizThreatVariables:
-    ALL_ISSUE_DETECTIONS = 'ALL_ISSUE_DETECTIONS'
-    THREAT_DETECTION = 'THREAT_DETECTION'
+    ALL_ISSUE_DETECTIONS = "ALL_ISSUE_DETECTIONS"
+    THREAT_DETECTION = "THREAT_DETECTION"
 
 
 class WizStatus:
-    OPEN = 'OPEN'
-    IN_PROGRESS = 'IN_PROGRESS'
-    REJECTED = 'REJECTED'
-    RESOLVED = 'RESOLVED'
+    OPEN = "OPEN"
+    IN_PROGRESS = "IN_PROGRESS"
+    REJECTED = "REJECTED"
+    RESOLVED = "RESOLVED"
 
 
 class WizOrderByFields:
-    SEVERITY = 'SEVERITY'
-    CREATED_AT = 'CREATED_AT'
+    SEVERITY = "SEVERITY"
+    CREATED_AT = "CREATED_AT"
 
 
 class WizOrderDirection:
-    DESC = 'DESC'
-    ASC = 'ASC'
+    DESC = "DESC"
+    ASC = "ASC"
 
 
 class WizDetectionStatus:
-    OPEN = 'OPEN'
-    IN_PROGRESS = 'IN_PROGRESS'
-    CLOSED = 'CLOSED'
-    REJECTED = 'REJECTED'
+    OPEN = "OPEN"
+    IN_PROGRESS = "IN_PROGRESS"
+    CLOSED = "CLOSED"
+    REJECTED = "REJECTED"
 
 
 class WizSeverity:
-    CRITICAL = 'CRITICAL'
-    HIGH = 'HIGH'
-    MEDIUM = 'MEDIUM'
-    LOW = 'LOW'
-    INFORMATIONAL = 'INFORMATIONAL'
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    INFORMATIONAL = "INFORMATIONAL"
 
 
 class DemistoCommands:
-    TEST_MODULE = 'test-module'
-    FETCH_INCIDENTS = 'fetch-incidents'
-    WIZ_GET_DETECTIONS = 'wiz-get-detections'
-    WIZ_GET_DETECTION = 'wiz-get-detection'
-    WIZ_GET_THREAT = 'wiz-get-threat'
-    WIZ_GET_THREATS = 'wiz-get-threats'
+    TEST_MODULE = "test-module"
+    FETCH_INCIDENTS = "fetch-incidents"
+    WIZ_GET_DETECTIONS = "wiz-get-detections"
+    WIZ_GET_DETECTION = "wiz-get-detection"
+    WIZ_GET_THREAT = "wiz-get-threat"
+    WIZ_GET_THREATS = "wiz-get-threats"
 
 
 class AuthParams:
-    GRANT_TYPE = 'grant_type'
-    AUDIENCE = 'audience'
-    CLIENT_ID = 'client_id'
-    CLIENT_SECRET = 'client_secret'
+    GRANT_TYPE = "grant_type"
+    AUDIENCE = "audience"
+    CLIENT_ID = "client_id"
+    CLIENT_SECRET = "client_secret"
 
 
 class HeaderFields:
-    CONTENT_TYPE = 'Content-Type'
-    USER_AGENT = 'User-Agent'
-    AUTHORIZATION = 'Authorization'
+    CONTENT_TYPE = "Content-Type"
+    USER_AGENT = "User-Agent"
+    AUTHORIZATION = "Authorization"
 
 
 class ContentTypes:
-    JSON = 'application/json'
-    FORM_URLENCODED = 'application/x-www-form-urlencoded'
+    JSON = "application/json"
+    FORM_URLENCODED = "application/x-www-form-urlencoded"
 
 
 class OutputPrefix:
-    DETECTIONS = 'Wiz.Manager.Detections'
-    DETECTION = 'Wiz.Manager.Detection'
-    THREAT = 'Wiz.Manager.Threat'
-    THREATS = 'Wiz.Manager.Threats'
+    DETECTIONS = "Wiz.Manager.Detections"
+    DETECTION = "Wiz.Manager.Detection"
+    THREAT = "Wiz.Manager.Threat"
+    THREATS = "Wiz.Manager.Threats"
 
 
 class ValidationType:
     """Class representing field names for validation results"""
+
     IS_VALID = "is_valid"
     ERROR_MESSAGE = "error_message"
     VALUE = "value"
@@ -229,7 +230,7 @@ class ValidationResponse:
             ValidationType.DAYS_VALUE: self.days_value,
             ValidationType.MINUTES_VALUE: self.minutes_value,
             ValidationType.SEVERITY_LIST: self.severity_list,
-            ValidationType.STATUS_LIST: self.status_list
+            ValidationType.STATUS_LIST: self.status_list,
         }
 
     @classmethod
@@ -245,12 +246,10 @@ class ValidationResponse:
 
 class DetectionType:
     """Detection types supported by the API"""
+
     GENERATED_THREAT = "GENERATED THREAT"
     DID_NOT_GENERATE_THREAT = "DID NOT GENERATE THREAT"
-    api_dict = {
-        GENERATED_THREAT: "GENERATED_THREAT",
-        DID_NOT_GENERATE_THREAT: "MATCH_ONLY"
-    }
+    api_dict = {GENERATED_THREAT: "GENERATED_THREAT", DID_NOT_GENERATE_THREAT: "MATCH_ONLY"}
 
     @classmethod
     def values(cls):
@@ -277,6 +276,7 @@ class DetectionType:
 
 class CloudPlatform:
     """Cloud platforms supported by the API"""
+
     AWS = "AWS"
     GCP = "GCP"
     AZURE = "Azure"
@@ -311,12 +311,12 @@ class CloudPlatform:
     @classmethod
     def values(cls):
         """Get all available cloud platforms"""
-        return [getattr(cls, attr) for attr in dir(cls)
-                if not attr.startswith('_') and not callable(getattr(cls, attr))]
+        return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
 
 
 class DurationUnit:
     """Duration units for API filters"""
+
     DAYS = "DurationFilterValueUnitDays"
     HOURS = "DurationFilterValueUnitHours"
     MINUTES = "DurationFilterValueUnitMinutes"
@@ -324,6 +324,7 @@ class DurationUnit:
 
 class DetectionOrigin:
     """Detection origins supported by the API"""
+
     WIZ_SENSOR = "WIZ_SENSOR"
     WIZ_ADMISSION_CONTROLLER = "WIZ_ADMISSION_CONTROLLER"
     WIZ_FILE_INTEGRITY_MONITORING = "WIZ_FILE_INTEGRITY_MONITORING"
@@ -368,29 +369,22 @@ class DetectionOrigin:
     @classmethod
     def values(cls):
         """Get all available detection origins"""
-        return [getattr(cls, attr) for attr in dir(cls)
-                if not attr.startswith('_') and not callable(getattr(cls, attr))]
+        return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
 
 
 def get_integration_user_agent():
-    integration_user_agent = f'{INTEGRATION_GUID}/{USER_AGENT_NAME}/{WIZ_VERSION}'
+    integration_user_agent = f"{INTEGRATION_GUID}/{USER_AGENT_NAME}/{WIZ_VERSION}"
     return integration_user_agent
 
 
 # Standard headers
-HEADERS_AUTH = {
-    HeaderFields.CONTENT_TYPE: ContentTypes.FORM_URLENCODED,
-    HeaderFields.USER_AGENT: get_integration_user_agent()
-}
+HEADERS_AUTH = {HeaderFields.CONTENT_TYPE: ContentTypes.FORM_URLENCODED, HeaderFields.USER_AGENT: get_integration_user_agent()}
 
-HEADERS = {
-    HeaderFields.CONTENT_TYPE: ContentTypes.JSON,
-    HeaderFields.USER_AGENT: get_integration_user_agent()
-}
+HEADERS = {HeaderFields.CONTENT_TYPE: ContentTypes.JSON, HeaderFields.USER_AGENT: get_integration_user_agent()}
 
 TOKEN = None
-URL = ''
-AUTH_E = ''
+URL = ""
+AUTH_E = ""
 
 # Pull Detections
 PULL_DETECTIONS_QUERY = """
@@ -561,8 +555,10 @@ $includeTriggeringEvents: Boolean = true) {
 """
 
 PULL_DETECTIONS_VARIABLES = {
-    WizApiVariables.ORDER_BY: {WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
-                               WizApiVariables.DIRECTION: WizOrderDirection.ASC}
+    WizApiVariables.ORDER_BY: {
+        WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
+        WizApiVariables.DIRECTION: WizOrderDirection.ASC,
+    }
 }
 
 PULL_ISSUE_QUERY = """
@@ -908,13 +904,13 @@ fragment ThreatDetectionDetailsMainDetection on ThreatDetectionIssueDetails {
 """
 
 PULL_THREAT_ISSUE_VARIABLES = {
-    WizApiVariables.FILTER_BY: {
-        WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]
-    },
+    WizApiVariables.FILTER_BY: {WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]},
     WizApiVariables.FILTER_SCOPE: WizThreatVariables.ALL_ISSUE_DETECTIONS,
     WizApiVariables.FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG: True,
-    WizApiVariables.ORDER_BY: {WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
-                               WizApiVariables.DIRECTION: WizOrderDirection.DESC}
+    WizApiVariables.ORDER_BY: {
+        WizApiVariables.FIELD: WizOrderByFields.CREATED_AT,
+        WizApiVariables.DIRECTION: WizOrderDirection.DESC,
+    },
 }
 
 
@@ -933,31 +929,33 @@ def get_token():
     Retrieve the token using the credentials
     """
     global TOKEN
-    audience = 'wiz-api'
+    audience = "wiz-api"
 
     demisto_params = demisto.params()
     said = demisto_params.get(DemistoParams.CREDENTIALS).get(DemistoParams.IDENTIFIER)
     sasecret = demisto_params.get(DemistoParams.CREDENTIALS).get(DemistoParams.PASSWORD)
-    auth_payload = parse.urlencode({
-        AuthParams.GRANT_TYPE: 'client_credentials',
-        AuthParams.AUDIENCE: audience,
-        AuthParams.CLIENT_ID: said,
-        AuthParams.CLIENT_SECRET: sasecret
-    })
+    auth_payload = parse.urlencode(
+        {
+            AuthParams.GRANT_TYPE: "client_credentials",
+            AuthParams.AUDIENCE: audience,
+            AuthParams.CLIENT_ID: said,
+            AuthParams.CLIENT_SECRET: sasecret,
+        }
+    )
     response = requests.post(AUTH_E, headers=HEADERS_AUTH, data=auth_payload)
 
     if response.status_code != requests.codes.ok:
-        raise Exception(f'Error authenticating to Wiz [{response.status_code}] - {response.text}')
+        raise Exception(f"Error authenticating to Wiz [{response.status_code}] - {response.text}")
     try:
         response_json = response.json()
         TOKEN = response_json.get(WizApiResponse.ACCESS_TOKEN)
         if not TOKEN:
             demisto.debug(json.dumps(response_json))
-            message = f'Could not retrieve token from Wiz: {response_json.get(WizApiResponse.MESSAGE)}'
+            message = f"Could not retrieve token from Wiz: {response_json.get(WizApiResponse.MESSAGE)}"
             raise Exception(message)
     except ValueError as exception:
         demisto.debug(exception)
-        raise Exception('Could not parse API response')
+        raise Exception("Could not parse API response")
     HEADERS[HeaderFields.AUTHORIZATION] = "Bearer " + TOKEN
 
     return TOKEN
@@ -978,20 +976,18 @@ def get_entries(query, variables, wiz_type):
         demisto.debug(f"The response is {response_json}")
 
         if response.status_code != requests.codes.ok:
-            raise Exception(f'Got an error querying Wiz API [{response.status_code}] - {response.text}')
+            raise Exception(f"Got an error querying Wiz API [{response.status_code}] - {response.text}")
 
         if WizApiResponse.ERRORS in response_json:
             demisto.error(f"Wiz error content: {response_json[WizApiResponse.ERRORS]}")
             error_message = f"Wiz API error details: {get_error_output(response_json)}"
-            demisto.error("An error has occurred using:"
-                          f"\tVariables: {variables} -"
-                          f"\t{error_message}")
+            demisto.error(f"An error has occurred using:\tVariables: {variables} -\t{error_message}")
             demisto.error(error_message)
-            raise Exception(f"{error_message}\n"
-                            f"Check 'server.log' instance file to get additional information")
+            raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
 
-        return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], \
-            response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
+        return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], response_json[WizApiResponse.DATA][wiz_type][
+            WizApiResponse.PAGE_INFO
+        ]
 
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
@@ -1021,9 +1017,11 @@ def query_api(query, variables, wiz_type, paginate=True):
         if new_entries is not None:
             entries += new_entries
         if len(entries) >= API_MAX_FETCH:
-            demisto.info(f"Reached the maximum fetch limit of {API_MAX_FETCH} detections.\n"
-                         f"Some detections will not be processed in this fetch cycle.\n"
-                         f"Consider adjusting the filters to get relevant logs")
+            demisto.info(
+                f"Reached the maximum fetch limit of {API_MAX_FETCH} detections.\n"
+                f"Some detections will not be processed in this fetch cycle.\n"
+                f"Consider adjusting the filters to get relevant logs"
+            )
             break
     if entries:
         demisto.info(f"Successfully pulled {len(entries)} {wiz_type}")
@@ -1056,8 +1054,11 @@ def build_incidents(detection):
         return {}
 
     return {
-        DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {}).get(WizApiVariables.RULE, {}).get(
-            WizApiVariables.NAME, f'No {WizApiVariables.NAME}') + ' - ' + detection.get(WizApiVariables.ID),
+        DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {})
+        .get(WizApiVariables.RULE, {})
+        .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
+        + " - "
+        + detection.get(WizApiVariables.ID),
         DemistoParams.OCCURRED: detection[WizApiVariables.CREATED_AT],
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),
@@ -1080,8 +1081,7 @@ def get_last_run_time():
 
     if not last_run:
         demisto.info("First Time Fetch")
-        first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH,
-                                               DEFAULT_FETCH_BACK).strip()
+        first_fetch_param = demisto_params.get(DemistoParams.FIRST_FETCH, DEFAULT_FETCH_BACK).strip()
         last_run = get_fetch_timestamp(first_fetch_param)
         return last_run
 
@@ -1091,8 +1091,10 @@ def get_last_run_time():
         max_days_ago = datetime.now() - timedelta(days=MAX_DAYS_FIRST_FETCH_DETECTIONS)
 
         if last_run_datetime < max_days_ago:
-            demisto.info(f"Last run time ({last_run}) is more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago. "
-                         f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time.")
+            demisto.info(
+                f"Last run time ({last_run}) is more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago. "
+                f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time."
+            )
 
             # Format max_days_ago to match DEMISTO_OCCURRED_FORMAT
             last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
@@ -1112,12 +1114,17 @@ def extract_params_from_integration_settings(advanced_params=False):
         WizInputParam.TYPE: demisto_params.get(WizInputParam.TYPE),
         WizInputParam.PLATFORM: demisto_params.get(WizInputParam.PLATFORM),
         WizInputParam.ORIGIN: demisto_params.get(WizInputParam.ORIGIN),
-        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: demisto_params.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
+        WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG: demisto_params.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG),
     }
 
     if advanced_params:
-        for demisto_param in [DemistoParams.FIRST_FETCH, DemistoParams.INCIDENT_FETCH_INTERVAL,
-                              DemistoParams.INCIDENT_TYPE, DemistoParams.IS_FETCH, DemistoParams.MAX_FETCH]:
+        for demisto_param in [
+            DemistoParams.FIRST_FETCH,
+            DemistoParams.INCIDENT_FETCH_INTERVAL,
+            DemistoParams.INCIDENT_TYPE,
+            DemistoParams.IS_FETCH,
+            DemistoParams.MAX_FETCH,
+        ]:
             integration_setting_params[demisto_param] = demisto_params.get(demisto_param)
 
     return integration_setting_params
@@ -1177,13 +1184,13 @@ def test_module():
         detection_origin=integration_settings_params[WizInputParam.ORIGIN],
         detection_cloud_account_or_cloud_organization=integration_settings_params[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG],
         api_limit=1,
-        paginate=False
+        paginate=False,
     )
 
     if WizApiResponse.ERRORS in wiz_detection or type(wiz_detection) is not list:
         demisto.results(wiz_detection)
     else:
-        demisto.results('ok')
+        demisto.results("ok")
 
 
 def get_fetch_incidents_api_max_fetch(max_fetch):
@@ -1231,8 +1238,7 @@ def fetch_incidents():
     demisto.setLastRun({DemistoParams.TIME: api_start_run_time})
 
     if incidents:
-        demisto.info(f"Successfully fetched and created {len(incidents)} incidents - "
-                     f"Set last run time to {api_start_run_time}.")
+        demisto.info(f"Successfully fetched and created {len(incidents)} incidents - Set last run time to {api_start_run_time}.")
     else:
         demisto.info(f"No new incidents to fetch - Set last run time to {api_start_run_time}.")
 
@@ -1261,12 +1267,14 @@ def get_fetch_timestamp(first_fetch_param):
     # Check if we had to adjust the date to MAX_DAYS_FIRST_FETCH_DETECTIONS days max
     original_date = dateparser.parse(first_fetch_param or DEFAULT_FETCH_BACK)
     if original_date and valid_date.date() != original_date.date():
-        demisto.info(f"First fetch timestamp was more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days "
-                     f"({first_fetch_param}), automatically setting to "
-                     f"{MAX_DAYS_FIRST_FETCH_DETECTIONS} days back")
+        demisto.info(
+            f"First fetch timestamp was more than {MAX_DAYS_FIRST_FETCH_DETECTIONS} days "
+            f"({first_fetch_param}), automatically setting to "
+            f"{MAX_DAYS_FIRST_FETCH_DETECTIONS} days back"
+        )
 
     # Return the ISO formatted timestamp
-    return valid_date.isoformat()[:-3] + 'Z'
+    return valid_date.isoformat()[:-3] + "Z"
 
 
 def update_wiz_domain_url():
@@ -1280,18 +1288,19 @@ def update_wiz_domain_url():
     if match:
         WIZ_DOMAIN_URL = match.group(1)
     else:
-        demisto.debug("Could not find the domain in the auth endpoint. "
-                      "Using default domain: app.wiz.io")
-        WIZ_DOMAIN_URL = 'app.wiz.io'
+        demisto.debug("Could not find the domain in the auth endpoint. Using default domain: app.wiz.io")
+        WIZ_DOMAIN_URL = "app.wiz.io"
 
 
 def get_detection_url(detection):
     if not WIZ_DOMAIN_URL:
         update_wiz_domain_url()
 
-    detection_url = f"https://{WIZ_DOMAIN_URL}/findings/detections#~(filters" \
-                    f"~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}" \
-                    f"~streamCols~(~'event~'principal~'principalIp~'resource))"
+    detection_url = (
+        f"https://{WIZ_DOMAIN_URL}/findings/detections#~(filters"
+        f"~(updateTime~(dateRange~(past~(amount~5~unit~'day))))~detectionId~'{detection.get('id')}"
+        f"~streamCols~(~'event~'principal~'principalIp~'resource))"
+    )
     return detection_url
 
 
@@ -1299,8 +1308,9 @@ def get_threat_url(threat):
     if not WIZ_DOMAIN_URL:
         update_wiz_domain_url()
 
-    detection_url = f"https://{WIZ_DOMAIN_URL}/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))" \
-                    f"~issue~'{threat.get('id')})"
+    detection_url = (
+        f"https://{WIZ_DOMAIN_URL}/threats#~(filters~(createdAt~(inTheLast~(amount~90~unit~'days)))~issue~'{threat.get('id')})"
+    )
     return detection_url
 
 
@@ -1399,8 +1409,8 @@ def validate_detection_platform(platform):
         return ValidationResponse.create_success()
 
     # Handle case where platform is a comma-separated string
-    if isinstance(platform, str) and ',' in platform:
-        platforms = [p.strip() for p in platform.split(',')]
+    if isinstance(platform, str) and "," in platform:
+        platforms = [p.strip() for p in platform.split(",")]
     elif isinstance(platform, str):
         platforms = [platform]
     elif isinstance(platform, list):
@@ -1433,8 +1443,8 @@ def validate_detection_cloud_account_or_cloud_organization(cloud_account_or_clou
         return ValidationResponse.create_success()
 
     # Handle case where cloud_account_or_cloud_organization is a comma-separated string
-    if isinstance(cloud_account_or_cloud_organization, str) and ',' in cloud_account_or_cloud_organization:
-        cloud_account_or_cloud_organizations = [s.strip() for s in cloud_account_or_cloud_organization.split(',')]
+    if isinstance(cloud_account_or_cloud_organization, str) and "," in cloud_account_or_cloud_organization:
+        cloud_account_or_cloud_organizations = [s.strip() for s in cloud_account_or_cloud_organization.split(",")]
     elif isinstance(cloud_account_or_cloud_organization, str):
         cloud_account_or_cloud_organizations = [cloud_account_or_cloud_organization]
     elif isinstance(cloud_account_or_cloud_organization, list):
@@ -1447,9 +1457,11 @@ def validate_detection_cloud_account_or_cloud_organization(cloud_account_or_clou
     # Validate each cloud_account_or_cloud_organization is a UUID
     invalid_cloud_account_or_cloud_organizations = [s for s in cloud_account_or_cloud_organizations if not is_valid_uuid(s)]
     if invalid_cloud_account_or_cloud_organizations:
-        error_msg = f"Invalid {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} ID(s): " \
-                    f"{', '.join(invalid_cloud_account_or_cloud_organizations)}. " \
-                    f"All {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} must be in valid UUID format."
+        error_msg = (
+            f"Invalid {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} ID(s): "
+            f"{', '.join(invalid_cloud_account_or_cloud_organizations)}. "
+            f"All {WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG} must be in valid UUID format."
+        )
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
@@ -1470,8 +1482,8 @@ def validate_detection_origin(origin):
         return ValidationResponse.create_success()
 
     # Handle case where origin is a comma-separated string
-    if isinstance(origin, str) and ',' in origin:
-        origins = [o.strip() for o in origin.split(',')]
+    if isinstance(origin, str) and "," in origin:
+        origins = [o.strip() for o in origin.split(",")]
     elif isinstance(origin, str):
         origins = [origin]
     elif isinstance(origin, list):
@@ -1490,7 +1502,7 @@ def validate_detection_origin(origin):
     return ValidationResponse.create_success(origins)
 
 
-def validate_creation_time_back(time_value, time_unit='minutes'):
+def validate_creation_time_back(time_value, time_unit="minutes"):
     """
     Validates if the creation time parameter is valid
 
@@ -1504,13 +1516,13 @@ def validate_creation_time_back(time_value, time_unit='minutes'):
     response = ValidationResponse.create_success()
 
     # Set default values and limits based on the time unit
-    if time_unit == 'minutes':
+    if time_unit == "minutes":
         param_name = WizInputParam.CREATION_MINUTES_BACK
         min_value = FETCH_INTERVAL_MINIMUM_MIN
         max_value = FETCH_INTERVAL_MAXIMUM_MIN
         default_value = FETCH_INTERVAL_MINIMUM_MIN
         response.minutes_value = default_value
-    elif time_unit == 'days':
+    elif time_unit == "days":
         param_name = WizInputParam.CREATION_DAYS_BACK
         min_value = THREATS_DAYS_MIN
         max_value = THREATS_DAYS_MAX
@@ -1528,7 +1540,7 @@ def validate_creation_time_back(time_value, time_unit='minutes'):
     try:
         time_int_value = int(time_value)
         if min_value <= time_int_value <= max_value:
-            if time_unit == 'minutes':
+            if time_unit == "minutes":
                 response.minutes_value = time_int_value
             else:  # days
                 response.days_value = time_int_value
@@ -1557,8 +1569,10 @@ def validate_fetch_interval(fetch_interval):
         response.minutes_value = fetch_interval
         return response
 
-    error_msg = f"Invalid Incidents Fetch Interval - It must be a valid integer " \
-                f"higher or equal than {FETCH_INTERVAL_MINIMUM_MIN}. Received {fetch_interval}."
+    error_msg = (
+        f"Invalid Incidents Fetch Interval - It must be a valid integer "
+        f"higher or equal than {FETCH_INTERVAL_MINIMUM_MIN}. Received {fetch_interval}."
+    )
     return ValidationResponse.create_error(error_msg)
 
 
@@ -1621,8 +1635,9 @@ def validate_first_fetch(first_fetch):
         ValidationResponse: Response with validation results and time value
     """
     response = ValidationResponse.create_success()
-    error_msg = f"Invalid first fetch format: {first_fetch}. " \
-                f"Expected format is '<number> <time unit>' (e.g., '12 hours', '1 day')."
+    error_msg = (
+        f"Invalid first fetch format: {first_fetch}. Expected format is '<number> <time unit>' (e.g., '12 hours', '1 day')."
+    )
 
     if not first_fetch:
         demisto.error(error_msg)
@@ -1646,15 +1661,17 @@ def validate_first_fetch(first_fetch):
     time_unit_limits = {
         "minute": (max_hours * 60, f"({max_hours * 60} minutes)"),
         "hour": (max_hours, f"({max_hours} hours)"),
-        "day": (MAX_DAYS_FIRST_FETCH_DETECTIONS, "")
+        "day": (MAX_DAYS_FIRST_FETCH_DETECTIONS, ""),
     }
 
     # Find which time unit is being used
     for unit_prefix, (max_value, format_suffix) in time_unit_limits.items():
         if unit.startswith(unit_prefix) and number > max_value:
             suffix = format_suffix if format_suffix else ""
-            error_msg = f"First fetch duration too long: {first_fetch}. " \
-                        f"Maximum allowed is {MAX_DAYS_FIRST_FETCH_DETECTIONS} days {suffix}"
+            error_msg = (
+                f"First fetch duration too long: {first_fetch}. "
+                f"Maximum allowed is {MAX_DAYS_FIRST_FETCH_DETECTIONS} days {suffix}"
+            )
             demisto.error(error_msg)
             return ValidationResponse.create_error(error_msg)
 
@@ -1691,8 +1708,13 @@ def validate_severity(severity):
         WizSeverity.HIGH: [WizSeverity.CRITICAL, WizSeverity.HIGH],
         WizSeverity.MEDIUM: [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM],
         WizSeverity.LOW: [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM, WizSeverity.LOW],
-        WizSeverity.INFORMATIONAL: [WizSeverity.CRITICAL, WizSeverity.HIGH, WizSeverity.MEDIUM, WizSeverity.LOW,
-                                    WizSeverity.INFORMATIONAL]
+        WizSeverity.INFORMATIONAL: [
+            WizSeverity.CRITICAL,
+            WizSeverity.HIGH,
+            WizSeverity.MEDIUM,
+            WizSeverity.LOW,
+            WizSeverity.INFORMATIONAL,
+        ],
     }
 
     response.severity_list = severity_map[severity]
@@ -1715,8 +1737,8 @@ def validate_status(status):
         return response
 
     # Handle case where status is a comma-separated string
-    if isinstance(status, str) and ',' in status:
-        statuses = [s.strip() for s in status.split(',')]
+    if isinstance(status, str) and "," in status:
+        statuses = [s.strip() for s in status.split(",")]
     elif isinstance(status, str):
         statuses = [status.upper()]  # Convert to uppercase for comparison
     elif isinstance(status, list):
@@ -1729,8 +1751,7 @@ def validate_status(status):
     invalid_statuses = [s for s in statuses if s not in valid_statuses]
 
     if invalid_statuses:
-        error_msg = f"Invalid status(es): {', '.join(invalid_statuses)}. Valid statuses are: " \
-                    f"{', '.join(valid_statuses)}."
+        error_msg = f"Invalid status(es): {', '.join(invalid_statuses)}. Valid statuses are: {', '.join(valid_statuses)}."
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
@@ -1856,7 +1877,7 @@ def validate_all_detection_parameters(parameters_dict):
             WizInputParam.SEVERITY: severity,
             WizInputParam.RULE_MATCH_ID: matched_rule,
             WizInputParam.RULE_MATCH_NAME: rule_match_name,
-            WizInputParam.PROJECT_ID: project_id
+            WizInputParam.PROJECT_ID: project_id,
         }
 
         # Check if any parameter has a value
@@ -1907,8 +1928,9 @@ def validate_all_detection_parameters(parameters_dict):
     validated_values[WizInputParam.ORIGIN] = origin_validation.value
 
     # Validate cloud_account_or_cloud_organization
-    cloud_account_or_cloud_organization_validation = \
-        validate_detection_cloud_account_or_cloud_organization(detection_cloud_account_or_cloud_organization)
+    cloud_account_or_cloud_organization_validation = validate_detection_cloud_account_or_cloud_organization(
+        detection_cloud_account_or_cloud_organization
+    )
     if not cloud_account_or_cloud_organization_validation.is_valid:
         return False, cloud_account_or_cloud_organization_validation.error_message, None
     validated_values[WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG] = cloud_account_or_cloud_organization_validation.value
@@ -1970,7 +1992,7 @@ def validate_all_threat_parameters(parameters_dict):
         WizInputParam.SEVERITY: parameters_dict.get(WizInputParam.SEVERITY),
         WizInputParam.STATUS: parameters_dict.get(WizInputParam.STATUS),
         WizInputParam.CREATION_DAYS_BACK: parameters_dict.get(WizInputParam.CREATION_DAYS_BACK),
-        WizInputParam.PROJECT_ID: parameters_dict.get(WizInputParam.PROJECT_ID)
+        WizInputParam.PROJECT_ID: parameters_dict.get(WizInputParam.PROJECT_ID),
     }
 
     # Check if at least one parameter has a value
@@ -2014,7 +2036,7 @@ def validate_all_threat_parameters(parameters_dict):
     # Validate creation_days_back
     creation_days_back = param_map[WizInputParam.CREATION_DAYS_BACK]
     if creation_days_back:
-        days_validation = validate_creation_time_back(creation_days_back, time_unit='days')
+        days_validation = validate_creation_time_back(creation_days_back, time_unit="days")
         if not days_validation.is_valid:
             return False, days_validation.error_message, None
         validated_values[WizInputParam.CREATION_DAYS_BACK] = days_validation.days_value
@@ -2071,9 +2093,7 @@ def apply_rule_match_id_filter(variables, matched_rule_id):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE] = {
-        WizApiVariables.ID: matched_rule_id
-    }
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE] = {WizApiVariables.ID: matched_rule_id}
 
     return variables
 
@@ -2095,14 +2115,12 @@ def apply_rule_match_name_filter(variables, matched_rule_name):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE_NAME] = {
-        WizApiVariables.EQUALS: [matched_rule_name]
-    }
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.MATCHED_RULE_NAME] = {WizApiVariables.EQUALS: [matched_rule_name]}
 
     return variables
 
 
-def apply_creation_in_last_filter(variables, time_value, time_unit='minutes'):
+def apply_creation_in_last_filter(variables, time_value, time_unit="minutes"):
     """
     Adds a creation time filter (minutes or days) to the query variables
 
@@ -2121,13 +2139,10 @@ def apply_creation_in_last_filter(variables, time_value, time_unit='minutes'):
         variables[WizApiVariables.FILTER_BY] = {}
 
     # Select the appropriate duration unit based on the time_unit parameter
-    duration_unit = DurationUnit.MINUTES if time_unit == 'minutes' else DurationUnit.DAYS
+    duration_unit = DurationUnit.MINUTES if time_unit == "minutes" else DurationUnit.DAYS
 
     variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {
-        WizApiVariables.IN_LAST: {
-            WizApiVariables.AMOUNT: time_value,
-            WizApiVariables.UNIT: duration_unit
-        }
+        WizApiVariables.IN_LAST: {WizApiVariables.AMOUNT: time_value, WizApiVariables.UNIT: duration_unit}
     }
 
     return variables
@@ -2148,9 +2163,7 @@ def apply_creation_after_time_filter(variables, after_time):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {
-        WizApiVariables.AFTER: after_time
-    }
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.CREATED_AT] = {WizApiVariables.AFTER: after_time}
 
     return variables
 
@@ -2172,9 +2185,7 @@ def apply_detection_id_filter(variables, detection_ids):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.ID] = {
-        WizApiVariables.EQUALS: detection_ids
-    }
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.ID] = {WizApiVariables.EQUALS: detection_ids}
 
     return variables
 
@@ -2221,9 +2232,7 @@ def apply_detection_type_filter(variables, detection_type):
     if WizApiVariables.FILTER_BY not in variables:
         variables[WizApiVariables.FILTER_BY] = {}
 
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.TYPE] = {
-        WizApiVariables.EQUALS: [detection_type]
-    }
+    variables[WizApiVariables.FILTER_BY][WizApiVariables.TYPE] = {WizApiVariables.EQUALS: [detection_type]}
 
     return variables
 
@@ -2254,9 +2263,7 @@ def apply_platform_filter(variables, platforms, is_detection=True):
 
     # Apply filter based on whether it's for detections or threats
     if is_detection:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM] = {
-            WizApiVariables.EQUALS: platform_list
-        }
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM] = {WizApiVariables.EQUALS: platform_list}
     else:
         if WizApiVariables.RELATED_ENTITY not in variables[WizApiVariables.FILTER_BY]:
             variables[WizApiVariables.FILTER_BY][WizApiVariables.RELATED_ENTITY] = {}
@@ -2290,9 +2297,7 @@ def apply_origin_filter(variables, platforms, is_detection=True):
         platform_list = platforms
 
     origin_var = WizApiVariables.ORIGIN if is_detection else WizApiVariables.EVENT_ORIGIN
-    variables[WizApiVariables.FILTER_BY][origin_var] = {
-        WizApiVariables.EQUALS: platform_list
-    }
+    variables[WizApiVariables.FILTER_BY][origin_var] = {WizApiVariables.EQUALS: platform_list}
 
     return variables
 
@@ -2316,9 +2321,7 @@ def apply_resource_id_filter(variables, resource_id, is_detection=True):
 
     if is_detection:
         variables[WizApiVariables.FILTER_BY][WizApiVariables.RESOURCE] = {
-            WizApiVariables.ID: {
-                WizApiVariables.EQUALS: [resource_id]
-            }
+            WizApiVariables.ID: {WizApiVariables.EQUALS: [resource_id]}
         }
     else:
         if not variables[WizApiVariables.FILTER_BY].get(WizApiVariables.THREAT_RESOURCE):
@@ -2357,8 +2360,9 @@ def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_or
             WizApiVariables.EQUALS: cloud_account_or_cloud_organization_list
         }
     else:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = \
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = (
             cloud_account_or_cloud_organization_list
+        )
 
     return variables
 
@@ -2381,9 +2385,7 @@ def apply_severity_filter(variables, severity_list, is_detection=True):
         variables[WizApiVariables.FILTER_BY] = {}
 
     if is_detection:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.SEVERITY] = {
-            WizApiVariables.EQUALS: severity_list
-        }
+        variables[WizApiVariables.FILTER_BY][WizApiVariables.SEVERITY] = {WizApiVariables.EQUALS: severity_list}
     else:
         variables[WizApiVariables.FILTER_BY][WizApiVariables.SEVERITY] = severity_list
 
@@ -2458,8 +2460,9 @@ def apply_all_detection_filters(variables, validated_values):
     variables = apply_detection_type_filter(variables, validated_values.get(WizInputParam.TYPE))
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM))
     variables = apply_origin_filter(variables, validated_values.get(WizInputParam.ORIGIN))
-    variables = apply_cloud_account_or_cloud_organization_filter(variables,
-                                                                 validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG))
+    variables = apply_cloud_account_or_cloud_organization_filter(
+        variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
+    )
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID))
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY))
     variables = apply_rule_match_id_filter(variables, validated_values.get(WizInputParam.RULE_MATCH_ID))
@@ -2495,11 +2498,24 @@ def log_input_parameters(parameters_dict):
         demisto.info(f"{demisto_command} input parameters are empty.")
 
 
-def get_filtered_detections(detection_id=None, issue_id=None, detection_type=None, detection_platform=None,
-                            detection_origin=None, detection_cloud_account_or_cloud_organization=None, resource_id=None,
-                            severity=None,
-                            creation_minutes_back=None, rule_match_id=None, rule_match_name=None, project_id=None,
-                            after_time=None, add_detection_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
+def get_filtered_detections(
+    detection_id=None,
+    issue_id=None,
+    detection_type=None,
+    detection_platform=None,
+    detection_origin=None,
+    detection_cloud_account_or_cloud_organization=None,
+    resource_id=None,
+    severity=None,
+    creation_minutes_back=None,
+    rule_match_id=None,
+    rule_match_name=None,
+    project_id=None,
+    after_time=None,
+    add_detection_url=True,
+    api_limit=WIZ_API_LIMIT,
+    paginate=True,
+):
     """
     Retrieves Filtered Detections
 
@@ -2535,7 +2551,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
         WizInputParam.RULE_MATCH_ID: rule_match_id,
         WizInputParam.RULE_MATCH_NAME: rule_match_name,
         WizInputParam.PROJECT_ID: project_id,
-        DemistoParams.AFTER_TIME: after_time
+        DemistoParams.AFTER_TIME: after_time,
     }
 
     log_input_parameters(parameters_dict)
@@ -2549,8 +2565,7 @@ def get_filtered_detections(detection_id=None, issue_id=None, detection_type=Non
     detection_variables[WizApiVariables.FIRST] = api_limit
     detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
-    wiz_detections = query_detections(query=PULL_DETECTIONS_QUERY, variables=detection_variables,
-                                      paginate=paginate)
+    wiz_detections = query_detections(query=PULL_DETECTIONS_QUERY, variables=detection_variables, paginate=paginate)
 
     if add_detection_url:
         for detection in wiz_detections:
@@ -2571,11 +2586,11 @@ def apply_all_threat_filters(variables, validated_values):
         dict: Updated query variables with all filters applied
     """
     variables = apply_issue_id_filter(variables, validated_values.get(WizInputParam.ISSUE_ID), is_detection=False)
-    variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK), 'days')
+    variables = apply_creation_in_last_filter(variables, validated_values.get(WizInputParam.CREATION_DAYS_BACK), "days")
     variables = apply_platform_filter(variables, validated_values.get(WizInputParam.PLATFORM), is_detection=False)
-    variables = apply_cloud_account_or_cloud_organization_filter(variables,
-                                                                 validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG),
-                                                                 is_detection=False)
+    variables = apply_cloud_account_or_cloud_organization_filter(
+        variables, validated_values.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG), is_detection=False
+    )
     variables = apply_resource_id_filter(variables, validated_values.get(WizInputParam.RESOURCE_ID), is_detection=False)
     variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY), is_detection=False)
     variables = apply_status_filter(variables, validated_values.get(WizInputParam.STATUS))
@@ -2585,9 +2600,20 @@ def apply_all_threat_filters(variables, validated_values):
     return variables
 
 
-def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_organization=None, resource_id=None, origin=None,
-                         severity=None, status=None, creation_days_back=None, project_id=None,
-                         add_threat_url=True, api_limit=WIZ_API_LIMIT, paginate=True):
+def get_filtered_threats(
+    issue_id=None,
+    platform=None,
+    cloud_account_or_cloud_organization=None,
+    resource_id=None,
+    origin=None,
+    severity=None,
+    status=None,
+    creation_days_back=None,
+    project_id=None,
+    add_threat_url=True,
+    api_limit=WIZ_API_LIMIT,
+    paginate=True,
+):
     """
     Retrieves Filtered Threats
 
@@ -2617,7 +2643,7 @@ def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_or
         WizInputParam.SEVERITY: severity,
         WizInputParam.STATUS: status,
         WizInputParam.CREATION_DAYS_BACK: creation_days_back,
-        WizInputParam.PROJECT_ID: project_id
+        WizInputParam.PROJECT_ID: project_id,
     }
 
     log_input_parameters(parameters_dict)
@@ -2631,8 +2657,7 @@ def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_or
     threat_variables[WizApiVariables.FIRST] = api_limit
     threat_variables = apply_all_threat_filters(threat_variables, validated_values)
 
-    wiz_threats = query_threats(query=PULL_ISSUE_QUERY, variables=threat_variables,
-                                paginate=paginate)
+    wiz_threats = query_threats(query=PULL_ISSUE_QUERY, variables=threat_variables, paginate=paginate)
 
     if add_threat_url:
         for threat in wiz_threats:
@@ -2642,8 +2667,8 @@ def get_filtered_threats(issue_id=None, platform=None, cloud_account_or_cloud_or
 
 
 def get_error_output(wiz_api_response):
-    error_output_message = ''
-    first_error_message = ''
+    error_output_message = ""
+    first_error_message = ""
     if WizApiResponse.ERRORS in wiz_api_response:
         for error_dict in wiz_api_response[WizApiResponse.ERRORS]:
             if WizApiResponse.MESSAGE in error_dict:
@@ -2655,7 +2680,7 @@ def get_error_output(wiz_api_response):
                 if not first_error_message:
                     first_error_message = error_message
 
-                error_output_message = error_output_message + error_message + '\n'
+                error_output_message = error_output_message + error_message + "\n"
 
     return error_output_message if error_output_message else wiz_api_response
 
@@ -2701,7 +2726,7 @@ def get_detections():
     detection_cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
     resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
     severity = demisto_args.get(WizInputParam.SEVERITY)
-    creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, '10')
+    creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, "10")
     matched_rule = demisto_args.get(WizInputParam.RULE_MATCH_ID)
     matched_rule_name = demisto_args.get(WizInputParam.RULE_MATCH_NAME)
     project_id = demisto_args.get(WizInputParam.PROJECT_ID)
@@ -2716,7 +2741,7 @@ def get_detections():
         creation_minutes_back=creation_minutes_back,
         rule_match_id=matched_rule,
         rule_match_name=matched_rule_name,
-        project_id=project_id
+        project_id=project_id,
     )
 
     if isinstance(detections, str):
@@ -2730,16 +2755,18 @@ def get_single_detection():
     demisto_args = demisto.args()
     detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
     if not detection_id:
-        return CommandResults(readable_output=f"Error: Missing required argument: {WizInputParam.DETECTION_ID}", outputs={},
-                              raw_response={})
+        return CommandResults(
+            readable_output=f"Error: Missing required argument: {WizInputParam.DETECTION_ID}", outputs={}, raw_response={}
+        )
 
     detection = get_filtered_detections(detection_id=detection_id)
 
     if isinstance(detection, str):
         return CommandResults(readable_output=f"Error: {detection}", outputs={}, raw_response=detection)
     else:
-        return CommandResults(outputs_prefix=OutputPrefix.DETECTION, outputs=detection, readable_output=detection,
-                              raw_response=detection)
+        return CommandResults(
+            outputs_prefix=OutputPrefix.DETECTION, outputs=detection, readable_output=detection, raw_response=detection
+        )
 
 
 def get_single_threat():
@@ -2747,8 +2774,9 @@ def get_single_threat():
     demisto_args = demisto.args()
     issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
     if not issue_id:
-        return CommandResults(readable_output=f"Error: Missing required argument: {WizInputParam.ISSUE_ID}", outputs={},
-                              raw_response={})
+        return CommandResults(
+            readable_output=f"Error: Missing required argument: {WizInputParam.ISSUE_ID}", outputs={}, raw_response={}
+        )
 
     threat = get_filtered_threats(issue_id=issue_id)
 
@@ -2761,7 +2789,7 @@ def get_single_threat():
 def get_threats():
     """Retrieves threats based on command arguments."""
     demisto_args = demisto.args()
-    creation_days_back = demisto_args.get(WizInputParam.CREATION_DAYS_BACK, '5')
+    creation_days_back = demisto_args.get(WizInputParam.CREATION_DAYS_BACK, "5")
     platform = demisto_args.get(WizInputParam.PLATFORM)
     project_id = demisto_args.get(WizInputParam.PROJECT_ID)
     resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
@@ -2769,9 +2797,15 @@ def get_threats():
     status = demisto_args.get(WizInputParam.STATUS)
     cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
 
-    threats = get_filtered_threats(platform=platform, cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
-                                   resource_id=resource_id, severity=severity, status=status,
-                                   creation_days_back=creation_days_back, project_id=project_id)
+    threats = get_filtered_threats(
+        platform=platform,
+        cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
+        resource_id=resource_id,
+        severity=severity,
+        status=status,
+        creation_days_back=creation_days_back,
+        project_id=project_id,
+    )
 
     if isinstance(threats, str):
         return CommandResults(readable_output=f"Error: {threats}", outputs={}, raw_response=threats)
@@ -2782,31 +2816,31 @@ def get_threats():
 def main():
     params = demisto.params()
     set_authentication_endpoint(params.get(DemistoParams.AUTH_ENDPOINT))
-    set_api_endpoint(params.get(DemistoParams.API_ENDPOINT, ''))
+    set_api_endpoint(params.get(DemistoParams.API_ENDPOINT, ""))
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
 
-        if command == 'test-module':
+        if command == "test-module":
             test_module()
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             fetch_incidents()
 
-        elif command == 'wiz-get-detection':
+        elif command == "wiz-get-detection":
             return_results(get_single_detection())
 
-        elif command == 'wiz-get-detections':
+        elif command == "wiz-get-detections":
             return_results(get_detections())
 
-        elif command == 'wiz-get-threat':
+        elif command == "wiz-get-threat":
             return_results(get_single_threat())
 
-        elif command == 'wiz-get-threats':
+        elif command == "wiz-get-threats":
             return_results(get_threats())
 
         else:
-            raise Exception('Unrecognized command: ' + command)
+            raise Exception("Unrecognized command: " + command)
 
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
@@ -2814,5 +2848,5 @@ def main():
         return
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
