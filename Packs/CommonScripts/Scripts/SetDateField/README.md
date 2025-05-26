@@ -1,6 +1,7 @@
 Sets a custom incident field with the current date.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Sets a custom incident field with the current date.
 | Script Type | python |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +18,6 @@ Sets a custom incident field with the current date.
 | fieldName | The name of the incident custom field. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

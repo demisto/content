@@ -1,5 +1,7 @@
 IoT alert post processing script to resolve the alert in IoT security portal using API.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +13,7 @@ IoT alert post processing script to resolve the alert in IoT security portal usi
 This script executes the 'iot-security-resolve-alert' command to resolve an alert in PANW IoT security portal during post-processing.
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +21,6 @@ This script executes the 'iot-security-resolve-alert' command to resolve an aler
 | close_reason | The reason the alert was closed \(either 'Resolved' or 'No Action Needed'\). |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
