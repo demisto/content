@@ -1836,10 +1836,305 @@ Lists enrollments with active certificates. Note that the rate limit for this op
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| contract_id | Specify the contract on which to operate or view. | Required |
+| contract_id | Unique Identifier of a contract on which to operate or view. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Akamai.Cps.Active.Certificates.Enrollments | unknown |  |
+| Akamai.Cps.Active.Certificates.Enrollments | Dictionary | A collection of Active Akami CPS enrollments. | 
+
+### akamai-patch-datastream
+
+***
+Updates selected details of an existing stream. Running this operation using JSON Patch syntax creates a stream version that replaces the current one. Currently you can patch a stream using only the REPLACE operation. When updating configuration objects such as destination or deliveryConfiguration, pass a complete object to avoid overwriting current details with default values for omitted members such as tags, uploadFilePrefix, and uploadFileSuffix. Note that only active streams collect and send logs to their destinations. You need to set the activate parameter to true while patching active streams, and optionally for inactive streams if you want to activate them upon request. See Patching streams for details.
+
+#### Base Command
+
+`akamai-patch-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | The unique identifier of the stream. | Required | 
+| activate | Activates the stream at the time of the request, false by default. When you Edit a stream or Patch a stream that is active, you need to set this member to true. Possible values are: true, false. | Optional | 
+| path | A JSON Pointer that identifies the values you want to replace in the stream configuration. This member's value is / followed by any of the configuration object's top-level member name. See Edit a stream for available members. | Required | 
+| value | Specifies the data to replace at the path location, any type of data including objects and arrays. Pass complete objects to avoid overwriting current details with default values for omitted members. | Required | 
+| value_to_json | Whether convert the value above into Json or not. Possible values are: yes, no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream | unknown | Akamai DataStream. | 
+
+### akamai-generic-api-call-command
+
+***
+Akamai Generic API Call.
+
+#### Base Command
+
+`akamai-generic-api-call-command`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| method | Type 'str'. The HTTP method, for example: GET, POST, and so on. Possible values are: GET, POST, PUT, PATCH, DELETE. | Optional | 
+| url_suffix | Type 'str'. The API endpoint. | Optional | 
+| headers | Type 'dict'. Headers to send in the request. If None, will use self._headers. | Optional | 
+| params | Type 'dict'. URL parameters to specify the query. | Optional | 
+| data | Type 'dict'. The data to send in a 'POST' request. | Optional | 
+| json_data | Type 'dict'. The dictionary to send in a 'POST' request. | Optional | 
+| files | Type 'dict'. The file data to send in a 'POST' request. | Optional | 
+| timeout | Type 'float' or comma separated two floats. The amount of time (in seconds) that a request will wait for a client to establish a connection to a remote machine before a timeout occurs. can be only float (Connection Timeout) or  or Comma separated two floats for Connection Timeout and Read Timeout. (Samput Input: 60, 60). | Optional | 
+| resp_type | Type 'str'. Determines which data format to return from the HTTP request. The default is 'json'. Other options are 'text', 'content', 'xml' or 'response'. Use 'response' to return the full response object. Possible values are: json, text, content, xml, response. | Optional | 
+| ok_codes | Type 'tuple'. The request codes to accept as OK, for example: 200, 201, 204. If you specify "None", will use self._ok_codes. Default is None. | Optional | 
+| retries | Type 'int'. How many retries should be made in case of a failure. when set to '0'- will fail on the first time. | Optional | 
+| status_list_to_retry | Type 'iterable'. A set of integer HTTP status codes that we should force a retry on. A retry is initiated if the request method is in ['GET', 'POST', 'PUT'] and the response status code is in 'status_list_to_retry'. | Optional | 
+| backoff_factor | Type 'float'. A backoff factor to apply between attempts after the second try (most errors are resolved immediately by a second try without a delay). urllib3 will sleep for: {backoff factor} * (2 ** ({number of total retries} - 1)) seconds. If the backoff_factor is 0.1, then :func:`.sleep` will sleep for [0.0s, 0.2s, 0.4s, ...] between retries. It will never be longer than :attr:`Retry.BACKOFF_MAX`. By default, backoff_factor set to 5. | Optional | 
+| raise_on_redirect | Type 'bool'. Whether, if the number of redirects is exhausted, to raise a MaxRetryError, or to return a response with a response code in the 3xx range. Possible values are: True, False. | Optional | 
+| raise_on_status | Type 'bool'. Similar meaning to 'raise_on_redirect': whether we should raise an exception, or return a response, if status falls in 'status_forcelist' range and retries have been exhausted. Possible values are: True, False. | Optional | 
+| empty_valid_codes | Type 'list'.A list of all valid status codes of empty responses (usually only 204, but can vary). | Optional | 
+| with_metrics | Type 'bool'. Whether or not to calculate execution metrics from the response. | Optional | 
+
+#### Context Output
+
+There is no context output for this command.
+### akamai-list-idam-properties
+
+***
+Lists the properties and includes for the current account.
+
+#### Base Command
+
+`akamai-list-idam-properties`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Idam.Properties | unknown | Akamai Properties of the current account via Identity Access Management. | 
+
+### akamai-get-datastream
+
+***
+Returns information about any version of a stream, including details about the monitored properties, logged data set fields, and log delivery destination. If you omit the version query parameter, this operation returns the last version of the stream.
+
+#### Base Command
+
+`akamai-get-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Uniquely identifies the stream. | Required | 
+| version | Identifies the version of the stream. If omitted, the operation returns the latest version of the stream. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamDetails | unknown | Akamai DataStream Details. | 
+
+### akamai-list-datastream-properties-bygroup
+
+***
+Get properties that are active on the production and staging network and available within a specific group. Run this operation to get and store the propertyId values for the Create a stream and Edit a stream operations.
+
+#### Base Command
+
+`akamai-list-datastream-properties-bygroup`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Group | unknown | List of the Active Properties within the Group. | 
+
+### akamai-list-datastream-groups
+
+***
+Returns access groups with contracts on your account. You can later use the groupId and contractId values to create and view streams or list properties by group. Set the contractId query parameter to get groups for a specific contract.
+
+#### Base Command
+
+`akamai-list-datastream-groups`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Uniquely identifies the contract that belongs to a group. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreamGroups | unknown | Akamai Groups within the contract. | 
+
+### akamai-get-client_lists
+
+***
+Get accessible client lists
+
+#### Base Command
+
+`akamai-get-client_lists`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.ClientList | unknown | Akamai ClientList. | 
+
+### akamai-delete-datastream
+
+***
+Deletes a deactivated stream. Deleting a stream means that you can't activate this stream again, and that you stop receiving logs for the properties that this stream monitors. Before deleting any stream, you need to deactivate it first. See Deactivate a stream.
+
+#### Base Command
+
+`akamai-delete-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Unique identifer of a stream. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream | unknown | Akamai DataStream. | 
+
+### akamai-list-datastreams
+
+***
+Returns the latest versions of the stream configurations for all groups within the account.
+
+#### Base Command
+
+`akamai-list-datastreams`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStreams | unknown | Akamai DataStreams. | 
+
+### akamai-activate-datastream
+
+***
+Activate/Deactivate the latest version of a DataStream.
+
+#### Base Command
+
+`akamai-activate-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_id | Uniquely identifies the stream. | Optional | 
+| option | "activate" or "deactivate". Possible values are: activate, deactivate. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream.Activation | unknown | Akamai DataStream Activation. | 
+
+### akamai-list-edgehostname
+
+***
+Lists all edge hostnames available under a contract.
+
+#### Base Command
+
+`akamai-list-edgehostname`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| contract_id | Unique identifier of a contract. | Required | 
+| group_id | Unique identifier of a group. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.Edgehostname | unknown | Akamai Edgehostnames. | 
+
+### akamai-new-datastream
+
+***
+Creates a stream configuration. Within a stream configuration, you can select properties to monitor in the stream, data set fields to collect in logs, and a destination to send these log files to. Get the streamId value from the response to use in the https://{hostname}/datastream-config-api/v2/log/streams/{streamId} endpoint URL. Apart from the log and delivery frequency configurations, you can decide whether to activate the stream on making the request or later using the activate parameter. Note that only active streams collect and send logs to their destinations. NOTE: "SPLUNK" and "HTTPS" are the only two types tested.
+
+#### Base Command
+
+`akamai-new-datastream`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| stream_name | The name of the stream. | Required | 
+| group_id | The unique identifier of the group that has access to the product and this stream configuration. | Required | 
+| contract_id | The unique identifier of the contract that has access to the product. | Optional | 
+| properties | The unique identifier of the properties that belong to the same product and to be monitored in the stream. Note that a stream can only log data for active properties. A property can be activated in Property Manager. | Optional | 
+| dataset_fields | The unique identifier of the data set fields to be included in stream logs. In case of STRUCTURED format, the order of the identifiers define how the value for these fields appear in the log lines. See Data set parameters for the complete list of the fields you can choose. | Optional | 
+| interval_in_seconds | The interval in seconds (30 or 60) after which the system bundles log lines into a file and sends it to a destination. Possible values are: 30, 60. | Optional | 
+| log_format | The format in which you want to receive log files. STRUCTURED or JSON are the currently available formats. When the delimiter is present in the request, STRUCTURED format needs to be defined. | Optional | 
+| field_delimiter | A delimiter that separates data set fields in the log lines, either SPACE or TAB. Set this only for the STRUCTURED log file format. | Optional | 
+| upload_file_prefix | The prefix of the log file to be used when sending to a object-based destination. It's a string of at most 200 characters. If unspecified, it defaults to ak. This member supports Dynamic time variables, but doesn't support the '.' character. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions. | Optional | 
+| upload_file_suffix | The suffix of the log file that you want to send to a object-based destination. It's a static string of at most 10 characters. If unspecified, it defaults to ds. This member doesn't support Dynamic time variables, and the ., /, %, ? characters. See S3 naming conventions, Azure blob naming conventions, and Google Cloud Storage object naming conventions. | Optional | 
+| ca_cert | The certification authority (CA) certificate used to verify the origin server's certificate. If the certificate is not signed by a well-known certification authority, enter the CA certificate in the PEM format for verification. If this value is set, the mTlsEnabled property replaces it in the response as true. | Optional | 
+| client_cert | The PEM-formatted digital certificate you want to authenticate requests to your destination with. If you want to use mutual authentication, you need to provide both the client certificate and the client key. If you pass this member, the mTlsEnabled member replaces it in the response as true. | Optional | 
+| client_key | The private key in the non-encrypted PKCS8 format that authenticates with the back-end server. If you want to use mutual authentication, you need to provide both the client certificate and the client key. | Optional | 
+| content_type | The type of the resource passed in the request's custom header. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional | 
+| custom_header_name | A human-readable name for the request's custom header, containing only alphanumeric, dash, and underscore characters. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional | 
+| custom_header_value | The custom header's contents passed with the request that contains information about the client connection. For details, see the additional options discussed in Stream logs to a HTTPS endpoint. | Optional | 
+| compress_logs | Enables gzip compression for a log file sent to a destination. True by default. Possible values are: True, False. | Optional | 
+| destination_type | The destination configuration in the stream to send logs. See Destinations for details and features available for each destination. Note: "SPLUNK" and "HTTPS" are the only two types tested. Possible values are: HTTPS, SPLUNK. Default is SPLUNK. | Optional | 
+| display_name | The name of the destination. | Optional | 
+| endpoint | The raw event Splunk URL where the logs need to be sent to. Akamaized property hostnames can be used as endpoint URLs. See Stream logs to Splunk. | Optional | 
+| event_collector_token | The Event Collector token for your Splunk account. See View usage of Event Collector token in the Splunk documentation. | Optional | 
+| tls_hostname | The hostname that verifies the server's certificate and matches the Subject Alternative Names (SANs) in the certificate. If not provided, DataStream fetches the hostname from the endpoint URL. | Optional | 
+| notification_emails | A list of e-mail addresses where you want to send notifications about activations and deactivations of the stream. You can omit this member and activate or deactivate the stream without notifications. | Optional | 
+| collect_midgress | Indicates if you've opted to capture midgress traffic within the Akamai platform, such as between two edge servers. Possible values are: True, False. | Optional | 
+| activate | Activates the stream at the time of the request, false by default. When Edit a stream or Patch a stream that is active, set this value to true. Possible values are: True, False. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Akamai.DataStream | unknown | Akamai DataStream. | 
+
