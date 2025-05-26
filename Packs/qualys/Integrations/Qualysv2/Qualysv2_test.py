@@ -1,5 +1,5 @@
 import re
-from unittest.mock import Mock, patch
+from unittest.mock import Mock
 import Qualysv2
 import pytest
 import requests
@@ -1558,7 +1558,7 @@ truncate_test_cases = [
             "ID": "12345",
             "DETECTION": {
                 "UNIQUE_VULN_ID": "vuln1",
-                "RESULTS": "A" * 2 * 10 ** 6,  # Exceeds size limit
+                "RESULTS": "A" * 2 * 10**6,  # Exceeds size limit
             },
         },
         True,
@@ -1568,7 +1568,7 @@ truncate_test_cases = [
         {
             "DETECTION": {
                 "UNIQUE_VULN_ID": "vuln2",
-                "RESULTS": "A" * 2 * 10 ** 6,  # Exceeds size limit
+                "RESULTS": "A" * 2 * 10**6,  # Exceeds size limit
             }
         },
         True,
@@ -1986,6 +1986,7 @@ def test_get_qid_for_cve_single_qid(mock_client):
     mock_client.get_qid_for_cve.return_value = mock_response
 
     from Qualysv2 import get_qid_for_cve  # Replace 'your_module' with your filename (without .py)
+
     result = get_qid_for_cve(mock_client, "CVE-2024-0001")
 
     assert isinstance(result, CommandResults)
@@ -2018,6 +2019,7 @@ def test_get_qid_for_cve_multiple_qids(mock_client):
     mock_client.get_qid_for_cve.return_value = mock_response
 
     from Qualysv2 import get_qid_for_cve
+
     result = get_qid_for_cve(mock_client, "CVE-2024-9999")
 
     assert result.outputs == ["12345", "67890"]
@@ -2090,15 +2092,39 @@ def test_get_asset_by_qid_success(mock_client):
 
     # Assertions
     assert isinstance(result, CommandResults)
-    assert result.outputs == [{'ID': '1111', 'IP': '1.1.1.1', 'TRACKING_METHOD': 'AGENT', 'OS': None, 'DNS': None,
-                               'DNS_DATA': {'HOSTNAME': None, 'DOMAIN': None, 'FQDN': None}, 'NETBIOS': None, 'QG_HOSTID': None,
-                               'LAST_SCAN_DATETIME': None, 'LAST_VM_SCANNED_DATE': None, 'LAST_VM_SCANNED_DURATION': None,
-                               'LAST_VM_AUTH_SCANNED_DATE': None,
-                               'DETECTION': {'UNIQUE_VULN_ID': '1111', 'QID': '888888', 'TYPE': 'Confirmed', 'SEVERITY': '5',
-                                             'SSL': '0', 'RESULTS': None, 'STATUS': 'Active', 'FIRST_FOUND_DATETIME': None,
-                                             'LAST_FOUND_DATETIME': None, 'TIMES_FOUND': '1430', 'LAST_TEST_DATETIME': None,
-                                             'LAST_UPDATE_DATETIME': None, 'IS_IGNORED': '0', 'IS_DISABLED': '0',
-                                             'LAST_PROCESSED_DATETIME': None}}]
+    assert result.outputs == [
+        {
+            "ID": "1111",
+            "IP": "1.1.1.1",
+            "TRACKING_METHOD": "AGENT",
+            "OS": None,
+            "DNS": None,
+            "DNS_DATA": {"HOSTNAME": None, "DOMAIN": None, "FQDN": None},
+            "NETBIOS": None,
+            "QG_HOSTID": None,
+            "LAST_SCAN_DATETIME": None,
+            "LAST_VM_SCANNED_DATE": None,
+            "LAST_VM_SCANNED_DURATION": None,
+            "LAST_VM_AUTH_SCANNED_DATE": None,
+            "DETECTION": {
+                "UNIQUE_VULN_ID": "1111",
+                "QID": "888888",
+                "TYPE": "Confirmed",
+                "SEVERITY": "5",
+                "SSL": "0",
+                "RESULTS": None,
+                "STATUS": "Active",
+                "FIRST_FOUND_DATETIME": None,
+                "LAST_FOUND_DATETIME": None,
+                "TIMES_FOUND": "1430",
+                "LAST_TEST_DATETIME": None,
+                "LAST_UPDATE_DATETIME": None,
+                "IS_IGNORED": "0",
+                "IS_DISABLED": "0",
+                "LAST_PROCESSED_DATETIME": None,
+            },
+        }
+    ]
     assert result.outputs_prefix == "Qualys.Assets"
     assert result.outputs_key_field == "ID"
     assert "1 assets are found related to the given qid='888888'" in result.readable_output
