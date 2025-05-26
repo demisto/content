@@ -12,31 +12,37 @@ configuration:
   defaultvalue: WizDefend Detection
   type: 13
   required: false
+  section: Collect
 - name: credentials
   display: Service Account ID
   type: 9
   required: true
+  section: Connect
 - name: auth_endpoint
   display: Authentication Endpoint
   type: 0
   required: true
+  section: Connect
 - name: api_endpoint
   display: API Endpoint
   required: true
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
+  section: Connect
 - name: first_fetch
   display: First fetch timestamp (maximum 5 days)
   additionalinfo: 'Specifies how far back to retrieve detections during the first fetch. Format: <number> <time unit>, e.g., "12 hours", "1 day". Maximum allowed is 5 days.'
   type: 0
   required: false
   defaultvalue: 12 hours
+  section: Collect
 - name: max_fetch
   defaultvalue: '1000'
   display: Max Detections to Fetch
   type: 0
   required: false
   additionalinfo: Maximum number of detections to fetch per run. Note that XSOAR fetch process has a 5-minute timeout, so fetching large numbers of detections may cause timeouts. Recommended range is 10-1000.
+  section: Collect
 - name: severity
   additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
   display: Minimum detection severity to fetch
@@ -49,6 +55,7 @@ configuration:
   defaultvalue: High
   type: 15
   required: false
+  section: Collect
 - name: type
   display: Type of detections to fetch.
   options:
@@ -58,10 +65,12 @@ configuration:
   defaultvalue: GENERATED THREAT
   type: 15
   required: false
+  section: Collect
 - name: cloud_account_or_cloud_organization
   display: Detection cloud account or cloud organization to fetch.
   type: 0
   required: false
+  section: Collect
 - name: platform
   display: Detection platforms to fetch.
   options:
@@ -96,6 +105,7 @@ configuration:
   - SelfHosted
   - LKE
   type: 16
+  section: Collect
 - name: origin
   display: Cloud event origin to fetch.
   options:
@@ -141,14 +151,17 @@ configuration:
     - WIN_SALT_SECURITY
   type: 16
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 description: Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
 display: WizDefend
 name: WizDefend
