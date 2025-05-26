@@ -4228,7 +4228,7 @@ script:
       isArray: false
       type: String
     - description: "The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed.
-                    CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n195.200.31.22,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware"
+                    CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n195.200.31.22,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware ."
       name: ioc_object
       required: false
       isArray: false
