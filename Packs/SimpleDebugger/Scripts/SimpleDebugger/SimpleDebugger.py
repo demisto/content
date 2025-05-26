@@ -1,12 +1,11 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
-# Append this to CommonServerUserPython
-
-from types import FrameType
-from typing import List
 from collections import OrderedDict
 from datetime import datetime
 
+# Append this to CommonServerUserPython
+from types import FrameType
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 EXCLUDELIST = [
     "iterencode",
@@ -26,7 +25,7 @@ EXCLUDELIST = [
     "timestamp",
     "strftime",
     "sub",
-    "compile"
+    "compile",
 ]
 
 SILENTLIST = [
@@ -44,7 +43,7 @@ SILENTLIST = [
     "CommandResults",
     "execute_command",
     "results",
-    "fileResult"
+    "fileResult",
 ]
 
 
@@ -98,14 +97,12 @@ class SimpleDebugger:
         self.exclude = EXCLUDELIST
         self.silent = SILENTLIST
 
-        execute_command("setIncident", {
-            'simpledebuggeroutput': " ",
-            'simpledebuggercode': " ",
-            'simpledebuggerdata': " ",
-            'simpledebuggercmd': ""
-        })
+        execute_command(
+            "setIncident",
+            {"simpledebuggeroutput": " ", "simpledebuggercode": " ", "simpledebuggerdata": " ", "simpledebuggercmd": ""},
+        )
         self.SdbgLoadCommands()
-        self.incid = demisto.incident()['id']
+        self.incid = demisto.incident()["id"]
 
     def SdbgTraceOn(self):
         sys.settrace(self.SdbgTrace)
@@ -114,23 +111,23 @@ class SimpleDebugger:
         sys.settrace(None)
 
     def SdbgLoadCommands(self):
-        fields = demisto.incident()['CustomFields']
-        if 'simpledebuggerinput' in fields:
-            lines = fields['simpledebuggerinput'].split("\n")
+        fields = demisto.incident()["CustomFields"]
+        if "simpledebuggerinput" in fields:
+            lines = fields["simpledebuggerinput"].split("\n")
             for line in lines:
                 if line.strip() == "":
                     continue
                 cmd = line.split(" ", 1)
                 command = cmd[0].strip()
-                if command == "break":          # break lineno1, lineno2, func1, func2, ...
+                if command == "break":  # break lineno1, lineno2, func1, func2, ...
                     self.SdbgSetBreakpoint(cmd[1].split(","))
-                elif command == "print":        # print func, func.var1, func.var2, ...
+                elif command == "print":  # print func, func.var1, func.var2, ...
                     self.SdbgSetPrint(cmd[1].split(","))
-                elif command == "quiet":        # quiet
+                elif command == "quiet":  # quiet
                     self.quietmode = True
-                elif command == "profile":      # profile
+                elif command == "profile":  # profile
                     self.profmode = True
-                elif command == "nolog":        # nolog
+                elif command == "nolog":  # nolog
                     self.logmode = False
                 elif command == "silent":
                     self.SdbgSetSilent(cmd[1].split(","))
@@ -144,27 +141,27 @@ class SimpleDebugger:
             else:
                 self.funcbreak.append(b.strip())
 
-    def SdbgSetPrint(self, functions: List[str]):
+    def SdbgSetPrint(self, functions: list[str]):
         for f in functions:
             self.printfunc.append(f.strip())
 
-    def SdbgSetSilent(self, functions: List[str]):
+    def SdbgSetSilent(self, functions: list[str]):
         for f in functions:
             self.silent.append(f.strip())
 
-    def SdbgSetExclude(self, functions: List[str]):
+    def SdbgSetExclude(self, functions: list[str]):
         for f in functions:
             self.exclude.append(f.strip())
 
     def SdbgLog(self, message: str):
         if self.logmode:
-            time_ms = datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+            time_ms = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")[:-3]
             self.output = f"{time_ms} | {message}\n" + self.output
-            execute_command("setIncident", {'simpledebuggeroutput': self.output})
+            execute_command("setIncident", {"simpledebuggeroutput": self.output})
 
     def SdbgCodeMd(self):
         markdown = ""
-        for key, val in self.code.items():
+        for _key, val in self.code.items():
             markdown += f"{val}\n"
         return markdown
 
@@ -174,10 +171,10 @@ class SimpleDebugger:
         return md
 
     def SdbgPrintLocals(self):
-        execute_command("setIncident", {'simpledebuggerdata': self.SdbgDataMd(self.data[self.currfunc['name']])})
+        execute_command("setIncident", {"simpledebuggerdata": self.SdbgDataMd(self.data[self.currfunc["name"]])})
 
     def SdbgPrintCode(self):
-        execute_command("setIncident", {'simpledebuggercode': self.SdbgCodeMd()})
+        execute_command("setIncident", {"simpledebuggercode": self.SdbgCodeMd()})
 
     def SdbgPrintFunc(self, funclist: str):
         md = ""
@@ -195,34 +192,30 @@ class SimpleDebugger:
                     value = {vname: self.data[fname][vname]}
                     md += SdbgDictMarkdown(value, "")
         if md != "":
-            execute_command("setIncident", {'simpledebuggerdata': md})
+            execute_command("setIncident", {"simpledebuggerdata": md})
 
     def SdbgPrintProfile(self):
         markdown = "|Function|Count|Average Duration|\n"
         markdown += "|:---|:---|:---|\n"
         for key, val in self.profile.items():
             markdown += f"|{key}|{val['count']}|{round(val['duration']/val['count'], 3)}|\n"
-        execute_command("setIncident", {'simpledebuggerdata': markdown})
+        execute_command("setIncident", {"simpledebuggerdata": markdown})
 
     def SdbgProfileEvent(self, frame: FrameType, event: str):
         if event == "call":
             if frame.f_code.co_name not in self.profile:
-                self.profile[frame.f_code.co_name] = {
-                    'count': 0,
-                    'duration': 0.0,
-                    'starts': []
-                }
-            self.profile[frame.f_code.co_name]['starts'].append(time.time())
+                self.profile[frame.f_code.co_name] = {"count": 0, "duration": 0.0, "starts": []}
+            self.profile[frame.f_code.co_name]["starts"].append(time.time())
         elif event == "return":
-            start = self.profile[frame.f_code.co_name]['starts'].pop()
-            self.profile[frame.f_code.co_name]['count'] += 1
-            self.profile[frame.f_code.co_name]['duration'] += time.time() - start
+            start = self.profile[frame.f_code.co_name]["starts"].pop()
+            self.profile[frame.f_code.co_name]["count"] += 1
+            self.profile[frame.f_code.co_name]["duration"] += time.time() - start
 
     def SdbgTraceCall(self, frame: FrameType, event: str) -> str:
         self.SdbgLog(f"Called > {frame.f_code.co_name}")
         self.currfunc = {"name": frame.f_code.co_name, "lineno": frame.f_lineno}
         self.stack.append(self.currfunc)
-        self.data[self.currfunc['name']] = {}
+        self.data[self.currfunc["name"]] = {}
         c = f"_{frame.f_lineno}:[0] {self.indent}> {frame.f_code.co_name}("
         for i in range(frame.f_code.co_argcount):
             if i > 0:
@@ -245,7 +238,7 @@ class SimpleDebugger:
 
     def SdbgTraceLine(self, frame: FrameType, event: str) -> str:
         c = f"**{frame.f_lineno}:[{frame.f_lineno - self.currfunc['lineno']}] {self.indent} {frame.f_code.co_name}()**"
-        self.data[self.currfunc['name']] = frame.f_locals
+        self.data[self.currfunc["name"]] = frame.f_locals
         return c
 
     def SdbgSetCurrentLineno(self, frame: FrameType, c: str) -> bool:
@@ -257,15 +250,15 @@ class SimpleDebugger:
         else:
             self.code[frame.f_lineno] = c
         if self.prevlineno != 0:
-            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")
+            self.code[self.prevlineno] = self.code[self.prevlineno].lstrip("**").rstrip("**")  # noqa: B005
         self.prevlineno = frame.f_lineno
         return newcode
 
     def SdbgCommand(self, frame: FrameType, breakpnt: bool) -> bool:
         if breakpoint is False:
             return False
-        fields = execute_command("getIncidents", {"id": self.incid})['data'][0]['CustomFields']
-        cmd = fields['simpledebuggercmd'].split(" ", 1)
+        fields = execute_command("getIncidents", {"id": self.incid})["data"][0]["CustomFields"]
+        cmd = fields["simpledebuggercmd"].split(" ", 1)
         command = cmd[0].strip()
         if command == "continue":
             self.SdbgLog("Continue execution")
@@ -289,7 +282,7 @@ class SimpleDebugger:
         elif command == "log":
             self.logmode = True
 
-        execute_command("setIncident", {'simpledebuggercmd': ""})
+        execute_command("setIncident", {"simpledebuggercmd": ""})
         return breakpnt
 
     def SdbgException(self):
@@ -304,9 +297,7 @@ class SimpleDebugger:
         if event == "call" and frame.f_code.co_name in self.funcbreak:
             self.SdbgLog(f"Breakpoint at function > {frame.f_code.co_name}")
             return True
-        if self.stepmode:
-            return True
-        return False
+        return bool(self.stepmode)
 
     def SdbgExclude(self, frame: FrameType, event: str) -> bool:
         if frame.f_code.co_name in self.silent and event == "line":
@@ -317,9 +308,7 @@ class SimpleDebugger:
             return True
         if frame.f_code.co_name.startswith("<"):
             return True
-        if frame.f_code.co_name.startswith("Sdbg"):
-            return True
-        return False
+        return bool(frame.f_code.co_name.startswith("Sdbg"))
 
     def SdbgTrace(self, frame: FrameType, event: str, _arg: Any):
         if event == "exception":

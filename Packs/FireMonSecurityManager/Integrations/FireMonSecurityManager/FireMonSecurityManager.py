@@ -1,9 +1,8 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
 """ IMPORTS """
-from typing import Any, Dict
+from typing import Any
 
 """ CONSTANTS """
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -97,7 +96,6 @@ class Client(BaseClient):
         return api_response
 
     def get_workflow_id_by_workflow_name(self, domain_id, workflow_name, auth_token, parameters):
-
         list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
         count_of_workflow = list_of_workflow.get("total")
 
@@ -105,18 +103,14 @@ class Client(BaseClient):
             parameters = {"includeDisabled": False, "pageSize": count_of_workflow}
             list_of_workflow = self.get_list_of_workflow(auth_token, domain_id, parameters)
 
-        for workflow in list_of_workflow.get("results"):
-            if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (
-                workflow["workflow"]["name"] == workflow_name
-            ):
+        for workflow in list_of_workflow.get("results"):  # noqa: RET503
+            if (workflow["workflow"]["pluginArtifactId"] == "access-request") and (workflow["workflow"]["name"] == workflow_name):
                 workflow_id = workflow["workflow"]["id"]
                 return workflow_id
 
     def create_pp_ticket(self, auth_token, payload):
         parameters = {"includeDisabled": False, "pageSize": 10}
-        workflow_id = self.get_workflow_id_by_workflow_name(
-            payload["domainId"], payload["workflowName"], auth_token, parameters
-        )
+        workflow_id = self.get_workflow_id_by_workflow_name(payload["domainId"], payload["workflowName"], auth_token, parameters)
         headers = {"Accept": "application/json", "Content-Type": "application/json", "X-FM-Auth-Token": auth_token}
         data = get_create_pp_ticket_payload()
         data["variables"]["priority"] = payload["priority"]
@@ -132,9 +126,7 @@ class Client(BaseClient):
             data["policyPlanRequirements"].append(dict(input_data))
 
         create_pp_ticket_url = CREATE_PP_TICKET_URL.format(payload["domainId"], workflow_id)
-        api_response = self._http_request(
-            method="POST", url_suffix=create_pp_ticket_url, headers=headers, json_data=data
-        )
+        api_response = self._http_request(method="POST", url_suffix=create_pp_ticket_url, headers=headers, json_data=data)
         return api_response
 
     def validate_pca_change(self, payload_pca, pca_url_suffix, headers):
@@ -201,7 +193,7 @@ class Client(BaseClient):
         )
         return rule_rec_api_response
 
-    def get_paged_search_secrule(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_search_secrule(self, auth_token: str, payload: dict[str, Any]):
         """Calling siql paged search api for searching security rules
         using `SIQL` language query
 
@@ -209,7 +201,7 @@ class Client(BaseClient):
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "q": payload["q"],
             "pageSize": payload["pageSize"],
             "page": payload["page"],
@@ -227,14 +219,14 @@ class Client(BaseClient):
         )
         return secrule_page_search_response
 
-    def get_paged_all_collectors(self, auth_token: str, payload: Dict[str, Any]):
+    def get_paged_all_collectors(self, auth_token: str, payload: dict[str, Any]):
         """Calling get paged search api for collector
 
         Args:
             auth_token (str): authentication token
             payload (Dict[str, Any]): payload to be used for making request
         """
-        parameters: Dict[str, Any] = {
+        parameters: dict[str, Any] = {
             "pageSize": payload["pageSize"],
             "page": payload["page"],
         }
@@ -260,7 +252,7 @@ class Client(BaseClient):
         """
         collector_status_response = self._http_request(
             method="GET",
-            url_suffix=f'{COLLECTOR_URL}/status/{collector_id}',
+            url_suffix=f"{COLLECTOR_URL}/status/{collector_id}",
             headers={
                 "Content-Type": "application/json",
                 "Accept": "application/json",
@@ -294,13 +286,14 @@ def authenticate_command(client):
 def create_pp_ticket_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        domainId=args.get("domain_id"),
-        workflowName=args.get("workflow_name"),
-        requirements=args.get("requirement"),
-        priority=args.get("priority"),
-        due_date=args.get("due_date"),
-    )
+    payload = {
+        "domainId": args.get("domain_id"),
+        "workflowName": args.get("workflow_name"),
+        "requirements": args.get("requirement"),
+        "priority": args.get("priority"),
+        "due_date": args.get("due_date"),
+    }
+
     response = client.create_pp_ticket(auth_token, payload)
     return CommandResults(
         outputs_prefix="FireMonSecurityManager.CreatePPTicket",
@@ -314,14 +307,15 @@ def create_pp_ticket_command(client, args):
 def pca_command(client, args):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
-    payload = dict(
-        sources=list(args.get("sources").split(",")),
-        destinations=list(args.get("destinations").split(",")),
-        services=list(args.get("services").split(",")),
-        action=args.get("action"),
-        domainId=args.get("domain_id"),
-        deviceGroupId=args.get("device_group_id"),
-    )
+    payload = {
+        "sources": list(args.get("sources").split(",")),
+        "destinations": list(args.get("destinations").split(",")),
+        "services": list(args.get("services").split(",")),
+        "action": args.get("action"),
+        "domainId": args.get("domain_id"),
+        "deviceGroupId": args.get("device_group_id"),
+    }
+
     payload_rule_rec = client.rule_rec_api(auth_token, payload)
     result = {}
     list_of_device_changes = payload_rule_rec["deviceChanges"]
@@ -329,13 +323,13 @@ def pca_command(client, args):
         return CommandResults(
             outputs_prefix="FireMonSecurityManager.PCA",
             outputs_key_field="pca",
-            outputs="No matching rule found for this requirement, " "Please go back and update the requirement",
+            outputs="No matching rule found for this requirement, Please go back and update the requirement",
             readable_output=tableToMarkdown(
                 name="FireMon SecurityManager PCA:",
-                t={"pca": "No matching rule found for this requirement, " "Please go back and update the requirement"},
+                t={"pca": "No matching rule found for this requirement, Please go back and update the requirement"},
                 removeNull=True,
             ),
-            raw_response="No matching rule found for this requirement, " "Please go back and update the requirement",
+            raw_response="No matching rule found for this requirement, Please go back and update the requirement",
         )
 
     for i in range(len(list_of_device_changes)):
@@ -351,9 +345,7 @@ def pca_command(client, args):
         if filtered_rules is None:
             return "No Rules Needs to be changed!"
 
-        result[i] = client.validate_pca_change(
-            filtered_rules, PCA_URL_SUFFIX.format(args.get("domain_id"), device_id), headers
-        )
+        result[i] = client.validate_pca_change(filtered_rules, PCA_URL_SUFFIX.format(args.get("domain_id"), device_id), headers)
         if "requestId" in result[i]:
             del result[i]["requestId"]
         if "pcaResult" in result[i]:
@@ -399,7 +391,7 @@ def pca_command(client, args):
     )
 
 
-def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_search_secrule(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -410,21 +402,21 @@ def get_paged_search_secrule(client: Client, auth_token: str, payload: Dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_search_secrule(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_search_secrule(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
 
-def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
+def secmgr_secrule_search_command(client: Client, args: dict[str, Any]):
     """Searches for security rules using the SIQL language query
 
     Args:
@@ -435,12 +427,13 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     auth_token = auth_token_cmd_result.outputs
 
     # page size can't be less than 1
-    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
-    payload = dict(
-        q=str(args.get("q")),
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    page_size = max(int(args.get("pageSize", 10)), 1)
+    payload = {
+        "q": str(args.get("q")),
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
+
     results = get_paged_search_secrule(client, auth_token, payload)
 
     return CommandResults(
@@ -457,7 +450,7 @@ def secmgr_secrule_search_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str, Any]) -> List:
+def get_paged_all_collectors(client: Client, auth_token: str, payload: dict[str, Any]) -> List:
     """Make subsequent requests using client and other arguments
 
     Args:
@@ -468,21 +461,21 @@ def get_paged_all_collectors(client: Client, auth_token: str, payload: Dict[str,
     Returns:
         (List[Dict[str, Any]]): results list
     """
-    result = list()
+    result = []
     response = client.get_paged_all_collectors(auth_token, payload)
     total_pages = response.get("total", 0) // payload.get("pageSize")
 
-    result.extend(response.get("results", list()))
+    result.extend(response.get("results", []))
 
     while payload.get("page") < total_pages:  # NOTE: Check if we can implement async here
         payload["page"] += 1
         response = client.get_paged_all_collectors(auth_token, payload)
-        result.extend(response.get("results", list()))
+        result.extend(response.get("results", []))
 
     return result
 
 
-def collector_get_all_command(client: Client, args: Dict[str, Any]):
+def collector_get_all_command(client: Client, args: dict[str, Any]):
     """List all the collectors in the inventory
 
     Args:
@@ -492,11 +485,12 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     auth_token_cmd_result = authenticate_command(client)
     auth_token = auth_token_cmd_result.outputs
 
-    page_size = 1 if int(args.get("pageSize", 10)) < 1 else int(args.get("pageSize", 10))
-    payload = dict(
-        pageSize=page_size,
-        page=int(args.get("page", 0)),
-    )
+    page_size = max(int(args.get("pageSize", 10)), 1)
+    payload = {
+        "pageSize": page_size,
+        "page": int(args.get("page", 0)),
+    }
+
     results = get_paged_all_collectors(client, auth_token, payload)
 
     return CommandResults(
@@ -513,7 +507,7 @@ def collector_get_all_command(client: Client, args: Dict[str, Any]):
     )
 
 
-def collector_get_status_byid_command(client: Client, args: Dict[str, Any]):
+def collector_get_status_byid_command(client: Client, args: dict[str, Any]):
     """Get collector status by ID
 
     Args:
@@ -547,9 +541,7 @@ def main():
     base_url = urljoin(demisto.params()["url"])
     proxy = demisto.params().get("proxy", False)
     try:
-        client = Client(
-            base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, username=username, password=password)
         if demisto.command() == "test-module":
             result = test_module(client)
             demisto.results(result)
@@ -566,7 +558,7 @@ def main():
         elif demisto.command() == "firemon-collector-get-status-byid":
             return_results(collector_get_status_byid_command(client, demisto.args()))
     except Exception as e:
-        return_error(f"Failed to execute {demisto.command()} command. Error: {str(e)}")
+        return_error(f"Failed to execute {demisto.command()} command. Error: {e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

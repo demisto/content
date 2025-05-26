@@ -1,13 +1,15 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
-from CommonServerUserPython import *  # noqa
 import asyncio
-import urllib3
 import traceback
-from urllib.parse import urlparse
 from ipaddress import ip_address
-from typing import Dict, Tuple, Any
-from jarm.scanner.scanner import Scanner
+from typing import Any
+from urllib.parse import urlparse
+
+import demistomock as demisto
+import urllib3
+from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
+from jarm.scanner.scanner import Scanner  # pylint: disable=E0401,E0611
+
+from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -18,36 +20,36 @@ DEFAULT_PORT = 443
 
 
 class Client:
-    def jarm_fingerprint(self, host: str, port: int) -> Tuple[str, str, int]:
+    def jarm_fingerprint(self, host: str, port: int) -> tuple[str, str, int]:
         return asyncio.run(Scanner.scan_async(host, port, suppress=True))
 
 
 """ HELPER FUNCTIONS """
 
 
-def parse_hostname(hostname: str, port: Optional[int]) -> Dict[str, Any]:
+def parse_hostname(hostname: str, port: Optional[int]) -> dict[str, Any]:
     """
     Parses a target hostname. Supports multiple ipv4/fqdn with and without port formats.
     """
-    target: Dict[str, Any] = {}
-    if not hostname.startswith('https://'):
-        hostname = 'https://' + hostname
+    target: dict[str, Any] = {}
+    if not hostname.startswith("https://"):
+        hostname = "https://" + hostname
 
     parsed_url = urlparse(hostname)
     if port:
-        target['port'] = port
+        target["port"] = port
     elif parsed_url.port:
-        target['port'] = parsed_url.port
+        target["port"] = parsed_url.port
     else:
-        target['port'] = DEFAULT_PORT
+        target["port"] = DEFAULT_PORT
 
     try:
         ip = ip_address(parsed_url.hostname)  # type: ignore[arg-type]
-        target['target_host'] = str(ip)
-        target['target_type'] = 'ip'
+        target["target_host"] = str(ip)
+        target["target_type"] = "ip"
     except ValueError:
-        target['target_host'] = parsed_url.hostname
-        target['target_type'] = 'fqdn'
+        target["target_host"] = parsed_url.hostname
+        target["target_type"] = "fqdn"
 
     return target
 
@@ -59,14 +61,12 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def jarm_fingerprint_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def jarm_fingerprint_command(client: Client, args: dict[str, Any]) -> CommandResults:
     class JARMDBotScore(Common.Indicator):
-        def __init__(self, output: Dict[str, Any]):
-            self._jarm = output.get('Fingerprint')
+        def __init__(self, output: dict[str, Any]):
+            self._jarm = output.get("Fingerprint")
 
-        def to_context(self) -> Dict[str, Any]:
+        def to_context(self) -> dict[str, Any]:
             return {
                 "DBotScore": {
                     "Indicator": self._jarm,
@@ -84,32 +84,31 @@ def jarm_fingerprint_command(
 
     target = parse_hostname(host, port)
 
-    target_type = target.get('target_type')
+    target_type = target.get("target_type")
     if not target_type:
-        raise ValueError('Cannot determine scan target')
+        raise ValueError("Cannot determine scan target")
 
-    target_host = target.get('target_host')
+    target_host = target.get("target_host")
     if not target_host:
-        raise ValueError('Cannot determine scan target')
+        raise ValueError("Cannot determine scan target")
 
-    port = target.get('port')
+    port = target.get("port")
     if not port:
-        raise ValueError('Invalid port provided')
+        raise ValueError("Invalid port provided")
 
     result = client.jarm_fingerprint(target_host, port)
 
     output = {}
-    output['Fingerprint'] = result[0]
-    output['Target'] = f'{target_host}:{port}'
-    output['Port'] = port
-    if target_type == 'ip':
-        output['IP'] = target_host
-    elif target_type == 'fqdn':
-        output['FQDN'] = target_host
+    output["Fingerprint"] = result[0]
+    output["Target"] = f"{target_host}:{port}"
+    output["Port"] = port
+    if target_type == "ip":
+        output["IP"] = target_host
+    elif target_type == "fqdn":
+        output["FQDN"] = target_host
 
     return CommandResults(
-        outputs_prefix="JARM", outputs_key_field=['FQDN', 'IP', 'Port'], outputs=output,
-        indicator=JARMDBotScore(output=output)
+        outputs_prefix="JARM", outputs_key_field=["FQDN", "IP", "Port"], outputs=output, indicator=JARMDBotScore(output=output)
     )
 
 
@@ -117,7 +116,6 @@ def jarm_fingerprint_command(
 
 
 def main() -> None:
-
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
@@ -131,14 +129,12 @@ def main() -> None:
         elif command == "jarm-fingerprint":
             return_results(jarm_fingerprint_command(client, demisto.args()))
         else:
-            raise NotImplementedError(f'Command {command} is not implemented.')
+            raise NotImplementedError(f"Command {command} is not implemented.")
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(
-            f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """ ENTRY POINT """

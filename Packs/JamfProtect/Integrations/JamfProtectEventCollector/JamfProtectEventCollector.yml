@@ -101,9 +101,10 @@ script:
   subtype: python3
   isfetchevents: true
   isfetchassets: true
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 6.9.0
 tests:
 - No tests (auto formatted)

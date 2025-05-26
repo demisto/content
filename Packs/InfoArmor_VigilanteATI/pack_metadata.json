@@ -2,7 +2,7 @@
     "name": "InfoArmor VigilanteATI",
     "description": "VigilanteATI redefines Advanced Threat Intelligence. InfoArmor's VigilanteATI platform and cyber threat services act as an extension of your IT security team.",
     "support": "xsoar",
-    "currentVersion": "1.0.14",
+    "currentVersion": "1.0.15",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,6 +15,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

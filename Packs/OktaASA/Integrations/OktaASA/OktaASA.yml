@@ -12,8 +12,8 @@ configuration:
   required: true
   type: 0
   section: Connect
-- displaypassword: API Key ID
-  display: API Key Secret
+- displaypassword: API Key Secret
+  display: API Key ID
   additionalinfo: The API Key ID to use for connection.
   name: credentials
   required: true
@@ -75,6 +75,7 @@ script:
   type: python
 marketplaces:
 - marketplacev2
+- platform
 fromversion: 8.3.0
 tests:
 - No tests (auto formatted)

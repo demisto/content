@@ -1,24 +1,21 @@
-import pytest
-import dateparser
 import datetime
-from freezegun import freeze_time
+
+import dateparser
+import pytest
 from CloudflareZeroTrustEventCollector import (
+    DATE_FORMAT,
     Client,
+    calculate_fetch_dates,
     fetch_events,
     get_events_command,
-    calculate_fetch_dates,
-    prepare_next_run,
     handle_duplicates,
-    DATE_FORMAT,
+    prepare_next_run,
 )
-
+from freezegun import freeze_time
 
 MOCK_BASE_URL = "https://api.cloudflare.com"
 MOCK_ACCOUNT_ID = "mock_account_id"
-MOCK_HEADERS = {
-    'X-Auth-Email': "test@example.com",
-    'X-Auth-Key': "mock_api_key"
-}
+MOCK_HEADERS = {"X-Auth-Email": "test@example.com", "X-Auth-Key": "mock_api_key"}
 
 MOCK_TIME_UTC_NOW = "2024-01-01T00:00:00.000000Z"
 
@@ -28,30 +25,22 @@ SAMPLE_EVENTS = [
     {"id": "4", "created_at": "2024-01-01T11:59:58Z"},
     {"id": "3", "when": "2024-01-01T11:59:59Z"},
     {"id": "2", "when": "2024-01-01T12:00:00Z"},
-    {"id": "1", "when": "2024-01-01T12:00:00Z"}
+    {"id": "1", "when": "2024-01-01T12:00:00Z"},
 ]
 
 
 @pytest.fixture
 def mock_client() -> Client:
     """Fixture to create a mock client for testing."""
-    return Client(
-        base_url=MOCK_BASE_URL,
-        verify=False,
-        proxy=False,
-        headers=MOCK_HEADERS,
-        account_id=MOCK_ACCOUNT_ID
-    )
+    return Client(base_url=MOCK_BASE_URL, verify=False, proxy=False, headers=MOCK_HEADERS, account_id=MOCK_ACCOUNT_ID)
 
 
 @freeze_time(MOCK_TIME_UTC_NOW)
 def test_test_module(mock_client: Client, mocker):
     """Test the test_module function."""
     from CloudflareZeroTrustEventCollector import test_module
-    mocker.patch(
-        "CloudflareZeroTrustEventCollector.fetch_events",
-        return_value=({}, [])
-    )
+
+    mocker.patch("CloudflareZeroTrustEventCollector.fetch_events", return_value=({}, []))
     events_types = ["Account Audit Logs", "User Audit Logs", "Access Authentication Logs"]
     result = test_module(mock_client, events_types)
     assert result == "ok"
@@ -62,9 +51,7 @@ def test_fetch_events(mock_client: Client, mocker):
     """Test the fetch_events function."""
     mocker.patch(
         "CloudflareZeroTrustEventCollector.Client.get_events",
-        return_value={
-            "result": [{"id": "event1", "created_at": "2024-01-01T00:00:00Z"}]
-        }
+        return_value={"result": [{"id": "event1", "created_at": "2024-01-01T00:00:00Z"}]},
     )
 
     last_run = {}
@@ -79,7 +66,7 @@ def test_fetch_events(mock_client: Client, mocker):
         max_fetch_account_audit=max_fetch_account_audit,
         max_fetch_user_audit=max_fetch_user_audit,
         max_fetch_authentication=max_fetch_authentication,
-        event_types_to_fetch=event_types_to_fetch
+        event_types_to_fetch=event_types_to_fetch,
     )
 
     assert len(events) == 2  # one for each type, since the len(result) < page_size: break condition.
@@ -96,16 +83,12 @@ def test_get_events_command(mock_client: Client, mocker):
         return_value={
             "result": [
                 {"id": "event1", "created_at": "2024-01-01T00:00:00Z"},
-                {"id": "event2", "created_at": "2024-01-01T00:00:01Z"}
+                {"id": "event2", "created_at": "2024-01-01T00:00:01Z"},
             ]
-        }
+        },
     )
 
-    args = {
-        "limit": "2",
-        "event_types_to_fetch": "Account Audit Logs",
-        "start_date": "2024-01-01T00:00:00Z"
-    }
+    args = {"limit": "2", "event_types_to_fetch": "Account Audit Logs", "start_date": "2024-01-01T00:00:00Z"}
 
     events, command_results = get_events_command(mock_client, args)
 

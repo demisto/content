@@ -2,7 +2,7 @@
     "name": "Envoy",
     "description": "Envoy is offering an enterprise workplace visitor management software platform.",
     "support": "xsoar",
-    "currentVersion": "1.0.12",
+    "currentVersion": "1.0.13",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -14,6 +14,13 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

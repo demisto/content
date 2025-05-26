@@ -1,35 +1,36 @@
-import demistomock as demisto
 import base64
+import json
+
+import dateparser
+import demistomock as demisto
 import pytest
 from GooglePubSub import (
-    GoogleNameParser,
-    convert_datetime_to_iso_str,
-    message_to_incident,
-    attribute_pairs_to_dict,
-    get_publish_body,
-    extract_acks_and_msgs,
-    try_pull_unique_messages,
-    setup_subscription_last_run,
-    publish_message_command,
-    pull_messages_command,
-    subscriptions_list_command,
-    get_subscription_command,
-    create_subscription_command,
-    update_subscription_command,
-    topics_list_command,
-    create_topic_command,
-    delete_topic_command,
-    update_topic_command,
-    seek_message_command,
-    snapshot_list_command,
-    snapshot_create_command,
-    snapshot_update_command,
-    snapshot_delete_command,
     LAST_RUN_FETCHED_KEY,
     LAST_RUN_TIME_KEY,
+    GoogleNameParser,
+    attribute_pairs_to_dict,
+    convert_datetime_to_iso_str,
+    create_subscription_command,
+    create_topic_command,
+    delete_topic_command,
+    extract_acks_and_msgs,
+    get_publish_body,
+    get_subscription_command,
+    message_to_incident,
+    publish_message_command,
+    pull_messages_command,
+    seek_message_command,
+    setup_subscription_last_run,
+    snapshot_create_command,
+    snapshot_delete_command,
+    snapshot_list_command,
+    snapshot_update_command,
+    subscriptions_list_command,
+    topics_list_command,
+    try_pull_unique_messages,
+    update_subscription_command,
+    update_topic_command,
 )
-import dateparser
-import json
 
 
 class TestGoogleNameParser:
@@ -61,9 +62,7 @@ class TestGoogleNameParser:
             - GoogleNameParser should parse it in the expected format
         """
         expected = f"projects/{self.DFLT_PROJECT_ID}/topics/{self.DFLT_TOPIC_ID}"
-        assert expected == GoogleNameParser.get_topic_name(
-            self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID
-        )
+        assert expected == GoogleNameParser.get_topic_name(self.DFLT_PROJECT_ID, self.DFLT_TOPIC_ID)
 
     def test_get_full_subscription_project_name(self):
         """
@@ -76,9 +75,7 @@ class TestGoogleNameParser:
             - GoogleNameParser should parse it in the expected format
         """
         expected = f"projects/{self.DFLT_PROJECT_ID}/subscriptions/{self.DFLT_SUB_ID}"
-        assert expected == GoogleNameParser.get_subscription_project_name(
-            self.DFLT_PROJECT_ID, self.DFLT_SUB_ID
-        )
+        assert expected == GoogleNameParser.get_subscription_project_name(self.DFLT_PROJECT_ID, self.DFLT_SUB_ID)
 
     def test_get_full_subscription_topic_name(self):
         """
@@ -107,16 +104,12 @@ class TestGoogleNameParser:
             - GoogleNameParser should parse it in the expected format
         """
         expected = f"projects/{self.DFLT_PROJECT_ID}/snapshots/{self.DFLT_SNAPSHOT_ID}"
-        assert expected == GoogleNameParser.get_snapshot_project_name(
-            self.DFLT_PROJECT_ID, self.DFLT_SNAPSHOT_ID
-        )
+        assert expected == GoogleNameParser.get_snapshot_project_name(self.DFLT_PROJECT_ID, self.DFLT_SNAPSHOT_ID)
 
 
 class TestHelperFunctions:
     DECODED_B64_MESSAGE = "decoded message"
-    ENCODED_B64_MESSAGE = str(base64.b64encode(DECODED_B64_MESSAGE.encode("utf8")))[
-        2:-1
-    ]
+    ENCODED_B64_MESSAGE = str(base64.b64encode(DECODED_B64_MESSAGE.encode("utf8")))[2:-1]
     DATE_NO_MS = "2020-01-01T11:11:11Z"
     DATE_WITH_MS = "2020-01-01T11:11:11.123000Z"
     MOCK_MESSAGE = {"messageId": "123", "publishTime": DATE_WITH_MS}
@@ -132,12 +125,10 @@ class TestHelperFunctions:
             - convert_datetime_to_iso_str should convert the dates to the same string
         """
         datetime_no_ms = dateparser.parse(self.DATE_NO_MS)
-        assert f"{self.DATE_NO_MS[:-1]}.000000Z" == convert_datetime_to_iso_str(
-            datetime_no_ms
-        )
+        assert f"{self.DATE_NO_MS[:-1]}.000000Z" == convert_datetime_to_iso_str(datetime_no_ms)
 
         datetime_with_ms = dateparser.parse(self.DATE_WITH_MS)
-        assert self.DATE_WITH_MS == convert_datetime_to_iso_str(datetime_with_ms)
+        assert convert_datetime_to_iso_str(datetime_with_ms) == self.DATE_WITH_MS
 
     def test_message_to_incident(self):
         """
@@ -149,11 +140,8 @@ class TestHelperFunctions:
             - message_to_incident should convert it correctly
         """
         incident = message_to_incident(self.MOCK_MESSAGE)
-        assert self.DATE_WITH_MS == incident.get("occurred")
-        assert (
-            f'Google PubSub Message {self.MOCK_MESSAGE.get("messageId")}'
-            == incident.get("name")
-        )
+        assert incident.get("occurred") == self.DATE_WITH_MS
+        assert f'Google PubSub Message {self.MOCK_MESSAGE.get("messageId")}' == incident.get("name")
         assert json.dumps(self.MOCK_MESSAGE) == incident.get("rawJSON")
 
     class TestGetPublishBody:
@@ -214,11 +202,11 @@ class TestHelperFunctions:
             attrs_str = f"{key_1}={val_1},{key_2}={val_2}"
             expected_attributes = {key_1: val_1, key_2: val_2}
             expected_data = TestHelperFunctions.ENCODED_B64_MESSAGE
-            expected = {
-                "messages": [{"data": expected_data, "attributes": expected_attributes}]
-            }
+            expected = {"messages": [{"data": expected_data, "attributes": expected_attributes}]}
             assert expected == get_publish_body(
-                attrs_str, TestHelperFunctions.DECODED_B64_MESSAGE, delim_char=",",
+                attrs_str,
+                TestHelperFunctions.DECODED_B64_MESSAGE,
+                delim_char=",",
             )
 
     class TestAttributePairsToDict:
@@ -247,7 +235,7 @@ class TestHelperFunctions:
             Then:
                 - return attribute pairs
             """
-            assert "" == attribute_pairs_to_dict("")
+            assert attribute_pairs_to_dict("") == ""
             assert attribute_pairs_to_dict(None) is None
 
         def test_attribute_pairs_to_dict__single(self):
@@ -418,9 +406,9 @@ class TestCommands:
         def ack_messages(self, a, b):
             return ""
 
-    with open("test_data/commands_outputs.json", "r") as f:
+    with open("test_data/commands_outputs.json") as f:
         COMMAND_OUTPUTS = json.load(f)
-    with open("test_data/raw_responses.json", "r") as f:
+    with open("test_data/raw_responses.json") as f:
         RAW_RESPONSES = json.load(f)
 
     TEST_COMMANDS_LIST = [
@@ -555,9 +543,7 @@ class TestCommands:
         ),
     ]
 
-    @pytest.mark.parametrize(
-        "command_name,command_func,client_func,args, ", TEST_COMMANDS_LIST
-    )
+    @pytest.mark.parametrize("command_name,command_func,client_func,args, ", TEST_COMMANDS_LIST)
     def test_commands(self, command_name, command_func, client_func, args, mocker):
         """
         Given:
@@ -626,9 +612,7 @@ class TestCommands:
         sub_name = "test_sub_2"
         previous_msg_ids = set()
         last_run_time = "2020-04-25T08:36:30.242Z"
-        mocker.patch.object(
-            client, "pull_messages", return_value={"receivedMessages": []}
-        )
+        mocker.patch.object(client, "pull_messages", return_value={"receivedMessages": []})
         debug_mock = mocker.patch.object(demisto, "debug")
         (
             res_msgs,
@@ -668,7 +652,7 @@ class TestCommands:
             res_acks,
             res_max_publish_time,
         ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
-        assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
+        assert not any(call.args[0].startswith("GCP_PUBSUB_MSG") for call in debug_mock.call_args_list)
         assert res_msgs == [
             {
                 "ackId": "321",
@@ -710,7 +694,7 @@ class TestCommands:
             res_acks,
             res_max_publish_time,
         ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
-        assert len(list(filter(lambda x: x.args[0].startswith('GCP_PUBSUB_MSG'), debug_mock.call_args_list))) == 1
+        assert len(list(filter(lambda x: x.args[0].startswith("GCP_PUBSUB_MSG"), debug_mock.call_args_list))) == 1
         assert res_msgs == [
             {
                 "ackId": "654",
@@ -749,7 +733,7 @@ class TestCommands:
             res_acks,
             res_max_publish_time,
         ) = try_pull_unique_messages(client, sub_name, previous_msg_ids, last_run_time, False, retry_times=1)
-        assert not any(call.args[0].startswith('GCP_PUBSUB_MSG') for call in debug_mock.call_args_list)
+        assert not any(call.args[0].startswith("GCP_PUBSUB_MSG") for call in debug_mock.call_args_list)
         assert res_msgs == [
             {
                 "ackId": "654",

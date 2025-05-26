@@ -69,7 +69,7 @@ configuration:
   name: raw_query
   type: 12
   additionalinfo: |-
-    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -424,7 +424,7 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
-  dockerimage: demisto/elasticsearch:1.0.0.117175
+  dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
   runonce: false
   script: '-'

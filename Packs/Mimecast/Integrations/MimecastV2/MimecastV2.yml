@@ -8,6 +8,7 @@ configuration:
   name: baseUrl
   required: true
   type: 0
+  section: Connect
 - display: Client ID
   name: client_id
   type: 0
@@ -95,21 +96,25 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Fetch URL incidents
   name: fetchURL
   type: 8
   hidden: true
   required: false
+  section: Collect
 - display: Fetch attachment incidents
   name: fetchAttachments
   type: 8
   hidden: true
   required: false
+  section: Collect
 - display: Fetch impersonation incidents
   name: fetchImpersonations
   type: 8
   hidden: true
   required: false
+  section: Collect
 - additionalinfo: Fetch specific incident types. Default value is "All".
   defaultvalue: All
   display: Fetch incident types
@@ -122,28 +127,43 @@ configuration:
   - Held Messages
   type: 16
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - defaultvalue: '24'
   display: Hours before first fetch to retrieve incidents
   name: fetchDelta
   type: 0
   required: false
+  section: Collect
+- defaultvalue: '100'
+  display: Max fetch limit
+  name: max_fetch
+  type: 0
+  required: false
+  additionalinfo: Limit for each fetched incident type. Recommended value is 100. Maximum value is 200.
+  section: Collect
+  advanced: true
 - display: Trust any certificate (not secure)
   name: new_insecure
   type: 8
   required: false
+  section: Connect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - defaultvalue: '1'
   display: Incidents Fetch Interval
   name: incidentFetchInterval
   required: false
   type: 19
+  additionalinfo: Set the Incidents Fetch Interval to a maximum of 15 minutes if the number of incidents is expected to exceed the specified max fetch limit in each fetch cycle.
+  section: Collect
 description: Mimecast unified email management offers cloud email services for email security, continuity and archiving emails. Please read detailed instructions in order to understand how to set the integration's parameters.
 display: Mimecast v2
 name: MimecastV2
@@ -3392,7 +3412,7 @@ script:
   script: '-'
   subtype: python3
   type: python
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.1983910
 tests:
 - Mimecast test
 - Mimecast Test api 2.0
