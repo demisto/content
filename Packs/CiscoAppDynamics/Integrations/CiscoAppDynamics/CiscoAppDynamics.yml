@@ -75,7 +75,7 @@ display: CiscoAppDynamics
 name: CiscoAppDynamics
 script:
   commands:
-  - name: cisappdynamics-get-events
+  - name: cisco-appdynamics-get-events
     description: Retrieves a list of events from the cisappdynamics instance.
     arguments:
     - auto: PREDEFINED
@@ -86,13 +86,9 @@ script:
         - 'True'
         - 'False'
       required: true
-    - description: 'The maximum number of Audit History logs per fetch.'
-      name: max_audit_fetch
+    - description: 'The maximum number of events to fetch.'
+      name: limit
       defaultValue: 1000
-      required: false
-    - description: 'The maximum number of Healthrule Violations Events per fetch.'
-      name: max_healthrule_fetch
-      defaultValue: 3000
       required: false
     - description: 'Which events to fetch.'
       name: events_type_to_fetch

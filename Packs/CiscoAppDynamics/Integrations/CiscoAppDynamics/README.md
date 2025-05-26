@@ -45,14 +45,14 @@ You can create new API Client identity types that can be used to generate OAuth 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### cisappdynamics-get-events
+### cisco-appdynamics-get-events
 
 ***
 Retrieves a list of events from the cisappdynamics instance.
 
 #### Base Command
 
-`cisappdynamics-get-events`
+`cisco-appdynamics-get-events`
 
 #### Input
 
