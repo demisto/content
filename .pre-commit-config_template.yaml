@@ -28,7 +28,7 @@ repos:
     - --lock
     files: ^pyproject.toml$
 - repo: https://github.com/hadialqattan/pycln
-  rev: v2.5.0
+  rev: v2.5.0a
   hooks:
   - id: pycln
     min_py_version: '3.7'
@@ -391,3 +391,4 @@ repos:
     - id: markdownlint-cli2
       files: "^(.*/)?README\\.md$"
       args: [ "--config", ".markdownlint-cli2.jsonc" ]
+      exclude: Packs/ReversingLabs_Titanium_Cloud/Integrations/ReversingLabsTitaniumCloudv2/README\.md
