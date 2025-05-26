@@ -90,7 +90,6 @@
 [Instance] ProtectWise_instance_1
 </code></pre>
 
-
 <p><a href="../../doc_files/protectwise_event_search.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_search.png" alt="image" width="751" height="269"></a></p>
 <p><a href="../../doc_files/protectwith_sensors.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwith_sensors.png" alt="image" width="752" height="180"></a></p>
 <p><a href="../../doc_files/protectwise_event_info.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/protectwise_event_info.png" alt="image" width="751" height="404"></a><br><a href="../../doc_files/netflows.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/netflows.png" alt="image" width="751" height="277"></a></p>
