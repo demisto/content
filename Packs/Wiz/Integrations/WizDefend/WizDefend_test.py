@@ -1582,9 +1582,9 @@ def test_update_wiz_domain_url(mocker, auth_endpoint, expected_domain, reset_dom
     update_wiz_domain_url()
 
     # Verify domain was correctly extracted
-    assert expected_domain == WizDefend.WIZ_DOMAIN_URL, (
-        f"Failed for auth_endpoint={auth_endpoint}: expected {expected_domain}, got {WizDefend.WIZ_DOMAIN_URL}"
-    )
+    assert (
+        expected_domain == WizDefend.WIZ_DOMAIN_URL
+    ), f"Failed for auth_endpoint={auth_endpoint}: expected {expected_domain}, got {WizDefend.WIZ_DOMAIN_URL}"
 
 
 @pytest.mark.parametrize("domain", ["app.wiz.io", "test.wiz.io", "staging-env.wiz.io", "customer-subdomain.wiz.io"])
@@ -2712,9 +2712,9 @@ def test_status_values_consistency(yaml_content):
     yaml_status_values.sort()
 
     # Test exact equality between code and YAML values
-    assert code_status_values == yaml_status_values, (
-        f"Status values in code do not exactly match wiz-get-threats:\nCode: {code_status_values}\nYAML: {yaml_status_values}"
-    )
+    assert (
+        code_status_values == yaml_status_values
+    ), f"Status values in code do not exactly match wiz-get-threats:\nCode: {code_status_values}\nYAML: {yaml_status_values}"
 
 
 def test_origin_values_consistency(yaml_content):
@@ -2799,9 +2799,9 @@ def test_max_fetch_values_consistency(yaml_content):
 
     # Check additional info mentions the range
     additional_info = max_fetch_config.get("additionalinfo", "")
-    assert "10-1000" in additional_info, (
-        f"max_fetch additionalinfo doesn't mention the expected range (10-1000): {additional_info}"
-    )
+    assert (
+        "10-1000" in additional_info
+    ), f"max_fetch additionalinfo doesn't mention the expected range (10-1000): {additional_info}"
 
     # Verify the range in additionalinfo matches the code constants
     import re
@@ -2812,13 +2812,13 @@ def test_max_fetch_values_consistency(yaml_content):
     min_value_in_yaml = int(range_match.group(1))
     max_value_in_yaml = int(range_match.group(2))
 
-    assert min_value_in_yaml == API_MIN_FETCH, (
-        f"API_MIN_FETCH ({API_MIN_FETCH}) does not match the minimum value in max_fetch additionalinfo ({min_value_in_yaml})"
-    )
+    assert (
+        min_value_in_yaml == API_MIN_FETCH
+    ), f"API_MIN_FETCH ({API_MIN_FETCH}) does not match the minimum value in max_fetch additionalinfo ({min_value_in_yaml})"
 
-    assert max_value_in_yaml == API_MAX_FETCH, (
-        f"API_MAX_FETCH ({API_MAX_FETCH}) does not match the maximum value in max_fetch additionalinfo ({max_value_in_yaml})"
-    )
+    assert (
+        max_value_in_yaml == API_MAX_FETCH
+    ), f"API_MAX_FETCH ({API_MAX_FETCH}) does not match the maximum value in max_fetch additionalinfo ({max_value_in_yaml})"
 
 
 def test_first_fetch_timestamp_consistency(yaml_content):
@@ -2839,9 +2839,9 @@ def test_first_fetch_timestamp_consistency(yaml_content):
     # Update the pattern to match both "max X days" and "maximum X days"
     max_days_match = re.search(r"max(?:imum)? (\d+) days", display_text)
 
-    assert max_days_match is not None, (
-        f"Could not find 'max X days' or 'maximum X days' in first_fetch display text: {display_text}"
-    )
+    assert (
+        max_days_match is not None
+    ), f"Could not find 'max X days' or 'maximum X days' in first_fetch display text: {display_text}"
     max_days_in_yaml = int(max_days_match.group(1))
 
     # Assert that the code constant matches the YAML value
@@ -2967,9 +2967,9 @@ def test_default_fetch_back_consistency(yaml_content):
 
     # Also check the additional info - update to match the actual text in additionalinfo
     additional_info = first_fetch_config.get("additionalinfo", "")
-    assert "Maximum allowed is 5 days" in additional_info, (
-        f"first_fetch additionalinfo doesn't mention the maximum days limit: {additional_info}"
-    )
+    assert (
+        "Maximum allowed is 5 days" in additional_info
+    ), f"first_fetch additionalinfo doesn't mention the maximum days limit: {additional_info}"
 
 
 def test_wiz_input_param_consistency(yaml_content):
@@ -3199,9 +3199,9 @@ def test_all_wiz_input_params_have_examples():
             missing_examples.add(param)
 
     # Assert that all parameters have examples
-    assert not missing_examples, (
-        f"The following WizInputParam values don't have examples in command_examples.txt: {missing_examples}"
-    )
+    assert (
+        not missing_examples
+    ), f"The following WizInputParam values don't have examples in command_examples.txt: {missing_examples}"
 
 
 @pytest.mark.parametrize("demisto_command,example", get_all_commands_for_test())
