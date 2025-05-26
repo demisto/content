@@ -87,7 +87,7 @@ class ContextData:
             key = key[1:]
         else:
             for prefix in self.__specials:
-                k = key[len(prefix):]
+                k = key[len(prefix) :]
                 if key.startswith(prefix) and k[:1] in ("", ".", "(", "="):
                     if prefix == "lists":
                         if list_name := re.split("[.(=]", k[1:], maxsplit=1)[0]:
@@ -128,7 +128,7 @@ class Formatter:
     @staticmethod
     def __is_closure(source: str, ci: int, closure_marker: str) -> bool:
         if closure_marker:
-            return source[ci: ci + len(closure_marker)] == closure_marker
+            return source[ci : ci + len(closure_marker)] == closure_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -185,7 +185,7 @@ class Formatter:
                 else:
                     xval = markers[0] + key + markers[1]
                 return xval, ci + len(markers[1])
-            elif source[ci: ci + len(self.__var_opening)] == self.__var_opening:
+            elif source[ci : ci + len(self.__var_opening)] == self.__var_opening:
                 xval, ei = self.__extract(
                     source=source,
                     dx=dx,
@@ -323,9 +323,7 @@ class QueryParams:
             raise DemistoException("earliest_time and latest_time must be timezone aware.")
 
         if earliest_time > latest_time:
-            raise DemistoException(
-                f"latest_time ({latest_time}) must be equal to or later than earliest_time ({earliest_time})."
-            )
+            raise DemistoException(f"latest_time ({latest_time}) must be equal to or later than earliest_time ({earliest_time}).")
 
         self.__query_name = query_name
         self.__query_string = query_string
@@ -488,7 +486,7 @@ class Cache:
             data={
                 "execution_id": execution_id,
                 "recordset": recordset,
-            }
+            },
         )
 
     def save_entry(
@@ -699,9 +697,7 @@ class Query:
 
         :return: The quest execution ID and list of fields retrieved by the query.
         """
-        if self.__cache and (
-            ret := self.__cache.load_recordset(self.__query_params.query_hash())
-        ):
+        if self.__cache and (ret := self.__cache.load_recordset(self.__query_params.query_hash())):
             return ret
         elif self.__xql_query:
             execution_id, recordset = self.__xql_query.query(self.__query_params)
@@ -746,12 +742,14 @@ class EntryBuilder:
             return sorted(
                 (
                     (
-                        k, sorted(
+                        k,
+                        sorted(
                             records,
                             key=lambda v: SortableValue(v.get(sort_by)),
                             reverse=not asc,
-                        )
-                    ) for k, records in groups
+                        ),
+                    )
+                    for k, records in groups
                 ),
                 key=lambda v: SortableValue(next(iter(v[1]), {}).get(sort_by)),  # type: ignore
                 reverse=not asc,
@@ -1028,10 +1026,8 @@ class EntryBuilder:
                     assert isinstance(by, str), f"x.by must be of type str - {type(by)}"
                     self.__by = by
 
-                    sort_by = x.get('sort-by')
-                    assert isinstance(sort_by, str) or sort_by is None, (
-                        f'x.sort-by must be of type str or null - {type(sort_by)}'
-                    )
+                    sort_by = x.get("sort-by")
+                    assert isinstance(sort_by, str) or sort_by is None, f"x.sort-by must be of type str or null - {type(sort_by)}"
                     self.__sort_by = sort_by
 
                     self.__asc = EntryBuilder.to_sort_order(x.get("order") or "asc")
@@ -1627,7 +1623,13 @@ class EntryBuilder:
         self,
         query: Query,
         entry_params: dict[Hashable, Any],
-    ) -> dict[Hashable, Any]:
+    ) -> tuple[dict[str, Any], dict[Hashable, Any]]:
+        """Build an entry by querying data.
+
+        :param query: The query instance.
+        :param entry_params: Template parameters for an entry.
+        :return: A pair of extra context and entry.
+        """
         query_params = query.query_params
         extra_context: dict[str, Any] = {
             "query": {
@@ -1637,29 +1639,28 @@ class EntryBuilder:
                     "to": query_params.get_latest_time_iso(utc=True),
                 },
                 "request_url": (
-                    "/xql/xql-search?phrase=" +
-                    urllib.parse.quote(query_params.query_string) +
-                    "&timeframe=" +
-                    urllib.parse.quote(
-                        json.dumps({
-                            "from": int(query_params.earliest_time.timestamp() * 1000),
-                            "to": int(query_params.latest_time.timestamp() * 1000),
-                        })
+                    "/xql/xql-search?phrase="
+                    + urllib.parse.quote(query_params.query_string)
+                    + "&timeframe="
+                    + urllib.parse.quote(
+                        json.dumps(
+                            {
+                                "from": int(query_params.earliest_time.timestamp() * 1000),
+                                "to": int(query_params.latest_time.timestamp() * 1000),
+                            }
+                        )
                     )
-                )
+                ),
             }
         }
 
         if not query.available() and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.QUERY_SKIPPED,
-                entry_params=self.__formatter.build(
-                    template=entry_params,
-                    context=self.__context.inherit(extra_context)
-                ),
+                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
 
         entry_type = entry_params.get("type")
         if not entry_type:
@@ -1712,32 +1713,27 @@ class EntryBuilder:
             raise DemistoException(f"Invalid type - {entry_type}")
 
         execution_id, recordset = query.query()
-        extra_context.update({
-            "recordset": recordset,
-            "query": dict(
-                extra_context.get("query") or {},
-                execution_id=execution_id,
-                result_url=f"/xql/xql-search/{urllib.parse.quote(execution_id)}",
-            )
-        })
+        extra_context.update(
+            {
+                "recordset": recordset,
+                "query": dict(
+                    extra_context.get("query") or {},
+                    execution_id=execution_id,
+                    result_url=f"/xql/xql-search/{urllib.parse.quote(execution_id)}",
+                ),
+            }
+        )
 
         if not recordset and (
             entry := self.__get_default_entry(
                 scope=DefaultEntryScope.NO_RECORDSET,
-                entry_params=self.__formatter.build(
-                    template=entry_params,
-                    context=self.__context.inherit(extra_context)
-                ),
+                entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
         else:
-            return build_entry(
-                self.__formatter.build(
-                    template=params,
-                    context=self.__context.inherit(extra_context)
-                ),
-                recordset
+            return extra_context, build_entry(
+                self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset
             )
 
 
@@ -1758,9 +1754,7 @@ class Main:
         if isinstance(context, str):
             context = json.loads(context)
 
-        assert context is None or isinstance(context, dict), (
-            f"Context data must be of type str, dict, or null - {type(context)}"
-        )
+        assert context is None or isinstance(context, dict), f"Context data must be of type str, dict, or null - {type(context)}"
         return dict(demisto.context(), **(context or {}))
 
     @staticmethod
@@ -1774,6 +1768,7 @@ class Main:
         :param template: The template.
         :return: The context data.
         """
+
         def __child_paths(
             parent: str,
             paths: list[str],
@@ -1787,9 +1782,9 @@ class Main:
             cpaths = []
             for path in paths:
                 pit = iter(path)
-                nit = (next(pit, '\\') if c == '\\' else '' if c == '.' else c for c in pit)
-                if parent == ''.join(itertools.takewhile(lambda x: x != "", iter(nit))):
-                    cpaths.append(''.join(list(pit)))
+                nit = (next(pit, "\\") if c == "\\" else "" if c == "." else c for c in pit)
+                if parent == "".join(itertools.takewhile(lambda x: x != "", iter(nit))):
+                    cpaths.append("".join(list(pit)))
             return cpaths
 
         def __filter_context(
@@ -1802,13 +1797,13 @@ class Main:
             :param filters: A list of node paths to be removed from the context.
             :return: The filtered context node.
             """
-            if any(v == '' for v in filters):
+            if any(v == "" for v in filters):
                 return context
             elif isinstance(context, dict):
                 return {
-                    k: v for k, cpaths
-                    in ((k, __child_paths(k, filters)) for k in context)
-                    if (v := __filter_context(context[k], cpaths)) or any(c == '' for c in cpaths)
+                    k: v
+                    for k, cpaths in ((k, __child_paths(k, filters)) for k in context)
+                    if (v := __filter_context(context[k], cpaths)) or any(c == "" for c in cpaths)
                 } or None
             elif isinstance(context, list):
                 return [v for v in (__filter_context(v, filters) for v in context) if v] or None
@@ -1835,17 +1830,10 @@ class Main:
                     return {
                         k: __remove_null(v, cpaths, entries_only)
                         for k, v in context.items()
-                        if (
-                            not (cpaths := __child_paths(k, paths))
-                            or v is not None
-                            or all(path != '' for path in cpaths)
-                        )
+                        if (not (cpaths := __child_paths(k, paths)) or v is not None or all(path != "" for path in cpaths))
                     }
             elif isinstance(context, list):
-                return [
-                    __remove_null(v, paths, entries_only) for v in context
-                    if entries_only or v is not None
-                ]
+                return [__remove_null(v, paths, entries_only) for v in context if entries_only or v is not None]
             else:
                 return context
 
@@ -1885,32 +1873,28 @@ class Main:
         for name, context in dict(entries).items():
             filters = demisto.get(template, f"config.{name}.filters")
             if filters is not None:
-                assert isinstance(filters, list), (
-                    f'config.{name}.filters must be of type null or list - {type(filters)}'
-                )
+                assert isinstance(filters, list), f"config.{name}.filters must be of type null or list - {type(filters)}"
                 filters = [f for f in filters if isinstance(f, str)]
                 context = __filter_context(context, filters) or {}
 
             remove_null = demisto.get(template, f"config.{name}.remove-null")
             if remove_null is not None:
-                assert isinstance(remove_null, dict), (
-                    f'config.{name}.remove-null must be of type null or dict - {type(remove_null)}'
-                )
-                entries_only = argToBoolean(remove_null.get('entries-only', 'true'))
-                paths = remove_null.get('paths')
+                assert isinstance(
+                    remove_null, dict
+                ), f"config.{name}.remove-null must be of type null or dict - {type(remove_null)}"
+                entries_only = argToBoolean(remove_null.get("entries-only", "true"))
+                paths = remove_null.get("paths")
                 if paths is not None:
-                    assert isinstance(paths, list), (
-                        f'config.{name}.remove-null.paths must be of type null or list - {type(paths)}'
-                    )
+                    assert isinstance(
+                        paths, list
+                    ), f"config.{name}.remove-null.paths must be of type null or list - {type(paths)}"
                     paths = [x for x in paths if isinstance(x, str)]
 
                 context = __remove_null(context, paths, entries_only) or {}
 
             default = demisto.get(template, f"config.{name}.default")
             if default is not None:
-                assert isinstance(default, dict), (
-                    f'config.{name}.default must be of type dict - {type(default)}'
-                )
+                assert isinstance(default, dict), f"config.{name}.default must be of type dict - {type(default)}"
                 context = __apply_default(context, default) or {}
 
             entries[name] = context
@@ -2229,7 +2213,7 @@ class Main:
         self.__args = args
         self.__template_name, self.__template = self.__get_template(args)
         self.__variable_substitution = self.__get_variable_substitution(args, self.__template)
-        
+
         context = self.__create_base_context(args)
         self.__context: ContextData = self.__create_context(context, self.__template)
 
@@ -2247,6 +2231,7 @@ class Main:
         self.__query_timeout_duration: int = (
             self.__arg_to_int("query_timeout_duration", DEFAULT_QUERY_TIMEOUT_DURATION) or DEFAULT_QUERY_TIMEOUT_DURATION
         )
+        self.__output_recordset = argToBoolean(args.get("output_recordset", "false"))
 
         self.__xql_query_instance: str | None = demisto.get(self.__template, "query.command.using") or args.get(
             "xql_query_instance"
@@ -2275,25 +2260,27 @@ class Main:
 
         need_query = not entry and self.__is_query_executable()
 
-        entry = entry or EntryBuilder(
-            formatter=formatter,
-            context=self.__context,
-        ).build(
-            query=Query(
-                query_params=query_params,
-                xql_query=XQLQuery(
-                    xql_query_instance=self.__xql_query_instance,
-                    polling_interval=self.__polling_interval,
-                    retry_interval=self.__retry_interval,
-                    retry_max=self.__max_retries,
-                    query_timeout_duration=self.__query_timeout_duration,
-                )
-                if need_query
-                else None,
-                cache=cache if self.__cache_type != CacheType.NONE else None,
-            ),
-            entry_params=self.__template.get("entry") or {},
-        )
+        extra_context: dict[str, Any] = {}
+        if not entry:
+            extra_context, entry = EntryBuilder(
+                formatter=formatter,
+                context=self.__context,
+            ).build(
+                query=Query(
+                    query_params=query_params,
+                    xql_query=XQLQuery(
+                        xql_query_instance=self.__xql_query_instance,
+                        polling_interval=self.__polling_interval,
+                        retry_interval=self.__retry_interval,
+                        retry_max=self.__max_retries,
+                        query_timeout_duration=self.__query_timeout_duration,
+                    )
+                    if need_query
+                    else None,
+                    cache=cache if self.__cache_type != CacheType.NONE else None,
+                ),
+                entry_params=self.__template.get("entry") or {},
+            )
 
         res = {
             "QueryParams": {
@@ -2303,6 +2290,10 @@ class Main:
                 "latest_time": query_params.get_latest_time_iso(),
             },
             "QueryHash": query_params.query_hash(),
+            "RequestURL": demisto.get(extra_context, "query.request_url"),
+            "ResultURL": demisto.get(extra_context, "query.result_url"),
+            "ExecutionID": demisto.get(extra_context, "query.execution_id"),
+            "RecordSet": demisto.get(extra_context, "recordset") or [] if self.__output_recordset else [],
             "Entry": entry,
         }
         if need_query and self.__cache_type == CacheType.ENTRY:
