@@ -22,18 +22,18 @@ def test_retrieve_data_from_xdr_sanity_check(mocker):
     completed_response = [{"Contents": {"status": "COMPLETED"}, "HumanReadable": "Query results here"}]
 
     # Patching dependencies
-    mock_execute = mocker.patch(
-        "SearchIndicatorInXDR.demisto.executeCommand", side_effect=[initial_response, completed_response]
-    )
+    mock_execute = mocker.patch("SearchIndicatorInXDR.demisto.executeCommand", side_effect=[initial_response, completed_response])
 
     from SearchIndicatorInXDR import retrieve_data_from_xdr
 
     poll_result = retrieve_data_from_xdr(args)
 
     assert mock_execute.call_count == 1
-    assert mock_execute.mock_calls[0][2]["args"]["query"] == 'config timeframe = 7d | dataset = xdr_data | ' \
-                                                             'filter action_remote_ip contains "1.2.3.4" or' \
-                                                             ' action_local_ip contains "1.2.3.4"'
+    assert (
+        mock_execute.mock_calls[0][2]["args"]["query"] == "config timeframe = 7d | dataset = xdr_data | "
+        'filter action_remote_ip contains "1.2.3.4" or'
+        ' action_local_ip contains "1.2.3.4"'
+    )
     assert poll_result.scheduled_command._args["query_id"] == "abc123"
 
 

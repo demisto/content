@@ -56,7 +56,7 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
 
     # Determine indicator type
     if "." in indicator and not indicator.startswith("http"):
-        if all(char.isdigit() or char == '.' for char in indicator):
+        if all(char.isdigit() or char == "." for char in indicator):
             indicator_type = "ip"
         else:
             indicator_type = "domain"
@@ -78,7 +78,7 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
         "uri": ["uri"],
         "md5": ["action_file_md5", "action_module_md5", "action_process_image_md5"],
         "sha256": ["action_file_sha256", "action_module_sha256", "action_process_image_sha256"],
-        "mutex": ['json_extract_scalar(action_syscall_string_params, "$.1")']
+        "mutex": ['json_extract_scalar(action_syscall_string_params, "$.1")'],
     }
 
     # Build query
@@ -88,7 +88,8 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
         filter_clause = " or ".join(filters)
         return f"config timeframe = {time_frame_for_query} | dataset = {data_set} | filter {filter_clause}"
     else:
-        return_error(f'# Unsupported indicator type for: {indicator}')
+        return_error(f"# Unsupported indicator type for: {indicator}")
+        exit(1)
 
 
 def execute_query(args: dict) -> dict:
