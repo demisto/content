@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: WildFire-v2
+  id: WildFire-v2 
   version: -1
 configuration:
 - defaultvalue: https://wildfire.paloaltonetworks.com/publicapi
