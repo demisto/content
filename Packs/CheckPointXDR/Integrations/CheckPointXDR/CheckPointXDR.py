@@ -2,6 +2,7 @@ import demistomock as demisto
 from dateutil import parser
 from CommonServerPython import *
 
+
 class Client(BaseClient):
     def __init__(self, base_url: str, client_id: str, access_key: str, verify: bool, proxy: bool):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
@@ -25,13 +26,12 @@ class Client(BaseClient):
         else:
             raise DemistoException(f"Log-in failed: {str(res.status_code)}: {res.text}")
 
-    def get_incidents(self, startTS: int, max_fetch: int):
+    def get_incidents(self, startTS: str, max_fetch: int):
         self._login()
-        incidents_url = f"{self._base_url}/app/xdr/api/xdr/v1/incidents"
         headers = {"Authorization": f"Bearer {self.token}"}
-
-        # TODO: Handle max_fetch and startTS properly
-        res = self._http_request('GET', url_suffix='/app/xdr/api/xdr/v1/incidents', headers=headers, resp_type='response')
+        demisto.debug(f"Fetching XDR incidents with start timestamp: {startTS} and max fetch: {max_fetch}")
+        res = self._http_request('GET', url_suffix=f"/app/xdr/api/xdr/v1/incidents?limit={max_fetch}&offset=0&from={startTS}",
+                                 headers=headers, resp_type='response')
         if res.status_code != 200:
             raise DemistoException(f"Failed to fetch XDR incidents: {str(res.status_code)}: {res.text}")
         incidents = res.json().get("data")
@@ -46,6 +46,7 @@ def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime)
         return 'ok'
     except DemistoException as e:
         return e.message
+
 
 def map_severity(severity: str) -> int:
     """
@@ -64,6 +65,7 @@ def map_severity(severity: str) -> int:
         "critical": 4,
     }
     return severity_mapping.get(severity.lower(), 1)
+
 
 def parse_incidents(xdr_incidents: list[dict[str, Any]], startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
@@ -141,9 +143,10 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datet
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
         raise Exception(f"Invalid last fetch time value '{last_fetch}'")
-
+    formatted_fetch = last_fetch_time.strftime('%Y-%m-%d %H:%M:%S')
     startTS = int(last_fetch_time.timestamp() * 1000)
-    xdr_incidents = client.get_incidents(startTS, max_fetch)
+    demisto.debug(f"Fetching incidents since {last_fetch} (timestamp: {startTS})")
+    xdr_incidents = client.get_incidents(formatted_fetch, max_fetch)
     incidents, last_insight_time = parse_incidents(xdr_incidents, startTS, max_fetch)
 
     return {'last_fetch': last_insight_time}, incidents
