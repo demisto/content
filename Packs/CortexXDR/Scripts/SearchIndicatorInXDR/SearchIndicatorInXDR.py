@@ -52,7 +52,6 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
     """
     This function generates a query for xdr by the indicator's type.
     """
-    indicator_lower = indicator.lower()
 
     # Determine indicator type
     if "." in indicator and not indicator.startswith("http"):
@@ -62,12 +61,10 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
             indicator_type = "domain"
     elif indicator.startswith("http"):
         indicator_type = "uri"
-    elif len(indicator) == 32:
+    elif re.match(md5Regex, indicator):
         indicator_type = "md5"
-    elif len(indicator) == 64:
+    elif re.match(sha256Regex, indicator):
         indicator_type = "sha256"
-    elif "\\" in indicator or "mutex" in indicator_lower:
-        indicator_type = "mutex"
     else:
         indicator_type = "unknown"
 
@@ -78,7 +75,6 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
         "uri": ["uri"],
         "md5": ["action_file_md5", "action_module_md5", "action_process_image_md5"],
         "sha256": ["action_file_sha256", "action_module_sha256", "action_process_image_sha256"],
-        "mutex": ['json_extract_scalar(action_syscall_string_params, "$.1")'],
     }
 
     # Build query
@@ -88,6 +84,7 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
         filter_clause = " or ".join(filters)
         return f"config timeframe = {time_frame_for_query} | dataset = {data_set} | filter {filter_clause}"
     else:
+        # TODO - what should we do in this case?
         return_error(f"# Unsupported indicator type for: {indicator}")
         exit(1)
 
