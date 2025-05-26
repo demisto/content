@@ -1,2165 +1,1576 @@
-import binascii
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+import base64
+import re
+import requests
+import traceback
+from CommonServerPython import *  # noqa: F401
+import demistomock as demisto  # noqa: F401
 import uuid
 from urllib.parse import quote
 
-from MicrosoftApiModule import *  # noqa: E402
 
-API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+# GENERATED CODE ###: from MicrosoftApiModule import *  # noqa: E402
+# This code was inserted in place of an API module.
+register_module_line('MicrosoftApiModule', 'start', __line__(), wrapper=-3)
 
 
-class MsGraphMailBaseClient(MicrosoftClient):
-    """
-    Microsoft Graph Mail Client enables authorized access to a user's Office 365 mail data in a personal account.
-    """
+# pylint: disable=E9010, E9011
 
-    ITEM_ATTACHMENT = "#microsoft.graph.itemAttachment"
-    FILE_ATTACHMENT = "#microsoft.graph.fileAttachment"
-    # maximum attachment size to be sent through the api, files larger must be uploaded via upload session
-    MAX_ATTACHMENT_SIZE = 3145728  # 3mb = 3145728 bytes
-    MAX_FOLDERS_SIZE = 250
-    DEFAULT_PAGE_SIZE = 20
-    DEFAULT_PAGES_TO_PULL_NUM = 1
 
-    # Well known folders shortcut in MS Graph API
-    # For more information: https://docs.microsoft.com/en-us/graph/api/resources/mailfolder?view=graph-rest-1.0
-    WELL_KNOWN_FOLDERS = {
-        "archive": "archive",
-        "conversation history": "conversationhistory",
-        "deleted items": "deleteditems",
-        "drafts": "drafts",
-        "inbox": "inbox",
-        "junk email": "junkemail",
-        "outbox": "outbox",
-        "sent items": "sentitems",
-    }
+class Scopes:
+    graph = 'https://graph.microsoft.com/.default'
+    security_center = 'https://api.securitycenter.windows.com/.default'
+    security_center_apt_service = 'https://securitycenter.onmicrosoft.com/windowsatpservice/.default'
+    management_azure = 'https://management.azure.com/.default'  # resource_manager
 
-    def __init__(
-        self,
-        mailbox_to_fetch,
-        folder_to_fetch,
-        first_fetch_interval,
-        emails_fetch_limit,
-        display_full_email_body: bool = False,
-        mark_fetched_read: bool = False,
-        look_back: int | None = 0,
-        fetch_html_formatting=True,
-        legacy_name=False,
-        **kwargs,
-    ):
-        super().__init__(
-            retry_on_rate_limit=True, managed_identities_resource_uri=Resources.graph, command_prefix="msgraph-mail", **kwargs
-        )
-        self._mailbox_to_fetch = mailbox_to_fetch
-        self._folder_to_fetch = folder_to_fetch
-        self._first_fetch_interval = first_fetch_interval
-        self._emails_fetch_limit = emails_fetch_limit
-        self._display_full_email_body = display_full_email_body
-        self._mark_fetched_read = mark_fetched_read
-        self._look_back = look_back
-        self.fetch_html_formatting = fetch_html_formatting
-        self.legacy_name = legacy_name
 
-    @classmethod
-    def _build_inline_layout_attachments_input(cls, inline_from_layout_attachments):
-        # Added requires_upload for handling the attachment in upload session
-        file_attachments_result = []
-        for attachment in inline_from_layout_attachments:
-            file_attachments_result.append(
-                {
-                    "data": attachment.get("data"),
-                    "isInline": True,
-                    "name": attachment.get("name"),
-                    "contentId": attachment.get("cid"),
-                    "requires_upload": True,
-                    "size": len(attachment.get("data")),
-                }
-            )
-        return file_attachments_result
+class Resources:
+    graph = 'https://graph.microsoft.com/'
+    security_center = 'https://api.securitycenter.microsoft.com/'
+    security = 'https://api.security.microsoft.com/'
+    management_azure = 'https://management.azure.com/'  # resource_manager
+    manage_office = 'https://manage.office.com/'
 
-    @classmethod
-    def _build_attachments_input(cls, ids, attach_names=None, is_inline=False):
+
+# authorization types
+OPROXY_AUTH_TYPE = 'oproxy'
+SELF_DEPLOYED_AUTH_TYPE = 'self_deployed'
+
+# grant types in self-deployed authorization
+CLIENT_CREDENTIALS = 'client_credentials'
+AUTHORIZATION_CODE = 'authorization_code'
+REFRESH_TOKEN = 'refresh_token'  # guardrails-disable-line
+DEVICE_CODE = 'urn:ietf:params:oauth:grant-type:device_code'
+REGEX_SEARCH_URL = r'(?P<url>https?://[^\s]+)'
+REGEX_SEARCH_ERROR_DESC = r"^.*?:\s(?P<desc>.*?\.)"
+SESSION_STATE = 'session_state'
+
+# Deprecated, prefer using AZURE_CLOUDS
+TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.com',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+    'de': 'https://login.microsoftonline.de',
+    'cn': 'https://login.chinacloudapi.cn',
+}
+
+# Deprecated, prefer using AZURE_CLOUDS
+GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.us',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+    'de': 'https://graph.microsoft.de',
+    'cn': 'https://microsoftgraph.chinacloudapi.cn'
+}
+
+# Deprecated, prefer using AZURE_CLOUDS
+GRAPH_BASE_ENDPOINTS = {
+    'https://graph.microsoft.com': 'com',
+    # can't create an entry here for 'gcc' as the url is the same for both 'gcc' and 'gcc-high'
+    'https://graph.microsoft.us': 'gcc-high',
+    'https://dod-graph.microsoft.us': 'dod',
+    'https://graph.microsoft.de': 'de',
+    'https://microsoftgraph.chinacloudapi.cn': 'cn'
+}
+
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE = {
+    "Worldwide": "com",
+    "US Geo Proximity": "geo-us",
+    "EU Geo Proximity": "geo-eu",
+    "UK Geo Proximity": "geo-uk",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM = "Custom"
+MICROSOFT_DEFENDER_FOR_ENDPOINT_DEFAULT_ENDPOINT_TYPE = "com"
+
+
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender/api-supported?view=o365-worldwide#endpoint-uris
+# https://learn.microsoft.com/en-us/microsoft-365/security/defender-endpoint/gov?view=o365-worldwide#api
+MICROSOFT_DEFENDER_FOR_ENDPOINT_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "geo-us": "https://api.securitycenter.microsoft.com",
+    "geo-eu": "https://api-eu.securitycenter.microsoft.com",
+    "geo-uk": "https://api-uk.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gov.securitycenter.microsoft.us",
+    "dod": "https://api-gov.securitycenter.microsoft.us",
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#app-registration-and-token-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'geo-us': 'https://login.microsoftonline.com',
+    'geo-eu': 'https://login.microsoftonline.com',
+    'geo-uk': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.com',
+    'gcc-high': 'https://login.microsoftonline.us',
+    'dod': 'https://login.microsoftonline.us',
+}
+
+# https://learn.microsoft.com/en-us/graph/deployments#microsoft-graph-and-graph-explorer-service-root-endpoints
+MICROSOFT_DEFENDER_FOR_ENDPOINT_GRAPH_ENDPOINTS = {
+    'com': 'https://graph.microsoft.com',
+    'geo-us': 'https://graph.microsoft.com',
+    'geo-eu': 'https://graph.microsoft.com',
+    'geo-uk': 'https://graph.microsoft.com',
+    'gcc': 'https://graph.microsoft.com',
+    'gcc-high': 'https://graph.microsoft.us',
+    'dod': 'https://dod-graph.microsoft.us',
+}
+
+MICROSOFT_DEFENDER_FOR_ENDPOINT_APT_SERVICE_ENDPOINTS = {
+    'com': 'https://securitycenter.onmicrosoft.com',
+    'geo-us': 'https://securitycenter.onmicrosoft.com',
+    'geo-eu': 'https://securitycenter.onmicrosoft.com',
+    'geo-uk': 'https://securitycenter.onmicrosoft.com',
+    'gcc': 'https://securitycenter.onmicrosoft.com',
+    'gcc-high': 'https://securitycenter.onmicrosoft.us',
+    'dod': 'https://securitycenter.onmicrosoft.us',
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_API = {
+    "com": "https://api.securitycenter.microsoft.com",
+    "gcc": "https://api-gcc.securitycenter.microsoft.us",
+    "gcc-high": "https://api-gcc.securitycenter.microsoft.us",
+}
+
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TYPE = {
+    "Worldwide": "com",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+}
+
+MICROSOFT_DEFENDER_FOR_APPLICATION_TOKEN_RETRIEVAL_ENDPOINTS = {
+    'com': 'https://login.microsoftonline.com',
+    'gcc': 'https://login.microsoftonline.com',
+    'gcc-high': 'https://login.microsoftonline.us',
+}
+
+# Azure Managed Identities
+MANAGED_IDENTITIES_TOKEN_URL = 'http://169.254.169.254/metadata/identity/oauth2/token?api-version=2018-02-01'
+MANAGED_IDENTITIES_SYSTEM_ASSIGNED = 'SYSTEM_ASSIGNED'
+TOKEN_EXPIRED_ERROR_CODES = {50173, 700082, 70008, 54005, 7000222,
+                             }  # See: https://login.microsoftonline.com/error?code=
+
+# Moderate Retry Mechanism
+MAX_DELAY_REQUEST_COUNTER = 6
+
+
+class CloudEndpointNotSetException(Exception):
+    pass
+
+
+class CloudSuffixNotSetException(Exception):
+    pass
+
+
+class AzureCloudEndpoints:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+    def __init__(self,  # pylint: disable=unused-argument
+                 management=None,
+                 resource_manager=None,
+                 sql_management=None,
+                 batch_resource_id=None,
+                 gallery=None,
+                 active_directory=None,
+                 active_directory_resource_id=None,
+                 active_directory_graph_resource_id=None,
+                 microsoft_graph_resource_id=None,
+                 active_directory_data_lake_resource_id=None,
+                 vm_image_alias_doc=None,
+                 media_resource_id=None,
+                 ossrdbms_resource_id=None,
+                 log_analytics_resource_id=None,
+                 app_insights_resource_id=None,
+                 app_insights_telemetry_channel_resource_id=None,
+                 synapse_analytics_resource_id=None,
+                 attestation_resource_id=None,
+                 portal=None,
+                 keyvault=None,
+                 exchange_online=None):
+        # Attribute names are significant. They are used when storing/retrieving clouds from config
+        self.management = management
+        self.resource_manager = resource_manager
+        self.sql_management = sql_management
+        self.batch_resource_id = batch_resource_id
+        self.gallery = gallery
+        self.active_directory = active_directory
+        self.active_directory_resource_id = active_directory_resource_id
+        self.active_directory_graph_resource_id = active_directory_graph_resource_id
+        self.microsoft_graph_resource_id = microsoft_graph_resource_id
+        self.active_directory_data_lake_resource_id = active_directory_data_lake_resource_id
+        self.vm_image_alias_doc = vm_image_alias_doc
+        self.media_resource_id = media_resource_id
+        self.ossrdbms_resource_id = ossrdbms_resource_id
+        self.log_analytics_resource_id = log_analytics_resource_id
+        self.app_insights_resource_id = app_insights_resource_id
+        self.app_insights_telemetry_channel_resource_id = app_insights_telemetry_channel_resource_id
+        self.synapse_analytics_resource_id = synapse_analytics_resource_id
+        self.attestation_resource_id = attestation_resource_id
+        self.portal = portal
+        self.keyvault = keyvault
+        self.exchange_online = exchange_online
+
+    def has_endpoint_set(self, endpoint_name):
+        try:
+            # Can't simply use hasattr here as we override __getattribute__ below.
+            # Python 3 hasattr() only returns False if an AttributeError is raised, but we raise
+            # CloudEndpointNotSetException. This exception is not a subclass of AttributeError.
+            getattr(self, endpoint_name)
+            return True
+        except Exception:  # pylint: disable=broad-except
+            return False
+
+    def __getattribute__(self, name):
+        val = object.__getattribute__(self, name)
+        if val is None:
+            raise CloudEndpointNotSetException("The endpoint '{}' for this cloud is not set but is used.")
+        return val
+
+
+class AzureCloudSuffixes:  # pylint: disable=too-few-public-methods,too-many-instance-attributes
+
+    def __init__(self,  # pylint: disable=unused-argument
+                 storage_endpoint=None,
+                 storage_sync_endpoint=None,
+                 keyvault_dns=None,
+                 mhsm_dns=None,
+                 sql_server_hostname=None,
+                 azure_datalake_store_file_system_endpoint=None,
+                 azure_datalake_analytics_catalog_and_job_endpoint=None,
+                 acr_login_server_endpoint=None,
+                 mysql_server_endpoint=None,
+                 postgresql_server_endpoint=None,
+                 mariadb_server_endpoint=None,
+                 synapse_analytics_endpoint=None,
+                 attestation_endpoint=None):
+        # Attribute names are significant. They are used when storing/retrieving clouds from config
+        self.storage_endpoint = storage_endpoint
+        self.storage_sync_endpoint = storage_sync_endpoint
+        self.keyvault_dns = keyvault_dns
+        self.mhsm_dns = mhsm_dns
+        self.sql_server_hostname = sql_server_hostname
+        self.mysql_server_endpoint = mysql_server_endpoint
+        self.postgresql_server_endpoint = postgresql_server_endpoint
+        self.mariadb_server_endpoint = mariadb_server_endpoint
+        self.azure_datalake_store_file_system_endpoint = azure_datalake_store_file_system_endpoint
+        self.azure_datalake_analytics_catalog_and_job_endpoint = azure_datalake_analytics_catalog_and_job_endpoint
+        self.acr_login_server_endpoint = acr_login_server_endpoint
+        self.synapse_analytics_endpoint = synapse_analytics_endpoint
+        self.attestation_endpoint = attestation_endpoint
+
+    def __getattribute__(self, name):
+        val = object.__getattribute__(self, name)
+        if val is None:
+            raise CloudSuffixNotSetException("The suffix '{}' for this cloud is not set but is used.")
+        return val
+
+
+class AzureCloud:  # pylint: disable=too-few-public-methods
+    """ Represents an Azure Cloud instance """
+
+    def __init__(self,
+                 origin,
+                 name,
+                 abbreviation,
+                 endpoints=None,
+                 suffixes=None):
+        self.name = name
+        self.abbreviation = abbreviation
+        self.origin = origin
+        self.endpoints = endpoints or AzureCloudEndpoints()
+        self.suffixes = suffixes or AzureCloudSuffixes()
+
+
+AZURE_WORLDWIDE_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureCloud',
+    'com',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.windows.net/',
+        resource_manager='https://management.azure.com/',
+        sql_management='https://management.core.windows.net:8443/',
+        batch_resource_id='https://batch.core.windows.net/',
+        gallery='https://gallery.azure.com/',
+        active_directory='https://login.microsoftonline.com',
+        active_directory_resource_id='https://management.core.windows.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.com/',
+        active_directory_data_lake_resource_id='https://datalake.azure.net/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.azure.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.windows.net',
+        app_insights_resource_id='https://api.applicationinsights.io',
+        log_analytics_resource_id='https://api.loganalytics.io',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.com/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.net',
+        attestation_resource_id='https://attest.azure.net',
+        portal='https://portal.azure.com',
+        keyvault='https://vault.azure.net',
+        exchange_online='https://outlook.office365.com'
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.windows.net',
+        storage_sync_endpoint='afs.azure.net',
+        keyvault_dns='.vault.azure.net',
+        mhsm_dns='.managedhsm.azure.net',
+        sql_server_hostname='.database.windows.net',
+        mysql_server_endpoint='.mysql.database.azure.com',
+        postgresql_server_endpoint='.postgres.database.azure.com',
+        mariadb_server_endpoint='.mariadb.database.azure.com',
+        azure_datalake_store_file_system_endpoint='azuredatalakestore.net',
+        azure_datalake_analytics_catalog_and_job_endpoint='azuredatalakeanalytics.net',
+        acr_login_server_endpoint='.azurecr.io',
+        synapse_analytics_endpoint='.dev.azuresynapse.net',
+        attestation_endpoint='.attest.azure.net'))
+
+AZURE_US_GCC_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'gcc',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.com',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.com'
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+AZURE_US_GCC_HIGH_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'gcc-high',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.us',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook.office365.us'
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+AZURE_DOD_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureUSGovernment',
+    'dod',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.usgovcloudapi.net/',
+        resource_manager='https://management.usgovcloudapi.net/',
+        sql_management='https://management.core.usgovcloudapi.net:8443/',
+        batch_resource_id='https://batch.core.usgovcloudapi.net/',
+        gallery='https://gallery.usgovcloudapi.net/',
+        active_directory='https://login.microsoftonline.us',
+        active_directory_resource_id='https://management.core.usgovcloudapi.net/',
+        active_directory_graph_resource_id='https://graph.windows.net/',
+        microsoft_graph_resource_id='https://dod-graph.microsoft.us/',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.usgovcloudapi.net',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.usgovcloudapi.net',
+        app_insights_resource_id='https://api.applicationinsights.us',
+        log_analytics_resource_id='https://api.loganalytics.us',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.us/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.usgovcloudapi.net',
+        portal='https://portal.azure.us',
+        keyvault='https://vault.usgovcloudapi.net',
+        exchange_online='https://outlook-dod.office365.us'
+
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.usgovcloudapi.net',
+        storage_sync_endpoint='afs.azure.us',
+        keyvault_dns='.vault.usgovcloudapi.net',
+        mhsm_dns='.managedhsm.usgovcloudapi.net',
+        sql_server_hostname='.database.usgovcloudapi.net',
+        mysql_server_endpoint='.mysql.database.usgovcloudapi.net',
+        postgresql_server_endpoint='.postgres.database.usgovcloudapi.net',
+        mariadb_server_endpoint='.mariadb.database.usgovcloudapi.net',
+        acr_login_server_endpoint='.azurecr.us',
+        synapse_analytics_endpoint='.dev.azuresynapse.usgovcloudapi.net'))
+
+
+AZURE_GERMAN_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureGermanCloud',
+    'de',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.cloudapi.de/',
+        resource_manager='https://management.microsoftazure.de',
+        sql_management='https://management.core.cloudapi.de:8443/',
+        batch_resource_id='https://batch.cloudapi.de/',
+        gallery='https://gallery.cloudapi.de/',
+        active_directory='https://login.microsoftonline.de',
+        active_directory_resource_id='https://management.core.cloudapi.de/',
+        active_directory_graph_resource_id='https://graph.cloudapi.de/',
+        microsoft_graph_resource_id='https://graph.microsoft.de',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.cloudapi.de',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.cloudapi.de',
+        portal='https://portal.microsoftazure.de',
+        keyvault='https://vault.microsoftazure.de',
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.cloudapi.de',
+        keyvault_dns='.vault.microsoftazure.de',
+        mhsm_dns='.managedhsm.microsoftazure.de',
+        sql_server_hostname='.database.cloudapi.de',
+        mysql_server_endpoint='.mysql.database.cloudapi.de',
+        postgresql_server_endpoint='.postgres.database.cloudapi.de',
+        mariadb_server_endpoint='.mariadb.database.cloudapi.de'))
+
+AZURE_CHINA_CLOUD = AzureCloud(
+    'Embedded',
+    'AzureChinaCloud',
+    'cn',
+    endpoints=AzureCloudEndpoints(
+        management='https://management.core.chinacloudapi.cn/',
+        resource_manager='https://management.chinacloudapi.cn',
+        sql_management='https://management.core.chinacloudapi.cn:8443/',
+        batch_resource_id='https://batch.chinacloudapi.cn/',
+        gallery='https://gallery.chinacloudapi.cn/',
+        active_directory='https://login.chinacloudapi.cn',
+        active_directory_resource_id='https://management.core.chinacloudapi.cn/',
+        active_directory_graph_resource_id='https://graph.chinacloudapi.cn/',
+        microsoft_graph_resource_id='https://microsoftgraph.chinacloudapi.cn',
+        vm_image_alias_doc='https://raw.githubusercontent.com/Azure/azure-rest-api-specs/main/arm-compute/quickstart-templates/aliases.json',  # noqa: E501
+        media_resource_id='https://rest.media.chinacloudapi.cn',
+        ossrdbms_resource_id='https://ossrdbms-aad.database.chinacloudapi.cn',
+        app_insights_resource_id='https://api.applicationinsights.azure.cn',
+        log_analytics_resource_id='https://api.loganalytics.azure.cn',
+        app_insights_telemetry_channel_resource_id='https://dc.applicationinsights.azure.cn/v2/track',
+        synapse_analytics_resource_id='https://dev.azuresynapse.azure.cn',
+        portal='https://portal.azure.cn',
+        keyvault='https://vault.azure.cn',
+        exchange_online='https://partner.outlook.cn'
+    ),
+    suffixes=AzureCloudSuffixes(
+        storage_endpoint='core.chinacloudapi.cn',
+        keyvault_dns='.vault.azure.cn',
+        mhsm_dns='.managedhsm.azure.cn',
+        sql_server_hostname='.database.chinacloudapi.cn',
+        mysql_server_endpoint='.mysql.database.chinacloudapi.cn',
+        postgresql_server_endpoint='.postgres.database.chinacloudapi.cn',
+        mariadb_server_endpoint='.mariadb.database.chinacloudapi.cn',
+        acr_login_server_endpoint='.azurecr.cn',
+        synapse_analytics_endpoint='.dev.azuresynapse.azure.cn'))
+
+
+AZURE_CLOUD_NAME_MAPPING = {
+    "Worldwide": "com",
+    "Germany": "de",
+    "China": "cn",
+    "US GCC": "gcc",
+    "US GCC-High": "gcc-high",
+    "DoD": "dod",
+}
+
+AZURE_CLOUD_NAME_CUSTOM = "Custom"
+
+AZURE_CLOUDS = {
+    "com": AZURE_WORLDWIDE_CLOUD,
+    "gcc": AZURE_US_GCC_CLOUD,
+    "gcc-high": AZURE_US_GCC_HIGH_CLOUD,
+    "dod": AZURE_DOD_CLOUD,
+    "de": AZURE_GERMAN_CLOUD,
+    "cn": AZURE_CHINA_CLOUD,
+}
+
+
+class AzureCloudNames:
+    WORLDWIDE = "com"
+    GERMANY = "de"
+    CHINA = "cn"
+    US_GCC = "gcc"
+    US_GCC_HIGH = "gcc-high"
+    DOD = "dod"
+    CUSTOM = "custom"
+
+
+def create_custom_azure_cloud(origin: str,
+                              name: str | None = None,
+                              abbreviation: str | None = None,
+                              defaults: AzureCloud | None = None,
+                              endpoints: dict | None = None,
+                              suffixes: dict | None = None):
+    defaults = defaults or AzureCloud(origin, name, abbreviation)
+    endpoints = endpoints or {}
+    suffixes = suffixes or {}
+    return AzureCloud(
+        origin,
+        name or defaults.name,
+        abbreviation or defaults.abbreviation,
+        endpoints=AzureCloudEndpoints(
+            management=endpoints.get('management', defaults.endpoints.management),
+            resource_manager=endpoints.get('resource_manager', defaults.endpoints.resource_manager),
+            sql_management=endpoints.get('sql_management', defaults.endpoints.sql_management),
+            batch_resource_id=endpoints.get('batch_resource_id', defaults.endpoints.batch_resource_id),
+            gallery=endpoints.get('gallery', defaults.endpoints.gallery),
+            active_directory=endpoints.get('active_directory', defaults.endpoints.active_directory),
+            active_directory_resource_id=endpoints.get('active_directory_resource_id',
+                                                       defaults.endpoints.active_directory_resource_id),
+            active_directory_graph_resource_id=endpoints.get(
+                'active_directory_graph_resource_id', defaults.endpoints.active_directory_graph_resource_id),
+            microsoft_graph_resource_id=endpoints.get('microsoft_graph_resource_id',
+                                                      defaults.endpoints.microsoft_graph_resource_id),
+            active_directory_data_lake_resource_id=endpoints.get(
+                'active_directory_data_lake_resource_id', defaults.endpoints.active_directory_data_lake_resource_id),
+            vm_image_alias_doc=endpoints.get('vm_image_alias_doc', defaults.endpoints.vm_image_alias_doc),
+            media_resource_id=endpoints.get('media_resource_id', defaults.endpoints.media_resource_id),
+            ossrdbms_resource_id=endpoints.get('ossrdbms_resource_id', defaults.endpoints.ossrdbms_resource_id),
+            app_insights_resource_id=endpoints.get('app_insights_resource_id', defaults.endpoints.app_insights_resource_id),
+            log_analytics_resource_id=endpoints.get('log_analytics_resource_id', defaults.endpoints.log_analytics_resource_id),
+            app_insights_telemetry_channel_resource_id=endpoints.get(
+                'app_insights_telemetry_channel_resource_id', defaults.endpoints.app_insights_telemetry_channel_resource_id),
+            synapse_analytics_resource_id=endpoints.get(
+                'synapse_analytics_resource_id', defaults.endpoints.synapse_analytics_resource_id),
+            attestation_resource_id=endpoints.get('attestation_resource_id', defaults.endpoints.attestation_resource_id),
+            portal=endpoints.get('portal', defaults.endpoints.portal),
+            keyvault=endpoints.get('keyvault', defaults.endpoints.keyvault),
+        ),
+        suffixes=AzureCloudSuffixes(
+            storage_endpoint=suffixes.get('storage_endpoint', defaults.suffixes.storage_endpoint),
+            storage_sync_endpoint=suffixes.get('storage_sync_endpoint', defaults.suffixes.storage_sync_endpoint),
+            keyvault_dns=suffixes.get('keyvault_dns', defaults.suffixes.keyvault_dns),
+            mhsm_dns=suffixes.get('mhsm_dns', defaults.suffixes.mhsm_dns),
+            sql_server_hostname=suffixes.get('sql_server_hostname', defaults.suffixes.sql_server_hostname),
+            mysql_server_endpoint=suffixes.get('mysql_server_endpoint', defaults.suffixes.mysql_server_endpoint),
+            postgresql_server_endpoint=suffixes.get('postgresql_server_endpoint', defaults.suffixes.postgresql_server_endpoint),
+            mariadb_server_endpoint=suffixes.get('mariadb_server_endpoint', defaults.suffixes.mariadb_server_endpoint),
+            azure_datalake_store_file_system_endpoint=suffixes.get(
+                'azure_datalake_store_file_system_endpoint', defaults.suffixes.azure_datalake_store_file_system_endpoint),
+            azure_datalake_analytics_catalog_and_job_endpoint=suffixes.get(
+                'azure_datalake_analytics_catalog_and_job_endpoint',
+                defaults.suffixes.azure_datalake_analytics_catalog_and_job_endpoint),
+            acr_login_server_endpoint=suffixes.get('acr_login_server_endpoint', defaults.suffixes.acr_login_server_endpoint),
+            synapse_analytics_endpoint=suffixes.get('synapse_analytics_endpoint', defaults.suffixes.synapse_analytics_endpoint),
+            attestation_endpoint=suffixes.get('attestation_endpoint', defaults.suffixes.attestation_endpoint),
+        ))
+
+
+def microsoft_defender_for_endpoint_get_base_url(endpoint_type, url, is_gcc=None):
+    # Backward compatible argument parsing, preserve the url and is_gcc functionality if provided, otherwise use endpoint_type.
+    log_message_append = ""
+    if is_gcc:  # Backward compatible.
+        endpoint_type = "US GCC"
+        log_message_append = f" ,Overriding endpoint to {endpoint_type}, backward compatible."
+    elif (endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM or not endpoint_type) and not url:
+        # When the integration was configured before our Azure Cloud support, the value will be None.
+        if endpoint_type == MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE_CUSTOM:
+            raise DemistoException("Endpoint type is set to 'Custom' but no URL was provided.")
+        raise DemistoException("'Endpoint Type' is not set and no URL was provided.")
+    endpoint_type = MICROSOFT_DEFENDER_FOR_ENDPOINT_TYPE.get(endpoint_type, 'com')
+    url = url or MICROSOFT_DEFENDER_FOR_ENDPOINT_API[endpoint_type]
+    demisto.info(f"Using url:{url}, endpoint type:{endpoint_type}{log_message_append}")
+    return endpoint_type, url
+
+
+def get_azure_cloud(params, integration_name):
+    azure_cloud_arg = params.get('azure_cloud')
+    if not azure_cloud_arg or azure_cloud_arg == AZURE_CLOUD_NAME_CUSTOM:
+        # Backward compatibility before the azure cloud settings.
+        if 'server_url' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'resource_manager': params.get('server_url')
+                                                        or 'https://management.azure.com'})
+        if 'azure_ad_endpoint' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={
+                                                 'active_directory': params.get('azure_ad_endpoint')
+                                                 or 'https://login.microsoftonline.com'
+                                             })
+        # in multiple Graph integrations, the url is called 'url' or 'host' instead of 'server_url' and the default url is
+        # different.
+        if 'url' in params or 'host' in params:
+            return create_custom_azure_cloud(integration_name, defaults=AZURE_WORLDWIDE_CLOUD,
+                                             endpoints={'microsoft_graph_resource_id': params.get('url') or params.get('host')
+                                                        or 'https://graph.microsoft.com'})
+
+    # There is no need for backward compatibility support, as the integration didn't support it to begin with.
+    return AZURE_CLOUDS.get(AZURE_CLOUD_NAME_MAPPING.get(azure_cloud_arg), AZURE_WORLDWIDE_CLOUD)  # type: ignore[arg-type]
+
+
+class MicrosoftClient(BaseClient):
+    def __init__(self, tenant_id: str = '',
+                 auth_id: str = '',
+                 enc_key: str | None = '',
+                 token_retrieval_url: str = '{endpoint}/{tenant_id}/oauth2/v2.0/token',
+                 app_name: str = '',
+                 refresh_token: str = '',
+                 auth_code: str = '',
+                 scope: str = '{graph_endpoint}/.default',
+                 grant_type: str = CLIENT_CREDENTIALS,
+                 redirect_uri: str = 'https://localhost/myapp',
+                 resource: str | None = '',
+                 multi_resource: bool = False,
+                 resources: list[str] = None,
+                 verify: bool = True,
+                 self_deployed: bool = False,
+                 timeout: int | None = None,
+                 azure_ad_endpoint: str = '{endpoint}',
+                 azure_cloud: AzureCloud = AZURE_WORLDWIDE_CLOUD,
+                 endpoint: str = "__NA__",  # Deprecated
+                 certificate_thumbprint: str | None = None,
+                 retry_on_rate_limit: bool = False,
+                 private_key: str | None = None,
+                 managed_identities_client_id: str | None = None,
+                 managed_identities_resource_uri: str | None = None,
+                 base_url: str | None = None,
+                 command_prefix: str | None = "command_prefix",
+                 *args, **kwargs):
         """
-        Builds valid attachment input of the message. Is used for both in-line and regular attachments.
-
-        :type ids: ``list``
-        :param ids: List of uploaded to War Room files ids
-
-        :type attach_names: ``list``
-        :param attach_names: List of attachment name, not required.
-
-        :type is_inline: ``bool``
-        :param is_inline: Indicates whether the attachment is inline or not
-
-        :return: List of valid attachments of message
-        :rtype: ``list``
+        Microsoft Client class that implements logic to authenticate with oproxy or self deployed applications.
+        It also provides common logic to handle responses from Microsoft.
+        Args:
+            tenant_id: If self deployed it's the tenant for the app url, otherwise (oproxy) it's the token
+            auth_id: If self deployed it's the client id, otherwise (oproxy) it's the auth id and may also
+            contain the token url
+            enc_key: If self deployed it's the client secret, otherwise (oproxy) it's the encryption key
+            refresh_token: The current used refresh token.
+            scope: The scope of the application (only if self deployed)
+            resource: The resource of the application (only if self deployed)
+            multi_resource: Where or not module uses a multiple resources (self-deployed, auth_code grant type only)
+            resources: Resources of the application (for multi-resource mode)
+            verify: Demisto insecure parameter
+            self_deployed: Indicates whether the integration mode is self deployed or oproxy
+            timeout: Connection timeout
+            azure_ad_endpoint: Custom endpoint to Azure Active Directory URL
+            azure_cloud: Azure Cloud.
+            certificate_thumbprint: Certificate's thumbprint that's associated to the app
+            private_key: Private key of the certificate
+            managed_identities_client_id: The Azure Managed Identities client id
+            managed_identities_resource_uri: The resource uri to get token for by Azure Managed Identities
+            retry_on_rate_limit: If the http request returns with a 429 - Rate limit reached response,
+                                 retry the request using a scheduled command.
+            base_url: Optionally override the calculated Azure endpoint, used for self-deployed and backward-compatibility with
+                      integration that supported national cloud before the *azure_cloud* parameter.
+            command_prefix: The prefix for all integration commands.
         """
-        provided_names = bool(attach_names)
+        self.command_prefix = command_prefix
+        demisto.debug(f'Initializing MicrosoftClient with: {endpoint=} | {azure_cloud.abbreviation}')
+        if endpoint != "__NA__":
+            # Backward compatible.
+            self.azure_cloud = AZURE_CLOUDS.get(endpoint, AZURE_WORLDWIDE_CLOUD)
+        else:
+            self.azure_cloud = azure_cloud
 
-        if provided_names and len(ids) != len(attach_names):
-            raise Exception("Invalid input, attach_ids and attach_names lists should be the same length.")
+        super().__init__(*args, verify=verify, base_url=base_url, **kwargs)  # type: ignore[misc]
 
-        file_attachments_result = []
-        # in case that no attach names where provided, ids are zipped together and the attach_name value is ignored
-        attachments = zip(ids, attach_names) if provided_names else zip(ids, ids)
-
-        for attach_id, attach_name in attachments:
-            file_data, file_size, uploaded_file_name = GraphMailUtils.read_file(attach_id)
-            file_name = attach_name if provided_names or not uploaded_file_name else uploaded_file_name
-            if file_size < cls.MAX_ATTACHMENT_SIZE:  # if file is less than 3MB
-                file_attachments_result.append(
-                    {
-                        "@odata.type": cls.FILE_ATTACHMENT,
-                        "contentBytes": base64.b64encode(file_data).decode("utf-8"),
-                        "isInline": is_inline,
-                        "name": file_name,
-                        "size": file_size,
-                        "contentId": attach_id,
-                    }
-                )
+        self.retry_on_rate_limit = retry_on_rate_limit
+        if retry_on_rate_limit and (429 not in self._ok_codes):
+            self._ok_codes = self._ok_codes + (429,)
+        if not self_deployed:
+            auth_id_and_token_retrieval_url = auth_id.split('@')
+            auth_id = auth_id_and_token_retrieval_url[0]
+            if len(auth_id_and_token_retrieval_url) != 2:
+                self.token_retrieval_url = 'https://oproxy.demisto.ninja/obtain-token'  # guardrails-disable-line
             else:
-                file_attachments_result.append(
-                    {
-                        "size": file_size,
-                        "data": file_data,
-                        "name": file_name,
-                        "isInline": is_inline,
-                        "requires_upload": True,
-                        "contentId": attach_id,
-                    }
-                )
-        return file_attachments_result
+                self.token_retrieval_url = auth_id_and_token_retrieval_url[1]
+
+            self.app_name = app_name
+            self.auth_id = auth_id
+            self.enc_key = enc_key
+            self.refresh_token = refresh_token
+
+        else:
+            self.token_retrieval_url = token_retrieval_url.format(tenant_id=tenant_id,
+                                                                  endpoint=self.azure_cloud.endpoints.active_directory
+                                                                  .rstrip("/"))
+            self.client_id = auth_id
+            self.client_secret = enc_key
+            self.auth_code = auth_code
+            self.grant_type = grant_type
+            self.resource = resource
+            self.scope = scope.format(graph_endpoint=self.azure_cloud.endpoints.microsoft_graph_resource_id.rstrip("/"))
+            self.redirect_uri = redirect_uri
+            if certificate_thumbprint and private_key:
+                try:
+                    import msal  # pylint: disable=E0401
+                    self.jwt = msal.oauth2cli.assertion.JwtAssertionCreator(
+                        private_key,
+                        'RS256',
+                        certificate_thumbprint
+                    ).create_normal_assertion(audience=self.token_retrieval_url, issuer=self.client_id)
+                except ModuleNotFoundError:
+                    raise DemistoException('Unable to use certificate authentication because `msal` is missing.')
+            else:
+                self.jwt = None
+
+        self.tenant_id = tenant_id
+        self.auth_type = SELF_DEPLOYED_AUTH_TYPE if self_deployed else OPROXY_AUTH_TYPE
+        self.verify = verify
+        self.azure_ad_endpoint = azure_ad_endpoint.format(
+            endpoint=self.azure_cloud.endpoints.active_directory.rstrip("/"))
+        self.timeout = timeout  # type: ignore
+
+        self.multi_resource = multi_resource
+        if self.multi_resource:
+            self.resources = resources if resources else []
+            self.resource_to_access_token: dict[str, str] = {}
+
+        # for Azure Managed Identities purpose
+        self.managed_identities_client_id = managed_identities_client_id
+        self.managed_identities_resource_uri = managed_identities_resource_uri
 
     @staticmethod
-    def upload_attachment(
-        upload_url: str, start_chunk_idx: int, end_chunk_idx: int, chunk_data: bytes, attachment_size: int
-    ) -> requests.Response:
-        """
-        Upload an attachment to the upload URL.
-        Args:
-            upload_url (str): upload URL provided when running 'get_upload_session'
-            start_chunk_idx (int): the start of the chunk file data.
-            end_chunk_idx (int): the end of the chunk file data.
-            chunk_data (bytes): the chunk data in bytes from start_chunk_idx to end_chunk_idx
-            attachment_size (int): the entire attachment size in bytes.
-        Returns:
-            Response: response indicating whether the operation succeeded. 200 if a chunk was added successfully,
-                201 (created) if the file was uploaded completely. 400 in case of errors.
-        """
-        chunk_size = len(chunk_data)
-        headers = {
-            "Content-Length": f"{chunk_size}",
-            "Content-Range": f"bytes {start_chunk_idx}-{end_chunk_idx - 1}/{attachment_size}",
-            "Content-Type": "application/octet-stream",
-        }
-        demisto.debug(f"uploading session headers: {headers}")
-        return requests.put(url=upload_url, data=chunk_data, headers=headers)
+    def is_command_executed_from_integration():
+        ctx = demisto.callingContext.get('context', {})
+        executed_commands = ctx.get('ExecutedCommands', [{'moduleBrand': 'Scripts'}])
 
-    def _get_root_folder_children(self, user_id, overwrite_rate_limit_retry=False):
-        """
-        Get the root folder (Top Of Information Store) children collection.
+        if executed_commands:
+            return executed_commands[0].get('moduleBrand', "") != 'Scripts'
 
-        :type user_id: ``str``
-        :param user_id: Mailbox address
-
-        :raises: ``Exception``: No folders found under Top Of Information Store folder
-
-        :return: List of root folder children
-        rtype: ``list``
-        """
-        root_folder_id = "msgfolderroot"
-        if children := self._get_folder_children(user_id, root_folder_id, overwrite_rate_limit_retry):
-            return children
-
-        raise DemistoException("No folders found under Top Of Information Store folder")
-
-    def _get_folder_children(self, user_id, folder_id, overwrite_rate_limit_retry=False):
-        """
-        Get the folder collection under the specified folder.
-
-        :type user_id ``str``
-        :param user_id: Mailbox address
-
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-
-        :return: List of folders that contain basic folder information
-        :rtype: ``list``
-        """
-        return self.http_request(
-            "GET",
-            f"users/{user_id}/mailFolders/{folder_id}/childFolders?$top={self.MAX_FOLDERS_SIZE}",
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
-        ).get("value", [])
-
-    def _get_folder_info(self, user_id, folder_id, overwrite_rate_limit_retry=False):
-        """
-        Returns folder information.
-
-        :type user_id: ``str``
-        :param user_id: Mailbox address
-
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-
-        :raises: ``Exception``: No info found for folder {folder id}
-
-        :return: Folder information if found
-        :rtype: ``dict``
-        """
-
-        if folder_info := self.http_request(
-            "GET", f"users/{user_id}/mailFolders/{folder_id}", overwrite_rate_limit_retry=overwrite_rate_limit_retry
-        ):
-            return folder_info
-
-        raise DemistoException(f"No info found for folder {folder_id}")
-
-    def _get_folder_by_path(self, user_id, folder_path, overwrite_rate_limit_retry=False):
-        """
-        Searches and returns basic folder information.
-
-        Receives mailbox address and folder path (e.g Inbox/Phishing) and iteratively retrieves folders info until
-        reaches the last folder of a path. In case that such folder exist, basic information that includes folder id,
-        display name, parent folder id, child folders count, unread items count and total items count will be returned.
-
-        :type user_id: ``str``
-        :param user_id: Mailbox address
-
-        :type folder_path: ``str``
-        :param folder_path: Folder path of searched folder
-
-        :raises: ``Exception``: No such folder exist: {folder path}
-
-        :return: Folder information if found
-        :rtype: ``dict``
-        """
-        folders_names = folder_path.replace("\\", "/").split("/")  # replaced backslash in original folder path
-
-        # Optimization step in order to improve performance before iterating the folder path in order to skip API call
-        # for getting Top of Information Store children collection if possible.
-        if folders_names[0].lower() in self.WELL_KNOWN_FOLDERS:
-            # check if first folder in the path is known folder in order to skip not necessary api call
-            folder_id = self.WELL_KNOWN_FOLDERS[folders_names[0].lower()]  # get folder shortcut instead of using folder id
-            if len(folders_names) == 1:  # in such case the folder path consist only from one well known folder
-                return self._get_folder_info(user_id, folder_id, overwrite_rate_limit_retry)
-
-            current_directory_level_folders = self._get_folder_children(user_id, folder_id, overwrite_rate_limit_retry)
-            folders_names.pop(0)  # remove the first folder name from the path before iterating
-        else:  # in such case the optimization step is skipped
-            # current_directory_level_folders will be set to folders that are under Top Of Information Store (root)
-            current_directory_level_folders = self._get_root_folder_children(user_id, overwrite_rate_limit_retry)
-
-        for index, folder_name in enumerate(folders_names):
-            # searching for folder in current_directory_level_folders list by display name or id
-            found_folder = [
-                f
-                for f in current_directory_level_folders
-                if f.get("displayName", "").lower() == folder_name.lower() or f.get("id", "") == folder_name
-            ]
-
-            if not found_folder:  # no folder found, return error
-                raise DemistoException(f"No such folder exist: {folder_path}")
-            found_folder = found_folder[0]  # found_folder will be list with only one element in such case
-
-            if index == len(folders_names) - 1:  # reached the final folder in the path
-                # skip get folder children step in such case
-                return found_folder
-            # didn't reach the end of the loop, set the current_directory_level_folders to folder children
-            current_directory_level_folders = self._get_folder_children(
-                user_id, found_folder.get("id", ""), overwrite_rate_limit_retry=overwrite_rate_limit_retry
-            )
-        return None
-
-    def _get_email_attachments(self, message_id, user_id=None, overwrite_rate_limit_retry=False) -> list:
-        """
-        Get email attachments  and upload to War Room.
-
-        :type message_id: ``str``
-        :param message_id: The email id to get attachments
-
-        :type user_id: ``str``
-        :param user_id: The user id to get attachments from, if not provided - the mailbox_to_fetch will be used.
-
-        :return: List of uploaded to War Room data, uploaded file path and name
-        :rtype: ``list``
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        attachment_results: list = []
-        attachments = self.http_request(
-            "Get", f"users/{user_id}/messages/{message_id}/attachments", overwrite_rate_limit_retry=overwrite_rate_limit_retry
-        ).get("value", [])
-
-        for attachment in attachments:
-            attachment_type = attachment.get("@odata.type", "")
-            attachment_content_id = attachment.get("contentId")
-            attachment_is_inline = attachment.get("isInline")
-            attachment_name = attachment.get("name", "untitled_attachment")
-            if attachment_is_inline and not self.legacy_name and attachment_content_id and attachment_content_id != "None":
-                attachment_name = f"{attachment_content_id}-attachmentName-{attachment_name}"
-            if not attachment_name.isascii():
-                try:
-                    demisto.debug(f"Trying to decode the attachment file name: {attachment_name}")
-                    attachment_name = b64_decode(attachment_name)  # type: ignore
-                except Exception as e:
-                    demisto.debug(f"Could not decode the {attachment_name=}: error: {e}")
-
-            if attachment_type == self.FILE_ATTACHMENT:
-                try:
-                    attachment_content = b64_decode(attachment.get("contentBytes", ""))
-                except Exception as e:  # skip the uploading file step
-                    demisto.info(f"failed in decoding base64 file attachment with error {e!s}")
-                    continue
-            elif attachment_type == self.ITEM_ATTACHMENT:
-                attachment_id = attachment.get("id", "")
-                attachment_content = self._get_attachment_mime(message_id, attachment_id, user_id, overwrite_rate_limit_retry)
-                attachment_name = f"{attachment_name}.eml"
-            else:
-                # skip attachments that are not of the previous types (type referenceAttachment)
-                continue
-            # upload the item/file attachment to War Room
-            demisto.debug(f"Uploading attachment file: {attachment_name=}, {attachment_content=}")
-            GraphMailUtils.upload_file(attachment_name, attachment_content, attachment_results)
-
-        demisto.debug(f"Final attachment results = {attachment_results}")
-        return attachment_results
-
-    def _get_attachment_mime(self, message_id, attachment_id, user_id=None, overwrite_rate_limit_retry=False):
-        """
-        Gets attachment mime.
-
-
-        :type message_id: ``str``
-        :param message_id: The email id to get attachments
-
-        :type attachment_id: ``str``
-        :param attachment_id: Attachment id to get MIME
-
-        :type user_id: ``str``
-        :param user_id: The user id to get attachments from, if not provided - the mailbox_to_fetch will be used.
-
-        :return: The MIME of the attachment
-        :rtype: ``str``
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        suffix_endpoint = f"users/{user_id}/messages/{message_id}/attachments/{attachment_id}/$value"
-        return self.http_request("GET", suffix_endpoint, resp_type="text", overwrite_rate_limit_retry=overwrite_rate_limit_retry)
-
-    def list_mails(self, user_id: str, folder_id: str = "", search: str = None, odata: str = None) -> dict | list:
-        """Returning all mails from given user
-
-        Args:
-            user_id (str): the user id,
-            folder_id (str): the folder id
-            search (str):   plaintext search query
-            odata (str):    odata-formatted query
-
-        Returns:
-            dict or list:   list of mails or dictionary when single item is returned
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        pages_to_pull = demisto.args().get("pages_to_pull", self.DEFAULT_PAGES_TO_PULL_NUM)
-        page_size = demisto.args().get("page_size", self.DEFAULT_PAGE_SIZE)
-        odata = f"{odata}&$top={page_size}" if odata else f"$top={page_size}"
-        if search:
-            # Data is being handled as a JSON so in cases the search phrase contains double quote ",
-            # we should escape it.
-            search = search.replace('"', '\\"')
-            odata = f'{odata}&$search="{quote(search)}"'
-
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-        suffix = f"/users/{user_id}{folder_path}/messages?{odata}"
-        demisto.debug(f"URL suffix is {suffix}")
-        response = self.http_request("GET", suffix)
-        return self.pages_puller(response, GraphMailUtils.assert_pages(pages_to_pull))
-
-    def get_message(self, user_id: str, message_id: str, folder_id: str = "", odata: str = "") -> dict:
-        """
-
-        Args:
-            user_id (str): User ID to pull message from
-            message_id (str): Message ID to pull
-            folder_id: (str) Folder ID to pull from
-            odata (str): OData query
-
-        Returns
-            dict: request json
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-        suffix = f"/users/{user_id}{folder_path}/messages/{message_id}"
-
-        if odata:
-            suffix += f"?{odata}"
-        response = self.http_request("GET", suffix)
-
-        # Add user ID
-        response["userId"] = user_id
-        return response
-
-    def delete_mail(self, user_id: str, message_id: str, folder_id: str = None) -> bool:
-        """
-
-        Args:
-            user_id (str):
-            message_id (str):
-            folder_id (str):
-
-        Returns:
-            bool
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-        suffix = f"/users/{user_id}{folder_path}/messages/{message_id}"
-        self.http_request("DELETE", suffix, resp_type="")
         return True
 
-    def create_draft(self, from_email: str, json_data, reply_message_id: str = None) -> dict:
+    def http_request(
+            self, *args, resp_type='json', headers=None,
+            return_empty_response=False, scope: str | None = None,
+            resource: str = '', overwrite_rate_limit_retry=False, **kwargs):
         """
-        Create a draft message for either a new message or as a reply to an existing message.
+        Overrides Base client request function, retrieves and adds to headers access token before sending the request.
+
         Args:
-            from_email (str): email to create the draft from.
-            json_data (dict): data to create the message with.
-            reply_message_id (str): message ID in case creating a draft to an existing message.
+            resp_type: Type of response to return. will be ignored if `return_empty_response` is True.
+            headers: Headers to add to the request.
+            return_empty_response: Return the response itself if the return_code is 206.
+            scope: A scope to request. Currently, will work only with self-deployed app.
+            resource (str): The resource identifier for which the generated token will have access to.
+            overwrite_rate_limit_retry : Skip rate limit retry
         Returns:
-            dict: api response information about the draft.
+            Response from api according to resp_type. The default is `json` (dict or list).
         """
-        from_email = from_email or self._mailbox_to_fetch
-        suffix = f"/users/{from_email}/messages"  # create draft for a new message
-        if reply_message_id:
-            suffix = f"{suffix}/{reply_message_id}/createReply"  # create draft for a reply to an existing message
-        demisto.debug(f"{suffix=}")
-        return self.http_request("POST", suffix, json_data=json_data)
-
-    def send_mail(self, email, json_data):
-        """
-        Sends an email.
-        Args:
-            email (str): email to send the message from, if not provided - the mailbox_to_fetch will be used.
-            json_data (dict): message data.
-        """
-        email = email or self._mailbox_to_fetch
-        self.http_request("POST", f"/users/{email}/sendMail", json_data={"message": json_data}, resp_type="text")
-
-    def send_reply(self, email_from, json_data, message_id):
-        """
-        Sends a reply email.
-        Args:
-            email_from (str): email to send the reply from.
-            message_id (str): a message ID to reply to.
-            json_data (dict): message body request.
-        """
-        email_from = email_from or self._mailbox_to_fetch
-        self.http_request("POST", f"/users/{email_from}/messages/{message_id}/reply", json_data=json_data, resp_type="text")
-
-    def send_draft(self, email: str, draft_id: str):
-        """
-        Sends a draft message.
-        Args:
-            email (str): email to send the draft from, if not provided - the mailbox_to_fetch will be used.
-            draft_id (str): the ID of the draft to send.
-        """
-        email = email or self._mailbox_to_fetch
-        self.http_request("POST", f"/users/{email}/messages/{draft_id}/send", resp_type="text")
-
-    def list_attachments(self, user_id: str, message_id: str, folder_id: str | None = None) -> dict:
-        """Listing all the attachments
-
-        Args:
-            user_id (str):      ID of a user to pull attachments from
-            message_id (str):   ID of a message to pull attachments from
-            folder_id (str):    ID of a folder to pull attachments from
-
-        Returns:
-            dict:
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-        suffix = f"/users/{user_id}{folder_path}/messages/{message_id}/attachments/"
-        return self.http_request("GET", suffix)
-
-    def get_attachment(self, message_id: str, user_id: str = None, attachment_id: str = None, folder_id: str = None) -> list:
-        """Get the attachment represented by the attachment_id from the API
-        In case not supplied, the command will return all the attachments.
-
-        Args:
-            message_id (str): The message ID to get attachments from
-            user_id (str, optional): The User ID, if not provided - the mailbox_to_fetch will be used
-            attachment_id (str, optional): The attachment id. Defaults to None.
-            folder_id (str, optional): The folder ID. Defaults to None.
-
-        Returns:
-            list: List contained the attachment represented by the attachment_id from the API
-            or all the attachments if not attachment_id was provided.
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-        attachment_id_path = f"/{attachment_id}/?$expand=microsoft.graph.itemattachment/item" if attachment_id else ""
-        suffix = f"/users/{user_id}{folder_path}/messages/{message_id}/attachments{attachment_id_path}"
-
-        demisto.debug(f"Getting attachment with suffix: {suffix}")
-
-        response = self.http_request("GET", suffix)
-        return [response] if attachment_id else response.get("value", [])
-
-    def create_folder(self, user_id: str, new_folder_name: str, parent_folder_id: str = None) -> dict:
-        """Create folder under specified folder with given display name
-
-        Args:
-            user_id (str): The User ID, if not provided - the mailbox_to_fetch will be used
-            new_folder_name (str): Created folder display name
-            parent_folder_id (str): Parent folder id under where created new folder
-
-        Returns:
-            dict: Created folder data
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        suffix = f"/users/{user_id}/mailFolders"
-        if parent_folder_id:
-            suffix += f"/{parent_folder_id}/childFolders"
-
-        json_data = {"displayName": new_folder_name}
-        return self.http_request("POST", suffix, json_data=json_data)
-
-    def update_folder(self, user_id: str, folder_id: str, new_display_name: str) -> dict:
-        """Update folder under specified folder with new display name
-
-        Args:
-            user_id (str): The User ID, if not provided - the mailbox_to_fetch will be used
-            folder_id (str): Folder id to update
-            new_display_name (str): New display name of updated folder
-
-        Returns:
-            dict: Updated folder data
-        """
-
-        suffix = f"/users/{user_id}/mailFolders/{folder_id}"
-        json_data = {"displayName": new_display_name}
-        return self.http_request("PATCH", suffix, json_data=json_data)
-
-    def list_folders(self, user_id: str, limit: str = "20") -> dict:
-        """List folder under root folder (Top of information store)
-
-        Args:
-            user_id (str): User id or mailbox address, if not provided - the mailbox_to_fetch will be used
-            limit (str): Limit number of returned folder collection
-
-        Returns:
-            dict: Collection of folders under root folder
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        suffix = f"/users/{user_id}/mailFolders?$top={limit}"
-        return self.http_request("GET", suffix)
-
-    def list_child_folders(self, user_id: str, parent_folder_id: str, limit: str = "20") -> list:
-        """List child folder under specified folder.
-
-        Args:
-            user_id (str): User id or mailbox address, if not provided - the mailbox_to_fetch will be used
-            parent_folder_id (str): Parent folder id
-            limit (str): Limit number of returned folder collection
-
-        Returns:
-            list: Collection of folders under specified folder
-        """
-        # for additional info regarding OData query https://docs.microsoft.com/en-us/graph/query-parameters
-        user_id = user_id or self._mailbox_to_fetch
-        suffix = f"/users/{user_id}/mailFolders/{parent_folder_id}/childFolders?$top={limit}"
-        return self.http_request("GET", suffix)
-
-    def delete_folder(self, user_id: str, folder_id: str):
-        """Deletes folder under specified folder
-
-        Args:
-            user_id (str): User id or mailbox address
-            folder_id (str): Folder id to delete
-        """
-
-        suffix = f"/users/{user_id}/mailFolders/{folder_id}"
-        return self.http_request("DELETE", suffix, resp_type="")
-
-    def move_email(self, user_id: str, message_id: str, destination_folder_id: str) -> dict:
-        """Moves email to destination folder
-
-        Args:
-            user_id (str): User id or mailbox address, if not provided - the mailbox_to_fetch will be used
-            message_id (str): The message id to move
-            destination_folder_id (str): Destination folder id
-
-        Returns:
-            dict: Moved email data
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        suffix = f"/users/{user_id}/messages/{message_id}/move"
-        json_data = {"destinationId": destination_folder_id}
-        return self.http_request("POST", suffix, json_data=json_data)
-
-    def get_email_as_eml(self, user_id: str, message_id: str) -> str:
-        """Returns MIME content of specified message
-
-        Args:
-            user_id (str): User id or mailbox address, if not provided - the mailbox_to_fetch will be used
-            message_id (str): The message id of the email
-
-        Returns:
-            str: MIME content of the email
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        suffix = f"/users/{user_id}/messages/{message_id}/$value"
-        return self.http_request("GET", suffix, resp_type="text")
-
-    def update_email_read_status(self, user_id: str, message_id: str, read: bool, folder_id: str | None = None) -> dict:
-        """
-        Update the status of an email to read / unread.
-
-        Args:
-            user_id (str): User id or mailbox address, if not provided - the mailbox_to_fetch will be used
-            message_id (str): Message id to mark as read/unread
-            folder_id (str): Folder id to update
-            read (bool): Whether to mark the email as read or unread. True for read, False for unread.
-
-        Returns:
-            dict: API response
-        """
-        user_id = user_id or self._mailbox_to_fetch
-        folder_path = f"/{GraphMailUtils.build_folders_path(folder_id)}" if folder_id else ""
-
-        return self.http_request(
-            method="PATCH",
-            url_suffix=f"/users/{user_id}{folder_path}/messages/{message_id}",
-            json_data={"isRead": read},
-        )
-
-    def pages_puller(self, response: dict, page_count: int) -> list:
-        """Gets first response from API and returns all pages
-
-        Args:
-            response (dict):        raw http response data
-            page_count (int):       amount of pages
-
-        Returns:
-            list: list of all pages
-        """
-        responses = [response]
-        for _i in range(page_count - 1):
-            next_link = response.get("@odata.nextLink")
-            if next_link:
-                response = self.http_request("GET", full_url=next_link, url_suffix=None)
-                responses.append(response)
-            else:
-                return responses
-        return responses
-
-    def test_connection(self):
-        if self._mailbox_to_fetch:
-            self.http_request("GET", f"/users/{self._mailbox_to_fetch}/messages?$top=1")
-        else:
-            self.get_access_token()
-        return "ok"
-
-    def add_attachments_via_upload_session(self, email: str, draft_id: str, attachments: list[dict]):
-        """
-        Add attachments using an upload session by dividing the file bytes into chunks and sent each chunk each time.
-        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
-        Args:
-            email (str): email to create the upload session.
-            draft_id (str): draft ID to add the attachments to.
-            attachments (list[dict]) : attachments to add to the draft message.
-        """
-        email = email or self._mailbox_to_fetch
-        for attachment in attachments:
-            self.add_attachment_with_upload_session(
-                email=email,
-                draft_id=draft_id,
-                attachment_data=attachment.get("data", ""),
-                attachment_name=attachment.get("name", ""),
-                is_inline=attachment.get("isInline", False),
-                content_id=attachment.get("contentId", None),
-            )
-
-    def get_upload_session(
-        self, email: str, draft_id: str, attachment_name: str, attachment_size: int, is_inline: bool, content_id=None
-    ) -> dict:
-        """
-        Create an upload session for a specific draft ID.
-        Args:
-            email (str): email to create the upload session.
-            draft_id (str): draft ID to add the attachments to.
-            attachment_size (int) : attachment size (in bytes).
-            attachment_name (str): attachment name.
-            is_inline (bool): is the attachment inline, True if yes, False if not.
-        """
-        json_data = {
-            "attachmentItem": {"attachmentType": "file", "name": attachment_name, "size": attachment_size, "isInline": is_inline}
+        if 'ok_codes' not in kwargs and not self._ok_codes:
+            kwargs['ok_codes'] = (200, 201, 202, 204, 206, 404)
+        token = self.get_access_token(resource=resource, scope=scope)
+        default_headers = {
+            'Authorization': f'Bearer {token}',
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
         }
-        if content_id:
-            json_data["attachmentItem"]["contentId"] = content_id
-        return self.http_request(
-            "POST", f"/users/{email}/messages/{draft_id}/attachments/createUploadSession", json_data=json_data
-        )
 
-    def add_attachment_with_upload_session(
-        self, email: str, draft_id: str, attachment_data: bytes, attachment_name: str, is_inline: bool = False, content_id=None
-    ):
+        if headers:
+            default_headers |= headers
+
+        if self.timeout:
+            kwargs['timeout'] = self.timeout
+
+        should_http_retry_on_rate_limit = self.retry_on_rate_limit and not overwrite_rate_limit_retry
+        if should_http_retry_on_rate_limit and not kwargs.get('error_handler'):
+            kwargs['error_handler'] = self.handle_error_with_metrics
+
+        response = super()._http_request(  # type: ignore[misc]
+            *args, resp_type="response", headers=default_headers, **kwargs)
+
+        if should_http_retry_on_rate_limit and MicrosoftClient.is_command_executed_from_integration():
+            MicrosoftClient.create_api_metrics(response.status_code)
+        # 206 indicates Partial Content, reason will be in the warning header.
+        # In that case, logs with the warning header will be written.
+        if response.status_code == 206:
+            demisto.debug(str(response.headers))
+        is_response_empty_and_successful = (response.status_code == 204)
+        if is_response_empty_and_successful and return_empty_response:
+            return response
+
+        # Handle 404 errors instead of raising them as exceptions:
+        if response.status_code == 404:
+            try:
+                error_message = response.json()
+            except Exception:
+                error_message = 'Not Found - 404 Response'
+            raise NotFoundError(error_message)
+
+        if should_http_retry_on_rate_limit and response.status_code == 429 and is_demisto_version_ge('6.2.0'):
+            command_args = demisto.args()
+            ran_once_flag = command_args.get('ran_once_flag')
+            demisto.info(f'429 MS rate limit for command {demisto.command()}, where ran_once_flag is {ran_once_flag}')
+            # We want to retry on rate limit only once
+            if ran_once_flag:
+                try:
+                    error_message = response.json()
+                except Exception:
+                    error_message = 'Rate limit reached on retry - 429 Response'
+                demisto.info(f'Error in retry for MS rate limit - {error_message}')
+                raise DemistoException(error_message)
+
+            else:
+                demisto.info(f'Scheduling command {demisto.command()}')
+                command_args['ran_once_flag'] = True
+                return_results(MicrosoftClient.run_retry_on_rate_limit(command_args))
+                sys.exit(0)
+
+        try:
+            if resp_type == 'json':
+                return response.json()
+            if resp_type == 'text':
+                return response.text
+            if resp_type == 'content':
+                return response.content
+            if resp_type == 'xml':
+                try:
+                    import defusedxml.ElementTree as defused_ET
+                    defused_ET.fromstring(response.text)
+                except ImportError:
+                    demisto.debug('defused_ET is not supported, using ET instead.')
+                    ET.fromstring(response.text)
+            return response
+        except ValueError as exception:
+            raise DemistoException(f'Failed to parse json object from response: {response.content}', exception)
+
+    def get_access_token(self, resource: str = '', scope: str | None = None) -> str:
         """
-        Add an attachment using an upload session by dividing the file bytes into chunks and sent each chunk each time.
-        more info here - https://docs.microsoft.com/en-us/graph/outlook-large-attachments?tabs=http
+        Obtains access and refresh token from oproxy server or just a token from a self deployed app.
+        Access token is used and stored in the integration context
+        until expiration time. After expiration, new refresh token and access token are obtained and stored in the
+        integration context.
+
         Args:
-            email (str): email to create the upload session.
-            draft_id (str): draft ID to add the attachments to.
-            attachment_data (bytes) : attachment data in bytes.
-            attachment_name (str): attachment name.
-            is_inline (bool): is the attachment inline, True if yes, False if not.
+            resource: The resource identifier for which the generated token will have access to.
+            scope: A scope to get instead of the default on the API.
+
+        Returns:
+            str: Access token that will be added to authorization header.
         """
+        integration_context = get_integration_context()
+        refresh_token = integration_context.get('current_refresh_token', '')
+        # Set keywords. Default without the scope prefix.
+        access_token_keyword = f'{scope}_access_token' if scope else 'access_token'
+        valid_until_keyword = f'{scope}_valid_until' if scope else 'valid_until'
 
-        attachment_size = len(attachment_data)
-        upload_session = self.get_upload_session(
-            email=email,
-            draft_id=draft_id,
-            attachment_name=attachment_name,
-            attachment_size=attachment_size,
-            is_inline=is_inline,
-            content_id=content_id,
-        )
-        upload_url = upload_session.get("uploadUrl")
-        if not upload_url:
-            raise Exception(f"Cannot get upload URL for attachment {attachment_name}")
+        access_token = integration_context.get(resource) if self.multi_resource else integration_context.get(access_token_keyword)
 
-        start_chunk_index = 0
-        # The if is for adding functionality of inline attachment sending from layout
-        end_chunk_index = min(self.MAX_ATTACHMENT_SIZE, attachment_size)
+        valid_until = integration_context.get(valid_until_keyword)
 
-        chunk_data = attachment_data[start_chunk_index:end_chunk_index]
+        if access_token and valid_until and self.epoch_seconds() < valid_until:
+            return access_token
 
-        response = self.upload_attachment(
-            upload_url=upload_url,
-            start_chunk_idx=start_chunk_index,
-            end_chunk_idx=end_chunk_index,
-            chunk_data=chunk_data,
-            attachment_size=attachment_size,
-        )
-        while response.status_code != 201:  # the api returns 201 when the file is created at the draft message
-            start_chunk_index = end_chunk_index
-            next_chunk = end_chunk_index + self.MAX_ATTACHMENT_SIZE
-            end_chunk_index = min(attachment_size, next_chunk)
+        if self.auth_type == OPROXY_AUTH_TYPE:
+            if self.multi_resource:
+                expires_in = None
+                for resource_str in self.resources:
+                    access_token, current_expires_in, refresh_token = self._oproxy_authorize(resource_str)
+                    self.resource_to_access_token[resource_str] = access_token
+                    self.refresh_token = refresh_token
+                    expires_in = current_expires_in if expires_in is None else \
+                        min(expires_in, current_expires_in)  # type: ignore[call-overload]
+                if expires_in is None:
+                    raise DemistoException("No resource was provided to get access token from")
+            else:
+                access_token, expires_in, refresh_token = self._oproxy_authorize(scope=scope)
 
-            chunk_data = attachment_data[start_chunk_index:end_chunk_index]
-
-            response = self.upload_attachment(
-                upload_url=upload_url,
-                start_chunk_idx=start_chunk_index,
-                end_chunk_idx=end_chunk_index,
-                chunk_data=chunk_data,
-                attachment_size=attachment_size,
-            )
-
-            if response.status_code not in (201, 200):
-                raise Exception(f"{response.json()}")
-
-    def send_mail_with_upload_session_flow(
-        self, email: str, json_data: dict, attachments_more_than_3mb: list[dict], reply_message_id: str = None
-    ):
-        """
-        Sends an email with the upload session flow, this is used only when there is one attachment that is larger
-        than 3 MB.
-        1) creates a draft message
-        2) upload the attachment using an upload session which uploads file chunks by chunks.
-        3) send the draft message
-        Args:
-            email (str): email to send from.
-            json_data (dict): data to send the message with.
-            attachments_more_than_3mb (list[dict]): data information about the large attachments.
-            reply_message_id (str): message ID in case sending a reply to an existing message.
-        """
-        # create the draft email
-        email = email or self._mailbox_to_fetch
-        created_draft = self.create_draft(from_email=email, json_data=json_data, reply_message_id=reply_message_id)
-        draft_id = created_draft.get("id", "")
-        self.add_attachments_via_upload_session(  # add attachments via upload session.
-            email=email, draft_id=draft_id, attachments=attachments_more_than_3mb
-        )
-        self.send_draft(email=email, draft_id=draft_id)  # send the draft email
-
-    def _fetch_last_emails(self, folder_id, last_fetch, exclude_ids):
-        """
-        Fetches emails from given folder that were modified after specific datetime (last_fetch).
-
-        All fields are fetched for given email using select=* clause,
-        for more information https://docs.microsoft.com/en-us/graph/query-parameters.
-        The email will be excluded from returned results if it's id is presented in exclude_ids.
-        Number of fetched emails is limited by _emails_fetch_limit parameter.
-        The filtering and ordering is done based on modified time.
-
-        :type folder_id: ``str``
-        :param folder_id: Folder id
-
-        :type last_fetch: ``str``
-        :param last_fetch: Previous fetch date
-
-        :type exclude_ids: ``list``
-        :param exclude_ids: List of previous fetch email ids to exclude in current run
-
-        :return: Fetched emails and exclude ids list that contains the new ids of fetched emails
-        :rtype: ``list`` and ``list``
-        """
-        demisto.debug(f"Fetching emails since {last_fetch}")
-        fetched_emails = self.get_emails(
-            exclude_ids=exclude_ids,
-            last_fetch=last_fetch,
-            folder_id=folder_id,
-            overwrite_rate_limit_retry=True,
-            mark_emails_as_read=self._mark_fetched_read,
-        )
-
-        fetched_emails_ids = {email.get("id") for email in fetched_emails}
-        exclude_ids_set = set(exclude_ids)
-        if not fetched_emails or not (filtered_new_email_ids := fetched_emails_ids - exclude_ids_set):
-            # no new emails
-            demisto.debug(f"No new emails: {fetched_emails_ids=}. {exclude_ids_set=}")
-            return [], exclude_ids
-
-        new_emails = [mail for mail in fetched_emails if mail.get("id") in filtered_new_email_ids][: self._emails_fetch_limit]
-
-        last_email_time = new_emails[-1].get("receivedDateTime")
-        if last_email_time == last_fetch:
-            # next fetch will need to skip existing exclude_ids
-            excluded_ids_for_nextrun = exclude_ids + [email.get("id") for email in new_emails]
         else:
-            # next fetch will need to skip messages the same time as last_email
-            excluded_ids_for_nextrun = [
-                email.get("id") for email in new_emails if email.get("receivedDateTime") == last_email_time
-            ]
+            access_token, expires_in, refresh_token = self._get_self_deployed_token(
+                refresh_token, scope, integration_context)
+        time_now = self.epoch_seconds()
+        time_buffer = 5  # seconds by which to shorten the validity period
+        if expires_in - time_buffer > 0:
+            # err on the side of caution with a slightly shorter access token validity period
+            expires_in = expires_in - time_buffer
+        valid_until = time_now + expires_in
+        integration_context.update({
+            access_token_keyword: access_token,
+            valid_until_keyword: valid_until,
+            'current_refresh_token': refresh_token
+        })
 
-        return new_emails, excluded_ids_for_nextrun
+        # Add resource access token mapping
+        if self.multi_resource:
+            integration_context.update(self.resource_to_access_token)
 
-    def get_emails_from_api(
-        self, folder_id: str, last_fetch: str, limit: int, body_as_text: bool = True, overwrite_rate_limit_retry: bool = False
-    ):
-        headers = {"Prefer": "outlook.body-content-type='text'"} if body_as_text else None
-        # Adding the "$" sign to the select filter results in the 'internetMessageHeaders' field not being contained
-        # within the response, (looks like a bug in graph API).
-        return self.http_request(
-            method="GET",
-            url_suffix=f"/users/{self._mailbox_to_fetch}/mailFolders/{folder_id}/messages",
-            params={
-                "$filter": f"receivedDateTime ge {GraphMailUtils.add_second_to_str_date(last_fetch)}",
-                "$orderby": "receivedDateTime asc",
-                "select": "*",
-                "$top": limit,
-            },
+        set_integration_context(integration_context)
+        demisto.debug('Set integration context successfully.')
+
+        if self.multi_resource:
+            return self.resource_to_access_token[resource]
+
+        return access_token
+
+    def _raise_authentication_error(self, oproxy_response: requests.Response):
+        """
+        Raises an exception for authentication error with the Oproxy server.
+        Args:
+            oproxy_response: Raw response from the Oproxy server to parse.
+        """
+        msg = 'Error in Microsoft authorization.'
+        try:
+            demisto.info(
+                f'Authentication failure from server: {oproxy_response.status_code} {oproxy_response.reason} '
+                f'{oproxy_response.text}'
+            )
+            msg += f" Status: {oproxy_response.status_code},"
+            search_microsoft_response = re.search(r'{.*}', oproxy_response.text)
+            microsoft_response = self.extract_microsoft_error(json.loads(search_microsoft_response.group())) \
+                if search_microsoft_response else ""
+            err_str = microsoft_response or oproxy_response.text
+            if err_str:
+                msg += f' body: {err_str}'
+            err_response = oproxy_response.json()
+            server_msg = err_response.get('message', '') or f'{err_response.get("title", "")}. {err_response.get("detail", "")}'
+            if server_msg:
+                msg += f' Server message: {server_msg}'
+        except Exception as ex:
+            demisto.error(f'Failed parsing error response - Exception: {ex}')
+        raise Exception(msg)
+
+    def _oproxy_authorize_build_request(self, headers: dict[str, str], content: str,
+                                        scope: str | None = None, resource: str = ''
+                                        ) -> requests.Response:
+        """
+        Build the Post request sent to the Oproxy server.
+        Args:
+            headers: The headers of the request.
+            content: The content for the request (usually contains the refresh token).
+            scope: A scope to add to the request. Do not use it.
+            resource: Resource to get.
+
+        Returns: The response from the Oproxy server.
+
+        """
+        return requests.post(
+            self.token_retrieval_url,
             headers=headers,
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
-        ).get("value", [])
-
-    def get_emails(
-        self, exclude_ids, last_fetch, folder_id, overwrite_rate_limit_retry=False, mark_emails_as_read: bool = False
-    ) -> list:
-        emails_as_html = self.get_emails_from_api(
-            folder_id,
-            last_fetch,
-            body_as_text=False,
-            limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
-        )
-
-        emails_as_text = self.get_emails_from_api(
-            folder_id,
-            last_fetch,
-            limit=len(exclude_ids) + self._emails_fetch_limit,  # fetch extra incidents
-            overwrite_rate_limit_retry=overwrite_rate_limit_retry,
-        )
-
-        if mark_emails_as_read:
-            for email in emails_as_html:
-                if email.get("id"):
-                    self.update_email_read_status(
-                        user_id=self._mailbox_to_fetch, message_id=email["id"], read=True, folder_id=folder_id
-                    )
-
-        return self.get_emails_as_text_and_html(emails_as_html=emails_as_html, emails_as_text=emails_as_text)
-
-    @staticmethod
-    def get_emails_as_text_and_html(emails_as_html, emails_as_text):
-        text_emails_ids = {email.get("id"): email for email in emails_as_text}
-        emails_as_html_and_text = []
-
-        for email_as_html in emails_as_html:
-            html_email_id = email_as_html.get("id")
-            text_email_data = text_emails_ids.get(html_email_id) or {}
-            if not text_email_data:
-                demisto.info(f"There is no matching text email to html email-ID {html_email_id}")
-
-            body_as_text = text_email_data.get("body")
-            if body_as_html := email_as_html.get("body"):
-                email_as_html["body"] = [body_as_html, body_as_text]
-
-            unique_body_as_text = text_email_data.get("uniqueBody")
-            if unique_body_as_html := email_as_html.get("uniqueBody"):
-                email_as_html["uniqueBody"] = [unique_body_as_html, unique_body_as_text]
-
-            emails_as_html_and_text.append(email_as_html)
-
-        return emails_as_html_and_text
-
-    @staticmethod
-    def get_email_content_as_text_and_html(email):
-        email_body: tuple = email.get("body") or ()  # email body including replyTo emails.
-        email_unique_body: tuple = email.get("uniqueBody") or ()  # email-body without replyTo emails.
-
-        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
-        # in those cases for both html/text formats.
-        try:
-            email_content_as_html, email_content_as_text = email_body or email_unique_body
-        except ValueError:
-            demisto.info(f"email body content is missing from email {email}")
-            return "", ""
-
-        return email_content_as_html.get("content"), email_content_as_text.get("content")
-
-    def _parse_email_as_incident(self, email, overwrite_rate_limit_retry=False):
-        """
-        Parses fetched emails as incidents.
-
-        :type email: ``dict``
-        :param email: Fetched email to parse
-
-        :return: Parsed email
-        :rtype: ``dict``
-        """
-        # there are situations where the 'body' key won't be returned from the api response, hence taking the uniqueBody
-        # in those cases for both html/text formats.
-
-        def body_extractor(email, parsed_email):
-            email_content_as_html, email_content_as_text = self.get_email_content_as_text_and_html(email)
-            parsed_email["Body"] = email_content_as_html if self.fetch_html_formatting else email_content_as_text
-            parsed_email["Text"] = email_content_as_text
-            parsed_email["BodyType"] = "html" if self.fetch_html_formatting else "text"
-
-        parsed_email = GraphMailUtils.parse_item_as_dict(email, body_extractor)
-
-        # handling attachments of fetched email
-        attachments = self._get_email_attachments(
-            message_id=email.get("id", ""), overwrite_rate_limit_retry=overwrite_rate_limit_retry
-        )
-        if attachments:
-            parsed_email["Attachments"] = attachments
-
-        parsed_email["Mailbox"] = self._mailbox_to_fetch
-
-        body = email.get("bodyPreview", "")
-        if not body or self._display_full_email_body:
-            _, body = self.get_email_content_as_text_and_html(email)
-
-        incident = {
-            "name": parsed_email.get("Subject"),
-            "details": body,
-            "labels": GraphMailUtils.parse_email_as_labels(parsed_email),
-            "occurred": parsed_email.get("ReceivedTime"),
-            "attachment": parsed_email.get("Attachments", []),
-            "rawJSON": json.dumps(parsed_email),
-            "ID": parsed_email.get("ID"),  # only used for look-back to identify the email in a unique way
-        }
-
-        return incident
-
-    def message_rules_action(self, action, user_id=None, rule_id=None, limit=50):
-        """
-        get/delete message rule action
-        """
-        if action != "DELETE":
-            return_empty_response = False
-            params = {"$top": limit}
-        else:
-            return_empty_response = True
-            params = {}
-            if rule_id is None:
-                raise ValueError("rule_id is required in order to delete the rule")
-
-        url = f"{f'/users/{user_id}' if user_id else '/me'}/mailFolders/inbox/messageRules{f'/{rule_id}' if rule_id else ''}"
-        return self.http_request(action.upper(), url, return_empty_response=return_empty_response, params=params)
-
-
-# HELPER FUNCTIONS
-class GraphMailUtils:
-    FOLDER_MAPPING = {
-        "id": "ID",
-        "displayName": "DisplayName",
-        "parentFolderId": "ParentFolderID",
-        "childFolderCount": "ChildFolderCount",
-        "unreadItemCount": "UnreadItemCount",
-        "totalItemCount": "TotalItemCount",
-    }
-
-    EMAIL_DATA_MAPPING = {
-        "id": "ID",
-        "createdDateTime": "CreatedTime",
-        "lastModifiedDateTime": "ModifiedTime",
-        "receivedDateTime": "ReceivedTime",
-        "sentDateTime": "SentTime",
-        "subject": "Subject",
-        "importance": "Importance",
-        "conversationId": "ConversationID",
-        "isRead": "IsRead",
-        "isDraft": "IsDraft",
-        "internetMessageId": "MessageID",
-        "categories": "Categories",
-    }
-
-    @staticmethod
-    def read_file(attach_id: str) -> tuple[bytes, int, str]:
-        """
-        Reads file that was uploaded to War Room.
-
-        :type attach_id: ``str``
-        :param attach_id: The id of uploaded file to War Room
-
-        :return: data, size of the file in bytes and uploaded file name.
-        :rtype: ``bytes``, ``int``, ``str``
-        """
-        try:
-            file_info = demisto.getFilePath(attach_id)
-            with open(file_info["path"], "rb") as file_data:
-                data = file_data.read()
-                file_size = os.path.getsize(file_info["path"])
-                return data, file_size, file_info["name"]
-        except Exception as e:
-            raise Exception(f"Unable to read file with id {attach_id}", e)
-
-    @staticmethod
-    def build_folders_path(folder_string: str) -> str | None:
-        """
-
-        Args:
-            folder_string (str): string with `,` delimiter. first one is mailFolders all other are child
-
-        Returns:
-            str or None:  string with path to the folder and child folders
-        """
-        if not folder_string:
-            return None
-        folders_list = argToList(folder_string, ",")
-        path = f"mailFolders/{folders_list[0]}"
-        for folder in folders_list[1:]:
-            path += f"/childFolders/{folder}"
-        return path
-
-    @staticmethod
-    def build_mail_object(raw_response: dict | list, get_body: bool = False, user_id: str = None) -> dict | list:
-        """Building mail entry context
-        Getting a list from GraphMailUtils.build_mail_object
-
-        Args:
-            raw_response (dict or list): list of pages
-            get_body (bool): should get body
-            user_id (str): user id of the mail
-
-        Returns:
-            dict or list: output context
-        """
-
-        def build_mail(given_mail: dict) -> dict:
-            """
-
-            Args:
-                given_mail (dict):  Mail Data
-
-            Returns:
-                dict: Transformed mail data
-            """
-            # Dicts
-            mail_properties = {
-                "ID": "id",
-                "Created": "createdDateTime",
-                "LastModifiedTime": "lastModifiedDateTime",
-                "ReceivedTime": "receivedDateTime",
-                "SendTime": "sentDateTime",
-                "Categories": "categories",
-                "HasAttachments": "hasAttachments",
-                "Subject": "subject",
-                "IsDraft": "isDraft",
-                "Headers": "internetMessageHeaders",
-                "Flag": "flag",
-                "Importance": "importance",
-                "InternetMessageID": "internetMessageId",
-                "ConversationID": "conversationId",
-            }
-
-            contact_properties = {
-                "Sender": "sender",
-                "From": "from",
-                "Recipients": "toRecipients",
-                "CCRecipients": "ccRecipients",
-                "BCCRecipients": "bccRecipients",
-                "ReplyTo": "replyTo",
-            }
-
-            # Create entry properties
-            entry = {k: given_mail.get(v) for k, v in mail_properties.items()}
-
-            # Create contacts properties
-            entry.update(
-                {k: build_contact(given_mail.get(v)) for k, v in contact_properties.items()}  # type: ignore
-            )
-
-            if get_body:
-                entry["Body"] = given_mail.get("body", {}).get("content")
-            if user_id:
-                entry["UserID"] = user_id
-            return entry
-
-        def build_contact(contacts: Union[dict, list, str]) -> object:
-            """Building contact object
-
-            Args:
-                contacts (list or dict or str):
-
-            Returns:
-                dict or list[dict] or str or None: describing contact
-            """
-            if contacts:
-                if isinstance(contacts, list):
-                    return [build_contact(contact) for contact in contacts]
-                elif isinstance(contacts, dict):
-                    email = contacts.get("emailAddress")
-                    if email and isinstance(email, dict):
-                        return {"Name": email.get("name"), "Address": email.get("address")}
-            return None
-
-        mails_list = []
-        if isinstance(raw_response, list):  # response from list_emails_command
-            for page in raw_response:
-                # raw_response is a list containing multiple pages or one page
-                # if value is not empty, there are emails in the page
-                value = page.get("value")
-                if value:
-                    for mail in value:
-                        mails_list.append(build_mail(mail))
-        elif isinstance(raw_response, dict):  # response from get_message_command
-            return build_mail(raw_response)
-        return mails_list
-
-    @staticmethod
-    def handle_html(htmlBody):
-        """
-        Extract all data-url content from within the html and return as separate attachments.
-        Due to security implications, we support only images here
-        We might not have Beautiful Soup so just do regex search
-        """
-        attachments = []
-        cleanBody = ""
-        if htmlBody:
-            lastIndex = 0
-            for i, m in enumerate(
-                re.finditer(  # pylint: disable=E1101
-                    r"<img.+?src=\"(data:(image\/.+?);base64,([a-zA-Z0-9+/=\r\n]+?))\"",
-                    htmlBody,
-                    re.I | re.S,  # pylint: disable=E1101
-                )
-            ):
-                maintype, subtype = m.group(2).split("/", 1)
-                name = f"image{i}.{subtype}"
-                att = {
-                    "maintype": maintype,
-                    "subtype": subtype,
-                    "data": b64_decode(m.group(3)),
-                    "name": name,
-                    "cid": f"{name}@{str(uuid.uuid4())[:8]}_{str(uuid.uuid4())[:8]}",
-                }
-                attachments.append(att)
-                cleanBody += htmlBody[lastIndex : m.start(1)] + "cid:" + att["cid"]
-                lastIndex = m.end() - 1
-
-            cleanBody += htmlBody[lastIndex:]
-        return cleanBody, attachments
-
-    @staticmethod
-    def prepare_args(command, args):
-        """
-        Receives command and prepares the arguments for future usage.
-
-        :type command: ``str``
-        :param command: Command to execute
-
-        :type args: ``dict``
-        :param args: Demisto args
-
-        :return: Prepared args
-        :rtype: ``dict``
-        """
-        if command in ["create-draft", "send-mail"]:
-            email_body, inline_attachments = (
-                GraphMailUtils.handle_html(args.get("htmlBody")) if args.get("htmlBody", None) else (args.get("body", ""), [])
-            )
-            processed_args = {
-                "to_recipients": argToList(args.get("to")),
-                "cc_recipients": argToList(args.get("cc")),
-                "bcc_recipients": argToList(args.get("bcc")),
-                "reply_to": argToList(args.get("replyTo") or args.get("reply_to")),
-                "subject": args.get("subject", ""),
-                "body": email_body,
-                "body_type": args.get("bodyType") or args.get("body_type") or "html",
-                "flag": args.get("flag", "notFlagged"),
-                "importance": args.get("importance", "Low"),
-                "internet_message_headers": argToList(args.get("headers")),
-                "attach_ids": argToList(args.get("attachIDs") or args.get("attach_ids")),
-                "attach_names": argToList(args.get("attachNames") or args.get("attach_names")),
-                "attach_cids": argToList(args.get("attachCIDs") or args.get("attach_cids")),
-                "manual_attachments": args.get("manualAttachObj", []),
-                "inline_attachments": inline_attachments or [],
-            }
-            if command == "send-mail":
-                processed_args["renderBody"] = argToBoolean(args.get("renderBody") or False)
-            return processed_args
-
-        elif command == "reply-to":
-            return {
-                "to_recipients": argToList(args.get("to")),
-                "message_id": GraphMailUtils.handle_message_id(args.get("ID") or args.get("message_id") or ""),
-                "comment": args.get("body") or args.get("comment"),
-                "attach_ids": argToList(args.get("attachIDs") or args.get("attach_ids")),
-                "attach_names": argToList(args.get("attachNames") or args.get("attach_names")),
-                "attach_cids": argToList(args.get("attachCIDs") or args.get("attach_cids")),
-            }
-
-        elif command == "get-message":
-            return {
-                "user_id": args.get("user_id"),
-                "folder_id": args.get("folder_id"),
-                "message_id": GraphMailUtils.handle_message_id(args.get("message_id", "")),
-                "odata": args.get("odata"),
-            }
-
-        return args
-
-    @staticmethod
-    def divide_attachments_according_to_size(attachments=[]):
-        """
-        Divide attachments to those are larger than 3mb and those who are less than 3mb.
-
-        Returns:
-            tuple[list, list]: less than 3mb attachments and more than 3mb attachments.
-        """
-        less_than_3mb_attachments, more_than_3mb_attachments = [], []
-
-        for attachment in attachments:
-            if attachment.pop("requires_upload", None):  # if the attachment is bigger than 3mb, it requires upload session.
-                more_than_3mb_attachments.append(attachment)
-            else:
-                less_than_3mb_attachments.append(attachment)
-        return less_than_3mb_attachments, more_than_3mb_attachments
-
-    @staticmethod
-    def assert_pages(pages: str | int) -> int:
-        """
-
-        Args:
-            pages (str or int): pages need to pull in int or str
-
-        Returns:
-            int: default 1
-
-        """
-        if isinstance(pages, str) and pages.isdigit():
-            return int(pages)
-        elif isinstance(pages, int):
-            return pages
-        return 1
-
-    @staticmethod
-    def item_result_creator(raw_attachment, user_id, args, client) -> dict[str, Any] | CommandResults:
-        """
-        Create a result object for an attachment item.
-        This method processes raw attachment data and returns either an XSOAR file result or a command result
-        based on the attachment type and provided arguments.
-
-        Args:
-            raw_attachment (dict): The raw attachment data from the API response.
-            user_id (str): The ID of the user associated with the attachment.
-            args (dict): Additional arguments for processing the attachment.
-            client (MsGraphMailBaseClient, optional): The client instance for making additional API calls.
-
-        Returns:
-            dict[str, Any] | CommandResults:
-                - If the attachment is a message and should be downloaded, returns a dict containing file result.
-                - If the attachment is a message but should not be downloaded, returns a CommandResults with message details.
-                - If the attachment is of an unsupported type, returns a CommandResults with an error message.
-
-        Note:
-            - The method handles different types of attachments, particularly focusing on message attachments.
-              It can either return the attachment as a downloadable file or as structured data in the command results.
-            - 'client' function argument is only relevant when 'should_download_message_attachment' command argument is True.
-        """
-        item = raw_attachment.get("item", {})
-        item_type = item.get("@odata.type", "")
-        if "message" in item_type:
-            return_message_attachment_as_downloadable_file: bool = client and argToBoolean(
-                args.get("should_download_message_attachment", False)
-            )
-            if return_message_attachment_as_downloadable_file:
-                # return the message attachment as a file result
-                attachment_content = client._get_attachment_mime(
-                    GraphMailUtils.handle_message_id(args.get("message_id", "")), args.get("attachment_id"), user_id, False
-                )
-                attachment_name: str = (item.get("name") or item.get("subject") or "untitled_attachment").replace(
-                    " ", "_"
-                ) + ".eml"
-                demisto.debug(f'Email attachment of type "microsoft.graph.message" acquired successfully, {attachment_name=}')
-                return fileResult(attachment_name, attachment_content)
-            else:
-                # return the message attachment as a command result
-                message_id = raw_attachment.get("id")
-                item["id"] = message_id
-                mail_context = GraphMailUtils.build_mail_object(item, user_id=user_id, get_body=True)
-                human_readable = tableToMarkdown(
-                    f"Attachment ID {message_id} \n **message details:**",
-                    mail_context,
-                    headers=["ID", "Subject", "SendTime", "Sender", "From", "HasAttachments", "Body"],
-                )
-
-                return CommandResults(
-                    outputs_prefix="MSGraphMail",
-                    outputs_key_field="ID",
-                    outputs=mail_context,
-                    readable_output=human_readable,
-                    raw_response=raw_attachment,
-                )
-        else:
-            human_readable = f"Integration does not support attachments from type {item_type}"
-            return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
-
-    @staticmethod
-    def file_result_creator(raw_attachment: dict, legacy_name=False) -> dict:
-        """Create FileResult from the attachment
-
-        Args:
-            raw_attachment (dict): The attachments from the API
-
-        Raises:
-            DemistoException: if the decoded fail, raise DemistoException
-
-        Returns:
-            dict: FileResult with the b64decode of the attachment content
-        """
-        name = raw_attachment.get("name", "")
-        content_id = raw_attachment.get("contentId")
-        is_inline = raw_attachment.get("isInline")
-        if is_inline and content_id and content_id != "None" and not legacy_name:
-            name = f"{content_id}-attachmentName-{name}"
-        data = raw_attachment.get("contentBytes")
-        try:
-            data = b64_decode(data)  # type: ignore
-            return fileResult(name, data)
-        except binascii.Error:
-            raise DemistoException("Attachment could not be decoded")
-
-    @staticmethod
-    def create_attachment(raw_attachment, user_id, args, client, legacy_name=False) -> CommandResults | dict:
-        attachment_type = raw_attachment.get("@odata.type", "")
-        # Documentation about the different attachment types
-        # https://docs.microsoft.com/en-us/graph/api/attachment-get?view=graph-rest-1.0&tabs=http
-        if "itemAttachment" in attachment_type:
-            return GraphMailUtils.item_result_creator(raw_attachment, user_id, args, client)
-        elif "fileAttachment" in attachment_type:
-            return GraphMailUtils.file_result_creator(raw_attachment, legacy_name)
-        else:
-            human_readable = f"Integration does not support attachments from type {attachment_type}"
-            return CommandResults(readable_output=human_readable, raw_response=raw_attachment)
-
-    @staticmethod
-    def parse_folders_list(folders_list):
-        if isinstance(folders_list, dict):
-            folders_list = [folders_list]
-
-        return [
-            {parsed_key: f.get(response_key) for (response_key, parsed_key) in GraphMailUtils.FOLDER_MAPPING.items()}
-            for f in folders_list
-        ]
-
-    @staticmethod
-    def build_recipients_human_readable(message_content):
-        to_recipients = []
-        cc_recipients = []
-        bcc_recipients = []
-        reply_to_recipients = []
-
-        for recipients_dict in message_content.get("toRecipients", {}):
-            to_recipients.append(recipients_dict.get("emailAddress", {}).get("address"))
-
-        for recipients_dict in message_content.get("ccRecipients", {}):
-            cc_recipients.append(recipients_dict.get("emailAddress", {}).get("address"))
-
-        for recipients_dict in message_content.get("bccRecipients", {}):
-            bcc_recipients.append(recipients_dict.get("emailAddress", {}).get("address"))
-
-        for recipients_dict in message_content.get("replyTo", {}):
-            reply_to_recipients.append(recipients_dict.get("emailAddress", {}).get("address"))
-
-        return to_recipients, cc_recipients, bcc_recipients, reply_to_recipients
-
-    @staticmethod
-    def prepare_outputs_for_reply_mail_command(reply, email_to, message_id):
-        reply.pop("attachments", None)
-        to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = GraphMailUtils.build_recipients_human_readable(reply)
-        reply["toRecipients"] = to_recipients
-        reply["ccRecipients"] = cc_recipients
-        reply["bccRecipients"] = bcc_recipients
-        reply["replyTo"] = reply_to_recipients
-        reply["ID"] = message_id
-
-        message_content = assign_params(**reply)
-        human_readable = tableToMarkdown(f'Replied message was successfully sent to {", ".join(email_to)} .', message_content)
-
-        return CommandResults(
-            outputs_prefix="MicrosoftGraph.SentMail",
-            readable_output=human_readable,
-            outputs_key_field="ID",
-            outputs=message_content,
-        )
-
-    @staticmethod
-    def add_second_to_str_date(date_string, seconds=1):
-        """
-        Add seconds to date string.
-
-        Is used as workaround to Graph API bug, for more information go to:
-        https://stackoverflow.com/questions/35729273/office-365-graph-api-greater-than-filter-on-received-date
-
-        :type date_string: ``str``
-        :param date_string: Date string to add seconds
-
-        :type seconds: int
-        :param seconds: Seconds to add to date, by default is set to 1
-
-        :return: Date time string appended seconds
-        :rtype: ``str``
-        """
-        added_result = datetime.strptime(date_string, API_DATE_FORMAT) + timedelta(seconds=seconds)
-        return datetime.strftime(added_result, API_DATE_FORMAT)
-
-    @staticmethod
-    def upload_file(filename, content, attachments_list):
-        """
-        Uploads file to War room.
-
-        :type filename: ``str``
-        :param filename: file name to upload
-
-        :type content: ``str``
-        :param content: Content of file to upload
-
-        :type attachments_list: ``list``
-        :param attachments_list: List of uploaded file data to War Room
-        """
-        file_result = fileResult(filename, content)
-
-        if is_error(file_result):
-            demisto.error(file_result["Contents"])
-            raise DemistoException(file_result["Contents"])
-
-        attachments_list.append({"path": file_result["FileID"], "name": file_result["File"]})
-
-    @staticmethod
-    def parse_item_as_dict(email, body_extractor=None):
-        """
-        Parses basic data of email.
-
-        Additional info https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
-
-        :type email: ``dict``
-        :param email: Email to parse
-
-        :type body_extractor: ``function``
-        :param body_extractor: Optional function to parse the body in different way
-
-        :return: Parsed email
-        :rtype: ``dict``
-        """
-        parsed_email = {parsed_key: email.get(orig_key) for (orig_key, parsed_key) in GraphMailUtils.EMAIL_DATA_MAPPING.items()}
-        parsed_email["Headers"] = email.get("internetMessageHeaders", [])
-        parsed_email["Sender"] = GraphMailUtils.get_recipient_address(email.get("sender", {}))
-        parsed_email["From"] = GraphMailUtils.get_recipient_address(email.get("from", {}))
-        parsed_email["To"] = list(map(GraphMailUtils.get_recipient_address, email.get("toRecipients", [])))
-        parsed_email["Cc"] = list(map(GraphMailUtils.get_recipient_address, email.get("ccRecipients", [])))
-        parsed_email["Bcc"] = list(map(GraphMailUtils.get_recipient_address, email.get("bccRecipients", [])))
-
-        if body_extractor:
-            body_extractor(email, parsed_email)
-        else:
-            email_body = email.get("body", {}) or email.get("uniqueBody", {})
-            parsed_email["Body"] = email_body.get("content", "")
-            parsed_email["BodyType"] = email_body.get("contentType", "")
-
-        return parsed_email
-
-    @staticmethod
-    def parse_email_as_labels(parsed_email):
-        """
-        Parses the email as incident labels.
-
-        :type parsed_email: ``dict``
-        :param parsed_email: The parsed email from which create incidents labels.
-
-        :return: Incident labels
-        :rtype: ``list``
-        """
-        labels = []
-
-        for key, value in parsed_email.items():
-            if key == "Headers":
-                headers_labels = [
-                    {"type": f"Email/Header/{header.get('name', '')}", "value": header.get("value", "")} for header in value
-                ]
-                labels.extend(headers_labels)
-            elif key in ["To", "Cc", "Bcc"]:
-                recipients_labels = [{"type": f"Email/{key}", "value": recipient} for recipient in value]
-                labels.extend(recipients_labels)
-            else:
-                labels.append({"type": f"Email/{key}", "value": f"{value}"})
-
-        return labels
-
-    @staticmethod
-    def get_recipient_address(email_address):
-        """
-        Receives dict of form  "emailAddress":{"name":"_", "address":"_"} and return the address
-
-        :type email_address: ``dict``
-        :param email_address: Recipient address
-
-        :return: The address of recipient
-        :rtype: ``str``
-        """
-        return email_address.get("emailAddress", {}).get("address", "")
-
-    @staticmethod
-    def build_recipient_input(recipients):
-        """
-        Builds legal recipients list.
-
-        :type recipients: ``list``
-        :param recipients: List of recipients
-
-        :return: List of email addresses recipients
-        :rtype: ``list``
-        """
-        return [{"emailAddress": {"address": r}} for r in recipients] if recipients else []
-
-    @staticmethod
-    def build_body_input(body, body_type):
-        """
-        Builds message body input.
-
-        :type body: ``str``
-        :param body: The body of the message
-
-        :type body_type: The body type of the message, html or text.
-        :param body_type:
-
-        :return: The message body
-        :rtype ``dict``
-        """
-        return {"content": body, "contentType": body_type}
-
-    @staticmethod
-    def build_flag_input(flag):
-        """
-        Builds flag status of the message.
-
-        :type flag: ``str``
-        :param flag: The flag of the message
-
-        :return: The flag status of the message
-        :rtype ``dict``
-        """
-        return {"flagStatus": flag}
-
-    @staticmethod
-    def build_file_attachments_input(
-        attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments_from_layout=[]
-    ):
-        """
-        Builds both inline and regular attachments.
-
-        :type attach_ids: ``list``
-        :param attach_ids: List of uploaded to War Room regular attachments to send
-
-        :type attach_names: ``list``
-        :param attach_names: List of regular attachments names to send
-
-        :type attach_cids: ``list``
-        :param attach_cids: List of uploaded to War Room inline attachments to send
-
-        :type manual_attachments: ``list``
-        :param manual_attachments: List of manual attachments reports to send
-
-        :return: List of both inline and regular attachments of the message
-        :rtype: ``list``
-        """
-        regular_attachments = MsGraphMailBaseClient._build_attachments_input(ids=attach_ids, attach_names=attach_names)
-        inline_attachments = MsGraphMailBaseClient._build_attachments_input(ids=attach_cids, is_inline=True)
-        # collecting manual attachments info
-        manual_att_ids = [os.path.basename(att["RealFileName"]) for att in manual_attachments if "RealFileName" in att]
-        manual_att_names = [att["FileName"] for att in manual_attachments if "FileName" in att]
-        manual_report_attachments = MsGraphMailBaseClient._build_attachments_input(
-            ids=manual_att_ids, attach_names=manual_att_names
-        )
-        inline_from_layout_attachments = MsGraphMailBaseClient._build_inline_layout_attachments_input(
-            inline_attachments_from_layout
-        )
-
-        return regular_attachments + inline_attachments + manual_report_attachments + inline_from_layout_attachments
-
-    @staticmethod
-    def build_headers_input(internet_message_headers):
-        """
-        Builds valid headers input.
-
-        :type internet_message_headers: ``list``
-        :param internet_message_headers: List of headers to build.
-
-        :return: List of transformed headers
-        :rtype: ``list``
-        """
-        return [{"name": kv[0], "value": kv[1]} for kv in (h.split(":") for h in internet_message_headers)]
-
-    @staticmethod
-    def build_message(
-        to_recipients,
-        cc_recipients,
-        bcc_recipients,
-        subject,
-        body,
-        body_type,
-        flag,
-        importance,
-        internet_message_headers,
-        attach_ids,
-        attach_names,
-        attach_cids,
-        manual_attachments,
-        reply_to,
-        inline_attachments=[],
-    ):
-        """
-        Builds valid message dict.
-        For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
-        """
-        message = {
-            "toRecipients": GraphMailUtils.build_recipient_input(to_recipients),
-            "ccRecipients": GraphMailUtils.build_recipient_input(cc_recipients),
-            "bccRecipients": GraphMailUtils.build_recipient_input(bcc_recipients),
-            "replyTo": GraphMailUtils.build_recipient_input(reply_to),
-            "subject": subject,
-            "body": GraphMailUtils.build_body_input(body=body, body_type=body_type),
-            "bodyPreview": body[:255],
-            "importance": importance,
-            "flag": GraphMailUtils.build_flag_input(flag),
-            "attachments": GraphMailUtils.build_file_attachments_input(
-                attach_ids, attach_names, attach_cids, manual_attachments, inline_attachments
-            ),
-        }
-
-        if internet_message_headers:
-            message["internetMessageHeaders"] = GraphMailUtils.build_headers_input(internet_message_headers)
-
-        return message
-
-    @staticmethod
-    def build_reply(to_recipients, comment, attach_ids, attach_names, attach_cids):
-        """
-        Builds the reply message that includes recipients to reply and reply message.
-
-        :type to_recipients: ``list``
-        :param to_recipients: The recipients list to reply
-
-        :type comment: ``str``
-        :param comment: The message to reply.
-
-        :type attach_ids: ``list``
-        :param attach_ids: List of uploaded to War Room regular attachments to send
-
-        :type attach_names: ``list``
-        :param attach_names: List of regular attachments names to send
-
-        :type attach_cids: ``list``
-        :param attach_cids: List of uploaded to War Room inline attachments to send
-
-        :return: Returns legal reply message.
-        :rtype: ``dict``
-        """
-        return {
-            "message": {
-                "toRecipients": GraphMailUtils.build_recipient_input(to_recipients),
-                "attachments": GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, []),
+            json={
+                'app_name': self.app_name,
+                'registration_id': self.auth_id,
+                'encrypted_token': self.get_encrypted(content, self.enc_key),
+                'scope': scope,
+                'resource': resource
             },
-            "comment": comment,
-        }
+            verify=self.verify
+        )
 
-    @staticmethod
-    def build_message_to_reply(
-        to_recipients, cc_recipients, bcc_recipients, subject, email_body, attach_ids, attach_names, attach_cids, reply_to
-    ):
+    def _oproxy_authorize(self, resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
         """
-        Builds a valid reply message dict.
-        For more information https://docs.microsoft.com/en-us/graph/api/resources/message?view=graph-rest-1.0
+        Gets a token by authorizing with oproxy.
+        Args:
+            scope: A scope to add to the request. Do not use it.
+            resource: Resource to get.
+        Returns:
+            tuple: An access token, its expiry and refresh token.
         """
-        return {
-            "toRecipients": GraphMailUtils.build_recipient_input(to_recipients),
-            "ccRecipients": GraphMailUtils.build_recipient_input(cc_recipients),
-            "bccRecipients": GraphMailUtils.build_recipient_input(bcc_recipients),
-            "replyTo": GraphMailUtils.build_recipient_input(reply_to),
-            "subject": subject,
-            "bodyPreview": email_body[:255],
-            "attachments": GraphMailUtils.build_file_attachments_input(attach_ids, attach_names, attach_cids, []),
-        }
-
-    @staticmethod
-    def handle_message_id(message_id: str) -> str:
-        """
-        Handle a Microsoft Graph API message ID by replacing forward slashes with hyphens.
-        """
-        if "/" in message_id:
-            message_id = message_id.replace("/", "-")
-            demisto.debug(f"Handling message_id: {message_id}")
-        return message_id
-
-
-# COMMANDS
-def list_mails_command(client: MsGraphMailBaseClient, args) -> CommandResults | dict:
-    kwargs = {arg_key: args.get(arg_key) for arg_key in ["search", "odata", "folder_id", "user_id"]}
-    demisto.debug(f"{kwargs=}")
-    raw_response = client.list_mails(**kwargs)
-
-    next_page = raw_response[-1].get("@odata.nextLink")
-
-    if not (mail_context := GraphMailUtils.build_mail_object(raw_response, user_id=args.get("user_id"))):
-        return CommandResults(readable_output="### No mails were found")
-
-    partial_result_title = ""
-    if next_page:
-        partial_result_title = (
-            f"{len(mail_context)} mails received"
-            "\nPay attention there are more results than shown. "
-            'For more data please increase "pages_to_pull" argument'
-        )
-    human_readable = tableToMarkdown(
-        partial_result_title or f"Total of {len(mail_context)} mails received",
-        mail_context,
-        headers=["Subject", "From", "Recipients", "SendTime", "ID", "InternetMessageID"],
-    )
-
-    result_entry = CommandResults(
-        outputs_prefix="MSGraphMail",
-        outputs_key_field="ID",
-        outputs=mail_context,
-        readable_output=human_readable,
-        raw_response=raw_response,
-    ).to_context()
-    if next_page:
-        result_entry["EntryContext"].update({"MSGraphMail(val.NextPage.indexOf('http')>=0)": {"NextPage": next_page}})
-    return result_entry
-
-
-def create_draft_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    """
-    Creates draft message in user's mailbox, in draft folder.
-    """
-    # prepare the draft data
-    kwargs = GraphMailUtils.prepare_args("create-draft", args)
-    draft = GraphMailUtils.build_message(**kwargs)
-    less_than_3mb_attachments, more_than_3mb_attachments = GraphMailUtils.divide_attachments_according_to_size(
-        attachments=draft.get("attachments")
-    )
-    draft["attachments"] = less_than_3mb_attachments
-
-    # create the draft via API
-    from_email = args.get("from")
-    created_draft = client.create_draft(from_email=from_email, json_data=draft)
-
-    # upload attachment that should be uploaded using upload session
-    if more_than_3mb_attachments:
-        client.add_attachments_via_upload_session(
-            email=from_email, draft_id=created_draft.get("id", ""), attachments=more_than_3mb_attachments
-        )
-
-    # prepare the command result
-    parsed_draft = GraphMailUtils.parse_item_as_dict(created_draft)
-    human_readable = tableToMarkdown(f'Created draft with id: {parsed_draft.get("ID", "")}', parsed_draft)
-    return CommandResults(
-        outputs_prefix="MicrosoftGraph.Draft",
-        outputs_key_field="ID",
-        outputs=parsed_draft,
-        readable_output=human_readable,
-        raw_response=created_draft,
-    )
-
-
-def reply_to_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    prepared_args = GraphMailUtils.prepare_args("reply-to", args)
-    email = args.get("from")
-    message_id = prepared_args.pop("message_id")
-
-    reply = GraphMailUtils.build_reply(**prepared_args)  # pylint: disable=unexpected-keyword-arg
-
-    less_than_3mb_attachments, more_than_3mb_attachments = GraphMailUtils.divide_attachments_according_to_size(
-        attachments=reply.get("message").get("attachments")
-    )
-
-    if more_than_3mb_attachments:
-        reply["message"]["attachments"] = less_than_3mb_attachments
-        client.send_mail_with_upload_session_flow(
-            email=email, json_data=reply, attachments_more_than_3mb=more_than_3mb_attachments, reply_message_id=message_id
-        )
-    else:
-        client.send_reply(email_from=email, message_id=message_id, json_data=reply)
-
-    to_recipients = prepared_args.get("to_recipients")
-    comment = prepared_args.get("comment")
-    return CommandResults(readable_output=f'### Replied to: {", ".join(to_recipients)} with comment: {comment}')
-
-
-def get_message_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    prepared_args = GraphMailUtils.prepare_args("get-message", args)
-    get_body = args.get("get_body") == "true"
-    user_id = args.get("user_id")
-
-    raw_response = client.get_message(**prepared_args)
-    message = GraphMailUtils.build_mail_object(raw_response, user_id=user_id, get_body=get_body)
-    human_readable = tableToMarkdown(
-        f'Results for message ID {prepared_args["message_id"]}',
-        message,
-        headers=["ID", "Subject", "SendTime", "Sender", "From", "Recipients", "HasAttachments", "Body"],
-    )
-    return CommandResults(
-        outputs_prefix="MSGraphMail",
-        outputs_key_field="ID",
-        outputs=message,
-        readable_output=human_readable,
-        raw_response=raw_response,
-    )
-
-
-def delete_mail_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    delete_mail_args = {
-        "user_id": args.get("user_id"),
-        "message_id": GraphMailUtils.handle_message_id(args.get("message_id", "")),
-        "folder_id": args.get("folder_id"),
-    }
-    client.delete_mail(**delete_mail_args)
-
-    human_readable = tableToMarkdown("Message has been deleted successfully", delete_mail_args, removeNull=True)
-
-    return CommandResults(readable_output=human_readable)
-
-
-def list_attachments_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    user_id = args.get("user_id")
-    message_id = GraphMailUtils.handle_message_id(args.get("message_id", ""))
-    folder_id = args.get("folder_id")
-    raw_response = client.list_attachments(user_id, message_id, folder_id)
-    if not (attachments := raw_response.get("value")):
-        readable_output = f"### No attachments found in message {message_id}"
-        return CommandResults(readable_output=readable_output)
-
-    attachment_list = [
-        {
-            "ID": attachment.get("id"),
-            "Name": attachment.get("name") or attachment.get("id"),
-            "Type": attachment.get("contentType"),
-        }
-        for attachment in attachments
-    ]
-
-    # Build human readable
-    readable_output = tableToMarkdown(
-        f"Total of {len(attachment_list)} attachments found in message {message_id}",
-        {"File names": [attachment.get("Name") for attachment in attachment_list]},
-        removeNull=True,
-    )
-
-    return CommandResults(
-        outputs_prefix="MSGraphMailAttachment",
-        outputs_key_field="ID",
-        outputs={"ID": message_id, "Attachment": attachment_list, "UserID": user_id},
-        readable_output=readable_output,
-        raw_response=raw_response,
-    )
-
-
-def get_attachment_command(client: MsGraphMailBaseClient, args) -> list[CommandResults | dict]:
-    kwargs = {
-        "message_id": GraphMailUtils.handle_message_id(args.get("message_id", "")),
-        "user_id": args.get("user_id", client._mailbox_to_fetch),
-        "folder_id": args.get("folder_id"),
-        "attachment_id": args.get("attachment_id"),
-    }
-    raw_response = client.get_attachment(**kwargs)
-    return [
-        GraphMailUtils.create_attachment(
-            raw_attachment=attachment, user_id=kwargs["user_id"], args=args, client=client, legacy_name=client.legacy_name
-        )
-        for attachment in raw_response
-    ]
-
-
-def create_folder_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    user_id = args.get("user_id")
-    new_folder_name = args.get("new_folder_name")
-    parent_folder_id = args.get("parent_folder_id")
-
-    raw_response = client.create_folder(user_id, new_folder_name, parent_folder_id)
-    parsed_folder = GraphMailUtils.parse_folders_list(raw_response)
-
-    return CommandResults(
-        outputs_prefix="MSGraphMail.Folders",
-        outputs_key_field="ID",
-        outputs=parsed_folder,
-        readable_output=tableToMarkdown(f"The Mail folder {new_folder_name} was created", parsed_folder),
-        raw_response=raw_response,
-    )
-
-
-def list_folders_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    limit = args.get("limit", "20")
-
-    raw_response = client.list_folders(user_id, limit)
-    parsed_folders = GraphMailUtils.parse_folders_list(raw_response.get("value", []))
-    return CommandResults(
-        outputs_prefix="MSGraphMail.Folders",
-        outputs_key_field="ID",
-        outputs=parsed_folders,
-        raw_response=raw_response,
-        readable_output=tableToMarkdown(f"Mail Folder collection under root folder for user {user_id}", parsed_folders),
-    )
-
-
-def list_child_folders_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    parent_folder_id = args.get("parent_folder_id")
-    limit = args.get("limit", "20")
-
-    raw_response = client.list_child_folders(user_id, parent_folder_id, limit)
-    child_folders = GraphMailUtils.parse_folders_list(raw_response.get("value", []))  # type: ignore
-
-    return CommandResults(
-        outputs_prefix="MSGraphMail.Folders",
-        outputs_key_field="ID",
-        outputs=child_folders,
-        raw_response=raw_response,
-        readable_output=tableToMarkdown(
-            f"Mail Folder collection under {parent_folder_id} folder for user {user_id}", child_folders
-        ),
-    )
-
-
-def update_folder_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    folder_id = args.get("folder_id")
-    new_display_name = args.get("new_display_name")
-
-    raw_response = client.update_folder(user_id, folder_id, new_display_name)
-    parsed_folder = GraphMailUtils.parse_folders_list(raw_response)
-
-    return CommandResults(
-        outputs_prefix="MSGraphMail.Folders",
-        outputs_key_field="ID",
-        outputs=parsed_folder,
-        raw_response=raw_response,
-        readable_output=tableToMarkdown(
-            f"Mail folder {folder_id} was updated with display name: {new_display_name}", parsed_folder
-        ),
-    )
-
-
-def delete_folder_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    folder_id = args.get("folder_id")
-
-    client.delete_folder(user_id, folder_id)
-
-    return CommandResults(readable_output=f"The folder {folder_id} was deleted successfully")
-
-
-def move_email_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    message_id = GraphMailUtils.handle_message_id(args.get("message_id", ""))
-    destination_folder_id = args.get("destination_folder_id")
-
-    raw_response = client.move_email(user_id, message_id, destination_folder_id)
-    new_message_id = raw_response.get("id")
-    moved_email_info = {"ID": new_message_id, "DestinationFolderID": destination_folder_id, "UserID": user_id}
-
-    readable_output = tableToMarkdown("The email was moved successfully. Updated email data:", moved_email_info)
-    return CommandResults(
-        outputs_prefix="MSGraphMail.MovedEmails",
-        outputs_key_field="ID",
-        outputs=moved_email_info,
-        readable_output=readable_output,
-        raw_response=raw_response,
-    )
-
-
-def get_email_as_eml_command(client: MsGraphMailBaseClient, args):
-    user_id = args.get("user_id")
-    message_id = GraphMailUtils.handle_message_id(args.get("message_id", ""))
-
-    eml_content = client.get_email_as_eml(user_id, message_id)
-    file_result = fileResult(f"{message_id}.eml", eml_content)
-
-    if is_error(file_result):
-        raise DemistoException(file_result["Contents"])
-
-    return file_result
-
-
-def send_draft_command(client: MsGraphMailBaseClient, args):
-    email = args.get("from")
-    draft_id = args.get("draft_id")
-
-    client.send_draft(email=email, draft_id=draft_id)
-
-    return CommandResults(readable_output=f"### Draft with: {draft_id} id was sent successfully.")
-
-
-def update_email_status_command(client: MsGraphMailBaseClient, args) -> CommandResults:
-    user_id = args.get("user_id")
-    folder_id = args.get("folder_id")
-    message_ids = argToList(args["message_ids"], transform=GraphMailUtils.handle_message_id)
-    status: str = args["status"]
-    mark_as_read = status.lower() == "read"
-
-    raw_responses = []
-
-    for message_id in message_ids:
-        raw_responses.append(
-            client.update_email_read_status(user_id=user_id, message_id=message_id, folder_id=folder_id, read=mark_as_read)
-        )
-
-    return CommandResults(
-        readable_output=f"Emails status has been updated to {status}.",
-        raw_response=raw_responses[0] if len(raw_responses) == 1 else raw_responses,
-    )
-
-
-def reply_email_command(client: MsGraphMailBaseClient, args):
-    """
-    Reply to an email from user's mailbox, the sent message will appear in Sent Items folder
-    """
-    email_to = argToList(args.get("to"))
-    email_from = args.get("from", client._mailbox_to_fetch)
-    message_id = args.get("inReplyTo")
-    reply_to = argToList(args.get("replyTo"))
-    email_body = args.get("body", "")
-    email_subject = args.get("subject", "")
-    email_subject = f"Re: {email_subject}"
-    attach_ids = argToList(args.get("attachIDs"))
-    email_cc = argToList(args.get("cc"))
-    email_bcc = argToList(args.get("bcc"))
-    html_body = args.get("htmlBody")
-    attach_names = argToList(args.get("attachNames"))
-    attach_cids = argToList(args.get("attachCIDs"))
-    message_body = html_body or email_body
-
-    reply = GraphMailUtils.build_message_to_reply(
-        email_to, email_cc, email_bcc, email_subject, message_body, attach_ids, attach_names, attach_cids, reply_to
-    )
-
-    less_than_3mb_attachments, more_than_3mb_attachments = GraphMailUtils.divide_attachments_according_to_size(
-        attachments=reply.get("attachments")
-    )
-
-    if more_than_3mb_attachments:
-        reply["attachments"] = less_than_3mb_attachments
-        client.send_mail_with_upload_session_flow(
-            email=email_from,
-            json_data={"message": reply, "comment": message_body},
-            attachments_more_than_3mb=more_than_3mb_attachments,
-            reply_message_id=message_id,
-        )
-    else:
-        client.send_reply(email_from=email_from, message_id=message_id, json_data={"message": reply, "comment": message_body})
-
-    return GraphMailUtils.prepare_outputs_for_reply_mail_command(reply, email_to, message_id)
-
-
-def send_email_command(client: MsGraphMailBaseClient, args):
-    """
-    Sends email from user's mailbox, the sent message will appear in Sent Items folder.
-
-    Sending email process:
-    1) If there are attachments larger than 3MB, create a draft mail, upload > 3MB attachments via upload session,
-        and send the draft mail.
-
-    2) if there aren't any attachments larger than 3MB, just send the email as usual.
-    """
-    prepared_args = GraphMailUtils.prepare_args("send-mail", args)
-    render_body = prepared_args.pop("renderBody", False)
-    message_content = GraphMailUtils.build_message(**prepared_args)
-    email = args.get("from", client._mailbox_to_fetch)
-
-    less_than_3mb_attachments, more_than_3mb_attachments = GraphMailUtils.divide_attachments_according_to_size(
-        attachments=message_content.get("attachments")
-    )
-
-    if more_than_3mb_attachments:  # go through process 1 (in docstring)
-        message_content["attachments"] = less_than_3mb_attachments
-        client.send_mail_with_upload_session_flow(
-            email=email, json_data=message_content, attachments_more_than_3mb=more_than_3mb_attachments
-        )
-    else:  # go through process 2 (in docstring)
-        client.send_mail(email=email, json_data=message_content)
-
-    message_content.pop("attachments", None)
-    message_content.pop("internet_message_headers", None)
-
-    to_recipients, cc_recipients, bcc_recipients, reply_to_recipients = GraphMailUtils.build_recipients_human_readable(
-        message_content
-    )
-    message_content["toRecipients"] = to_recipients
-    message_content["ccRecipients"] = cc_recipients
-    message_content["bccRecipients"] = bcc_recipients
-    message_content["replyTo"] = reply_to_recipients
-
-    message_content = assign_params(**message_content)
-    results = [
-        CommandResults(
-            outputs_prefix="MicrosoftGraph.Email",
-            outputs=message_content,
-            readable_output=tableToMarkdown("Email was sent successfully.", message_content),
-        )
-    ]
-    if render_body:
-        results.append(
-            CommandResults(
-                entry_type=EntryType.NOTE,
-                content_format=EntryFormat.HTML,
-                raw_response=prepared_args["body"],
+        content = self.refresh_token or self.tenant_id
+        headers = self._add_info_headers()
+        context = get_integration_context()
+        next_request_time = context.get("next_request_time", 0.0)
+        delay_request_counter = min(int(context.get('delay_request_counter', 1)), MAX_DELAY_REQUEST_COUNTER)
+
+        should_delay_request(next_request_time)
+        oproxy_response = self._oproxy_authorize_build_request(headers, content, scope, resource)
+
+        if not oproxy_response.ok:
+            next_request_time = calculate_next_request_time(delay_request_counter=delay_request_counter)
+            set_retry_mechanism_arguments(next_request_time=next_request_time, delay_request_counter=delay_request_counter,
+                                          context=context)
+            self._raise_authentication_error(oproxy_response)
+
+        # In case of success, reset the retry mechanism arguments.
+        set_retry_mechanism_arguments(context=context)
+        # Oproxy authentication succeeded
+        try:
+            gcloud_function_exec_id = oproxy_response.headers.get('Function-Execution-Id')
+            demisto.info(f'Google Cloud Function Execution ID: {gcloud_function_exec_id}')
+            parsed_response = oproxy_response.json()
+        except ValueError:
+            raise Exception(
+                'There was a problem in retrieving an updated access token.\n'
+                'The response from the Oproxy server did not contain the expected content.'
             )
+
+        return (parsed_response.get('access_token', ''), parsed_response.get('expires_in', 3595),
+                parsed_response.get('refresh_token', ''))
+
+    def _get_self_deployed_token(self,
+                                 refresh_token: str = '',
+                                 scope: str | None = None,
+                                 integration_context: dict | None = None
+                                 ) -> tuple[str, int, str]:
+        if self.managed_identities_client_id:
+
+            if not self.multi_resource:
+                return self._get_managed_identities_token()
+
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_managed_identities_token(resource=resource)
+                self.resource_to_access_token[resource] = access_token
+            return '', expires_in, refresh_token
+
+        if self.grant_type == AUTHORIZATION_CODE:
+            if not self.multi_resource:
+                return self._get_self_deployed_token_auth_code(refresh_token, scope=scope)
+            expires_in = -1  # init variable as an int
+            for resource in self.resources:
+                access_token, expires_in, refresh_token = self._get_self_deployed_token_auth_code(refresh_token,
+                                                                                                  resource)
+                self.resource_to_access_token[resource] = access_token
+
+            return '', expires_in, refresh_token
+        elif self.grant_type == DEVICE_CODE:
+            return self._get_token_device_code(refresh_token, scope, integration_context)
+        else:
+            # by default, grant_type is CLIENT_CREDENTIALS
+            if self.multi_resource:
+                expires_in = -1  # init variable as an int
+                for resource in self.resources:
+                    access_token, expires_in, refresh_token = self._get_self_deployed_token_client_credentials(
+                        resource=resource)
+                    self.resource_to_access_token[resource] = access_token
+                return '', expires_in, refresh_token
+            return self._get_self_deployed_token_client_credentials(scope=scope)
+
+    def _get_self_deployed_token_client_credentials(self, scope: str | None = None,
+                                                    resource: str | None = None) -> tuple[str, int, str]:
+        """
+        Gets a token by authorizing a self deployed Azure application in client credentials grant type.
+
+        Args:
+            scope: A scope to add to the headers. Else will get self.scope.
+            resource: A resource to add to the headers. Else will get self.resource.
+        Returns:
+            tuple: An access token and its expiry.
+        """
+        data = {
+            'client_id': self.client_id,
+            'client_secret': self.client_secret,
+            'grant_type': CLIENT_CREDENTIALS
+        }
+
+        if self.jwt:
+            data.pop('client_secret', None)
+            data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data['client_assertion'] = self.jwt
+
+        # Set scope.
+        if self.scope or scope:
+            data['scope'] = scope or self.scope
+
+        if self.resource or resource:
+            data['resource'] = resource or self.resource  # type: ignore
+
+        response_json: dict = {}
+        try:
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+
+        access_token = response_json.get('access_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
+
+        return access_token, expires_in, ''
+
+    def _get_self_deployed_token_auth_code(
+            self, refresh_token: str = '', resource: str = '', scope: str | None = None) -> tuple[str, int, str]:
+        """
+        Gets a token by authorizing a self deployed Azure application.
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
+        data = assign_params(
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            resource=resource if resource else self.resource,
+            redirect_uri=self.redirect_uri
         )
-    return results
+
+        if self.jwt:
+            data.pop('client_secret', None)
+            data['client_assertion_type'] = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+            data['client_assertion'] = self.jwt
+
+        if scope:
+            data['scope'] = scope
+
+        refresh_token = refresh_token or self._get_refresh_token_from_auth_code_param()
+        if refresh_token:
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            if SESSION_STATE in self.auth_code:
+                raise ValueError('Malformed auth_code parameter: Please copy the auth code from the redirected uri '
+                                 'without any additional info and without the "session_state" query parameter.')
+            data['grant_type'] = AUTHORIZATION_CODE
+            data['code'] = self.auth_code
+
+        response_json: dict = {}
+        try:
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+
+        access_token = response_json.get('access_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
+        refresh_token = response_json.get('refresh_token', '')
+
+        return access_token, expires_in, refresh_token
+
+    def _get_managed_identities_token(self, resource=None):
+        """
+        Gets a token based on the Azure Managed Identities mechanism
+        in case user was configured the Azure VM and the other Azure resource correctly
+        """
+        try:
+            # system assigned are restricted to one per resource and is tied to the lifecycle of the Azure resource
+            # see https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview
+            use_system_assigned = (self.managed_identities_client_id == MANAGED_IDENTITIES_SYSTEM_ASSIGNED)
+            resource = resource or self.managed_identities_resource_uri
+
+            demisto.debug('try to get Managed Identities token')
+
+            params = {'resource': resource}
+            if not use_system_assigned:
+                params['client_id'] = self.managed_identities_client_id
+
+            response_json = requests.get(MANAGED_IDENTITIES_TOKEN_URL, params=params, headers={'Metadata': 'True'}).json()
+            access_token = response_json.get('access_token')
+            expires_in = int(response_json.get('expires_in', 3595))
+            if access_token:
+                return access_token, expires_in, ''
+
+            err = response_json.get('error_description')
+        except Exception as e:
+            err = f'{str(e)}'
+
+        return_error(f'Error in Microsoft authorization with Azure Managed Identities: {err}')
+        return None
+
+    def _get_token_device_code(
+        self, refresh_token: str = '', scope: str | None = None, integration_context: dict | None = None
+    ) -> tuple[str, int, str]:
+        """
+        Gets a token by authorizing a self deployed Azure application.
+
+        Returns:
+            tuple: An access token, its expiry and refresh token.
+        """
+        data = {
+            'client_id': self.client_id,
+            'scope': scope
+        }
+
+        if refresh_token:
+            data['grant_type'] = REFRESH_TOKEN
+            data['refresh_token'] = refresh_token
+        else:
+            data['grant_type'] = DEVICE_CODE
+            if integration_context:
+                data['code'] = integration_context.get('device_code')
+
+        response_json: dict = {}
+        try:
+            response = requests.post(self.token_retrieval_url, data, verify=self.verify)
+            if response.status_code not in {200, 201}:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+
+        access_token = response_json.get('access_token', '')
+        expires_in = int(response_json.get('expires_in', 3595))
+        refresh_token = response_json.get('refresh_token', '')
+
+        return access_token, expires_in, refresh_token
+
+    def _get_refresh_token_from_auth_code_param(self) -> str:
+        refresh_prefix = "refresh_token:"
+        if self.auth_code.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
+            demisto.debug("Using refresh token set as auth_code")
+            return self.auth_code[len(refresh_prefix):]
+        return ''
+
+    @staticmethod
+    def run_retry_on_rate_limit(args_for_next_run: dict):
+        return CommandResults(readable_output="Rate limit reached, rerunning the command in 1 min",
+                              scheduled_command=ScheduledCommand(command=demisto.command(), next_run_in_seconds=60,
+                                                                 args=args_for_next_run, timeout_in_seconds=900))
+
+    def handle_error_with_metrics(self, res):
+        MicrosoftClient.create_api_metrics(res.status_code)
+        self.client_error_handler(res)
+
+    @staticmethod
+    def create_api_metrics(status_code):
+        execution_metrics = ExecutionMetrics()
+        ok_codes = (200, 201, 202, 204, 206)
+
+        if not execution_metrics.is_supported() or demisto.command() in ['test-module', 'fetch-incidents']:
+            return
+        if status_code == 429:
+            execution_metrics.quota_error += 1
+        elif status_code in ok_codes:
+            execution_metrics.success += 1
+        else:
+            execution_metrics.general_error += 1
+        return_results(execution_metrics.metrics)
+
+    def error_parser(self, error: requests.Response) -> str:
+        """
+
+        Args:
+            error (requests.Response): response with error
+
+        Returns:
+            str: string of error
+
+        """
+        try:
+            response = error.json()
+            demisto.error(str(response))
+            err_str = self.extract_microsoft_error(response)
+            if err_str:
+                return err_str
+            # If no error message
+            raise ValueError
+        except ValueError:
+            return error.text
+
+    def extract_microsoft_error(self, response: dict) -> str | None:
+        """
+        Extracts the Microsoft error message from the JSON response.
+
+        Args:
+            response (dict): JSON response received from the microsoft server.
+
+        Returns:
+            str or None: Extracted Microsoft error message if found, otherwise returns None.
+        """
+        inner_error = response.get('error', {})
+        error_codes = response.get("error_codes", [""])
+        err_desc = response.get('error_description', '')
+
+        if isinstance(inner_error, dict):
+            err_str = f"{inner_error.get('code')}: {inner_error.get('message')}"
+        else:
+            err_str = inner_error
+            re_search = re.search(REGEX_SEARCH_ERROR_DESC, err_desc)
+            err_str += f". \n{re_search['desc']}" if re_search else ""
+
+        if err_str:
+            if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
+                err_str += f"\nYou can run the ***{self.command_prefix}-auth-reset*** command " \
+                           f"to reset the authentication process."
+            return err_str
+        # If no error message
+        return None
+
+    @staticmethod
+    def epoch_seconds(d: datetime = None) -> int:
+        """
+        Return the number of seconds for given date. If no date, return current.
+
+        Args:
+            d (datetime): timestamp
+        Returns:
+             int: timestamp in epoch
+        """
+        if not d:
+            d = MicrosoftClient._get_utcnow()
+        return int((d - MicrosoftClient._get_utc_from_timestamp(0)).total_seconds())
+
+    @staticmethod
+    def _get_utcnow() -> datetime:
+        return datetime.utcnow()
+
+    @staticmethod
+    def _get_utc_from_timestamp(_time) -> datetime:
+        return datetime.utcfromtimestamp(_time)
+
+    @staticmethod
+    def get_encrypted(content: str, key: str | None) -> str:
+        """
+        Encrypts content with encryption key.
+        Args:
+            content: Content to encrypt
+            key: encryption key from oproxy
+
+        Returns:
+            timestamp: Encrypted content
+        """
+
+        def create_nonce():
+            return os.urandom(12)
+
+        def encrypt(string, enc_key):
+            """
+            Encrypts string input with encryption key.
+            Args:
+                string: String to encrypt
+                enc_key: Encryption key
+
+            Returns:
+                bytes: Encrypted value
+            """
+            # String to bytes
+            try:
+                enc_key = base64.b64decode(enc_key)
+            except Exception as err:
+                return_error(f"Error in Microsoft authorization: {str(err)}"
+                             f" Please check authentication related parameters.", error=traceback.format_exc())
+
+            # Create key
+            aes_gcm = AESGCM(enc_key)
+            # Create nonce
+            nonce = create_nonce()
+            # Create ciphered data
+            data = string.encode()
+            ct = aes_gcm.encrypt(nonce, data, None)
+            return base64.b64encode(nonce + ct)
+
+        now = MicrosoftClient.epoch_seconds()
+        encrypted = encrypt(f'{now}:{content}', key).decode('utf-8')
+        return encrypted
+
+    @staticmethod
+    def _add_info_headers() -> dict[str, str]:
+        # pylint: disable=no-member
+        headers = {}
+        try:
+            headers = get_x_content_info_headers()
+        except Exception as e:
+            demisto.error(f'Failed getting integration info: {str(e)}')
+
+        return headers
+
+    def device_auth_request(self) -> dict:
+        response_json = {}
+        try:
+            response = requests.post(
+                url=f'{self.azure_ad_endpoint}/organizations/oauth2/v2.0/devicecode',
+                data={
+                    'client_id': self.client_id,
+                    'scope': self.scope
+                },
+                verify=self.verify
+            )
+            if not response.ok:
+                return_error(f'Error in Microsoft authorization. Status: {response.status_code},'
+                             f' body: {self.error_parser(response)}')
+            response_json = response.json()
+        except Exception as e:
+            return_error(f'Error in Microsoft authorization: {str(e)}')
+        set_integration_context({'device_code': response_json.get('device_code')})
+        return response_json
+
+    def start_auth(self, complete_command: str) -> str:
+        response = self.device_auth_request()
+        message = response.get('message', '')
+        re_search = re.search(REGEX_SEARCH_URL, message)
+        url = re_search['url'] if re_search else None
+        user_code = response.get('user_code')
+
+        return f"""### Authorization instructions
+1. To sign in, use a web browser to open the page [{url}]({url})
+and enter the code **{user_code}** to authenticate.
+2. Run the **{complete_command}** command in the War Room."""
 
 
-def list_rule_action_command(client: MsGraphMailBaseClient, args) -> CommandResults | dict:
-    rule_id = args.get("rule_id")
-    user_id = args.get("user_id")
-    limit = args.get("limit", 50)
-    hr_headers = ["id", "displayName", "isEnabled"]
-    hr_title_parts = [f"!{demisto.command()}", user_id if user_id else "", f"for {rule_id=}" if rule_id else "rules"]
-    if rule_id:
-        hr_headers.extend(["conditions", "actions"])
-    result = client.message_rules_action("GET", user_id=user_id, rule_id=rule_id, limit=limit)
-    result.pop("@odata.context", None)
-    outputs = [result] if rule_id else result.get("value", [])
+class NotFoundError(Exception):
+    """Exception raised for 404 - Not Found errors.
 
-    return CommandResults(
-        outputs_prefix="MSGraphMail.Rule",
-        outputs=outputs,
-        readable_output=tableToMarkdown(" ".join(hr_title_parts), outputs, headers=hr_headers, headerTransform=pascalToSpace),
-    )
+    Attributes:
+        message -- explanation of the error
+    """
+
+    def __init__(self, message):
+        self.message = message
 
 
-def delete_rule_command(client: MsGraphMailBaseClient, args) -> str:
-    rule_id = args.get("rule_id")
-    user_id = args.get("user_id")
-    client.message_rules_action("DELETE", user_id=user_id, rule_id=rule_id)
-    return f"Rule {rule_id} deleted{f' for user {user_id}' if user_id else ''}."
+def calculate_next_request_time(delay_request_counter: int) -> float:
+    """
+        Calculates the next request time based on the delay_request_counter.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    # The max delay time should be limited to ~60 sec.
+    next_request_time = get_current_time() + timedelta(seconds=(2 ** delay_request_counter))
+    return next_request_time.timestamp()
+
+
+def set_retry_mechanism_arguments(context: dict, next_request_time: float = 0.0, delay_request_counter: int = 1):
+    """
+        Sets the next_request_time in the integration context.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    context = context or {}
+    next_counter = delay_request_counter + 1
+
+    context['next_request_time'] = next_request_time
+    context['delay_request_counter'] = next_counter
+    # Should reset the context retry arguments.
+    if next_request_time == 0.0:
+        context['delay_request_counter'] = 1
+    set_integration_context(context)
+
+
+def should_delay_request(next_request_time: float):
+    """
+        Checks if the request should be delayed based on context variables.
+        This is an implication of the Moderate Retry Mechanism for the Oproxy requests.
+    """
+    now = get_current_time().timestamp()
+
+    # If the next_request_time is 0 or negative, it means that the request should not be delayed because no error has occurred.
+    if next_request_time <= 0.0:
+        return
+    # Checking if the next_request_time has passed.
+    if now >= next_request_time:
+        return
+    raise Exception(f"The request will be delayed until {datetime.fromtimestamp(next_request_time)}")
+
+
+def get_azure_managed_identities_client_id(params: dict) -> str | None:
+    """
+    Extract the Azure Managed Identities from the demisto params
+
+    Args:
+        params (dict): the demisto params
+
+    Returns:
+        Optional[str]: if the use_managed_identities are True
+        the managed_identities_client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+        will return, otherwise - None
+
+    """
+    auth_type = params.get('auth_type') or params.get('authentication_type')
+    if params and (argToBoolean(params.get('use_managed_identities') or auth_type == 'Azure Managed Identities')):
+        client_id = params.get('managed_identities_client_id', {}).get('password')
+        return client_id or MANAGED_IDENTITIES_SYSTEM_ASSIGNED
+    return None
+
+
+def generate_login_url(client: MicrosoftClient,
+                       login_url: str = "https://login.microsoftonline.com/") -> CommandResults:
+    missing = []
+    if not client.client_id:
+        missing.append("client_id")
+    if not client.tenant_id:
+        missing.append("tenant_id")
+    if not client.scope:
+        missing.append("scope")
+    if not client.redirect_uri:
+        missing.append("redirect_uri")
+    if missing:
+        raise DemistoException("Please make sure you entered the Authorization configuration correctly. "
+                               f"Missing:{','.join(missing)}")
+
+    login_url = urljoin(login_url, f'{client.tenant_id}/oauth2/v2.0/authorize?'
+                        f'response_type=code&scope=offline_access%20{client.scope.replace(" ", "%20")}'
+                        f'&client_id={client.client_id}&redirect_uri={client.redirect_uri}')
+
+    result_msg = f"""### Authorization instructions
+1. Click on the [login URL]({login_url}) to sign in and grant Cortex XSOAR permissions for your Azure Service Management.
+You will be automatically redirected to a link with the following structure:
+```REDIRECT_URI?code=AUTH_CODE&session_state=SESSION_STATE```
+2. Copy the `AUTH_CODE` (without the `code=` prefix, and the `session_state` parameter)
+and paste it in your instance configuration under the **Authorization code** parameter.
+ """
+    return CommandResults(readable_output=result_msg)
+
+
+def get_from_args_or_params(args: dict[str, Any], params: dict[str, Any], key: str) -> Any:
+    """
+    Get a value from args or params, if the value is provided in both args and params, the value from args will be used.
+    if the value is not provided in args or params, an exception will be raised.
+    this function is used in commands that have a value that can be provided in the instance parameters or in the command,
+    e.g in azure-key-vault-delete 'subscription_id' can be provided in the instance parameters or in the command.
+    Args:
+        args (Dict[str, Any]): Demisto args.
+        params (Dict[str, Any]): Demisto params
+        key (str): Key to get.
+    """
+    if value := args.get(key, params.get(key)):
+        return value
+    else:
+        raise Exception(f'No {key} was provided. Please provide a {key} either in the \
+instance configuration or as a command argument.')
+
+
+def azure_tag_formatter(arg):
+    """
+    Formats a tag argument to the Azure format
+    Args:
+        arg (str): Tag argument as string
+    Returns:
+        str: Tag argument in Azure format
+    """
+    try:
+        tag = json.loads(arg)
+        tag_name = next(iter(tag))
+        tag_value = tag[tag_name]
+        return f"tagName eq '{tag_name}' and tagValue eq '{tag_value}'"
+    except Exception as e:
+        raise Exception(
+            """Invalid tag format, please use the following format: '{"key_name":"value_name"}'""",
+            e,
+        ) from e
+
+
+def reset_auth() -> CommandResults:
+    """
+    This command resets the integration context.
+    After running the command, a new token/auth-code will need to be given by the user to regenerate the access token.
+    :return: Message about resetting the authorization process.
+    """
+    demisto.debug(f"Reset integration-context, before resetting {get_integration_context()=}")
+    set_integration_context({})
+    return CommandResults(readable_output='Authorization was reset successfully. Please regenerate the credentials, '
+                                          'and then click **Test** to validate the credentials and connection.')
