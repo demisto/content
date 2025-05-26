@@ -29,7 +29,3 @@ Follow one of these steps for authentication based on Azure Managed Identities:
    3. Select the **Use Azure Managed Identities** checkbox.
 
 For more information, see [Managed identities for Azure resources](https://learn.microsoft.com/en-us/azure/active-directory/managed-identities-azure-resources/overview).
-
-
----
-[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/microsoft-graph-mail-single-user)
