@@ -14,6 +14,7 @@ ExtraHop RevealX 360 is a cloud-based security platform that provides comprehens
 ## Configure an instance for ExtraHop Reveal(x)
 
 ### How to create REST API Credentials
+
 - You must have system and access administration privileges.
 
 1. Log in to RevealX 360.
@@ -22,6 +23,7 @@ ExtraHop RevealX 360 is a cloud-based security platform that provides comprehens
 4. Click **Create Credentials**.
 5. In the Name field, type a name for the credentials.
 6. In the Privileges field, specify a privilege level for the credentials. The privilege level determines which actions can be performed with the credential. Do not grant more privileges to REST API credentials than needed because it can create a security risk. For example, applications that only retrieve metrics should not be granted credentials that grant administrative privileges. For more information about each privilege level, see User privileges.
+
 - Note: System and Access Administration privileges are similar to Full write privileges and allow the credentials to connect sensors and Trace appliances to RevealX 360.*
 
 7. In the Packet Access field, specify whether you can retrieve packets and session keys with the credentials.

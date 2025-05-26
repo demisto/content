@@ -824,7 +824,7 @@ Further documentation available at https://docs.ansible.com/ansible/2.9/modules/
 >   * spacetotal_kb: 2092496.0
 >  >
 > > * ## Net_Gather_Network_Resources
->  >
+> >
 > > * ## Net_Gather_Subset
 >
 > * 0: interfaces

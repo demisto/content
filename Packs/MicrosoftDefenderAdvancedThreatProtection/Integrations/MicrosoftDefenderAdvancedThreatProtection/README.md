@@ -220,7 +220,7 @@ Isolates a machine from accessing external network.
 
 ##### Required Permissions
 
-Machine.Isolate 
+Machine.Isolate
 
 ##### Base Command
 
@@ -314,7 +314,7 @@ Remove a machine from isolation.
 
 ##### Required Permissions
 
-Machine.Isolate 
+Machine.Isolate
 
 ##### Base Command
 
@@ -864,7 +864,7 @@ Initiates Microsoft Defender Antivirus scan on a machine.
 
 ##### Required Permissions
 
-Machine.Scan 
+Machine.Scan
 
 #### Base Command
 
@@ -960,7 +960,7 @@ Gets a list of alerts that are present on the system. Filtering can be done on a
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -1107,7 +1107,7 @@ Updates the properties of an alert entity.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -1189,7 +1189,7 @@ lists all the tables in the schema. Each table name links to a page describing t
 
 ##### Required Permissions
 
-AdvancedQuery.Read.All 
+AdvancedQuery.Read.All
 
 ##### Base Command
 
@@ -1282,7 +1282,7 @@ Creates a new alert entity using event data, as obtained from the Advanced Hunti
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -1391,7 +1391,7 @@ Retrieves the user associated with a specific alert.
 
 ##### Required Permissions
 
-User.Read.All 
+User.Read.All
 
 ##### Base Command
 
@@ -1466,7 +1466,7 @@ Retrieves the files associated to a specific alert.
 
 ##### Required Permissions
 
-File.Read.All 
+File.Read.All
 
 ##### Base Command
 
@@ -1566,7 +1566,7 @@ Retrieves the IP addresses associated to a specific alert.
 
 ##### Required Permissions
 
-Ip.Read.All 
+Ip.Read.All
 
 ##### Base Command
 
@@ -1615,7 +1615,7 @@ Retrieves the domains associated with a specific alert.
 
 ##### Required Permissions
 
-URL.Read.All 
+URL.Read.All
 
 ##### Base Command
 
@@ -2021,7 +2021,7 @@ Stops the execution of a file on a machine and deletes it.
 
 ##### Required Permissions
 
-Machine.StopAndQuarantine 
+Machine.StopAndQuarantine
 
 ##### Base Command
 
@@ -2091,7 +2091,7 @@ Retrieves a collection of investigations or retrieves a specific investigation b
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2182,7 +2182,7 @@ Starts an automated investigation on a machine.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2247,7 +2247,7 @@ Retrieves statistics on the given domain.
 ##### Required Permissions
 
 URL.Read.All
- 
+
 ##### Base Command
 
 `microsoft-atp-get-domain-statistics`
@@ -2304,7 +2304,7 @@ Retrieves a collection of alerts related to a given domain address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2464,7 +2464,7 @@ Retrieves statistics for the given file.
 
 ##### Required Permissions
 
-File.Read.All 
+File.Read.All
 
 ##### Base Command
 
@@ -2561,7 +2561,7 @@ Retrieves a collection of alerts related to a given file hash.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2687,7 +2687,7 @@ Retrieves statistics for the given IP address.
 
 ##### Required Permissions
 
-Ip.Read.All 
+Ip.Read.All
 
 ##### Base Command
 
@@ -2744,7 +2744,7 @@ Retrieves a collection of alerts related to a given IP address.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -2817,7 +2817,7 @@ Retrieves a collection of alerts related to a given user ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 ##### Base Command
 
@@ -4825,7 +4825,7 @@ Retrieves specific alert by the given alert ID.
 
 ##### Required Permissions
 
-Alert.ReadWrite.All 
+Alert.ReadWrite.All
 
 #### Base Command
 
@@ -6309,7 +6309,7 @@ Offboard a machine from microsoft ATP.
 
 ##### Required Permissions
 
-Machine.Offboard 
+Machine.Offboard
 
 ##### Base Command
 

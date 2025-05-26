@@ -243,7 +243,7 @@ Get a report of a domain.
 >| example.example.com |
 
 >
->### 
+>###
 >
 >|emails|permalink|references|response_code|value|votes|
 >|---|---|---|---|---|---|

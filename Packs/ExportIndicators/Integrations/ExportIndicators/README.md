@@ -44,6 +44,7 @@ Use the Export Indicators Service integration to provide an endpoint with a list
 4. Click __Test__ to validate the URLs, token, and connection.
 
 ### Access the Export Indicators Service by Instance Name (HTTPS)
+
 __Note__: By default, the route will be open without security hardening and might expose you to network risks. Cortex XSOAR recommends that you use credentials to connect to connect to the integration.
 
 To access the Export Indicators service by instance name, make sure *__Instance execute external__* is enabled.
