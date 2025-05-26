@@ -12,6 +12,7 @@ On Dec 28 2021, another RCE vulnerability was published for Apache Log4j2, versi
 In order to exploit this vulnerability, an attacker with permission to modify the logging configuration file can construct a malicious configuration using a JDBC Appender with a data source referencing a JNDI URI which can execute remote code. This issue is fixed by limiting JNDI data source names to the java protocol in Log4j2 versions 2.17.1, 2.12.4, and 2.3.2.
 
 This pack will provide you with a first response kit which includes:
+
 * Hunting
 * Remediation
 * Mitigations
