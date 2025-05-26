@@ -4,13 +4,13 @@ from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from google.oauth2 import service_account
 import urllib3
-import enum
+from enum import Enum
 from COOCApiModule import *
 
 urllib3.disable_warnings()
 
 
-class GcpService(enum.Enum):
+class GCPServices(Enum):
     COMPUTE = ("compute", "v1")
     STORAGE = ("storage", "v1")
     CONTAINER = ("container", "v1")
@@ -162,7 +162,7 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
     if disabled := args.get("disabled"):
         config["disabled"] = argToBoolean(disabled)
 
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
     response = (
         compute.firewalls()  # pylint: disable=E1101
@@ -193,7 +193,7 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
     bucket = args.get("resource_name")
     entities_to_remove = set(argToList(args.get("entity", "allUsers")))
 
-    storage = GcpService.STORAGE.build(creds)
+    storage = GCPServices.STORAGE.build(creds)
     policy = storage.buckets().getIamPolicy(bucket=bucket).execute()  # pylint: disable=E1101
 
     modified = False
@@ -238,7 +238,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     region = args.get("region")
     resource_name = args.get("resource_name")
 
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
     hr, response_patch, response_set = "", {}, {}
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
@@ -303,7 +303,7 @@ def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> C
     zone = args.get("zone")
     resource_name = args.get("resource_name")
     metadata_str: str = args.get("metadata", "")
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
 
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
     fingerprint = instance.get("metadata", {}).get("fingerprint")
@@ -364,7 +364,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
-    container = GcpService.CONTAINER.build(creds)
+    container = GCPServices.CONTAINER.build(creds)
     update_fields: dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
@@ -411,7 +411,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     """
     bucket = args.get("resource_name")
 
-    storage = GcpService.STORAGE.build(creds)
+    storage = GCPServices.STORAGE.build(creds)
 
     body: dict[str, Any] = {}
     if enable_versioning := args.get("enable_versioning"):
@@ -452,7 +452,7 @@ def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) 
     member = args.get("member")
     role = args.get("role")
 
-    resource_manager = GcpService.RESOURCE_MANAGER.build(creds)
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
 
     # Get current policy
     policy_request = resource_manager.projects().getIamPolicy(resource=f"projects/{project_id}")  # pylint: disable=E1101
@@ -509,7 +509,7 @@ def iam_deny_policy_create(creds: Credentials, args: dict[str, Any]) -> CommandR
     denied_permissions = argToList(args.get("denied_permissions"))
     resource = args.get("resource")
 
-    iam = GcpService.IAM_V2.build(creds)
+    iam = GCPServices.IAM_V2.build(creds)
     # Construct the deny policy
     policy = {
         "name": f"policies/{policy_id}",
@@ -558,7 +558,7 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
     service_account = args.get("service_account", "")
     scopes = argToList(args.get("scopes", []))
 
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
 
     body = {}
     if service_account:
@@ -591,7 +591,7 @@ def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> Com
     member_key = args.get("member_key")
 
     # Need to use the Admin SDK Directory API
-    directory = GcpService.ADMIN_DIRECTORY.build(creds)
+    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
     try:
         directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
         hr = f"Member {member_key} was removed from group {group_id}."
@@ -615,7 +615,7 @@ def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> Comm
     project_id = args.get("project_id")
     service_account_email = args.get("service_account_email")
 
-    iam = GcpService.IAM_V1.build(creds)
+    iam = GCPServices.IAM_V1.build(creds)
 
     # Format the resource name
     name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
@@ -644,7 +644,7 @@ def compute_instance_start(creds: Credentials, args: dict[str, Any]) -> CommandR
     zone = args.get("zone")
     resource_name = args.get("resource_name")
 
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -677,7 +677,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     zone = args.get("zone")
     resource_name = args.get("resource_name")
 
-    compute = GcpService.COMPUTE.build(creds)
+    compute = GCPServices.COMPUTE.build(creds)
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -712,7 +712,7 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
 
     try:
-        resource_manager = GcpService.RESOURCE_MANAGER.build(creds)
+        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
         response = (
             resource_manager.projects()  # pylint: disable=E1101
             .testIamPermissions(name=f"projects/{project_id}", body={"permissions": permissions})
