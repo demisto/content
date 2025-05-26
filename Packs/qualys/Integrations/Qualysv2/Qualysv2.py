@@ -3284,7 +3284,7 @@ def get_asset_by_qid(client: Client, qid: str) -> CommandResults:
         readable_output=f"{len(assets)} assets are found related to the given {qid=}",
         outputs=assets,
         outputs_prefix="Qualys.Assets",
-        outputs_key_field="ID"
+        outputs_key_field="ID",
     )
 
 
