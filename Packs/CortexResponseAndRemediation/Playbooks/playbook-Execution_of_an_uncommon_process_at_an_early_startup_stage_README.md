@@ -10,7 +10,7 @@ Analysis:
 
 Investigation:
 
-- Searches for related Cortex XSIAM alerts to identify potential attack patterns with persistence mechanisms.
+- Searches for related alerts to identify potential attack patterns with persistence mechanisms.
 - Checks for any suspicious parameters in the command line (if the command line risk score is medium or higher).
 - Checks the Action process prevalence.
 
