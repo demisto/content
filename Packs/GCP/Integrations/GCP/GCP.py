@@ -9,10 +9,33 @@ from COOCApiModule import *
 urllib3.disable_warnings()
 
 # API versions
-COMPUTE_API_VERSION = "v1"
-STORAGE_API_VERSION = "v1"
-CONTAINER_API_VERSION = "v1"
-RESOURCE_MANAGER_API_VERSION = "v3"
+import enum
+
+
+class GcpService(enum.Enum):
+    COMPUTE = ("compute", "v1")
+    STORAGE = ("storage", "v1")
+    CONTAINER = ("container", "v1")
+    RESOURCE_MANAGER = ("cloudresourcemanager", "v3")
+    IAM_V1 = ("iam", "v1")
+    IAM_V2 = ("iam", "v2")
+    ADMIN_DIRECTORY = ("admin", "directory_v1")
+
+    def __init__(self, api_name: str, version: str):
+        self._api_name = api_name
+        self._version = version
+
+    @property
+    def api_name(self):
+        return self._api_name
+
+    @property
+    def version(self):
+        return self._version
+
+    def build(self, credentials, **kwargs):
+        return build(self.api_name, self.version, credentials=credentials, **kwargs)
+
 
 SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 REQUIRED_PERMISSIONS: dict[str, list[str]] = {
@@ -33,6 +56,13 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
     "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
+    "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    "gcp-iam-deny-policy-create": ["iam.policies.create", "iam.policies.setIamPolicy"],
+    "gcp-compute-instance-service-account-set": ["compute.instances.setServiceAccount", "compute.instances.get"],
+    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],
+    "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
+    "gcp-compute-instance-start": ["compute.instances.start"],
+    "gcp-compute-instance-stop": ["compute.instances.stop"],
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
@@ -134,7 +164,7 @@ def compute_firewall_patch(creds: Credentials, args: dict[str, Any]) -> CommandR
     if disabled := args.get("disabled"):
         config["disabled"] = argToBoolean(disabled)
 
-    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
+    compute = GcpService.COMPUTE.build(creds)
     demisto.debug(f"Firewall patch config for {resource_name} in project {project_id}: {config}")
     response = (
         compute.firewalls()  # pylint: disable=E1101
@@ -165,7 +195,7 @@ def storage_bucket_policy_delete(creds: Credentials, args: dict[str, Any]) -> Co
     bucket = args.get("resource_name")
     entities_to_remove = set(argToList(args.get("entity", "allUsers")))
 
-    storage = build("storage", STORAGE_API_VERSION, credentials=creds)
+    storage = GcpService.STORAGE.build(creds)
     policy = storage.buckets().getIamPolicy(bucket=bucket).execute()  # pylint: disable=E1101
 
     modified = False
@@ -210,7 +240,7 @@ def compute_subnet_update(creds: Credentials, args: dict[str, Any]) -> CommandRe
     region = args.get("region")
     resource_name = args.get("resource_name")
 
-    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
+    compute = GcpService.COMPUTE.build(creds)
     hr, response_patch, response_set = "", {}, {}
     patch_body = {}
     if enable_flow_logs := args.get("enable_flow_logs"):
@@ -275,7 +305,7 @@ def compute_instance_metadata_add(creds: Credentials, args: dict[str, Any]) -> C
     zone = args.get("zone")
     resource_name = args.get("resource_name")
     metadata_str: str = args.get("metadata", "")
-    compute = build("compute", COMPUTE_API_VERSION, credentials=creds)
+    compute = GcpService.COMPUTE.build(creds)
 
     instance = compute.instances().get(project=project_id, zone=zone, instance=resource_name).execute()  # pylint: disable=E1101
     fingerprint = instance.get("metadata", {}).get("fingerprint")
@@ -336,7 +366,7 @@ def container_cluster_security_update(creds: Credentials, args: dict[str, Any]) 
     if args.get("enable_master_authorized_networks") and not cidrs:
         raise DemistoException("CIDRs must be provided when enabling master authorized networks.")
 
-    container = build("container", CONTAINER_API_VERSION, credentials=creds)
+    container = GcpService.CONTAINER.build(creds)
     update_fields: dict[str, Any] = {}
 
     if enable_intra := args.get("enable_intra_node_visibility"):
@@ -383,7 +413,7 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     """
     bucket = args.get("resource_name")
 
-    storage = build("storage", STORAGE_API_VERSION, credentials=creds)
+    storage = GcpService.STORAGE.build(creds)
 
     body: dict[str, Any] = {}
     if enable_versioning := args.get("enable_versioning"):
@@ -409,6 +439,264 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
     )
 
 
+def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a specified IAM role binding from a GCP project.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'member', and 'role'.
+
+    Returns:
+        CommandResults: Result of the IAM binding removal operation.
+    """
+    project_id = args.get("project_id")
+    member = args.get("member")
+    role = args.get("role")
+
+    resource_manager = GcpService.RESOURCE_MANAGER.build(creds)
+
+    # Get current policy
+    policy_request = resource_manager.projects().getIamPolicy(resource=f"projects/{project_id}")  # pylint: disable=E1101
+    policy = policy_request.execute()
+
+    # Filter out the binding to be removed
+    modified = False
+    if "bindings" in policy:
+        updated_bindings = []
+        for binding in policy["bindings"]:
+            if binding["role"] == role and member in binding.get("members", []):
+                modified = True
+                # Remove the member from this role
+                binding["members"].remove(member)
+                # Only keep the binding if there are still members assigned to this role
+                if binding["members"]:
+                    updated_bindings.append(binding)
+            else:
+                updated_bindings.append(binding)
+
+        if modified:
+            policy["bindings"] = updated_bindings
+
+            # Set the updated policy
+            set_policy_request = resource_manager.projects().setIamPolicy(  # pylint: disable=E1101
+                resource=f"projects/{project_id}", body={"policy": policy}
+            )
+            set_policy_request.execute()
+
+            hr = f"IAM role {role} was successfully removed from {member} in project {project_id}."
+        else:
+            hr = f"No changes made. The member {member} does not have the role {role} in project {project_id}."
+    else:
+        hr = f"No IAM bindings found for project {project_id}."
+
+    return CommandResults(readable_output=hr)
+
+
+def iam_deny_policy_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Creates an IAM deny policy to explicitly block access to specific resources.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'policy_id', 'denied_principals',
+                               'denied_permissions', and 'resource'.
+
+    Returns:
+        CommandResults: Result of the deny policy creation.
+    """
+    project_id = args.get("project_id")
+    policy_id = args.get("policy_id")
+    denied_principals = argToList(args.get("denied_principals"))
+    denied_permissions = argToList(args.get("denied_permissions"))
+    resource = args.get("resource")
+
+    iam = GcpService.IAM_V2.build(creds)
+    # Construct the deny policy
+    policy = {
+        "name": f"policies/{policy_id}",
+        "displayName": f"Deny Policy {policy_id}",
+        "rules": [
+            {
+                "denyRule": {
+                    "deniedPrincipals": denied_principals,
+                    "deniedPermissions": denied_permissions,
+                    "exceptionPrincipals": [],
+                    "deniedCondition": {},
+                }
+            }
+        ],
+        "etag": "",
+    }
+
+    # Create the policy
+    parent = f"projects/{project_id}"
+    response = iam.policies().create(parent=parent, policyId=policy_id, body=policy).execute()  # pylint: disable=E1101
+
+    # Attach the policy to the resource
+    attachment = {"attachedResource": resource, "policy": response["name"]}
+
+    iam.policies().attachments().create(parent=response["name"], body=attachment).execute()  # pylint: disable=E1101
+
+    hr = f"Deny policy {policy_id} was successfully created for project {project_id}."
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.IAM.DenyPolicy", outputs=response)
+
+
+def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Sets or removes a service account from a GCP Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', 'resource_name',
+                              and optional 'service_account' and 'scopes'.
+
+    Returns:
+        CommandResults: Result of the service account update operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+    service_account = args.get("service_account", "")
+    scopes = argToList(args.get("scopes", []))
+
+    compute = GcpService.COMPUTE.build(creds)
+
+    body = {}
+    if service_account:
+        body = {"email": service_account, "scopes": scopes}
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setServiceAccount(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    action = "updated" if service_account else "removed"
+    hr = f"Service account was successfully {action} for VM instance {resource_name} in project {project_id}."
+
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a user or service account from a GSuite group.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'group_id' and 'member_key'.
+
+    Returns:
+        CommandResults: Result of the group membership removal.
+    """
+    group_id = args.get("group_id")
+    member_key = args.get("member_key")
+
+    # Need to use the Admin SDK Directory API
+    directory = GcpService.ADMIN_DIRECTORY.build(creds)
+    try:
+        directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
+        hr = f"Member {member_key} was removed from group {group_id}."
+    except Exception as e:
+        raise DemistoException(f"Failed to remove member from group: {str(e)}") from e
+
+    return CommandResults(readable_output=hr)
+
+
+def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Deletes a GCP IAM service account.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id' and 'service_account_email'.
+
+    Returns:
+        CommandResults: Result of the service account deletion.
+    """
+    project_id = args.get("project_id")
+    service_account_email = args.get("service_account_email")
+
+    iam = GcpService.IAM_V1.build(creds)
+
+    # Format the resource name
+    name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
+
+    try:
+        iam.projects().serviceAccounts().delete(name=name).execute()  # pylint: disable=E1101
+        hr = f"Service account {service_account_email} was successfully deleted from project {project_id}."
+    except Exception as e:
+        raise DemistoException(f"Failed to delete service account: {str(e)}") from e
+
+    return CommandResults(readable_output=hr)
+
+
+def compute_instance_start(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Starts a stopped Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM start operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+
+    compute = GcpService.COMPUTE.build(creds)
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .start(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} was started in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
+
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
+
+
+def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Stops a running Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the VM stop operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+
+    compute = GcpService.COMPUTE.build(creds)
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .stop(project=project_id, zone=zone, instance=resource_name)
+        .execute()
+    )
+
+    hr = tableToMarkdown(
+        f"VM instance {resource_name} was stopped in project {project_id}",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
+
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
+
+
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
     """
     Checks if the provided GCP credentials have the required IAM permissions.
@@ -426,7 +714,7 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
 
     try:
-        resource_manager = build("cloudresourcemanager", RESOURCE_MANAGER_API_VERSION, credentials=creds)
+        resource_manager = GcpService.RESOURCE_MANAGER.build(creds)
         response = (
             resource_manager.projects()  # pylint: disable=E1101
             .testIamPermissions(name=f"projects/{project_id}", body={"permissions": permissions})
@@ -455,6 +743,13 @@ def main():
             "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             "gcp-container-cluster-security-update": container_cluster_security_update,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
+            "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            "gcp-iam-deny-policy-create": iam_deny_policy_create,
+            "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
+            "gcp-iam-group-membership-delete": iam_group_membership_delete,
+            "gcp-iam-service-account-delete": iam_service_account_delete,
+            "gcp-compute-instance-start": compute_instance_start,
+            "gcp-compute-instance-stop": compute_instance_stop,
         }
 
         if command != "test-module" and command not in command_map:
