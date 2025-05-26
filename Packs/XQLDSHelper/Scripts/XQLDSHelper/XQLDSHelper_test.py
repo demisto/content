@@ -416,6 +416,70 @@ class MainTester:
                 """
                 assert ok
 
+            # Validate 'RequestURL' - only when results.RequestURL is provided
+            returned_request_url = results.get("Contents").get("RequestURL")
+            expected_request_url = self.__config.get("results").get("RequestURL")
+            if expected_request_url is not None:
+                ok = MainTester.equals_entry(
+                    returned_request_url,
+                    expected_request_url,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_request_url, indent=2))
+                """
+                assert ok
+
+            # Validate 'ResultURL' - only when results.ResultURL is provided
+            returned_result_url = results.get("Contents").get("ResultURL")
+            expected_result_url = self.__config.get("results").get("ResultURL")
+            if expected_result_url is not None:
+                ok = MainTester.equals_entry(
+                    returned_result_url,
+                    expected_result_url,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_result_url, indent=2))
+                """
+                assert ok
+
+            # Validate 'ExecutionID' - only when results.ExecutionID is provided
+            returned_execution_id = results.get("Contents").get("ExecutionID")
+            expected_execution_id = self.__config.get("results").get("ExecutionID")
+            if expected_execution_id is not None:
+                ok = MainTester.equals_entry(
+                    returned_execution_id,
+                    expected_execution_id,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_execution_id, indent=2))
+                """
+                assert ok
+
+            # Validate 'RecordSet' - only when results.RecordSet is provided
+            returned_recordset = results.get("Contents").get("RecordSet")
+            expected_recordset = self.__config.get("results").get("RecordSet")
+            if expected_recordset is not None:
+                ok = MainTester.equals_entry(
+                    returned_recordset,
+                    expected_recordset,
+                    skip_keys=False,
+                )
+                """
+                if not ok:
+                    print(json.dumps(self.__config, indent=2))
+                    print(json.dumps(returned_recordset, indent=2))
+                """
+                assert ok
+
 
 class TestXQLDSHelper:
     @staticmethod

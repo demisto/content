@@ -31,6 +31,7 @@ The query is executed by the `xdr-xql-generic-query` and the `xdr-xql-get-query-
 | polling_interval | The polling interval \(in seconds\) to wait for results \(Default = 10\). |
 | query_timeout_duration | The maximum duration (in seconds) allowed for an XQL query to complete after it has started \(Default = 60\). |
 | context_data | The custom context data is merged with the current context data for use. |
+| output_recordset | Set to true to return the recordset in the outputs context; otherwise, set to false. |
 | xql_query_instance | The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results. |
 
 ### Query Execution Timeout and Retry Limits
@@ -46,6 +47,10 @@ Once the query starts running, it may take some time to return results. During t
 | --- | --- | --- |
 | XQLDSHelper.QueryParams | The query parameters. | unknown |
 | XQLDSHelper.QueryHash | The hash value of the query parameters. | string |
+| XQLDSHelper.RequestURL | The URL path, including query parameters, used to search datasets in the XQL builder. | string |
+| XQLDSHelper.ResultURL | The URL path used to get the results of an executed query in the XQL builder. | string |
+| XQLDSHelper.ExecutionID | The unique execution ID for the request query. | string |
+| XQLDSHelper.RecordSet | The record set retrieved by the XQL query. | unknown |
 | XQLDSHelper.Entry | The entry data for the general dynamic section. | unknown |
 
 ## Structure of the templates
@@ -1437,8 +1442,10 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 
 In addition, it supports extended variables that start with `.`.
 <!-- markdownlint-disable MD005 -->
-- ${.recordset}
-  - It refers to the record set retrieved by the XQL query.- ${.query.string}
+ - ${.recordset}
+   * It refers to the record set retrieved by the XQL query.
+
+ - ${.query.string}
    * It refers to the query string used in the XQL query.
 
  - ${.query.timeframe.from}
