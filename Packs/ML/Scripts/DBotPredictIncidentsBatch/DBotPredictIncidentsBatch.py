@@ -67,13 +67,14 @@ def main():
     email_subject_list = [i.get(subject_field_name, "") for i in incidents]
     email_body_list = [i.get(body_field_name, "") for i in incidents]
     email_html_list = [i.get(html_field_name, "") for i in incidents]
-    
+
     if not (email_body_list or email_html_list) and email_subject_list:
         if not incidents:
-            return_error("No incidents match the query.\n"
-                         f"Query arguments: !GetIncidentsByQuery {get_incidents_by_query_args}")
-        return_error("Incidents are missing fields.\nFields:\n"
-                     f"emailsubject: {email_subject_list}\nemailbody: {email_body_list}\nemailbodyhtml: {email_html_list}")
+            return_error("No incidents match the query.\n" f"Query arguments: !GetIncidentsByQuery {get_incidents_by_query_args}")
+        return_error(
+            "Incidents are missing fields.\nFields:\n"
+            f"emailsubject: {email_subject_list}\nemailbody: {email_body_list}\nemailbodyhtml: {email_html_list}"
+        )
 
     model_name = d_args.get("modelName")
 
