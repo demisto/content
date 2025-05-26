@@ -77,7 +77,7 @@ tasks:
     task:
       id: 987d0709-7e38-4c8c-b576-86ea099e9376
       version: -1
-      name: Get IP, Identities & Anomaly Data
+      name: Get Extended Alert Data
       description: Provides additional information about the alert, such as **IP address, assignor and assignee identities, and UA/ASN/country anomalies**
       script: '|||core-get-cloud-original-alerts'
       type: regular
@@ -721,7 +721,7 @@ tasks:
     task:
       id: c2843ef8-6f54-491a-bbd2-45f84f9ef012
       version: -1
-      name: What Integration is Available?
+      name: Check Available Integrations
       description: Integration with *MSGraph Identity and Access* or with *Azure Risky Users* is required to retrieve **Azure Risk Detections**
       type: condition
       iscommand: false
