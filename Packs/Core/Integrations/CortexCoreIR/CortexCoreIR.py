@@ -29,9 +29,15 @@ PREVALENCE_COMMANDS = {
 
 TERMINATE_BUILD_NUM = "1398786"
 TERMINATE_SERVER_VERSION = "8.8.0"
-COMMAND_DATA_KEYS = ['failed_files', 'retention_date', 'retrieved_files', 'standard_output', 'command_output', 'execution_status']
-EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = ['endpoint_id', 'command', 'command_output', 'endpoint_ip_address', 'endpoint_name',
-                                          'endpoint_status']
+COMMAND_DATA_KEYS = ["failed_files", "retention_date", "retrieved_files", "standard_output", "command_output", "execution_status"]
+EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS = [
+    "endpoint_id",
+    "command",
+    "command_output",
+    "endpoint_ip_address",
+    "endpoint_name",
+    "endpoint_status",
+]
 
 
 class Client(CoreClient):
@@ -185,22 +191,22 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
 
 def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]]:
     """
-         Converts relative expiration strings / numbers to epoch milliseconds or returns 'Never'.
+     Converts relative expiration strings / numbers to epoch milliseconds or returns 'Never'.
 
-        Args:
-            expiration Optional[str]: The input from the command argument
+    Args:
+        expiration Optional[str]: The input from the command argument
 
-        Returns:
-            Optional[int, str]: The valiue that represent the expiration date of the IOC rule:
-                None: the rule get a default value.
-                str: "Never" - The rule has no expiration date.
-                int: epoch milliseconds of the expiration date.
-        """
+    Returns:
+        Optional[int, str]: The valiue that represent the expiration date of the IOC rule:
+            None: the rule get a default value.
+            str: "Never" - The rule has no expiration date.
+            int: epoch milliseconds of the expiration date.
+    """
 
     if not expiration:
         return None
-    if expiration == 'Never':
-        return 'Never'
+    if expiration == "Never":
+        return "Never"
 
     def convert_datetime_to_epoch_milli(dt: datetime) -> int:
         return int(dt.timestamp() * 1000)
@@ -248,17 +254,19 @@ def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> d
     Returns:
         dict: Parsed JSON-style IOC object.
     """
-    if input_format == 'JSON':
-        return ioc_payload
+    if input_format == "JSON":
+        return cast(dict, ioc_payload)
+
+    ioc_payload = cast(str, ioc_payload)
 
     # Split CSV string into lines
     lines = ioc_payload.strip().splitlines()
-    header = lines[0].split(',')
-    values = lines[1].split(',')
+    header = lines[0].split(",")
+    values = lines[1].split(",")
 
     # Map headers to values, collecting all duplicate fields
     # Create a flat mapping, keeping the last occurrence of each header
-    field_map = {}
+    field_map: dict[str, Any] = {}
     for i, key in enumerate(header):
         field_map[key] = values[i]  # always overwrite (keep last)
 
@@ -267,17 +275,13 @@ def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> d
         field_map["expiration_date"] = int_val_date
 
     # Extract vendor fields
-    vendor_name = field_map.pop('vendor.name', None)
-    vendor_reliability = field_map.pop('vendor.reliability', None)
-    vendor_reputation = field_map.pop('vendor.reputation', None)
+    vendor_name = field_map.pop("vendor.name", None)
+    vendor_reliability = field_map.pop("vendor.reliability", None)
+    vendor_reputation = field_map.pop("vendor.reputation", None)
 
     # Attach vendor only if name exists
     if vendor_name:
-        field_map['vendors'] = [{
-            "vendor_name": vendor_name,
-            "reliability": vendor_reliability,
-            "reputation": vendor_reputation
-        }]
+        field_map["vendors"] = [{"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}]
 
     return field_map
 
@@ -295,18 +299,22 @@ def core_execute_command_reformat_readable_output(script_res: list) -> str:
     """
     reformatted_results = []
     for response in script_res:
-        results = response.outputs.get('results')
+        results = response.outputs.get("results")
         for res in results:
             # for each result, get only the data we want to present to the user
             reformatted_result = {}
             for key in EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS:
                 reformatted_result[key] = res.get(key)
             # remove the underscore prefix from the command name
-            reformatted_result['command'] = reformatted_result['command'].removeprefix('_')
+            reformatted_result["command"] = reformatted_result["command"].removeprefix("_")
             reformatted_results.append(reformatted_result)
-    return tableToMarkdown(f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
-                           reformatted_results, EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS, removeNull=True,
-                           headerTransform=string_to_table_header)
+    return tableToMarkdown(
+        f'Script Execution Results for Action ID: {script_res[0].outputs["action_id"]}',
+        reformatted_results,
+        EXECUTE_COMMAND_READABLE_OUTPUT_FIELDS,
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
 
 
 def core_execute_command_reformat_command_data(result: dict) -> dict:
@@ -319,7 +327,7 @@ def core_execute_command_reformat_command_data(result: dict) -> dict:
     Returns:
         dict: all relevant command data from the result
     """
-    reformatted_command = {'command': result['command'].removeprefix('_')}  # remove the underscore prefix from the command name
+    reformatted_command = {"command": result["command"].removeprefix("_")}  # remove the underscore prefix from the command name
     for key in COMMAND_DATA_KEYS:
         reformatted_command[key] = result.get(key)
     return reformatted_command
@@ -337,22 +345,22 @@ def core_execute_command_reformat_outputs(script_res: list) -> list:
     """
     new_results: dict[str, Any] = {}
     for response in script_res:
-        results = response.outputs.get('results')
+        results = response.outputs.get("results")
         for res in results:
-            endpoint_id = res.get('endpoint_id')
+            endpoint_id = res.get("endpoint_id")
             if endpoint_id in new_results:
                 # if the endpoint already exists - adding the command data to new_results (the endpoint data already in)
-                new_results[endpoint_id]['executed_command'].append(core_execute_command_reformat_command_data(res))
+                new_results[endpoint_id]["executed_command"].append(core_execute_command_reformat_command_data(res))
                 # the context output include for each result a field with the name of each command, we want to remove it
-                command_name = res.get('command')
+                command_name = res.get("command")
                 new_results[endpoint_id].pop(command_name)
             else:
                 # if the endpoint doesn't already exist - adding all the data into new_results[endpoint]
                 # relocate all the data related to the command to be under executed_command
                 reformatted_res = deepcopy(res)
-                reformatted_res['executed_command'] = [core_execute_command_reformat_command_data(res)]
+                reformatted_res["executed_command"] = [core_execute_command_reformat_command_data(res)]
                 # remove from reformatted_res all the data we put under executed_command
-                command_name = reformatted_res.pop('command')
+                command_name = reformatted_res.pop("command")
                 reformatted_res.pop(command_name)
                 for key in COMMAND_DATA_KEYS:
                     reformatted_res.pop(key)
@@ -374,16 +382,16 @@ def core_execute_command_reformat_args(args: dict) -> dict:
     Returns:
         dict: reformatted args.
     """
-    commands = args.get('command')
+    commands = args.get("command")
     if not commands:
         raise DemistoException("'command' is a required argument.")
     # the value of script_uid is the Unique identifier of execute_commands script.
-    reformatted_args = args | {'is_core': True, 'script_uid': 'a6f7683c8e217d85bd3c398f0d3fb6bf'}
-    is_raw_command = argToBoolean(args.get('is_raw_command', False))
-    commands_list = [commands] if is_raw_command else argToList(commands, args.get('command_separator', ','))
-    if args.get('command_type') == 'powershell':
+    reformatted_args = args | {"is_core": True, "script_uid": "a6f7683c8e217d85bd3c398f0d3fb6bf"}
+    is_raw_command = argToBoolean(args.get("is_raw_command", False))
+    commands_list = [commands] if is_raw_command else argToList(commands, args.get("command_separator", ","))
+    if args.get("command_type") == "powershell":
         commands_list = [form_powershell_command(command) for command in commands_list]
-    reformatted_args['parameters'] = json.dumps({'commands_list': commands_list})
+    reformatted_args["parameters"] = json.dumps({"commands_list": commands_list})
     return reformatted_args
 
 
@@ -399,12 +407,12 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         PollResult: Reformatted script_run_polling_command result.
     """
     reformatted_args = core_execute_command_reformat_args(args)
-    script_res = script_run_polling_command(reformatted_args, client, statuses=('PENDING', 'IN_PROGRESS', 'PENDING_ABORT'))
+    script_res = script_run_polling_command(reformatted_args, client, statuses=("PENDING", "IN_PROGRESS", "PENDING_ABORT"))
     # script_res = [CommandResult] if it's the final result (ScriptResult)
     # else if the polling still continue, script_res = CommandResult
     if isinstance(script_res, list):
         script_res[0].readable_output = core_execute_command_reformat_readable_output(script_res)
-        script_res[0].outputs['results'] = core_execute_command_reformat_outputs(script_res)
+        script_res[0].outputs["results"] = core_execute_command_reformat_outputs(script_res)
     elif isinstance(script_res, CommandResults):
         # delete ScriptRun from context data
         script_res.outputs = None
@@ -442,21 +450,21 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
                         raw response, and outputs for integration context.
     """
     # Required arguments
-    indicator = args['indicator']
-    indicator_type = args['type']
-    severity = args['severity']
+    indicator = args["indicator"]
+    indicator_type = args["type"]
+    severity = args["severity"]
 
     # Optional arguments
-    expiration_date = args.get('expiration_date')
-    comment = args.get('comment')
-    reputation = args.get('reputation')
-    reliability = args.get('reliability')
-    indicator_class = args.get('class')
-    vendor_name = args.get('vendor_name')
-    vendor_reputation = args.get('vendor_reputation')
-    vendor_reliability = args.get('vendor_reliability')
-    input_format = args.get('input_format', 'JSON')  # Default to 'JSON'
-    ioc_object = args.get('ioc_object')
+    expiration_date = args.get("expiration_date")
+    comment = args.get("comment")
+    reputation = args.get("reputation")
+    reliability = args.get("reliability")
+    indicator_class = args.get("class")
+    vendor_name = args.get("vendor_name")
+    vendor_reputation = args.get("vendor_reputation")
+    vendor_reliability = args.get("vendor_reliability")
+    input_format = args.get("input_format", "JSON")  # Default to 'JSON'
+    ioc_object = args.get("ioc_object")
     ioc_payload: Union[dict, str]
 
     # Handle pre-built IOC object
@@ -464,22 +472,18 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         # Try to detect JSON
         try:
             ioc_payload = json.loads(ioc_object)
-            input_format = 'JSON'
+            input_format = "JSON"
         except json.JSONDecodeError:
             # Not JSON, check if it looks like CSV (very basic check)
-            if ',' in ioc_object and ('\\n' in ioc_object or '\n' in ioc_object):
-                ioc_object = ioc_object.replace('\\n', '\n')
+            if "," in ioc_object and ("\\n" in ioc_object or "\n" in ioc_object):
+                ioc_object = ioc_object.replace("\\n", "\n")
                 ioc_payload = ioc_object  # Leave as raw string
-                input_format = 'CSV'
+                input_format = "CSV"
             else:
                 raise DemistoException("Invalid ioc_object: must be either valid JSON or CSV string.")
     else:
         # Build payload from individual arguments
-        ioc_payload = {
-            "indicator": indicator,
-            "type": indicator_type,
-            "severity": severity
-        }
+        ioc_payload = {"indicator": indicator, "type": indicator_type, "severity": severity}
         parsed_expiration_date = parse_expiration_date(expiration_date)
         ioc_payload["expiration_date"] = parsed_expiration_date
         ioc_payload["comment"] = comment
@@ -488,15 +492,13 @@ def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
         ioc_payload["class"] = indicator_class
 
         if vendor_name:
-            ioc_payload["vendors"] = [{
-                "vendor_name": vendor_name,
-                "reliability": vendor_reliability,
-                "reputation": vendor_reputation
-            }]
-        input_format = 'JSON'
+            ioc_payload["vendors"] = [
+                {"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}
+            ]
+        input_format = "JSON"
 
     # Request According to format
-    if input_format == 'CSV':
+    if input_format == "CSV":
         suffix = "indicators/insert_csv"
     else:
         suffix = "indicators/insert_jsons"

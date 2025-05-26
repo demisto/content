@@ -1,5 +1,4 @@
 import json
-from symtable import Class
 from unittest.mock import MagicMock
 
 import pytest
@@ -381,6 +380,7 @@ def test_reformat_args_missing_command_raises():
         - Should raise a DemistoException.
     """
     from CommonServerPython import DemistoException
+
     args = {}
     with pytest.raises(DemistoException, match="'command' is a required argument."):
         core_execute_command_reformat_args(args)
@@ -395,10 +395,7 @@ def test_reformat_args_is_raw_command_true():
     Then:
         - Verify that commands_list has only one element.
     """
-    args = {
-        "command": "dir, hostname",
-        "is_raw_command": True
-    }
+    args = {"command": "dir, hostname", "is_raw_command": True}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir, hostname"]
@@ -406,7 +403,7 @@ def test_reformat_args_is_raw_command_true():
     assert reformatted_args["script_uid"] == "a6f7683c8e217d85bd3c398f0d3fb6bf"
 
 
-@pytest.mark.parametrize("separator", [',', '/', '|'])
+@pytest.mark.parametrize("separator", [",", "/", "|"])
 def test_reformat_args_separators(separator):
     """
     Given:
@@ -416,11 +413,7 @@ def test_reformat_args_separators(separator):
     Then:
         - Verify that commands_list split by the chosen separator.
     """
-    args = {
-        "command": f"dir{separator}hostname",
-        "is_raw_command": False,
-        "command_separator": separator
-    }
+    args = {"command": f"dir{separator}hostname", "is_raw_command": False, "command_separator": separator}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ["dir", "hostname"]
@@ -435,11 +428,7 @@ def test_reformat_args_powershell_command_formatting():
     Then:
         - Verify command at commands_list reformated from 'command' to 'powershell -Command "command"'.
     """
-    args = {
-        "command": "Get-Process",
-        "command_type": "powershell",
-        "is_raw_command": True
-    }
+    args = {"command": "Get-Process", "command_type": "powershell", "is_raw_command": True}
     reformatted_args = core_execute_command_reformat_args(args)
     params = json.loads(reformatted_args["parameters"])
     assert params["commands_list"] == ['powershell -Command "Get-Process"']
@@ -456,7 +445,8 @@ def test_reformat_output():
         Instead of a list with element for each commmand, we'll have an element for each endpoint.
     """
     from CortexCoreIR import core_execute_command_reformat_outputs
-    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+
+    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
     reformatted_outputs = core_execute_command_reformat_outputs([mock_res])
     excepted_output = [
         {
@@ -465,27 +455,26 @@ def test_reformat_output():
             "endpoint_status": "STATUS_010_CONNECTED",
             "domain": "domain.name",
             "endpoint_id": "dummy_id",
-            "executed_command":
-                [
-                    {
-                        "command": "echo",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "output",
-                        "command_output": [],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    },
-                    {
-                        "command": "echo hello",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "outputs",
-                        "command_output": ["hello"],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    }
-                ]
+            "executed_command": [
+                {
+                    "command": "echo",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": [],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+                {
+                    "command": "echo hello",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "outputs",
+                    "command_output": ["hello"],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+            ],
         },
         {
             "endpoint_name": "name2",
@@ -493,28 +482,27 @@ def test_reformat_output():
             "endpoint_status": "STATUS_010_CONNECTED",
             "domain": "",
             "endpoint_id": "dummy_id2",
-            "executed_command":
-                [
-                    {
-                        "command": "echo",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "out",
-                        "command_output": [],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    },
-                    {
-                        "command": "echo hello",
-                        "failed_files": 0,
-                        "retention_date": None,
-                        "retrieved_files": 0,
-                        "standard_output": "output",
-                        "command_output": ["hello"],
-                        "execution_status": "COMPLETED_SUCCESSFULLY",
-                    }
-                ]
-        }
+            "executed_command": [
+                {
+                    "command": "echo",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "out",
+                    "command_output": [],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+                {
+                    "command": "echo hello",
+                    "failed_files": 0,
+                    "retention_date": None,
+                    "retrieved_files": 0,
+                    "standard_output": "output",
+                    "command_output": ["hello"],
+                    "execution_status": "COMPLETED_SUCCESSFULLY",
+                },
+            ],
+        },
     ]
     assert reformatted_outputs == excepted_output
 
@@ -530,7 +518,8 @@ def test_reformat_readable():
         Instead of a row for each endpoint, we'll have a row for each command.
     """
     from CortexCoreIR import core_execute_command_reformat_readable_output
-    mock_res = CommandResults(outputs_prefix='val', outputs=load_test_data("./test_data/execute_command_response.json"))
+
+    mock_res = CommandResults(outputs_prefix="val", outputs=load_test_data("./test_data/execute_command_response.json"))
     reformatted_readable_output = core_execute_command_reformat_readable_output([mock_res])
     excepted_output = """### Script Execution Results for Action ID: 1
 |Endpoint Id|Command|Command Output|Endpoint Ip Address|Endpoint Name|Endpoint Status|
@@ -617,12 +606,9 @@ def test_prepare_ioc_to_output():
     """
 
     from CortexCoreIR import prepare_ioc_to_output
+
     # Case 1: input_format is JSON → return as-is
-    json_input = {
-        "indicator": "1.2.3.4",
-        "type": "IP",
-        "severity": "HIGH"
-    }
+    json_input = {"indicator": "1.2.3.4", "type": "IP", "severity": "HIGH"}
     assert prepare_ioc_to_output(json_input, "JSON") == json_input
 
     # Case 2: input_format is CSV → single vendor, return as dict
@@ -639,11 +625,7 @@ def test_prepare_ioc_to_output():
         "reputation": "SUSPICIOUS",
         "reliability": "D",
         "class": "Malware",
-        "vendors": [{
-            "vendor_name": "VirusTotal",
-            "reliability": "A",
-            "reputation": "GOOD"
-        }]
+        "vendors": [{"vendor_name": "VirusTotal", "reliability": "A", "reputation": "GOOD"}],
     }
     assert prepare_ioc_to_output(csv_input_single_vendor, "CSV") == expected_output_single
 
@@ -665,23 +647,16 @@ def test_prepare_ioc_to_output():
         "reputation": "SUSPICIOUS",
         "reliability": "D",
         "class": "Malware",
-        "vendors": [{
-            "vendor_name": "VirusTotalV5",
-            "reliability": "B",
-            "reputation": "SUSPICIOUS"
-        }]
+        "vendors": [{"vendor_name": "VirusTotalV5", "reliability": "B", "reputation": "SUSPICIOUS"}],
     }
     assert prepare_ioc_to_output(csv_input_multi_vendor, "CSV") == expected_output_multi
 
 
 def get_mock_client():
     return Client(
-        base_url="https://dummy.url",
-        proxy=False,
-        verify=False,
-        headers={"Authorization": "Bearer dummy"},
-        timeout=10
+        base_url="https://example.com", proxy=False, verify=False, headers={"Authorization": "Bearer dummy"}, timeout=10
     )
+
 
 class TestCoreAddIndicator:
     def test_core_add_indicator_json(self, mocker):
@@ -698,9 +673,9 @@ class TestCoreAddIndicator:
         """
 
         client = get_mock_client()
-        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-            "reply": {"success": True, "validation_errors": []}
-        })
+        mock_post = mocker.patch.object(
+            client, "post_indicator_rule", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
 
         args = {
             "indicator": "1.2.3.4",
@@ -714,7 +689,7 @@ class TestCoreAddIndicator:
             "vendor_name": "VirusTotal",
             "vendor_reliability": "A",
             "vendor_reputation": "GOOD",
-            "input_format": "JSON"
+            "input_format": "JSON",
         }
 
         result = core_add_indicator_command(client, args)
@@ -725,7 +700,6 @@ class TestCoreAddIndicator:
         mock_post.assert_called_once()
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_jsons"
-
 
     def test_core_add_indicator_success_minimal_args(self, mocker):
         """
@@ -739,20 +713,13 @@ class TestCoreAddIndicator:
             - Verify that results were correctly parsed.
         """
         client = get_mock_client()
-        mocker.patch.object(client, "post_indicator_rule", return_value={
-            "reply": {"success": True, "validation_errors": []}
-        })
+        mocker.patch.object(client, "post_indicator_rule", return_value={"reply": {"success": True, "validation_errors": []}})
 
-        args = {
-            "indicator": "example.com",
-            "type": "DOMAIN_NAME",
-            "severity": "LOW"
-        }
+        args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
 
         result = core_add_indicator_command(client, args)
         assert isinstance(result, CommandResults)
         assert "example.com" in result.readable_output
-
 
     def test_core_add_indicator_csv(self, mocker):
         """
@@ -768,9 +735,9 @@ class TestCoreAddIndicator:
             - Verify that the API call was sent with the correct params.
         """
         client = get_mock_client()
-        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-            "reply": {"success": True, "validation_errors": []}
-        })
+        mock_post = mocker.patch.object(
+            client, "post_indicator_rule", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
 
         csv_payload = (
             "indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation"
@@ -783,7 +750,7 @@ class TestCoreAddIndicator:
             "input_format": "JSON",
             "indicator": "ignored",
             "type": "ignored",
-            "severity": "ignored"
+            "severity": "ignored",
         }
 
         result = core_add_indicator_command(client, args)
@@ -793,7 +760,6 @@ class TestCoreAddIndicator:
         mock_post.assert_called_once()
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_csv"
-
 
     def test_core_add_indicator_ioc_object_precedence(self, mocker):
         """
@@ -809,16 +775,16 @@ class TestCoreAddIndicator:
             - Verify that the API call was sent with the correct params.
         """
         client = get_mock_client()
-        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-            "reply": {"success": True, "validation_errors": []}
-        })
+        mock_post = mocker.patch.object(
+            client, "post_indicator_rule", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
 
         args = {
             "ioc_object": '{"indicator": "5.5.5.5", "type": "IP", "severity": "LOW"}',
             "input_format": "JSON",
             "indicator": "should_not_use_this",
             "type": "should_not_use_this",
-            "severity": "should_not_use_this"
+            "severity": "should_not_use_this",
         }
 
         result = core_add_indicator_command(client, args)
@@ -828,7 +794,6 @@ class TestCoreAddIndicator:
         mock_post.assert_called_once()
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_jsons"
-
 
     def test_core_add_indicator_invalid_ioc_object_raises_error(self, mocker):
         """
@@ -842,14 +807,9 @@ class TestCoreAddIndicator:
             - Verify an error has been raised and that the error message is correct.
         """
         client = get_mock_client()
-        args = {
-            "ioc_object": "not a json or csv string",
-            "input_format": "JSON",
-            "indicator": "x", "type": "x", "severity": "x"
-        }
+        args = {"ioc_object": "not a json or csv string", "input_format": "JSON", "indicator": "x", "type": "x", "severity": "x"}
         with pytest.raises(DemistoException, match="Invalid ioc_object: must be either valid JSON or CSV string."):
             core_add_indicator_command(client, args)
-
 
     def test_core_add_indicator_failure_response(self, mocker):
         """
@@ -863,21 +823,18 @@ class TestCoreAddIndicator:
             - Verify an error has been raised and that the error message is correct.
         """
         client = get_mock_client()
-        mock_post = mocker.patch.object(client, "post_indicator_rule", return_value={
-            "reply": {
-                "success": False,
-                "validation_errors": [
-                    {"indicator": "dummy", "error": "error1"},
-                    {"indicator": "dummy", "error": "error2"}
-                ]
-            }
-        })
+        mock_post = mocker.patch.object(
+            client,
+            "post_indicator_rule",
+            return_value={
+                "reply": {
+                    "success": False,
+                    "validation_errors": [{"indicator": "dummy", "error": "error1"}, {"indicator": "dummy", "error": "error2"}],
+                }
+            },
+        )
 
-        args = {
-            "indicator": "dummy",
-            "type": "IP",
-            "severity": "HIGH"
-        }
+        args = {"indicator": "dummy", "type": "IP", "severity": "HIGH"}
 
         with pytest.raises(DemistoException) as exc_info:
             core_add_indicator_command(client, args)
