@@ -1,6 +1,3 @@
-sectionOrder:
-- Connect
-- Collect
 category: Messaging and Conferencing
 commonfields:
   id: SlackV3
@@ -66,9 +63,8 @@ configuration:
   - failedFetchIncidents
   - mentionNew
   - mentionOld
-  - deprecatedContentInUse
   advanced: true
-  additionalinfo: Types of notifications to send (to individual users and to the dedicated Slack channel, if specified).To enable use User (User Name) -> User Preferences -> Notifications
+  additionalinfo: By default, externalFormSubmit is enabled in order to allow Ask tasks to be sent correctly.
 - display: Type of incidents created in Slack
   name: incidentType
   type: 13
@@ -103,7 +99,6 @@ configuration:
   advanced: true
   additionalinfo: Trust any certificate (not secure). Make sure to mark this parameter if you want the SlackBlockBuilder script to send a response back to the incident context.
 - defaultvalue: 'true'
-  defaultvalue:xpanse: 'false'
   display: Enable Incident Mirroring
   name: mirroring
   type: 8
@@ -116,7 +111,6 @@ configuration:
   required: false
   additionalinfo: Whether to enable mirroring only from xsoar to slack, mark it if file mirroring is required in investigations.
 - defaultvalue: 'true'
-  defaultvalue:xpanse: 'false'
   display: Long running instance. Required for investigation mirroring and direct messages.
   name: longRunning
   type: 8
@@ -168,9 +162,7 @@ configuration:
   displaypassword: XSOAR API Key
   hiddenusername: true
   additionalinfo: Adding an API key will enable the integration to handle blocks that contain a state and is necessary for the SlackBlockBuilder script.
-  hidden:
-  - marketplacev2
-  - xsoar
+  hidden: true
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -201,6 +193,11 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- additionalinfo: You can create an incident using the slash command via Slack with a json list as in the example.
+  display: Slash Commands Json
+  name: slash_commands
+  required: false
+  type: 0
 description: Send messages and notifications to your Slack team.
 display: Slack v3
 name: SlackV3
@@ -382,7 +379,7 @@ script:
     name: slack-rename-channel
   - arguments:
     - default: true
-      description: The Slack user (username, email or user ID).
+      description: The Slack user (username or email).
       name: user
       required: true
     description: Get details about a specified user.
@@ -406,6 +403,7 @@ script:
   - description: Returns the integration context as a file. Use this command for debug purposes only.
     hidden: true
     name: slack-get-integration-context
+    arguments: []
   - arguments:
     - description: The channel containing the message.
       name: channel
@@ -457,7 +455,7 @@ script:
     - defaultValue: 'true'
       description: Default is true (exclude archived channels). This setting allows the command to read channels that have been archived.
       name: exclude_archived
-    - defaultValue: 100
+    - defaultValue: '100'
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
     - description: 'Default is the first page of results. If you have more results than your limit, you need to paginate your results with this argument.  This is found with the next_cursor attribute returned by a previous request''s response_metadata.'
@@ -484,7 +482,7 @@ script:
     - description: The channel ID associated with the Slack channel.
       name: channel_id
       required: true
-    - defaultValue: 100
+    - defaultValue: '100'
       description: Set this argument to specify how many results to return. If you have more results than the limit you set, you will need to use the cursor argument to paginate your results.
       name: limit
     - description: The conversation ID.
@@ -498,38 +496,18 @@ script:
     - name: thread_timestamp
       description: The timestamp of the thread, that can be extracted using "slack-get-conversation-history" command.
       required: true
-    - defaultValue: 100
+    - defaultValue: '100'
       name: limit
       description: Set this argument to specify how many results to return.
     description: Retrieves replies to specific messages, regardless of whether it's from a public or private channel, direct message, or otherwise.
     name: slack-get-conversation-replies
-  - arguments:
-    - default: true
-      description: 'The message to send to the channel. Use issue fields as variables to enrich the text. Example: “${issue.details}”.'
-      name: message
-      prettyname: Message
-      required: true
-    - description: The name of the Slack channel to which to send the message.
-      name: channel
-      prettyname: Channel
-      required: true
-    description: Sends a message to a user, group, or channel.
-    name: slack-send-notification-quick-action
-    prettyname: Send Slack Message
-    hidden: true
-    quickaction: true
-    outputs:
-      - contextPath: Slack.Thread.ID
-        description: The Slack thread ID.
-        type: String
-  dockerimage: demisto/slackv3:1.0.0.3040830
+  dockerimage: demisto/slackv3:1.0.0.3470211
   longRunning: true
   runonce: false
-  script: '-'
+  script: ''
   subtype: python3
   type: python
   isFetchSamples: true
-supportsquickactions: true
 fromversion: 5.5.0
 tests:
 - SlackV3 TestPB
