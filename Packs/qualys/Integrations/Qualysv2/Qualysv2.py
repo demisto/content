@@ -7,7 +7,7 @@ import csv
 import io
 import requests
 import signal
-import xml.etree.ElementTree as ET
+from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
 
@@ -3258,10 +3258,14 @@ def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
 
     response = client.get_qid_for_cve(cve=cve)
     # Parse XML response
-    root = ET.fromstring(response.content)
+    root = ElementTree.fromstring(response.content)
 
     # Extract QID(s)
-    qids = [vuln.find("QID").text for vuln in root.findall(".//VULN")]
+    qids = []
+    for vuln in root.findall(".//VULN"):
+        qid_elem = vuln.find("QID")
+        if qid_elem is not None:
+            qids.append(qid_elem.text)
 
     return CommandResults(
         readable_output=f"They are the {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"

@@ -22201,3 +22201,40 @@ Manual command to fetch assets from Qualys and display them.
 #### Context Output
 
 There is no context output for this command.
+
+### qualys-get-assets-by-qid
+
+***
+Retrieves a list of assets (hosts) affected by a specified Qualys QID.
+
+#### Base Command
+
+`qualys-get-assets-by-qid`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| qid | The Qualys ID (QID) used to identify and retrieve assets affected by the specified vulnerability. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+### qualys-get-quid-by-cve
+
+***
+Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+
+#### Base Command
+
+`qualys-get-quid-by-cve`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| cve | The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
