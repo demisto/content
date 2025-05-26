@@ -45,7 +45,7 @@ configuration:
   section: Collect
 - name: severity
   additionalinfo: 'The system will fetch detections of the selected severity level and all higher severity levels.'
-  display: Minimum detection severity to fetch
+  display: Minimum detection severity to fetch.
   options:
   - None
   - Critical
