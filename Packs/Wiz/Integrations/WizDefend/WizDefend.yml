@@ -58,6 +58,7 @@ configuration:
   section: Collect
 - name: type
   display: Type of detections to fetch.
+  additionalinfo: 'Select the type of detections to fetch from Wiz. "GENERATED THREAT" fetches detections that resulted in actual threats being identified. "DID NOT GENERATE THREAT" fetches detections that matched rules but did not result in threats. Leave as "None" to fetch all detection types.'
   options:
   - None
   - GENERATED THREAT
