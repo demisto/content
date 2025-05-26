@@ -1,4 +1,7 @@
 category: Utilities
+sectionorder:
+- Connect
+- Collect
 commonfields:
   id: WizDefend
   version: -1
@@ -396,7 +399,7 @@ script:
           - MEDIUM
           - LOW
           - INFORMATIONAL
-        description: Minimum threat severity to fetch
+        description: Minimum threat severity to fetch.
       - name: status
         auto: PREDEFINED
         predefined:
@@ -473,7 +476,7 @@ script:
       - contextPath: Wiz.Manager.Threats.status
         description: Wiz Threat status.
         type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'

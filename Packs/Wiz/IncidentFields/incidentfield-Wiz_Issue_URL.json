@@ -5,7 +5,7 @@
     "name": "Wiz Issue URL",
     "ownerOnly": false,
     "cliName": "wizissueurl",
-    "type": "url",
+    "type": "shortText",
     "closeForm": false,
     "editForm": true,
     "required": false,

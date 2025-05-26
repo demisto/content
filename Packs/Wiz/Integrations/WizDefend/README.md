@@ -1,356 +1,166 @@
-Agentless, context-aware and full-stack security and compliance for AWS, Azure and GCP.
-This integration was integrated and tested with Wiz
+# WizDefend Integration
 
-## Configure Wiz in Cortex
+Agentless cloud security platform for detecting and addressing cloud issues, detections, and threats.
 
+## Configure WizDefend on Cortex XSOAR
 
-| **Parameter** | **Description** | **Required** |
-| --- | --- | --- |
-| name | Integration Name. Default: `Wiz_instance_1` | True |
-| said | Service Account ID | True |
-| sasecret | Service Account Secret | True |
-| auth_endpoint | Wiz Authentication Endpoint, e.g., `https://auth.app.wiz.io/oauth/token` | True |
-| api_endpoint | Wiz API Endpoint. Default: `https://api.us1.app.wiz.io/graphql` <br /> To find your API endpoint URL: <br />1. Log in to Wiz, then open your <a href="https://app.wiz.io/user/profile">user profile</a> <br />2. Copy the **API Endpoint URL** to use here. | True
-| first_fetch | First fetch timestamp \(`<number>` `<time unit>`, e.g., 12 hours, 7 days\) | False |
-| Fetch incidents | Issue Streaming type.<br />Either `Fetch incidents` (to constantly pull Issues) or `Do not fetch` (to push live Issues)| False |
-| max_fetch | Max Issues to fetch | False |
+1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+2. Search for WizDefend.
+3. Click **Add instance** to create and configure a new integration instance.
 
+| **Parameter** | **Required** |
+| --- | --- |
+| Service Account ID | True |
+| Authentication Endpoint | True |
+| API Endpoint | True |
+| First fetch timestamp (maximum 5 days) | False |
+| Max Detections to Fetch | False |
+| Minimum detection severity to fetch | False |
+| Type of detections to fetch | False |
+| Detection cloud account or cloud organization to fetch | False |
+| Detection platforms to fetch | False |
+| Cloud event origin to fetch | False |
+| Use system proxy settings | False |
+| Fetch incidents | False |
+
+4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
-You can execute these commands from the CLI, as part of an automation, or in a playbook or War Room.
+
+You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### wiz-get-issue
+### wiz-get-detections
+
 ***
-Get the details for a Wiz Issue ID.
+Retrieve Wiz security detections based on specified filters.
 
-<h4> Base Command </h4>
+#### Base Command
 
-`wiz-get-issue`
+`wiz-get-detections`
 
-<h4> Input </h4>
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue id | Required | 
+| creation_minutes_back | Time window in minutes to retrieve detections (range 10-600). Default is 10. | Optional |
+| type | Type of detections to fetch. Possible values are: GENERATED THREAT, DID NOT GENERATE THREAT. Default is GENERATED THREAT. | Optional |
+| issue_id | The internal Wiz Issue ID of the Detections. | Optional |
+| cloud_account_or_cloud_organization | Detection cloud account or cloud organization to fetch. | Optional |
+| origin | Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc... | Optional |
+| platform | Get Detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc... | Optional |
+| resource_id | Filter detections by specific resource ID. | Optional |
+| severity | Get Detections of a specific severity and above. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL. | Optional |
+| rule_match_id | Filter detections by rule match ID (requires valid UUID format). | Optional |
+| rule_match_name | Filter detections by matching rule name. | Optional |
+| project | Filter Detections by project. | Optional |
 
-#### Command Example
-```
-!wiz-get-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-```
-
-### wiz-get-issues
-***
-Get the issues on cloud resources.
-<h4> Base Command </h4>
-
-`wiz-get-issues`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description**                                                                                                                                                  | **Required** |
-|-------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| issue_type        | The type of Issue to get<br />Expected input: `TOXIC_COMBINATION`, `THREAT_DETECTION`, `CLOUD_CONFIGURATION`.<br />The chosen type will be fetched  .            | Optional | 
-| entity_type       | The type of entity to get issues for.                                                                                                                            | Optional | 
-| resource_id       | Get Issues of a specific resource_id.<br />Expected input: `providerId`                                                                                          | Optional | 
-| severity          | Get Issues of a specific severuty.<br />Expected input: `CRITICAL`, `HIGH`, `MEDIUM`, `LOW` or `INFORMATIONAL`.<br />The chosen severity and above will be fetched | Optional | 
-*`entity_type` and `resource_id` are mutually exclusive.*
-
-<h4> Context Output </h4>
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Wiz.Manager.Issues | String | All Issues | 
+| Wiz.Manager.Detections.entitySnapshot | String | All resource details. |
+| Wiz.Manager.Detections.createdAt | String | Detection created at. |
+| Wiz.Manager.Detections.id | String | Wiz Detection ID. |
+| Wiz.Manager.Detections.url | String | Wiz Detection URL. |
+| Wiz.Manager.Detections.severity | String | Wiz Detection severity. |
+| Wiz.Manager.Detections.status | String | Wiz Detection status. |
 
+### wiz-get-detection
 
-#### Command Example
-```
-!wiz-get-issues entity_type="VIRTUAL_MACHINE"
-!wiz-get-issues issue_type="THREAT_DETECTION"
-!wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
-!wiz-get-issues resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456" severity=HIGH
-```
-
-### wiz-get-resource
 ***
-Get Details of a resource. You should pass exactly one of `resource_id`, `resource_name`.
-When searching by name, results are limited to 500 records.
+Retrieve detailed information about a specific Wiz detection by ID.
 
-<h4> Base Command </h4>
+#### Base Command
 
-`wiz-get-resource`
+`wiz-get-detection`
 
-<h4> Input </h4>
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
-|-------------------| --- |--------------|
-| resource_id       | Resource provider id | optional     | 
-| resource_name     | search by name or external ID | optional     | 
+| --- | --- | --- |
+| detection_id | Wiz internal detection ID to retrieve. | Optional |
 
-
-<h4> Context Output </h4>
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Wiz.Manager.Resource | String | Resource details | 
+| Wiz.Manager.Detection.id | String | Detection ID in Wiz. |
+| Wiz.Manager.Detection.severity | String | Detection severity. |
+| Wiz.Manager.Detection.description | String | Detection description. |
+| Wiz.Manager.Detection.createdAt | Date | Detection creation time. |
+| Wiz.Manager.Detection.resources | String | Related resources. |
+| Wiz.Manager.Detection.url | String | URL to the Wiz Detection in the Wiz console. |
 
+### wiz-get-threat
 
-#### Command Example
-```
-!wiz-get-resource resource_id="arn:aws:ec2:us-east-2:123456789098:instance/i-0g03j4h5gd123d456"
-!wiz-get-resource resource_name="i-0g03j4h5gd123d456"
-!wiz-get-resource resource_name="test_vm"
-```
-
-### wiz-issue-in-progress
 ***
-Re-open an Issue.
+Retrieve detailed information about a specific Wiz threat by issue ID.
 
-<h4> Base Command </h4>
+#### Base Command
 
-`wiz-issue-in-progress`
+`wiz-get-threat`
 
-<h4> Input </h4>
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue id | Required | 
+| issue_id | Wiz internal issue ID to retrieve. | Optional |
 
-
-<h4> Context Output </h4>
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Wiz.Manager.Issue | String | Issue details | 
+| Wiz.Manager.Threat.id | String | Threat ID in Wiz. |
+| Wiz.Manager.Threat.severity | String | Threat severity. |
+| Wiz.Manager.Threat.description | String | Threat description. |
+| Wiz.Manager.Threat.createdAt | Date | Threat creation time. |
+| Wiz.Manager.Threat.resources | String | Related resources. |
+| Wiz.Manager.Threat.url | String | URL to the Wiz Threat in the Wiz console. |
 
+### wiz-get-threats
 
-#### Command Example
-```
-!wiz-issue-in-progress issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-```
-
-### wiz-reopen-issue
 ***
-Re-open an Issue.
+Retrieve Wiz threats based on specified filters.
 
-<h4> Base Command </h4>
+#### Base Command
 
-`wiz-reopen-issue`
+`wiz-get-threats`
 
-<h4> Input </h4>
+#### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| issue_id | Issue id | Required | 
-| reopen_note | Note for re-opening Issue | Optional | 
+| creation_days_back | Time window in days to retrieve threats (range 1-30). Default is 5. | Optional |
+| cloud_account_or_cloud_organization | Threat cloud account or cloud organization to fetch. | Optional |
+| platform | Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc... | Optional |
+| resource_id | Filter threats by specific resource ID. | Optional |
+| severity | Minimum threat severity to fetch. Possible values are: CRITICAL, HIGH, MEDIUM, LOW, INFORMATIONAL. | Optional |
+| status | Filter threats by status (e.g., OPEN, IN_PROGRESS). Possible values are: OPEN, IN_PROGRESS, RESOLVED, REJECTED. Default is OPEN, IN_PROGRESS. | Optional |
+| origin | Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc... | Optional |
+| project | Filter Threats by project. | Optional |
 
-
-<h4> Context Output </h4>
+#### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Wiz.Manager.Issue | String | Issue details | 
+| Wiz.Manager.Threats.entitySnapshot | String | All resource details. |
+| Wiz.Manager.Threats.createdAt | String | Threat created at. |
+| Wiz.Manager.Threats.id | String | Wiz Threat ID. |
+| Wiz.Manager.Threats.url | String | Wiz Threat URL. |
+| Wiz.Manager.Threats.severity | String | Wiz Threat severity. |
+| Wiz.Manager.Threats.status | String | Wiz Threat status. |
 
+## Known Limitations
 
-#### Command Example
-```
-!wiz-reopen-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reopen-note="still an issue"
-```
+- Maximum fetch limit is 1000 detections per run
+- XSOAR fetch process has a 5-minute timeout
 
-### wiz-reject-issue
-***
-Re-open an Issue.
+## Troubleshooting
 
-<h4> Base Command </h4>
+If you encounter issues:
 
-`wiz-reject-issue`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required | 
-| reject_reason | Note for re-opening Issue<br />Accepted values: `WONT_FIX`, `FALSE_POSITIVE` and `REJECTED`. | Required | 
-| reject_note | Note for re-opening Issue | Required | 
-
-
-<h4> Context Output </h4>
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Wiz.Manager.Issue | String | Issue details | 
-
-
-#### Command Example
-```
-!wiz-reject-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" reject_reason="WONT_FIX" reject_note="this is by design"
-```
-
-### wiz-resolve-issue
-***
-Resolve a Threat Detection Issue.
-
-<h4> Base Command </h4>
-
-`wiz-resolve-issue`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description**                                 | **Required** |
-|-------------------|-------------------------------------------------| --- |
-| issue_id          | Issue id                                        | Required | 
-| resolution_reason | Issue resolution reason                         | Required | 
-| resolution_note   | Note to explain why the Issue has been resolved | Required | 
-
-
-<h4> Context Output </h4>
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Wiz.Manager.Issue | String | Issue details | 
-
-
-#### Command Example
-```
-!wiz-resolve-issue issue_id="12345678-1234-1234-1234-cc0a24716e0b" resolution_note="won't fix this issue as this is low priority" resolution_reason="WONT_FIX"
-```
-
-### wiz-set-issue-note
-***
-Set (append) a note to an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-set-issue-note`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required | 
-| reject_note | Note for the Issue. Will be appeneded to existing one. | Required | 
-
-#### Command Example
-```
-!wiz-set-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b" note="Checking with owner"
-```
-
-### wiz-clear-issue-note
-***
-Clears a note from an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-clear-issue-note`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required | 
-
-#### Command Example
-```
-!wiz-clear-issue-note issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-```
-
-### wiz-get-issue-evidence
-***
-Get the evidence from an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-get-issue-evidence`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required |
-
-#### Command Example
-```
-!wiz-get-issue-evidence issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-```
-
-### wiz-rescan-machine-disk
-***
-Deprecated
-
-### wiz-set-issue-due-date
-***
-Set a due date for an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-set-issue-due-date`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required | 
-| due_at | Due At Date | Required | 
-
-#### Command Example
-```
-!wiz-set-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b" due_at="2022-01-20"
-```
-
-### wiz-clear-issue-due-date
-***
-Clear a due date for an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-clear-issue-due-date`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| issue_id | Issue id | Required | 
-
-#### Command Example
-```
-!wiz-clear-issue-due-date issue_id="12345678-1234-1234-1234-cc0a24716e0b"
-```
-
-### wiz-get-project-team
-***
-Clear a due date for an Issue.
-
-<h4> Base Command </h4>
-
-`wiz-get-project-team`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| project_name | Project Name | Required | 
-
-#### Command Example
-```
-!wiz-get-project-team project_name="project1"
-```
-
-### wiz-copy-to-forensics-account
-***
-Copy VM's Volumes to a Forensics Account
-
-<h4> Base Command </h4>
-
-`wiz-copy-to-forensics-account`
-
-<h4> Input </h4>
-
-| **Argument Name** | **Description** | **Required** |
-| --- |-----------------| --- |
-| resource_id | Resource Id     | Required | 
-
-#### Command Example
-```
-!wiz-copy-to-forensics-account resource_id="12345678-1234-1234-1234-cc0a24716e0b"
-!wiz-copy-to-forensics-account resource_id="arn:aws:ec2:us-east-1:123455563321:instance/i-05r662bfb9708a4e8"
-```
+1. Verify your Service Account credentials are correct
+2. Ensure the Authentication and API endpoints are accessible
+3. Check that your Wiz account has the necessary permissions
+4. Review the integration logs for detailed error messages
