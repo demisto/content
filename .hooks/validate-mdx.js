@@ -8,7 +8,7 @@ const files = process.argv.slice(2);
         await new Promise((resolve, reject) => {
             const child = spawn(
                 'node',
-                ['--max-old-space-size=512', path.join(__dirname, 'parse-mdx-single.js'), file],
+                ['--max-old-space-size=2048', path.join(__dirname, 'parse-mdx-single.js'), file],
                 { stdio: 'inherit' } // pass output to parent console
             );
 
