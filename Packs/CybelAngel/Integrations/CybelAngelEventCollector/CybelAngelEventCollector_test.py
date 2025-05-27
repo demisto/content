@@ -183,8 +183,31 @@ def test_get_last_run_all_present(mocker):
     assert result == initial
 
 
+def test_get_last_run_all_present_one_removed(mocker):
+    """
+    If getLastRun() already contains all three types, and event_types_to_fetch have one less event
+    type after removal.
+    return should reset the time and id of the event who removed, other as usual.
+    """
+    from CybelAngelEventCollector import get_last_run
+
+    now = datetime(2025, 5, 15, 12, 0, 0)
+    last_time = now - timedelta(minutes=1)  # TODO
+    initial = {
+        REPORT.name: {LATEST_TIME: "2025-05-14T11:00:00", LATEST_FETCHED_IDS: [1]},
+        DOMAIN.name: {LATEST_TIME: "2025-05-14T11:01:00", LATEST_FETCHED_IDS: [2]},
+        CREDENTIALS.name: {LATEST_TIME: "2025-05-14T11:02:00", LATEST_FETCHED_IDS: [3]},
+    }
+    mocker.patch.object(demisto, "getLastRun", return_value=initial.copy())
+
+    result = get_last_run(now, [REPORT, DOMAIN])
+    initial[CREDENTIALS.name] = {LATEST_TIME: last_time.strftime(DATE_FORMAT), LATEST_FETCHED_IDS: []}
+    assert result == initial
+
+
 def test_http_request_token_expired(client: Client, mocker):
     """
+    When calling http_request and the token is expired, will ask for a new one.
     Given:
      - expired token from integration context
 
@@ -1084,7 +1107,7 @@ def test_get_latest_event_time_and_ids():
 
     Then:
     - last_ids holds all 6 events.
-    - last_time does n0t changes.
+    - last_time does not changes.
     """
     from CybelAngelEventCollector import get_latest_event_time_and_ids
 
