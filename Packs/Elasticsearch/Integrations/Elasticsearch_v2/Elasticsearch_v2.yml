@@ -427,7 +427,7 @@ script:
     description: Indexes a document into an Elasticsearch index.
   - name: es-esql-search
     arguments:
-      - description: The ES|QL query string to execute using piped syntax (e.g., FROM index | WHERE field == "value").
+      - description: The ES|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value").
         name: query
         required: true
       - description: Maximum number of results to return.
@@ -435,7 +435,7 @@ script:
     description: Search using ES|QL query. (Elastic >=8.11).
     outputs:
       - contextPath: Elasticsearch.ESQLSearch
-        description: ES|QL Search Result.
+        description: ES|QL search result.
   dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
   runonce: false

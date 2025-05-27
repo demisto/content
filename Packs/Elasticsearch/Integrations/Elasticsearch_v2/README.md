@@ -280,7 +280,7 @@ Returns Elasticsearch indices statistics and information. This command is not su
 ### es-esql-search
 
 ***
-Search using ES|QL query. (Elastic >=8.11)
+Search using ES|QL query (Elasticsearch 8.11 and above).
 
 #### Base Command
 
@@ -288,13 +288,13 @@ Search using ES|QL query. (Elastic >=8.11)
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| query | The ES\|QL query string to execute using piped syntax (e.g., FROM index \| WHERE field == "value"). | Required | 
-| limit | Maximum number of results to return. | Optional | 
+| **Argument Name** | **Description**                                                                | **Required** |
+| --- |--------------------------------------------------------------------------------| --- |
+| query | The ES\|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value"). | Required | 
+| limit | Maximum number of results to return.                                           | Optional | 
 
 #### Context Output
 
-| **Path**                 | **Type** | **Description**      |
-|--------------------------| --- |----------------------|
-| Elasticsearch.ESQLSearch | unknown | ES\|QL Search Result | 
+| **Path**                 | **Description**      | **Type** |
+|--------------------------|----------------------|----------------------|
+| Elasticsearch.ESQLSearch | ES\|QL search result | unknown |
