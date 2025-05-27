@@ -450,9 +450,9 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
                         raw response, and outputs for integration context.
     """
     # Required arguments
-    indicator = args["indicator"]
-    indicator_type = args["type"]
-    severity = args["severity"]
+    indicator = args.get("indicator")
+    indicator_type = args.get("type")
+    severity = args.get("severity")
     ioc_object = args.get("ioc_object")
 
     # Optional arguments
