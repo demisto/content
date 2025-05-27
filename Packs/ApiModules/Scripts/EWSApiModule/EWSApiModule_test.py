@@ -735,7 +735,7 @@ def test_client_reply_email(mocker, mock_account, msg_type):
 
     mocked_reply_send.assert_called_once()
 
-    
+
 def test_handle_html(mocker):
     """
     Given:
