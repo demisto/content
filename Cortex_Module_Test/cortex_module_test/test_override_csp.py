@@ -2,16 +2,8 @@ import json
 
 STRING_TYPES = (str, bytes)
 
-
-try:
-     # Try to access the global demisto object provided at runtime
-    import builtins
-    if hasattr(builtins, 'demisto'):
-        demisto = builtins.demisto # reference the global runtime demisto
-    else:
-        import demistomock as demisto  # fallback for testing
-except Exception:
-    demisto = None
+import builtins
+demisto = getattr(builtins, "demisto", None)
     
 
 def arg_to_number(arg, arg_name=None, required=False):
