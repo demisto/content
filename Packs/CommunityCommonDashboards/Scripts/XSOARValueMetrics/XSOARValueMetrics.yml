@@ -49,7 +49,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/pandas:1.0.0.2067380
+dockerimage: demisto/pandas:1.0.0.3540678
 enabled: true
 engineinfo: {}
 name: XSOARValueMetrics
