@@ -299,7 +299,7 @@ Search using ES|QL query. (Elastic >=8.11)
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Elasticsearch.Search | unknown | ES|QL Search Result | 
+| **Path**                 | **Type** | **Description**      |
+|--------------------------| --- |----------------------|
+| Elasticsearch.ESQLSearch | unknown | ES\|QL Search Result | 
 
