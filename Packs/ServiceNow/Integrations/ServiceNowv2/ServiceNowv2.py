@@ -6,7 +6,7 @@ import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
 import urllib3
-from CommonServerPython import *  # noqa: F401 
+from CommonServerPython import *  # noqa: F401  
 
 urllib3.disable_warnings()
 
