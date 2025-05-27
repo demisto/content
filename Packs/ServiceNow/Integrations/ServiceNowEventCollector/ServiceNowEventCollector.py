@@ -44,7 +44,7 @@ class Client:
         self.fetch_limit_audit = fetch_limit_audit
         self.fetch_limit_syslog = fetch_limit_syslog
         self.api_server_url = api_server_url
-
+    
     def search_events(self, from_time: str, log_type: str, limit: Optional[int] = None, offset: int = 0):
         """Make a request to the ServiceNow REST API to retrieve audit and syslog transactions logs"""
 

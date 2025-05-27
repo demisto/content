@@ -4,6 +4,7 @@ from CommonServerUserPython import *
 
 OAUTH_URL = "/oauth_token.do"
 
+TRIED_ONCE = "Tried Once"
 
 class ServiceNowClient(BaseClient):
     def __init__(
@@ -32,12 +33,12 @@ class ServiceNowClient(BaseClient):
         """
         self.auth = None
         self.use_oauth = use_oauth
+        self.username = credentials.get("identifier", "")
+        self.password = credentials.get("password", "")
         if self.use_oauth:  # if user selected the `Use OAuth` box use OAuth authorization, else use basic authorization
             self.client_id = client_id
             self.client_secret = client_secret
         else:
-            self.username = credentials.get("identifier")
-            self.password = credentials.get("password")
             self.auth = (self.username, self.password)
 
         if "@" in client_id:  # for use in OAuth test-playbook
@@ -141,56 +142,184 @@ class ServiceNowClient(BaseClient):
             return_error(
                 f"Login failed. Please check the instance configuration and the given username and password.\n{e.args[0]}"
             )
-
+    
+    
     def get_access_token(self):
         """
         Get an access token that was previously created if it is still valid, else, generate a new access token from
         the client id, client secret and refresh token.
+        If refresh token is expired, retry once to create new one using the login command.
+        If unsuccessful flag the context and no more retry will be until sucessful login.
         """
         ok_codes = (200, 201, 401)
-        previous_token = get_integration_context()
-
-        # Check if there is an existing valid access token
-        if previous_token.get("access_token") and previous_token.get("expiry_time") > date_to_timestamp(datetime.now()):
-            return previous_token.get("access_token")
-        else:
-            data = {"client_id": self.client_id, "client_secret": self.client_secret}
-
-            # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
-            if previous_token.get("refresh_token"):
-                data["refresh_token"] = previous_token.get("refresh_token")
-                data["grant_type"] = "refresh_token"
-            else:
-                raise Exception(
+        ctx = get_integration_context()
+        if ctx.get("access_token") and ctx.get("expiry_time") > date_to_timestamp(datetime.now()):
+            demisto.debug("access token exists")
+            return ctx.get("access_token")
+        
+        if "refresh_token" not in ctx:
+            demisto.debug("refresh token not exists")
+            raise Exception(
                     "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
                 )
-
-            try:
-                headers = {"Content-Type": "application/x-www-form-urlencoded"}
+            
+        data = {"client_id": self.client_id,
+                "client_secret": self.client_secret,
+                "refresh_token": ctx.get("refresh_token"),
+                "grant_type": "refresh_token"}
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        
+        try:
+            for attempt in range(2):
+                demisto.debug(f"Attempt number {attempt}")
+                if attempt == 1:
+                    if TRIED_ONCE not in ctx:
+                        demisto.debug("login retry")
+                        data["refresh_token"] = self.get_refresh_token()
+                    else:
+                        break
+                
                 res = super()._http_request(
-                    method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
-                )
+                        method="POST",
+                        url_suffix=OAUTH_URL,
+                        resp_type="response",
+                        headers=headers,
+                        data=data,
+                        ok_codes=ok_codes
+                    )
+                demisto.debug("Requests successful")
                 try:
                     res = res.json()
                 except ValueError as exception:
                     raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
-                if "error" in res:
-                    return_error(
-                        f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
-                        f"and try to run again the login command to generate a new refresh token as it "
-                        f"might have expired.\n{res}"
-                    )
+                
                 if res.get("access_token"):
-                    expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
-                    expiry_time += res.get("expires_in", 0) * 1000 - 10
-                    new_token = {
-                        "access_token": res.get("access_token"),
-                        "refresh_token": res.get("refresh_token"),
-                        "expiry_time": expiry_time,
-                    }
-                    set_integration_context(new_token)
-                    return res.get("access_token")
-            except Exception as e:
-                return_error(
-                    f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
-                )
+                    return self.store_access_token(res)
+                
+                demisto.debug(f"Creating access token failed with {str(res)}")
+                if attempt == 1:
+                    demisto.debug("No more retries")
+                    ctx[TRIED_ONCE] = "True"
+                    set_integration_context(ctx)
+                    
+        except DemistoException:
+            return_error(
+                "Error occurred while creating an access token. Please check the Client ID, Client Secret "
+                "and try to run again the as it might that the credentials are wrong."
+            )
+            
+    def get_refresh_token(self):
+        demisto.debug("Get refresh token")
+        try:
+            self.login(self.username, self.password)
+            demisto.debug("Login successful")
+            ctx = get_integration_context()
+            if ctx.get("refresh_token"):
+                demisto.debug("New refresh token")
+                return ctx.get("refresh_token")
+            else:
+                demisto.debug("No refresh token")
+        except DemistoException as e:
+            return_error(
+                f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+                f"and try to run again the as it might that the credentials are wrong {e}."
+            )
+            
+    def store_access_token(self, response):
+        demisto.debug("New access token received")
+        expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+        expiry_time += response.get("expires_in", 0) * 1000 - 10
+        new_token = {
+            "access_token": response.get("access_token"),
+            "refresh_token": response.get("refresh_token"),
+            "expiry_time": expiry_time,
+        }
+        set_integration_context(new_token)
+        return response.get("access_token")
+            
+    # def get_access_token(self):
+    #     """
+    #     Get an access token that was previously created if it is still valid, else, generate a new access token from
+    #     the client id, client secret and refresh token.
+    #     """
+    #     ok_codes = (200, 201, 401)
+    #     ctx = get_integration_context()
+
+    #     # Check if there is an existing valid access token
+    #     if ctx.get("access_token") and ctx.get("expiry_time") > date_to_timestamp(datetime.now()):
+    #         return ctx.get("access_token")
+    #     else:
+    #         data = {"client_id": self.client_id, "client_secret": self.client_secret}
+
+    #         # Check if a refresh token exists. If not, raise an exception indicating to call the login function first.
+    #         if ctx.get("refresh_token"):
+    #             data["refresh_token"] = ctx.get("refresh_token")
+    #             data["grant_type"] = "refresh_token"
+    #         else:
+    #             raise Exception(
+    #                 "Could not create an access token. User might be not logged in. Try running the oauth-login command first."
+    #             )
+
+    #         try:
+    #             headers = {"Content-Type": "application/x-www-form-urlencoded"}
+    #             res = super()._http_request(
+    #                 method="POST", url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
+    #             )
+    #             try:
+    #                 res = res.json()
+    #             except ValueError as exception:
+    #                 raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+    #             if "error" in res:
+    #                 # If refresh token is expired try creating new one by login in
+    #                 demisto.debug(f"Creating access token failed with {str(res)}")
+    #                 if TRIED_ONCE not in ctx:
+    #                     demisto.debug("First login retry")
+    #                     try:
+    #                         self.login(self.username, self.password)
+    #                         demisto.debug("Login successful")
+    #                         ctx = get_integration_context()
+    #                         if ctx.get("refresh_token"):
+    #                             data["refresh_token"] = ctx.get("refresh_token")
+    #                             data["grant_type"] = "refresh_token"
+    #                             demisto.debug("New refresh token")
+    #                         else:
+    #                             demisto.debug("No refresh token")
+    #                         res = super()._http_request(
+    #                         method="POST",
+    #                         url_suffix=OAUTH_URL, resp_type="response", headers=headers, data=data, ok_codes=ok_codes
+    #                         )
+    #                         demisto.debug("Request successful")
+    #                         try:
+    #                             res = res.json()
+    #                         except ValueError as exception:
+    #                             raise DemistoException(f"Failed to parse json object from response: {res.content}", exception)
+    #                     except DemistoException as e:
+    #                         ctx[TRIED_ONCE] = "True"
+    #                         set_integration_context(ctx)
+    #                         return_error(
+    #                             f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+    #                             f"and try to run again the login command to generate a new refresh token as it "
+    #                             f"might have expired.\n{res}"
+    #                         )
+    #                 else:
+    #                     return_error(
+    #                                 f"Error occurred while creating an access token. Please check the Client ID, Client Secret "
+    #                                 f"and try to run again the login command to generate a new refresh token as it "
+    #                                 f"might have expired.\n{res}"
+    #                             )
+                        
+    #             if res.get("access_token"):
+    #                 demisto.debug("New access token received")
+    #                 expiry_time = date_to_timestamp(datetime.now(), date_format="%Y-%m-%dT%H:%M:%S")
+    #                 expiry_time += res.get("expires_in", 0) * 1000 - 10
+    #                 new_token = {
+    #                     "access_token": res.get("access_token"),
+    #                     "refresh_token": res.get("refresh_token"),
+    #                     "expiry_time": expiry_time,
+    #                 }
+    #                 set_integration_context(new_token)
+    #                 return res.get("access_token")
+    #         except Exception as e:
+    #             return_error(
+    #                 f"Error occurred while creating an access token. Please check the instance configuration.\n\n{e.args[0]}"
+    #             )
