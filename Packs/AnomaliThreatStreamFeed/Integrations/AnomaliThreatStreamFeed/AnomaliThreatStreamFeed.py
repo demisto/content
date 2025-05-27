@@ -283,25 +283,17 @@ def get_past_time(minutes_interval):
     """
     Calculates the time that is now minus the given time interval in minutes,
     and returns it in ISO 8601 format with milliseconds and 'Z' for UTC.
-    This format is commonly expected by APIs for timestamp filtering.
-
+    
     Args:
         minutes_interval (int): The time interval in minutes to go back.
 
     Returns:
-        str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sssZ' format.
+        str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sssZ' format. i.e 2023-08-01T11:57:00.080Z
     """
-    # now = datetime.now()
-    # past_time = now - timedelta(minutes=minutes_interval)
-    
-    # # Format the datetime object as a string
-    # formatted_time = past_time.strftime('%Y-%m-%dT%H:%M:%S')
-    # return formatted_time
-    
     now = datetime.now(timezone.utc)
     past_time = now - timedelta(minutes=minutes_interval)
     # Format to ISO 8601 with milliseconds and Z (Zulu time) for UTC
-    return past_time.isoformat(timespec='milliseconds') + 'Z'
+    return past_time.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
 
 
 def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: dict[str, Any]) -> tuple[str, list[dict[str, Any]]]:
@@ -349,11 +341,11 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
         order_by=order_by,
         confidence__gt=confidence_threshold
     )
-    # TODO roll back
+
     if order_by == "modified_ts":
-        query['modified_ts__gte'] = "2023-08-01T11:57:00.080Z" # last_fetch_time
+        query['modified_ts__gte'] = last_fetch_time
     else: # order_by == "created_ts"
-        query['created_ts__gte'] =  "2023-08-01T11:57:00.080Z" #last_fetch_time
+        query['created_ts__gte'] = last_fetch_time
     
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix="v2/intelligence", params=query)
