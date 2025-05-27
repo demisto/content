@@ -1,8 +1,5 @@
-const { createReadStream } = require('fs');
-const { pipeline } = require('stream');
+const { readFile } = require('fs-extra');
 const mdx = require('@mdx-js/mdx');
-const { promisify } = require('util');
-const pipelineAsync = promisify(pipeline);
 
 
 const NO_HTML = "<!-- NOT_HTML_DOC -->";
@@ -18,10 +15,10 @@ function isHtmlDoc(content) {
 }
 
 
-function fixMdx(content) {
+function fixMdx(readmeContent) {
     // copied from: https://github.com/demisto/content-docs/blob/2402bd1ab1a71f5bf1a23e1028df6ce3b2729cbb/content-repo/mdx_utils.py#L11
     // to use the same logic as we have in the content-docs build
-    let txt = content;
+    let txt = readmeContent;
 
     const replaceTuples = [
         [/<br>(?!<\/br>)/gi, "<br/>"],
@@ -41,46 +38,20 @@ function fixMdx(content) {
 
 async function parseMDX(file) {
     try {
-        let isHtml = false;
-        let initialContent = '';
-        await pipelineAsync(
-            createReadStream(file, { encoding: 'utf8', highWaterMark: 1024 }), // Adjust highWaterMark as needed
-            {
-                objectMode: false,
-                transform(chunk, encoding, callback) {
-                  initialContent += chunk;
-                  if (initialContent.length > 1024 && !isHtml) { // Check early for HTML to avoid unnecessary processing
-                    isHtml = isHtmlDoc(initialContent);
-                  }
-                  callback(null, chunk);
-                },
-                flush(callback) {
-                  if (!isHtml) {
-                    const processedContent = fixMdx(initialContent);
-                    pipelineAsync(
-                      processedContent,
-                      mdx(),
-                      process.stdout,
-                      callback
-                    );
-                  } else {
-                    callback(null);
-                  }
-                }
-              }
-        );
 
-        if (isHtml) {
-          return true;
+        let contents = await readFile(file, 'utf8');
+
+        if (isHtmlDoc(contents)) {
+            return true;
         }
+        contents = fixMdx(contents);
+        await mdx(contents);
         return true;
-
     } catch (error) {
         console.error(`Validation failed in ${file}:`, error.message);
         return false;
     }
 }
-
 
 const files = process.argv.slice(2);
 (async () => {
