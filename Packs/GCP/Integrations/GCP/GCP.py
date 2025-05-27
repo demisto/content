@@ -56,19 +56,15 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-compute-instance-service-account-remove": ["compute.instances.setServiceAccount", "compute.instances.get"],
     "gcp-compute-instance-start": ["compute.instances.start"],
     "gcp-compute-instance-stop": ["compute.instances.stop"],
-
     # Storage commands
     "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
     "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
-
     # Container (GKE) commands
     "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
-
     # IAM commands
     "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     "gcp-iam-project-deny-policy-create": ["iam.policies.create", "iam.policies.setIamPolicy"],
     "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
-
     # Admin Directory commands
     "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],
     "gcp-admin-user-update": ["admin.directory.user.update"],
@@ -607,7 +603,7 @@ def compute_instance_service_account_remove(creds: Credentials, args: dict[str, 
     compute = GCPServices.COMPUTE.build(creds)
 
     # Setting empty body to remove service account
-    body = {}
+    body: dict[str, Any] = {}
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -617,11 +613,7 @@ def compute_instance_service_account_remove(creds: Credentials, args: dict[str, 
 
     hr = f"Service account was successfully removed from VM instance {resource_name} in project {project_id}."
 
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.Compute.Instance.ServiceAccount",
-        outputs=response
-    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance.ServiceAccount", outputs=response)
 
 
 def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -755,7 +747,7 @@ def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResult
         CommandResults: Result of the user update operation.
     """
     user_key = args.get("user_key")
-    update_fields = json.loads(args.get("update_fields"))
+    update_fields = json.loads(args.get("update_fields", "{}"))
 
     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
 
@@ -765,11 +757,7 @@ def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResult
     except Exception as e:
         raise DemistoException(f"Failed to update user: {str(e)}") from e
 
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.GSuite.User",
-        outputs=response
-    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User", outputs=response)
 
 
 def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -790,20 +778,14 @@ def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> Comma
 
     try:
         # Create password update body
-        password_update = {
-            "password": new_password
-        }
+        password_update = {"password": new_password}
 
         response = directory.users().update(userKey=user_key, body=password_update).execute()  # pylint: disable=E1101
         hr = f"Password for GSuite user {user_key} was successfully reset."
     except Exception as e:
         raise DemistoException(f"Failed to reset password: {str(e)}") from e
 
-    return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.GSuite.User.Password",
-        outputs=response
-    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User.Password", outputs=response)
 
 
 def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -828,9 +810,7 @@ def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResul
         raise DemistoException(f"Failed to sign out user: {str(e)}") from e
 
     return CommandResults(
-        readable_output=hr,
-        outputs_prefix="GCP.GSuite.User.SignOut",
-        outputs={"user": user_key, "status": "signed_out"}
+        readable_output=hr, outputs_prefix="GCP.GSuite.User.SignOut", outputs={"user": user_key, "status": "signed_out"}
     )
 
 
@@ -882,20 +862,16 @@ def main():
             "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
-
             # Storage commands
             "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
-
             # Container (GKE) commands
             "gcp-container-cluster-security-update": container_cluster_security_update,
-
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
             "gcp-iam-deny-policy-create": iam_deny_policy_create,
             "gcp-iam-service-account-delete": iam_service_account_delete,
             "gcp-iam-group-membership-delete": iam_group_membership_delete,
-
             # Admin Directory commands
             "gcp-admin-user-update": admin_user_update,
             "gcp-admin-user-password-reset": admin_user_password_reset,
