@@ -70,7 +70,7 @@ configuration:
   name: raw_query
   type: 12
   additionalinfo: |-
-    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -424,14 +424,15 @@ script:
     - contextPath: Elasticsearch.Index.result
       description: The result of the index operation.
       type: string
-  - arguments:
+    description: Indexes a document into an Elasticsearch index.
+  - name: es-esql-search
+    arguments:
     - description: The ES|QL query string to execute using piped syntax (e.g., FROM index | WHERE field == "value").
       name: query
       required: true
     - description: Maximum number of results to return.
       name: limit
     description: Search using ES|QL query. (Elastic >=8.11).
-    name: es-esql-search
     outputs:
     - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL Search Result.
