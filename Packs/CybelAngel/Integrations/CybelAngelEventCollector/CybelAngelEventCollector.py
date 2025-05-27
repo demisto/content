@@ -38,8 +38,8 @@ class EventType:
     ):
         """
         Args:
-            name (str): Name as in the integration configuration.
-            url_suffix (str): URL suffix of the CybelAngel API endpoint.
+            name (str): Human-friendly name of the event type.
+            url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
             id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
             ascending_order (bool): If the API return in sorted by ascending or descending order after returning from get_event.
             time_field (str): Field name in the event used for timestamp mapping (`_time`).
