@@ -28,7 +28,7 @@ tasks:
       {
         "position": {
           "x": 316,
-          "y": -221
+          "y": -230
         }
       }
     note: false
@@ -61,7 +61,7 @@ tasks:
       {
         "position": {
           "x": 316,
-          "y": 41
+          "y": 32
         }
       }
     note: false
@@ -95,8 +95,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 761,
-          "y": 172
+          "x": 316,
+          "y": 162
         }
       }
     note: false
@@ -132,8 +132,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1198.5,
-          "y": 172
+          "x": 753.5,
+          "y": 162
         }
       }
     note: false
@@ -269,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 761,
-          "y": 882
+          "x": 998,
+          "y": 879
         }
       }
     note: false
@@ -312,8 +312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1198.5,
-          "y": 613
+          "x": 1435.5,
+          "y": 610
         }
       }
     note: false
@@ -374,7 +374,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 761,
+          "x": 998,
           "y": 1031
         }
       }
@@ -507,10 +507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: aeadf2a8-beb7-4c4a-8a8e-556f40400434
+    taskid: ce11ae55-93fa-4515-90af-6807ed7cd09c
     type: regular
     task:
-      id: aeadf2a8-beb7-4c4a-8a8e-556f40400434
+      id: ce11ae55-93fa-4515-90af-6807ed7cd09c
       version: -1
       name: Get Domain from Alert Extra Data
       description: Retrieves the suspicious domain name from the alert's extra data.
@@ -532,7 +532,7 @@ tasks:
       {
         "position": {
           "x": 316,
-          "y": -91
+          "y": -100
         }
       }
     note: false
@@ -564,8 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 316,
-          "y": 453
+          "x": 998,
+          "y": 461
         }
       }
     note: false
@@ -599,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 761,
-          "y": 613
+          "x": 998,
+          "y": 610
         }
       }
     note: false
@@ -670,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 316,
-          "y": 613
+          "x": 553,
+          "y": 610
         }
       }
     note: false
@@ -723,8 +723,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 761,
-          "y": 753
+          "x": 998,
+          "y": 750
         }
       }
     note: false
@@ -890,8 +890,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 316,
-          "y": 172
+          "x": -129,
+          "y": 162
         }
       }
     note: false
@@ -908,14 +908,14 @@ view: |-
       "4_20_#default#": 0.37,
       "4_7_yes": 0.21,
       "5_7_Malicious": 0.55,
-      "5_8_#default#": 0.66
+      "5_8_#default#": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2172,
-        "width": 1263.5,
-        "x": 316,
-        "y": -221
+        "height": 2181,
+        "width": 1945.5,
+        "x": -129,
+        "y": -230
       }
     }
   }
