@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Elasticsearch v2 final final final
+  id: Elasticsearch v2
   version: -1
 configuration:
 - display: Server URL
@@ -124,8 +124,8 @@ configuration:
   section: Collect
   required: false
 description: "Search for and analyze data in real time. \n Supports version 6 and later."
-display: Elasticsearch v2 final final final
-name: Elasticsearch v2 final final final
+display: Elasticsearch v2
+name: Elasticsearch v2
 script:
   commands:
   - arguments:
