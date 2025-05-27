@@ -4116,13 +4116,13 @@ script:
       description: The command that was executed by the script.
       type: String
   - arguments:
-    - description: String that identifies the indicator you want to insert into Cortex.
+    - description: String that identifies the indicator you want to insert into Cortex. Required when ioc_object is not in use.
       name: indicator
       required: false
       isArray: false
       type: String
     - auto: PREDEFINED
-      description: Keyword identifying the type of indicator.
+      description: Keyword identifying the type of indicator. Required when ioc_object is not in use.
       name: type
       predefined:
         - 'HASH'
@@ -4134,7 +4134,7 @@ script:
       isArray: false
       type: String
     - auto: PREDEFINED
-      description: Keyword identifying the indicator's severity.
+      description: Keyword identifying the indicator's severity. Required when ioc_object is not in use.
       name: severity
       predefined:
         - 'INFO'
