@@ -35,8 +35,9 @@ class GCPServices(Enum):
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
 
 
-SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
+# SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 REQUIRED_PERMISSIONS: dict[str, list[str]] = {
+    # Compute Engine commands
     "gcp-compute-firewall-patch": [
         "compute.firewalls.update",
         "compute.firewalls.get",
@@ -51,16 +52,28 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
         "compute.subnetworks.list",
     ],
     "gcp-compute-instance-metadata-add": ["compute.instances.setMetadata", "compute.instances.get", "compute.instances.list"],
-    "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
-    "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
-    "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
-    "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
-    "gcp-iam-deny-policy-create": ["iam.policies.create", "iam.policies.setIamPolicy"],
     "gcp-compute-instance-service-account-set": ["compute.instances.setServiceAccount", "compute.instances.get"],
-    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],
-    "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
+    "gcp-compute-instance-service-account-remove": ["compute.instances.setServiceAccount", "compute.instances.get"],
     "gcp-compute-instance-start": ["compute.instances.start"],
     "gcp-compute-instance-stop": ["compute.instances.stop"],
+
+    # Storage commands
+    "gcp-storage-bucket-policy-delete": ["storage.buckets.getIamPolicy", "storage.buckets.setIamPolicy"],
+    "gcp-storage-bucket-metadata-update": ["storage.buckets.update"],
+
+    # Container (GKE) commands
+    "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
+
+    # IAM commands
+    "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
+    "gcp-iam-project-deny-policy-create": ["iam.policies.create", "iam.policies.setIamPolicy"],
+    "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
+
+    # Admin Directory commands
+    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],
+    "gcp-admin-user-update": ["admin.directory.user.update"],
+    "gcp-admin-user-password-reset": ["admin.directory.user.security"],
+    "gcp-admin-user-signout": ["admin.directory.user.security"],
 }
 
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
@@ -576,6 +589,41 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
+def compute_instance_service_account_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a service account from a GCP Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the service account removal operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    # Setting empty body to remove service account
+    body = {}
+
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setServiceAccount(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
+
+    hr = f"Service account was successfully removed from VM instance {resource_name} in project {project_id}."
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.Compute.Instance.ServiceAccount",
+        outputs=response
+    )
+
+
 def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Removes a user or service account from a GSuite group.
@@ -695,6 +743,97 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
 
 
+def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Updates user account fields in GSuite, such as names, org unit, or status.
+
+    Args:
+        creds (Credentials): GCP credentials with admin directory scopes.
+        args (dict[str, Any]): Must include 'user_key' and 'update_fields'.
+
+    Returns:
+        CommandResults: Result of the user update operation.
+    """
+    user_key = args.get("user_key")
+    update_fields = json.loads(args.get("update_fields"))
+
+    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+
+    try:
+        response = directory.users().update(userKey=user_key, body=update_fields).execute()  # pylint: disable=E1101
+        hr = f"GSuite user {user_key} was successfully updated."
+    except Exception as e:
+        raise DemistoException(f"Failed to update user: {str(e)}") from e
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.GSuite.User",
+        outputs=response
+    )
+
+
+def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Resets the password for a GSuite user account.
+
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'user_key' and 'new_password'.
+
+    Returns:
+        CommandResults: Result of the password reset operation.
+    """
+    user_key = args.get("user_key")
+    new_password = args.get("new_password")
+
+    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+
+    try:
+        # Create password update body
+        password_update = {
+            "password": new_password
+        }
+
+        response = directory.users().update(userKey=user_key, body=password_update).execute()  # pylint: disable=E1101
+        hr = f"Password for GSuite user {user_key} was successfully reset."
+    except Exception as e:
+        raise DemistoException(f"Failed to reset password: {str(e)}") from e
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.GSuite.User.Password",
+        outputs=response
+    )
+
+
+def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Invalidates all active sessions for a GSuite user, forcing them to sign in again.
+
+    Args:
+        creds (Credentials): GCP credentials with admin directory security scope.
+        args (dict[str, Any]): Must include 'user_key'.
+
+    Returns:
+        CommandResults: Result of the signout operation.
+    """
+    user_key = args.get("user_key")
+
+    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+
+    try:
+        directory.users().signOut(userKey=user_key).execute()  # pylint: disable=E1101
+        hr = f"All active sessions for GSuite user {user_key} were successfully signed out."
+    except Exception as e:
+        raise DemistoException(f"Failed to sign out user: {str(e)}") from e
+
+    return CommandResults(
+        readable_output=hr,
+        outputs_prefix="GCP.GSuite.User.SignOut",
+        outputs={"user": user_key, "status": "signed_out"}
+    )
+
+
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
     """
     Checks if the provided GCP credentials have the required IAM permissions.
@@ -735,19 +874,32 @@ def main():
         params = demisto.params()
 
         command_map = {
+            # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
-            "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
             "gcp-compute-subnet-update": compute_subnet_update,
             "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
-            "gcp-container-cluster-security-update": container_cluster_security_update,
-            "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
-            "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
-            "gcp-iam-deny-policy-create": iam_deny_policy_create,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
-            "gcp-iam-group-membership-delete": iam_group_membership_delete,
-            "gcp-iam-service-account-delete": iam_service_account_delete,
+            "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
+
+            # Storage commands
+            "gcp-storage-bucket-policy-delete": storage_bucket_policy_delete,
+            "gcp-storage-bucket-metadata-update": storage_bucket_metadata_update,
+
+            # Container (GKE) commands
+            "gcp-container-cluster-security-update": container_cluster_security_update,
+
+            # IAM commands
+            "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
+            "gcp-iam-deny-policy-create": iam_deny_policy_create,
+            "gcp-iam-service-account-delete": iam_service_account_delete,
+            "gcp-iam-group-membership-delete": iam_group_membership_delete,
+
+            # Admin Directory commands
+            "gcp-admin-user-update": admin_user_update,
+            "gcp-admin-user-password-reset": admin_user_password_reset,
+            "gcp-admin-user-signout": admin_user_signout,
         }
 
         if command != "test-module" and command not in command_map:
