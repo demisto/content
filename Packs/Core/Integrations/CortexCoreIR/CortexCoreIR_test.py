@@ -808,8 +808,10 @@ class TestCoreAddIndicator:
         """
         client = get_mock_client()
         args = {"ioc_object": "not a json or csv string"}
-        with pytest.raises(DemistoException, match="Core Add Indicator Rule Command: Invalid ioc_object"
-                                       " must be either valid JSON or CSV string."):
+        with pytest.raises(
+            DemistoException,
+            match="Core Add Indicator Rule Command: Invalid ioc_object" " must be either valid JSON or CSV string.",
+        ):
             core_add_indicator_rule_command(client, args)
 
     def test_core_add_indicator_rule_failure_response(self, mocker):

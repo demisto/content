@@ -478,13 +478,15 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
                 ioc_payload = ioc_object  # Leave as raw string
                 input_format = "CSV"
             else:
-                raise DemistoException("Core Add Indicator Rule Command: Invalid ioc_object"
-                                       " must be either valid JSON or CSV string.")
+                raise DemistoException(
+                    "Core Add Indicator Rule Command: Invalid ioc_object" " must be either valid JSON or CSV string."
+                )
     else:
         if not (indicator and indicator_type and severity):
             raise DemistoException(
                 "Core Add Indicator Rule Command: when 'ioc_object' is not provided,"
-                " 'indicator', 'type', and 'severity' are required arguments.")
+                " 'indicator', 'type', and 'severity' are required arguments."
+            )
         # Build payload from individual arguments
         ioc_payload = {"indicator": indicator, "type": indicator_type, "severity": severity}
         parsed_expiration_date = parse_expiration_date(expiration_date)
