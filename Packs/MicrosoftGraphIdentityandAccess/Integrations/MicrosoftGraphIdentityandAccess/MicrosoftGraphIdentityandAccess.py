@@ -422,12 +422,12 @@ class Client:  # pragma: no cover
             json_data=policy,
         )
 
-        if not res.get("id"):
+        policy_id = res.get("id")
+        if not policy_id:
             demisto.error(f"Error creating Conditional Access policy:\n{str(res)}")
             raise DemistoException(f"Error creating Conditional Access policy:\n{str(res)}")
 
-        policy_id = res.get("id")
-        demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n {res}")
+        demisto.info(f"Conditional Access policy {policy_id} was successfully created:\n{str(res)}")
 
         return CommandResults(
             outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
@@ -677,51 +677,40 @@ def merge_policy_section(
     """
 
     def walk(node_new: Dict[str, Any], path: List[str]) -> None:
-        demisto.debug(f"merge_policy_section - walk: Starting with path {path}")
-
         for key, val in node_new.items():
             current_path_to_key = path + [key]
-            demisto.debug(f"merge_policy_section - walk: Processing key {key} at path {'/'.join(current_path_to_key)}")
+            demisto.debug(f"Processing key {key} at path {'/'.join(current_path_to_key)}")
 
             # ── dive deeper
             if isinstance(val, dict):
-                demisto.debug(f"merge_policy_section - walk: Found dictionary at {'/'.join(current_path_to_key)}, diving deeper")
-
+                demisto.debug(f"Found dictionary at {'/'.join(current_path_to_key)}, diving deeper")
                 walk(val, current_path_to_key)
                 continue
 
             # ── override non-list leaves
             if not isinstance(val, list):
-                demisto.debug(
-                    f"merge_policy_section - walk: Found non-list value at {'/'.join(current_path_to_key)},"
-                    f"this value will be overriding"
-                )
+                demisto.debug("setting to the new policy value.")
                 messages.append(f"Field `{'/'.join(current_path_to_key)}` is not a list - overriding the value.")
                 continue
 
             existing_val = deep_get(base_existing, current_path_to_key)
-            demisto.debug(f"merge_policy_section - walk: Existing value at {'/'.join(current_path_to_key)}: {existing_val}")
+            demisto.debug(f"Existing value at {'/'.join(current_path_to_key)}: {existing_val}")
 
             if isinstance(existing_val, list):
-                demisto.debug(f"merge_policy_section - walk: Merging lists for {'/'.join(current_path_to_key)}")
-
                 merged = resolve_merge_value(key, existing_val, val, messages)
-                demisto.debug(f"merge_policy_section - walk: Merged result for {'/'.join(current_path_to_key)}: {merged}")
+                demisto.debug(f"Merged result for {'/'.join(current_path_to_key)}: {merged}")
                 deep_set(new, current_path_to_key, merged)
 
             else:
                 # no existing list (or wrong type) → leave new value as-is
                 if existing_val is None:
-                    demisto.debug(f"merge_policy_section - walk: No existing value at {'/'.join(current_path_to_key)}")
                     messages.append(f"Field `{'/'.join(current_path_to_key)}` was empty - new list left untouched.")
-                    demisto.debug(f"merge_policy_section - walk: new value at {'/'.join(current_path_to_key)} is {val}")
+                    demisto.debug(f"No existing value at {'/'.join(current_path_to_key)}, new value is {val}")
                 else:
-                    demisto.debug(f"merge_policy_section - walk: Existing value at {'/'.join(current_path_to_key)} is not a list")
+                    demisto.debug(f"Existing value at {'/'.join(current_path_to_key)} is not a list, new list left untouched.")
                     messages.append(
                         f"Field `{'/'.join(current_path_to_key)}` exists but is not a list - new list left untouched."
                     )
-
-        demisto.debug(f"merge_policy_section - walk: Finished processing path {path}")
 
     demisto.debug("merge_policy_section: Starting policy merge process")
     walk(new, [])
