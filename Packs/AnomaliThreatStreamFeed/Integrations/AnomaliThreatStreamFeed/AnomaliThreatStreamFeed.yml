@@ -112,7 +112,6 @@ configuration:
   section: Connect
   advanced: true
   required: false
-defaultclassifier: 'null'
 description: Anomali ThreatStream Feed Integration.
 display: Anomali ThreatStream Feed
 name: Anomali ThreatStream Feed
@@ -138,10 +137,9 @@ script:
       type: Number
     description: Gets indicators from the feed. (Test function)
     name: threatstream-feed-get-indicators
-  - description: ''
-    name: fetch-indicators
   dockerimage: demisto/py3-tools:1.0.0.114656
   runonce: false
+  feed: true
   script: '-'
   subtype: python3
   type: python

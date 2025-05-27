@@ -15,7 +15,7 @@ RETRY_COUNT = 2
 LIMIT = 1000
 STATUS = "active"
 
-scoreType = {
+indicatorType = {
     "domain": FeedIndicatorType.Domain,
     "ip":FeedIndicatorType.IP,
     "md5": FeedIndicatorType.File,
@@ -60,7 +60,7 @@ RELATIONSHIPS_MAPPING = {
             "entity_b_type": "Malware"
         },
     ],
-    "file": [
+    "md5": [
         {
             "name": EntityRelationship.Relationships.INDICATOR_OF,
             "raw_field": "meta.maltype",
@@ -320,7 +320,6 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
             - list[dict[str, Any]]: A list of parsed indicators ready for Cortex XSOAR.
     """
     
-    # TODO what to do with them
     reputation = params.get("feedReputation", "Unknown")
     expiration_method = params.get("indicatorExpirationMethod", "Indicator Type")
     
@@ -350,11 +349,11 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
         order_by=order_by,
         confidence__gt=confidence_threshold
     )
-        
+    # TODO roll back
     if order_by == "modified_ts":
-        query['modified_ts__gte'] = "2023-11-01T09:4:41" # last_fetch_time
+        query['modified_ts__gte'] = "2023-08-01T11:57:00.080Z" # last_fetch_time
     else: # order_by == "created_ts"
-        query['created_ts__gte'] = last_fetch_time
+        query['created_ts__gte'] =  "2023-08-01T11:57:00.080Z" #last_fetch_time
     
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix="v2/intelligence", params=query)
@@ -455,7 +454,7 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
                     relationships.append(
                         EntityRelationship(
                             entity_a=indicator_value,
-                            entity_a_type=scoreType.get(indicator_type),
+                            entity_a_type=indicatorType.get(indicator_type),
                             name=relationship_name,
                             entity_b=entity_b_item,
                             entity_b_type=entity_b_type,
@@ -485,7 +484,8 @@ def parse_indicator_for_fetch(indicator: dict[str, Any], tlp_color: str, create_
     # Calculate relationships first, as they depend on the raw indicator data
     relationships = create_relationships(create_relationship_param, reliability, indicator)
     
-    indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email", "file", "url"
+    # indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email", "md5", "url"
+    indicator_type = indicatorType.get(str(indicator.get("type")))
     indicator_value = indicator.get("value") # The actual value of the indicator (e.g., "1.1.1.1", "example.com")
     
     if not indicator_type or not indicator_value:
@@ -518,7 +518,7 @@ def parse_indicator_for_fetch(indicator: dict[str, Any], tlp_color: str, create_
 
     return assign_params(
         value=indicator_value,
-        type=scoreType.get(indicator_type),
+        type=indicator_type,
         fields=fields,
         relationships=relationships,
         rawJSON=indicator,
