@@ -6,6 +6,7 @@ from CoreXQLApiModule import *
 urllib3.disable_warnings()
 DEFAULT_TIMEOUT = 600
 DEFAULT_INTERVAL = 30
+uri_fallback = r"(?P<uri>\b[a-z][a-z0-9+.-]*:[^\s]+)"  # for covering all cases in addition to "urlRegex"
 
 
 def shorten_text(text: str) -> str:
@@ -54,17 +55,16 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
     """
 
     # Determine indicator type
-    if "." in indicator and not indicator.startswith("http"):
-        if all(char.isdigit() or char == "." for char in indicator):
-            indicator_type = "ip"
-        else:
-            indicator_type = "domain"
-    elif indicator.startswith("http"):
-        indicator_type = "uri"
+    if re.match(ipv4Regex, indicator) or re.match(ipv6Regex, indicator):
+        indicator_type = "ip"
+    elif re.match(domainRegex, indicator):
+        indicator_type = "domain"
     elif re.match(md5Regex, indicator):
         indicator_type = "md5"
     elif re.match(sha256Regex, indicator):
         indicator_type = "sha256"
+    elif re.match(urlRegex, indicator) or re.match(uri_fallback, indicator):
+        indicator_type = "uri"
     else:
         indicator_type = "unknown"
 
@@ -84,9 +84,9 @@ def generate_xdr_query(time_frame_for_query: str, indicator: str, data_set: str 
         filter_clause = " or ".join(filters)
         return f"config timeframe = {time_frame_for_query} | dataset = {data_set} | filter {filter_clause}"
     else:
-        # TODO - what should we do in this case?
-        return_error(f"# Unsupported indicator type for: {indicator}")
-        exit(1)
+        raise DemistoException(
+            f"Indicators supported by this script are IP, Domain, MD5, Sha256, and Uri.\n" f"This {indicator=} has unknown type"
+        )
 
 
 def execute_query(args: dict) -> dict:

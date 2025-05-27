@@ -6,7 +6,7 @@ script: ''
 type: python
 tags:
   - Utilities
-comment: Searches for a specific indicator in the tenant's event and log data, and extracts the logs the indicator appears in.
+comment: Extracts the logs that contain a specific indicator from the XDR logs data. Indicators supported by this script are IP, Domain, MD5, Sha256, and Uri.
 enabled: true
 args:
   - name: indicator
@@ -33,7 +33,7 @@ args:
     description: The maximum time to wait for the query to finish (in seconds). The command fails if the query takes longer.
 outputs:
   - contextPath: PaloAltoNetworksXQL
-    description: A list of event records (constructed as dictionaries) where the specified indicator was found.
+    description: A list of records (constructed as dictionaries) where the specified indicator was found.
     type: List
 scripttarget: 0
 subtype: python3

@@ -1,3 +1,7 @@
+from CommonServerPython import DemistoException
+import pytest
+
+
 def test_retrieve_data_from_xdr_sanity_check(mocker):
     """
     Given:
@@ -74,3 +78,30 @@ def test_check_status(mocker):
     assert mock_execute.mock_calls[0][2]["args"] == {"query_id": "abc123"}
     assert mock_execute.mock_calls[0][2]["command"] == "xdr-xql-get-query-results"
     assert poll_result.readable_output == "job ID abc123 is finished!"
+
+
+def test_generate_xdr_query_unknown_type():
+    """
+    Given:
+    - An unknown indicator
+
+    When:
+    - Executing generate_xdr_query function
+
+    Then:
+    - Ensure DemistoException is thrown
+    - Ensure an informative message includes the given indicator is shown
+    """
+
+    indicator = "some-unknown-input"
+    timeframe = "last_24_hours"
+
+    from SearchIndicatorInXDR import generate_xdr_query
+
+    with pytest.raises(DemistoException) as e:
+        generate_xdr_query(timeframe, indicator)
+
+    assert (
+        e.value.message == f"Indicators supported by this script are IP, Domain, MD5, Sha256, and Uri."
+        f"\nThis indicator='{indicator}' has unknown type"
+    )
