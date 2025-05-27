@@ -1437,7 +1437,7 @@ class Client(BaseClient):
 
         return last_fetch, date_from  # type: ignore
 
-    def create_poll_generator(self, collection_name: str, hunting_rules: int, enable_probable_corporate_access: int, **kwargs):
+    def create_poll_generator(self, collection_name: str, hunting_rules: int, enable_probable_corporate_access: bool, **kwargs):
         """
         Interface to work with different types of indicators.
         """
