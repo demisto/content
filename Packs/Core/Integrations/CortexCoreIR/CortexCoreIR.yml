@@ -4118,7 +4118,7 @@ script:
   - arguments:
     - description: String that identifies the indicator you want to insert into Cortex.
       name: indicator
-      required: true
+      required: false
       isArray: false
       type: String
     - auto: PREDEFINED
@@ -4130,7 +4130,7 @@ script:
         - 'PATH'
         - 'DOMAIN_NAME'
         - 'FILENAME'
-      required: true
+      required: false
       isArray: false
       type: String
     - auto: PREDEFINED
@@ -4142,7 +4142,7 @@ script:
         - 'MEDIUM'
         - 'HIGH'
         - 'CRITICAL'
-      required: true
+      required: false
       isArray: false
       type: String
     - description: "Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds.

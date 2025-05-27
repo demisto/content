@@ -453,6 +453,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     indicator = args["indicator"]
     indicator_type = args["type"]
     severity = args["severity"]
+    ioc_object = args.get("ioc_object")
 
     # Optional arguments
     expiration_date = args.get("expiration_date")
@@ -464,7 +465,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     vendor_reputation = args.get("vendor_reputation")
     vendor_reliability = args.get("vendor_reliability")
     input_format = args.get("input_format", "JSON")  # Default to 'JSON'
-    ioc_object = args.get("ioc_object")
+
     ioc_payload: Union[dict, str]
 
     # Handle pre-built IOC object
@@ -480,8 +481,13 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
                 ioc_payload = ioc_object  # Leave as raw string
                 input_format = "CSV"
             else:
-                raise DemistoException("Invalid ioc_object: must be either valid JSON or CSV string.")
+                raise DemistoException("Core Add Indicator Rule Command: Invalid ioc_object"
+                                       " must be either valid JSON or CSV string.")
     else:
+        if not (indicator and indicator_type and severity):
+            raise DemistoException(
+                "Core Add Indicator Rule Command: when 'ioc_object' is not provided,"
+                " 'indicator', 'type', and 'severity' are required arguments.")
         # Build payload from individual arguments
         ioc_payload = {"indicator": indicator, "type": indicator_type, "severity": severity}
         parsed_expiration_date = parse_expiration_date(expiration_date)
@@ -506,7 +512,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     try:
         response = client.post_indicator_rule(ioc_payload, suffix=suffix)
     except DemistoException as error:
-        raise DemistoException(f"Core Add Indicator Command: During post, exception occurred {str(error)}")
+        raise DemistoException(f"Core Add Indicator Rule Command: During post, exception occurred {str(error)}")
 
     is_success = response["reply"]["success"]
 
@@ -516,7 +522,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
         for error_obj in response["reply"]["validation_errors"]:
             errors_array.append(error_obj["error"])
         error_string = ", ".join(errors_array)
-        raise DemistoException(f"Core Add Indicator Command: post of IOC rule failed: {error_string}")
+        raise DemistoException(f"Core Add Indicator Rule Command: post of IOC rule failed: {error_string}")
 
     ioc_payload_output = prepare_ioc_to_output(ioc_payload, input_format)
     return CommandResults(
