@@ -1081,7 +1081,7 @@ def search_esql_command(args, proxies):
         readable_output=total_human_readable,
         outputs_prefix="Elasticsearch.ESQLSearch",
         outputs=human_output,
-        raw_response=res
+        raw_response=res.body
     )
 
 
