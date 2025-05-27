@@ -1,8 +1,8 @@
 import pytest
 import demistomock as demisto
 from datetime import datetime, timezone, timedelta
-import CiscoAppDynamics as appdynamics
-from CiscoAppDynamics import (
+import CiscoAppDynamicsEventCollector as appdynamics
+from CiscoAppDynamicsEventCollector import (
     add_fields_to_events,
     get_events,
     parse_iso_millis_z,
