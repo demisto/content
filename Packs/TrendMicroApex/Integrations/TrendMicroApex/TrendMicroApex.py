@@ -177,6 +177,7 @@ class Client(BaseClient):
     def udso_list(self, list_type="", contentfilter=""):
         querystring = "?type=" + list_type + "&contentFilter=" + contentfilter
         headers = {
+            'Content-Type': 'application/json;charset=utf-8',
             "Authorization": "Bearer "
             + self.create_jwt_token(http_method="GET", api_path=UDSOAPIPATH + querystring, headers="", request_body="")
         }
@@ -186,6 +187,7 @@ class Client(BaseClient):
     def udso_delete(self, list_type="", content=""):
         querystring = "?type=" + list_type + "&content=" + content
         headers = {
+            'Content-Type': 'application/json;charset=utf-8',
             "Authorization": "Bearer "
             + self.create_jwt_token(http_method="DELETE", api_path=UDSOAPIPATH + querystring, headers="", request_body="")
         }
