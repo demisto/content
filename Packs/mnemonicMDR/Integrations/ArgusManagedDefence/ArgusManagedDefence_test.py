@@ -134,7 +134,6 @@ def test_build_tags_from_list():
     assert build_tags_from_list([]) is None
     with pytest.raises(ValueError) as e:
         build_tags_from_list(["list must be divisible by two"])
-    assert isinstance(e, ValueError)
     assert build_tags_from_list(["foo", "bar"]) == [{"key": "foo", "value": "bar"}]
 
 
@@ -145,7 +144,6 @@ def test_str_to_dict():
     assert str_to_dict("") is None
     with pytest.raises(ValueError) as e:
         str_to_dict("one_value")
-    assert isinstance(e, ValueError)
     assert str_to_dict("foo,bar") == {"foo": "bar"}
     assert str_to_dict("foo,bar,key,value") == {"foo": "bar", "key": "value"}
 
