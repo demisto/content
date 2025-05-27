@@ -1195,24 +1195,6 @@ def parse_indicator_response(indicators):
     return {"events": events, "href": hrefs, "attack_ids": attack_ids}
 
 
-def create_relationships_list(client, events_details, ip):
-    """Create relationships list from given data."""
-    relationships = []
-    if client.create_relationships and events_details.get("attack_ids"):
-        for attack_id in events_details.get("attack_ids"):
-            relationships.append(
-                EntityRelationship(
-                    name="indicator-of",
-                    entity_a=ip,
-                    entity_a_type=FeedIndicatorType.IP,
-                    entity_b=attack_id,
-                    entity_b_type=FeedIndicatorType.indicator_type_by_server_version(STIX_ATTACK_PATTERN),
-                    brand=VENDOR_NAME,
-                )
-            )
-    return relationships
-
-
 def create_relationships_list_v2(client, related_iocs, indicator_value, indicator_type):
     """
     Create relationships list from given data.
@@ -1470,7 +1452,6 @@ def html_to_text(html) -> str:
     """
 
     # Remove HTML tags
-    # text = re.sub(r'</*[a-zA-Z0-9]+>', '', html)
     text = re.sub(r"<.*?>", "", html)
 
     # Replace HTML entities with their corresponding characters

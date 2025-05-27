@@ -198,11 +198,13 @@ configuration:
   type: 8
   required: false
   section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
   section: Connect
+  advanced: true
 script:
   commands:
   - name: flashpoint-ignite-intelligence-report-search
