@@ -580,8 +580,13 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
     )
 
     action = "updated" if service_account else "removed"
-    hr = f"Service account was successfully {action} for VM instance {resource_name} in project {project_id}."
 
+    hr = tableToMarkdown(
+        f"Service account was successfully {action} for VM instance {resource_name} in project {project_id}.",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
@@ -613,7 +618,7 @@ def compute_instance_service_account_remove(creds: Credentials, args: dict[str, 
 
     hr = f"Service account was successfully removed from VM instance {resource_name} in project {project_id}."
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Instance.ServiceAccount", outputs=response)
+    return CommandResults(readable_output=hr)
 
 
 def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -699,7 +704,7 @@ def compute_instance_start(creds: Credentials, args: dict[str, Any]) -> CommandR
         removeNull=True,
     )
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
 def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -732,7 +737,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
         removeNull=True,
     )
 
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operation", outputs=response)
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
 def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -809,9 +814,7 @@ def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResul
     except Exception as e:
         raise DemistoException(f"Failed to sign out user: {str(e)}") from e
 
-    return CommandResults(
-        readable_output=hr, outputs_prefix="GCP.GSuite.User.SignOut", outputs={"user": user_key, "status": "signed_out"}
-    )
+    return CommandResults(readable_output=hr)
 
 
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:

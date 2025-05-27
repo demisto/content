@@ -19,7 +19,9 @@ GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
 
-def get_cloud_credentials(cloud_type: str, scopes: list = None) -> dict:
+def get_cloud_credentials(
+    cloud_type: str, scopes: list = None
+) -> dict:  # todo will need to pass the accountID and outpostID from the integration
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
 
