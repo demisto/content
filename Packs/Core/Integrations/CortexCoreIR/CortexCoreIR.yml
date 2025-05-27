@@ -4227,15 +4227,14 @@ script:
       required: false
       isArray: false
       type: String
-    - description: "The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed.
-                    CSV Example: indicator,type,severity,expiration_date,comment,reputation,reliability,vendor.name,vendor.reliability,vendor.reputation,class\n195.200.31.22,IP,HIGH,1744874761000,test indicator,SUSPICIOUS,D,VirusTotal (API v3),A,GOOD,Malware ."
+    - description: "The JSON/CSV object contains the IOC details. Make sure a valid IOC object is passed."
       name: ioc_object
       required: false
       isArray: false
       type: String
     description: "Upload IOCs to XSIAM. When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
                   If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-                      Adding the same indicator with different parameters will result in an update to the existing rule."
+                      Adding rule with the same indicator and different parameters will result in an update to the existing rule."
     name: core-add-indicator-rule
     outputs:
     - contextPath: Core.Indicator.indicator
