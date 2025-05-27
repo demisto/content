@@ -1,6 +1,6 @@
 {
-    "name": "Azure",
-    "description": "Azure",
+    "name": "AZURE",
+    "description": "AZURE",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

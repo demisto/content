@@ -2,6 +2,8 @@
 
 import demistomock as demisto
 import urllib3
+import jwt
+from urllib.parse import quote
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
@@ -24,6 +26,33 @@ SCOPE_BY_CONNECTION = {
     "Client Credentials": "https://management.azure.com/.default",
 }
 
+# COMMAND_PERMISSIONS_MAP = {
+#     "azure-nsg-security-rule-update": update_security_rule_command,
+#     "azure-storage-account-update": storage_account_update_command,
+#     "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
+#     "azure-policy-assignment-create": create_policy_assignment_command,
+#     "azure-postgres-config-set": set_postgres_config_command,
+#     "azure-webapp-config-set": set_webapp_config_command,
+#     "azure-webapp-auth-update": update_webapp_auth_command,
+#     # "azure-resource-update": resource_update_command, ### we use storage_account_create_update for this
+#     "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
+#     "azure-monitor-log-profile-update": monitor_log_profile_update_command,
+#     "azure-disk-update": disk_update_command,
+#     "azure-webapp-update": webapp_update_command,
+#     "azure-acr-update": acr_update_command,
+#     "azure-postgres-server-update": postgres_server_update_command,
+#     "azure-key-vault-update": update_key_vault_command,
+#     "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
+#     # "azure-logicapp-update": logicapp_update_command,
+#     "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
+#     "azure-cosmos-db-update": cosmosdb_update_command,
+#     "azure-remove-member-from-role": remove_member_from_role,
+#     "azure-remove-member-from-group": remove_member_from_group_command,
+#     "azure-user-session-revoke": revoke_user_session_command,
+#     "azure-user-change-password": change_password_user_command,
+#     "azure-user-account-disable": disable_user_account_command,
+# }
+
 DEFAULT_LIMIT = 50
 PREFIX_URL = "https://management.azure.com/subscriptions/"
 POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
@@ -38,6 +67,8 @@ ACR_API_VERSION="2023-01-01-preview"
 KEY_VAULT_API_VERSION="2022-07-01"
 SQL_DB_API_VERSION="2021-11-01"
 COSMOS_DB_API_VERSION="2024-11-15"
+PERMISSIONS_VERSION="2022-04-01"
+
 """ CLIENT CLASS """
 
 
@@ -56,6 +87,7 @@ class AzureClient:
         auth_code: str = None,
         redirect_uri: str = None,
         managed_identities_client_id: str = None,
+        scope: str = None
     ):
         if "@" in app_id:
             app_id, refresh_token = app_id.split("@")
@@ -66,21 +98,19 @@ class AzureClient:
         client_args = assign_params(
             self_deployed=True,
             auth_id=app_id,
-            token_retrieval_url="https://login.microsoftonline.com/organizations/oauth2/v2.0/token"
-            if "Device Code" in connection_type
-            else None,
+            token_retrieval_url=None,
             grant_type=GRANT_BY_CONNECTION.get(connection_type),
             base_url=f"{PREFIX_URL}{subscription_id}",
             verify=verify,
             proxy=proxy,
-            resource="https://management.core.windows.net" if "Device" in connection_type else None,
-            scope=SCOPE_BY_CONNECTION.get(connection_type),
+            resource=None,
+            # scope=scope,
             tenant_id=tenant_id,
             enc_key=enc_key,
             auth_code=auth_code,
             redirect_uri=redirect_uri,
             managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=Resources.management_azure
+            managed_identities_resource_uri=None
         )
         self.ms_client = MicrosoftClient(**client_args)
         self.subscription_id = subscription_id
@@ -771,11 +801,7 @@ and resource group "{resource_group_name}" was not found.')
             https://docs.microsoft.com/en-us/graph/api/directoryrole-delete-member?view=graph-rest-1.0&tabs=http
         """
         full_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref"
-        params = {"api-version": COSMOS_DB_API_VERSION}
-        response = self.ms_client.http_request(
-            "DELETE", full_url=full_url, params=params
-        )
-        print(response)
+        self.ms_client.http_request("DELETE", full_url=full_url)
         
     
     def remove_member_from_group(self, group_id: str, user_id: str):
@@ -787,9 +813,38 @@ and resource group "{resource_group_name}" was not found.')
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         #  Using resp_type="text" to avoid parsing error in the calling method.
-        params = {"api-version": COSMOS_DB_API_VERSION}
-        self.ms_client.http_request(method="DELETE", full_url=f"https://management.azure.com/v1.0/groups/{group_id}/members/{user_id}/$ref", params=params, resp_type="text")
-    
+        self.ms_client.http_request(method="DELETE", full_url=f"https://graph.microsoft.com/v1.0/groups/{group_id}/members/{user_id}/$ref", resp_type="text")
+        
+        
+    def revoke_user_session(self, user):
+        full_url = f"https://graph.microsoft.com/v1.0/users/{quote(user)}"
+        self.ms_client.http_request(method="POST", full_url=full_url, resp_type="text")
+        
+        
+    def password_change_user(
+        self, user: str, password: str, force_change_password_next_sign_in: bool, force_change_password_with_mfa: bool
+    ):
+        body = {
+            "passwordProfile": {
+                "forceChangePasswordNextSignIn": force_change_password_next_sign_in,
+                "forceChangePasswordNextSignInWithMfa": force_change_password_with_mfa,
+                "password": password,
+            }
+        }
+        full_url = f"https://graph.microsoft.com/v1.0/users/{quote(user)}"
+        self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=body, resp_type="text")
+
+
+    def disable_user_account_session(self, user):
+        full_url = f"https://graph.microsoft.com/v1.0/users/{quote(user)}"
+        self.ms_client.http_request(method="PATCH", full_url=full_url, data='{"accountEnabled": false}', resp_type="text")
+
+
+    def get_role_assignments(self, app_id):
+        full_url = f"https://management.azure.com/subscriptions/{self.subscription_id}/providers/Microsoft.Authorization/roleAssignments"
+        # full_url = f"https://graph.microsoft.com/v1.0/servicePrincipals(appId='{app_id}')/appRoleAssignments"
+        self.ms_client.http_request(method="GET", full_url=full_url)
+        
         
 """ HELPER FUNCTIONS """
 def format_rule(rule_json: dict | list, security_rule_name: str):
@@ -1654,6 +1709,58 @@ def remove_member_from_group_command(client: AzureClient, args: dict) -> Command
     return CommandResults(readable_output=human_readable)
 
 
+def revoke_user_session_command(client: AzureClient, args: dict):
+    user = args.get("user")
+    client.revoke_user_session(user)
+    human_readable = f'User: "{user}" sessions have been revoked successfully.'
+    return CommandResults(readable_output=human_readable)
+
+
+def change_password_user_command(client: AzureClient, args: dict):
+    user = str(args.get("user"))
+    password = str(args.get("password"))
+    force_change_password_next_sign_in = args.get("force_change_password_next_sign_in", "true") == "true"
+    force_change_password_with_mfa = args.get("force_change_password_with_mfa", False) == "true"
+
+    client.password_change_user(user, password, force_change_password_next_sign_in, force_change_password_with_mfa)
+    human_readable = f"User {user} password was changed successfully."
+    return CommandResults(readable_output=human_readable)
+
+
+def disable_user_account_command(client: AzureClient, args: dict):
+    user = args.get("user")
+    client.disable_user_account_session(user)
+    human_readable = f'user: "{user}" account has been disabled successfully.'
+    return CommandResults(readable_output=human_readable)
+
+
+def get_token(access_token: str) -> dict:
+    """
+    Decodes the provided access token and retrieves a list of API permissions associated with the token.
+
+    :param access_token: the access token to decode.
+    :return: A list of the token's API permission roles.
+    """
+    decoded_token = jwt.decode(access_token, options={"verify_signature": False})
+    return decoded_token
+
+
+def check_command_permission_exist(command: str, app_id: str, permissions: list) -> str:
+    """
+    Check if a specific command has the required API permissions.
+
+    :param command: The command to check permissions for
+    :param app_id: The application ID
+    :param permissions: List of permissions to validate
+    :return: Detailed permission check result
+    """
+    return
+
+def get_role_assignments(client, app_id: str):
+    role_assignments = client.get_role_assignments(app_id)
+    print(role_assignments)
+
+
 def test_module(client: AzureClient) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
@@ -1674,7 +1781,11 @@ def test_module(client: AzureClient) -> str:
             "For more details press the (?) button."
         )
     elif client.connection_type == "Azure Managed Identities" or client.connection_type == "Client Credentials":
-        client.ms_client.get_access_token()
+        access_token = client.ms_client.get_access_token()
+        decoded_token = get_token(access_token)
+        app_id = decoded_token.get("appid", "")
+        list_permissions = decoded_token.get("roles", [])
+        list_role_assignments = get_role_assignments(client, app_id)
         return "ok"
 
     else:
@@ -1690,6 +1801,7 @@ def main():
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
+    connection_type = params.get("auth_type", "Device Code")
     try:
         client = AzureClient(
             app_id=params.get("app_id", ""),
@@ -1697,12 +1809,14 @@ def main():
             resource_group_name=params.get("resource_group_name", ""),
             verify=not params.get("insecure", False),
             proxy=params.get("proxy", False),
-            connection_type=params.get("auth_type", "Device Code"),
+            connection_type=connection_type,
             tenant_id=params.get("tenant_id"),
             enc_key=params.get("credentials", {}).get("password"),
             auth_code=(params.get("auth_code", {})).get("password"),
             redirect_uri=params.get("redirect_uri"),
             managed_identities_client_id=get_azure_managed_identities_client_id(params),
+            # scope=SCOPE_BY_CONNECTION.get(connection_type) if (("remove-member" not in command) and ("user" not in command)) else None # the issue!
+            scope=None
         )
     
         commands_with_params_and_args = {
@@ -1728,7 +1842,10 @@ def main():
         }
         commands_with_args = {
             "azure-remove-member-from-role": remove_member_from_role,
-            "azure-remove-member-from-group": remove_member_from_group_command
+            "azure-remove-member-from-group": remove_member_from_group_command,
+            "azure-user-session-revoke": revoke_user_session_command,
+            "azure-user-change-password": change_password_user_command,
+            "azure-user-account-disable": disable_user_account_command,
         }
        
         if command == "test-module":

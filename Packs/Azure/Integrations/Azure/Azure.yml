@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: Azure
+  id: AZURE
   version: -1
 configuration:
 - defaultvalue: d4736600-e3d5-4c97-8e65-57abd2b979fe
@@ -102,8 +102,8 @@ configuration:
   section: Connect
   required: false
 description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: Azure
-name: Azure
+display: AZURE
+name: AZURE
 script:
   commands:
   - arguments:
@@ -1797,6 +1797,51 @@ script:
       required: true
     description: Removes a member from a group.
     name: azure-remove-member-from-group
+  - arguments:
+    - description: User ID or userPrincipalName to update password for.
+      name: user
+      required: true
+    - description: The new password.
+      name: password
+      required: true
+      secret: true
+    - auto: PREDEFINED
+      defaultValue: 'true'
+      description: Whether the password will be changed on the next sign in.
+      name: force_change_password_next_sign_in
+      predefined:
+      - 'true'
+      - 'false'
+    - auto: PREDEFINED
+      defaultValue: 'false'
+      description: Whether to change the password with MFA.
+      name: force_change_password_with_mfa
+      predefined:
+      - 'true'
+      - 'false'
+    description: |-
+      Changes the user password.
+      Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
+    execution: true
+    name: azure-user-change-password
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Disables a user from all Office 365 applications, and prevents sign in. Note: This command disables user,
+      but does not terminate an existing session. Supported only in a self deployed app flow with the
+      Permission: Directory.AccessAsUser.All(Delegated).
+    name: azure-user-account-disable
+  - arguments:
+    - description: User ID or userPrincipalName.
+      name: user
+      required: true
+    description: |-
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      This command requires an administrator role.
+      Permission required: Directory.AccessAsUser.All (Delegated).
+    name: azure-user-session-revoke
   isfetch: false
   runonce: false
   script: '-'
