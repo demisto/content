@@ -216,9 +216,9 @@ def get_incident_ids_to_fetch(
     last_id: Optional[int],
     max_fetch,
 ) -> List[int]:
-    demisto.debug(f"Test-IronScales: going in get_incident_ids_to_fetch with param: first_fetch = {str(first_fetch)}\
+    demisto.debug(f"Test-IronScales: going in get_incident_ids_to_fetch with param: first_fetch = {str(first_fetch)},\
                   last_id = {str(last_id)},\
-                  ,max_fetch = max_fetch")
+                  max_fetch = max_fetch")
 
     incident_ids: List[int] = client.get_incident_ids(first_fetch, max_fetch, last_id)
     if not incident_ids:
