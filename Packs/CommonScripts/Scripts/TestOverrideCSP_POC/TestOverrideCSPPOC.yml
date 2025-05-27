@@ -6,7 +6,7 @@ comment: Test.
 commonfields:
   id: TestOverrideCSP_POC
   version: -1
-dockerimage: devdemisto/python3:3.12.8.3383313
+dockerimage: devdemisto/python3:3.12.8.3530013
 enabled: true
 name: TestOverrideCSP_POC
 runas: DBotWeakRole
