@@ -434,7 +434,7 @@ script:
       name: limit
     description: Search using ES|QL query. (Elastic >=8.11).
     outputs:
-    - contextPath: Elasticsearch.Search
+    - contextPath: Elasticsearch.ESQLSearch
       description: ES|QL Search Result.
   dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
