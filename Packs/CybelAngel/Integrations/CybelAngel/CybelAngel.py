@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-from datetime import datetime, timedelta, timezone  # noqa: UP017
+from datetime import datetime, timedelta, UTC
 import requests  # type: ignore
 import json
 from typing import Any
@@ -56,29 +56,26 @@ class Client(BaseClient):
     def check_token(self):
         if not self.token_time:
             self.fetch_token()
-            self.token_time = datetime.now(timezone.utc)  # noqa: UP017
+            self.token_time = datetime.now(UTC)
             return
 
         try:
             token_time = datetime.fromisoformat(self.token_time.replace("Z", "+00:00"))
-            time_diff = (datetime.now(timezone.utc) - token_time).total_seconds()  # noqa: UP017
+            time_diff = (datetime.now(UTC) - token_time).total_seconds()
             if time_diff >= 3600:
                 self.fetch_token()
-                self.token_time = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+                self.token_time = datetime.now(UTC).strftime(DATE_FORMAT)
         except (ValueError, TypeError):
             self.fetch_token()
-            self.token_time = datetime.now(timezone.utc).strftime(DATE_FORMAT)  # noqa: UP017
+            self.token_time = datetime.now(UTC).strftime(DATE_FORMAT)
 
     def get_reports(self, interval: int):
         self.check_token()
         headers = {"Content-Type": "application/json", "Authorization": str(self.token)}
 
-        difference = datetime.now(timezone.utc) - timedelta(minutes=interval)  # noqa: UP017
+        difference = datetime.now(UTC) - timedelta(minutes=interval)
 
-        params = {
-            "end-date": datetime.now(timezone.utc).strftime(DATE_FORMAT),  # noqa: UP017
-            "start-date": difference.strftime(DATE_FORMAT),
-        }
+        params = {"end-date": datetime.now(UTC).strftime(DATE_FORMAT), "start-date": difference.strftime(DATE_FORMAT)}
         try:
             demisto.info(f"Fetching incidents at interval :{interval}")
 
@@ -95,10 +92,7 @@ class Client(BaseClient):
         """Get all reports from CybelAngel -- Only run once on Configuration"""
         self.check_token()
         headers = {"Content-Type": "application/json", "Authorization": str(self.token)}
-        params = {
-            "end-date": datetime.now(timezone.utc).strftime(DATE_FORMAT),  # noqa: UP017
-            "start-date": "2000-01-02T01:01:01",
-        }
+        params = {"end-date": datetime.now(UTC).strftime(DATE_FORMAT), "start-date": "2000-01-02T01:01:01"}
         try:
             response = json.loads(requests.get(f"{self.base_url}api/v2/reports", headers=headers, params=params).text)
             reports = []
@@ -217,11 +211,7 @@ class Client(BaseClient):
 
 def _set_context(client: Client):
     if client.new_token_fetched:
-        new_context = {
-            "token": str(client.token),
-            "expiry": datetime.now(timezone.utc).strftime(DATE_FORMAT),  # noqa: UP017
-            "first_pull": str(False),
-        }
+        new_context = {"token": str(client.token), "expiry": datetime.now(UTC).strftime(DATE_FORMAT), "first_pull": str(False)}
         demisto.setIntegrationContext(new_context)
         demisto.info("New auth token stored")
 
@@ -230,9 +220,9 @@ def _datetime_helper(last_run_date: str) -> int:
     try:
         last_run = datetime.fromisoformat(last_run_date.replace("Z", "+00:00"))
     except (ValueError, TypeError):
-        last_run = datetime.now(timezone.utc) - timedelta(minutes=5)  # noqa: UP017
+        last_run = datetime.now(UTC) - timedelta(minutes=5)
 
-    delta = datetime.now(timezone.utc) - last_run  # noqa: UP017
+    delta = datetime.now(UTC) - last_run
     total_minutes = int(delta.total_seconds() / 60)
     return total_minutes
 
@@ -268,7 +258,7 @@ def fetch_incidents(client: Client, first_fetch: bool, last_run: str | None, fir
 
     # Set the integration context
     _set_context(client)
-    demisto.setLastRun({"start_time": datetime.now(timezone.utc).strftime(DATE_FORMAT)})  # noqa: UP017
+    demisto.setLastRun({"start_time": datetime.now(UTC).strftime(DATE_FORMAT)})
     return incidents
 
 
