@@ -9,7 +9,7 @@ urllib3.disable_warnings()
 VENDOR = "cisco"
 PRODUCT = "appdynamics"
 
-TOKEN_URL = "/controller/api/oauth/access_token"
+TOKEN_URL = "/api/oauth/access_token"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 DAY_IN_MS = 24 * 60 * 60 * 1000
 
@@ -47,7 +47,7 @@ class EventType:
 
 AUDIT = EventType(
     name="Audit",
-    url_suffix="/controller/ControllerAuditHistory",
+    url_suffix="/ControllerAuditHistory",
     time_field="timeStamp",
     source_log_type="Audit History",
 )
@@ -410,7 +410,7 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     if HEALTH_EVENT.name in event_types_to_fetch:
         HEALTH_EVENT.max_fetch = max_fetch_health
         event_types.append(HEALTH_EVENT)
-        HEALTH_EVENT.url_suffix = f"/controller/rest/applications/{application_id}/problems/healthrule-violations"
+        HEALTH_EVENT.url_suffix = f"/rest/applications/{application_id}/problems/healthrule-violations"
 
     return event_types
 
