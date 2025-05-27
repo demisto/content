@@ -147,7 +147,9 @@ def execute_reply_mail(
         # setting the email's subject for gmail adjustments
         try:
             demisto.debug(f"Setting incident {incident_id} email subject to {subject_with_id}")
-            execute_command("setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}}, extract_contents=False)
+            execute_command(
+                "setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}}, extract_contents=False
+            )
         except Exception:
             return_error(
                 f"SetIncident Failed."
@@ -484,7 +486,9 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             attachment_name = attachment.get("name", "")
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
-            execute_command("core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data}, extract_contents=False)
+            execute_command(
+                "core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data}, extract_contents=False
+            )
             if not isinstance(files, list):
                 files = [files]
             for file in files:
@@ -560,7 +564,9 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         entry_note = json.dumps([{"Type": 1, "ContentsFormat": "html", "Contents": reply_body, "tags": ["email-thread"]}])
         demisto.debug(f"Adding note to incident {incident_id}")
         entry_tags_res = execute_command(
-            "addEntries", {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async}, extract_contents=False
+            "addEntries",
+            {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async},
+            extract_contents=False,
         )
         demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
         entry_note_res = execute_command(
@@ -569,7 +575,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
                 "uri": "/entry/note",
                 "body": json.dumps({"id": note.get("ID"), "version": -1, "investigationId": incident_id, "data": "false"}),
             },
-            extract_contents=False
+            extract_contents=False,
         )
         if is_error(entry_note_res):
             return_error(get_error(entry_note_res))
@@ -725,7 +731,7 @@ def reset_fields():
     execute_command(
         "setIncident",
         {"emailnewrecipients": "", "emailnewsubject": "", "emailnewbody": "", "addcctoemail": "", "addbcctoemail": ""},
-        extract_contents=False
+        extract_contents=False,
     )
 
 
@@ -915,7 +921,9 @@ def single_thread_reply(
         # If a unique code is not set for this incident yet, generate and set it
         email_code = get_unique_code(incident_id)
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
-        execute_command("setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}}, extract_contents=False)
+        execute_command(
+            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}}, extract_contents=False
+        )
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
         reply_body, context_html_body, reply_html_body = get_reply_body(notes, incident_id, attachments, reputation_calc_async)
@@ -998,13 +1006,15 @@ def multi_thread_new(
     if email_codes:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {email_codes},{thread_code}")
         execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}},
-            extract_contents=False
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}},
+            extract_contents=False,
         )
     else:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {thread_code}")
-        execute_command("setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}},
-                        extract_contents=False)
+        execute_command(
+            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}}, extract_contents=False
+        )
     try:
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
 

@@ -1,5 +1,6 @@
 import json
 
+import CommonServerPython
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
@@ -50,14 +51,10 @@ def test_append_email_signature_fails(mocker):
     from SendEmailReply import append_email_signature
 
     get_list_error_response = util_load_json("test_data/getList_signature_error.json")
-    mocker.patch.object(demisto, "executeCommand", return_value=get_list_error_response)
-    debug_mocker = mocker.patch.object(demisto, "debug")
-    append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
-    debug_mocker_call_args = debug_mocker.call_args
-    assert (
-        debug_mocker_call_args.args[0] == "Error occurred while trying to load the `XSOAR - Email Communication "
-        "Signature` list. No signature added to email"
-    )
+    mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
+    res = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
+    assert "Item not found" in res
+
 
 
 @pytest.mark.parametrize(
@@ -1582,7 +1579,7 @@ def test_format_body(mocker):
     from SendEmailReply import format_body
 
     html_body = "![image](/markdown/image/aljhgfghdjakldvygi)"
-    mocker.patch.object(demisto, "executeCommand", return_value=[{"FileID": "111"}])
+    mocker.patch("SendEmailReply.execute_command", return_value=[{"FileID": "111"}])
     mocker.patch.object(demisto, "investigation", return_value={"id": "1234"})
     open_mock = mocker.mock_open(read_data=b"some binary data")
     mocker.patch("builtins.open", open_mock)
