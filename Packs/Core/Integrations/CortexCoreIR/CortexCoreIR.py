@@ -449,13 +449,10 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
         CommandResults: Object containing the formatted asset details,
                         raw response, and outputs for integration context.
     """
-    # Required arguments
     indicator = args.get("indicator")
     indicator_type = args.get("type")
     severity = args.get("severity")
     ioc_object = args.get("ioc_object")
-
-    # Optional arguments
     expiration_date = args.get("expiration_date")
     comment = args.get("comment")
     reputation = args.get("reputation")

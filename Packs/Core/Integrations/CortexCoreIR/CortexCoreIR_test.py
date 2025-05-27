@@ -807,8 +807,9 @@ class TestCoreAddIndicator:
             - Verify an error has been raised and that the error message is correct.
         """
         client = get_mock_client()
-        args = {"ioc_object": "not a json or csv string", "input_format": "JSON", "indicator": "x", "type": "x", "severity": "x"}
-        with pytest.raises(DemistoException, match="Invalid ioc_object: must be either valid JSON or CSV string."):
+        args = {"ioc_object": "not a json or csv string"}
+        with pytest.raises(DemistoException, match="Core Add Indicator Rule Command: Invalid ioc_object"
+                                       " must be either valid JSON or CSV string."):
             core_add_indicator_rule_command(client, args)
 
     def test_core_add_indicator_rule_failure_response(self, mocker):
@@ -839,5 +840,5 @@ class TestCoreAddIndicator:
         with pytest.raises(DemistoException) as exc_info:
             core_add_indicator_rule_command(client, args)
 
-        assert "Core Add Indicator Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
+        assert "Core Add Indicator Rule Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
         mock_post.assert_called_once()
