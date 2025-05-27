@@ -680,7 +680,7 @@ Search into firewall logs
 | interface | Interface search filter. | Optional |
 
 #### Context Output
-<!-- markdownlint-disable MD049 -->
+<!-- markdownlint-disable MD050 -->
 | **Path**                    | **Type** | **Description** |
 |-----------------------------| --- | --- |
 | OPNSense.Logs               | Unknown | OPNSense logs |
@@ -693,7 +693,7 @@ Search into firewall logs
 | OPNSense.Logs.__timestamp__ | Unknown | timestamp in logs |
 | OPNSense.Logs.label         | Unknown | label in logs |
 | OPNSense.Logs.protoname     | Unknown | protoname in logs |
-<!-- markdownlint-enable MD049 -->
+<!-- markdownlint-enable MD050 -->
 ### opnsense-states-search
 
 ***
