@@ -61,7 +61,7 @@ class Client(BaseClient):
         Raises:
             DemistoException: If neither an authorization code nor refresh token is available.
         """
-        ctx = demisto.getIntegrationContext() or {}
+        ctx = get_integration_context() or {}
         now = datetime.now()
         if "access_token" in ctx and now < datetime.fromisoformat(ctx.get("expire_date")):  # type: ignore
             demisto.debug(f"Using cached access token. Expires at {ctx.get('expire_date')}")
@@ -99,7 +99,7 @@ class Client(BaseClient):
             "expire_date": (now + timedelta(seconds=int(response.get("expires_in")) - 60)).isoformat(),
         }
 
-        demisto.setIntegrationContext(new_ctx)
+        set_integration_context(new_ctx)
 
         return response.get("access_token")
 
@@ -123,7 +123,7 @@ class Client(BaseClient):
             "Accept": "application/auditlogsdata.v1+json",
         }
         params = {"startTime": start_time, "endTime": end_time, "pageLimit": PAGE_LIMIT_DEFAULT}
-        demisto.debug(f"Time intervar: {start_time} --- {end_time}")
+        demisto.debug(f"Time intervarl: {start_time} --- {end_time}")
 
         while True:
             params["page"] = str(page)
@@ -168,8 +168,6 @@ def test_module(client: Client) -> str:
 
     try:
         _ = client.search_events(str(one_min_ago_ts), str(now_ts), 1)
-        demisto.debug("-------------------- END OF TEST --------------------")
-        demisto.debug(demisto.getIntegrationContext())
         return "ok"
     except Exception as e:
         msg = str(e).lower()

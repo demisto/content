@@ -3,7 +3,7 @@ sectionOrder:
 - Connect
 - Collect
 commonfields:
-  id: ManageEngineEventCollector
+  id: ManageEngine
   version: -1
 configuration:
 - name: server_url
@@ -53,8 +53,8 @@ configuration:
   section: Collect
   required: false
 description: ManageEngine EndpointCentral event collector integration for Cortex XSIAM.
-display: ManageEngineEventCollector
-name: ManageEngineEventCollector
+display: ManageEngineEvent
+name: ManageEngineEvent
 script:
   commands:
   - arguments:
