@@ -1,7 +1,3 @@
-import json
-
-import CommonServerPython
-import demistomock as demisto
 import pytest
 from CommonServerPython import *
 from freezegun import freeze_time
@@ -54,7 +50,6 @@ def test_append_email_signature_fails(mocker):
     mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
     res = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
     assert "Item not found" in res
-
 
 
 @pytest.mark.parametrize(

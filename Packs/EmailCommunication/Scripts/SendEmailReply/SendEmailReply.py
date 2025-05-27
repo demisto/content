@@ -1,7 +1,4 @@
-import json
-import re
 from datetime import datetime as dt
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from markdown import Extension, markdown
