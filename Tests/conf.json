@@ -6372,6 +6372,7 @@
                 "memory_threshold": 120
             },
             "demisto/ml": {
+                "pid_threshold": 45,
                 "memory_threshold": 500
             }
         }
