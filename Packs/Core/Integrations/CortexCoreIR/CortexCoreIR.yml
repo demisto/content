@@ -4236,7 +4236,7 @@ script:
     description: "Upload IOCs to XSIAM. When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
                   If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
                       Adding the same indicator with different parameters will result in an update to the existing rule."
-    name: core-add-indicator
+    name: core-add-indicator-rule
     outputs:
     - contextPath: Core.Indicator.indicator
       description: String that identifies the indicator that was insert into Cortex.

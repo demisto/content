@@ -3301,14 +3301,14 @@ Run a shell command on a specific endpoint and return its result.
 | echo hello | hello | dummy_id2 | 11.11.11.11 | name2 | STATUS_010_CONNECTED | COMPLETED_SUCCESSFULLY |
 
 
-### core-add-indicator
+### core-add-indicator-rule
 
 ***
 Upload IOCs to XSIAM. When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding the same indicator with different parameters will result in an update to the existing rule.
 
 #### Base Command
 
-`core-add-indicator`
+`core-add-indicator-rule`
 
 #### Input
 

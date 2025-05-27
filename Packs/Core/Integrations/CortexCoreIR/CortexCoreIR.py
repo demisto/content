@@ -419,7 +419,7 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
     return script_res
 
 
-def core_add_indicator_command(client: Client, args: dict) -> CommandResults:
+def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResults:
     """
     Add Indicator Rule to XSIAM command.
 
@@ -914,8 +914,8 @@ def main():  # pragma: no cover
         elif command == "core-execute-command":
             return_results(core_execute_command_command(client, args))
 
-        elif command == "core-add-indicator":
-            return_results(core_add_indicator_command(client, args))
+        elif command == "core-add-indicator-rule":
+            return_results(core_add_indicator_rule_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))

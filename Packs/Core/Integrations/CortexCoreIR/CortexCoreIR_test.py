@@ -3,7 +3,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from CommonServerPython import *
-from CortexCoreIR import core_execute_command_reformat_args, core_add_indicator_command, Client
+from CortexCoreIR import core_execute_command_reformat_args, core_add_indicator_rule_command, Client
 from freezegun import freeze_time
 
 Core_URL = "https://api.xdrurl.com"
@@ -659,13 +659,13 @@ def get_mock_client():
 
 
 class TestCoreAddIndicator:
-    def test_core_add_indicator_json(self, mocker):
+    def test_core_add_indicator_rule_json(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command.
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
             - Receiving successful response.
         Then:
             - Verify that results were correctly parsed.
@@ -692,7 +692,7 @@ class TestCoreAddIndicator:
             "input_format": "JSON",
         }
 
-        result = core_add_indicator_command(client, args)
+        result = core_add_indicator_rule_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert "IOC 1.2.3.4 was successfully added." in result.readable_output
@@ -701,13 +701,13 @@ class TestCoreAddIndicator:
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_jsons"
 
-    def test_core_add_indicator_success_minimal_args(self, mocker):
+    def test_core_add_indicator_rule_success_minimal_args(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command - the minimal required arguments.
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
             - Receiving successful response.
         Then:
             - Verify that results were correctly parsed.
@@ -717,18 +717,18 @@ class TestCoreAddIndicator:
 
         args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
 
-        result = core_add_indicator_command(client, args)
+        result = core_add_indicator_rule_command(client, args)
         assert isinstance(result, CommandResults)
         assert "example.com" in result.readable_output
 
-    def test_core_add_indicator_csv(self, mocker):
+    def test_core_add_indicator_rule_csv(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command.
             - IOC object argument
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
             - Receiving successful response.
         Then:
             - Verify that results were correctly parsed.
@@ -753,7 +753,7 @@ class TestCoreAddIndicator:
             "severity": "ignored",
         }
 
-        result = core_add_indicator_command(client, args)
+        result = core_add_indicator_rule_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert result.outputs["indicator"] == "1.2.3.4"
@@ -761,14 +761,14 @@ class TestCoreAddIndicator:
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_csv"
 
-    def test_core_add_indicator_ioc_object_precedence(self, mocker):
+    def test_core_add_indicator_rule_ioc_object_precedence(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command.
             - IOC object argument
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
             - Receiving successful response.
         Then:
             - Verify that results were correctly parsed.
@@ -787,7 +787,7 @@ class TestCoreAddIndicator:
             "severity": "should_not_use_this",
         }
 
-        result = core_add_indicator_command(client, args)
+        result = core_add_indicator_rule_command(client, args)
 
         assert isinstance(result, CommandResults)
         assert result.outputs["indicator"] == "5.5.5.5"
@@ -795,29 +795,29 @@ class TestCoreAddIndicator:
         _, kwargs = mock_post.call_args
         assert kwargs["suffix"] == "indicators/insert_jsons"
 
-    def test_core_add_indicator_invalid_ioc_object_raises_error(self, mocker):
+    def test_core_add_indicator_rule_invalid_ioc_object_raises_error(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command.
             - IOC object argument malformed
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
         Then:
             - Verify an error has been raised and that the error message is correct.
         """
         client = get_mock_client()
         args = {"ioc_object": "not a json or csv string", "input_format": "JSON", "indicator": "x", "type": "x", "severity": "x"}
         with pytest.raises(DemistoException, match="Invalid ioc_object: must be either valid JSON or CSV string."):
-            core_add_indicator_command(client, args)
+            core_add_indicator_rule_command(client, args)
 
-    def test_core_add_indicator_failure_response(self, mocker):
+    def test_core_add_indicator_rule_failure_response(self, mocker):
         """
         Given:
             - A mock Client to make API calls.
             - Arguments for the command.
         When:
-            - Calling `core_add_indicator`.
+            - Calling `core_add_indicator_rule`.
             - Receiving bad response.
         Then:
             - Verify an error has been raised and that the error message is correct.
@@ -837,7 +837,7 @@ class TestCoreAddIndicator:
         args = {"indicator": "dummy", "type": "IP", "severity": "HIGH"}
 
         with pytest.raises(DemistoException) as exc_info:
-            core_add_indicator_command(client, args)
+            core_add_indicator_rule_command(client, args)
 
         assert "Core Add Indicator Command: post of IOC rule failed: error1, error2" in str(exc_info.value)
         mock_post.assert_called_once()
