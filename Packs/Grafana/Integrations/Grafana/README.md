@@ -3,6 +3,7 @@ This integration was integrated and tested with version 8.0.0 of Grafana
 
 ## Configure Grafana in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -18,6 +19,8 @@ This integration was integrated and tested with version 8.0.0 of Grafana
 | Alert name to fetch |  | False |
 | States to fetch |  | False |
 | Incident type |  | False |
+| Incidents Fetch Interval |  | False |
+
 
 ## Commands
 
