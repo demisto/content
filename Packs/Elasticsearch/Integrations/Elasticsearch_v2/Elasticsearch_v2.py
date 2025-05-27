@@ -1068,7 +1068,12 @@ def search_esql_command(args, proxies):
     hits_human_readable = tableToMarkdown("Results:", human_output, removeNull=True)
     total_human_readable = search_human_readable + "\n" + hits_human_readable
 
-    return CommandResults(readable_output=total_human_readable, outputs_prefix="Elasticsearch.Search", outputs=human_output)
+    return CommandResults(
+        readable_output=total_human_readable,
+        outputs_prefix="Elasticsearch.Search",
+        outputs=human_output,
+        raw_response=res
+    )
 
 
 def index_document(args, proxies):
