@@ -9,7 +9,8 @@ alter
     duration_format = if(to_integer(duration) != null, multiply(to_integer(duration), 1000), null),
     ICMP_type = to_integer(if(cn2Label = "ICMP Type", cn2, null)),
     ICMP_code = to_integer(if(cn3Label = "ICMP Code", cn3, null)),
-    protection_Type = if(cs3Label = "Protection Type", cs3, null)
+    protection_Type = if(cs3Label = "Protection Type", cs3, null),
+    proto = to_string(proto)
 | alter
     ipv6src = if(src != null and ipv4src = null, src, null),
     ipv6dest = if(dst != null and ipv4dest = null, dst, null),
@@ -51,12 +52,15 @@ alter
     xdm.target.sent_packets = to_integer(server_outbound_packets);
 
 [MODEL: dataset ="check_point_url_filtering_raw"]
-alter application = if(app = null or app="Unknown Protocol", service_id, app)
-| alter ruleName = if(cs2Label = "Rule Name", cs2, null)
-| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
-| alter ipv6src = if(src != null and ipv4src = null, src, null)
-| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
-| alter ipv6dest = if(dst != null and ipv4dest = null, dst, null)
+alter 
+    application = if(app = null or app="Unknown Protocol", service_id, app),
+    ruleName = if(cs2Label = "Rule Name", cs2, null),
+    ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
+    proto = to_string(proto)
+| alter
+    ipv6src = if(src != null and ipv4src = null, src, null),
+    ipv6dest = if(dst != null and ipv4dest = null, dst, null)
 // Fields Modeling
 | alter
     xdm.event.id = loguid,
@@ -80,14 +84,16 @@ alter application = if(app = null or app="Unknown Protocol", service_id, app)
 
 [MODEL: dataset ="check_point_smartdefense_raw"]
 // Fields Parsing
-alter Threat_Prevention_Rule_Name = if(cs1Label = "Threat Prevention Rule Name", cs1, null)
-| alter protectionName = if(cs4Label = "Protection Name", cs4, null)
-| alter Attack_Information = if(flexString2Label = "Attack Information", flexString2, null)
-| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
-| alter ipv6src = if(src != null and ipv4src = null, src, null)
-| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
-| alter ipv6dest = if(dst != null and ipv4dest = null, dst, null)
-| alter proto = to_string(proto)
+alter 
+    Threat_Prevention_Rule_Name = if(cs1Label = "Threat Prevention Rule Name", cs1, null),
+    protectionName = if(cs4Label = "Protection Name", cs4, null),
+    Attack_Information = if(flexString2Label = "Attack Information", flexString2, null),
+    ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
+    proto = to_string(proto)
+| alter 
+    ipv6src = if(src != null and ipv4src = null, src, null),
+    ipv6dest = if(dst != null and ipv4dest = null, dst, null)
 // Fields Modeling
 | alter    
     xdm.event.id = loguid,
@@ -112,12 +118,15 @@ alter Threat_Prevention_Rule_Name = if(cs1Label = "Threat Prevention Rule Name",
 
 [MODEL: dataset ="check_point_application_control_raw"]
 // Fields Parsing
-alter application = if(app = null or app="Unknown Protocol", service_id, app)
-| alter ruleName = if(cs2Label = "Rule Name", cs2, null)
-| alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
-| alter ipv6src = if(src != null and ipv4src = null, src, null)
-| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
-| alter ipv6dest = if(dst != null and ipv4dest = null, dst, null)
+alter 
+    application = if(app = null or app="Unknown Protocol", service_id, app),
+    ruleName = if(cs2Label = "Rule Name", cs2, null),
+    ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null),
+    proto = to_string(proto)
+| alter 
+    ipv6src = if(src != null and ipv4src = null, src, null),
+    ipv6dest = if(dst != null and ipv4dest = null, dst, null)
 // Fields Modeling
 | alter
     xdm.event.id = loguid,
@@ -142,11 +151,13 @@ alter application = if(app = null or app="Unknown Protocol", service_id, app)
 
 [MODEL: dataset ="check_point_identity_awareness_raw"]
 // Fields Parsing
-alter ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null)
-| alter ipv6src = if(src != null and ipv4src = null, src, null)
-| alter ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
-| alter ipv6dest = if(dst != null and ipv4dest = null, dst, null)
-| alter auth_status_temp = if(auth_status = null, act, auth_status)
+alter 
+    ipv4src = if(src ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", src, null),
+    ipv4dest = if(dst ~= "\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}", dst, null)
+| alter 
+    ipv6src = if(src != null and ipv4src = null, src, null),
+    ipv6dest = if(dst != null and ipv4dest = null, dst, null),
+    auth_status_temp = if(auth_status = null, act, auth_status)
 // Fields Modeling
 | alter
     xdm.event.id = loguid,
