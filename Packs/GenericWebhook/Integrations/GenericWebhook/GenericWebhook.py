@@ -24,7 +24,7 @@ app = FastAPI(docs_url=None, redoc_url=None, openapi_url=None)
 
 basic_auth = HTTPBasic(auto_error=False)
 token_auth = APIKeyHeader(auto_error=False, name="Authorization")
-TEST = 1
+EXAMPLE_6_COUNTER = 1
 STEP_1_DICT = defaultdict(int)
 STEP_2_DICT = defaultdict(int)
 STEP_3_DICT = defaultdict(dict)
@@ -137,22 +137,6 @@ async def handle_post(
     return return_incidents
 
 
-@app.get('/example_6')
-async def handle_get_request_example_6():
-    """
-        for example 6.
-    """
-    global TEST
-    global lock_example_6
-    async with lock_example_6:
-        val = TEST
-        TEST += 1
-    await asyncio.sleep(2)
-    async with lock_example_6:
-        TEST -= 1
-    return Response(status_code=status.HTTP_200_OK, content=str(val), media_type="application/json")
-
-
 @app.get('/example_5')
 async def handle_get_request_example_5(query):
     """
@@ -166,6 +150,22 @@ async def handle_get_request_example_5(query):
     return Response(status_code=status.HTTP_200_OK, content=answer, media_type="application/json")
 
 
+@app.get('/example_6')
+async def handle_get_request_example_6():
+    """
+        for example 6.
+    """
+    global EXAMPLE_6_COUNTER
+    global lock_example_6
+    async with lock_example_6:
+        val = EXAMPLE_6_COUNTER
+        EXAMPLE_6_COUNTER += 1
+    await asyncio.sleep(2)
+    async with lock_example_6:
+        EXAMPLE_6_COUNTER -= 1
+    return Response(status_code=status.HTTP_200_OK, content=str(val), media_type="application/json")
+
+
 @app.get('/step_1')
 async def handle_get_request_step_1(name=""):
     """
@@ -176,7 +176,7 @@ async def handle_get_request_step_1(name=""):
     async with lock_1:
         STEP_1_DICT[name] += 1
         if STEP_1_DICT[name] == 3:
-            response = "You passed the first step! you know how to get instructions for the second step, this time, add arad (str) field to your request."
+            response = "You passed the first step! you know how to get instructions for the second step, this time, add arad (str) field to your request params."
         else:
             response = str(STEP_1_DICT[name])
     await asyncio.sleep(3)
@@ -200,8 +200,7 @@ async def handle_get_request_step_2(name=""):
     await asyncio.sleep(3)
     async with lock_2:
         STEP_2_DICT[name] -= 1
-    response = 'well, I was not going to give it easily.. to obtain the password, send your name to the "step_3/get_pass" endpoint.'
-    return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
+    return Response(status_code=status.HTTP_200_OK, content='Finished call to step_2 endpoint.', media_type="application/json")
 
 
 @app.get('/step_2_completion_attempt')
@@ -215,7 +214,7 @@ async def handle_get_request_step_2_completion_attempt(name=""):
         if not STEP_2_DICT[name]:
             response = 'You have to make the call in the time window that is 2 seconds after the first call and before 5 seconds the first call.'
         elif STEP_2_DICT[name] == 1:
-            response = "Congrats! your made it to the right time window!\n get get your instructions for the third step."
+            response = "Congrats! your made it to the right time window! now go get get your instructions for the third step."
         else:
             response = "Make sure there's exactly one call to step_2 endpoint at a time."
     return Response(status_code=status.HTTP_200_OK, content=response, media_type="application/json")
@@ -318,28 +317,30 @@ async def handle_get_request_instructions(hint=False, arad="", step_number=0):
     answer = ""
     if not step_number:
         answer = """Welcome to the asyncio workshop exercise!
-        During the exercise We'll practice what we learned in the workshop and have some fun with asyncio.
-        Here are some general instructions:
-        1. There are 3 steps
-        2. The initial instructions for each step are contained in this endpoint, use the following params to move along the instructions:
-            - hint (bool) - boolean flag whether you need a hint for this step or not.
-            - step_number (int) - the step number of the exercise you need instructions for.
-        3. Make sure to print the response you get for further instructions and completion messages.
-        4. Remember, arad=naknik.
-        5. Have fun!"""
-    elif step_number == 1:
+During the exercise We'll practice what we learned in the workshop and have some fun with asyncio.
+Here are some general instructions:
+    1. There are 3 steps
+    2. The initial instructions for each step are contained in this endpoint, use the following params to move along the instructions:
+        - hint (str) - flag whether you need a hint for this step or not, can be true or false.
+        - step_number (int) - the step number of the exercise you need instructions for.
+    3. Make sure to print the response you get for further instructions and completion messages.
+    4. Remember, arad=naknik.
+    5. Have fun!"""
+    elif step_number == "1":
         answer = "Send your name 3 times to the step_1 endpoint."
-        if hint:
+        if hint == "true":
             answer = "Your name is being kept for only 5 seconds. Think about a way to send multiple requests simultaneously."
-    elif step_number == 2:
-        if hint:
+    elif step_number == "2":
+        if hint == "true":
             answer = """If you're still trying to figure out how to get the instructions, send a param less request to this endpoint.
             If you're trying to figure out how to solve it, go to sleep."""
         elif arad == "naknik":
             answer = "Nice! you figured the password.. To move on to the next step"
-    elif step_number == 3:
+        else:
+            answer = "wrong password."
+    elif step_number == "3":
         answer = ""
-        if hint:
+        if hint == "true":
             answer = """You may want to use while loops."""
     # step two: send to two different endpoints.
     # step three: obtain password and send it to another endpoint - this will add your name to the winners list
