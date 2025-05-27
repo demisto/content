@@ -1039,15 +1039,15 @@ def search_esql_command(args, proxies):
     else:
         query = {"query": query}
 
-     if ELASTIC_SEARCH_CLIENT in[ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
-        compatible_with = 8 if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8 else 9
-        headers = {
-            "Content-Type": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
-            "Accept": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
-        }
-    else:
-        return_error("ES|QL Search is only supported in Elasticsearch 8.11 and above.")
-        return None
+        if ELASTIC_SEARCH_CLIENT in[ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
+            compatible_with = 8 if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8 else 9
+            headers = {
+                "Content-Type": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
+                "Accept": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
+            }
+        else:
+            return_error("ES|QL Search is only supported in Elasticsearch 8.11 and above.")
+            return None
 
     demisto.debug(f"ES|QL search body: {query}")
     res = es.perform_request(method="POST", path="/_query?format=json", headers=headers, body=query)
