@@ -74,8 +74,7 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: Exclude All with Combolist type
-  defaultvalue: "false"
+- defaultvalue: "false"
   display: Exclude All with Combolist type
   name: exclude_combolist
   section: Collect
