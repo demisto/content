@@ -403,7 +403,7 @@ def test_list_conditional_access_policies_command_empty_policies(mocker):
 
     result = list_conditional_access_policies_command(mock_client, {})
 
-    expected_readable_output = "No Conditional Access policies found"
+    expected_readable_output = "No Conditional Access policies were found"
     assert expected_readable_output in result.readable_output
     assert result.outputs is None
 

@@ -403,7 +403,6 @@ class Client:  # pragma: no cover
             raise DemistoException(f"Error deleting Conditional Access policy {policy_id}.:\n{str(res)}")
 
         demisto.info(f"Conditional Access policy {policy_id} was successfully deleted.")
-
         return CommandResults(readable_output=f"Conditional Access policy {policy_id} was successfully deleted.")
 
     def create_conditional_access_policy(self, policy: Dict[str, Any]) -> CommandResults:
@@ -1297,7 +1296,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     if len(policies) == 0:
         demisto.info("no conditional policies were found")
         return CommandResults(readable_output="No Conditional Access policies were found.")
-    
+
     elif limit:
         max_items = int(limit)
     elif all_results:
@@ -1309,7 +1308,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
 
     context = []
     readable_policies = []
-    
+
     for policy in policies_to_process:
         context.append(policy)
         readable_policy = {
@@ -1326,8 +1325,6 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
         }
         readable_policy = remove_empty_elements(readable_policy)
         readable_policies.append(readable_policy)
-
-    readable_policies = remove_empty_elements(readable_policies)
 
     return CommandResults(
         outputs_prefix="MSGraphIdentity.ConditionalAccessPolicy",
@@ -1376,7 +1373,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     try:
         if isinstance(policy, str):
             policy = json.loads(policy)
-            
+
     except json.JSONDecodeError as e:
         raise DemistoException(f"The provided policy string is not a valid JSON.\nError: {e}")
 
