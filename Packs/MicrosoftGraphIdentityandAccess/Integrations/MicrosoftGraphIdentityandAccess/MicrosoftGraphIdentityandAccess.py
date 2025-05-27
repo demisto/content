@@ -1295,8 +1295,9 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
     policies: list[dict[str, Any]] = client.list_conditional_access_policies(policy_id, filter_query)
 
     if len(policies) == 0:
-        demisto.info("no conditional policies has found")
-        return CommandResults(readable_output="No Conditional Access policies found.")
+        demisto.info("no conditional policies were found")
+        return CommandResults(readable_output="No Conditional Access policies were found.")
+    
     elif limit:
         max_items = int(limit)
     elif all_results:
@@ -1308,6 +1309,7 @@ def list_conditional_access_policies_command(client: Client, args: Dict[str, Any
 
     context = []
     readable_policies = []
+    
     for policy in policies_to_process:
         context.append(policy)
         readable_policy = {
@@ -1353,7 +1355,6 @@ def delete_conditional_access_policy_command(client: Client, args: Dict[str, Any
         CommandResults: Results to return to Cortex XSOAR.
     """
     policy_id = args.get("policy_id", "")
-
     return client.delete_conditional_access_policy(policy_id)
 
 
@@ -1375,6 +1376,7 @@ def create_conditional_access_policy_command(client: Client, args: Dict[str, Any
     try:
         if isinstance(policy, str):
             policy = json.loads(policy)
+            
     except json.JSONDecodeError as e:
         raise DemistoException(f"The provided policy string is not a valid JSON.\nError: {e}")
 
