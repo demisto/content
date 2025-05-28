@@ -33,7 +33,7 @@ def load_oob_model():
             "modelLabels": ["Malicious", "Non-Malicious"],
             "modelOverride": "true",
             "modelType": demisto_ml.ModelType.Torch.value,
-            "modelExtraInfo": {"threshold": THRESHOLD, OOB_VERSION_INFO_KEY: SCRIPT_MODEL_VERSION},
+            "modelExtraInfo": {"threshold": THRESHOLD},
         },
     )
     if is_error(res):
