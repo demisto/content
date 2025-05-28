@@ -9,7 +9,6 @@ THRESHOLD = 0.9
 OUT_OF_THE_BOX_MODEL_NAME = "demisto_out_of_the_box_model_v2"
 OUT_OF_THE_BOX_MODEL_PATH = "/ml/encrypted_model.b"
 EVALUATION_PATH = "/ml/oob_evaluation.txt"
-SCRIPT_MODEL_VERSION = "4.0"
 OOB_VERSION_INFO_KEY = "oob_version"
 
 
@@ -17,8 +16,8 @@ def oob_model_exists_and_updated():
     res_model = demisto.executeCommand("getMLModel", {"modelName": OUT_OF_THE_BOX_MODEL_NAME})[0]
     if is_error(res_model):
         return False
-    existing_model_version = res_model["Contents"]["model"]["extra"].get(OOB_VERSION_INFO_KEY, -1)
-    return existing_model_version == SCRIPT_MODEL_VERSION
+    model_type = dict_safe_get(res_model, [0, "Contents", "model", "type", "type"], UNKNOWN_MODEL_TYPE)
+    return model_type == demisto_ml.ModelType.Torch.value
 
 
 def load_oob_model():
