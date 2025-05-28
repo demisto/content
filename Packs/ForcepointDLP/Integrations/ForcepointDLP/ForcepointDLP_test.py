@@ -906,3 +906,79 @@ def test_validate_authentication_get_refresh_token(requests_mock, mock_client: C
     assert context_patch["access_token_expiry_date"]
     assert context_patch["refresh_token"] == "new-refresh-token"
     assert context_patch["refresh_token_expiry_date"]
+
+
+@freeze_time("2025-05-28T12:00:00Z")
+def test_fetch_incidents_initial_run(requests_mock, mock_client: Client, monkeypatch):
+    """
+    Scenario: First-time fetch with no last_run.
+    Given:
+    - No last_fetch or last_ids.
+    When:
+    - The fetch_incidents function is called.
+    Then:
+    - It uses first_fetch as the start time.
+    - Incidents are returned.
+    - Context is updated accordingly.
+    """
+    from ForcepointDLP import fetch_incidents
+
+    incident_time = "28/05/2025 11:59:00"
+
+    requests_mock.post(
+        f"{mock_client._base_url}/incidents",
+        json={"incidents": [
+            {"id": "1", "event_id": "evt1", "incident_time": incident_time, "severity": "LOW"}
+        ]},
+        status_code=200,
+    )
+
+    monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
+    monkeypatch.setattr("ForcepointDLP.set_integration_context", lambda x: None)
+
+    first_fetch = datetime(2025, 5, 28, 11, 0, tzinfo=timezone.utc)
+    last_run, incidents = fetch_incidents(mock_client, {}, first_fetch, 10, "Both")
+
+    assert len(incidents) == 1
+    assert last_run["last_fetch"] == incident_time
+    assert "1" in last_run["last_ids"]
+
+
+
+@freeze_time("2025-05-28T12:00:00Z")
+def test_fetch_incidents_filters_last_ids(requests_mock, mock_client: Client, monkeypatch):
+    """
+    Scenario: Duplicates already seen are passed in last_ids.
+    Given:
+    - last_fetch and last_ids are present.
+    When:
+    - fetch_incidents is called.
+    Then:
+    - Previously seen incidents are filtered out.
+    """
+    from ForcepointDLP import fetch_incidents
+
+    incident_time = "28/05/2025 11:59:00"
+
+    requests_mock.post(
+        f"{mock_client._base_url}/incidents",
+        json={"incidents": [
+            {"id": "1", "event_id": "evt1", "incident_time": incident_time, "severity": "LOW"},
+            {"id": "2", "event_id": "evt2", "incident_time": incident_time, "severity": "LOW"},
+        ]},
+        status_code=200,
+    )
+
+    monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
+    monkeypatch.setattr("ForcepointDLP.set_integration_context", lambda x: None)
+
+    last_run_input = {
+        "last_fetch": incident_time,
+        "last_ids": ["1", "2"]
+    }
+    first_fetch = datetime(2025, 5, 28, 11, 0, tzinfo=timezone.utc)
+    last_run, incidents = fetch_incidents(mock_client, last_run_input, first_fetch, 10, "Both")
+
+    assert len(incidents) == 0
+    assert last_run["last_fetch"] == incident_time
+    assert last_run["last_ids"] == ["1", "2"]
