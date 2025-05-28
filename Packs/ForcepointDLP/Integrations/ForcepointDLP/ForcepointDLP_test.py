@@ -6,6 +6,7 @@ from http import HTTPStatus
 import pytest
 from CommonServerPython import *
 from ForcepointDLP import Client
+from freezegun import freeze_time
 
 
 @pytest.fixture(autouse=True)
@@ -796,7 +797,7 @@ def test_update_incident_command(requests_mock, mock_client: Client):
             "severity": "LOW",
         },
     )
-    result.readable_output == "Rule `TestRule` was successfully created in policy 'TestPolicy'."
+    assert result.readable_output == "Incidents was successfully updated."
 
 
 def test_validate_authentication(mock_client: Client, context_patch, decorated_dummy):
@@ -827,6 +828,7 @@ def test_validate_authentication(mock_client: Client, context_patch, decorated_d
     assert context == context_patch
 
 
+@freeze_time("2025-05-28T12:00:00Z")
 def test_validate_authentication_get_access_token(requests_mock, mock_client: Client, context_patch, decorated_dummy):
     """
     Scenario: Access token expired, refresh token is still valid.
@@ -885,7 +887,7 @@ def test_validate_authentication_get_refresh_token(requests_mock, mock_client: C
     now = datetime.now(timezone.utc)
     context_patch.clear()
     requests_mock.post(
-        f"https://test.com/dlp/rest/v1/auth/refresh-token",
+        "https://test.com/dlp/rest/v1/auth/refresh-token",
         json={
             "access_token": "new-access-token",
             "access_token_expires_in": 1800,

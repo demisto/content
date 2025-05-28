@@ -1058,18 +1058,46 @@ def validate_authentication(func: Callable) -> Callable:
 
     @wraps(wrapped=func)
     def wrapper(client: "Client", *args, **kwargs):
-        def is_token_expired(integration_context: dict[str, Any], key: str) -> bool:
-            return datetime.now(timezone.utc) >= datetime.fromisoformat(integration_context[f"{key}_token_expiry_date"])
+        def is_token_valid(integration_context: dict[str, Any], key: str) -> bool:
+            """Check if the specified token (access or refresh) is present and not expired.
+
+            Args:
+                integration_context (dict[str, Any]): Dictionary containing token data and expiry timestamps.
+                key (str): The token type to validate, typically 'access' or 'refresh'.
+
+            Returns:
+                bool: True if the token exists and is still valid, False otherwise.
+            """
+            if f"{key}_token_expiry_date" not in integration_context:
+                return False
+
+            return datetime.now(timezone.utc) < datetime.fromisoformat(integration_context[f"{key}_token_expiry_date"])
 
         def get_token_and_expiry_date(data: dict[str, Any], response_time: datetime, key: str) -> dict[str, Any]:
-            expires_in = data[f"{key}_token_expires_in"]
+            """Extract a token and calculate its adjusted expiry timestamp with buffer.
+
+            Args:
+                data (dict[str, Any]): Response data containing token and expiry information.
+                response_time (datetime): Time the response was received to calculate accurate expiry.
+                key (str): The token type ('access' or 'refresh').
+
+            Returns:
+                dict[str, Any]: Dictionary containing the token and its buffered expiry timestamp.
+            """
+            expires_in = data.get(f"{key}_token_expires_in")
             buffer = min(30, expires_in * 0.1)  # Edge case buffer for near-expiration edge-cases
             return {
-                f"{key}_token": data[f"{key}_token"],
+                f"{key}_token": data.get(f"{key}_token"),
                 f"{key}_token_expiry_date": (response_time + timedelta(seconds=expires_in - buffer)).isoformat(),
             }
 
         def set_tokens_in_integration_context(response: requests.Response, integration_context: dict[str, Any]) -> None:
+            """Update the integration context with new access and refresh tokens from a response.
+
+            Args:
+                response (requests.Response): HTTP response containing token data.
+                integration_context (dict[str, Any]): The current integration context to update.
+            """
             if "Date" in response.headers:
                 response_time = parsedate_to_datetime(response.headers["Date"])
             else:
@@ -1084,12 +1112,17 @@ def validate_authentication(func: Callable) -> Callable:
             set_integration_context(integration_context)
 
         def set_client_bearer_token(token: str) -> None:
+            """Set the Authorization header on the client using the provided bearer token.
+
+            Args:
+                token (str): The bearer token to set in the client's headers.
+            """
             client._headers = {"Authorization": f"Bearer {token}"}
 
         integration_context = get_integration_context() or {}
 
-        if "access_token" not in integration_context or is_token_expired(integration_context, "access"):
-            if "refresh_token" not in integration_context or is_token_expired(integration_context, "refresh"):
+        if not is_token_valid(integration_context, "access"):
+            if not is_token_valid(integration_context, "refresh"):
                 response = client.get_refresh_token()
             else:
                 response = client.get_access_token(integration_context["refresh_token"])
@@ -1143,9 +1176,11 @@ class Client(BaseClient):
 
     @validate_authentication
     def _http_request(self, *args, **kwargs):
+        """Send an HTTP request with authentication and custom error handling."""
         return super()._http_request(*args, **kwargs, error_handler=self.error_handler)
 
     def get_refresh_token(self) -> requests.Response:
+        """Request a new access token using the stored username and password."""
         return super()._http_request(
             method="POST",
             url_suffix="auth/refresh-token",
@@ -1154,6 +1189,7 @@ class Client(BaseClient):
         )
 
     def get_access_token(self, refresh_token: str) -> requests.Response:
+        """Request a new access token using a refresh token."""
         return super()._http_request(
             method="POST",
             url_suffix="auth/access-token",
@@ -1162,6 +1198,7 @@ class Client(BaseClient):
         )
 
     def list_policies(self, policy_type: str = "DLP") -> dict:
+        """Retrieve a list of enabled policies of the specified type."""
         return self._http_request(
             method="GET",
             url_suffix="policy/enabled-names",
@@ -1169,6 +1206,7 @@ class Client(BaseClient):
         )
 
     def list_policy_rules(self, policy_name: str) -> dict:
+        """Retrieve rules for a given policy."""
         return self._http_request(
             method="GET",
             url_suffix="policy/rules",
@@ -1176,6 +1214,7 @@ class Client(BaseClient):
         )
 
     def list_exception_rules(self, policy_type: str = "DLP") -> dict:
+        """List all exception rules for the specified policy type."""
         return self._http_request(
             method="GET",
             url_suffix="policy/rules/exceptions/all",
@@ -1188,6 +1227,7 @@ class Client(BaseClient):
         policy_name: str,
         rule_name: str,
     ) -> dict:
+        """Get details of a specific exception rule."""
         return self._http_request(
             method="GET",
             url_suffix="policy/rules/exceptions",
@@ -1202,6 +1242,7 @@ class Client(BaseClient):
         self,
         policy_name: str,
     ) -> dict:
+        """Get severity and action settings for rules in a policy."""
         return self._http_request(
             method="GET",
             url_suffix="policy/rules/severity-action",
@@ -1212,6 +1253,7 @@ class Client(BaseClient):
         self,
         policy_name: str,
     ) -> dict:
+        """Get source and destination settings for rules in a policy."""
         return self._http_request(
             method="GET",
             url_suffix="policy/rules/source-destination",
@@ -1303,6 +1345,7 @@ class Client(BaseClient):
         self,
         rule: dict,
     ) -> dict:
+        """Update a rule with the provided data."""
         return self._http_request(
             method="POST",
             url_suffix="policy/rules",
@@ -1314,6 +1357,7 @@ class Client(BaseClient):
         self,
         severity_action_rule: dict,
     ) -> dict:
+        """Update severity and action settings for a rule."""
         return self._http_request(
             method="POST",
             url_suffix="policy/rules/severity-action",
@@ -1325,6 +1369,7 @@ class Client(BaseClient):
         self,
         source_destination_rule: dict,
     ) -> dict:
+        """Update source and destination settings for a rule."""
         return self._http_request(
             method="POST",
             url_suffix="policy/rules/source-destination",
@@ -2380,7 +2425,8 @@ def get_modified_remote_data_command(
 """ HELPER FUNCTIONS """
 
 
-def get_paginated_data(data: list, limit: int, all_results: bool):
+def get_paginated_data(data: list, limit: int, all_results: bool) -> list:
+    """Return all data or a limited subset based on the pagination flag."""
     return data if all_results else data[:limit]
 
 
