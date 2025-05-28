@@ -352,6 +352,9 @@ class QuickActionPreview:
         assignee (Optional[str]): The user or entity assigned to the action.
         creation_date (Optional[str]): The date and time when the item was created.
         severity (Optional[str]): Indicates the priority or severity level.
+
+    Returns:
+        QuickActionPreview: Describes an instance of this class.
     """
     id: Optional[str] = None
     title: Optional[str] = None
@@ -391,6 +394,9 @@ class MirrorObject:
     Attributes:
         ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
         ticket_id (Optional[str]): Unique identifier of the created ticket.
+
+    Returns:
+        MirrorObject: Describes an instance of this class.
     """
     ticket_url: Optional[str] = None
     ticket_id: Optional[str] = None
