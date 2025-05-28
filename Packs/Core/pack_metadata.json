@@ -1,5 +1,5 @@
 {
-    "name": "Core - Investigation and Response",
+    "name": "Core",
     "description": "Automates incident response",
     "support": "xsoar",
     "currentVersion": "3.4.0",

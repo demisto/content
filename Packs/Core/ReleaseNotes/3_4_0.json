@@ -1,4 +1,4 @@
 {
     "breakingChanges": true,
-    "breakingChangesNotes": "The core-get-asset-details command from 'Core - Investigation & Response' has been migrated to the 'Core - Cortex Platform Core' Integration. Please ensure an instance of the new integration is configured after updating."
+    "breakingChangesNotes": "The ***core-get-asset-details*** command has been moved from the ***Core - Investigation & Response*** integration to the new ***Cortex Platform - Core*** integration. After updating the pack, a default instance of the new integration should already be configured and enabled - no action is required."
 }

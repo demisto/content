@@ -14,8 +14,8 @@ configuration:
   type: 0
   required: false
   section: Connect
-description: The Cortex Platform Core integration uses the Cortex API to provide commands for accessing essential services and capabilities of the Cortex Platform.
-display: Cortex Platform Core
+description: This integration uses the Cortex API for accessing essential services and capabilities of the Cortex platform.
+display: Cortex Platform - Core
 name: Cortex Core - Platform
 script:
   commands:
