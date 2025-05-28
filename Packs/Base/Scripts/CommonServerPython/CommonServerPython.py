@@ -353,8 +353,8 @@ class QuickActionPreview:
         creation_date (Optional[str]): The date and time when the item was created.
         severity (Optional[str]): Indicates the priority or severity level.
 
-    Returns:
-        QuickActionPreview: Describes an instance of this class.
+    :return: None
+    :rtype: ``None``
     """
     id: Optional[str] = None
     title: Optional[str] = None
@@ -368,6 +368,9 @@ class QuickActionPreview:
         """
           Performs post-initialization checks for missing field values.
           Logs a debug message if any of the defined fields are None.
+
+        :return: None
+        :rtype: ``None``
         """
         missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
 
@@ -378,8 +381,8 @@ class QuickActionPreview:
         """
         Converts the dataclass instance to a dictionary.
 
-        Returns:
-            Dict[str, Any]: Dictionary representation of the QuickActionPreview instance.
+        :return: Dictionary representation of the QuickActionPreview instance.
+        :rtype: ``Dict[str, Any]``
         """
         return asdict(self)
 
@@ -395,8 +398,8 @@ class MirrorObject:
         ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
         ticket_id (Optional[str]): Unique identifier of the created ticket.
 
-    Returns:
-        MirrorObject: Describes an instance of this class.
+    :return: None
+    :rtype: ``None``.
     """
     ticket_url: Optional[str] = None
     ticket_id: Optional[str] = None
@@ -406,6 +409,9 @@ class MirrorObject:
         Performs post-initialization validation.
         Checks for missing mandatory fields 'ticket_url' and 'ticket_id'
         and logs a debug message if they are not set.
+
+        :return: None
+        :rtype: ``None``
         """
         missing_fields_list = []
         if self.ticket_url is None:
@@ -420,8 +426,8 @@ class MirrorObject:
         """
         Converts the dataclass instance to a dictionary.
 
-        Returns:
-            Dict[str, Any]: Dictionary representation of the MirrorObject instance.
+        :return: Dictionary representation of the MirrorObject instance.
+        :rtype: ``Dict[str, Any]``
         """
         return asdict(self)
 
