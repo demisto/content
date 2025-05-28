@@ -1,0 +1,70 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Forcepoint DLP Incoming Mapper",
+    "mapping": {
+        "Forcepoint DLP Incident": {
+            "dontMapEventToLabels": true,
+            "internalMapping": {
+                "Alert ID": {
+                    "simple": "id"
+                },
+                "Alert Rules": {
+                    "simple": "violation_triggers.[].rule_name"
+                },
+                "Alert tags": {
+                    "simple": "tag"
+                },
+                "Event ID": {
+                    "simple": "event_id"
+                },
+                "Forcepoint DLP Chanel": {
+                    "simple": "channel"
+                },
+                "Forcepoint DLP Classifier": {
+                    "simple": "violation_triggers.[].classifiers.[].classifier_name"
+                },
+                "Forcepoint DLP Destination": {
+                    "simple": "destination"
+                },
+                "Forcepoint DLP False Positive": {
+                    "simple": "ignored_incidents"
+                },
+                "Forcepoint DLP Policy": {
+                    "simple": "policies"
+                },
+                "Forcepoint DLP Release": {
+                    "simple": "released_incident"
+                },
+                "Policy Actions": {
+                    "simple": "action"
+                },
+                "Source IP": {
+                    "simple": "source.ip_address"
+                },
+                "Source Status": {
+                    "simple": "status"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "mirror_direction"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "mirror_instance"
+                },
+                "details": {
+                    "simple": "details"
+                },
+                "occurred": {
+                    "simple": "incident_time"
+                },
+                "severity": {
+                    "simple": "severity"
+                }
+            }
+        }
+    },
+    "name": "Forcepoint DLP Incoming Mapper",
+    "type": "mapping-incoming",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
