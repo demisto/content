@@ -1158,7 +1158,7 @@ def test_search_command_with_query_esql(mocker):
      - Make sure that the expected message is returned.
     """
     MOCKER_RES = {"columns": [{"name": "col_1"}, {"name": "col_2"}], "values": [["val_1", "val_2"], ["val_1_1", "val_2_2"]]}
-    EXPECTED_HEADERS = headers = {
+    EXPECTED_HEADERS = {
         "Content-Type": "application/vnd.elasticsearch+json; compatible-with=9",
         "Accept": "application/vnd.elasticsearch+json; compatible-with=9",
     }
