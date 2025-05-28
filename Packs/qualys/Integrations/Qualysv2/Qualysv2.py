@@ -11,9 +11,7 @@ from xml.etree import ElementTree
 
 from urllib3 import disable_warnings
 
-
 disable_warnings()  # pylint: disable=no-member
-
 
 """ CONSTANTS """
 
@@ -33,7 +31,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = "host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = "host_last_fetch"
 ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
-ASSET_SIZE_LIMIT = 10**6  # 1MB
+ASSET_SIZE_LIMIT = 10 ** 6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
@@ -1738,6 +1736,7 @@ class Client(BaseClient):
         since_datetime: str,
         next_page: str | None = None,
         limit: int = HOST_LIMIT,
+        qid: Optional[str] = None
     ) -> tuple[str, bool]:
         """
         Make a http request to Qualys API to get assets
@@ -1745,6 +1744,7 @@ class Client(BaseClient):
             since_datetime (str): Filter hosts by vulnerability scan end date. Specify in the `YYYY-MM-DD[THH:MM:SSZ]` format.
             next_page (str | None): For pagination; show hosts starting from a minimum host ID value.
             limit (int): Maximum number of host records returned; should be <= 1000000. Specify 0 for no truncation limit.
+            qid: The Qualys ID (QID).
         Returns:
             response from Qualys API
         Raises:
@@ -1759,6 +1759,10 @@ class Client(BaseClient):
             "show_qds": 1,  # Show host detection score `QDS` and score contributing factors `QDS_FACTORS`
             "show_qds_factors": 1,
         }
+
+        if qid:
+            params["qids"] = qid
+
         if next_page:
             params["id_min"] = next_page
 
@@ -1827,27 +1831,6 @@ class Client(BaseClient):
             params=params,
             resp_type="xml",
             timeout=60,
-            error_handler=self.error_handler,
-        )
-
-        return response
-
-    def get_asset_by_qid(self, qid: str) -> str:
-        """
-        This method retrieves the Qualys assets associated with a specified qid.
-        """
-
-        self._headers.update({"Content-Type": "application/x-www-form-urlencoded"})
-
-        # params: dict[str, Any] = {"ids": "810146609", "qids": qid}
-        params: dict[str, Any] = {"qids": qid}
-
-        response = self._http_request(
-            method="GET",
-            url_suffix=urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list"),
-            params=params,
-            resp_type="text",
-            timeout=120,
             error_handler=self.error_handler,
         )
 
@@ -2221,7 +2204,7 @@ def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str)
             if rule_type_arg != "STATIC" and not rule_text_arg:
                 raise DemistoException(
                     message="Rule Type argument is passed but Rule Text argument is missing."
-                    + " Rule Text is optional only when Rule Type is 'STATIC'."
+                            + " Rule Text is optional only when Rule Type is 'STATIC'."
                 )
 
             ServiceRequest = ET.Element("ServiceRequest")
@@ -3099,7 +3082,8 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False) -> tuple:
+def get_host_list_detections_events(client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False,
+                                    qid: Optional[str] = None) -> tuple:
     """Get host list detections from qualys
     Args:
         client: Qualys client
@@ -3107,6 +3091,7 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
         since_datetime: The start fetch date.
         limit: The limit of the host list detections
         is_test: Indicates whether it's test-module run or regular run.
+        qid: The Qualys ID (QID).
     Returns:
         Host list detections assets
     """
@@ -3114,7 +3099,7 @@ def get_host_list_detections_events(client, since_datetime, next_page="", limit=
     assets: list = []
 
     demisto.debug("Starting to get client host list detections.")
-    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit)
+    host_list_detections, set_new_limit = client.get_host_list_detection(since_datetime, next_page, limit, qid)
     demisto.debug(f"Finished getting client host list detections. Set new limit: {set_new_limit}")
 
     if not set_new_limit:
@@ -3239,7 +3224,8 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
         vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
     else:
         since_datetime = (
-            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
+            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)
+        # type: ignore[union-attr]
         )
         demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
@@ -3269,27 +3255,6 @@ def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
 
     return CommandResults(
         readable_output=f"The QID: {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
-    )
-
-
-def get_asset_by_qid(client: Client, qid: str) -> CommandResults:
-    """
-    This function retrieves the Qualys assets associated with a specified qid.
-    """
-
-    demisto.debug(f"Start getting assets for the given QID = {qid}")
-
-    response = client.get_asset_by_qid(qid=qid)
-
-    response_requested_value, _ = handle_host_list_detection_result(response)
-    assets, _ = get_detections_from_hosts(response_requested_value)
-    readable_output = tableToMarkdown(name=f"Assets are found related to the given {qid=}", t=assets)
-
-    return CommandResults(
-        readable_output=readable_output,
-        outputs=assets,
-        outputs_prefix="Qualys.Assets",
-        outputs_key_field="ID",
     )
 
 
@@ -3366,7 +3331,7 @@ def get_activity_logs_events_command(client: Client, args, first_fetch_time):
         since_datetime=since_datetime,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset : limit + offset]  # type: ignore[index,operator]
+    limited_activity_logs_events = activity_logs_events[offset: limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name="Activity Logs", t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
@@ -3866,17 +3831,23 @@ def main():  # pragma: no cover
 
         elif command == "qualys-get-assets":
             should_push_events = argToBoolean(args.get("should_push_assets", False))
+            qid = args.get("qid")
             since_datetime = arg_to_datetime("1 hour").strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
-            assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1)
+            assets, _, _ = get_host_list_detections_events(client=client, since_datetime=since_datetime, limit=1, qid=qid)
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
-            return_results(assets)
+
+            readable_output = tableToMarkdown(name=f"Assets from Qualys:", t=assets)
+
+            return_results(CommandResults(
+                readable_output=readable_output,
+                outputs=assets,
+                outputs_prefix="Qualys.Assets",
+                outputs_key_field="ID",
+            ))
 
         elif command == "qualys-get-quid-by-cve":
             return_results(get_qid_for_cve(client=client, cve=args["cve"]))
-
-        elif command == "qualys-get-assets-by-qid":
-            return_results(get_asset_by_qid(client=client, qid=args["qid"]))
 
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
