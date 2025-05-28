@@ -2,7 +2,7 @@ import json
 
 STRING_TYPES = (str, bytes)
 
-from DemistoModule import demisto
+from DemistoModule import demisto, json, uuid, sys, os
 
 def arg_to_number(arg, arg_name=None, required=False):
     

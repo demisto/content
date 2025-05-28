@@ -3,8 +3,6 @@ from CommonServerPython import *  # noqa: F401
 import traceback
 #import cortex_module_test.test_override_csp as cmt
 from cortex_module_test import *
-# from cortex_module_test import test_override_csp
-# test_override_csp.demisto = demisto
 
 
 def main():

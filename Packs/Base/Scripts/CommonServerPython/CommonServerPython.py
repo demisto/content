@@ -12722,6 +12722,16 @@ def override_cortex_module_function(func):
 #     setattr(module_to_change, "demisto", getattr(builtins, "demisto", None))
 #     sys.modules["cortex_module_test.test_override_csp"] = module_to_change
 
+# # Injects the Demisto object to the cortex-module package:
+import uuid
+DemistoModule = types.ModuleType("DemistoModule")
+DemistoModule.demisto = demisto
+DemistoModule.json = json
+DemistoModule.uuid = uuid
+DemistoModule.sys = sys
+DemistoModule.os = os
+sys.modules["DemistoModule"] = DemistoModule
+
 
 
 
