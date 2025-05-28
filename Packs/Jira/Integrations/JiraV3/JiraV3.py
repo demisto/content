@@ -65,44 +65,6 @@ V2_ARGS_TO_V3: Dict[str, str] = {
 }
 
 
-@dataclass
-class MirrorObject:
-    """
-    A container class for storing ticket metadata used in mirroring integrations.
-
-    This class is intended to be populated by commands like `!jira-create-issue`
-    and placed directly into the root context under `MirrorObject`.
-
-    Fields:
-        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
-        ticket_id (Optional[str]): Unique identifier of the created ticket.
-
-    ### TODO: We will need this class in common server python,
-    but due to known performance issues, we are keeping it here for now.
-    """
-    ticket_url: Optional[str] = None
-    ticket_id: Optional[str] = None
-
-    def __post_init__(self):
-        missing_fields = []
-        if not self.ticket_url:
-            missing_fields.append('ticket_url')
-        if not self.ticket_id:
-            missing_fields.append('ticket_id')
-
-        if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
-
-    def to_context(self) -> Dict[str, Any]:
-        """
-        Converts the dataclass to a dict for placing into context.
-
-        Returns:
-            dict: Dictionary representation of the MirrorObject.
-        """
-        return asdict(self)
-
-
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     """
     This class is an abstract class. By using metaclass=ABCMeta, we tell python that this class behaves as an abstract
