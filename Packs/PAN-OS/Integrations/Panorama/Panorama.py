@@ -8779,7 +8779,9 @@ class BestPractices:
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
     VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
-    URL_BLOCK_CATEGORIES = ["command-and-control", "hacking", "malware", "phishing"]
+    URL_BLOCK_CATEGORIES = ["abused-drugs", "adult", "command-and-control", "compromised-website", "gambling", 
+                            "grayware", "hacking", "malware", "phishing", "questionable", "ransomware", 
+                            "scanning-activity", "weapons"]
 
 
 # pan-os-python new classes
@@ -10982,8 +10984,8 @@ class HygieneLookups:
         """
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-7"])
-        # pan-os-python will include Panorama template-pushed zones without indication where they are inherited
-        # from, so we have to check after.
+        # pan-os-python will include Panorama template-pushed zones when checking a Firewall device without indication
+        # where they are actually configured, so we have to check after.
         for device, container in topology.get_all_object_containers(device_filter_str):
             security_zones: List[Zone] = Zone.refreshall(container)
             

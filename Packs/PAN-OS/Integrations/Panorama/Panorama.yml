@@ -8202,7 +8202,7 @@ script:
       predefined:
       - 'yes'
       - 'no'
-    description: Checks the configured URL filtering profiles to ensure at least one meets best practices.
+    description: Checks the configured URL filtering profiles to ensure at least one meets best practices of blocking the following URL categories - abused-drugs, adult, command-and-control, compromised-websites, gambling, grayware, hacking, malware, phishing, questionable, ransomware, scanning-activity, weapons.
     name: pan-os-hygiene-check-url-filtering-profiles
     outputs:
     - contextPath: PANOS.ConfigurationHygiene.Summary.description
