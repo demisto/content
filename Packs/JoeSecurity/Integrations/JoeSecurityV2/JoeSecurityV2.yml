@@ -1,6 +1,7 @@
 category: Forensics & Malware Analysis
 sectionOrder:
 - Connect
+- Collect
 commonfields:
   id: JoeSecurityV2
   version: -1
