@@ -906,7 +906,8 @@
             "instance_names": "ml_dummy_prod",
             "scripts": [
                 "FindDuplicateEmailIncidents"
-            ]
+            ],
+            "integrations": "Rasterize"
         },
         {
             "integrations": "ZeroFox",
@@ -4041,7 +4042,8 @@
             "fromversion": "6.10.0",
             "scripts": [
                 "FindDuplicateEmailIncidents"
-            ]
+            ],
+            "integrations": "Rasterize"
         },
         {
             "integrations": "HPEArubaClearPass",
