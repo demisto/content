@@ -879,10 +879,10 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "dummy_link"}
+        expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "https://example.com/browse/dummy_key-1234"}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_results = create_issue_command(client=client, args={"summary": "test"}, is_quick_action=True)
+        command_results = create_issue_command(client=client, args={"summary": "test"}, is_quick_action=True, server_url="https://example.com")
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
         assert command_results[1].to_context().get("EntryContext") == {
             'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}
@@ -903,11 +903,11 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
-        expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "dummy_link"}
+        expected_mo_outputs = {'ticket_id': 'dummy_key-1234', 'ticket_url': "http://example.com/browse/dummy_key-1234"}
 
         mocker.patch.object(client, "create_issue", return_value=raw_response)
 
-        command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'}, is_quick_action=True)
+        command_results = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'}, is_quick_action=True, server_url="http://example.com")
         assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
         assert command_results[1].to_context().get("EntryContext") == {
             'MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)': expected_mo_outputs}

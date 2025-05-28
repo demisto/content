@@ -1,19 +1,20 @@
 Use this pack to receive information and indicators on adversaries tracked by CrowdStrike, their target nations and industries, and research on their activities.
 
 ## What does this pack do?
+
 This pack contains 2 feed integrations.
 
 - The CrowdStrike Falcon Intel Feed Actors integration retrieves indicators of type STIX Threat Actor from the CrowdStrike Falcon Intel Feed.
 
 - The CrowdStrike Falcon Indicator Feed integration retrieves indicators of the following types from the CrowdStrike Falcon Intel Feed.
-   - Account
-   - Domain
-   - Email
-   - File MD5
-   - File SHA-256
-   - IP
-   - Registry Key
-   - URL
+  - Account
+  - Domain
+  - Email
+  - File MD5
+  - File SHA-256
+  - IP
+  - Registry Key
+  - URL
 
 ## Creating the integration instance
 
