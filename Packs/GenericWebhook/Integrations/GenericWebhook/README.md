@@ -15,12 +15,12 @@ The Generic Webhook integration is a long-running integration. For more informat
 | password | Password (see [Security](#security) for more details) |  (For Cortex XSOAR 6.x) False <br> (For Cortex XSOAR 8 and Cortex XSIAM)  Optional for engines, otherwise mandatory. Using the `_header:` feature without using an engine will not work.  |
 | certificate | For use with HTTPS - the certificate that the service should use. <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support custom certificates.  | False |
 | Private Key | For use with HTTPS - the private key that the service should use.  <br> Supported for Cortex XSOAR On-prem (6.x or 8) or when using an engine. Cortex XSOAR 8 Cloud tenants and Cortex XSIAM tenants do not support private keys.  | False |
-| Result | Automatically generated webhook trigger link (based on user configuration). | Auto-populated. Only available in updated FE versions. |
+| Result | Automatically generated webhook trigger link (based on user configuration). | Auto-populated.|
 | incidentType | Incident type | False |
 | store_samples | Store sample events for mapping (Because this is a push-based integration, it cannot fetch sample events in the mapping wizard). | False |
 
-4. Click **Done**.
-5. For Cortex XSOAR 6.x:
+1. Click **Done**.
+2. For Cortex XSOAR 6.x:
      1. Navigate to  **Settings > About > Troubleshooting**.
      2. In the **Server Configuration** section, verify that the value for the ***instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>*** key is set to *true*. If this key does not exist, click **+ Add Server Configuration** and add *instance.execute.external.\<INTEGRATION-INSTANCE-NAME\>* and set the value to *true*. See the following [reference article](https://xsoar.pan.dev/docs/reference/articles/long-running-invoke) for further information.
 

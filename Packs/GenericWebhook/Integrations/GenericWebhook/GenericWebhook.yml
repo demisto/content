@@ -10,7 +10,8 @@ configuration:
 - name: engine_placeholder
   type: 23
   section: Connect
-  hidden: true
+  hidden:
+  - xsoar_on_prem
 - display: Long running instance
   defaultvalue: 'true'
   name: longRunning
@@ -61,7 +62,8 @@ configuration:
   section: Result
   name: resultLink
   type: 22
-  additionalinfo: This field is populated only in updated FE versions.
+  hidden:
+  - xsoar_on_prem
 description: The Generic Webhook integration is used to create incidents on event triggers. The trigger can be any query posted to the integration.
 display: Generic Webhook
 name: Generic Webhook
