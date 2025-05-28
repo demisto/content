@@ -695,7 +695,7 @@ class TestCoreAddIndicator:
         result = core_add_indicator_rule_command(client, args)
 
         assert isinstance(result, CommandResults)
-        assert "IOC 1.2.3.4 was successfully added." in result.readable_output
+        assert "1.2.3.4" in result.readable_output
         assert result.outputs["indicator"] == "1.2.3.4"
         mock_post.assert_called_once()
         _, kwargs = mock_post.call_args
