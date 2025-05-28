@@ -3221,8 +3221,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
         vulnerabilities = get_vulnerabilities(client, detection_qids=detection_qids)
     else:
         since_datetime = (
-            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)
-            # type: ignore[union-attr]
+            last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)  # type: ignore[union-attr]
         )
         demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
