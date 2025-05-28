@@ -512,7 +512,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
 
     ioc_payload_output = prepare_ioc_to_output(ioc_payload, input_format)
     return CommandResults(
-        readable_output=f"IOC {ioc_payload_output['indicator']} was successfully added.",
+        readable_output=f"IOC rule for {ioc_payload_output['indicator']} was successfully added.",
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Indicator",
         outputs=ioc_payload_output,
         raw_response=response,
