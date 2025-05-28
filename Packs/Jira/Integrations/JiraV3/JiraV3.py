@@ -65,86 +65,6 @@ V2_ARGS_TO_V3: Dict[str, str] = {
 }
 
 
-@dataclass
-class QuickActionPreview:
-    """
-        A container class for storing quick action data previews.
-        This class is intended to be populated by commands like `!get-remote-data-preview`
-        and placed directly into the root context under `QuickActionPreview`.
-
-        Fields:
-            id (Optional[str]): The ID of the ticket.
-            title (Optional[str]): The title or summary of the ticket or action.
-            description (Optional[str]): A brief description or details about the action.
-            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
-            assignee (Optional[str]): The user or entity assigned to the action.
-            creation_date (Optional[str]): The date and time when the item was created.
-            severity (Optional[str]): Indicates the priority or severity level.
-
-        TODO: We will need this class in common server python,
-        but due to temporary restrictions in extending it, we are keeping it here for now.
-        """
-    id: Optional[str] = None
-    title: Optional[str] = None
-    description: Optional[str] = None
-    status: Optional[str] = None
-    assignee: Optional[str] = None
-    creation_date: Optional[str] = None
-    severity: Optional[str] = None
-
-    def __post_init__(self):
-        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
-
-        if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
-
-    def to_context(self) -> Dict[str, Any]:
-        """
-        Converts the dataclass to a dict for placing into context.
-        Returns:
-            dict: Dictionary representation of the QuickActionPreview.
-        """
-        return asdict(self)
-
-
-@dataclass
-class MirrorObject:
-    """
-    A container class for storing ticket metadata used in mirroring integrations.
-
-    This class is intended to be populated by commands like `!jira-create-issue`
-    and placed directly into the root context under `MirrorObject`.
-
-    Fields:
-        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
-        ticket_id (Optional[str]): Unique identifier of the created ticket.
-
-    ### TODO: We will need this class in common server python,
-    but due to known performance issues, we are keeping it here for now.
-    """
-    ticket_url: Optional[str] = None
-    ticket_id: Optional[str] = None
-
-    def __post_init__(self):
-        missing_fields = []
-        if not self.ticket_url:
-            missing_fields.append('ticket_url')
-        if not self.ticket_id:
-            missing_fields.append('ticket_id')
-
-        if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
-
-    def to_context(self) -> Dict[str, Any]:
-        """
-        Converts the dataclass to a dict for placing into context.
-
-        Returns:
-            dict: Dictionary representation of the MirrorObject.
-        """
-        return asdict(self)
-
-
 class JiraBaseClient(BaseClient, metaclass=ABCMeta):
     """
     This class is an abstract class. By using metaclass=ABCMeta, we tell python that this class behaves as an abstract
@@ -233,6 +153,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             ok_codes=ok_codes,
             files=files,
             headers=request_headers,
+            with_metrics=True
         )
 
     def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
@@ -1080,6 +1001,17 @@ class JiraCloudClient(JiraBaseClient):
             Dict[str, Any]: The results of the queried projects.
         """
         return self.http_request(method="GET", url_suffix="rest/api/3/project/search", params=query_params)
+
+    def get_jira_base_url(self) -> str:
+        """
+        Fetches the Jira UI base URL from the serverInfo endpoint.
+        Requires the client to have a `get` method for REST calls.
+
+        Returns:
+            str: The Jira UI base URL (e.g., https://yourcompany.atlassian.net)
+        """
+        server_info = self.http_request(method="GET", url_suffix="rest/api/3/serverInfo")
+        return server_info["baseUrl"]
 
     def issues_to_backlog(self, board_id: str, json_data: Dict[str, Any]) -> requests.Response:
         """This method is in charge of moving issues, back to backlog of their board.
@@ -2370,7 +2302,7 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False) -> list[CommandResults]:
+def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False, server_url: str = "") -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
@@ -2400,10 +2332,16 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_
         raise DemistoException("The summary argument must be provided.")
     res = client.create_issue(json_data=issue_fields)
 
-    ticket_url = res.get("self")
     ticket_id = res.get("id") or res.get("ticket_id")
     ticket_key = res.get("key", "")
     formatted_ticket_id = f"{ticket_key}-{ticket_id}"
+
+    if isinstance(client, JiraCloudClient):
+        ui_base_url = client.get_jira_base_url()
+    else:
+        ui_base_url = server_url
+    ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
+
     mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=formatted_ticket_id)
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
@@ -4866,7 +4804,7 @@ def main():  # pragma: no cover
         elif command == "get-mapping-fields":
             return_results(get_mapping_fields_command(client=client))
         elif command == "jira-create-issue-quick-action":
-            return_results(create_issue_command(client=client, args=args, is_quick_action=True))
+            return_results(create_issue_command(client=client, args=args, is_quick_action=True, server_url=server_url))
         elif command == "update-remote-system":
             return_results(
                 update_remote_system_command(
