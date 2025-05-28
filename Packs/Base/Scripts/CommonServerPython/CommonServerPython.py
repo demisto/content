@@ -12707,11 +12707,11 @@ def override_cortex_module_function(func):
     return func
 
 # Injects the Demisto object to the cortex-module package: 
-# try:
-#     from cortex_module_test import test_override_csp
-#     test_override_csp.demisto = demisto
-# except ModuleNotFoundError:
-#     pass
+try:
+    from cortex_module_test import test_override_csp
+    test_override_csp.demisto = demisto
+except ModuleNotFoundError:
+    pass
 
 # import builtins
 
@@ -12723,14 +12723,14 @@ def override_cortex_module_function(func):
 #     sys.modules["cortex_module_test.test_override_csp"] = module_to_change
 
 # # Injects the Demisto object to the cortex-module package:
-import uuid
-DemistoModule = types.ModuleType("DemistoModule")
-DemistoModule.demisto = demisto
-DemistoModule.json = json
-DemistoModule.uuid = uuid
-DemistoModule.sys = sys
-DemistoModule.os = os
-sys.modules["DemistoModule"] = DemistoModule
+# import uuid
+# DemistoModule = types.ModuleType("DemistoModule")
+# DemistoModule.demisto = demisto
+# DemistoModule.json = json
+# DemistoModule.uuid = uuid
+# DemistoModule.sys = sys
+# DemistoModule.os = os
+# sys.modules["DemistoModule"] = DemistoModule
 
 
 

@@ -2,8 +2,6 @@ import json
 
 STRING_TYPES = (str, bytes)
 
-from DemistoModule import demisto, json, uuid, sys, os
-
 def arg_to_number(arg, arg_name=None, required=False):
     
     demisto.info("In arg_to_number from cortex module test! - testing demisto info")
