@@ -3268,7 +3268,7 @@ def get_qid_for_cve(client: Client, cve: str) -> CommandResults:
             qids.append(qid_elem.text)
 
     return CommandResults(
-        readable_output=f"They are the {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
+        readable_output=f"The QID: {qids=} from Qualys for the given {cve=}", outputs=qids, outputs_prefix="Qualys.QID"
     )
 
 
