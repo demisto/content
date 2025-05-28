@@ -5,10 +5,10 @@ filter category in ("NetworkSecurityGroupFlowEvent", "FlowLogFlowEvent") or Type
 | alter
     tmp_NSG_startTime = if(category = "NetworkSecurityGroupFlowEvent", to_timestamp(to_integer(startTime)), null),
     tmp_NSG_time = if(category = "NetworkSecurityGroupFlowEvent", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(time)), null),
-    tmp_NTA_NTAIpDetails = if(tmp_check_NTA = "NTAIpDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(FlowIntervalStartTime)), null),
+    tmp_NTA_NTAIpDetails = if(tmp_check_NTA = "NTAIpDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(_raw_log -> FlowIntervalStartTime)), null),
     tmp_NTA_NTATopologyDetails = if(
-        tmp_check_NTA = "NTATopologyDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(TimeProcessed)),
-        tmp_check_NTA = "NTATopologyDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(TimeGenerated)), null
+        tmp_check_NTA = "NTATopologyDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(_raw_log -> TimeProcessed)),
+        tmp_check_NTA = "NTATopologyDetails", parse_timestamp("%Y-%m-%dT%H:%M:%E*SZ", to_string(_raw_log -> TimeGenerated)), null
         )
 | alter
     _time = coalesce(tmp_NSG_startTime, tmp_NSG_time, tmp_NTA_NTAIpDetails, tmp_NTA_NTATopologyDetails)
