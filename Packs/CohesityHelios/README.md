@@ -17,4 +17,3 @@ Cohesity’s comprehensive, end-to-end solution [Cohesity Ransomware](https://ww
 - Command to restore a specified backed up object from its latest clean snapshot.
 
 - Command to ignore a specified ransomware alert.
-

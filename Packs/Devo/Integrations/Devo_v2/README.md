@@ -46,14 +46,13 @@ of the time that other traditional time series databases can't.
     * `Private Key`
     * `CHAIN CA`
 
-
 ## Configure Devo v2 on Cortex XSOAR
 
-1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
+1. Navigate to __Settings__ > __Integrations__ > __Servers & Services__.
 2. Search for Devo v2.
-3. Click **Add instance** to create and configure a new integration instance.
+3. Click __Add instance__ to create and configure a new integration instance.
 
-    | **Parameter** | **Required** |
+    | __Parameter__ | __Required__ |
     | --- | --- |
     | Query Server Endpoint (e.g. <https://apiv2-us.devo.com/search/query>) | True |
     | Port (e.g. 443) | False |
@@ -75,9 +74,9 @@ of the time that other traditional time series databases can't.
     | Fetch Incidents Lookback Time (in seconds). Must be between 3600 (1 hour; default) to 86400 (24 hours). | False |
     | Fetch Incident Time Frame (in seconds) | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click __Test__ to validate the URLs, token, and connection.
 
-### Configuration Details :
+### Configuration Details
 
 * __Writer JSON credentials__ *Optional*
 
@@ -109,9 +108,7 @@ of the time that other traditional time series databases can't.
     }
     ```
 
-
-
-**Note:** single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes.
+__Note:__ single table query and multi table query can take long hours to complete runing and xsoar only allows commands to run for 5 minutes.
 To override that follow the below steps:
 
 * Login to xsoar.
@@ -185,20 +182,19 @@ Please refer to to the Devo documentation for building a query with LINQ
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| query | A LINQ query to run in Devo, with pagination support. | Required | 
-| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required | 
-| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional | 
-| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
-| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
-| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
-| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
-| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
-| ip_as_string | Flag to return IP as string. | Optional | 
+| query | A LINQ query to run in Devo, with pagination support. | Required |
+| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required |
+| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional |
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional |
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional |
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional |
+| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional |
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
+| ip_as_string | Flag to return IP as string. | Optional |
 
-
-#### Time Format for __from__ and __to__ Arguments:
+#### Time Format for __from__ and __to__ Arguments
 
 This integration supports the following time formats for the __from__ and __to__ arguments:
 
@@ -212,10 +208,10 @@ Using unsupported formats will result in an error.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Devo.QueryResults | unknown | List of dictionary alerts from the specified time range. | 
-| Devo.QueryLink | unknown | The link to the Devo table for executed query. | 
+| Devo.QueryResults | unknown | List of dictionary alerts from the specified time range. |
+| Devo.QueryLink | unknown | The link to the Devo table for executed query. |
 
 #### Command Example
 
@@ -226,6 +222,7 @@ Using unsupported formats will result in an error.
 #### Human Readable Output
 
 >### Devo run query results
+>
 >|eventdate|level|domain|userid|username|sessionid|correlationId|srcHost|srcPort|serverHost|serverPort|type|method|url|headers|params|referer|userAgent|locale|contentLength|responseLength|responseTime|result|resourceInfo|errorInfo|country|region|city|isp|org|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|2019-10-23T17:18:29.784000|INFO|helloworld|988409ce-3955-44a8-bcbb-b613bc8d9f8e|<john.doe@devo.com>|22671FE384D9FDF20E9BFFD7F4469971||1.2.3.4|45590|us.devo.com|8080||GET|<https://us.devo.com/alerts/alertsGlobe.json>||{origin:app.custom.tsAnomalyDetectionDev,serialNumber:ad475065-b0ef-4bbe-a620-a6dcd0874629,}|<https://us.devo.com/welcome>|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.120 Safari/537.36|en_US|0|124|7|OK|||US|NJ|Secaucus|Ppman Services Srl|M247 Ltd New Jersey|
@@ -256,20 +253,20 @@ Requires a Devo OAuth token that has read permission on siem.logtrust.alert.info
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| table_name | name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used. | Optional | 
-| prefix | Prefix to use for the column names. | Optional | 
-| from | Start datetime for alerts to fetch. | Required | 
-| to | End datetime for alerts to fetch. | Optional | 
-| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
-| filters | Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation. | Optional | 
-| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
-| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
-| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional | 
-| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
+| table_name | name of alert table to fetch alerts from a table. If not provided 'siem.logtrust.alert.info' will be used. | Optional |
+| prefix | Prefix to use for the column names. | Optional |
+| from | Start datetime for alerts to fetch. | Required |
+| to | End datetime for alerts to fetch. | Optional |
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional |
+| filters | Key value filter to apply to retrieve the specified alerts. For more information, see the Devo documentation. | Optional |
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional |
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional |
+| linqLinkBase | Overrides the global Devo base domain for linq linking. | Optional |
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
-#### Time Format for __from__ and __to__ Arguments:
+#### Time Format for __from__ and __to__ Arguments
 
 This integration supports the following time formats for the __from__ and __to__ arguments:
 
@@ -283,7 +280,7 @@ Using unsupported formats will result in an error.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Devo.AlertsResults | unknown | List of dictionary alerts from the specified time range. |
 | Devo.QueryLink | unknown | The link to the Devo table for the executed query. |
@@ -297,6 +294,7 @@ Using unsupported formats will result in an error.
 #### Human Readable Output
 
 >### Devo get alerts results
+>
 >|eventdate|alertHost|domain|priority|context|category|status|alertId|srcIp|srcPort|srcHost|dstIp|dstPort|dstHost|protocol|username|application|engine|extraData|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|2019-10-23T18:18:07.320000|backoffice|helloworld|5.0|my.alert.helloworld.simultaneous_login|my.context|4|6715552||||||||||pilot.my.alert.helloworld.simultaneous_login|duration_seconds: 30.142<br/>cluster: -<br/>prev_timestamp: 2019-10-23+18:17:29.652<br/>instance: -<br/>distance: 294.76<br/>level: info<br/>city: Secaucus<br/>srcHost: 1.2.3.4<br/>prev_city: Waltham<br/>format: output_qs9n126lnvh<br/>prev_geolocation: 42°23'49.925537109375"N+71°14'36.2420654296875"W<br/>message:0.0.0.4Waltham0°0'0.00"N+0°0'0.0"N+0°0'0.00"W0.0.0<<br/>eventdate: 2019-10-23+18:18:02.087<br/>prev_srcHost: 50.204.142.130<br/>duration: 0.008372777777777778<br/>indices: 0,9,31,49,69,77,123,136,149,156,204,217,231<br/>payload: 0.0.0.4Waltham0°0'0.00"N+0°0'0.0"N+0°0'0.00"W0.0.0<<br/>state: ANOMALOUS<br/>category: modelserverdev<br/>facility: user<br/>username: john.doe@devo.com<br/>geolocation: 0°0'0.00"N+0°0'0.0"W<br/>timestamp: 2019-10-23+18:17:59.794|
@@ -323,19 +321,19 @@ A Cortex XSOAR instance configured with the correct OAuth token that has permiss
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| tables | A list of table names to check for the searchToken. | Required | 
-| searchToken | A string to search for in the specified tables (in any column). | Required | 
-| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required | 
-| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional | 
-| limit | Limit of results to return to context. 0 for no limit. Default is 50. | Optional | 
-| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional | 
-| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional | 
-| items_per_page | Enter the per page value you want to set. Default is 50. | Optional | 
-| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional | 
+| tables | A list of table names to check for the searchToken. | Required |
+| searchToken | A string to search for in the specified tables (in any column). | Required |
+| from | Start datetime for the specified query. This argument supports natural language (e.g., 2 day, 3 week), Unix timestamps, Python datetime objects, and string datetimes. | Required |
+| to | End datetime for specified query. If provided must be in same format as "from" argument. This argument is ignored in a date range. | Optional |
+| limit | Limit of results to return to context. 0 for no limit. Default is 50. | Optional |
+| queryTimeout | Timeout in seconds for this query to run against Devo to override the minute default in the platform. Default is 60. | Optional |
+| writeToContext | Whether to write results to context. Can be "true" or "false". Default is true. | Optional |
+| items_per_page | Enter the per page value you want to set. Default is 50. | Optional |
+| filtered_columns | The subset of fields (separated by a comma) that you want to display from the query result. Use this if you want to filter out unwanted columns in your result. Context data is eventually modified by this parameter. | Optional |
 
-#### Time Format for __from__ and __to__ Arguments:
+#### Time Format for __from__ and __to__ Arguments
 
 This integration supports the following time formats for the __from__ and __to__ arguments:
 
@@ -349,12 +347,12 @@ Using unsupported formats will result in an error.
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
 | Devo.MultiResults | unknown | A list of dictionary results. |
 
-
 ##### Command Example
+
 ```
 !devo-multi-table-query tables="[siem.logtrust.alert.info, siem.logtrust.web.navigation]" searchToken="parag@metronlabs.com" from=1707416980 to=1707805927
 ```
@@ -362,14 +360,13 @@ Using unsupported formats will result in an error.
 #### Human Readable Output
 
 >### Devo multi-query results
+>
 >|isp|serverPort|srcPort|responseTime|headers|eventdate|correlationId|userEmail|responseLength|message|result|method|type|url|userid|level|referer|username|region|userAgent|sessionid|resourceInfo|contentLength|org|domain|srcHost|city|params|serverHost|errorInfo|section|action|origin|country|locale|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >|Amazon.com|8080|33522|||2019-09-18T07:58:39.691000||john@doe.com|||||0|`https://us.devo.com/alerts/view.json`|400d338d-c9a6-4930-90a5-357937f3e735||https://us.devo.com/welcome||VA|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1.2.3.4 Safari/537.36|8723DEE4B38F1056BC738760B5E79FD3|||Amazon.com|helloworld|1.2.3.4|Ashburn||us.devo.com||alert|index|undefined|US||
 >|Amazon.com|8080|33574|||2019-09-18T07:58:41.685000||john@doe.com||UserDomain: UserDomain[id: 2942, domain: 6ab72601-e982-4694-8ce6-3d526047f8a5/helloworld, roles: null, logged: 2019-09-18 04:32:58.0, status: 0, creation date: 2018-11-05 14:23:44.0, update date: 2019-09-18 04:32:58.0]\||||0|https://us.devo.com/lxcWidgets/lxcWidget.json|400d338d-c9a6-4930-90a5-357937f3e735||https://us.devo.com/welcome||VA|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1.2.3.4 Safari/537.36|8723DEE4B38F1056BC738760B5E79FD3|||Amazon.com|helloworld|1.2.3.4|Ashburn||us.devo.com||lxc_widgets|index|undefined|US||
 >|Comcast Cable|8080|37094|45||2019-09-18T08:08:21.593000|||124||OK|GET||https://us.devo.com/alerts/alertsGlobe.json|400d338d-c9a6-4930-90a5-357937f3e735|INFO|https://us.devo.com/welcome|john@doe.com|CA|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1.2.3.4 Safari/537.36|8723DEE4B38F1056BC738760B5E79FD3||0|Comcast Cable|helloworld|1.2.3.4|San Francisco|{origin:menu.alerts,serialNumber:b181cf08-14e0-49c2-826b-e4ff36afaa84,}|us.devo.com|||||US|en_US|
 >|Comcast Cable|8080|37092|78||2019-09-18T08:08:21.625000|||119||OK|GET||`https://us.devo.com/domain/notification.json`|400d338d-c9a6-4930-90a5-357937f3e735|INFO|https://us.devo.com/welcome|john@doe.com|CA|Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/1.2.3.4 Safari/537.36|8723DEE4B38F1056BC738760B5E79FD3||0|Comcast Cable|helloworld|1.2.3.4|San Francisco|{origin:menu.alerts,serialNumber:b181cf08-14e0-49c2-826b-e4ff36afaa84,}|us.devo.com|||||US|en_US|
-
-
 
 ### 4. devo-write-to-table
 
@@ -391,7 +388,7 @@ A Cortex XSOAR instance configured with the correct write JSON credentials
 
 #### Input
 
-| **Argument Name** | **Description**                                                 | **Required** |
+| __Argument Name__ | __Description__                                                 | __Required__ |
 |-------------------|-----------------------------------------------------------------|--------------|
 | tableName         | Table name to write to                                          | Required     |
 | records           | Records written to specified Devo table.                        | Required     |
@@ -399,19 +396,20 @@ A Cortex XSOAR instance configured with the correct write JSON credentials
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Devo.RecordsWritten | unknown | Records written to specified Devo table. | 
-| Devo.LinqQuery | unknown | The LINQ query to use to see your data in Devo. | 
-| Devo.QueryLink | unknown | The link to the Devo table for the executed query. | 
-
+| Devo.RecordsWritten | unknown | Records written to specified Devo table. |
+| Devo.LinqQuery | unknown | The LINQ query to use to see your data in Devo. |
+| Devo.QueryLink | unknown | The link to the Devo table for the executed query. |
 
 ##### Command Example
+
 ```
 !devo-write-to-table tableName="my.app.test.test" records=`[ "This is my first event", "This is my second log", {"hello": "world"}, {"hello": "friend"}, ["a", "b", "c"], ["1", "2", "3"], 1234, true ]`
 ```
 
 ##### Human Readable Output
+
 Total Records Sent: 8.
 Total Bytes Sent: 196.
 
@@ -428,13 +426,11 @@ Total Bytes Sent: 196.
 |2024-02-12 17:51:51.277|test|-|-|1234|
 |2024-02-12 17:51:51.277|test|-|-|True|
 
-
 ##### Link to Devo Query
 
 |DevoTableLink|
 |---|
 |[Devo Direct Link](https://us.devo.com/welcome#/verticalApp?path=apps/custom/dsQueryForwarder&targetQuery=blah==)|
-
 
 ### 5. devo-write-to-lookup-table
 
@@ -456,30 +452,32 @@ A Cortex XSOAR instance configured with the correct write JSON credentials.
 
 #### Input
 
-| **Argument Name** | **Description** | **Required** |
+| __Argument Name__ | __Description__ | __Required__ |
 | --- | --- | --- |
-| lookupTableName | The lookup table name to write to. | Required | 
-| headers | Headers for lookup table control. | Required | 
-| records | Records to write to the specified table. | Required | 
+| lookupTableName | The lookup table name to write to. | Required |
+| headers | Headers for lookup table control. | Required |
+| records | Records to write to the specified table. | Required |
 
 #### Context Output
 
-| **Path** | **Type** | **Description** |
+| __Path__ | __Type__ | __Description__ |
 | --- | --- | --- |
-| Devo.RecordsWritten | unknown | Lookup records written to the lookup table. | 
-
+| Devo.RecordsWritten | unknown | Lookup records written to the lookup table. |
 
 ##### Command Example
+
 ```
 !devo-write-to-lookup-table lookupTableName="lookup123" headers=`{"headers": ["foo", "bar", "baz"], "key_index": 0, "action": "FULL"}` records=`[{"fields": ["foo1", "bar1", "baz1"], "delete": false}, {"fields": ["foo2", "bar2", "baz2"]}, {"fields": ["foo3", "bar3", "baz3"]}]`
 ```
 
 ##### Human Readable Output
+
 Lookup Table Name: lookup123.
 Total Records Sent: 3.
 Total Bytes Sent: 125.
 
 ##### Entries to load into Devo
+
 The headers of headers array is written into the my.lookup.control table.
 
 |eventdate|lookup|lookupId|lookupOp|type|lookupFields|

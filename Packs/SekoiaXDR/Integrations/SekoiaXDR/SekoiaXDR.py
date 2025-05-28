@@ -69,10 +69,12 @@ class Client(BaseClient):
         alerts_urgency: str | None,
         alerts_type: str | None,
         sort_by: str | None,
+        offset: int | None = 0,
     ) -> dict[str, Any]:
         request_params: dict[str, Any] = {}
 
         """ Normal parameters"""
+        request_params["offset"] = offset
         if alerts_limit:
             request_params["limit"] = alerts_limit
 
@@ -442,6 +444,61 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
     return {key: value for key, value in input_dict.items() if key in keys_to_keep}
 
 
+def fetch_alerts_with_pagination(
+    client: Client,
+    alert_status: str | None,
+    alert_urgency: str | None,
+    alert_type: str | None,
+    max_results: int | None,
+    alerts_created_at: str | None,
+    alerts_updated_at: str | None,
+    sort_by: str | None,
+) -> List[Dict[str, Any]]:
+    """
+    Fetches alerts from the Sekoia XDR API with pagination support.
+    This function retrieves alerts in batches, allowing for efficient handling of large datasets.
+    Args:
+        client (Client): Sekoia XDR client to use.
+        alert_status (str): status of the alert to search for.
+        alert_urgency (str): alert urgency range to search for. Format: "MIN_urgency,MAX_urgency". i.e: 80,100.
+        alert_type (str): type of alerts to search for.
+        max_results (int): Maximum numbers of incidents per fetch.
+        alerts_created_at (str): The date range to search for alerts.
+    Returns:
+        dict: List of alerts retrieved from the API.
+    """
+
+    final_alerts = []
+    offset = 0
+    total_alerts = 0
+
+    # Fetch alerts in a loop until all alerts are retrieved
+    # Using offset to paginate through the results
+    while True:
+        response = client.list_alerts(
+            alerts_created_at=alerts_created_at,
+            alerts_updated_at=alerts_updated_at,
+            alerts_status=alert_status,
+            alerts_urgency=alert_urgency,
+            alerts_type=alert_type,
+            alerts_limit=max_results,
+            sort_by=sort_by,
+            offset=offset,
+        )
+
+        alerts: List[Dict[str, Any]] = response.get("items", [])
+        total_alerts = response.get("total", 0)
+
+        # Extend the final alerts list with the current batch of alerts
+        final_alerts.extend(alerts)
+        demisto.debug(f"Fetched {len(alerts)} alerts from offset {offset}.")
+        offset += len(alerts)
+        if offset >= total_alerts:
+            break
+
+    return final_alerts
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -509,17 +566,18 @@ def fetch_incidents(
     # Initialize an empty list of incidents to return
     # Each incident is a dict with a string as a key
     incidents: list[dict[str, Any]] = []
-    alerts = client.list_alerts(
-        alerts_limit=max_results,
-        alerts_status=alert_status,
-        alerts_created_at=alerts_created_at,
-        alerts_updated_at=None,
-        alerts_urgency=alert_urgency,
-        alerts_type=alert_type,
-        sort_by="created_at",
+    alerts = fetch_alerts_with_pagination(
+        client,
+        alert_status,
+        alert_urgency,
+        alert_type,
+        max_results,
+        alerts_created_at,
+        None,
+        "created_at",
     )
 
-    for alert in alerts["items"]:
+    for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Sekoia XDR API response
         incident_created_time = int(alert.get("created_at", "0"))
@@ -583,7 +641,10 @@ def fetch_incidents(
         }
         # If the integration parameter is set to mirror add the appropriate fields to the incident
         alert["mirror_instance"] = demisto.integrationInstance()
-        alert["mirrorOut"] = str(mirror_direction) in ["Outgoing", "Incoming and Outgoing"]
+        alert["mirrorOut"] = str(mirror_direction) in [
+            "Outgoing",
+            "Incoming and Outgoing",
+        ]
         incident["rawJSON"] = json.dumps(alert)
         incident["dbotMirrorDirection"] = MIRROR_DIRECTION.get(str(mirror_direction))
         incident["dbotMirrorId"] = alert["short_id"]
@@ -735,17 +796,9 @@ def get_modified_remote_data_command(client: Client, args):
     converted_time = time_converter(formatted_last_update)
     last_update_time = f"{converted_time},now"
 
-    raw_alerts = client.list_alerts(
-        alerts_updated_at=last_update_time,
-        alerts_limit=100,
-        alerts_status=None,
-        alerts_created_at=None,
-        alerts_urgency=None,
-        alerts_type=None,
-        sort_by="updated_at",
-    )
+    raw_alerts = fetch_alerts_with_pagination(client, None, None, None, 100, None, last_update_time, "updated_at")
 
-    modified_alert_ids = [item["short_id"] for item in raw_alerts["items"]]
+    modified_alert_ids = [item["short_id"] for item in raw_alerts]
 
     return GetModifiedRemoteDataResponse(modified_incident_ids=modified_alert_ids)
 
