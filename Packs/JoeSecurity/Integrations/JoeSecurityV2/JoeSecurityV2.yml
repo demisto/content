@@ -29,7 +29,7 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  section: Connect
+  section: Collect
   required: true
   type: 15
 - name: onprem
@@ -44,7 +44,7 @@ configuration:
   type: 8
   additionalinfo: Create relationships between indicators as part of enrichment.
   required: false
-  section: Connect
+  section: Collect
 - name: insecure
   display: Trust any certificate (not secure)
   type: 8
