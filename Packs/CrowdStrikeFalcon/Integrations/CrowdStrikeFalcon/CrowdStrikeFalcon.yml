@@ -5158,6 +5158,9 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
+  ismappable:platform: false
+  isremotesyncin:platform: false
+  isremotesyncout:platform: false
   script: '-'
   subtype: python3
   type: python
