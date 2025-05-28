@@ -907,7 +907,8 @@
             "scripts": [
                 "FindDuplicateEmailIncidents"
             ],
-            "integrations": "Rasterize"
+            "integrations": "Rasterize",
+            "timeout": 1000
         },
         {
             "integrations": "ZeroFox",
