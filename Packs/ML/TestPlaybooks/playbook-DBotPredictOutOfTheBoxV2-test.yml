@@ -184,7 +184,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2935
+          "y": 3110
         }
       }
     note: false
@@ -470,8 +470,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "27"
-      - "28"
+      - "41"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -490,10 +489,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 6666ee5f-9d6a-4043-8a34-4c268aef41fb
+    taskid: 1909962d-ed15-4899-89e9-743aeb146b08
     type: regular
     task:
-      id: 6666ee5f-9d6a-4043-8a34-4c268aef41fb
+      id: 1909962d-ed15-4899-89e9-743aeb146b08
       version: -1
       name: Predict batch
       description: Apply a trained ML model on multiple incidents at once, to compare incidents how the incidents were labeled by analysts, to the predictions of the model. This script is aimed to help evaluate a trained model using past incidents.
@@ -510,7 +509,15 @@ tasks:
       modelName:
         simple: demisto_out_of_the_box_model_v2
       query:
-        simple: (name:ootb_1 or name:ootb_2)
+        complex:
+          root: CreatedIncidentID
+          transformers:
+          - operator: concat
+            args:
+              prefix:
+                value:
+                  simple: '(name:ootb_1 or name:ootb_2) and uuid:'
+              suffix: {}
       tagField:
         simple: name
     separatecontext: false
@@ -519,7 +526,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2410
+          "y": 2585
         }
       }
     note: false
@@ -531,10 +538,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 5bf1340c-b244-4117-80df-a1b63aec3b38
+    taskid: e1de44f3-4a61-40a9-85b1-7f0fe8416573
     type: regular
     task:
-      id: 5bf1340c-b244-4117-80df-a1b63aec3b38
+      id: e1de44f3-4a61-40a9-85b1-7f0fe8416573
       version: -1
       name: 'Create incident #1'
       description: commands.local.cmd.create.inc
@@ -554,13 +561,15 @@ tasks:
         simple: ootb_1
       type:
         simple: Simulation
+      uuid:
+        simple: ${GeneratedUUID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 2060
+          "y": 2235
         }
       }
     note: false
@@ -572,10 +581,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: 3704baef-4fb4-4db6-84bc-efe74d45377e
+    taskid: 272ae4ca-6e08-4d5f-8b25-2edd8f1a2ba0
     type: regular
     task:
-      id: 3704baef-4fb4-4db6-84bc-efe74d45377e
+      id: 272ae4ca-6e08-4d5f-8b25-2edd8f1a2ba0
       version: -1
       name: 'Create incident #2'
       description: commands.local.cmd.create.inc
@@ -595,13 +604,15 @@ tasks:
         simple: ootb_2
       type:
         simple: Simulation
+      uuid:
+        simple: ${GeneratedUUID}
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 480,
-          "y": 2060
+          "y": 2235
         }
       }
     note: false
@@ -637,7 +648,7 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2585
+          "y": 2760
         }
       }
     note: false
@@ -686,7 +697,7 @@ tasks:
       {
         "position": {
           "x": 50,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
@@ -735,7 +746,7 @@ tasks:
       {
         "position": {
           "x": 480,
-          "y": 2760
+          "y": 2935
         }
       }
     note: false
@@ -778,10 +789,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: c14bfbc4-60b7-4532-81ce-64be1cd1f110
+    taskid: a6116ad7-7b6e-4c30-8271-2eda3d3b6688
     type: regular
     task:
-      id: c14bfbc4-60b7-4532-81ce-64be1cd1f110
+      id: a6116ad7-7b6e-4c30-8271-2eda3d3b6688
       version: -1
       name: Wait 10 Seconds
       description: Sleep for X seconds.
@@ -801,7 +812,40 @@ tasks:
       {
         "position": {
           "x": 265,
-          "y": 2235
+          "y": 2410
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: 479588da-a1f0-43d1-8852-3b4ee147d016
+    type: regular
+    task:
+      id: 479588da-a1f0-43d1-8852-3b4ee147d016
+      version: -1
+      name: Create UUID
+      description: Generates a random UUID (UUID 4).
+      scriptName: GenerateRandomUUID
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "27"
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 265,
+          "y": 2060
         }
       }
     note: false
@@ -816,7 +860,7 @@ view: |-
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 2950,
+        "height": 3125,
         "width": 810,
         "x": 50,
         "y": 50
@@ -828,5 +872,5 @@ outputs: []
 fromversion: 5.5.0
 contentitemexportablefields:
   contentitemfields: {}
-system: true
+sourceplaybookid: DbotPredictOufOfTheBoxTestV2
 description: ''
