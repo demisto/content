@@ -18,7 +18,7 @@ from CommonServerUserPython import *
 # If modifying these scopes, delete the file token.json.
 SCOPES = ["https://www.googleapis.com/auth/ediscovery", "https://www.googleapis.com/auth/devstorage.full_control"]
 DEMISTO_MATTER = "test_search_phishing"
-INTEGRATION_NAME = "GoogleVault: "
+INTEGRATION_NAME = "GoogleVault"
 ADMIN_EMAIL = demisto.params()["gsuite_credentials"]["identifier"]
 PRIVATE_KEY_CONTENT = demisto.params().get("auth_json_creds", {}).get("password") or demisto.params().get("auth_json")
 USE_SSL = not demisto.params().get("insecure", False)
@@ -1347,10 +1347,10 @@ def download_and_sanitize_export_results(object_ID, bucket_name, max_results):
         if type(documents) is dict:
             documents = [documents]
 
-        demisto.debug(f"{INTEGRATION_NAME}{len(documents)=}")
+        demisto.debug(f"{INTEGRATION_NAME}: {len(documents)=}")
         if len(documents) > max_results:
             documents = documents[:max_results]
-            demisto.debug(f"{INTEGRATION_NAME} limit results to {len(documents)=}")
+            demisto.debug(f"{INTEGRATION_NAME}: limit results to {len(documents)=}")
         dictList = build_dict_list(documents)
         return dictList
     finally:
@@ -1422,28 +1422,28 @@ def get_drive_results_command():
 def get_mail_and_groups_results_command(inquiryType):
     try:
         max_results = int(demisto.getArg("maxResult"))
-        demisto.debug(f"{INTEGRATION_NAME}{max_results=}")
+        demisto.debug(f"{INTEGRATION_NAME}: {max_results=}")
         view_ID = demisto.getArg("viewID")
         bucket_name = demisto.getArg("bucketName")
         output = download_and_sanitize_export_results(view_ID, bucket_name, max_results)
         if not (output[0].get("From") or output[0].get("To") or output[0].get("Subject")):
             return_error("Error displaying results: Corpus of the invoked command and the supplied ViewID does not match")
         markedown_output = []
-        for document in output:
-            markedown_output.append(
-                remove_empty_elements(
-                    {
-                        "From": document.get("From"),
-                        "To": document.get("To"),
-                        "CC": document.get("CC"),
-                        "BCC": document.get("BCC"),
-                        "Subject": document.get("Subject"),
-                        "DateSent": document.get("DateSent"),
-                        "Account": document.get("Account"),
-                        "DateReceived": document.get("DateReceived"),
-                    }
-                )
+        markedown_output = [
+            remove_empty_elements(
+                {
+                    "From": document.get("From"),
+                    "To": document.get("To"),
+                    "CC": document.get("CC"),
+                    "BCC": document.get("BCC"),
+                    "Subject": document.get("Subject"),
+                    "DateSent": document.get("DateSent"),
+                    "Account": document.get("Account"),
+                    "DateReceived": document.get("DateReceived"),
+                }
             )
+            for document in output
+        ]
 
         title = f"Your {inquiryType} inquiry details\n"
         headers = ["Subject", "From", "To", "CC", "BCC", "DateSent", "Account"]
