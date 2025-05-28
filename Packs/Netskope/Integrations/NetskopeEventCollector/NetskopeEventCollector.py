@@ -1,3 +1,8 @@
+from itertools import chain
+from aiohttp import ClientResponseError
+import asyncio
+import aiohttp
+import time
 from typing import Any
 
 import urllib3
@@ -8,11 +13,6 @@ from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
-import time
-import aiohttp
-import asyncio
-from aiohttp import ClientResponseError
-from itertools import chain
 ''' CONSTANTS '''
 
 ALL_SUPPORTED_EVENT_TYPES = ['application', 'alert', 'page', 'audit', 'network', 'incident']
@@ -63,16 +63,16 @@ class Client(BaseClient):
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params, resp_type="response", retries=10)
         # honor_rate_limiting(headers=response.headers, endpoint=url_suffix)
         return response.json()
-    
+
     async def get_events_data_async(self, type, params):
         url_suffix = f"events/data/{type}"
         url = urljoin(self._base_url, url_suffix)
         async with self.netskope_semaphore:
             async with self._async_session.get(url, params=params, headers=self._headers) as resp:
-                    demisto.debug(f'getting {type} events data, {params=}')
-                    resp.raise_for_status()
-                    return await resp.json()
-    
+                demisto.debug(f'getting {type} events data, {params=}')
+                resp.raise_for_status()
+                return await resp.json()
+
     async def get_events_count(self, type, params):
         """Return the count of event existing for the given type and time
 
@@ -92,6 +92,7 @@ class Client(BaseClient):
 
         demisto.debug(f'there is {event_count} total {type} events for the given time')
         return event_count
+
 
 ''' HELPER FUNCTIONS '''
 
@@ -141,14 +142,13 @@ async def honor_rate_limiting_async(headers, event_type):
                     # sleep for default 1 second as the rate limit remaining is 0
                     demisto.debug('Did not find a rate limit reset value, going to sleep for 1 second to avoid rate limit error')
                     await asyncio.sleep(1)
-                
+
                 return True
 
     except ValueError as ve:
         logging.error(f"Value error when honoring the rate limiting wait time {headers} {str(ve)}")
-    
-    return False
 
+    return False
 
 
 def populate_parsing_rule_fields(event: dict, event_type: str):
@@ -441,19 +441,18 @@ def handle_failures(failures):
 
 
 async def fetch_and_send_events_async(client: Client, type: str, request_params: dict, limit: int, send_to_xsiam: bool):
-    
-    
+
     async def _handle_page(params):
-        
+
         async def _fetch_page():
             retry = True
             while retry:
                 try:
-                    offset = params.get('offset')    
+                    offset = params.get('offset')
                     demisto.debug(f"fetching from {offset=} from netskope")
                     return await client.get_events_data_async(type, params)
                 except ClientResponseError as e:
-                    if e.status == 429: # rate limit
+                    if e.status == 429:  # rate limit
                         retry = await honor_rate_limiting_async(e.headers, type)
                     else:
                         raise e
@@ -474,15 +473,15 @@ async def fetch_and_send_events_async(client: Client, type: str, request_params:
             if send_to_xsiam:
                 await _send_page_to_xsiam(events)
         except Exception as e:
-                raise DemistoException(message=str(e), exception=e, res=params)
+            raise DemistoException(message=str(e), exception=e, res=params)
         return events
 
     async def _handle_all_pages():
-        
-        init_offset = int(request_params.pop('offset', 0)) # not needed in the get_events_count request
-        total_events =  await client.get_events_count(type, request_params)
+
+        init_offset = int(request_params.pop('offset', 0))  # not needed in the get_events_count request
+        total_events = await client.get_events_count(type, request_params)
         max_offset = min(total_events, init_offset + int(limit))
-        
+
         request_limit = request_params.get('limit', MAX_EVENTS_PAGE_SIZE)
         demisto.debug(f"Going to fetch {min(total_events, limit)} events by chunks of {request_limit} ...")
         tasks = [
@@ -492,12 +491,12 @@ async def fetch_and_send_events_async(client: Client, type: str, request_params:
         ]
         results = await asyncio.gather(*tasks, return_exceptions=True)
         return results
-    
-    results: list[list[dict]| BaseException] = await _handle_all_pages()
+
+    results: list[list[dict] | BaseException] = await _handle_all_pages()
     success_tasks = filter(lambda res: isinstance(res, list), results)
     failures = filter(lambda res: isinstance(res, Exception), results)
     events = list(chain.from_iterable(success_tasks))
-    
+
     demisto.debug(f"The number of fetched events - {len(events)}")
     # honor_rate_limiting(headers=response.headers, endpoint=url_suffix)
     return events, failures
@@ -515,23 +514,24 @@ async def handle_event_type_async(client: Client, event_type: str, start_time: s
     demisto.debug(f"Fetching '{event_type}' events with params: {params}")
     events, failures = await fetch_and_send_events_async(client, event_type, params, limit, send_to_xsiam)
     demisto.debug(f"Fetched {len(events)} {event_type} events")
-        
+
     prepared_events = prepare_events(events, event_type)
     failures_data = handle_failures(failures)
     res_dict = {'events': prepared_events, 'failures': failures_data}
     if len(events) == limit:
         # meaning, there may be another events to fetch for the current time "window"
         # save the start_time and end_time and the next offset
-        
+
         next_fetch_data = {
-            "next_fetch_start_time": start_time, 
+            "next_fetch_start_time": start_time,
             "next_fetch_end_time": end_time,
             "next_fetch_offset": offset + len(events)
         }
-        demisto.debug(f'fetched {(len(events) == limit)=}, need to store the time window and offset for next fetch, {next_fetch_data=}')
+        demisto.debug(
+            f'fetched {(len(events) == limit)=}, need to store the time window and offset for next fetch, {next_fetch_data=}')
         res_dict |= next_fetch_data
     else:
-         res_dict |= {"next_fetch_start_time": end_time}
+        res_dict |= {"next_fetch_start_time": end_time}
     return event_type, res_dict
 
 
@@ -552,9 +552,9 @@ def handle_prev_fetch_failures(client: Client, last_run: dict, event_type: str, 
 
 
 async def handle_fetch_and_send_all_events_async(client: Client,
-                         last_run: dict,
-                         limit: int = MAX_EVENTS_PAGE_SIZE,
-                         send_to_xsiam = False) -> tuple[list[dict], dict]:
+                                                 last_run: dict,
+                                                 limit: int = MAX_EVENTS_PAGE_SIZE,
+                                                 send_to_xsiam=False) -> tuple[list[dict], dict]:
     """
     Iterates over all supported event types and call the handle event fetch logic and send the events to XSIAM.
 
@@ -575,7 +575,7 @@ async def handle_fetch_and_send_all_events_async(client: Client,
         dict: The updated last_run object.
     """
     start = time.time()
-    # needed as we use concurrent async tasks 
+    # needed as we use concurrent async tasks
     # support_multithreading()
 
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
@@ -587,24 +587,22 @@ async def handle_fetch_and_send_all_events_async(client: Client,
 
     demisto.debug(f"Starting events fetch with {page_size=}, {limit=} ")
 
-    
-
     tasks = []
     for event_type in client.event_types_to_fetch:
-         # get failures from previous iteration
+        # get failures from previous iteration
         tasks.extend(
             handle_prev_fetch_failures(client, last_run, event_type, send_to_xsiam)
         )
-         # tasks.extend(retry_tasks)
-         # limit_for_specific_type = limit len(retry_tasks) * 
-         # 
+        # tasks.extend(retry_tasks)
+        # limit_for_specific_type = limit len(retry_tasks) *
+        #
         last_run_current_type = last_run.get(event_type, {})
         start_time = last_run_current_type.get("next_fetch_start_time", epoch_last_month)
         end_time = last_run_current_type.get("next_fetch_end_time", epoch_current_time)
         offset = int(last_run_current_type.get("next_fetch_offset", 0))
         tasks.append(
             handle_event_type_async(client, event_type, start_time, end_time, offset, limit, send_to_xsiam)
-        )    
+        )
     res: list[dict] = await asyncio.gather(*tasks)
 
     for event_type, event_type_res in res:
@@ -618,7 +616,7 @@ async def handle_fetch_and_send_all_events_async(client: Client,
 
 
 async def test_module(client: Client, last_run: dict) -> str:
-    await get_events_command_async(client=client, args={'limit':1}, last_run=last_run)
+    await get_events_command_async(client=client, args={'limit': 1}, last_run=last_run)
     return 'ok'
 
 
@@ -689,6 +687,8 @@ def next_trigger_time(num_of_events, max_fetch, new_last_run):
 
 
 ''' MAIN FUNCTION '''
+
+
 async def main() -> None:  # pragma: no cover
     try:
         params = demisto.params()
@@ -699,14 +699,14 @@ async def main() -> None:  # pragma: no cover
         verify_certificate = not params.get('insecure', False)
         proxy = params.get('proxy', False)
         max_fetch: int = arg_to_number(params.get('max_fetch')) or 10000
-        
+
         command_name = demisto.command()
         demisto.debug(f'Command being called is {command_name}')
 
         event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch'))
         demisto.debug(f'Event types that will be fetched in this instance: {event_types_to_fetch}')
 
-        async with aiohttp.ClientSession() as session: # TODO Israel proxy and insecure
+        async with aiohttp.ClientSession() as session:  # TODO Israel proxy and insecure
             client = Client(base_url, token, verify_certificate, proxy, session, event_types_to_fetch)
 
             if POC:
@@ -735,7 +735,7 @@ async def main() -> None:  # pragma: no cover
                         last_run=last_run,
                         limit=max_fetch,
                         send_to_xsiam=False
-                    )                
+                    )
                     next_trigger_time(len(all_event_types), max_fetch, new_last_run)
                     demisto.debug(f"Setting the last_run to: {new_last_run}")
                     # demisto.setLastRun(new_last_run)
