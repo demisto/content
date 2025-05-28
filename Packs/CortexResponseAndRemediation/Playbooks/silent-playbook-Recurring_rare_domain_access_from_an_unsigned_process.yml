@@ -214,7 +214,7 @@ tasks:
         1. Risky Path: The file or process is located in a risky or suspicious directory.
         2. Risky Command Line: The command line arguments used to execute the process contain suspicious patterns or known malicious commands.
         3. Low Prevalence: The file or process is rarely seen across the monitored environment, indicating it might be a new or targeted threat.
-        4. Related Alerts Found: The file or process has been associated with previous security alerts or known malicious activities.
+        4. Related Incidents Found: The file or process has been associated with previous security incidents or known malicious activities.
 
         If a malicious verdict is reached, the playbook continues to take remediation actions.
       type: condition
