@@ -2,10 +2,10 @@ args:
 - description: 'The JSON object that should be converted to a HTML table.'
   name: value
   required: true
-- description: 'e.g. pass id=”info-table” or class=”bootstrap-class”/data-* to apply these attributes to the generated table'
+- description: 'e.g. pass id=”info-table” or class=”bootstrap-class”/data-* to apply these attributes to the generated table.'
   name: table-attributes
   required: false
-- description: 'Custom CSS styling inserted before the table object'
+- description: 'Custom CSS styling inserted before the table object.'
   name: custom-styling
   required: false
 comment: 'Converts JSON objects to HTML tables.'
