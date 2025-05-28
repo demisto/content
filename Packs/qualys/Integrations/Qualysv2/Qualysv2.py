@@ -3283,9 +3283,10 @@ def get_asset_by_qid(client: Client, qid: str) -> CommandResults:
 
     response_requested_value, _ = handle_host_list_detection_result(response)
     assets, _ = get_detections_from_hosts(response_requested_value)
+    readable_output = tableToMarkdown(name=f"Assets are found related to the given {qid=}", t=assets)
 
     return CommandResults(
-        readable_output=f"{len(assets)} assets are found related to the given {qid=}",
+        readable_output=readable_output,
         outputs=assets,
         outputs_prefix="Qualys.Assets",
         outputs_key_field="ID",

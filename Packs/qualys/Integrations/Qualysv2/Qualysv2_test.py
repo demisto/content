@@ -2127,4 +2127,4 @@ def test_get_asset_by_qid_success(mock_client):
     ]
     assert result.outputs_prefix == "Qualys.Assets"
     assert result.outputs_key_field == "ID"
-    assert "1 assets are found related to the given qid='888888'" in result.readable_output
+    assert "### Assets are found related to the given qid='888888'" in result.readable_output
