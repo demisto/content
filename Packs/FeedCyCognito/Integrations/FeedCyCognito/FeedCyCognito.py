@@ -432,8 +432,9 @@ def fetch_indicators_command(
     :param is_test: True if the function call is from test_module, False otherwise
     """
     asset_type = params.get("asset_type")
-    first_fetch_timestamp = arg_to_datetime(params.get("first_fetch", DEFAULT_FIRST_FETCH),
-                                            arg_name="First Fetch Time").strftime(DATE_FORMAT)  # type: ignore
+    first_fetch_timestamp = arg_to_datetime(params.get("first_fetch", DEFAULT_FIRST_FETCH), arg_name="First Fetch Time").strftime(
+        DATE_FORMAT
+    )  # type: ignore
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_MAX_FETCH), arg_name="Max Fetch")
     organizations = argToList(params.get("organizations"))
     security_grade = [x.split(":")[0].lower() for x in params.get("security_grade", [])] if params.get("security_grade") else []
@@ -475,7 +476,7 @@ def fetch_indicators_command(
 
     demisto.info(f"[+] FeedCyCognito: Number of indicators fetched: {len(response)}")
     indicators = build_iterators(
-        tlp_color=tlp_color,    # type: ignore
+        tlp_color=tlp_color,  # type: ignore
         default_mapping=default_mapping,  # type: ignore
         response=response,
         feed_tags=feed_tags,

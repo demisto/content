@@ -44,7 +44,7 @@ from ReversingLabsTitaniumCloudv2 import (
     ip_command,
     file_command,
     domain_command,
-    url_command
+    url_command,
 )
 from CommonServerPython import *
 from ReversingLabs.SDK.helper import WrongInputError
@@ -411,21 +411,18 @@ def test_customer_data_output():
 
 DEFAULT_PARAMS = {
     "base": "data.reversinglabs.com",
-    "credentials": {
-        "password": "somepassword",
-        "identifier": "username"
-    },
+    "credentials": {"password": "somepassword", "identifier": "username"},
     "reliability": "C - Fairly reliable",
-    "verify_certs": "true"
+    "verify_certs": "true",
 }
 
 
 @pytest.fixture
 def mock_demisto(mocker):
-    mocker.patch.object(demisto, 'getArg', return_value='8.8.8.8')
-    mocker.patch.object(demisto, 'args', return_value={'ip': '8.8.8.8'})
+    mocker.patch.object(demisto, "getArg", return_value="8.8.8.8")
+    mocker.patch.object(demisto, "args", return_value={"ip": "8.8.8.8"})
     results = []
-    mocker.patch.object(demisto, 'results', side_effect=lambda r: results.append(r))
+    mocker.patch.object(demisto, "results", side_effect=lambda r: results.append(r))
     return results
 
 
@@ -434,31 +431,17 @@ def mock_ip_response():
     return {
         "rl": {
             "classification": "malicious",
-            "downloaded_files_statistics": {
-                "known": 1,
-                "malicious": 2,
-                "suspicious": 0,
-                "unknown": 0,
-                "total": 3
-            },
+            "downloaded_files_statistics": {"known": 1, "malicious": 2, "suspicious": 0, "unknown": 0, "total": 3},
             "third_party_reputations": {
-                "statistics": {
-                    "clean": 0,
-                    "malicious": 2,
-                    "undetected": 1,
-                    "total": 3
-                },
-                "sources": [
-                    {"source": "VendorA", "detection": "malicious"},
-                    {"source": "VendorB", "detection": "clean"}
-                ]
-            }
+                "statistics": {"clean": 0, "malicious": 2, "undetected": 1, "total": 3},
+                "sources": [{"source": "VendorA", "detection": "malicious"}, {"source": "VendorB", "detection": "clean"}],
+            },
         }
     }
 
 
 def test_ip_command_success(mocker, mock_ip_response, mock_demisto):
-    mock_ip_ti = mocker.patch('ReversingLabsTitaniumCloudv2.IPThreatIntelligence')
+    mock_ip_ti = mocker.patch("ReversingLabsTitaniumCloudv2.IPThreatIntelligence")
     instance = mock_ip_ti.return_value
     mock_response = mocker.Mock()
     mock_response.json.return_value = mock_ip_response

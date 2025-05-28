@@ -772,22 +772,16 @@ def test_get_alert_summary(requests_mock, reco_client: RecoClient) -> None:
     alert_id = uuid.uuid1()
     requests_mock.get(
         f"{DUMMY_RECO_API_DNS_NAME}/alert/summarize/{alert_id}",
-        json={
-            "content": "test"
-        },
+        json={"content": "test"},
         status_code=200,
     )
     res = reco_client.get_alert_ai_summary(alert_id=str(alert_id))
     assert res.get("content") == "test"
 
 
-def test_get_alert_summary_error(
-    capfd, requests_mock, reco_client: RecoClient
-) -> None:
+def test_get_alert_summary_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     alert_id = uuid.uuid1()
-    requests_mock.put(
-        f"{DUMMY_RECO_API_DNS_NAME}/alert/summarize/{alert_id}", json={}, status_code=404
-    )
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/alert/summarize/{alert_id}", json={}, status_code=404)
     with capfd.disabled(), pytest.raises(Exception):
         reco_client.get_alert_ai_summary(str(alert_id))
 

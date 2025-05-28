@@ -830,12 +830,7 @@ def test_ctm360_cbs_incident_list_command(
                 "remarks": "New leaked_credential with severity High found",
                 "first_seen": "27-12-2023 05:42:18 AM",
                 "last_seen": "27-12-2023 05:42:18 AM",
-                "screenshots": [
-                    {
-                        "filename": "screenshot1.png",
-                        "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"
-                    }
-                ],
+                "screenshots": [{"filename": "screenshot1.png", "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"}],
                 "brand": "Mock Brand",
                 "timestamp": "1703655740964",
             },
@@ -1214,18 +1209,10 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
         (
             {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]},
             {"ticket_id": "COMX123456"},
-            [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]
+            [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}],
         ),
-        (
-            {"results": []},
-            {"ticket_id": "COMX123456"},
-            []
-        ),
-        (
-            {"results": None},
-            {"ticket_id": "COMX123456"},
-            []
-        ),
+        ({"results": []}, {"ticket_id": "COMX123456"}, []),
+        ({"results": None}, {"ticket_id": "COMX123456"}, []),
     ],
 )
 def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_client, mocker):
@@ -1254,7 +1241,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             [],
             None,
-            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration."),
         ),
         # Test with single screenshot
         (
@@ -1263,22 +1250,24 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             [],
             None,
-            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
         ),
         # Test with multiple screenshots
         (
             True,
-            {"results": [
-                {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
-                {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}}
-            ]},
+            {
+                "results": [
+                    {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
+                    {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}},
+                ]
+            },
             {"ticket_id": "COMX123456"},
             [],
             None,
             [
                 {"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
-                {"File": "screenshot2.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}
-            ]
+                {"File": "screenshot2.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
+            ],
         ),
         # Test with no results
         (
@@ -1287,7 +1276,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             [],
             None,
-            CommandResults(readable_output="No new screenshots to fetch")
+            CommandResults(readable_output="No new screenshots to fetch"),
         ),
         # Test with filtered files (no files to fetch after filtering)
         (
@@ -1296,7 +1285,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"files": [{"filename": "screenshot1.png", "filepath": "/path/to/file"}]},
             [],
             None,
-            CommandResults(readable_output="No new screenshots to fetch")
+            CommandResults(readable_output="No new screenshots to fetch"),
         ),
         # Test with empty files list
         (
@@ -1305,7 +1294,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456", "files": []},
             [],
             None,
-            CommandResults(readable_output="No new screenshots to fetch")
+            CommandResults(readable_output="No new screenshots to fetch"),
         ),
         # Test with all files already existing in context
         (
@@ -1314,7 +1303,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"files": [{"filename": "existing.png", "filepath": "/path/to/file"}]},
             [{"Name": "existing.png"}],
             None,
-            CommandResults(readable_output="All requested screenshots already exist in context")
+            CommandResults(readable_output="All requested screenshots already exist in context"),
         ),
         # Test with invalid type in files list (should be filtered out)
         (
@@ -1323,7 +1312,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"files": [{"filename": "screenshot1.png"}, "not_a_dict"]},
             [],
             None,
-            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
         ),
         # Test with API error
         (
@@ -1332,7 +1321,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             [],
             Exception("API connection error"),
-            CommandResults(readable_output="Failed to fetch screenshots from API: API connection error")
+            CommandResults(readable_output="Failed to fetch screenshots from API: API connection error"),
         ),
         # Test with non-dictionary in results
         (
@@ -1341,7 +1330,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             [],
             None,
-            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
         ),
         # Test with non-list InfoFile
         (
@@ -1350,7 +1339,7 @@ def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_
             {"ticket_id": "COMX123456"},
             {"Name": "other_file.png"},  # Not a list
             None,
-            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}],
         ),
     ],
 )
@@ -1376,29 +1365,29 @@ def test_ctm360_cbs_incident_retrieve_screenshots_command(
     # Mock fileResult to avoid writing to disk
     def mock_file_result(filename, data, file_type=None):
         return {"File": filename, "FileID": "mock_file_id", "Type": file_type}
-    
+
     # Create a mock for demisto context
     mock_context = mocker.MagicMock(return_value={"InfoFile": existing_files})
-    
+
     # Mock log function but keep track of calls
     mock_log = mocker.patch("CyberBlindspot.log")
-    
+
     # Patch everything with mocker
     mocker.patch("CyberBlindspot.demisto.context", mock_context)
     mocker.patch("CyberBlindspot.RETRIEVE_SCREENSHOTS", new=mock_conf)
     mocker.patch("CyberBlindspot.fileResult", side_effect=mock_file_result)
     mocker.patch("CommonServerPython.fileResult", side_effect=mock_file_result)
-    
+
     # Configure get_screenshot_files based on whether we want to simulate an error
     if api_error:
         mocker.patch.object(mock_client, "get_screenshot_files", side_effect=api_error)
     else:
         mocker.patch.object(mock_client, "get_screenshot_files", return_value=mock_response.get("results", []))
-    
+
     # Run the function with capfd disabled to prevent stdout issues
     with capfd.disabled():
         result = ctm360_cbs_incident_retrieve_screenshots_command(mock_client, mock_args)
-    
+
     # Verify results
     if isinstance(result, list):
         assert len(result) == len(expected_result)
@@ -1408,7 +1397,7 @@ def test_ctm360_cbs_incident_retrieve_screenshots_command(
     elif isinstance(result, CommandResults):
         assert isinstance(expected_result, CommandResults)
         assert result.readable_output == expected_result.readable_output
-        
+
     # Verify critical logging behavior only
     if api_error:
         # For API errors, verify error is logged

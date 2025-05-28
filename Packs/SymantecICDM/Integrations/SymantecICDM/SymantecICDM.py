@@ -120,9 +120,7 @@ class Client(BaseClient):
         self._session_token = resp.get("access_token")
         return self._session_token is not None
 
-    def get_edr_incidents(
-        self, start_time: str, include_events: bool = False, offset: int = 0
-    ):
+    def get_edr_incidents(self, start_time: str, include_events: bool = False, offset: int = 0):
         now = datetime.now(timezone.utc)
         json_data = {
             "next": offset,
@@ -136,9 +134,7 @@ class Client(BaseClient):
             "authorization": f"Bearer {self._session_token}",
             "accept": "application/json",
         }
-        response = self._http_request(
-            "POST", url_suffix="/v1/incidents", json_data=json_data, headers=headers
-        )
+        response = self._http_request("POST", url_suffix="/v1/incidents", json_data=json_data, headers=headers)
         return response
 
     def broadcom_file_insight(self, file_hash: str):
@@ -198,18 +194,14 @@ class Client(BaseClient):
             "accept": "application/json",
         }
 
-        resp = self._http_request(
-            "GET", url_suffix=f"/v1/threat-intel/protection/cve/{cve}", headers=headers
-        )
+        resp = self._http_request("GET", url_suffix=f"/v1/threat-intel/protection/cve/{cve}", headers=headers)
         return resp
 
 
 """ HELPER FUNCTIONS """
 
 
-def ensure_max_age(
-    value: datetime, age: timedelta = timedelta(days=29, hours=23, minutes=59)
-) -> datetime:
+def ensure_max_age(value: datetime, age: timedelta = timedelta(days=29, hours=23, minutes=59)) -> datetime:
     """The SES Incident API does only support fetching incidents up to 30 days ago
     Ensures that the given datetime is no older than 30 days
     Args:
@@ -231,16 +223,10 @@ def icdm_fetch_incidents(client: Client, last_fetch_date: datetime):
     response = client.get_edr_incidents(start_time=last_fetch_str)
     incidents_raw = response["incidents"]
     while "next" in response:
-        response = client.get_edr_incidents(
-            start_time=last_fetch_str, offset=response["next"]
-        )
+        response = client.get_edr_incidents(start_time=last_fetch_str, offset=response["next"])
         incidents_raw += response["incidents"]
 
-    incidents_raw.sort(
-        key=lambda x: dateparser.parse(
-            x.get("created", "1970-01-01T00:00:00.000+00:00")
-        )
-    )
+    incidents_raw.sort(key=lambda x: dateparser.parse(x.get("created", "1970-01-01T00:00:00.000+00:00")))
     return incidents_raw
 
 
@@ -274,9 +260,7 @@ def has_intersection(a: list, b: list) -> bool:
     return len(intersect(a, b)) > 0
 
 
-def get_network_indicator_by_type(
-    type: str, indicator: str, dbot_score: Common.DBotScore
-) -> Common.Indicator:
+def get_network_indicator_by_type(type: str, indicator: str, dbot_score: Common.DBotScore) -> Common.Indicator:
     if type == DBotScoreType.IP:
         return Common.IP(ip=indicator, dbot_score=dbot_score)
     elif type == DBotScoreType.URL:
@@ -321,9 +305,7 @@ def calculate_network_severity(result: dict) -> tuple[int, str | None]:
     category_score = Common.DBotScore.NONE
     if has_intersection(MALICIOUS_CATEGORIES, categories):
         category_score = Common.DBotScore.BAD
-        malicious_description = (
-            f"Categorized as {','.join(categories)} with {reputation} reputation"
-        )
+        malicious_description = f"Categorized as {','.join(categories)} with {reputation} reputation"
     elif has_intersection(SUSPICIOUS_CATEGORIES, categories):
         category_score = Common.DBotScore.SUSPICIOUS
     elif len(categories) > 0 and "Uncategorized" not in categories:
@@ -401,9 +383,7 @@ def build_network_insight_result(
         malicious_description=severity_description,
     )
 
-    indicator = get_network_indicator_by_type(
-        type=arg_type, indicator=raw_result["indicator"], dbot_score=dbot_score
-    )
+    indicator = get_network_indicator_by_type(type=arg_type, indicator=raw_result["indicator"], dbot_score=dbot_score)
 
     command_result = CommandResults(
         outputs_prefix=insight_context_prefix[arg_type],
@@ -414,9 +394,7 @@ def build_network_insight_result(
     return command_result
 
 
-def execute_network_command(
-    client: Client, args: list[str], arg_type: str
-) -> list[CommandResults]:
+def execute_network_command(client: Client, args: list[str], arg_type: str) -> list[CommandResults]:
     results = []
     for arg in args:
         response = {"network": arg}
@@ -441,7 +419,7 @@ def execute_network_command(
             arg_type=arg_type,
             raw_result=result,
             reliability=client.reliability,
-            severity_description=severity[1]
+            severity_description=severity[1],
         )
 
         results.append(command_result)
@@ -481,9 +459,7 @@ def test_module(client: Client) -> str:
     return message
 
 
-def fetch_incidents_command(
-    client: Client, max_results: int, last_run: datetime
-) -> tuple[dict[str, float], list[dict]]:
+def fetch_incidents_command(client: Client, max_results: int, last_run: datetime) -> tuple[dict[str, float], list[dict]]:
     """
     This function retrieves new alerts every interval (default is 1 minute).
     It has to implement the logic of making sure that incidents are fetched only onces and no incidents are missed.
@@ -522,9 +498,7 @@ def fetch_incidents_command(
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_run and incident_created_time <= last_run:
-            demisto.debug(
-                f"skipping because {incident_created_time} is less than {last_run}"
-            )
+            demisto.debug(f"skipping because {incident_created_time} is less than {last_run}")
             continue
 
         # If no name is present it will throw an exception
@@ -548,9 +522,7 @@ def fetch_incidents_command(
     return next_run, incidents
 
 
-def icdm_fetch_incidents_command(
-    client: Client, max_results: int, last_fetch_date: datetime
-) -> CommandResults:
+def icdm_fetch_incidents_command(client: Client, max_results: int, last_fetch_date: datetime) -> CommandResults:
     incidents_raw = icdm_fetch_incidents(client, last_fetch_date)
 
     result = CommandResults(
@@ -567,45 +539,33 @@ def icdm_fetch_incidents_command(
     return result
 
 
-def ip_reputation_command(
-    client: Client, args: Dict[str, Any], reliability: str
-) -> list[CommandResults]:
+def ip_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, "ip")
 
     results = execute_network_command(client, values, DBotScoreType.IP)
     return results
 
 
-def url_reputation_command(
-    client: Client, args: Dict[str, Any], reliability: str
-) -> list[CommandResults]:
+def url_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, "url")
     results = execute_network_command(client, values, DBotScoreType.URL)
 
     return results
 
 
-def domain_reputation_command(
-    client: Client, args: Dict[str, Any], reliability: str
-) -> list[CommandResults]:
+def domain_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, "domain")
     results = execute_network_command(client, values, DBotScoreType.DOMAIN)
 
     return results
 
 
-def file_reputation_command(
-    client: Client, args: Dict[str, Any], reliability: str
-) -> list[CommandResults]:
+def file_reputation_command(client: Client, args: Dict[str, Any], reliability: str) -> list[CommandResults]:
     values = ensure_argument(args, "file")
     results = []
     for file in values:
         # The API only supports SHA256, so return a "Unknown" Reputation otherwise
-        resp = (
-            {"file": file}
-            if not re.match("^[A-Fa-f0-9]{64}$", file)
-            else client.broadcom_file_insight(file)
-        )
+        resp = {"file": file} if not re.match("^[A-Fa-f0-9]{64}$", file) else client.broadcom_file_insight(file)
         file_result = parse_insight_response(resp)
         if file_result:
             results.append(file_result)
@@ -634,18 +594,12 @@ def file_reputation_command(
     return command_results
 
 
-def symantec_protection_file_command(
-    client: Client, args: Dict[str, Any]
-) -> list[CommandResults]:
+def symantec_protection_file_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = ensure_argument(args, "file")
     results = []
     for file in values:
         # The API only supports SHA256, so return a "Unknown" Reputation otherwise
-        resp = (
-            {"file": file}
-            if not re.match("^[A-Fa-f0-9]{64}$", file)
-            else client.broadcom_file_protection(file)
-        )
+        resp = {"file": file} if not re.match("^[A-Fa-f0-9]{64}$", file) else client.broadcom_file_protection(file)
         results.append(resp)
 
     command_results = []
@@ -655,16 +609,14 @@ def symantec_protection_file_command(
             outputs_key_field="file",
             outputs=result,
             raw_response=result,
-            readable_output=tableToMarkdown(result.get('file'), result.get('state', []))
+            readable_output=tableToMarkdown(result.get("file"), result.get("state", [])),
         )
         command_results.append(command_result)
 
     return command_results
 
 
-def symantec_protection_network_command(
-    client: Client, args: Dict[str, Any]
-) -> list[CommandResults]:
+def symantec_protection_network_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = ensure_argument(args, "network")
     results = []
     for network in values:
@@ -678,16 +630,14 @@ def symantec_protection_network_command(
             outputs_prefix=f"{PROTECTION_CONTEXT_PREFIX}.Network",
             outputs_key_field="network",
             outputs=result,
-            readable_output=tableToMarkdown(result.get('network'), result.get('state', []))
+            readable_output=tableToMarkdown(result.get("network"), result.get("state", [])),
         )
         command_results.append(command_result)
 
     return command_results
 
 
-def symantec_protection_cve_command(
-    client: Client, args: Dict[str, Any]
-) -> list[CommandResults]:
+def symantec_protection_cve_command(client: Client, args: Dict[str, Any]) -> list[CommandResults]:
     values = ensure_argument(args, "cve")
     results = []
     for cve in values:
@@ -701,7 +651,7 @@ def symantec_protection_cve_command(
             outputs_prefix=f"{PROTECTION_CONTEXT_PREFIX}.CVE",
             outputs_key_field="cve",  # Documentation shows 'file', but actual return values has 'cve' field
             outputs=result,
-            readable_output=tableToMarkdown(result.get('cve'), result.get('state', []))
+            readable_output=tableToMarkdown(result.get("cve"), result.get("state", [])),
         )
         command_results.append(command_result)
 
@@ -760,9 +710,7 @@ def main() -> None:  # pragma: no cover
                     settings=DATE_PARSER_SETTINGS,
                 )
 
-            assert (
-                last_fetch is not None
-            )  # The line above should ensure, that we have at least a first fetch date
+            assert last_fetch is not None  # The line above should ensure, that we have at least a first fetch date
 
             client.authenticate()
 
@@ -784,9 +732,7 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "domain":
             client.authenticate()
-            return_results(
-                domain_reputation_command(client, demisto.args(), reliability)
-            )
+            return_results(domain_reputation_command(client, demisto.args(), reliability))
 
         elif demisto.command() == "file":
             client.authenticate()

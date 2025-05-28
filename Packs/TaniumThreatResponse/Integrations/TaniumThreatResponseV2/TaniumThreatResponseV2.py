@@ -599,7 +599,7 @@ def fetch_incidents(
 
     if len(incidents) > max_fetch:
         demisto.debug("Re-sizing incidents list.")
-        incidents = incidents[len(incidents) - max_fetch:]
+        incidents = incidents[len(incidents) - max_fetch :]
 
     if incidents:
         last_incident = incidents[0]
@@ -631,9 +631,7 @@ def get_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[lis
     """
     id_ = data_args.get("intel_doc_id")
     try:
-        raw_response = client.do_request(
-            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}"
-        )
+        raw_response = client.do_request("GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}")
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
     # with a "Not Found" message.
     except requests.HTTPError as e:
@@ -919,9 +917,7 @@ def update_intel_doc(client: Client, data_args: dict) -> tuple[str, dict, Union[
     intrinsic_id = ""
     try:
         # get intel doc intrinsicId
-        raw_response = client.do_request(
-            "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}"
-        )
+        raw_response = client.do_request("GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/intels/{id_}")
         raw_response_data = normalize_api_response(raw_response)
         intrinsic_id = raw_response_data.get("intrinsicId")
     # If the user provided a intel doc ID which does not exist, the do_request will throw HTTPError exception
@@ -1155,9 +1151,7 @@ def get_alert(client, data_args) -> tuple[str, dict, Union[list, dict]]:
 
     """
     alert_id = data_args.get("alert_id")
-    raw_response = client.do_request(
-        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/alerts/{alert_id}"
-    )
+    raw_response = client.do_request("GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/alerts/{alert_id}")
     raw_response_data = raw_response.get("data", raw_response)
     alert = get_alert_item(raw_response_data)
 
@@ -1614,9 +1608,7 @@ def get_label(client, data_args) -> tuple[str, dict, Union[list, dict]]:
 
     """
     label_id = data_args.get("label_id")
-    raw_response = client.do_request(
-        "GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/labels/{label_id}"
-    )
+    raw_response = client.do_request("GET", f"/plugin/products/{client.get_threat_response_endpoint()}/api/v1/labels/{label_id}")
 
     raw_response_data = normalize_api_response(raw_response)
     context = createContext(raw_response_data, removeNull=True)

@@ -6,11 +6,7 @@ from typing import Any
 
 def compare_jsons(json1: dict[str, Any], json2: dict[str, Any], path: str = "") -> dict[str, list[dict[str, Any]]]:
     """Recursively compare two JSON objects and return structured differences."""
-    differences: dict[str, list[dict[str, Any]]] = {
-        "changed": [],
-        "added": [],
-        "removed": []
-    }
+    differences: dict[str, list[dict[str, Any]]] = {"changed": [], "added": [], "removed": []}
 
     # Find keys present in both JSONs
     common_keys = json1.keys() & json2.keys()
@@ -60,12 +56,11 @@ def main():
         readable_output = f"### JSON Differences\n```json\n{json.dumps(differences, indent=4, ensure_ascii=False)}\n```"
 
         # Return results to XSOAR
-        return_results(CommandResults(
-            readable_output=readable_output,
-            outputs_prefix="JSONDiff",
-            outputs_key_field="field",
-            outputs=differences
-        ))
+        return_results(
+            CommandResults(
+                readable_output=readable_output, outputs_prefix="JSONDiff", outputs_key_field="field", outputs=differences
+            )
+        )
 
     except Exception as e:
         return_error(f"Failed to compare JSONs: {str(e)}")

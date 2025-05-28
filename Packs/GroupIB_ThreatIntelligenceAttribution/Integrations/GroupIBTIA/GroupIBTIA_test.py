@@ -3,13 +3,7 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
-from GroupIBTIA import (
-    fetch_incidents_command,
-    Client,
-    main,
-    get_available_collections_command,
-    local_search_command
-)
+from GroupIBTIA import fetch_incidents_command, Client, main, get_available_collections_command, local_search_command
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 import GroupIBTIA
@@ -18,13 +12,13 @@ import os
 
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
-with open(f'{realpath}/test_data/main_collections_examples.json') as example:
+with open(f"{realpath}/test_data/main_collections_examples.json") as example:
     COLLECTIONS_RAW_JSON = load(example)
 
-with open(f'{realpath}/test_data/search_example.json') as example:
+with open(f"{realpath}/test_data/search_example.json") as example:
     SEARCH_RAW_JSON = load(example)
 
-with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
+with open(f"{realpath}/test_data/avalible_collections_example.json") as example:
     AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
 
 # Disable insecure warnings
@@ -52,7 +46,7 @@ COLLECTION_NAMES = [
     "apt/threat_actor",
     "malware/malware",
     "osi/public_leak",
-    "compromised/breached"
+    "compromised/breached",
 ]
 
 
@@ -123,14 +117,9 @@ def test_fetch_incidents(mocker, session_fixture):
     """
     collection_name, client = session_fixture
     collection_name, client = session_fixture
-    mocker.patch.object(client, 'create_poll_generator', return_value=[COLLECTIONS_RAW_JSON[collection_name]])
+    mocker.patch.object(client, "create_poll_generator", return_value=[COLLECTIONS_RAW_JSON[collection_name]])
     next_run, incidents = fetch_incidents_command(
-        client=client,
-        last_run={},
-        first_fetch_time="3 days",
-        incident_collections=[],
-        max_requests=3,
-        hunting_rules=False
+        client=client, last_run={}, first_fetch_time="3 days", incident_collections=[], max_requests=3, hunting_rules=False
     )
     assert isinstance(incidents, list)
 
@@ -173,7 +162,7 @@ def test_global_search_command(mocker, single_session_fixture):
         consistent output formatting.
     """
     client = single_session_fixture
-    mocker.patch.object(client, 'search_proxy_function', return_value=SEARCH_RAW_JSON)
+    mocker.patch.object(client, "search_proxy_function", return_value=SEARCH_RAW_JSON)
     test_query = {"query": "8.8.8.8"}
     result = GroupIBTIA.global_search_command(client=client, args=test_query)
 
@@ -200,7 +189,7 @@ def test_get_available_collections(mocker, single_session_fixture):
         collections from the server response.
     """
     client = single_session_fixture
-    mocker.patch.object(client, 'get_available_collections_proxy_function', return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=[AVALIBLE_COLLECTIONS_RAW_JSON])
     result = get_available_collections_command(client=client)
 
     assert result.outputs_prefix == "GIBTIA.OtherInfo"
@@ -219,8 +208,10 @@ def mock_client():
 @pytest.fixture
 def mock_common_helpers():
     """Fixture to mock CommonHelpers functions."""
-    with patch("GroupIBTIA.CommonHelpers.validate_collections") as mock_validate, \
-            patch("GroupIBTIA.CommonHelpers.date_parse") as mock_date_parse:
+    with (
+        patch("GroupIBTIA.CommonHelpers.validate_collections") as mock_validate,
+        patch("GroupIBTIA.CommonHelpers.date_parse") as mock_date_parse,
+    ):
         mock_validate.return_value = None
         mock_date_parse.side_effect = lambda date, arg_name: f"parsed_{date}" if date else None
         yield mock_validate, mock_date_parse
@@ -250,10 +241,12 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     Then: The function should return a formatted list of search results.
     """
     mock_client.poller.create_search_generator.return_value = [
-        MagicMock(parse_portion=lambda keys, as_json: [
-            {"id": "123", "name": "Test Result"},
-            {"id": "456", "name": "Another Result"},
-        ])
+        MagicMock(
+            parse_portion=lambda keys, as_json: [
+                {"id": "123", "name": "Test Result"},
+                {"id": "456", "name": "Another Result"},
+            ]
+        )
     ]
 
     args = {"query": "test_query", "collection_name": "test_collection"}

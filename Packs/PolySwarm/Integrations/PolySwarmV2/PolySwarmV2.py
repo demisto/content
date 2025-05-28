@@ -94,9 +94,7 @@ class PolyswarmConnector:
                     positives += 1
                 total_scans += 1
 
-            demisto.debug(
-                f"Positives: {positives} - Total Scans: {total_scans}"
-            )
+            demisto.debug(f"Positives: {positives} - Total Scans: {total_scans}")
 
             md5 = result.md5
             sha256 = result.sha256

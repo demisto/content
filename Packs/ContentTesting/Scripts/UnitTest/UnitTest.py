@@ -12,7 +12,8 @@ def GetAutomationId(name):
 
 def GetPlaybookId(name):
     playbook = execute_command("core-api-post", {"uri": "/playbook/search", "body": {"query": "name:" + f'"{name}"'}})[
-        "response"]["playbooks"]
+        "response"
+    ]["playbooks"]
     if playbook is None:
         return "-1"
     pbid = playbook[0]["id"]
@@ -124,9 +125,7 @@ def RunAdhocPlaybook(playbookname, taskname, addafter, incid):
             "version": -1,
         }
         # Add the playbook as a task
-        tasks = execute_command("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})[
-            "response"
-        ]["tasks"]
+        tasks = execute_command("core-api-post", {"uri": f"/inv-playbook/task/add/{incid}", "body": task})["response"]["tasks"]
 
         # Find the new task ID in the updated playbook and execute the task
         for key, task in tasks.items():

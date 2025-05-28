@@ -240,7 +240,7 @@ def test_archive_with_slash_in_path():
 
 @pytest.fixture
 def mock_popen():
-    with patch('UnzipFile.Popen') as mock:
+    with patch("UnzipFile.Popen") as mock:
         yield mock
 
 
@@ -263,7 +263,7 @@ def test_extract_with_errors_in_stdout(mock_popen):
     mock_process = MagicMock()
     mock_process.communicate.return_value = (
         b"Hello_World_Errors.yml\nHello_World.yml",  # stdout
-        b""  # stderr (no error)
+        b"",  # stderr (no error)
     )
 
     # Mock the Popen constructor to return our mock process
@@ -280,5 +280,3 @@ def test_extract_with_errors_in_stdout(mock_popen):
     # Assert the stdout contains both filenames
     assert "Hello_World_Errors.yml" in result
     assert "Hello_World.yml" in result
-
-

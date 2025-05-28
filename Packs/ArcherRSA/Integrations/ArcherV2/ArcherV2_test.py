@@ -576,15 +576,15 @@ class TestArcherV2:
         assert "Check the given URL, it can be a redirect issue" in str(e.value)
 
     @pytest.mark.parametrize(
-        'json_fields_values, expected_value',
+        "json_fields_values, expected_value",
         [
-            pytest.param('{"Device Name":"Macbook\\Name\\\"Test"}', 'Macbook\\Name\"Test', id="Escaped double quote"),
-            pytest.param('{"Device Name":"Phone\\r\\n(Certified)"}', 'Phone\r\n(Certified)', id="New line & carriage return"),
-            pytest.param('{"Device Name":"Employee\\A\\PC"}', 'Employee\\A\\PC', id="Escaped Backslash"),
-            pytest.param('{"Device Name":"Laptop\\t#406"}', 'Laptop\t#406', id="Tab"),
-            pytest.param('{"Device Name":"I \\u2764 Tech"}', 'I \u2764 Tech', id="Unicode"),
-            pytest.param('{"Device Name":"Generic Tablet 2025"}', 'Generic Tablet 2025', id="No special characters"),
-        ]
+            pytest.param('{"Device Name":"Macbook\\Name\\"Test"}', 'Macbook\\Name"Test', id="Escaped double quote"),
+            pytest.param('{"Device Name":"Phone\\r\\n(Certified)"}', "Phone\r\n(Certified)", id="New line & carriage return"),
+            pytest.param('{"Device Name":"Employee\\A\\PC"}', "Employee\\A\\PC", id="Escaped Backslash"),
+            pytest.param('{"Device Name":"Laptop\\t#406"}', "Laptop\t#406", id="Tab"),
+            pytest.param('{"Device Name":"I \\u2764 Tech"}', "I \u2764 Tech", id="Unicode"),
+            pytest.param('{"Device Name":"Generic Tablet 2025"}', "Generic Tablet 2025", id="No special characters"),
+        ],
     )
     def test_generate_field_contents(self, json_fields_values: str, expected_value: str):
         """
@@ -700,7 +700,7 @@ class TestArcherV2:
         assert expected_condition in xml_request
 
     @pytest.mark.parametrize(
-        'integration_context, expected_api_call_count',
+        "integration_context, expected_api_call_count",
         [
             pytest.param(
                 {"fieldValueList": {}},
@@ -717,7 +717,7 @@ class TestArcherV2:
                 1,
                 id="Cache miss (same id but different depth)",
             ),
-        ]
+        ],
     )
     def test_get_field_value_list(
         self,
@@ -739,7 +739,7 @@ class TestArcherV2:
         """
         field_id = 304
         depth = 1
-        mocker.patch("ArcherV2.get_integration_context",return_value=integration_context)
+        mocker.patch("ArcherV2.get_integration_context", return_value=integration_context)
 
         login_request = requests_mock.post(
             f"{BASE_URL}api/core/security/login",

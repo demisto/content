@@ -133,7 +133,7 @@ MESSAGES = {
     "IP_NOT_FOUND": 'No details found for IP: "{}".',
     "DOMAIN_NOT_FOUND": 'No details found for domain: "{}".',
     "NO_OBJECT_FOUND": "No Objects Found",
-    'INVALID_FETCH_EVENT_TYPE': f"Only the following event types are supported: {', '.join(DEFAULT_EVENT_TYPES)}"
+    "INVALID_FETCH_EVENT_TYPE": f"Only the following event types are supported: {', '.join(DEFAULT_EVENT_TYPES)}",
 }
 
 OUTPUT_PREFIX = {
@@ -223,9 +223,16 @@ IOC_TYPE_ENUM = [
     "INDICATOR_OF_COMPROMISE_TYPE_PATH_OR_FILENAME",
 ]
 
-ANOMALY_TYPE_ENUM = ['FILESYSTEM', 'HYPERVISOR']
-FALSE_POSITIVE_TYPE_ENUM = ['FP_TYPE_UNSPECIFIED', 'OS_UPDATE', 'APPLICATION_UPDATE',
-                            'LOG_ROTATION', 'OTHER', 'NFA_SCHEDULED_MAINTENANCE', 'NFA_UNSCHEDULED_MAINTENANCE']
+ANOMALY_TYPE_ENUM = ["FILESYSTEM", "HYPERVISOR"]
+FALSE_POSITIVE_TYPE_ENUM = [
+    "FP_TYPE_UNSPECIFIED",
+    "OS_UPDATE",
+    "APPLICATION_UPDATE",
+    "LOG_ROTATION",
+    "OTHER",
+    "NFA_SCHEDULED_MAINTENANCE",
+    "NFA_UNSCHEDULED_MAINTENANCE",
+]
 
 USER_ACCESS_QUERY = """query UserAccessPrincipalListQuery(
     $filter: PrincipalSummariesFilterInput,
@@ -770,7 +777,7 @@ def convert_to_demisto_severity(severity: str = "XSOAR LOW") -> int:
             "XSOAR CRITICAL": IncidentSeverity.CRITICAL,
         }[severity]
     except KeyError:
-        raise ValueError(ERROR_MESSAGES['FETCH_PARAM_REQUIRED'].format('Event Critical Severity Level Mapping'))
+        raise ValueError(ERROR_MESSAGES["FETCH_PARAM_REQUIRED"].format("Event Critical Severity Level Mapping"))
 
 
 def process_activity_nodes(activity_nodes: list, processed_incident):
@@ -2183,8 +2190,8 @@ def prepare_context_hr_suspicious_file_list(snappable_investigations_data: dict,
         ENCRYPTION: context.get("encryption"),
         DETECTION_TIME: context.get("detectionTime"),
         SNAPSHOT_TIME: context.get("snapshotDate"),
-        ANOMALY_RESOLUTION_STATUS: context.get('resolutionStatus'),
-        ANOMALY_TYPE: context.get('anomalyType')
+        ANOMALY_RESOLUTION_STATUS: context.get("resolutionStatus"),
+        ANOMALY_TYPE: context.get("anomalyType"),
     }
 
     anomaly_info_list: list = context.get("anomalyInfo", {}).get("strainAnalysisInfo", [])
@@ -2343,9 +2350,10 @@ def validate_ip_addresses(ips_list: List[str]) -> tuple[List[str], List[str]]:
     return invalid_ip_addresses, valid_ip_addresses
 
 
-def validate_anomaly_status_update_command_args(anomaly_type: str, false_positive_type: Optional[str],
-                                                false_positive_reason: Optional[str]):
-    '''
+def validate_anomaly_status_update_command_args(
+    anomaly_type: str, false_positive_type: Optional[str], false_positive_reason: Optional[str]
+):
+    """
     Validate the arguments of the rubrik_radar_anomaly_status_update_command.
 
     :type anomaly_type: ``str``
@@ -2356,20 +2364,21 @@ def validate_anomaly_status_update_command_args(anomaly_type: str, false_positiv
 
     :type false_positive_reason: ``Optional[str]``
     :param false_positive_reason: The reason for marking the anomaly as a false positive.
-    '''
+    """
 
     if anomaly_type.upper() not in ANOMALY_TYPE_ENUM:
-        raise ValueError(ERROR_MESSAGES['INVALID_SELECT'].format(anomaly_type, 'anomaly_type', ANOMALY_TYPE_ENUM))
+        raise ValueError(ERROR_MESSAGES["INVALID_SELECT"].format(anomaly_type, "anomaly_type", ANOMALY_TYPE_ENUM))
 
     if false_positive_reason and not false_positive_type:
-        raise ValueError(ERROR_MESSAGES['FALSE_POSITIVE_REASON_ERROR'].format('false_positive_type', 'false_positive_reason'))
+        raise ValueError(ERROR_MESSAGES["FALSE_POSITIVE_REASON_ERROR"].format("false_positive_type", "false_positive_reason"))
 
     if false_positive_type and false_positive_type.upper() not in FALSE_POSITIVE_TYPE_ENUM:
-        raise ValueError(ERROR_MESSAGES['INVALID_SELECT'].format(
-            false_positive_type, 'false_positive_type', FALSE_POSITIVE_TYPE_ENUM))
+        raise ValueError(
+            ERROR_MESSAGES["INVALID_SELECT"].format(false_positive_type, "false_positive_type", FALSE_POSITIVE_TYPE_ENUM)
+        )
 
-    if false_positive_type and false_positive_type.upper() == 'OTHER' and not false_positive_reason:
-        raise ValueError(ERROR_MESSAGES['FALSE_POSITIVE_TYPE_ERROR'].format('false_positive_reason', 'false_positive_type'))
+    if false_positive_type and false_positive_type.upper() == "OTHER" and not false_positive_reason:
+        raise ValueError(ERROR_MESSAGES["FALSE_POSITIVE_TYPE_ERROR"].format("false_positive_reason", "false_positive_type"))
 
 
 """ COMMAND FUNCTIONS """
@@ -2421,7 +2430,7 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
     if not event_types:
         event_types = DEFAULT_EVENT_TYPES
     elif any(event_type not in DEFAULT_EVENT_TYPES for event_type in event_types):
-        raise ValueError(MESSAGES['INVALID_FETCH_EVENT_TYPE'])
+        raise ValueError(MESSAGES["INVALID_FETCH_EVENT_TYPE"])
 
     last_run_time = last_run.get("last_fetch", None)
     next_page_token = last_run.get("next_page_token", "")
@@ -2440,12 +2449,14 @@ def fetch_incidents(client: PolarisClient, last_run: dict, params: dict) -> tupl
 
     filters = {"lastActivityStatus": DEFAULT_ACTIVITY_STATUSES, "severity": DEFAULT_SEVERITIES}
 
-    events = client.list_event_series(activity_type=",".join(event_types),
-                                      start_date=last_run_time,
-                                      sort_order="ASC",
-                                      first=max_fetch,
-                                      after=next_page_token,
-                                      filters=filters)
+    events = client.list_event_series(
+        activity_type=",".join(event_types),
+        start_date=last_run_time,
+        sort_order="ASC",
+        first=max_fetch,
+        after=next_page_token,
+        filters=filters,
+    )
 
     activity_series_connection = events.get("data", {}).get("activitySeriesConnection", {})
 
@@ -4453,48 +4464,48 @@ def rubrik_radar_anomaly_status_update_command(client: PolarisClient, args: Dict
     :rtype: ``CommandResults``
     :return: Standard command result.
     """
-    anomaly_type = validate_required_arg('anomaly_type', args.get('anomaly_type'))
-    workload_id = validate_required_arg('workload_id', args.get('workload_id'))
-    anomaly_id = validate_required_arg('anomaly_id', args.get('anomaly_id'))
-    false_positive_type = args.get('false_positive_type')
-    false_positive_reason = args.get('false_positive_reason')
+    anomaly_type = validate_required_arg("anomaly_type", args.get("anomaly_type"))
+    workload_id = validate_required_arg("workload_id", args.get("workload_id"))
+    anomaly_id = validate_required_arg("anomaly_id", args.get("anomaly_id"))
+    false_positive_type = args.get("false_positive_type")
+    false_positive_reason = args.get("false_positive_reason")
 
     validate_anomaly_status_update_command_args(anomaly_type, false_positive_type, false_positive_reason)
 
-    params = {'anomalyType': anomaly_type.upper(), 'workloadId': workload_id, 'anomalyId': anomaly_id}
+    params = {"anomalyType": anomaly_type.upper(), "workloadId": workload_id, "anomalyId": anomaly_id}
 
     if false_positive_type:
-        false_positive_params = {'falsePositiveType': false_positive_type.upper()}
-        if false_positive_type.upper() == 'OTHER':
-            false_positive_params['otherReason'] = false_positive_reason
-        params.update({'falsePositiveReport': false_positive_params})
+        false_positive_params = {"falsePositiveType": false_positive_type.upper()}
+        if false_positive_type.upper() == "OTHER":
+            false_positive_params["otherReason"] = false_positive_reason
+        params.update({"falsePositiveReport": false_positive_params})
 
     input_params = {"input": params}
 
-    anomaly_status_update_response = client._query_raw(raw_query=ANOMALY_UPDATE_STATUS_MUTATION,
-                                                       operation_name='AnomalyUpdateStatusMutation',
-                                                       variables=input_params, timeout=60)
+    anomaly_status_update_response = client._query_raw(
+        raw_query=ANOMALY_UPDATE_STATUS_MUTATION, operation_name="AnomalyUpdateStatusMutation", variables=input_params, timeout=60
+    )
     ec = {
-        'command_name': 'rubrik-radar-anomaly-update-status',
-        'anomaly_id': anomaly_id,
-        'anomaly_type': anomaly_type,
-        'workload_id': workload_id,
+        "command_name": "rubrik-radar-anomaly-update-status",
+        "anomaly_id": anomaly_id,
+        "anomaly_type": anomaly_type,
+        "workload_id": workload_id,
     }
     if false_positive_type:
-        ec['false_positive_type'] = false_positive_type
-        if false_positive_type.upper() == 'OTHER':
-            ec['false_positive_reason'] = false_positive_reason
-        hr_output = f'### Anomaly detection with the ID {anomaly_id} marked as false positive successfully.'
+        ec["false_positive_type"] = false_positive_type
+        if false_positive_type.upper() == "OTHER":
+            ec["false_positive_reason"] = false_positive_reason
+        hr_output = f"### Anomaly detection with the ID {anomaly_id} marked as false positive successfully."
     else:
-        ec['is_resloved'] = True
-        hr_output = f'### Anomaly detection with the ID {anomaly_id} resolved successfully.'
+        ec["is_resloved"] = True
+        hr_output = f"### Anomaly detection with the ID {anomaly_id} resolved successfully."
 
     return CommandResults(
         readable_output=hr_output,
         raw_response=anomaly_status_update_response,
         outputs=remove_empty_elements(ec),
-        outputs_prefix=OUTPUT_PREFIX['ANOMALY_UPDATE_STATUS'],
-        outputs_key_field=['command_name', 'anomaly_id', 'workload_id']
+        outputs_prefix=OUTPUT_PREFIX["ANOMALY_UPDATE_STATUS"],
+        outputs_key_field=["command_name", "anomaly_id", "workload_id"],
     )
 
 

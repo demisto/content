@@ -3,6 +3,7 @@ from typing import Any
 import re
 from CommonServerPython import *
 import contextlib
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -19,11 +20,9 @@ class Client(BaseClient):
 
     def cve(self, cve_id) -> dict[str, Any]:
         return self._http_request(method="GET", url_suffix=f"cve/{cve_id}")
-    
+
     def cve_latest(self, limit) -> list[dict[str, Any]]:
         return self._http_request(method="GET", url_suffix=f"/last/{limit}")
-    
-    
 
 
 def detect_format(cve_data: dict) -> str:
@@ -45,21 +44,21 @@ def detect_format(cve_data: dict) -> str:
     Raises:
         ValueError: If the format is unrecognized.
     """
-    if 'cveMetadata' in cve_data:
+    if "cveMetadata" in cve_data:
         demisto.debug("CVE 5.1 format")
-        return 'cve_5_1'
-    elif 'document' in cve_data and 'vulnerabilities' in cve_data:
+        return "cve_5_1"
+    elif "document" in cve_data and "vulnerabilities" in cve_data:
         demisto.debug("CVE CSAF format")
-        return 'csaf'
-    elif 'schema_version' in cve_data and 'id' in cve_data:
+        return "csaf"
+    elif "schema_version" in cve_data and "id" in cve_data:
         demisto.debug("CVE GHSA format")
-        return 'ghsa'
-    elif 'sourceIdentifier' in cve_data:
+        return "ghsa"
+    elif "sourceIdentifier" in cve_data:
         demisto.debug("CVE NVD 5.1 format")
-        return 'nvd_cve_5_1'
-    elif 'id' in cve_data and 'summary' in cve_data:
+        return "nvd_cve_5_1"
+    elif "id" in cve_data and "summary" in cve_data:
         demisto.debug("CVE legacy format")
-        return 'legacy'
+        return "legacy"
     else:
         return "Unknown"
 
@@ -113,7 +112,7 @@ def handle_cve_5_1(cve: dict) -> dict | None:
             ),
             "NVD-CWE-noinfo",
         )
-        
+
         legacy = {
             "id": metadata.get("cveId", ""),
             "Published": metadata.get("datePublished", ""),
@@ -146,12 +145,12 @@ def handle_cve_5_1(cve: dict) -> dict | None:
             legacy["access"] = {
                 "vector": vector_map.get("AV", ""),
                 "complexity": vector_map.get("AC", ""),
-                "authentication": vector_map.get("Au", "NONE")
+                "authentication": vector_map.get("Au", "NONE"),
             }
             legacy["impact"] = {
                 "confidentiality": vector_map.get("C", ""),
                 "integrity": vector_map.get("I", ""),
-                "availability": vector_map.get("A", "")
+                "availability": vector_map.get("A", ""),
             }
 
         for affected in cna.get("affected", []):
@@ -174,7 +173,8 @@ def handle_cve_5_1(cve: dict) -> dict | None:
     except Exception as e:
         demisto.debug(f"Failed to parse CVE 5.1 data: {e}")
         return None
-    
+
+
 def create_cve_summary(cve: dict) -> dict:
     """
     Extracts and summarizes the key fields from the normalized CVE data for presentation or context.
@@ -190,7 +190,7 @@ def create_cve_summary(cve: dict) -> dict:
         "CVSS": cve.get("cvss", "N/A"),
         "Published": cve.get("Published", "").rstrip("Z"),
         "Modified": cve.get("Modified", "").rstrip("Z"),
-        "Description": cve.get("summary", "")
+        "Description": cve.get("summary", ""),
     }
 
 
@@ -201,7 +201,7 @@ def test_module(client: Client):
     Returns:
         'ok' if test passed, anything else will fail the test.
     """
-    cve_command(client, {'cve': 'CVE-2023-3982'})
+    cve_command(client, {"cve": "CVE-2023-3982"})
     return "ok"
 
 
@@ -242,7 +242,6 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
             raise DemistoException(f'"{_id}" is not a valid cve ID')
 
         if response := client.cve(_id):
-            
             full_data = process_cve_data(response)
             if not full_data:
                 skipped_cve_ids.append(_id)
@@ -267,13 +266,10 @@ def cve_command(client: Client, args: dict) -> list[CommandResults] | CommandRes
         skipped_msg = "The format of the following CVE IDs is not supported and they were skipped:\n"
         skipped_msg += "\n".join(f"- {cve_id}" for cve_id in skipped_cve_ids)
 
-        command_results.append(
-            CommandResults(
-                readable_output=skipped_msg
-            )
-        )
-        
+        command_results.append(CommandResults(readable_output=skipped_msg))
+
     return command_results
+
 
 def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     """
@@ -287,12 +283,11 @@ def cve_latest_command(client: Client, limit) -> list[CommandResults]:
     res = client.cve_latest(limit)
     command_results: list[CommandResults] = []
     for cve_details in res:
-
         full_data = process_cve_data(cve_details)
-        
+
         if not full_data:
             continue
-        
+
         data = create_cve_summary(full_data)
         indicator = generate_indicator(full_data)
         readable_output = tableToMarkdown("Latest CVEs", data)
@@ -309,7 +304,7 @@ def cve_latest_command(client: Client, limit) -> list[CommandResults]:
 
     if not res or not command_results:
         command_results.append(CommandResults(readable_output="No results found"))
-        
+
     return command_results
 
 
@@ -331,11 +326,9 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
     parts = set()
 
     for cpe in cpes:
-        
         cpe_split = re.split(r"(?<!\\):", cpe)
 
         if cpe.startswith("cpe:2.3:"):
-
             with contextlib.suppress(IndexError):
                 if vendor := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
                     vendors.add(vendor)
@@ -346,9 +339,8 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
 
             with contextlib.suppress(IndexError):
                 parts.add(cpe_parts[cpe_split[2]])
-                
+
         elif cpe.startswith("cpe:/"):
-            
             with contextlib.suppress(IndexError):
                 if vendor := cpe_split[2].capitalize().replace("\\", "").replace("_", " "):
                     vendors.add(vendor)
@@ -357,21 +349,17 @@ def parse_cpe(cpes: list[str], cve_id: str) -> tuple[list[str], list[EntityRelat
                 if product := cpe_split[3].capitalize().replace("\\", "").replace("_", " "):
                     products.add(product)
 
-
             with contextlib.suppress(IndexError):
-                parts.add(cpe_parts[cpe_split[1].replace("/","")])
-                
-                
+                parts.add(cpe_parts[cpe_split[1].replace("/", "")])
+
     relationships = [
-        EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve",
-                            entity_b=vendor, entity_b_type="identity")
+        EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=vendor, entity_b_type="identity")
         for vendor in vendors
     ]
 
     relationships.extend(
         [
-            EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve",
-                                entity_b=product, entity_b_type="software")
+            EntityRelationship(name="targets", entity_a=cve_id, entity_a_type="cve", entity_b=product, entity_b_type="software")
             for product in products
         ]
     )
@@ -391,7 +379,7 @@ def generate_indicator(data: dict) -> Common.CVE:
     """
 
     cve_id = data.get("id", "")
-    
+
     if cpe := data.get("vulnerable_product", ""):
         tags, relationships = parse_cpe(cpe, cve_id)
 

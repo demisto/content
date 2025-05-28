@@ -247,16 +247,16 @@ def test_query_gp_logs_command():
     """
     from CortexDataLake import query_gp_logs_command
 
-    cdl_records = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs.json')
-    cdl_records_xform = load_test_data('./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json')
+    cdl_records = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs.json")
+    cdl_records_xform = load_test_data("./test_data/test_query_logs_command_transform_results_gp_logs_xformed.json")
 
-    class MockClient():
+    class MockClient:
         def query_loggings(self, query, page_number=None, page_size=None):
             return cdl_records, []
 
-    _, results_xform, _ = query_gp_logs_command({'limit': '1', 'start_time': '1970-01-01 00:00:00'}, MockClient())
+    _, results_xform, _ = query_gp_logs_command({"limit": "1", "start_time": "1970-01-01 00:00:00"}, MockClient())
 
-    assert results_xform == {'CDL.Logging.GlobalProtect': cdl_records_xform}
+    assert results_xform == {"CDL.Logging.GlobalProtect": cdl_records_xform}
 
 
 class TestPagination:
@@ -272,16 +272,19 @@ class TestPagination:
             assert page_number is not None
             return [], []
 
-    @pytest.mark.parametrize("command_function", [
-        "query_logs_command",
-        "get_critical_logs_command",
-        "get_social_applications_command",
-        "search_by_file_hash_command",
-        "query_threat_logs_command",
-        "query_url_logs_command",
-        "query_file_data_command",
-        "query_gp_logs_command"
-    ])
+    @pytest.mark.parametrize(
+        "command_function",
+        [
+            "query_logs_command",
+            "get_critical_logs_command",
+            "get_social_applications_command",
+            "search_by_file_hash_command",
+            "query_threat_logs_command",
+            "query_url_logs_command",
+            "query_file_data_command",
+            "query_gp_logs_command",
+        ],
+    )
     def test_command_pagination(self, command_function):
         """
         Given:

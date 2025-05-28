@@ -32,16 +32,16 @@ def get_mitre_technique_name(mitre_id: str, indicator_type: str) -> str:
 
         if not success:
             demisto.debug(f"Failed to execute findIndicators command: {get_error(response)}")
-            return ''
+            return ""
 
         if response:
             indicator = response[0].get("value", "")
             MITRE_TECHNIQUE_CACHE[mitre_id] = indicator
-            demisto.debug(f'Found attack-pattern - {indicator}')
+            demisto.debug(f"Found attack-pattern - {indicator}")
 
         else:
-            demisto.debug(f'Could not find the attack-pattern - {mitre_id}')
-            indicator = ''
+            demisto.debug(f"Could not find the attack-pattern - {mitre_id}")
+            indicator = ""
 
         return indicator
 
@@ -69,10 +69,9 @@ def create_indicator_relationships(indicator: str, product: str, relationships: 
         demisto.debug(f"Creating a new relationship to {relationship['value']} ({relationship['type']})")
 
         if relationship["type"] in ("Attack Pattern", "CVE", "Tool"):
-            final_relationships.append(create_relationship(indicator,
-                                                           relationship["value"],
-                                                           relationship["type"],
-                                                           relation_type="detects"))
+            final_relationships.append(
+                create_relationship(indicator, relationship["value"], relationship["type"], relation_type="detects")
+            )
 
     return final_relationships
 
@@ -229,19 +228,18 @@ def parse_and_create_indicator(rule: SigmaRule, raw_rule: str) -> dict[str, Any]
 
 
 def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
-
     indicators = []
 
     # Extract zip file to the temp directory
-    with zipfile.ZipFile(file_path, 'r') as zip_ref:
+    with zipfile.ZipFile(file_path, "r") as zip_ref:
         start = time.time()
-        demisto.debug(f'SGM: Attempting to unzip {file_path} and extract files')
-        file_list = [f for f in zip_ref.namelist() if f.endswith('.yml') and not f.startswith(('__', '.'))]
+        demisto.debug(f"SGM: Attempting to unzip {file_path} and extract files")
+        file_list = [f for f in zip_ref.namelist() if f.endswith(".yml") and not f.startswith(("__", "."))]
         total_files = len(file_list)
 
         for file_name in file_list:
             with zip_ref.open(file_name) as file:
-                file_contents = file.read().decode('utf-8')
+                file_contents = file.read().decode("utf-8")
 
             try:
                 rule = SigmaRule.from_yaml(file_contents)
@@ -252,7 +250,7 @@ def extract_rules_from_zip(file_path: str) -> list[dict[str, Any]]:
                 demisto.error(f'SGM: Error parsing Sigma rule from file "{file_name}": {str(e)}')
                 continue
 
-    demisto.debug(f'Extraction took {time.time() - start:.2f} seconds for {total_files} files')
+    demisto.debug(f"Extraction took {time.time() - start:.2f} seconds for {total_files} files")
 
     return indicators
 
@@ -278,9 +276,9 @@ def tim_create_indicators(indicators: list[dict[str, Any]]) -> CommandResults:
     for indicator in indicators:
         xsoar_indicator = indicator["indicator"]
         execute_command("createNewIndicator", xsoar_indicator)
-        relationships += create_indicator_relationships(xsoar_indicator["value"],
-                                                        xsoar_indicator.get("product", ""),
-                                                        indicator["relationships"])
+        relationships += create_indicator_relationships(
+            xsoar_indicator["value"], xsoar_indicator.get("product", ""), indicator["relationships"]
+        )
     demisto.debug(f"{len(indicators)} indicators created. in {time.time() - start} seconds")
     md = f"{str(len(indicators))} Sigma Rule(s) Created.\n"
     md += f"{str(len(relationships))} Relationship(s) Created."
@@ -315,7 +313,7 @@ def main() -> None:
             if not res:
                 return_error(f"File entry {sigma_rule_entry_id} not found")
 
-            file_path = res['path']
+            file_path = res["path"]
 
             if res.get("name", "").endswith("zip"):
                 indicators = extract_rules_from_zip(file_path)

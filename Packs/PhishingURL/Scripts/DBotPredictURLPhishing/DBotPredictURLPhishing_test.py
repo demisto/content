@@ -38,10 +38,8 @@ def executeCommand(command, args=None):
         html_data = "" if url == "bad_url.com" else "html"
         return [{"Contents": {KEY_IMAGE_RASTERIZE: "iVBORwrkJggg==", KEY_IMAGE_HTML: html_data}, "Type": "note"}]
 
-    elif command == 'getMLModel':
-        return [{'Contents':
-                {'modelData': "ModelDataML", 'model':
-                    {'type': {'type': ''}}}}]
+    elif command == "getMLModel":
+        return [{"Contents": {"modelData": "ModelDataML", "model": {"type": {"type": ""}}}}]
 
     elif command == "createMLModel":
         return None
@@ -50,7 +48,7 @@ def executeCommand(command, args=None):
         if not url:
             return None
 
-        output = url[0] if url[0].startswith(('http', 'https')) else f'http://{url[0]}' # UnEscapeURLs usually adds http prefix
+        output = url[0] if url[0].startswith(("http", "https")) else f"http://{url[0]}"  # UnEscapeURLs usually adds http prefix
         return [{"Contents": output}]
 
     return None
@@ -65,15 +63,15 @@ def test_regular_malicious_new_domain(mocker):
         MODEL_KEY_LOGIN_FORM: True,
     }
     model_mock = PhishingURLModelMock()
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
-    mocker.patch.object(model_mock, 'major', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
-    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "args", return_value={"urls": "psg.fr", "numberDetailedReports": "1"})
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, "top_domains", return_value=("", 0), create=True)
+    mocker.patch.object(model_mock, "major", return_value=0, create=True)
+    mocker.patch.object(model_mock, "minor", return_value=0, create=True)
+    mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, "return_results", return_value=None)
     general_summary, detailed_summary, msg_list = main()
     assert general_summary[0][KEY_FINAL_VERDICT] == VERDICT_MALICIOUS_COLOR.format(MALICIOUS_VERDICT)
     assert detailed_summary[0][KEY_CONTENT_DOMAIN] == "psg.fr"
@@ -103,40 +101,44 @@ def test_regular_malicious_reliability_change(mocker, provided_reliability):
     Then:
         - Assert the outcome reliability is the provided one.
     """
-    model_prediction = {MODEL_KEY_URL_SCORE: 0.9,
-                        MODEL_KEY_LOGO_FOUND: True,
-                        MODEL_KEY_SEO: True,
-                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True}
+    model_prediction = {
+        MODEL_KEY_URL_SCORE: 0.9,
+        MODEL_KEY_LOGO_FOUND: True,
+        MODEL_KEY_SEO: True,
+        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+        MODEL_KEY_LOGIN_FORM: True,
+    }
     model_mock = PhishingURLModelMock(("", 0))
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': 'psg.fr', 'numberDetailedReports': '1',
-                                                       'reliability': provided_reliability})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
-    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(
+        demisto, "args", return_value={"urls": "psg.fr", "numberDetailedReports": "1", "reliability": provided_reliability}
+    )
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, "return_results", return_value=None)
 
     main()
 
-    entry_context = return_results_mock.mock_calls[1].args[0]['EntryContext']
-    assert entry_context[KEY_CONTENT_DBOT_SCORE]['Reliability'] == provided_reliability
+    entry_context = return_results_mock.mock_calls[1].args[0]["EntryContext"]
+    assert entry_context[KEY_CONTENT_DBOT_SCORE]["Reliability"] == provided_reliability
 
 
 def test_regular_benign(mocker):
-    url = 'google.com'
-    model_prediction = {MODEL_KEY_URL_SCORE: 0.01,
-                        MODEL_KEY_LOGO_FOUND: False,
-                        MODEL_KEY_SEO: False,
-                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True
-                        }
+    url = "google.com"
+    model_prediction = {
+        MODEL_KEY_URL_SCORE: 0.01,
+        MODEL_KEY_LOGO_FOUND: False,
+        MODEL_KEY_SEO: False,
+        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+        MODEL_KEY_LOGIN_FORM: True,
+    }
     model_mock = PhishingURLModelMock(("", 0))
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "args", return_value={"urls": url, "numberDetailedReports": "1"})
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
 
     general_summary, detailed_summary, msg_list = main()
 
@@ -151,19 +153,20 @@ def test_regular_benign(mocker):
 
 
 def test_white_list_not_force(mocker: MockerFixture):
-    url = 'google.com'
-    model_prediction = {MODEL_KEY_URL_SCORE: 0.01,
-                        MODEL_KEY_LOGO_FOUND: False,
-                        MODEL_KEY_SEO: False,
-                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True
-                        }
+    url = "google.com"
+    model_prediction = {
+        MODEL_KEY_URL_SCORE: 0.01,
+        MODEL_KEY_LOGO_FOUND: False,
+        MODEL_KEY_SEO: False,
+        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+        MODEL_KEY_LOGIN_FORM: True,
+    }
     model_mock = PhishingURLModelMock(top_domains={url: 0})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mock_pred = mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "args", return_value={"urls": url, "numberDetailedReports": "1"})
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mock_pred = mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
 
     main()
 
@@ -171,19 +174,20 @@ def test_white_list_not_force(mocker: MockerFixture):
 
 
 def test_white_list_force(mocker: MockerFixture):
-    url = 'google.com'
-    model_prediction = {MODEL_KEY_URL_SCORE: 0.01,
-                        MODEL_KEY_LOGO_FOUND: False,
-                        MODEL_KEY_SEO: False,
-                        MODEL_KEY_LOGO_IMAGE_BYTES: "",
-                        MODEL_KEY_LOGIN_FORM: True
-                        }
+    url = "google.com"
+    model_prediction = {
+        MODEL_KEY_URL_SCORE: 0.01,
+        MODEL_KEY_LOGO_FOUND: False,
+        MODEL_KEY_SEO: False,
+        MODEL_KEY_LOGO_IMAGE_BYTES: "",
+        MODEL_KEY_LOGIN_FORM: True,
+    }
     model_mock = PhishingURLModelMock(top_domains={url: 0})
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': url, 'numberDetailedReports': '1', 'forceModel': 'True'})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mock_pred = mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "args", return_value={"urls": url, "numberDetailedReports": "1", "forceModel": "True"})
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mock_pred = mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
 
     main()
 
@@ -317,19 +321,15 @@ def test_model_predictions(mocker: MockerFixture):
     """
 
     def mock_get(*args, **kwargs):
-        return next(
-            type('MockRequests', (), mock['res'])
-            for mock in model_runs['requests']
-            if args == mock['args']
-        )
+        return next(type("MockRequests", (), mock["res"]) for mock in model_runs["requests"] if args == mock["args"])
 
-    mocker.patch('requests.get', side_effect=mock_get)
+    mocker.patch("requests.get", side_effect=mock_get)
 
     model = load_model_from_docker()
-    for pred in model_runs['predictions']:
-        output = model.predict(pd.DataFrame(pred['input']))
-        output |= dict.fromkeys(('logo_name', 'debug_image'))
-        assert output == pred['output'], f"Prediction failed with {pred['input']['name']}"
+    for pred in model_runs["predictions"]:
+        output = model.predict(pd.DataFrame(pred["input"]))
+        output |= dict.fromkeys(("logo_name", "debug_image"))
+        assert output == pred["output"], f"Prediction failed with {pred['input']['name']}"
 
 
 def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
@@ -343,6 +343,7 @@ def test_get_urls_to_run_max_urls_zero(mocker: MockerFixture):
     model_example.top_domains = {}
     urls, _, _ = get_urls_to_run("", "", ["www.google.com"], 0, model_example, [""], False)
     assert urls == []
+
 
 @pytest.mark.parametrize("input_url", ["http://www.example.com", "https://example.org", "example.net"])
 def test_output_url_match_requested_url(mocker, input_url):
@@ -359,15 +360,15 @@ def test_output_url_match_requested_url(mocker, input_url):
         MODEL_KEY_LOGIN_FORM: True,
     }
     model_mock = PhishingURLModelMock()
-    mocker.patch.object(demisto, 'executeCommand', side_effect=executeCommand)
-    mocker.patch.object(demisto, 'args', return_value={'urls': input_url, 'numberDetailedReports': '1'})
-    mocker.patch('DBotPredictURLPhishing.load_model', return_value=model_mock, create=True)
-    mocker.patch.object(model_mock, 'top_domains', return_value=("", 0), create=True)
-    mocker.patch.object(model_mock, 'major', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'minor', return_value=0, create=True)
-    mocker.patch.object(model_mock, 'predict', return_value=model_prediction, create=True)
-    mocker.patch.object(model_mock, 'logos_dict', return_value={}, create=True)
-    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, 'return_results', return_value=None)
+    mocker.patch.object(demisto, "executeCommand", side_effect=executeCommand)
+    mocker.patch.object(demisto, "args", return_value={"urls": input_url, "numberDetailedReports": "1"})
+    mocker.patch("DBotPredictURLPhishing.load_model", return_value=model_mock, create=True)
+    mocker.patch.object(model_mock, "top_domains", return_value=("", 0), create=True)
+    mocker.patch.object(model_mock, "major", return_value=0, create=True)
+    mocker.patch.object(model_mock, "minor", return_value=0, create=True)
+    mocker.patch.object(model_mock, "predict", return_value=model_prediction, create=True)
+    mocker.patch.object(model_mock, "logos_dict", return_value={}, create=True)
+    return_results_mock = mocker.patch.object(DBotPredictURLPhishing, "return_results", return_value=None)
     general_summary, detailed_summary, msg_list = main()
     assert general_summary[0][KEY_CONTENT_URL] == input_url
     assert detailed_summary[0][KEY_CONTENT_URL] == input_url

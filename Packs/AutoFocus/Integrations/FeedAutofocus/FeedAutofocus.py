@@ -371,14 +371,14 @@ class Client(BaseClient):
 
         # for get_indicator_command only
         if limit:
-            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
+            parsed_indicators = parsed_indicators[int(offset) : int(offset) + int(limit)]
 
         if "Samples Feed" in self.indicator_feeds:
             parsed_indicators.extend(self.sample_http_request())
 
         # for get_indicator_command only
         if limit:
-            parsed_indicators = parsed_indicators[int(offset): int(offset) + int(limit)]
+            parsed_indicators = parsed_indicators[int(offset) : int(offset) + int(limit)]
 
         return parsed_indicators
 
@@ -517,8 +517,7 @@ def main():
             for b in batch(indicators, batch_size=2000):
                 demisto.createIndicators(b)
         else:
-            readable_output, outputs, raw_response = commands[command](
-                client, demisto.args(), feed_tags, tlp_color)  # type: ignore
+            readable_output, outputs, raw_response = commands[command](client, demisto.args(), feed_tags, tlp_color)  # type: ignore
             return_outputs(readable_output, outputs, raw_response)
     except Exception as e:
         raise Exception(f"Error in {SOURCE_NAME} Integration [{e}]")

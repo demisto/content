@@ -7,6 +7,7 @@ PRODUCT = "Email_Protection"
 FETCH_LIMIT = 9000
 DEFAULT_PAGE_SIZE = 1000
 
+
 class Client(BaseClient):
     def list_threats(self, params):
         return self._http_request("GET", params=params, url_suffix="threats")
@@ -51,7 +52,7 @@ def get_events(client: Client, after: str, before: str, next_page_number: int):
         before = arg_to_datetime(arg="now", arg_name="before", required=True).strftime("%Y-%m-%dT%H:%M:%SZ")  # type: ignore
     demisto.debug(f"Calling get_list_threats with: {after=}, {before=}, {next_page_number=}")
     next_page_number, threats_ids = get_list_threats(client, after, before, next_page_number)
-    last_run = {'before': before, 'after': after, 'next_page_number': next_page_number}
+    last_run = {"before": before, "after": after, "next_page_number": next_page_number}
     messages = []
     if threats_ids:
         for threat in reversed(threats_ids):
@@ -134,12 +135,12 @@ def main():  # pragma: no cover
     last_run = demisto.getLastRun()
     demisto.debug(f"{last_run=}")
     if last_run:
-        next_page_number = last_run.get('next_page_number')
+        next_page_number = last_run.get("next_page_number")
         if next_page_number > 1:
-            after = last_run.get('after')
-            before = last_run.get('before')
+            after = last_run.get("after")
+            before = last_run.get("before")
         else:
-            after = last_run.get('before')
+            after = last_run.get("before")
 
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")

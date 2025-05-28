@@ -284,19 +284,14 @@ def test_unisolate_machine_command(mocker):
 def test_get_non_edr_malop_data(mocker):
     from Cybereason import get_detection_details
     from Cybereason import Client
-    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
-    client = Client(
-        base_url="https://test.server.com:8888",
-        verify=False,
-        headers=HEADERS,
-        proxy=True)
-    args = {
-        "malopGuid": "AAAA0yUlnvXGQODT"
-    }
-    raw_response = json.loads(load_mock_response('malop_detection_data.json'))
+
+    HEADERS = {"Content-Type": "application/json", "Connection": "close"}
+    client = Client(base_url="https://test.server.com:8888", verify=False, headers=HEADERS, proxy=True)
+    args = {"malopGuid": "AAAA0yUlnvXGQODT"}
+    raw_response = json.loads(load_mock_response("malop_detection_data.json"))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=raw_response)
     command_output = get_detection_details(client, args)
-    assert command_output['malops'][0]['guid'] == 'AAAA0yUlnvXGQODT'
+    assert command_output["malops"][0]["guid"] == "AAAA0yUlnvXGQODT"
 
 
 def test_query_malops_command(mocker):
@@ -748,22 +743,19 @@ def test_add_comment_command(mocker):
 def test_fetch_incidents(mocker):
     from Cybereason import fetch_incidents
     from Cybereason import Client
-    HEADERS = {'Content-Type': 'application/json', 'Connection': 'close'}
-    client = Client(
-        base_url="https://test.server.com:8888",
-        verify=False,
-        headers=HEADERS,
-        proxy=True)
 
-    raw_response = json.loads(load_mock_response('query_malop_management_raw_response.json'))
+    HEADERS = {"Content-Type": "application/json", "Connection": "close"}
+    client = Client(base_url="https://test.server.com:8888", verify=False, headers=HEADERS, proxy=True)
+
+    raw_response = json.loads(load_mock_response("query_malop_management_raw_response.json"))
     mocker.patch("Cybereason.get_malop_management_data", return_value=raw_response)
-    malop_process_raw_response = json.loads(load_mock_response('query_malop_raw_response.json'))
+    malop_process_raw_response = json.loads(load_mock_response("query_malop_raw_response.json"))
     mocker.patch("Cybereason.Client.cybereason_api_call", return_value=malop_process_raw_response)
 
     command_output = fetch_incidents(client)
     command_output = str(command_output)
 
-    assert command_output == 'None'
+    assert command_output == "None"
 
 
 def test_archive_sensor_command(mocker):
@@ -924,14 +916,7 @@ def test_malop_to_incident_edr_malop(mocker):
             "malopLastUpdateTime": {"values": ["1728032260900"]},
         },
         "elementValues": {
-            "primaryRootCauseElements": {
-                "elementValues": [
-                    {
-                        "elementType": "File",
-                        "name": "avg_secure_browser_setup.pdf.exe"
-                    }
-                ]
-            }
+            "primaryRootCauseElements": {"elementValues": [{"elementType": "File", "name": "avg_secure_browser_setup.pdf.exe"}]}
         },
         "isEdr": True,
     }
@@ -995,15 +980,21 @@ def test_malop_to_incident_resolved_non_edr_malop(mocker):
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789",
-        "edr": False
+        "edr": False,
     }
     command_output = malop_to_incident(args)
 
-    assert all([(command_output['name'] == "Cybereason Malop 12345D"), (command_output['status'] == 2),
-                (command_output['CustomFields']['malopcreationtime'] == "23456"),
-                (command_output['CustomFields']['malopupdatetime'] == "6789"),
-                (command_output['CustomFields']['malopdetectiontype'] == "ABCD"),
-                (not command_output['CustomFields']['malopedr']), (command_output['dbotmirrorid'] == "12345D")])
+    assert all(
+        [
+            (command_output["name"] == "Cybereason Malop 12345D"),
+            (command_output["status"] == 2),
+            (command_output["CustomFields"]["malopcreationtime"] == "23456"),
+            (command_output["CustomFields"]["malopupdatetime"] == "6789"),
+            (command_output["CustomFields"]["malopdetectiontype"] == "ABCD"),
+            (not command_output["CustomFields"]["malopedr"]),
+            (command_output["dbotmirrorid"] == "12345D"),
+        ]
+    )
 
     with pytest.raises(Exception) as exc_info:
         command_output = malop_to_incident("args")
@@ -1012,13 +1003,14 @@ def test_malop_to_incident_resolved_non_edr_malop(mocker):
 
 def test_malop_to_incident_active_non_edr_malop(mocker):
     from Cybereason import malop_to_incident
+
     args = {
         "guidString": "12345D",
         "status": "Active",
         "malopDetectionType": "ABCD",
         "creationTime": "23456",
         "lastUpdateTime": "6789",
-        "edr": False
+        "edr": False,
     }
     command_output = malop_to_incident(args)
 

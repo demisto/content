@@ -239,14 +239,14 @@ class MainTester:
         path: str,
         default: Any = None,
     ) -> Any:
-        for part in path.split('.'):
+        for part in path.split("."):
             if isinstance(obj, dict):
                 if part in obj:
                     obj = obj[part]
                 else:
                     return default
             elif isinstance(obj, list):
-                if m := re.fullmatch(r'\[(\d+)\]', part):
+                if m := re.fullmatch(r"\[(\d+)\]", part):
                     idx = int(m[1])
                     obj = obj[idx] if idx < len(obj) else []
                 else:
@@ -289,7 +289,7 @@ class MainTester:
             if var == "".join(func.strip().split()):
                 return "\n".join(f" - {x[0]+1}: " + x[1].get("text") for x in enumerate(recordset))
 
-        var = '>JSON.stringify(val)'
+        var = ">JSON.stringify(val)"
         if var == func:
             return json.dumps(val, sort_keys=True)
 

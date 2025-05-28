@@ -1,6 +1,5 @@
 """IMPORTS"""
 
-
 import pytz
 import urllib3
 
@@ -19,8 +18,9 @@ class Client(BaseClient):
         super().__init__(base_url, verify=verify, proxy=proxy)
         self._secret = secret
 
-    def http_request(self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None,
-                     params=None, data=None) -> Any:
+    def http_request(
+        self, method="GET", url_suffix=None, resp_type="json", headers=None, json_data=None, params=None, data=None
+    ) -> Any:
         """
         Function to make http requests using inbuilt _http_request() method.
         Handles token expiration case and makes request using secret key.
@@ -39,17 +39,31 @@ class Client(BaseClient):
 
         try:
             token = self._get_token()
-            headers['Authorization'] = str(token)
-            response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                          headers=headers, resp_type=resp_type, data=data)
+            headers["Authorization"] = str(token)
+            response = self._http_request(
+                method=method,
+                url_suffix=url_suffix,
+                params=params,
+                json_data=json_data,
+                headers=headers,
+                resp_type=resp_type,
+                data=data,
+            )
         except DemistoException as e:
-            if 'Error in API call [401]' in str(e):
-                demisto.debug(f'One retry for 401 error. Error: {str(e)}')
+            if "Error in API call [401]" in str(e):
+                demisto.debug(f"One retry for 401 error. Error: {str(e)}")
                 # Token has expired, refresh token and retry request
                 token = self._get_token(force_new=True)
-                headers['Authorization'] = str(token)
-                response = self._http_request(method=method, url_suffix=url_suffix, params=params, json_data=json_data,
-                                              headers=headers, resp_type=resp_type, data=data)
+                headers["Authorization"] = str(token)
+                response = self._http_request(
+                    method=method,
+                    url_suffix=url_suffix,
+                    params=params,
+                    json_data=json_data,
+                    headers=headers,
+                    resp_type=resp_type,
+                    data=data,
+                )
             else:
                 raise e
         return response
@@ -109,18 +123,14 @@ class Client(BaseClient):
         if page_from is not None:
             params["from"] = str(page_from)
 
-        response = self.http_request(
-            "GET", "/search/", params=params, headers={"accept": "application/json"}
-        )
+        response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
         if max_results is None:
             # if max results was not specified get all results.
             results: list = response.get("data", {}).get("results")
             while response.get("data", {}).get("next") is not None:
                 # while the response says there are more results use the 'page from' parameter to get the next results
                 params["from"] = str(len(results))
-                response = self.http_request(
-                    "GET", "/search/", params=params, headers={"accept": "application/json"}
-                )
+                response = self.http_request("GET", "/search/", params=params, headers={"accept": "application/json"})
                 results.extend(response.get("data", {}).get("results", []))
 
             response["data"]["results"] = results
@@ -304,11 +314,20 @@ def test_module(client: Client, params: dict):
     """
 
     try:
-        if argToBoolean(params.get('isFetch', False)):
-            demisto.debug('Calling fetch incidents')
+        if argToBoolean(params.get("isFetch", False)):
+            demisto.debug("Calling fetch incidents")
             first_fetch_time, minimum_severity, alert_type, alert_status, free_search_string, max_fetch = get_fetch_params(params)
-            fetch_incidents(client, {}, first_fetch_time, minimum_severity, alert_type, alert_status,  # type: ignore
-                            free_search_string, max_fetch, is_test=True)  # type: ignore
+            fetch_incidents(
+                client,
+                {},
+                first_fetch_time,
+                minimum_severity,
+                alert_type,
+                alert_status,  # type: ignore
+                free_search_string,
+                max_fetch,
+                is_test=True,
+            )  # type: ignore
         else:
             client._get_token(force_new=True)
         return "ok"
@@ -372,7 +391,7 @@ def fetch_incidents(
     alert_status: list[str],
     free_search_string: str,
     max_results: Optional[int],
-    is_test: bool = False
+    is_test: bool = False,
 ):
     """
     This function will execute each interval (default is 1 minute).
@@ -418,7 +437,7 @@ def fetch_incidents(
     # get a list of severities from the minimum specified and upward
     # for example if min_severity is Medium requested_severities will be ['Medium', 'High']
     severities_in_order = ["Low", "Medium", "High"]
-    requested_severities = severities_in_order[severities_in_order.index(minimum_severity):]
+    requested_severities = severities_in_order[severities_in_order.index(minimum_severity) :]
     incidents = []
 
     # when the previous fetch returned more than max_results alerts, the same query is made again and max_results alerts

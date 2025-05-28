@@ -20,7 +20,7 @@ FETCH_SLEEP = 5
 SERVER_IDLE_TIMEOUT = 300
 
 
-EVENT_TYPES=["message", "maillog", "audit"]
+EVENT_TYPES = ["message", "maillog", "audit"]
 
 
 class EventConnection:
@@ -83,7 +83,6 @@ class EventConnection:
             time.sleep(self.idle_timeout)
 
 
-
 def is_interval_passed(fetch_start_time: datetime, fetch_interval: int) -> bool:
     """This function checks if the given interval has passed since the given start time
 
@@ -114,7 +113,7 @@ def websocket_connections(
     since_time: str | None = None,
     to_time: str | None = None,
     fetch_interval: int = FETCH_INTERVAL_IN_SECONDS,
-    event_types: list[str] = EVENT_TYPES
+    event_types: list[str] = EVENT_TYPES,
 ):
     """
     Create a connection for every type of event.
@@ -166,8 +165,9 @@ def websocket_connections(
         raise DemistoException(f"{e!s}\n")
 
 
-def fetch_events(connection: EventConnection, fetch_interval: int, integration_context: dict,
-                 should_skip_sleeping: List[bool]) -> list[dict]:
+def fetch_events(
+    connection: EventConnection, fetch_interval: int, integration_context: dict, should_skip_sleeping: List[bool]
+) -> list[dict]:
     """
     This function fetches events from the given connection, for the given fetch interval
 
@@ -186,7 +186,7 @@ def fetch_events(connection: EventConnection, fetch_interval: int, integration_c
     events: list[dict] = []
     event_ids = set()
     fetch_start_time = datetime.utcnow()
-    demisto.info(f'in {event_type=}, preparing to acquire lock & recv.')
+    demisto.info(f"in {event_type=}, preparing to acquire lock & recv.")
     with connection.lock:
         while not is_interval_passed(fetch_start_time, fetch_interval):
             try:
@@ -221,11 +221,11 @@ def fetch_events(connection: EventConnection, fetch_interval: int, integration_c
                 integration_context["last_run_results"] = f"{e!s} \nThe error happened at {datetime.now().astimezone(tz.tzutc())}"
                 set_integration_context(integration_context)
                 raise DemistoException(str(e))
-    demisto.info(f'in {event_type=}, released the lock and finished recv.')
+    demisto.info(f"in {event_type=}, released the lock and finished recv.")
     num_events = len(events)
     last_event_time = None
     if events:
-        last_event_time =  events[-1].get("_time")
+        last_event_time = events[-1].get("_time")
     demisto.debug(f"Fetched {num_events} events of type {event_type} with {last_event_time=}")
     demisto.debug("The fetched events ids are: " + ", ".join([str(event_id) for event_id in event_ids]))
     set_the_integration_context(
@@ -307,8 +307,9 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
     demisto.info("starting long running execution.")
     while True:
         try:
-            with websocket_connections(host, cluster_id, api_key, fetch_interval=fetch_interval,
-                                       event_types=event_types) as connections:
+            with websocket_connections(
+                host, cluster_id, api_key, fetch_interval=fetch_interval, event_types=event_types
+            ) as connections:
                 demisto.info("Connected to websocket")
                 fetch_interval = max(1, fetch_interval // len(event_types))  # Divide the fetch interval equally among event types
 
@@ -319,8 +320,10 @@ def long_running_execution_command(host: str, cluster_id: str, api_key: str, fet
                     if any(should_skip_sleeping):
                         demisto.info("Finished perform_long_running_loop, should_skip_sleeping evaluated to True.")
                     else:
-                        demisto.info("Finished perform_long_running_loop, should_skip_sleeping evaluated to False,  going to"
-                                     f"sleep {FETCH_SLEEP} seconds.")
+                        demisto.info(
+                            "Finished perform_long_running_loop, should_skip_sleeping evaluated to False,  going to"
+                            f"sleep {FETCH_SLEEP} seconds."
+                        )
                         time.sleep(FETCH_SLEEP)
                         demisto.info(f"Finished sleeping {FETCH_SLEEP} seconds.")
         except Exception as e:

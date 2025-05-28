@@ -506,19 +506,16 @@ def remove_angle_brackets(response):
     If a string value contains a URL wrapped in < >, remove the angle brackets.
     Necessary to make URL un-clickable.
     """
-    url_pattern = re.compile(r'<((http[s]?://|www\.)[^>]+)>')
+    url_pattern = re.compile(r"<((http[s]?://|www\.)[^>]+)>")
 
     if isinstance(response, dict):
-        return {
-            k: remove_angle_brackets(v)
-            for k, v in response.items()
-        }
+        return {k: remove_angle_brackets(v) for k, v in response.items()}
 
     elif isinstance(response, list):
         return [remove_angle_brackets(item) for item in response]
 
     elif isinstance(response, str):
-        return url_pattern.sub(r'\1', response)
+        return url_pattern.sub(r"\1", response)
 
     else:
         return response
@@ -632,7 +629,7 @@ def analysis_sample_command(
 
     items_to_display = parse_output(items, url_param) if isinstance(items, dict) else items
     items_to_display_no_clickable_url = remove_angle_brackets(items_to_display)
-    
+
     response["data"].update({"sample_id": sample_id})
 
     readable_output = tableToMarkdown(
@@ -941,7 +938,7 @@ def get_sample_command(
     else:
         sample_details = dict_safe_get(response, ["data", "items"]) or response.get("data")  # type: ignore[assignment]
     sample_details_no_clickable_url = remove_angle_brackets(sample_details)
-    
+
     readable_output = tableToMarkdown(
         name=SAMPLE_ARGS[arg_name]["name"],
         t=sample_details_no_clickable_url,

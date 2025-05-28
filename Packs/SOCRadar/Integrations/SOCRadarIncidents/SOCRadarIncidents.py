@@ -336,9 +336,7 @@ def fetch_incidents(
 
     # Check if severity contains allowed values, use all if default
     if severity and not all(s in SOCRADAR_SEVERITIES for s in severity):
-        raise ValueError(
-            f'severity must be a comma-separated value with the following options: {",".join(SOCRADAR_SEVERITIES)}'
-        )
+        raise ValueError(f'severity must be a comma-separated value with the following options: {",".join(SOCRADAR_SEVERITIES)}')
     alerts = client.search_incidents(
         incident_main_type=incident_main_type,
         incident_sub_type=incident_sub_type,

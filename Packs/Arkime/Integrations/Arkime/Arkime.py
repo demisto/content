@@ -496,7 +496,7 @@ def parse_unique_field_response(text: str) -> List:
 def unique_field_helper(response: Response, start: int, limit: int, pagination_dict: dict) -> CommandResults:
     headers = ["Field", "Count"]
     unique_field_list = parse_unique_field_response(response.text)
-    unique_field_list = unique_field_list[start: start + limit]
+    unique_field_list = unique_field_list[start : start + limit]
     command_results = CommandResults(
         outputs_prefix="Arkime.UniqueField",
         outputs=unique_field_list,

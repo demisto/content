@@ -65,7 +65,7 @@ class OktaASAClient(BaseClient):
 
     def execute_audit_events_request(
         self, offset: Optional[str], count: Optional[int], descending: Optional[bool], prev: Optional[bool]
-    ) -> tuple[list,dict]:
+    ) -> tuple[list, dict]:
         """Gets audit events request.
 
         Args:
@@ -82,7 +82,7 @@ class OktaASAClient(BaseClient):
         params = assign_params(offset=offset, count=count, descending=descending, prev=prev)
         self.generate_token_if_required()
         response = self.get_audit_events_request(params)
-        return response.get("list",[]),response.get("related_objects",{})
+        return response.get("list", []), response.get("related_objects", {})
 
     def generate_token_if_required(self, hard: bool = False) -> None:
         """Checks if token refresh required and return the token.
@@ -192,9 +192,10 @@ def add_time_and_related_object_data_to_events(events: List[Dict], related_objec
             if not event_details or not id_of_key_to_enhance:
                 continue
             # structure is {"type": "some_type", "object": {}}
-            related_object_dict = related_objects.get(id_of_key_to_enhance,{})
-            if  key == related_object_dict.get("type") and (related_object_data:=related_object_dict.get("object")):
+            related_object_dict = related_objects.get(id_of_key_to_enhance, {})
+            if key == related_object_dict.get("type") and (related_object_data := related_object_dict.get("object")):
                 event_details[key] = related_object_data if related_object_data else id_of_key_to_enhance
+
 
 """COMMAND FUNCTIONS"""
 
@@ -250,7 +251,7 @@ def fetch_events_command(
     last_run: dict[str, str],
     team_name: str,
     max_audit_events_per_fetch: Optional[int],
-    add_time_mapping: bool
+    add_time_mapping: bool,
 ) -> tuple[dict[str, str], List[Dict]]:
     """
     Args:
@@ -268,7 +269,7 @@ def fetch_events_command(
     events, offset, timestamp = client.search_events(
         limit=max_audit_events_per_fetch,
         offset=last_run.get("offset") if last_run and last_run.get("team_name") == team_name else None,
-        add_time_mapping=add_time_mapping
+        add_time_mapping=add_time_mapping,
     )
     # Save the next_run as a dict with the last_fetch key to be stored
     next_run: dict = {"offset": offset, "timestamp": timestamp, "team_name": team_name} if offset else last_run
@@ -317,8 +318,11 @@ def main() -> None:  # pragma: no cover
         elif command == "fetch-events":
             last_run = demisto.getLastRun()
             next_run, events = fetch_events_command(
-                client=client, last_run=last_run, max_audit_events_per_fetch=max_audit_events_per_fetch, team_name=team_name,
-                add_time_mapping = True
+                client=client,
+                last_run=last_run,
+                max_audit_events_per_fetch=max_audit_events_per_fetch,
+                team_name=team_name,
+                add_time_mapping=True,
             )
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.setLastRun(next_run)

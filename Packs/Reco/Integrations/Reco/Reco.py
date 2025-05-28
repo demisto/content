@@ -372,7 +372,7 @@ class RecoClient(BaseClient):
             raise e
 
     def get_alert_ai_summary(self, alert_id: str) -> dict[str, Any]:
-        """ Get alert AI summary. """
+        """Get alert AI summary."""
         try:
             response = self._http_request(
                 method="GET",
@@ -1036,9 +1036,7 @@ def get_alert_ai_summary(reco_client: RecoClient, alert_id: str) -> CommandResul
     )
 
 
-def enrich_incident(
-    reco_client: RecoClient, single_incident: dict[str, Any]
-) -> dict[str, Any]:
+def enrich_incident(reco_client: RecoClient, single_incident: dict[str, Any]) -> dict[str, Any]:
     alert_as_dict = parse_table_row_to_dict(single_incident.get("cells", {}))
     if RECO_INCIDENT_ID_FIELD in alert_as_dict:
         incident_id: str = str(alert_as_dict[RECO_INCIDENT_ID_FIELD])
