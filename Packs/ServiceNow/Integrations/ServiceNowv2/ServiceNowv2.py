@@ -2,6 +2,8 @@ import mimetypes
 import re
 from collections.abc import Callable, Iterable
 
+from dataclasses import asdict, dataclass
+
 import demistomock as demisto  # noqa: F401
 
 # disable insecure warnings
@@ -192,6 +194,86 @@ DEFAULT_RECORD_FIELDS = {
 }
 
 MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+
+
+@dataclass
+class QuickActionPreview:
+    """
+    A container class for storing quick action data previews.
+    This class is intended to be populated by commands like `!get-remote-data-preview`
+    and placed directly into the root context under `QuickActionPreview`.
+
+    Fields:
+        id (Optional[str]): The ID of the ticket (typically the user-facing number).
+        title (Optional[str]): The title or summary of the ticket (short description).
+        description (Optional[str]): A brief description or details about the action.
+        status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+        assignee (Optional[str]): The user or entity assigned to the action.
+        creation_date (Optional[str]): The date and time when the item was created.
+        severity (Optional[str]): Indicates the priority or severity level.
+
+    TODO: We will need this class in common server python,
+    but due to known performance issues, we are keeping it here for now.
+    """
+
+    id: Optional[str] = None
+    title: Optional[str] = None
+    description: Optional[str] = None
+    status: Optional[str] = None
+    assignee: Optional[str] = None
+    creation_date: Optional[str] = None
+    severity: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
+        if missing_fields:
+            demisto.debug(f"QuickActionPreview: Missing fields - {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+        Returns:
+            dict: Dictionary representation of the QuickActionPreview.
+        """
+        return asdict(self)
+      
+    
+@dataclass
+class MirrorObject:
+    """
+    A container class for storing ticket metadata used in mirroring integrations.
+
+    This class is intended to be populated by commands like `!jira-create-issue`
+    and placed directly into the root context under `MirrorObject`.
+
+    Fields:
+        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        ticket_id (Optional[str]): Unique identifier of the created ticket.
+
+    ### TODO: We will need this class in common server python,
+    but due to known performance issues, we are keeping it here for now.
+    """
+    ticket_url: Optional[str] = None
+    ticket_id: Optional[str] = None
+
+    def __post_init__(self):
+        missing_fields = []
+        if not self.ticket_url:
+            missing_fields.append('ticket_url')
+        if not self.ticket_id:
+            missing_fields.append('ticket_id')
+
+        if missing_fields:
+            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+
+    def to_context(self) -> Dict[str, Any]:
+        """
+        Converts the dataclass to a dict for placing into context.
+
+        Returns:
+            dict: Dictionary representation of the MirrorObject.
+        """
+        return asdict(self)
 
 
 def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> int:
@@ -1333,6 +1415,10 @@ class Client(BaseClient):
         """
         return self.send_request(f"change/{sys_id}/task", "GET", cr_api=True)
 
+    @property
+    def base_url(self):
+        return self._base_url
+
 
 def get_ticket_command(client: Client, args: dict):
     """Get a ticket.
@@ -1462,12 +1548,13 @@ def update_ticket_command(client: Client, args: dict) -> tuple[Any, dict, dict, 
     return human_readable, entry_context, result, True
 
 
-def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, bool]:
+def create_ticket_command(client: Client, args: dict, is_quick_action: bool = False) -> tuple[str, dict, dict, bool]:
     """Create a ticket.
 
     Args:
         client: Client object with request.
         args: Usually demisto.args()
+        is_quick_action: Whether the command is a quick action
 
     Returns:
         Demisto Outputs.
@@ -1528,11 +1615,20 @@ def create_ticket_command(client: Client, args: dict) -> tuple[str, dict, dict, 
     else:
         additional_fields_keys = list(args.keys())
 
+    instance_url = client.base_url
+    ticket_type = ticket.get("sys_class_name")
+    ticket_sys_id = ticket.get("sys_id")
+
+    ticket_url = f"{instance_url}/nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id)
+
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
         "Ticket(val.ID===obj.ID)": created_ticket_context,
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
+    if is_quick_action:
+        entry_context["MirrorObject"] = mirror_obj.to_context()
 
     return human_readable, entry_context, result, True
 
@@ -2909,6 +3005,66 @@ def get_timezone_offset(ticket: dict, display_date_format: str):
     return offset
 
 
+def get_remote_data_preview_command(client: Client, args: dict[str, Any]) -> CommandResults:
+    """
+    get-remote-data-preview command: Returns a standardized preview of a ServiceNow ticket.
+
+    Args:
+        client: XSOAR client to use.
+        args: Dictionary containing command arguments:
+            id (str): The ServiceNow ticket number or sys_id to retrieve the preview for.
+        params: Dictionary containing integration parameters.
+
+    Returns:
+        CommandResults: Object containing the QuickActionPreview data formatted for XSOAR context.
+
+    Raises:
+        ValueError: If the 'id' argument is missing.
+        DemistoException: If the ticket cannot be found in ServiceNow.
+    """
+    ticket_id = args.get("id")
+    if not ticket_id:
+        raise ValueError("ServiceNow Ticket ID ('id') is required for preview.")
+
+    demisto.debug(f"Getting preview for ServiceNow ticket {ticket_id=}")
+
+    ticket_type = client.ticket_type
+    try:
+        result = client.get(ticket_type, ticket_id, use_display_value=True)
+    except Exception as e:
+        raise DemistoException(f"Failed to fetch ticket {ticket_id} from ServiceNow. Error: {e}")
+
+    if not result or "result" not in result:
+        raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result empty or missing).")
+
+    if isinstance(result["result"], list):
+        if len(result["result"]) == 0:
+            raise DemistoException(f"Ticket {ticket_id=} was not found in ServiceNow (result list empty).")
+        ticket_data = result["result"][0]
+    else:
+        ticket_data = result["result"]
+
+    if not ticket_data:
+        raise DemistoException(f"Ticket data for {ticket_id=} is empty after fetch.")
+
+    demisto.debug(f"Raw ticket data for preview: {ticket_data}")
+
+    qa_preview_data = {
+        "id": ticket_data.get("number"),
+        "title": ticket_data.get("short_description"),
+        "description": ticket_data.get("description"),
+        "status": ticket_data.get("state"),
+        "assignee": ticket_data.get("assigned_to"),
+        "creation_date": ticket_data.get("sys_created_on"),
+        "severity": ticket_data.get("priority"),
+    }
+    qa_preview = QuickActionPreview(**qa_preview_data)
+
+    return CommandResults(
+        outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id", raw_response=result
+    )
+
+
 def get_remote_data_command(client: Client, args: dict[str, Any], params: dict) -> Union[list[dict[str, Any]], str]:
     """
     get-remote-data command: Returns an updated incident and entries
@@ -3124,7 +3280,7 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
     if parsed_args.delta:
         demisto.debug(f"Got the following delta {parsed_args.delta}")
         demisto.debug(
-            f"The following keys appears in data but not in delta {set(parsed_args.data.keys())-set(parsed_args.delta.keys())}"
+            f"The following keys appear in data but not in delta {set(parsed_args.data.keys()) - set(parsed_args.delta.keys())}"
         )
 
     ticket_type = client.ticket_type
@@ -3685,7 +3841,6 @@ def main():
             "servicenow-oauth-login": login_command,
             "servicenow-update-ticket": update_ticket_command,
             "servicenow-create-ticket": create_ticket_command,
-            "servicenow-create-ticket-quick-action": create_ticket_command,
             "servicenow-delete-ticket": delete_ticket_command,
             "servicenow-query-tickets": query_tickets_command,
             "servicenow-add-link": add_link_command,
@@ -3718,6 +3873,8 @@ def main():
             return_results(generic_api_call_command(client, args))
         elif command == "get-remote-data":
             return_results(get_remote_data_command(client, demisto.args(), demisto.params()))
+        elif command == "get-remote-data-preview":
+            return_results(get_remote_data_preview_command(client, demisto.args()))
         elif command == "update-remote-system":
             return_results(update_remote_system_command(client, demisto.args(), demisto.params()))
         elif command == "get-mapping-fields":
@@ -3732,6 +3889,9 @@ def main():
             return_results(get_ticket_notes_command(client, args, params))
         elif command == "servicenow-get-ticket-attachments":
             return_results(get_attachment_command(client, args))
+        elif command == "servicenow-create-ticket-quick-action":
+            md_, ec_, raw_response, ignore_auto_extract = create_ticket_command(client, args, is_quick_action=True)
+            return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
         elif command in commands:
             md_, ec_, raw_response, ignore_auto_extract = commands[command](client, args)
             return_outputs(md_, ec_, raw_response, ignore_auto_extract=ignore_auto_extract)
