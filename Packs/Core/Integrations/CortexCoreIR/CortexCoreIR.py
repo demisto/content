@@ -211,7 +211,7 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
     try:
         dt = arg_to_datetime(expiration)
     except ValueError:
-        return expiration # Invalid input, pass through
+        return expiration  # Invalid input, pass through
 
     if dt:
         # check if the input matches a relative time format:

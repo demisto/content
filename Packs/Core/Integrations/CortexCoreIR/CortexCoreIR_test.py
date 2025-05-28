@@ -713,7 +713,9 @@ class TestCoreAddIndicator:
             - Verify that results were correctly parsed.
         """
         client = get_mock_client()
-        mocker.patch.object(client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}})
+        mocker.patch.object(
+            client, "create_indicator_rule_request", return_value={"reply": {"success": True, "validation_errors": []}}
+        )
 
         args = {"indicator": "example.com", "type": "DOMAIN_NAME", "severity": "LOW"}
 
