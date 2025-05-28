@@ -18,5 +18,11 @@
     ],
     "marketplaces": [
         "xsoar"
-    ]
+    ],
+    "dependencies": {
+        "Base": {
+            "mandatory": true,
+            "display_name": "Base"
+        }
+    }
 }
