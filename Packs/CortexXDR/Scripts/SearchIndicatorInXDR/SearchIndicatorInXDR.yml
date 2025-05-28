@@ -34,7 +34,7 @@ args:
 outputs:
   - contextPath: PaloAltoNetworksXQL
     description: A list of records (constructed as dictionaries) where the specified indicator was found.
-    type: List
+    type: Unknown
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
