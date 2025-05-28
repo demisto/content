@@ -970,7 +970,7 @@ script:
     description: This command fetch indicators of potential future attacks using a feed UUID.
     name: silentpush-get-future-attack-indicators
     arguments:
-    - name: source_uuids
+    - name: feed_uuid
       isArray: false
       description: Unique ID for the feed.
       required: true
@@ -989,7 +989,7 @@ script:
       secret: false
       default: false
     outputs:
-    - contextPath: SilentPush.FutureAttackIndicators.source_uuids
+    - contextPath: SilentPush.FutureAttackIndicators.feed_uuid
       description: Unique identifier for the feed.
       type: String
     - contextPath: SilentPush.FutureAttackIndicators.page_no
