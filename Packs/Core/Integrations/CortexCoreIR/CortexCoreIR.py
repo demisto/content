@@ -81,7 +81,7 @@ class Client(CoreClient):
         )
         return reply
 
-    def post_indicator_rule(self, request_data: Union[dict, str], suffix: str):
+    def create_indicator_rule_request(self, request_data: Union[dict, str], suffix: str):
         reply = self._http_request(
             method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
         )
@@ -197,7 +197,7 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
         expiration Optional[str]: The input from the command argument
 
     Returns:
-        Optional[int, str]: The valiue that represent the expiration date of the IOC rule:
+        Optional[int, str]: The value that represent the expiration date of the IOC rule:
             None: the rule get a default value.
             str: "Never" - The rule has no expiration date.
             int: epoch milliseconds of the expiration date.
@@ -208,36 +208,21 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
     if expiration == "Never":
         return "Never"
 
-    def convert_datetime_to_epoch_milli(dt: datetime) -> int:
-        return int(dt.timestamp() * 1000)
-
-    def is_relative_time_format(s: str) -> bool:
-        """
-        Returns True if the input matches a relative time format:
-        'N minutes', 'N hours', 'N days', 'N weeks', 'N months', 'N years'
-        """
-        if not isinstance(s, str):
-            return False
-
-        pattern = r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$"
-        return bool(re.match(pattern, s, flags=re.IGNORECASE))
-
-    now_epoch_milli = convert_datetime_to_epoch_milli(get_current_time())
     try:
-        datetime_arg = arg_to_datetime(expiration)
+        dt = arg_to_datetime(expiration)
     except ValueError:
-        return expiration
+        return expiration # Invalid input, pass through
 
-    if datetime_arg:
-        is_relative_time_format_flag = is_relative_time_format(expiration)
-        datetime_arg_epoch_milli = convert_datetime_to_epoch_milli(datetime_arg)
-        if is_relative_time_format_flag:
-            # Using arg_to_datetime that takes relative time and converts it into datetime (if its relative then in the past)
-            delta = now_epoch_milli - datetime_arg_epoch_milli
-            # the arg_to_datetime returned a time in the past
-            return now_epoch_milli + delta
+    if dt:
+        # check if the input matches a relative time format:
+        if bool(re.match(r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$", expiration, flags=re.IGNORECASE)):
+            # Using dt that takes relative time and converts it into datetime (if its relative then in the past)
+            now = date_to_timestamp(get_current_time())
+            # the dt is a time in the past
+            delta = now - date_to_timestamp(dt)
+            return now + delta
         else:
-            return datetime_arg_epoch_milli
+            return date_to_timestamp(dt)
     else:
         raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
 
@@ -254,8 +239,10 @@ def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> d
     Returns:
         dict: Parsed JSON-style IOC object.
     """
-    if input_format == "JSON":
-        return cast(dict, ioc_payload)
+    if input_format.upper() == "JSON":
+        if not isinstance(ioc_payload, dict):
+            raise ValueError("Expected a dict for JSON input format.")
+        return ioc_payload
 
     ioc_payload = cast(str, ioc_payload)
 
@@ -509,7 +496,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
         suffix = "indicators/insert_jsons"
 
     try:
-        response = client.post_indicator_rule(ioc_payload, suffix=suffix)
+        response = client.create_indicator_rule_request(ioc_payload, suffix=suffix)
     except DemistoException as error:
         raise DemistoException(f"Core Add Indicator Rule Command: During post, exception occurred {str(error)}")
 
