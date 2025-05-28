@@ -12706,6 +12706,24 @@ def override_cortex_module_function(func):
     module_switcher.override_function("cortex_module_test", func.__name__, func)
     return func
 
+# Injects the Demisto object to the cortex-module package: 
+try:
+    from cortex_module_test import test_override_csp
+    test_override_csp.demisto = demisto
+except ModuleNotFoundError:
+    pass
+
+# import builtins
+
+# spec_module = importlib.util.find_spec("cortex_module_test.test_override_csp")
+# module_to_change = importlib.util.module_from_spec(spec_module)
+# if spec_module:
+#     spec_module.loader.exec_module(module_to_change)
+#     setattr(module_to_change, "demisto", getattr(builtins, "demisto", None))
+#     sys.modules["cortex_module_test.test_override_csp"] = module_to_change
+
+
+
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
