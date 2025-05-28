@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cortex-module-test"
-version = "0.0.20"
+version = "0.0.21"
 description = "A test cortex module package."
 authors = ["Cortex"]
 license = "MIT"

@@ -12707,11 +12707,11 @@ def override_cortex_module_function(func):
     return func
 
 # Injects the Demisto object to the cortex-module package: 
-try:
-    from cortex_module_test import test_override_csp
-    test_override_csp.demisto = demisto
-except ModuleNotFoundError:
-    pass
+# try:
+#     from cortex_module_test import test_override_csp
+#     test_override_csp.demisto = demisto
+# except ModuleNotFoundError:
+#     pass
 
 # import builtins
 

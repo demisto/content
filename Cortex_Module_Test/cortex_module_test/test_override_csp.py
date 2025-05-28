@@ -2,9 +2,7 @@ import json
 
 STRING_TYPES = (str, bytes)
 
-import builtins
-demisto = getattr(builtins, "demisto", None)
-    
+demisto = None
 
 def arg_to_number(arg, arg_name=None, required=False):
     
