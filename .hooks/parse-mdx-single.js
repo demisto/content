@@ -14,6 +14,8 @@ function isHtmlDoc(content) {
 }
 
 function fixMdx(readmeContent) {
+    // copied from: https://github.com/demisto/content-docs/blob/2402bd1ab1a71f5bf1a23e1028df6ce3b2729cbb/content-repo/mdx_utils.py#L11
+    // to use the same logic as we have in the content-docs build
     let txt = readmeContent;
 
     const replaceTuples = [
