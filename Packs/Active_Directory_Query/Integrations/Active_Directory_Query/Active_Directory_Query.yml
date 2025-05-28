@@ -117,6 +117,7 @@ script:
     description: Expires the password of an Active Directory user.
     compliantpolicies:
     - Users Soft Remediation
+    - Users Hard Remediation
   - name: ad-create-user
     arguments:
     - name: username
