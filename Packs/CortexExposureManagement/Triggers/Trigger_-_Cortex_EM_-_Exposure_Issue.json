@@ -1,9 +1,9 @@
 {
     "trigger_id": "714a581ffd144106a948bc9ad0cbd5ec",
     "playbook_id": "Cortex EM - Exposure Issue",
-    "suggestion_reason": "Recommended for Cortex Exposure Management issues",
-    "description": "This trigger is responsible for handling Cortex Exposure Management issues",
-    "trigger_name": "Cortex Exposure Management",
+    "suggestion_reason": "Recommended for enrichment of Cortex Exposure Management issues",
+    "description": "This automation rule is responsible for handling Cortex Exposure Management issue enrichment",
+    "trigger_name": "Cortex Exposure Management Enrichment",
     "alerts_filter": {
         "filter": {
             "AND": [
