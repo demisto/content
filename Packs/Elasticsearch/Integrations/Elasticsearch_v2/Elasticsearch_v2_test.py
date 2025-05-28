@@ -2,7 +2,7 @@ import importlib
 import unittest
 from datetime import datetime
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import dateparser
 import demistomock as demisto
@@ -91,12 +91,12 @@ ES_V8_RESPONSE = {
     },
 }
 
-ES_V9_RESPONSE = {
-    "took": 11,
-    "is_partial": False,
-    "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
-    "values": [["karl@test.io"]],
-}
+# ES_V9_RESPONSE = {
+#     "took": 11,
+#     "is_partial": False,
+#     "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
+#     "values": [["karl@test.io"]],
+# }
 
 MOCK_ES7_SEARCH_CONTEXT = str(
     {
@@ -1157,13 +1157,27 @@ def test_search_command_with_query_esql(mocker):
     Then
      - Make sure that the expected message is returned.
     """
+    MOCKER_RES = {"columns": [{"name": "col_1"}, {"name": "col_2"}], "values": [["val_1", "val_2"], ["val_1_1", "val_2_2"]]}
+    EXPECTED_HEADERS = headers = {
+        "Content-Type": "application/vnd.elasticsearch+json; compatible-with=9",
+        "Accept": "application/vnd.elasticsearch+json; compatible-with=9",
+    }
+    magic_mock = MagicMock()
+    magic_mock.body = MOCKER_RES
+    magic_mock.__getitem__.side_effect = lambda key: magic_mock.body[key]
+
     import Elasticsearch_v2
 
-    args = {"query": """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *"""}
+    mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+    mocked_builder().perform_request.return_value = magic_mock
+    mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new=Elasticsearch_v2.ELASTICSEARCH_V9)
 
-    with patch.object(Elasticsearch_v2, "search_esql_command", return_value=ES_V9_RESPONSE) as mock_search:
-        result = Elasticsearch_v2.search_esql_command(args, {})
-        assert result["took"] == 11
-        assert result["values"][0] == ["karl@test.io"]
-        assert result["columns"][0]["type"] == "text"
-        mock_search.assert_called_once_with(args, {})
+    query = """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *"""
+    res = Elasticsearch_v2.search_esql_command({"query": query, "limit": 2}, {})
+
+    call_args = mocked_builder().perform_request.call_args[1]
+    assert res.outputs_prefix == "Elasticsearch.ESQLSearch"
+    assert res.outputs == [{"col_1": "val_1", "col_2": "val_2"}, {"col_1": "val_1_1", "col_2": "val_2_2"}]
+    assert res.raw_response == magic_mock.body
+    assert call_args["headers"] == EXPECTED_HEADERS
+    assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
