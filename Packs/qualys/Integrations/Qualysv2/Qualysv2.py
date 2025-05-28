@@ -31,7 +31,7 @@ HOST_DETECTIONS_SINCE_DATETIME_PREV_RUN = "host_detections_since_datetime_prev_r
 HOST_LAST_FETCH = "host_last_fetch"
 ASSETS_FETCH_FROM = "90 days"
 HOST_LIMIT = 1000
-ASSET_SIZE_LIMIT = 10 ** 6  # 1MB
+ASSET_SIZE_LIMIT = 10**6  # 1MB
 TEST_FROM_DATE = "one day"
 FETCH_ASSETS_COMMAND_TIME_OUT = 180
 QIDS_BATCH_SIZE = 500
@@ -1732,11 +1732,7 @@ class Client(BaseClient):
         return response.text
 
     def get_host_list_detection(
-        self,
-        since_datetime: str,
-        next_page: str | None = None,
-        limit: int = HOST_LIMIT,
-        qid: Optional[str] = None
+        self, since_datetime: str, next_page: str | None = None, limit: int = HOST_LIMIT, qid: Optional[str] = None
     ) -> tuple[str, bool]:
         """
         Make a http request to Qualys API to get assets
@@ -2204,7 +2200,7 @@ def generate_asset_tag_xml_request_body(args: dict[str, str], command_name: str)
             if rule_type_arg != "STATIC" and not rule_text_arg:
                 raise DemistoException(
                     message="Rule Type argument is passed but Rule Text argument is missing."
-                            + " Rule Text is optional only when Rule Type is 'STATIC'."
+                    + " Rule Text is optional only when Rule Type is 'STATIC'."
                 )
 
             ServiceRequest = ET.Element("ServiceRequest")
@@ -3082,8 +3078,9 @@ def get_activity_logs_events(client, since_datetime, max_fetch, next_page=None) 
     return activity_logs_events, next_run_dict
 
 
-def get_host_list_detections_events(client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False,
-                                    qid: Optional[str] = None) -> tuple:
+def get_host_list_detections_events(
+    client, since_datetime, next_page="", limit=HOST_LIMIT, is_test=False, qid: Optional[str] = None
+) -> tuple:
     """Get host list detections from qualys
     Args:
         client: Qualys client
@@ -3225,7 +3222,7 @@ def fetch_vulnerabilities(client: Client, last_run: dict[str, Any], detection_qi
     else:
         since_datetime = (
             last_run.get("since_datetime") or arg_to_datetime(ASSETS_FETCH_FROM, required=True).strftime(ASSETS_DATE_FORMAT)
-        # type: ignore[union-attr]
+            # type: ignore[union-attr]
         )
         demisto.debug(f"Getting vulnerabilities modified after {since_datetime}")
         vulnerabilities = get_vulnerabilities(client, since_datetime=since_datetime)
@@ -3331,7 +3328,7 @@ def get_activity_logs_events_command(client: Client, args, first_fetch_time):
         since_datetime=since_datetime,
         max_fetch=0,
     )
-    limited_activity_logs_events = activity_logs_events[offset: limit + offset]  # type: ignore[index,operator]
+    limited_activity_logs_events = activity_logs_events[offset : limit + offset]  # type: ignore[index,operator]
     activity_logs_hr = tableToMarkdown(name="Activity Logs", t=limited_activity_logs_events)
     results = CommandResults(
         readable_output=activity_logs_hr,
@@ -3837,14 +3834,16 @@ def main():  # pragma: no cover
             if should_push_events:
                 send_data_to_xsiam(data=assets, vendor=VENDOR, product="host_detections", data_type="assets")
 
-            readable_output = tableToMarkdown(name=f"Assets from Qualys:", t=assets)
+            readable_output = tableToMarkdown(name="Assets from Qualys:", t=assets)
 
-            return_results(CommandResults(
-                readable_output=readable_output,
-                outputs=assets,
-                outputs_prefix="Qualys.Assets",
-                outputs_key_field="ID",
-            ))
+            return_results(
+                CommandResults(
+                    readable_output=readable_output,
+                    outputs=assets,
+                    outputs_prefix="Qualys.Assets",
+                    outputs_key_field="ID",
+                )
+            )
 
         elif command == "qualys-get-quid-by-cve":
             return_results(get_qid_for_cve(client=client, cve=args["cve"]))
