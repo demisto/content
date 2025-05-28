@@ -384,7 +384,7 @@ script:
       type: string
     description: Add new items to the Tenant Allow/Block Lists.  Uses PowerShell New-TenantAllowBlockListItems cmdlet.
     execution: true
-  - name: ews-new-tenant-allow-block-list-items-quick-action
+  - name: ews-block-sender-quick-action
     prettyname: Block Sender - Office 365
     quickaction: true
     hidden: true
@@ -394,6 +394,9 @@ script:
       description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
       isArray: true
       prettyname: Email ID
+      # defaultValue: ${issue.xdmemailemail_sender_address}
+      prettypredefined:
+        Issue email sender: ${issue.xdmemailemail_sender_address}
     - name: list_type
       defaultValue: sender
       auto: PREDEFINED
