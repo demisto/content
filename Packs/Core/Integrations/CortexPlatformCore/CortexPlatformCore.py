@@ -66,7 +66,7 @@ def main():  # pragma: no cover
     Executes an integration command
     """
     command = demisto.command()
-    LOG(f"Command being called is {command}")
+    demisto.debug(f"Command being called is {command}")
     args = demisto.args()
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
