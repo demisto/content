@@ -1,0 +1,68 @@
+{
+    "msft_azure_flowlogs_raw": {
+        "_raw_log": {
+            "type": "string",
+            "is_array": false
+        },
+        "resourceId": {
+            "type": "string",
+            "is_array": false
+        },
+        "operationName": {
+            "type": "string",
+            "is_array": false
+        },
+        "nsgRuleName": {
+            "type": "string",
+            "is_array": false
+        },
+        "sourceAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "destinationAddress": {
+            "type": "string",
+            "is_array": false
+        },
+        "mac": {
+            "type": "string",
+            "is_array": false
+        },
+        "transportProtocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "deviceAction": {
+            "type": "string",
+            "is_array": false
+        },
+        "flowState": {
+            "type": "string",
+            "is_array": false
+        },
+        "packetsStoD": {
+            "type": "int",
+            "is_array": false
+        },
+        "bytesStoD": {
+            "type": "int",
+            "is_array": false
+        },
+        "packetsDtoS": {
+            "type": "int",
+            "is_array": false
+        },
+        "bytesDtoS": {
+            "type": "int",
+            "is_array": false
+        },
+        "sourcePort": {
+            "type": "int",
+            "is_array": false
+        },
+        "destinationPort": {
+            "type": "int",
+            "is_array": false
+        }
+    }
+}
