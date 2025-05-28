@@ -2,7 +2,7 @@ commonfields:
   id: a5eea890-b1a3-4f8a-8428-c129f882a2f9
   version: 19
 vcShouldKeepItemLegacyProdMachine: false
-name: GetAlertTasks-backoffv2
+name: GetAlertTasks-backoffv3
 script: ''
 type: python
 tags:
@@ -24,6 +24,9 @@ args:
 - name: retry_attempts
   description: Number of times to retry on failure.
   defaultValue: 5
+- name: time_out
+  description: Maximum time in seconds to wait before each retry attempt.
+  defaultValue: 120
 outputs:
 - contextPath: Tasks
   description: The entire task object.

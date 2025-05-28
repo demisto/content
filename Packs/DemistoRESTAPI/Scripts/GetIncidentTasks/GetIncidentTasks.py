@@ -17,6 +17,7 @@ TASK_STATES = {
     'blocked': 'Blocked'
 }
 RETRY_ATTEMPTS_DEFAULT = 5
+TIME_OUT_DEFAULT = 120
 
 ''' STANDALONE FUNCTION '''
 
@@ -98,12 +99,13 @@ def get_task_command(args: dict[str, Any]) -> CommandResults:
     states = get_states(argToList(args.get('states')))
     inc_id = args['inc_id']
     retry_attempts = arg_to_number(args.get("retry_attempts")) or RETRY_ATTEMPTS_DEFAULT
+    time_out = arg_to_number(args.get("time_out")) or TIME_OUT_DEFAULT
 
-    # Forcing a TimeoutError to be raised if the command doesn't complete in 20 seconds.
+    # Forcing a TimeoutError to be raised if the command doesn't complete in X seconds.
     signal.signal(signal.SIGALRM, alarm_handler)
 
     for attempt in range(retry_attempts):
-        signal.alarm(20)
+        signal.alarm(time_out)
 
         try:
             res = demisto.executeCommand('core-api-get', {'uri': f'/investigation/{inc_id}/workplan'})
