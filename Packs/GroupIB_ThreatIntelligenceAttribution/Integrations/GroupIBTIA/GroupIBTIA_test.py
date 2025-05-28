@@ -3,7 +3,14 @@ from unittest.mock import patch, MagicMock
 import pytest
 
 from CommonServerPython import CommandResults
-from GroupIBTIA import fetch_incidents_command, Client, main, get_available_collections_command, local_search_command
+from GroupIBTIA import (
+    fetch_incidents_command,
+    Client,
+    main,
+    get_available_collections_command,
+    local_search_command,
+    CommonHelpers,
+)
 from urllib3.exceptions import InsecureRequestWarning
 from urllib3 import disable_warnings as urllib3_disable_warnings
 import GroupIBTIA
@@ -262,3 +269,72 @@ def test_local_search_command_with_results(mock_client, mock_common_helpers):
     assert "Search results" in result.readable_output
     assert "Name: Test Result" in result.readable_output
     assert "Name: Another Result" in result.readable_output
+
+
+# Unit tests for CommonHelpers
+
+
+def test_transform_dict_empty():
+    assert CommonHelpers.transform_dict({}) == [{}]
+
+
+def test_transform_dict_various_lengths():
+    input_dict = {"a": [1, 2], "b": "x", "c": []}
+    result = CommonHelpers.transform_dict(input_dict)
+    assert len(result) == 2
+    assert result[0] == {"a": 1, "b": "x", "c": None}
+    assert result[1] == {"a": 2, "b": "x", "c": None}
+
+
+def test_remove_underscore_and_lowercase_keys():
+    data = [{"Test_Key": 1, "another_key": 2}]
+    result = CommonHelpers.remove_underscore_and_lowercase_keys(data)
+    assert result == [{"testkey": 1, "anotherkey": 2}]
+
+
+def test_replace_empty_values_dict():
+    data = {"a": "", "b": "value", "c": {"d": ""}}
+    result = CommonHelpers.replace_empty_values(data)
+    assert result == {"a": None, "b": "value", "c": {"d": None}}
+
+
+def test_replace_empty_values_list():
+    data = ["", "x", [], [{}]]
+    result = CommonHelpers.replace_empty_values(data)
+    assert result == [None, "x", None, [{}]]
+
+
+def test_replace_empty_values_empty_list_returns_none():
+    assert CommonHelpers.replace_empty_values([]) is None
+    assert CommonHelpers.replace_empty_values([[]]) is None
+
+
+def test_all_lists_empty_true():
+    data = {"a": [], "b": {"c": []}}
+    assert CommonHelpers.all_lists_empty(data) is True
+
+
+def test_all_lists_empty_false():
+    data = {"a": [1], "b": {}}
+    assert CommonHelpers.all_lists_empty(data) is False
+
+
+def test_date_parse_valid():
+    result = CommonHelpers.date_parse("2020-01-01", "date")
+    assert result.endswith("Z") or result == "2020-01-01"
+
+
+def test_date_parse_invalid():
+    with pytest.raises(Exception):
+        CommonHelpers.date_parse("invalid", "date")
+
+
+def test_transform_list_to_str():
+    data = [{"x": [1, 2], "y": "a"}, {"x": []}]
+    result = CommonHelpers.transform_list_to_str(data)
+    assert result[0]["x"] == "1, 2"
+    assert result[1]["x"] == ""
+
+
+def test_validate_collections_valid():
+    CommonHelpers.validate_collections("valid_collection")
