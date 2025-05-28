@@ -930,7 +930,7 @@ def test_fetch_incidents_initial_run(requests_mock, mock_client: Client, monkeyp
         json={"incidents": [
             {"id": "1", "event_id": "evt1", "incident_time": incident_time, "severity": "LOW"}
         ]},
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
     monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
@@ -966,7 +966,7 @@ def test_fetch_incidents_filters_last_ids(requests_mock, mock_client: Client, mo
             {"id": "1", "event_id": "evt1", "incident_time": incident_time, "severity": "LOW"},
             {"id": "2", "event_id": "evt2", "incident_time": incident_time, "severity": "LOW"},
         ]},
-        status_code=200,
+        status_code=HTTPStatus.OK,
     )
 
     monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
@@ -982,3 +982,141 @@ def test_fetch_incidents_filters_last_ids(requests_mock, mock_client: Client, mo
     assert len(incidents) == 0
     assert last_run["last_fetch"] == incident_time
     assert last_run["last_ids"] == ["1", "2"]
+
+
+def test_update_remote_system_with_severity_and_closing_user(requests_mock, mock_client: Client, monkeypatch):
+    """
+    Scenario: Push local changes including severity and closing the incident.
+    Given:
+    - Incident changed with delta keys: severity and closingUserId.
+    When:
+    - update_remote_system is called.
+    Then:
+    - Two calls to update_incidents should be made (one for severity, one for status).
+    - The returned remote incident ID should match.
+    """
+    from ForcepointDLP import XSOAR_FP_SEVERITY_MAPPER, update_remote_system
+
+    remote_id = "abcd-1234"
+    event_id = "abcd"
+    delta = {
+        "severity": 3,
+        "closingUserId": "admin"
+    }
+
+    class MockUpdateArgs:
+        def __init__(self, _):
+            self.remote_incident_id = remote_id
+            self.delta = delta
+            self.incident_changed = True
+            self.data = {}
+
+    monkeypatch.setattr("ForcepointDLP.UpdateRemoteSystemArgs", MockUpdateArgs)
+
+    requests_mock.post(
+        f"{mock_client._base_url}/incidents/update",
+        status_code=200,
+    )
+
+    result = update_remote_system(mock_client, args={})
+
+    assert result == remote_id
+    assert requests_mock.call_count == 2
+
+    # Check first call: severity update
+    first_request = requests_mock.request_history[0].json()
+    assert first_request["action_type"] == "SEVERITY"
+    assert first_request["value"] == XSOAR_FP_SEVERITY_MAPPER[3]
+    assert event_id in first_request["event_ids"][0]
+
+    # Check second call: status update
+    second_request = requests_mock.request_history[1].json()
+    assert second_request["action_type"] == "STATUS"
+    assert second_request["value"] == "CLOSE"
+    assert event_id in second_request["event_ids"][0]
+
+
+def test_get_remote_data_command_closed_incident(requests_mock, mock_client: Client):
+    """
+    Scenario: Fetch remote data for an incident that is now closed.
+    Given:
+    - A remote_incident_id.
+    - The incident exists and has status 'Closed'.
+    When:
+    - get_remote_data_command is called.
+    Then:
+    - The incident is returned in the response.
+    - A closure note entry is included in the response.
+    """
+    from ForcepointDLP import get_remote_data_command
+
+    remote_incident_id = "evt1-1234"
+    incident_id = "1234"
+    mock_incident = {
+        "id": incident_id,
+        "event_id": "evt1",
+        "incident_time": "2025-05-28T11:59:00Z",
+        "status": "Closed"
+    }
+
+    requests_mock.post(
+        url=f"{mock_client._base_url}/incidents",
+        json={"incidents": [mock_incident]},
+        status_code=200
+    )
+
+    args = {
+        "id": remote_incident_id,
+        "lastUpdate": "2025-05-28T11:00:00Z"
+    }
+
+    response = get_remote_data_command(mock_client, args)
+
+    assert isinstance(response, GetRemoteDataResponse)
+    assert response.mirrored_object == mock_incident
+    assert len(response.entries) == 1
+
+    entry = response.entries[0]
+    assert entry["Type"] == EntryType.NOTE
+    assert entry["Contents"]["dbotIncidentClose"] is True
+    assert entry["Contents"]["closeReason"] == "Closed from Forcepoint DLP."
+    assert entry["ContentsFormat"] == EntryFormat.JSON
+
+
+@freeze_time("2025-05-28T12:00:00Z")
+def test_get_modified_remote_data_command(requests_mock, mock_client: Client, monkeypatch):
+    """
+    Scenario: Query for updated incidents since the last sync.
+    Given:
+    - An incident with a history update timestamp newer than last_update.
+    When:
+    - get_modified_remote_data_command is called.
+    Then:
+    - Ensure it returns the modified incident ID.
+    """
+    from ForcepointDLP import get_modified_remote_data_command
+
+    now = "2025-05-28T12:00:00Z"
+    monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {
+        "first_incident_time": "2025-05-28T11:00:00Z"
+    })
+
+    requests_mock.post(
+        url=f"{mock_client._base_url}/incidents",
+        json={"incidents": [{
+            "id": "5678",
+            "event_id": "evt1",
+            "incident_time": "2025-05-28T11:50:00Z",
+            "history": [{"update_time": now}]
+        }]},
+        status_code=HTTPStatus.OK,
+    )
+
+    args = {
+        "lastUpdate": "2025-05-28T11:30:00Z"
+    }
+
+    response = get_modified_remote_data_command(mock_client, args)
+
+    assert isinstance(response.modified_incident_ids, list)
+    assert "evt1-5678" in response.modified_incident_ids
