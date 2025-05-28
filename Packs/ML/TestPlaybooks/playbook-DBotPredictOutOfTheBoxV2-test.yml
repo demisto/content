@@ -510,7 +510,7 @@ tasks:
         simple: demisto_out_of_the_box_model_v2
       query:
         complex:
-          root: CreatedIncidentID
+          root: GeneratedUUID
           transformers:
           - operator: concat
             args:
