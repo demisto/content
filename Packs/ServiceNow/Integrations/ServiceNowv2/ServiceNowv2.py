@@ -10,7 +10,7 @@ from CommonServerPython import *  # noqa: F401
 
 urllib3.disable_warnings()
 
-import jwt
+import jwt 
 from datetime import datetime, timedelta, UTC
 import uuid
 
