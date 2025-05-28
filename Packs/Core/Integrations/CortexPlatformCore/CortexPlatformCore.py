@@ -49,15 +49,17 @@ def get_asset_details_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Object containing the formatted asset details,
                         raw response, and outputs for integration context.
     """
-    client._base_url = "/api/webapp/data-platform"
     asset_id = args.get("asset_id")
     response = client.get_asset_details(asset_id)
-    parsed = response.get("reply") if response else "An empty response was returned."
+    if not response:
+        raise DemistoException(f"Failed to fetch asset details for {asset_id}. Ensure the asset ID is valid.")
+
+    reply = response.get("reply")
     return CommandResults(
-        readable_output=tableToMarkdown("Asset Details", parsed, headerTransform=string_to_table_header),
+        readable_output=tableToMarkdown("Asset Details", reply, headerTransform=string_to_table_header),
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
-        outputs=parsed,
-        raw_response=parsed,
+        outputs=reply,
+        raw_response=reply,
     )
 
 
@@ -71,9 +73,7 @@ def main():  # pragma: no cover
     args["integration_context_brand"] = INTEGRATION_CONTEXT_BRAND
     args["integration_name"] = INTEGRATION_NAME
     headers: dict = {}
-    url_suffix = "/data-platform"
-    url = "/api/webapp/"
-    base_url = urljoin(url, url_suffix)
+    base_url = "/api/webapp/data-platform"
     proxy = demisto.params().get("proxy", False)
     verify_cert = not demisto.params().get("insecure", False)
 
