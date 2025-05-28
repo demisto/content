@@ -1,0 +1,19 @@
+{
+    "name": "European Union Vulnerability Database",
+    "description": "The European Union Vulnerability Database (EUVDB) is a vulnerability database that provides information about vulnerabilities in software and hardware products. It is maintained by the European Union Agency for Cybersecurity (ENISA) and is intended to help organizations identify and mitigate vulnerabilities in their systems.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Paul-Adrian Dragoi",
+    "url": "https://live.paloaltonetworks.com/t5/cortex-xsoar-discussions/bd-p/Cortex_XSOAR_Discussions",
+    "email": "",
+    "categories": [
+        "Vulnerability Management"
+    ],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": []
+}

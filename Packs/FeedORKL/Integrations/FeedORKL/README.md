@@ -3,7 +3,6 @@ This integration was integrated and tested with version 1.0.0 of FeedORKL.
 
 ## Configure ORKL Threat Intel Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -19,7 +18,6 @@ This integration was integrated and tested with version 1.0.0 of FeedORKL.
 | Bypass exclusion list | When selected, the exclusion list is ignored for indicators from this feed. This means that if an indicator from this feed is on the exclusion list, the indicator might still be added to the system. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -39,9 +37,9 @@ Retrieves latest Threat Reports from ORKL
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | Maximum number of Reports to return. Default is 5. | Optional | 
-| order_by | Criteria to order Threat Reports. Possible values are: created_at, updated_at, file_creation_date, file_modification_date. Default is file_creation_date. | Optional | 
-| order | Ordering of results. Possible values are: asc, desc. Default is desc. | Optional | 
+| limit | Maximum number of Reports to return. Default is 5. | Optional |
+| order_by | Criteria to order Threat Reports. Possible values are: created_at, updated_at, file_creation_date, file_modification_date. Default is file_creation_date. | Optional |
+| order | Ordering of results. Possible values are: asc, desc. Default is desc. | Optional |
 
 #### Context Output
 
