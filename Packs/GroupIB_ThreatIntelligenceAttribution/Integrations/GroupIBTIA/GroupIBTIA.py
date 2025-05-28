@@ -1476,7 +1476,7 @@ class Client(BaseClient):
             if enable_probable_corporate_access:
                 enable_probable_corporate_access = 1  # type: ignore
             else:
-                enable_probable_corporate_access = 0
+                enable_probable_corporate_access = 0  # type: ignore
             return (
                 self.poller.create_update_generator(
                     collection_name=collection_name,
@@ -1506,8 +1506,8 @@ class CommonHelpers:
             return [{}]
 
         normalized_dict = {
-            k: v if isinstance(v, list) else [v] # type: ignore
-            for k, v in input_dict.items()  
+            k: v if isinstance(v, list) else [v]  # type: ignore
+            for k, v in input_dict.items()
         }
 
         max_length = max((len(v) for v in normalized_dict.values() if isinstance(v, list)), default=1)
@@ -1574,8 +1574,7 @@ class CommonHelpers:
         date_from_parsed = dateparser_parse(date)
         if date_from_parsed is None:
             raise DemistoException(
-                f"Inappropriate {arg_name} format, "
-                "please use something like this: 2020-01-01 or January 1 2020"
+                f"Inappropriate {arg_name} format, please use something like this: 2020-01-01 or January 1 2020"
             )
         date_from_parsed = date_from_parsed.strftime(DATE_FORMAT)
         return date_from_parsed

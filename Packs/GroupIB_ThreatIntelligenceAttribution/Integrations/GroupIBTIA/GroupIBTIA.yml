@@ -75,15 +75,15 @@ configuration:
   required: false
   type: 0
 - defaultvalue: "false"
+  section: Collect
   display: Exclude All with Combolist type
   name: exclude_combolist
-  section: Collect
   required: false
   type: 8
 - display: Enable filter "Probable Corporate Access"
   name: enable_probable_corporate_access
-  required: false
   section: Collect
+  required: false
   type: 8
   defaultvalue: "false"
   additionalinfo: Enable filter "Probable Corporate Access"
