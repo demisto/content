@@ -9819,7 +9819,7 @@ script:
       type: Number
       required: true
       isArray: false
-  dockerimage: demisto/pan-os-python:1.0.0.2067372
+  dockerimage: demisto/pan-os-python:1.0.0.3545654
   isfetch: true
   runonce: false
   script: ''
