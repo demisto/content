@@ -28,7 +28,7 @@ args:
   description: A list of keys in the given JSON table that should be turned into a clickable URL.
 scripttarget: 0
 subtype: python3
-dockerimage: demisto/python3:3.11.10.115186
+dockerimage: demisto/python3:3.12.8.3296088
 runas: DBotWeakRole
 tests:
 - JsonToTable - Test Playbook
