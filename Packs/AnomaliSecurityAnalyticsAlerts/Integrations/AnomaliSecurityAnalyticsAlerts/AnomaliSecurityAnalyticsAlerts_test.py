@@ -254,6 +254,7 @@ def test_command_update_alert_no_uuid(mocker):
     assert "Please provide 'uuid' parameter" in str(e.value)
 
 
+@freeze_time("2025-03-01T12:00:00Z")
 def test_fetch_incidents(mocker):
     """
     Given:
@@ -287,3 +288,50 @@ def test_fetch_incidents(mocker):
     assert "occurred" in incident
     assert "name" in incident
     assert incident["name"].startswith("Anomali Alert")
+
+
+@freeze_time("2025-03-01T12:00:00Z")
+def test_fetch_incidents_with_offset(mocker):
+    """
+    Given:
+        - A last run state with a non-zero offset
+        - A full page of results equal to fetch_limit
+    When:
+        - fetch_incidents is invoked
+    Then:
+        - Validate that offset is incremented and last_fetch is unchanged
+    """
+    client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
+
+    mocker.patch.object(client, "create_search_job", return_value={"job_id": "job-id-456"})
+    mocker.patch.object(client, "get_search_job_status", return_value={"status": "DONE"})
+
+    fetch_limit = 3
+    sample_records = [
+        ["abc-001", "1727613600000", "low"],
+        ["abc-002", "1727613610000", "medium"],
+        ["abc-003", "1727613620000", "high"],
+    ]
+    mocker.patch.object(
+        client,
+        "get_search_job_results",
+        return_value={"fields": ["uuid_", "event_time", "severity"], "records": sample_records},
+    )
+
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "3 days", "fetch_limit": fetch_limit})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "offset": 3})
+    set_last_run_mock = mocker.patch("CommonServerPython.demisto.setLastRun")
+
+    incidents = fetch_incidents(client)
+
+    assert isinstance(incidents, list)
+    assert len(incidents) == 3
+    for incident in incidents:
+        assert "name" in incident
+        assert "occurred" in incident
+        assert "rawJSON" in incident
+
+    args, _ = set_last_run_mock.call_args
+    new_last_run = args[0]
+    assert new_last_run["offset"] == 6
+    assert "last_fetch" in new_last_run

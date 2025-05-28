@@ -183,45 +183,69 @@ def command_get_search_job_status(client: Client, args: dict) -> list[CommandRes
 
 def command_get_search_job_results(client: Client, args: dict) -> list[CommandResults]:
     """
-    Get results of one or more completed search jobs.
+    Get the search job results if the job status is 'completed'.
+    Otherwise, return a message indicating that the job is still running.
 
     Args:
-        client (Client): Client object.
-        args (dict): job_id, offset, fetch_size
+        client (Client): Client object with request.
+        args (dict): Usually demisto.args().
 
     Returns:
-        list[CommandResults]
+        list[CommandResults]: A list of command results for each job id.
     """
-    job_ids = argToList(args.get("job_id"))
+    job_ids = argToList(str(args.get("job_id")))
     offset = arg_to_number(args.get("offset", 0)) or 0
     fetch_size = arg_to_number(args.get("fetch_size", 25)) or 25
     command_results: list[CommandResults] = []
 
     for job_id in job_ids:
-        results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
-
-        if "fields" in results_response and "records" in results_response:
-            headers = results_response["fields"]
-            records = results_response["records"]
-            combined_records = [dict(zip(headers, record)) for record in records]
-            results_response["records"] = combined_records
-            results_response["job_id"] = job_id
-
-            human_readable = tableToMarkdown(
-                name=f"Search Job Results - {job_id}", t=combined_records, headers=headers, removeNull=True
+        status_response = client.get_search_job_status(job_id)
+        if "error" in status_response:
+            human_readable = (
+                f"No results found for Job ID: {job_id}. "
+                f"Error message: {status_response.get('error')}. "
+                f"Please verify the Job ID and try again."
             )
+            command_result = CommandResults(
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
+                outputs_key_field="job_id",
+                readable_output=human_readable,
+                raw_response=status_response,
+            )
+            command_results.append(command_result)
+            continue
+
+        status_value = status_response.get("status")
+        if status_value and status_value.upper() != "DONE":
+            human_readable = f"Job ID: {job_id} is still running. Current status: {status_value}."
+            command_result = CommandResults(
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
+                outputs_key_field="job_id",
+                outputs={"job_id": job_id, "status": status_value},
+                readable_output=human_readable,
+                raw_response=status_response,
+            )
+            command_results.append(command_result)
         else:
-            human_readable = tableToMarkdown(name=f"Search Job Results - {job_id}", t=results_response, removeNull=True)
-
-        command_result = CommandResults(
-            outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
-            outputs_key_field="job_id",
-            outputs=results_response,
-            readable_output=human_readable,
-            raw_response=results_response,
-        )
-        command_results.append(command_result)
-
+            results_response = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_size)
+            if "fields" in results_response and "records" in results_response:
+                headers = results_response["fields"]
+                records = results_response["records"]
+                combined_records = [dict(zip(headers, record)) for record in records]
+                results_response.pop("fields")
+                results_response["records"] = combined_records
+                human_readable = tableToMarkdown(name="Search Job Results", t=combined_records, headers=headers, removeNull=True)
+            else:
+                human_readable = tableToMarkdown(name="Search Job Results", t=results_response, removeNull=True)
+            results_response["job_id"] = job_id
+            command_result = CommandResults(
+                outputs_prefix="AnomaliSecurityAnalytics.SearchJobResults",
+                outputs_key_field="job_id",
+                outputs=results_response,
+                readable_output=human_readable,
+                raw_response=results_response,
+            )
+            command_results.append(command_result)
     return command_results
 
 
@@ -281,6 +305,7 @@ def fetch_incidents(client: Client) -> list:
     fetch_limit = arg_to_number(params.get("fetch_limit", 200)) or 200
 
     last_run = demisto.getLastRun()
+    offset = last_run.get("offset", 0)
     incidents = []
     fetch_time = last_run.get("last_fetch", first_fetch_time)
 
@@ -302,7 +327,7 @@ def fetch_incidents(client: Client) -> list:
     else:
         raise DemistoException(f"Search job {job_id} did not complete in time.")
 
-    results = client.get_search_job_results(job_id, fetch_size=fetch_limit)
+    results = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_limit)
     fields = results.get("fields", [])
     records = results.get("records", [])
     incidents_list = [dict(zip(fields, record)) for record in records]
@@ -326,7 +351,18 @@ def fetch_incidents(client: Client) -> list:
     if not has_new:
         latest_ts = int(to_dt.timestamp())
 
-    demisto.setLastRun({"last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z")})
+    if len(records) >= fetch_limit:
+        demisto.setLastRun(
+            {
+                "last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+                "offset": offset + fetch_limit,
+            }
+        )
+    else:
+        demisto.setLastRun(
+            {"last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z"), "offset": 0}
+        )
+
     return incidents
 
 
