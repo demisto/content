@@ -340,21 +340,19 @@ class FileAttachmentType(object):
 @dataclass
 class QuickActionPreview:
     """
-        A container class for storing quick action data previews.
-        This class is intended to be populated by commands like `!get-remote-data-preview`
-        and placed directly into the root context under `QuickActionPreview`.
+    A container class for storing quick action data previews.
+    This class is intended to be populated by commands like `!get-remote-data-preview`
+    and placed directly into the root context under `QuickActionPreview`.
 
-        Fields:
-            id (Optional[str]): The ID of the ticket.
-            title (Optional[str]): The title or summary of the ticket or action.
-            description (Optional[str]): A brief description or details about the action.
-            status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
-            assignee (Optional[str]): The user or entity assigned to the action.
-            creation_date (Optional[str]): The date and time when the item was created.
-            severity (Optional[str]): Indicates the priority or severity level.
-    :return: None
-    :rtype: ``None``
-        """
+    Attributes:
+        id (Optional[str]): The ID of the ticket.
+        title (Optional[str]): The title or summary of the ticket or action.
+        description (Optional[str]): A brief description or details about the action.
+        status (Optional[str]): Current status (e.g., Open, In Progress, Closed).
+        assignee (Optional[str]): The user or entity assigned to the action.
+        creation_date (Optional[str]): The date and time when the item was created.
+        severity (Optional[str]): Indicates the priority or severity level.
+    """
     id: Optional[str] = None
     title: Optional[str] = None
     description: Optional[str] = None
@@ -364,6 +362,10 @@ class QuickActionPreview:
     severity: Optional[str] = None
 
     def __post_init__(self):
+        """
+          Performs post-initialization checks for missing field values.
+          Logs a debug message if any of the defined fields are None.
+        """
         missing_fields = [field_name for field_name, value in self.__dict__.items() if value is None]
 
         if missing_fields:
@@ -371,9 +373,10 @@ class QuickActionPreview:
 
     def to_context(self) -> Dict[str, Any]:
         """
-        Converts the dataclass to a dict for placing into context.
+        Converts the dataclass instance to a dictionary.
+
         Returns:
-            dict: Dictionary representation of the QuickActionPreview.
+            Dict[str, Any]: Dictionary representation of the QuickActionPreview instance.
         """
         return asdict(self)
 
@@ -382,33 +385,37 @@ class QuickActionPreview:
 class MirrorObject:
     """
     A container class for storing ticket metadata used in mirroring integrations.
-
     This class is intended to be populated by commands like `!jira-create-issue`
     and placed directly into the root context under `MirrorObject`.
 
-    Fields:
+    Attributes:
         ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
         ticket_id (Optional[str]): Unique identifier of the created ticket.
     """
     ticket_url: Optional[str] = None
     ticket_id: Optional[str] = None
 
-    def __post_init__(self):
-        missing_fields = []
-        if not self.ticket_url:
-            missing_fields.append('ticket_url')
-        if not self.ticket_id:
-            missing_fields.append('ticket_id')
+    def __post_init__(self) -> None:
+        """
+        Performs post-initialization validation.
+        Checks for missing mandatory fields 'ticket_url' and 'ticket_id'
+        and logs a debug message if they are not set.
+        """
+        missing_fields_list = []
+        if self.ticket_url is None:
+            missing_fields_list.append('ticket_url')
+        if self.ticket_id is None:
+            missing_fields_list.append('ticket_id')
 
-        if missing_fields:
-            demisto.debug(f"Missing fields: {', '.join(missing_fields)}")
+        if missing_fields_list:
+            demisto.debug(f"MirrorObject: Initialized with missing mandatory fields: {', '.join(missing_fields_list)}")
 
     def to_context(self) -> Dict[str, Any]:
         """
-        Converts the dataclass to a dict for placing into context.
+        Converts the dataclass instance to a dictionary.
 
         Returns:
-            dict: Dictionary representation of the MirrorObject.
+            Dict[str, Any]: Dictionary representation of the MirrorObject instance.
         """
         return asdict(self)
 
