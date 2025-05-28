@@ -2869,7 +2869,7 @@ script:
       - description: The CVE identifier (e.g., CVE-2023-12345) used to look up the corresponding Qualys QID.
         name: cve
         required: true
-    description: Retrieves the Qualys QID (Qualys ID) associated with a specified CVE.
+    description: Retrieves one or more Qualys QIDs (Qualys IDs) associated with a specified CVE.
     name: qualys-get-quid-by-cve
     outputs:
     - contextPath: Qualys.QID
