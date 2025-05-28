@@ -5,7 +5,6 @@ from collections.abc import Callable
 from copy import deepcopy
 from mimetypes import guess_type
 
-from dataclasses import asdict, dataclass
 
 import demistomock as demisto  # noqa: F401
 from bs4 import BeautifulSoup
@@ -153,7 +152,7 @@ class JiraBaseClient(BaseClient, metaclass=ABCMeta):
             ok_codes=ok_codes,
             files=files,
             headers=request_headers,
-            with_metrics=True
+            with_metrics=True,
         )
 
     def get_headers_with_access_token(self, headers: dict[str, str] | None = None) -> dict[str, str]:
@@ -2146,16 +2145,11 @@ def get_remote_data_preview_command(client: JiraBaseClient, args: Dict[str, str]
     }
 
     qa_preview_data = {
-        attr: JiraIssueFieldsParser.get_value_from_context(method, issue)
-        for attr, method in context_methods.items()
+        attr: JiraIssueFieldsParser.get_value_from_context(method, issue) for attr, method in context_methods.items()
     }
 
     qa_preview = QuickActionPreview(**qa_preview_data)
-    return CommandResults(
-        outputs_prefix="QuickActionPreview",
-        outputs=qa_preview.to_context(),
-        outputs_key_field="id"
-    )
+    return CommandResults(outputs_prefix="QuickActionPreview", outputs=qa_preview.to_context(), outputs_key_field="id")
 
 
 def get_create_metadata_issue_types_command(client: JiraBaseClient, args: Dict[str, Any]) -> CommandResults:
@@ -2302,7 +2296,9 @@ def get_expanded_issues(client: JiraBaseClient, issue: Dict[str, Any], expand_li
     return responses
 
 
-def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False, server_url: str = "") -> list[CommandResults]:
+def create_issue_command(
+    client: JiraBaseClient, args: Dict[str, str], is_quick_action: bool = False, server_url: str = ""
+) -> list[CommandResults]:
     """This command is in charge of creating a new issue.
 
     Args:
@@ -2351,15 +2347,13 @@ def create_issue_command(client: JiraBaseClient, args: Dict[str, str], is_quick_
         outputs=outputs,
         outputs_key_field="Id",
         readable_output=tableToMarkdown(name=f'Issue {outputs.get("Key", "")}', t=markdown_dict),
-        raw_response=res
+        raw_response=res,
     )
     results.append(ticket_results)
 
     if is_quick_action:
         mirror_results = CommandResults(
-            outputs_prefix="MirrorObject",
-            outputs=mirror_obj.to_context(),
-            outputs_key_field="ticket_id"
+            outputs_prefix="MirrorObject", outputs=mirror_obj.to_context(), outputs_key_field="ticket_id"
         )
         results.append(mirror_results)
 
@@ -3521,7 +3515,7 @@ def parse_issue_times_for_next_run(
     issue_id: int,
     issue_created_time: str,
     issue_updated_time: str,
-    dateparser_settings: dict| None,
+    dateparser_settings: dict | None,
 ) -> tuple[str, str]:
     """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
     in the default date format. This makes sure queries by time are not affected by timezone.
@@ -3544,6 +3538,7 @@ def parse_issue_times_for_next_run(
     demisto.debug(f"Converted created time for {issue_id} to: {converted_updated_time} using settings {dateparser_settings}.")
 
     return converted_created_time, converted_updated_time
+
 
 # Fetch Incidents
 def fetch_incidents(
@@ -4095,7 +4090,7 @@ def get_cached_user_timezone(client: JiraBaseClient) -> str:
     """
     integration_context = get_integration_context()
 
-    if user_timezone:= integration_context.get("user_timezone"):
+    if user_timezone := integration_context.get("user_timezone"):
         demisto.debug(f"Got user timezone: {user_timezone} from integration context")
         return user_timezone
 

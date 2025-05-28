@@ -2,7 +2,6 @@ import mimetypes
 import re
 from collections.abc import Callable, Iterable
 
-from dataclasses import asdict, dataclass
 
 import demistomock as demisto  # noqa: F401
 

@@ -352,6 +352,8 @@ class QuickActionPreview:
             assignee (Optional[str]): The user or entity assigned to the action.
             creation_date (Optional[str]): The date and time when the item was created.
             severity (Optional[str]): Indicates the priority or severity level.
+    :return: None
+    :rtype: ``None``
         """
     id: Optional[str] = None
     title: Optional[str] = None
