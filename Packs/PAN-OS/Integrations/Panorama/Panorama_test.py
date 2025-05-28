@@ -2755,6 +2755,7 @@ def test_get_url_category_multiple_categories_for_url(mocker):
     # category with highest dbot-score
     assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
 
+
 def test_get_url_category_multiple_categories_for_url_missing_categories(mocker):
     """
     Given:
@@ -2798,6 +2799,7 @@ def test_get_url_category_multiple_categories_for_url_missing_categories(mocker)
     # validate
     for category in expected_results:
         assert category in results
+
 
 class TestDevices:
     def test_with_fw(self):
