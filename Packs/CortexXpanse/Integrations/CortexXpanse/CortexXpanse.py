@@ -1120,25 +1120,33 @@ def get_incident_command(client: Client, args: dict[str, Any]) -> CommandResults
 
 def list_external_websites_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     """
-    list_external_websites command: Get external websites .
+    asm-list-external-websites command: Get external websites.
 
     Args:
         client (Client): CortexXpanse client to use.
         args (dict): all command arguments, usually passed from ``demisto.args()``.
             ``args['filter']`` Used for filter websites based on authentication type
             ``args['limit']`` Used for limit num of results
+            ``args['use_page_token']`` Boolean value used to specify pagination
+            ``args['next_page_token']`` String value of a page token to get the next page of results
 
     Returns:
         CommandResults: A ``CommandResults`` object that is then passed to ``return_results``
     """
     limit = int(args.get("limit", DEFAULT_SEARCH_LIMIT))
     searchFilter = args.get("authentication")
+    use_page_token = args.get('use_page_token')
+    next_page_token = args.get('next_page_token')
     if limit > 500:
         raise ValueError("Limit cannot be more than 500, please try again")
 
     filters = {"filters": [], "search_to": limit}
     if searchFilter:
         filters["filters"] = [{"field": "authentication", "operator": "contains", "value": searchFilter}]
+    if use_page_token:
+        filters["use_page_token"] = use_page_token
+    if next_page_token:
+        filters["next_page_token"] = next_page_token
 
     response = client.get_external_websites(filters)
 

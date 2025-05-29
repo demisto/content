@@ -965,6 +965,16 @@ script:
     - name: limit
       description: Maximum number of assets to return. The maximum value is 100.
       defaultValue: "100"
+    - name: use_page_token
+      auto: PREDEFINED
+      predefined:
+      - "true"
+      - "false"
+      description: A boolean value to paginate the response data.  Required in order
+        to receive a next_page_token in the response.
+    - name: next_page_token
+      description: A string value representing the next page when pagination is used
+        via use_page_token.
     outputs:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
