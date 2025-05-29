@@ -2,7 +2,6 @@ Listen to a mailbox, enable incident triggering via e-mail
 
 ## Configure MailListener - POP3 in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. example.com) | True |

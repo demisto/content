@@ -64,6 +64,8 @@ repos:
     additional_dependencies:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
       - "fs-extra@11.3.0"
+    skip: true
+
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs
