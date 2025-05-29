@@ -181,12 +181,12 @@ script:
       type: String
   - name: wiz-get-resource
     arguments:
-      - description: resource provider unique id.
-        name: resource_id
-        required: false
-      - description: search by name or external ID.
-        name: resource_name
-        required: false
+    - description: resource provider unique id.
+      name: resource_id
+      required: false
+    - description: search by name or external ID.
+      name: resource_name
+      required: false
     description: Get details of a resource.
     outputs:
     - contextPath: Wiz.Manager.Resource.id
@@ -313,7 +313,7 @@ script:
       description: project name.
       required: true
   - name: wiz-rescan-machine-disk
-    description: DEPRECATED
+    description: DEPRECATED.
     deprecated: true
     arguments:
     - name: vm_id
@@ -322,9 +322,9 @@ script:
   - name: wiz-copy-to-forensics-account
     description: Copy VM's Volumes to a Forensics Account.
     arguments:
-      - name: resource_id
-        description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
-        required: true
+    - name: resource_id
+      description: ID of the resource to copy its Volumes. Can be Wiz ID or provider's ID.
+      required: true
   dockerimage: demisto/python3:3.11.10.115186
   isfetch: true
   runonce: false
