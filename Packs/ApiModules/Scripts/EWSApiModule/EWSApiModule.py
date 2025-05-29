@@ -709,43 +709,62 @@ class EWSClient:
 
     def reply_email(
         self,
-        inReplyTo: str,
+        in_reply_to: str,
         to: list[str],
         body: str,
         subject: str,
         bcc: list[str],
         cc: list[str],
-        htmlBody: Optional[str],
+        html_body: str | None,
         attachments: list,
-        from_mailbox: Optional[str] = None,
-        account: Optional[Account] = None,
+        from_mailbox: str | None = None,
+        account: Account | None = None,
+        handle_inline_image: bool = True,
     ) -> Message:
-        """
-        Send a reply email using the EWS account associated with this client or the provided account,
-        based on the provided parameters.
+        """Send a reply email using the EWS account.
 
-        :param inReplyTo: ID of the email to reply to
-        :param to: List of email addresses for the "To" field
-        :param body: Body of the email
-        :param subject: Subject of the email
-        :param bcc: List of 'BCC' email addresses
-        :param cc: List of 'CC' email addresses
-        :param htmlBody: HTML body of the email (overrides body)
-        :param attachments: List of attachments to include in the email
-        :param from_mailbox: Email address of the sender (optional)
-        :param account: Account for the mailbox containing the email to reply to (optional)
+        Sends a reply email using the EWS account associated with this client or the provided
+        account, based on the provided parameters.
 
-        :return: The sent message
+        Args:
+            in_reply_to (str): ID of the email to reply to.
+            to (list[str]): List of email addresses for the "To" field.
+            body (str): Body of the email.
+            subject (str): Subject of the email.
+            bcc (list[str]): List of 'BCC' email addresses.
+            cc (list[str]): List of 'CC' email addresses.
+            html_body (str | None): HTML body of the email (overrides body).
+            attachments (list): List of attachments to include in the email.
+            from_mailbox (str | None, optional): Email address of the sender. Defaults to None.
+            account (Account | None, optional): Account for the mailbox containing the email to reply to. Defaults to None.
+            handle_inline_image (bool, optional): Whether to process inline images in the HTML body. Defaults to True.
+
+        Returns:
+            Message: The sent message.
         """
+        demisto.debug(
+            f"reply_email: Starting with params: in_reply_to={in_reply_to}, to={to}, subject='{subject}', "
+            f"cc={cc}, bcc={bcc}, from_mailbox={from_mailbox}, handle_inline_image={handle_inline_image}, "
+            f"has_html_body={html_body is not None}, attachment_count={len(attachments)}"
+        )
+
         if not account:
+            demisto.debug("reply_email: No account provided, using default account")
             account = self.get_account()
-        item_to_reply_to = account.inbox.get(id=inReplyTo)  # pylint: disable=E1101
+
+        item_to_reply_to: Message | ErrorItemNotFound = account.inbox.get(id=in_reply_to)
         if isinstance(item_to_reply_to, ErrorItemNotFound):
+            demisto.debug(f"reply_email: Failed to find original message with ID {in_reply_to}")
             raise Exception(item_to_reply_to)
 
-        subject = subject or item_to_reply_to.subject
-        htmlBody, htmlAttachments = handle_html(htmlBody) if htmlBody else (None, [])
-        message_body = HTMLBody(htmlBody) if htmlBody else body
+        subject = subject or item_to_reply_to.subject or ""  # type: ignore[assignat]
+        html_attachments: list = []
+        if html_body and handle_inline_image:
+            demisto.debug("reply_email: Processing HTML body for inline images")
+            html_body, html_attachments = handle_html(html_body)
+            demisto.debug(f"reply_email: Found {len(html_attachments)} inline images in {html_body=}")
+
+        message_body = HTMLBody(html_body) if html_body else body
         reply = item_to_reply_to.create_reply(
             subject="Re: " + subject,
             body=message_body,
@@ -757,9 +776,10 @@ class EWSClient:
         reply = reply.save(account.drafts)
         m = account.inbox.get(id=reply.id)  # pylint: disable=E1101
 
-        attachments += htmlAttachments
-        for attachment in attachments:
+        attachments += html_attachments
+        for i, attachment in enumerate(attachments):
             if not isinstance(attachment, FileAttachment):
+                demisto.debug(f"reply_email: Converting attachment {i+1}/{len(attachments)} to FileAttachment")
                 if not attachment.get("cid"):
                     attachment = FileAttachment(name=attachment.get("name"), content=attachment.get("data"))
                 else:

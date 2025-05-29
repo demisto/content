@@ -62,6 +62,7 @@ BUILD = exchangelib.version.EXCHANGE_2013
 VERSION = exchangelib.Version(BUILD)
 AUTH_TYPE = BASIC
 MSG_ID = "message_1"
+MSG_NO_SUBJECT = "message_2"
 DICSOVERY_EWS_SERVER = "https://auto-discovered-server.com"
 DISCOVERY_SERVER_BUILD = exchangelib.version.EXCHANGE_2016
 DISCOVERY_VERSION = exchangelib.Version(DISCOVERY_SERVER_BUILD)
@@ -148,7 +149,8 @@ class MockAccount:
         self.inbox = MagicMock()
         self.drafts = MagicMock()
         self.drafts.messages = {
-            MSG_ID: Message(account=MagicMock(spec=exchangelib.Account), id=MSG_ID, subject="Test subject", body="Test body")
+            MSG_ID: Message(account=MagicMock(spec=exchangelib.Account), id=MSG_ID, subject="Test subject", body="Test body"),
+            MSG_NO_SUBJECT: Message(account=MagicMock(spec=exchangelib.Account), id=MSG_ID, subject=None, body=None),
         }
         self.inbox.get = MagicMock(side_effect=lambda id: self.drafts.messages.get(id))
 
@@ -679,7 +681,8 @@ def test_client_send_email(mocker, mock_account):
     assert message.account
 
 
-def test_client_reply_email(mocker, mock_account):
+@pytest.mark.parametrize("msg_type", [MSG_ID, MSG_NO_SUBJECT])
+def test_client_reply_email(mocker, mock_account, msg_type):
     """
     Given:
         - A configured EWSClient instance
@@ -713,13 +716,13 @@ def test_client_reply_email(mocker, mock_account):
     reply_cc = ["cc_recipient@example.com"]
     reply_bcc = []
     message = client.reply_email(
-        inReplyTo=MSG_ID,
+        in_reply_to=msg_type,
         to=reply_to,
         body=reply_body,
         subject="",
         bcc=reply_bcc,
         cc=reply_cc,
-        htmlBody=None,
+        html_body=None,
         attachments=[],
     )
 
