@@ -46,10 +46,17 @@ def append_email_signature(html_body):
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
     demisto.debug("append_email_signature")
-    email_signature = execute_command("getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False)
-    # Find the position of the closing </html> tag and insert the signature there
-    if re.search("(?i)</body>", html_body):
-        html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
+    is_succeed, email_signature = execute_command("getList", {"listName": "XSOAR - Email Communication Signature"},
+                                                  extract_contents=False,
+                                                  fail_on_error=False)
+    if is_succeed:
+        # Find the position of the closing </html> tag and insert the signature there
+        if re.search("(?i)</body>", html_body):
+            html_body = re.sub("(?i)</body>", f"\r\n{email_signature[0]['Contents']}\r\n</body>", html_body)
+    else:
+        demisto.debug(
+            "Error occurred while trying to load the `XSOAR - Email Communication Signature` list. No signature added to email"
+        )
 
     return html_body
 
@@ -90,7 +97,7 @@ def validate_email_sent(
     Returns:
         str: a message which indicates that the mail was sent successfully or an error message.
     """
-    email_reply = execute_reply_mail(
+    execute_reply_mail(
         incident_id,
         email_subject,
         subject_include_incident_id,
@@ -106,9 +113,6 @@ def validate_email_sent(
         email_code,
         mail_sender_instance,
     )
-
-    if is_error(email_reply):
-        return_error(f"Error:\n {get_error(email_reply)}")
 
     msg = f"Mail sent successfully. To: {email_to}"
     if email_cc:
@@ -178,7 +182,10 @@ def execute_reply_mail(
         if instances.get(mail_sender_instance, {}).get("brand") == "Gmail Single User":
             mail_content["references"] = email_latest_message
     demisto.debug(f"Sending email with the following subject: {subject_with_id}, and content: {mail_content}")
-    return execute_command("reply-mail", mail_content, extract_contents=False)
+    is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
+    if is_succeed:
+        return email_reply
+    return_error(f"Error:\n {email_reply}")
 
 
 def get_email_threads(incident_id):
@@ -191,8 +198,9 @@ def get_email_threads(incident_id):
     """
     # Get current email threads from context if any are present
     demisto.debug(f"Getting email threads for incident {incident_id}")
-    incident_context = execute_command("getContext", {"id": incident_id}, extract_contents=False)
+    _, incident_context = execute_command("getContext", {"id": incident_id}, extract_contents=False, fail_on_error=False)
     incident_email_threads = dict_safe_get(incident_context[0], ["Contents", "context", "EmailThreads"])
+
     return incident_email_threads
 
 
@@ -323,7 +331,7 @@ def send_new_email(
     # Get the custom email signature, if set, and append it to the message to be sent
     email_html_body = append_email_signature(email_html_body)
 
-    email_result = send_new_mail_request(
+    send_new_mail_request(
         incident_id,
         email_subject,
         subject_include_incident_id,
@@ -340,9 +348,6 @@ def send_new_email(
         mail_sender_instance,
         context_html_body,
     )
-
-    if is_error(email_result):
-        return_error(f"Error:\n {get_error(email_result)}")
 
     msg = f"Mail sent successfully. To: {email_to}"
     if email_cc:
@@ -417,7 +422,9 @@ def send_new_mail_request(
     demisto.debug(
         f"Sending email for incident {incident_id}, with the following subject: {email_subject}, and content: {mail_content}"
     )
-    email_result = execute_command("send-mail", mail_content, extract_contents=False)
+    is_succeed, email_result = execute_command("send-mail", mail_content, extract_contents=False, fail_on_error=False)
+    if not is_succeed:
+        return_error(f"Error:\n {email_result}")
 
     # Store message details in context entry
     create_thread_context(
@@ -484,7 +491,8 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
             execute_command(
-                "core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data}, extract_contents=False
+                "core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data}, extract_contents=False,
+                fail_on_error=False
             )
             if not isinstance(files, list):
                 files = [files]
@@ -547,7 +555,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         for note in notes:
             note_user = note["Metadata"]["user"]
             demisto.debug(f"Getting user data for user {note_user} in incident {incident_id}")
-            note_userdata = execute_command("getUserByUsername", {"username": note_user}, extract_contents=False)
+            _, note_userdata = execute_command("getUserByUsername", {"username": note_user}, extract_contents=False, fail_on_error=False)
             user_fullname = dict_safe_get(note_userdata[0], ["Contents", "name"]) or "DBot"
             reply_body += f"{user_fullname}: \n\n{note['Contents']}\n\n"
 
@@ -560,13 +568,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
 
         entry_note = json.dumps([{"Type": 1, "ContentsFormat": "html", "Contents": reply_body, "tags": ["email-thread"]}])
         demisto.debug(f"Adding note to incident {incident_id}")
-        entry_tags_res = execute_command(
-            "addEntries",
-            {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async},
-            extract_contents=False,
-        )
-        demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
-        entry_note_res = execute_command(
+        is_succeed, entry_note_res = execute_command(
             "core-api-post",
             {
                 "uri": "/entry/note",
@@ -574,10 +576,17 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
             },
             extract_contents=False,
         )
-        if is_error(entry_note_res):
-            return_error(get_error(entry_note_res))
-        if is_error(entry_tags_res):
-            return_error(get_error(entry_tags_res))
+        if not is_succeed:
+            return_error(entry_note_res)
+
+        is_succeed, entry_tags_res = execute_command(
+            "addEntries",
+            {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async},
+            extract_contents=False,
+        )
+        if not is_succeed:
+            return_error(entry_tags_res)
+        demisto.debug(f"Removing note:{note.get('ID')} from incident {incident_id}")
 
     else:
         return_error("Please add a note")
@@ -729,6 +738,7 @@ def reset_fields():
         "setIncident",
         {"emailnewrecipients": "", "emailnewsubject": "", "emailnewbody": "", "addcctoemail": "", "addbcctoemail": ""},
         extract_contents=False,
+        fail_on_error=False
     )
 
 
@@ -845,7 +855,7 @@ def convert_internal_url_to_base64(match):
         str: The src attribute with the base64-encoded image.
     """
     original_src = match.group(1)
-    result = execute_command("core-api-download", {"uri": original_src}, extract_contents=False)
+    _, result = execute_command("core-api-download", {"uri": original_src}, extract_contents=False, fail_on_error=False)
     with open(demisto.getFilePath(result[0]["FileID"]).get("path"), "rb") as f:
         base64_data_image = base64.b64encode(f.read()).decode("utf-8")
     image_type = handle_image_type(base64_data_image)
@@ -919,7 +929,9 @@ def single_thread_reply(
         email_code = get_unique_code(incident_id)
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
         execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}}, extract_contents=False
+            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}},
+            extract_contents=False,
+            fail_on_error=False
         )
     try:
         final_email_cc = get_email_cc(email_cc, add_cc)
@@ -1006,11 +1018,14 @@ def multi_thread_new(
             "setIncident",
             {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}},
             extract_contents=False,
+            fail_on_error=False
         )
     else:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {thread_code}")
         execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}}, extract_contents=False
+            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}},
+            extract_contents=False,
+            fail_on_error=False
         )
     try:
         entry_id_list = get_entry_id_list(incident_id, [], new_email_attachments, files)
@@ -1368,7 +1383,8 @@ def main():
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
         demisto.debug("Getting notes")
-        notes = execute_command("getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False)
+        _, notes = execute_command("getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False,
+                                   fail_on_error=False)
 
         if new_email_attachments:
             new_attachment_names = ", ".join([attachment.get("name", "") for attachment in new_email_attachments])
