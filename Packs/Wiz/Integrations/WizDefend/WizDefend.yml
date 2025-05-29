@@ -110,46 +110,46 @@ configuration:
 - name: origin
   display: Cloud event origin to fetch.
   options:
-    - WIZ_SENSOR
-    - WIZ_ADMISSION_CONTROLLER
-    - WIZ_FILE_INTEGRITY_MONITORING
-    - AWS_GUARD_DUTY
-    - AWS_CLOUDTRAIL
-    - AZURE_DEFENDER_FOR_CLOUD
-    - AZURE_ACTIVITY_LOGS
-    - GCP_SECURITY_COMMAND_CENTER
-    - GCP_AUDIT_LOGS
-    - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
-    - AZURE_ACTIVE_DIRECTORY
-    - GOOGLE_WORKSPACE_AUDIT_LOGS
-    - WIN_SENTINEL_ONE
-    - WIZ_CODE_ANALYZER
-    - WIN_SALT
-    - WIN_NONAME
-    - WIN_CROWD_STRIKE
-    - WIN_TRACEABLE
-    - WIZ_CLI
-    - WIZ_IDE_EXTENSION
-    - WIZ_THREAT_DETECTION
-    - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
-    - WIZ_CUSTOM_INTEGRATION
-    - WIN_AKAMAI_GUARDICORE
-    - OKTA_SYSTEM_LOGS
-    - WIN_SNOWFLAKE
-    - WIN_FALCO
-    - OCI_AUDIT_LOGS
-    - WIZ_VCS_FETCHER
-    - AWS_VPC_FLOW_LOGS
-    - GITHUB_AUDIT_LOGS
-    - WIN_FIRE_TAIL
-    - AZURE_STORAGE_ACCOUNT
-    - AZURE_KEY_VAULT
-    - AWS_RESOLVER_QUERY_LOGS
-    - AWS_S3_DATA_EVENTS
-    - GCP_STORAGE_DATA_ACCESS_LOGS
-    - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
-    - WIZ_BROWSER_EXTENSION
-    - WIN_SALT_SECURITY
+  - WIZ_SENSOR
+  - WIZ_ADMISSION_CONTROLLER
+  - WIZ_FILE_INTEGRITY_MONITORING
+  - AWS_GUARD_DUTY
+  - AWS_CLOUDTRAIL
+  - AZURE_DEFENDER_FOR_CLOUD
+  - AZURE_ACTIVITY_LOGS
+  - GCP_SECURITY_COMMAND_CENTER
+  - GCP_AUDIT_LOGS
+  - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+  - AZURE_ACTIVE_DIRECTORY
+  - GOOGLE_WORKSPACE_AUDIT_LOGS
+  - WIN_SENTINEL_ONE
+  - WIZ_CODE_ANALYZER
+  - WIN_SALT
+  - WIN_NONAME
+  - WIN_CROWD_STRIKE
+  - WIN_TRACEABLE
+  - WIZ_CLI
+  - WIZ_IDE_EXTENSION
+  - WIZ_THREAT_DETECTION
+  - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+  - WIZ_CUSTOM_INTEGRATION
+  - WIN_AKAMAI_GUARDICORE
+  - OKTA_SYSTEM_LOGS
+  - WIN_SNOWFLAKE
+  - WIN_FALCO
+  - OCI_AUDIT_LOGS
+  - WIZ_VCS_FETCHER
+  - AWS_VPC_FLOW_LOGS
+  - GITHUB_AUDIT_LOGS
+  - WIN_FIRE_TAIL
+  - AZURE_STORAGE_ACCOUNT
+  - AZURE_KEY_VAULT
+  - AWS_RESOLVER_QUERY_LOGS
+  - AWS_S3_DATA_EVENTS
+  - GCP_STORAGE_DATA_ACCESS_LOGS
+  - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+  - WIZ_BROWSER_EXTENSION
+  - WIN_SALT_SECURITY
   type: 16
   required: false
   section: Collect
@@ -191,80 +191,80 @@ script:
     - name: origin
       description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
       predefined:
-        - WIZ_SENSOR
-        - WIZ_ADMISSION_CONTROLLER
-        - WIZ_FILE_INTEGRITY_MONITORING
-        - AWS_GUARD_DUTY
-        - AWS_CLOUDTRAIL
-        - AZURE_DEFENDER_FOR_CLOUD
-        - AZURE_ACTIVITY_LOGS
-        - GCP_SECURITY_COMMAND_CENTER
-        - GCP_AUDIT_LOGS
-        - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
-        - AZURE_ACTIVE_DIRECTORY
-        - GOOGLE_WORKSPACE_AUDIT_LOGS
-        - WIN_SENTINEL_ONE
-        - WIZ_CODE_ANALYZER
-        - WIN_SALT
-        - WIN_NONAME
-        - WIN_CROWD_STRIKE
-        - WIN_TRACEABLE
-        - WIZ_CLI
-        - WIZ_IDE_EXTENSION
-        - WIZ_THREAT_DETECTION
-        - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
-        - WIZ_CUSTOM_INTEGRATION
-        - WIN_AKAMAI_GUARDICORE
-        - OKTA_SYSTEM_LOGS
-        - WIN_SNOWFLAKE
-        - WIN_FALCO
-        - OCI_AUDIT_LOGS
-        - WIZ_VCS_FETCHER
-        - AWS_VPC_FLOW_LOGS
-        - GITHUB_AUDIT_LOGS
-        - WIN_FIRE_TAIL
-        - AZURE_STORAGE_ACCOUNT
-        - AZURE_KEY_VAULT
-        - AWS_RESOLVER_QUERY_LOGS
-        - AWS_S3_DATA_EVENTS
-        - GCP_STORAGE_DATA_ACCESS_LOGS
-        - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
-        - WIZ_BROWSER_EXTENSION
-        - WIN_SALT_SECURITY
+      - WIZ_SENSOR
+      - WIZ_ADMISSION_CONTROLLER
+      - WIZ_FILE_INTEGRITY_MONITORING
+      - AWS_GUARD_DUTY
+      - AWS_CLOUDTRAIL
+      - AZURE_DEFENDER_FOR_CLOUD
+      - AZURE_ACTIVITY_LOGS
+      - GCP_SECURITY_COMMAND_CENTER
+      - GCP_AUDIT_LOGS
+      - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+      - AZURE_ACTIVE_DIRECTORY
+      - GOOGLE_WORKSPACE_AUDIT_LOGS
+      - WIN_SENTINEL_ONE
+      - WIZ_CODE_ANALYZER
+      - WIN_SALT
+      - WIN_NONAME
+      - WIN_CROWD_STRIKE
+      - WIN_TRACEABLE
+      - WIZ_CLI
+      - WIZ_IDE_EXTENSION
+      - WIZ_THREAT_DETECTION
+      - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+      - WIZ_CUSTOM_INTEGRATION
+      - WIN_AKAMAI_GUARDICORE
+      - OKTA_SYSTEM_LOGS
+      - WIN_SNOWFLAKE
+      - WIN_FALCO
+      - OCI_AUDIT_LOGS
+      - WIZ_VCS_FETCHER
+      - AWS_VPC_FLOW_LOGS
+      - GITHUB_AUDIT_LOGS
+      - WIN_FIRE_TAIL
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_KEY_VAULT
+      - AWS_RESOLVER_QUERY_LOGS
+      - AWS_S3_DATA_EVENTS
+      - GCP_STORAGE_DATA_ACCESS_LOGS
+      - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+      - WIZ_BROWSER_EXTENSION
+      - WIN_SALT_SECURITY
       auto: PREDEFINED
     - name: platform
       description: Get Detections for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
       predefined:
-        - AWS
-        - GCP
-        - Azure
-        - OCI
-        - Alibaba
-        - vSphere
-        - OpenStack
-        - AKS
-        - EKS
-        - GKE
-        - Kubernetes
-        - OpenShift
-        - OKE
-        - Linode
-        - AzureDevOps
-        - GitHub
-        - GitLab
-        - Bitbucket
-        - Terraform
-        - OpenAI
-        - Snowflake
-        - MongoDBAtlas
-        - Databricks
-        - Okta
-        - Cloudflare
-        - Microsoft365
-        - Wiz
-        - ACK
-        - SelfHosted
-        - LKE
+      - AWS
+      - GCP
+      - Azure
+      - OCI
+      - Alibaba
+      - vSphere
+      - OpenStack
+      - AKS
+      - EKS
+      - GKE
+      - Kubernetes
+      - OpenShift
+      - OKE
+      - Linode
+      - AzureDevOps
+      - GitHub
+      - GitLab
+      - Bitbucket
+      - Terraform
+      - OpenAI
+      - Snowflake
+      - MongoDBAtlas
+      - Databricks
+      - Okta
+      - Cloudflare
+      - Microsoft365
+      - Wiz
+      - ACK
+      - SelfHosted
+      - LKE
       auto: PREDEFINED
       isArray: true
     - name: resource_id
@@ -335,161 +335,161 @@ script:
   - name: wiz-get-threat
     description: Retrieve detailed information about a specific Wiz threat by issue ID.
     arguments:
-      - description: Wiz internal issue ID to retrieve.
-        name: issue_id
-        isArray: true
-        required: false
+    - description: Wiz internal issue ID to retrieve.
+      name: issue_id
+      isArray: true
+      required: false
     outputs:
-      - contextPath: Wiz.Manager.Threat.id
-        description: Threat ID in Wiz.
-        type: String
-      - contextPath: Wiz.Manager.Threat.severity
-        description: Threat severity.
-        type: String
-      - contextPath: Wiz.Manager.Threat.description
-        description: Threat description.
-        type: String
-      - contextPath: Wiz.Manager.Threat.createdAt
-        description: Threat creation time.
-        type: Date
-      - contextPath: Wiz.Manager.Threat.resources
-        description: Related resources.
-        type: String
-      - contextPath: Wiz.Manager.Threat.url
-        description: URL to the Wiz Threat in the Wiz console.
-        type: String
+    - contextPath: Wiz.Manager.Threat.id
+      description: Threat ID in Wiz.
+      type: String
+    - contextPath: Wiz.Manager.Threat.severity
+      description: Threat severity.
+      type: String
+    - contextPath: Wiz.Manager.Threat.description
+      description: Threat description.
+      type: String
+    - contextPath: Wiz.Manager.Threat.createdAt
+      description: Threat creation time.
+      type: Date
+    - contextPath: Wiz.Manager.Threat.resources
+      description: Related resources.
+      type: String
+    - contextPath: Wiz.Manager.Threat.url
+      description: URL to the Wiz Threat in the Wiz console.
+      type: String
   - name: wiz-get-threats
     description: Retrieve Wiz threats based on specified filters.
     arguments:
-      - name: creation_days_back
-        description: Time window in days to retrieve threats (range 1-30).
-        defaultValue: 5
-        required: false
-      - name: cloud_account_or_cloud_organization
-        description: Threat cloud account or cloud organization to fetch.
-        required: false
-      - name: platform
-        description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
-        predefined:
-          - AWS
-          - GCP
-          - Azure
-          - OCI
-          - Alibaba
-          - vSphere
-          - OpenStack
-          - AKS
-          - EKS
-          - GKE
-          - Kubernetes
-          - OpenShift
-          - OKE
-          - Linode
-          - AzureDevOps
-          - GitHub
-          - GitLab
-          - Bitbucket
-          - Terraform
-          - OpenAI
-          - Snowflake
-          - MongoDBAtlas
-          - Databricks
-          - Okta
-          - Cloudflare
-          - Microsoft365
-          - Wiz
-          - ACK
-          - SelfHosted
-          - LKE
-        auto: PREDEFINED
-        isArray: true
-      - name: resource_id
-        description: Filter threats by specific resource ID.
-      - name: severity
-        auto: PREDEFINED
-        predefined:
-          - CRITICAL
-          - HIGH
-          - MEDIUM
-          - LOW
-          - INFORMATIONAL
-        description: Minimum threat severity to fetch.
-      - name: status
-        auto: PREDEFINED
-        predefined:
-          - OPEN
-          - IN_PROGRESS
-          - RESOLVED
-          - REJECTED
-        isArray: true
-        defaultValue: OPEN, IN_PROGRESS
-        description: Filter threats by status (e.g., OPEN, IN_PROGRESS).
-      - name: origin
-        description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
-        predefined:
-          - WIZ_SENSOR
-          - WIZ_ADMISSION_CONTROLLER
-          - WIZ_FILE_INTEGRITY_MONITORING
-          - AWS_GUARD_DUTY
-          - AWS_CLOUDTRAIL
-          - AZURE_DEFENDER_FOR_CLOUD
-          - AZURE_ACTIVITY_LOGS
-          - GCP_SECURITY_COMMAND_CENTER
-          - GCP_AUDIT_LOGS
-          - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
-          - AZURE_ACTIVE_DIRECTORY
-          - GOOGLE_WORKSPACE_AUDIT_LOGS
-          - WIN_SENTINEL_ONE
-          - WIZ_CODE_ANALYZER
-          - WIN_SALT
-          - WIN_NONAME
-          - WIN_CROWD_STRIKE
-          - WIN_TRACEABLE
-          - WIZ_CLI
-          - WIZ_IDE_EXTENSION
-          - WIZ_THREAT_DETECTION
-          - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
-          - WIZ_CUSTOM_INTEGRATION
-          - WIN_AKAMAI_GUARDICORE
-          - OKTA_SYSTEM_LOGS
-          - WIN_SNOWFLAKE
-          - WIN_FALCO
-          - OCI_AUDIT_LOGS
-          - WIZ_VCS_FETCHER
-          - AWS_VPC_FLOW_LOGS
-          - GITHUB_AUDIT_LOGS
-          - WIN_FIRE_TAIL
-          - AZURE_STORAGE_ACCOUNT
-          - AZURE_KEY_VAULT
-          - AWS_RESOLVER_QUERY_LOGS
-          - AWS_S3_DATA_EVENTS
-          - GCP_STORAGE_DATA_ACCESS_LOGS
-          - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
-          - WIZ_BROWSER_EXTENSION
-          - WIN_SALT_SECURITY
-        auto: PREDEFINED
-      - name: project
-        description: Filter Threats by project.
-        required: false
+    - name: creation_days_back
+      description: Time window in days to retrieve threats (range 1-30).
+      defaultValue: 5
+      required: false
+    - name: cloud_account_or_cloud_organization
+      description: Threat cloud account or cloud organization to fetch.
+      required: false
+    - name: platform
+      description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
+      predefined:
+      - AWS
+      - GCP
+      - Azure
+      - OCI
+      - Alibaba
+      - vSphere
+      - OpenStack
+      - AKS
+      - EKS
+      - GKE
+      - Kubernetes
+      - OpenShift
+      - OKE
+      - Linode
+      - AzureDevOps
+      - GitHub
+      - GitLab
+      - Bitbucket
+      - Terraform
+      - OpenAI
+      - Snowflake
+      - MongoDBAtlas
+      - Databricks
+      - Okta
+      - Cloudflare
+      - Microsoft365
+      - Wiz
+      - ACK
+      - SelfHosted
+      - LKE
+      auto: PREDEFINED
+      isArray: true
+    - name: resource_id
+      description: Filter threats by specific resource ID.
+    - name: severity
+      auto: PREDEFINED
+      predefined:
+      - CRITICAL
+      - HIGH
+      - MEDIUM
+      - LOW
+      - INFORMATIONAL
+      description: Minimum threat severity to fetch.
+    - name: status
+      auto: PREDEFINED
+      predefined:
+      - OPEN
+      - IN_PROGRESS
+      - RESOLVED
+      - REJECTED
+      isArray: true
+      defaultValue: OPEN, IN_PROGRESS
+      description: Filter threats by status (e.g., OPEN, IN_PROGRESS).
+    - name: origin
+      description: Cloud event origin. You can insert multiple cloud event origins in this format ORIGIN1,ORIGIN2 etc...
+      predefined:
+      - WIZ_SENSOR
+      - WIZ_ADMISSION_CONTROLLER
+      - WIZ_FILE_INTEGRITY_MONITORING
+      - AWS_GUARD_DUTY
+      - AWS_CLOUDTRAIL
+      - AZURE_DEFENDER_FOR_CLOUD
+      - AZURE_ACTIVITY_LOGS
+      - GCP_SECURITY_COMMAND_CENTER
+      - GCP_AUDIT_LOGS
+      - WIZ_AGENTLESS_FILE_INTEGRITY_MONITORING
+      - AZURE_ACTIVE_DIRECTORY
+      - GOOGLE_WORKSPACE_AUDIT_LOGS
+      - WIN_SENTINEL_ONE
+      - WIZ_CODE_ANALYZER
+      - WIN_SALT
+      - WIN_NONAME
+      - WIN_CROWD_STRIKE
+      - WIN_TRACEABLE
+      - WIZ_CLI
+      - WIZ_IDE_EXTENSION
+      - WIZ_THREAT_DETECTION
+      - WIZ_KUBERNETES_AUDIT_LOGS_COLLECTOR
+      - WIZ_CUSTOM_INTEGRATION
+      - WIN_AKAMAI_GUARDICORE
+      - OKTA_SYSTEM_LOGS
+      - WIN_SNOWFLAKE
+      - WIN_FALCO
+      - OCI_AUDIT_LOGS
+      - WIZ_VCS_FETCHER
+      - AWS_VPC_FLOW_LOGS
+      - GITHUB_AUDIT_LOGS
+      - WIN_FIRE_TAIL
+      - AZURE_STORAGE_ACCOUNT
+      - AZURE_KEY_VAULT
+      - AWS_RESOLVER_QUERY_LOGS
+      - AWS_S3_DATA_EVENTS
+      - GCP_STORAGE_DATA_ACCESS_LOGS
+      - AWS_CLOUDTRAIL_NETWORK_ACTIVITY
+      - WIZ_BROWSER_EXTENSION
+      - WIN_SALT_SECURITY
+      auto: PREDEFINED
+    - name: project
+      description: Filter Threats by project.
+      required: false
     outputs:
-      - contextPath: Wiz.Manager.Threats.entitySnapshot
-        description: All resource details.
-        type: String
-      - contextPath: Wiz.Manager.Threats.createdAt
-        description: Threat created at.
-        type: String
-      - contextPath: Wiz.Manager.Threats.id
-        description: Wiz Threat ID.
-        type: String
-      - contextPath: Wiz.Manager.Threats.url
-        description: Wiz Threat URL.
-        type: String
-      - contextPath: Wiz.Manager.Threats.severity
-        description: Wiz Threat severity.
-        type: String
-      - contextPath: Wiz.Manager.Threats.status
-        description: Wiz Threat status.
-        type: String
+    - contextPath: Wiz.Manager.Threats.entitySnapshot
+      description: All resource details.
+      type: String
+    - contextPath: Wiz.Manager.Threats.createdAt
+      description: Threat created at.
+      type: String
+    - contextPath: Wiz.Manager.Threats.id
+      description: Wiz Threat ID.
+      type: String
+    - contextPath: Wiz.Manager.Threats.url
+      description: Wiz Threat URL.
+      type: String
+    - contextPath: Wiz.Manager.Threats.severity
+      description: Wiz Threat severity.
+      type: String
+    - contextPath: Wiz.Manager.Threats.status
+      description: Wiz Threat status.
+      type: String
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
@@ -498,4 +498,4 @@ script:
   type: python
 tests:
 - No tests
-fromversion: 6.0.0
+fromversion: 6.10.0

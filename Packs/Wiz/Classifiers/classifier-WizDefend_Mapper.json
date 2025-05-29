@@ -1,275 +1,275 @@
 {
-    "description": "Maps WizDefend Detection fields for use in Integration Playbooks.",
-    "feed": false,
-    "id": "WizDefend Mapper",
-    "mapping": {
-        "WizDefend Detection": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Details": {
-                    "complex": null,
-                    "simple": "description"
-                },
-                "Wiz Detection ID": {
-                    "complex": null,
-                    "simple": "id"
-                },
-                "Wiz Detection URL": {
-                    "complex": null,
-                    "simple": "url"
-                },
-                "Wiz Issue ID": {
-                    "complex": null,
-                    "simple": "issue.id"
-                },
-                "Wiz Issue URL": {
-                    "complex": null,
-                    "simple": "issue.url"
-                },
-                "Wiz Cloud Account": {
-                    "complex": {
-                        "accessor": "externalId",
-                        "filters": [],
-                        "root": "cloudAccounts",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Cloud Account Name": {
-                    "complex": {
-                        "accessor": "name",
-                        "filters": [],
-                        "root": "cloudAccounts",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Cloud Platform": {
-                    "complex": {
-                        "accessor": "cloudProvider",
-                        "filters": [],
-                        "root": "cloudAccounts",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Resource ID": {
-                    "complex": {
-                        "accessor": "id",
-                        "filters": [],
-                        "root": "resources",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Resource Cloud ID": {
-                    "complex": {
-                        "accessor": "externalId",
-                        "filters": [],
-                        "root": "resources",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Resource Region": {
-                    "complex": {
-                        "accessor": "region",
-                        "filters": [],
-                        "root": "resources",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Resource Type": {
-                    "complex": {
-                        "accessor": "type",
-                        "filters": [],
-                        "root": "resources",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Resource Native Type": {
-                    "complex": {
-                        "accessor": "nativeType",
-                        "filters": [],
-                        "root": "resources",
-                        "transformers": []
-                    },
-                    "simple": ""
-                },
-                "Wiz Issue Due Date": {
-                    "complex": null,
-                    "simple": "issue.dueAt"
-                },
-                "Wiz Details": {
-                    "complex": null,
-                    "simple": "description"
-                },
-                "Wiz Issue Projects": {
-                    "complex": null,
-                    "simple": "issue.projects"
-                },
-                "Wiz Issue Resolution Recommendation": {
-                    "complex": null,
-                    "simple": "issue.resolutionReason"
-                },
-                "Wiz Issue Note": {
-                    "complex": null,
-                    "simple": "issue.notes.text"
-                },
-                "severity": {
-                    "complex": {
-                        "accessor": "severity",
-                        "filters": [],
-                        "root": "",
-                        "transformers": [
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "4"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "CRITICAL"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "3"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "HIGH"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "2"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "MEDIUM"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "1"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "LOW"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            },
-                            {
-                                "args": {
-                                    "limit": {
-                                        "isContext": false,
-                                        "value": null
-                                    },
-                                    "replaceWith": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "0.5"
-                                        }
-                                    },
-                                    "toReplace": {
-                                        "isContext": false,
-                                        "value": {
-                                            "complex": null,
-                                            "simple": "INFORMATIONAL"
-                                        }
-                                    }
-                                },
-                                "operator": "replace"
-                            }
-                        ]
-                    },
-                    "simple": ""
-                }
-            }
+  "description": "Maps WizDefend Detection fields for use in Integration Playbooks.",
+  "feed": false,
+  "id": "WizDefend Mapper",
+  "mapping": {
+    "WizDefend Detection": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "Details": {
+          "complex": null,
+          "simple": "description"
         },
-        "dbot_classification_incident_type_all": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "details": {
-                    "complex": null,
-                    "simple": "description"
+        "Wiz Detection ID": {
+          "complex": null,
+          "simple": "id"
+        },
+        "Wiz Detection URL": {
+          "complex": null,
+          "simple": "url"
+        },
+        "Wiz Issue ID": {
+          "complex": null,
+          "simple": "issue.id"
+        },
+        "Wiz Issue URL": {
+          "complex": null,
+          "simple": "issue.url"
+        },
+        "Wiz Cloud Account": {
+          "complex": {
+            "accessor": "externalId",
+            "filters": [],
+            "root": "cloudAccounts",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Cloud Account Name": {
+          "complex": {
+            "accessor": "name",
+            "filters": [],
+            "root": "cloudAccounts",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Cloud Platform": {
+          "complex": {
+            "accessor": "cloudProvider",
+            "filters": [],
+            "root": "cloudAccounts",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Resource ID": {
+          "complex": {
+            "accessor": "id",
+            "filters": [],
+            "root": "resources",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Resource Cloud ID": {
+          "complex": {
+            "accessor": "externalId",
+            "filters": [],
+            "root": "resources",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Resource Region": {
+          "complex": {
+            "accessor": "region",
+            "filters": [],
+            "root": "resources",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Resource Type": {
+          "complex": {
+            "accessor": "type",
+            "filters": [],
+            "root": "resources",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Resource Native Type": {
+          "complex": {
+            "accessor": "nativeType",
+            "filters": [],
+            "root": "resources",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "Wiz Issue Due Date": {
+          "complex": null,
+          "simple": "issue.dueAt"
+        },
+        "Wiz Details": {
+          "complex": null,
+          "simple": "description"
+        },
+        "Wiz Issue Projects": {
+          "complex": null,
+          "simple": "issue.projects"
+        },
+        "Wiz Issue Resolution Recommendation": {
+          "complex": null,
+          "simple": "issue.resolutionReason"
+        },
+        "Wiz Issue Note": {
+          "complex": null,
+          "simple": "issue.notes.text"
+        },
+        "severity": {
+          "complex": {
+            "accessor": "severity",
+            "filters": [],
+            "root": "",
+            "transformers": [
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false,
+                    "value": null
+                  },
+                  "replaceWith": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "4"
+                    }
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "CRITICAL"
+                    }
+                  }
                 },
-                "name": {
-                    "complex": {
-                        "accessor": "rule.name",
-                        "filters": [],
-                        "root": "ruleMatch",
-                        "transformers": []
-                    },
-                    "simple": ""
+                "operator": "replace"
+              },
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false,
+                    "value": null
+                  },
+                  "replaceWith": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "3"
+                    }
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "HIGH"
+                    }
+                  }
                 },
-                "severity": {
-                    "complex": null,
-                    "simple": "severity"
-                }
-            }
+                "operator": "replace"
+              },
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false,
+                    "value": null
+                  },
+                  "replaceWith": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "2"
+                    }
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "MEDIUM"
+                    }
+                  }
+                },
+                "operator": "replace"
+              },
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false,
+                    "value": null
+                  },
+                  "replaceWith": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "1"
+                    }
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "LOW"
+                    }
+                  }
+                },
+                "operator": "replace"
+              },
+              {
+                "args": {
+                  "limit": {
+                    "isContext": false,
+                    "value": null
+                  },
+                  "replaceWith": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "0.5"
+                    }
+                  },
+                  "toReplace": {
+                    "isContext": false,
+                    "value": {
+                      "complex": null,
+                      "simple": "INFORMATIONAL"
+                    }
+                  }
+                },
+                "operator": "replace"
+              }
+            ]
+          },
+          "simple": ""
         }
+      }
     },
-    "name": "WizDefend Mapper",
-    "type": "mapping-incoming",
-    "version": -1,
-    "fromVersion": "6.0.0"
+    "dbot_classification_incident_type_all": {
+      "dontMapEventToLabels": false,
+      "internalMapping": {
+        "details": {
+          "complex": null,
+          "simple": "description"
+        },
+        "name": {
+          "complex": {
+            "accessor": "rule.name",
+            "filters": [],
+            "root": "ruleMatch",
+            "transformers": []
+          },
+          "simple": ""
+        },
+        "severity": {
+          "complex": null,
+          "simple": "severity"
+        }
+      }
+    }
+  },
+  "name": "WizDefend Mapper",
+  "type": "mapping-incoming",
+  "version": -1,
+  "fromVersion": "6.10.0"
 }
