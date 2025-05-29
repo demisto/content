@@ -19,6 +19,7 @@ fromversion: 5.0.0
 marketplaces:
 - xsoar
 - marketplacev2
-dockerimage: demisto/python3:3.11.10.115186
+- platform
+dockerimage: demisto/python3:3.12.8.3296088
 tests:
 - No tests (auto formatted)

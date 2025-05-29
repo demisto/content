@@ -104,3 +104,5 @@ script:
   dockerimage: demisto/btfl-soup:1.0.1.115405
   feed: true
   subtype: python3
+tests:
+- No tests

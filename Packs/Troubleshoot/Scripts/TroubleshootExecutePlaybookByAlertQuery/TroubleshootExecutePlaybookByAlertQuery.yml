@@ -1,7 +1,7 @@
 args:
 - name: query
-  description: A query string to filter alerts. For example, to fetch pending alerts, use "runStatus:\"Pending\"".
-  defaultValue: "runStatus:\"Pending\""
+  description: A query string to filter alerts. For example, to fetch pending alerts, use "runStatus:Pending".
+  defaultValue: "runStatus:Pending"
 - name: playbook_id
   description: The ID of the playbook to apply to the fetched alerts.
 - name: playbook_name

@@ -2,7 +2,7 @@
     "name": "Bambenek Consulting Feed",
     "description": "Indicators feed from Bambenek Consulting",
     "support": "partner",
-    "currentVersion": "1.2.5",
+    "currentVersion": "1.2.6",
     "author": "Bambenek Labs",
     "url": "https://wellfedintelligence.com/",
     "email": "support@bambenekconsulting.com",
@@ -20,6 +20,13 @@
     ],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }

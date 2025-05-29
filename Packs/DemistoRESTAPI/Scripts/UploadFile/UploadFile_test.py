@@ -38,10 +38,10 @@ RAW_RESPONSE = [
                             "sha1": "29f4d33b0895aa46a1dad97b54096d4e68e3d91a",
                             "sha256": "6577fb6b9a5f4779f835fec594d21267aedf3c7f3ee183c4bc2fd3f9fca52df4",
                             "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d742"
-                                      "0becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
+                            "0becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
                             "size": 250301,
                             "ssdeep": "6144:IwUbC/ok4IeyUvtRCRvhp2h8C+GYPcX6PorXMido+vWap81:z7ok4XjtIaxrKArXBoqw",
-                            "type": "application/pdf"
+                            "type": "application/pdf",
                         },
                         "format": "",
                         "hasRole": False,
@@ -73,12 +73,10 @@ RAW_RESPONSE = [
                         "timezoneOffset": 0,
                         "type": 3,
                         "user": "admin",
-                        "version": 2
+                        "version": 2,
                     }
                 ],
-                "entryUsers": [
-                    "admin"
-                ],
+                "entryUsers": ["admin"],
                 "hasRole": False,
                 "highPriority": False,
                 "id": "899",
@@ -98,16 +96,11 @@ RAW_RESPONSE = [
                 "sortValues": None,
                 "status": 0,
                 "systems": None,
-                "tags": [
-                    "Automation"
-                ],
+                "tags": ["Automation"],
                 "totalEntries": 0,
                 "type": 0,
-                "users": [
-                    "admin",
-                    "analyst"
-                ],
-                "version": 8
+                "users": ["admin", "analyst"],
+                "version": 8,
             }
         },
         "ContentsFormat": "json",
@@ -147,7 +140,7 @@ RAW_RESPONSE = [
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": '!core-api-multipart uri="entry/upload/899" entryID="722@737" body="test_bark"',
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -169,7 +162,7 @@ RAW_RESPONSE = [
             "timezoneOffset": 0,
             "type": 1,
             "user": "",
-            "version": 0
+            "version": 0,
         },
         "ModuleName": "Core REST API_instance_1",
         "Note": False,
@@ -177,7 +170,7 @@ RAW_RESPONSE = [
         "System": "",
         "Tags": None,
         "Type": 1,
-        "Version": 0
+        "Version": 0,
     }
 ]
 
@@ -193,8 +186,8 @@ def test_upload_file(mocker):
     - run the upload_file
     Validate the content of the HumanReadable.
     """
-    mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE)
-    command_results = upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
+    mocker.patch("UploadFile.upload_file", return_value=RAW_RESPONSE)
+    command_results = upload_file_command({"incidentId": "1", "entryID": "12@12", "body": "test_bark"})
     assert "test_bark" in command_results[0].readable_output
 
 
@@ -207,10 +200,10 @@ def test_upload_file_multiple_entry_ids(mocker):
     Then
     - Validate that the API request was called for each entry ID.
     """
-    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'incidentId': '1', 'entryID': '1,2'})
-    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
-    assert execute_command_mocker.call_args_list[1][0][1]['entryID'] == '2'
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand")
+    upload_file_command({"incidentId": "1", "entryID": "1,2"})
+    assert execute_command_mocker.call_args_list[0][0][1]["entryID"] == "1"
+    assert execute_command_mocker.call_args_list[1][0][1]["entryID"] == "2"
 
 
 def test_upload_file_one_entry_id(mocker):
@@ -222,10 +215,10 @@ def test_upload_file_one_entry_id(mocker):
     Then
     - Validate that the API request was called only one entry ID.
     """
-    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'incidentId': '1', 'entryID': '1'})
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand")
+    upload_file_command({"incidentId": "1", "entryID": "1"})
     assert len(execute_command_mocker.call_args_list) == 1
-    assert execute_command_mocker.call_args_list[0][0][1]['entryID'] == '1'
+    assert execute_command_mocker.call_args_list[0][0][1]["entryID"] == "1"
 
 
 RAW_RESPONSE_ERROR = [
@@ -265,10 +258,10 @@ RAW_RESPONSE_ERROR = [
                             "sha1": "29f4d33b0895aa46a1dad97b54096d4e68e3d91a",
                             "sha256": "6577fb6b9a5f4779f835fec594d21267aedf3c7f3ee183c4bc2fd3f9fca52df4",
                             "sha512": "174c4574cbe429bb646e19ed1973b2ccfc314bc951f251684591105d1d0f5fe8aa9f67beae0d7420"
-                                      "becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
+                            "becec61bcfd51e17d270683242b77dc552e58b2f95a0625b",
                             "size": 250301,
                             "ssdeep": "6144:IwUbC/ok4IeyUvtRCRvhp2h8C+GYPcX6PorXMido+vWap81:z7ok4XjtIaxrKArXBoqw",
-                            "type": "application/pdf"
+                            "type": "application/pdf",
                         },
                         "format": "",
                         "hasRole": False,
@@ -300,12 +293,10 @@ RAW_RESPONSE_ERROR = [
                         "timezoneOffset": 0,
                         "type": 3,
                         "user": "admin",
-                        "version": 2
+                        "version": 2,
                     }
                 ],
-                "entryUsers": [
-                    "admin"
-                ],
+                "entryUsers": ["admin"],
                 "hasRole": False,
                 "highPriority": False,
                 "id": "899",
@@ -325,16 +316,11 @@ RAW_RESPONSE_ERROR = [
                 "sortValues": None,
                 "status": 0,
                 "systems": None,
-                "tags": [
-                    "Automation"
-                ],
+                "tags": ["Automation"],
                 "totalEntries": 0,
                 "type": 0,
-                "users": [
-                    "admin",
-                    "analyst"
-                ],
-                "version": 8
+                "users": ["admin", "analyst"],
+                "version": 8,
             }
         },
         "ContentsFormat": "json",
@@ -374,7 +360,7 @@ RAW_RESPONSE_ERROR = [
             "mirrored": False,
             "modified": "0001-01-01T00:00:00Z",
             "note": False,
-            "parentContent": "!core-api-multipart uri=\"entry/upload/899\" entryID=\"722@737\" body=\"test_bark\"",
+            "parentContent": '!core-api-multipart uri="entry/upload/899" entryID="722@737" body="test_bark"',
             "parentEntryTruncated": False,
             "parentId": "726@737",
             "pinned": False,
@@ -396,7 +382,7 @@ RAW_RESPONSE_ERROR = [
             "timezoneOffset": 0,
             "type": 1,
             "user": "",
-            "version": 0
+            "version": 0,
         },
         "ModuleName": "Core REST API_instance_1",
         "Note": False,
@@ -404,7 +390,7 @@ RAW_RESPONSE_ERROR = [
         "System": "",
         "Tags": None,
         "Type": 4,
-        "Version": 0
+        "Version": 0,
     }
 ]
 
@@ -421,15 +407,13 @@ def test_demisto_upload_file_error(mocker):
     - run the upload_file
     Validate that the correct error was raised
     """
-    mocker.patch('UploadFile.upload_file', return_value=RAW_RESPONSE_ERROR)
+    mocker.patch("UploadFile.upload_file", return_value=RAW_RESPONSE_ERROR)
 
-    with pytest.raises(Exception,
-                       match="There was an issue uploading the file."):
-        upload_file_command({'incidentId': '1', 'entryID': '12@12', 'body': "test_bark"})
+    with pytest.raises(Exception, match="There was an issue uploading the file."):
+        upload_file_command({"incidentId": "1", "entryID": "12@12", "body": "test_bark"})
 
 
-@pytest.mark.parametrize(argnames='target, service', argvalues=[('incident attachment', 'incident'),
-                                                                ('war room entry', 'entry')])
+@pytest.mark.parametrize(argnames="target, service", argvalues=[("incident attachment", "incident"), ("war room entry", "entry")])
 def test_demisto_upload_file_as_attachment(mocker, target, service):
     """
     Given:
@@ -440,9 +424,10 @@ def test_demisto_upload_file_as_attachment(mocker, target, service):
         - Validate the correct Uri was sent to the executeCommand
     """
     import UploadFile
-    mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'target': target, 'entryID': '1'})
-    assert f'{service}/upload/' in UploadFile.demisto.executeCommand.call_args[0][1]['uri']
+
+    mocker.patch("UploadFile.demisto.executeCommand")
+    upload_file_command({"target": target, "entryID": "1"})
+    assert f"{service}/upload/" in UploadFile.demisto.executeCommand.call_args[0][1]["uri"]
 
 
 def test_upload_with_using_argument(mocker):
@@ -454,7 +439,7 @@ def test_upload_with_using_argument(mocker):
     Then
     - Validate that the API request was called only one entry ID.
     """
-    execute_command_mocker = mocker.patch('UploadFile.demisto.executeCommand')
-    upload_file_command({'incidentId': '1', 'entryID': '1', 'using': 'instance_1'})
+    execute_command_mocker = mocker.patch("UploadFile.demisto.executeCommand")
+    upload_file_command({"incidentId": "1", "entryID": "1", "using": "instance_1"})
     assert len(execute_command_mocker.call_args_list) == 1
-    assert execute_command_mocker.call_args_list[0][0][1]['using'] == 'instance_1'
+    assert execute_command_mocker.call_args_list[0][0][1]["using"] == "instance_1"

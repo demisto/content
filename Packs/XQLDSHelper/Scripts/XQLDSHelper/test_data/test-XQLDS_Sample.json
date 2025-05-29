@@ -1,0 +1,7016 @@
+[
+  "######### XQLDS_Sample_MarkdownTable_Top10Applications",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_MarkdownTable_Top10Applications",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "### Top 10 Applications\n|Application|# of sessions|\n|---|---|\n| ms-ds-smbv3 | 80879 |\n| msrpc-base | 80914 |\n| ldap | 81384 |\n| web-browsing | 122016 |\n| netbios-dg | 145486 |\n| netbios-ns | 145722 |\n| ssl | 149358 |\n| google-base | 240229 |\n| dns-base | 847200 |\n| incomplete | 2479222 |\n",
+        "Contents": null
+      }
+    }
+  },
+  "######### XQLDS_Sample_Pie_Top10Applications.field-color",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Pie_Top10Applications.field-color",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "config": {
+      "validation": {
+        "skip-color": true
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "incomplete",
+              "data": [
+                2479222
+              ],
+              "color": "rgb(255, 144, 255)"
+            },
+            {
+              "name": "dns-base",
+              "data": [
+                847200
+              ],
+              "color": "rgb(0, 144, 255)"
+            },
+            {
+              "name": "google-base",
+              "data": [
+                240229
+              ],
+              "color": "rgb(0, 230, 230)"
+            },
+            {
+              "name": "ssl",
+              "data": [
+                149358
+              ],
+              "color": "rgb(144, 255, 255)"
+            },
+            {
+              "name": "netbios-ns",
+              "data": [
+                145722
+              ],
+              "color": "rgb(230, 138, 0)"
+            },
+            {
+              "name": "netbios-dg",
+              "data": [
+                145486
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "web-browsing",
+              "data": [
+                122016
+              ],
+              "color": "rgb(184, 230, 0)"
+            },
+            {
+              "name": "ldap",
+              "data": [
+                81384
+              ],
+              "color": "rgb(0, 230, 92)"
+            },
+            {
+              "name": "msrpc-base",
+              "data": [
+                80914
+              ],
+              "color": "rgb(0, 92, 230)"
+            },
+            {
+              "name": "ms-ds-smbv3",
+              "data": [
+                80879
+              ],
+              "color": "rgb(184, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Pie_Top10Applications.color-order",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Pie_Top10Applications.color-order",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "incomplete",
+              "data": [
+                2479222
+              ],
+              "color": "rgb(0, 144, 255)"
+            },
+            {
+              "name": "dns-base",
+              "data": [
+                847200
+              ],
+              "color": "rgb(20, 144, 255)"
+            },
+            {
+              "name": "google-base",
+              "data": [
+                240229
+              ],
+              "color": "rgb(40, 144, 255)"
+            },
+            {
+              "name": "ssl",
+              "data": [
+                149358
+              ],
+              "color": "rgb(60, 144, 255)"
+            },
+            {
+              "name": "netbios-ns",
+              "data": [
+                145722
+              ],
+              "color": "rgb(80, 144, 255)"
+            },
+            {
+              "name": "netbios-dg",
+              "data": [
+                145486
+              ],
+              "color": "rgb(100, 144, 255)"
+            },
+            {
+              "name": "web-browsing",
+              "data": [
+                122016
+              ],
+              "color": "rgb(120, 144, 255)"
+            },
+            {
+              "name": "ldap",
+              "data": [
+                81384
+              ],
+              "color": "rgb(140, 144, 255)"
+            },
+            {
+              "name": "msrpc-base",
+              "data": [
+                80914
+              ],
+              "color": "rgb(160, 144, 255)"
+            },
+            {
+              "name": "ms-ds-smbv3",
+              "data": [
+                80879
+              ],
+              "color": "rgb(180, 144, 255)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Pie_Top10Applications",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Pie_Top10Applications",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "config": {
+      "skip-color": true
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "incomplete",
+              "data": [
+                2479222
+              ],
+              "color": "rgb(230, 0, 138)"
+            },
+            {
+              "name": "dns-base",
+              "data": [
+                847200
+              ],
+              "color": "rgb(46, 0, 230)"
+            },
+            {
+              "name": "google-base",
+              "data": [
+                240229
+              ],
+              "color": "rgb(0, 230, 230)"
+            },
+            {
+              "name": "ssl",
+              "data": [
+                149358
+              ],
+              "color": "rgb(46, 230, 0)"
+            },
+            {
+              "name": "netbios-ns",
+              "data": [
+                145722
+              ],
+              "color": "rgb(230, 138, 0)"
+            },
+            {
+              "name": "netbios-dg",
+              "data": [
+                145486
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "web-browsing",
+              "data": [
+                122016
+              ],
+              "color": "rgb(184, 230, 0)"
+            },
+            {
+              "name": "ldap",
+              "data": [
+                81384
+              ],
+              "color": "rgb(0, 230, 92)"
+            },
+            {
+              "name": "msrpc-base",
+              "data": [
+                80914
+              ],
+              "color": "rgb(0, 92, 230)"
+            },
+            {
+              "name": "ms-ds-smbv3",
+              "data": [
+                80879
+              ],
+              "color": "rgb(184, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Pie_TransferBytes",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Pie_TransferBytes",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "Total Bytes Sent (MB)",
+              "data": [
+                1000.9
+              ],
+              "color": "rgb(122, 204, 0)"
+            },
+            {
+              "name": "Total Bytes Received (MB)",
+              "data": [
+                2368.7
+              ],
+              "color": "rgb(0, 122, 204)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Pie_TransferBytesByType",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Pie_TransferBytesByType",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "pie",
+        "Contents": {
+          "stats": [
+            {
+              "name": "Total Bytes Received (MB)",
+              "data": [
+                2368.7
+              ],
+              "color": "rgb(0, 230, 230)"
+            },
+            {
+              "name": "Total Bytes Sent (MB)",
+              "data": [
+                1001
+              ],
+              "color": "rgb(230, 0, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_SingleLine_SessionsByHour",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_SingleLine_SessionsByHour",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_SessionsByHour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 15 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4151
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 16 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4138
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 17 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4495
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 18 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4066
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4033
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4160
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 21 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4084
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 22 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3823
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 23 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3921
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 00 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3937
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 01 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3977
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 02 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3891
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 03 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4086
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 04 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    4377
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 05 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3961
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 06 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3954
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 07 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3978
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 08 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3841
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 09 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3996
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 10 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3906
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 11 AM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3959
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3949
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3993
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "# of sessions",
+                  "data": [
+                    3887
+                  ],
+                  "color": "rgb(0, 144, 255)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_MultiLine_Top10AppSessionsByHour",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_MultiLine_Top10AppSessionsByHour",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 15 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1834
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    618
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    371
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    308
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    187
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 16 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1848
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    610
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    395
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    270
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    207
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    79
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 17 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    2250
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    515
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    383
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    271
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    68
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    46
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 18 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1853
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    565
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    385
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    273
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    203
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1876
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    472
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    393
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    288
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    190
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    162
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    58
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1883
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    557
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    293
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    200
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    82
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    47
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 21 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1825
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    526
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    394
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    304
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    68
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    46
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 22 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1829
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    359
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    376
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    275
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 23 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1826
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    389
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    387
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    289
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    91
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    58
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 00 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1876
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    366
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    393
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    274
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    210
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    82
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 01 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1858
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    399
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    282
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    193
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    81
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    59
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 02 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1830
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    436
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    370
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    281
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    63
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 03 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1862
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    452
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    446
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    269
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    151
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 04 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1868
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    509
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    560
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    276
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    202
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    81
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    229
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 05 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1818
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    450
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    400
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    263
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    208
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    157
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    78
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    44
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 06 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1848
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    444
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    389
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    264
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    206
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 07 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1853
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    421
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    410
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    285
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    196
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    84
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 08 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1836
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    356
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    394
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    264
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    205
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 09 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1901
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    367
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    441
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    275
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    198
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    151
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    74
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 10 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1849
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    354
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    262
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    215
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 11 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1852
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    437
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    386
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    271
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    196
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1819
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    437
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    382
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    284
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    203
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    78
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    59
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1860
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    454
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    375
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    273
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    202
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    75
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1858
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    358
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    376
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    265
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    204
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    41
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_MultiLine_TransferBytesByHour",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_MultiLine_TransferBytesByHour",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "line",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 15 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 16 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    29.2
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    157.2
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 17 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    15.1
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 18 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    122.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    246.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    73.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    121.6
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    51
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 21 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    81.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 22 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    25.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    13.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 23 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    50
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 00 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.8
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    95.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 01 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    25.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    22.8
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 02 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.1
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 03 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    31.7
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    219.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 04 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    38.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    372.4
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 05 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    54.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 06 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 07 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.7
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    54.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 08 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    89.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 09 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    30.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    170.3
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 10 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    31.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    270.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 11 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.6
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    62.3
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_SingleBar_Top10Applications.field-color",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_SingleBar_Top10Applications.field-color",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "config": {
+      "validation": {
+        "skip-color": true
+      }
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "incomplete",
+              "data": [
+                2479222
+              ],
+              "color": "rgb(255, 144, 255)"
+            },
+            {
+              "name": "dns-base",
+              "data": [
+                847200
+              ],
+              "color": "rgb(0, 144, 255)"
+            },
+            {
+              "name": "google-base",
+              "data": [
+                240229
+              ],
+              "color": "rgb(0, 230, 230)"
+            },
+            {
+              "name": "ssl",
+              "data": [
+                149358
+              ],
+              "color": "rgb(144, 255, 255)"
+            },
+            {
+              "name": "netbios-ns",
+              "data": [
+                145722
+              ],
+              "color": "rgb(230, 138, 0)"
+            },
+            {
+              "name": "netbios-dg",
+              "data": [
+                145486
+              ],
+              "color": "rgb(230, 0, 0)"
+            },
+            {
+              "name": "web-browsing",
+              "data": [
+                122016
+              ],
+              "color": "rgb(184, 230, 0)"
+            },
+            {
+              "name": "ldap",
+              "data": [
+                81384
+              ],
+              "color": "rgb(0, 230, 92)"
+            },
+            {
+              "name": "msrpc-base",
+              "data": [
+                80914
+              ],
+              "color": "rgb(0, 92, 230)"
+            },
+            {
+              "name": "ms-ds-smbv3",
+              "data": [
+                80879
+              ],
+              "color": "rgb(184, 0, 230)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_SingleBar_Top10Applications.color-order",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_SingleBar_Top10Applications.color-order",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10Applications.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "incomplete",
+              "data": [
+                2479222
+              ],
+              "color": "rgb(0, 144, 255)"
+            },
+            {
+              "name": "dns-base",
+              "data": [
+                847200
+              ],
+              "color": "rgb(20, 144, 255)"
+            },
+            {
+              "name": "google-base",
+              "data": [
+                240229
+              ],
+              "color": "rgb(40, 144, 255)"
+            },
+            {
+              "name": "ssl",
+              "data": [
+                149358
+              ],
+              "color": "rgb(60, 144, 255)"
+            },
+            {
+              "name": "netbios-ns",
+              "data": [
+                145722
+              ],
+              "color": "rgb(80, 144, 255)"
+            },
+            {
+              "name": "netbios-dg",
+              "data": [
+                145486
+              ],
+              "color": "rgb(100, 144, 255)"
+            },
+            {
+              "name": "web-browsing",
+              "data": [
+                122016
+              ],
+              "color": "rgb(120, 144, 255)"
+            },
+            {
+              "name": "ldap",
+              "data": [
+                81384
+              ],
+              "color": "rgb(140, 144, 255)"
+            },
+            {
+              "name": "msrpc-base",
+              "data": [
+                80914
+              ],
+              "color": "rgb(160, 144, 255)"
+            },
+            {
+              "name": "ms-ds-smbv3",
+              "data": [
+                80879
+              ],
+              "color": "rgb(180, 144, 255)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_SingleBar_TransferBytes",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_SingleBar_TransferBytes",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytes.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Total Bytes Sent (MB)",
+              "data": [
+                1000.9
+              ],
+              "color": "rgb(122, 204, 0)"
+            },
+            {
+              "name": "Total Bytes Received (MB)",
+              "data": [
+                2368.7
+              ],
+              "color": "rgb(0, 122, 204)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_SingleBar_TransferBytesByType",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_SingleBar_TransferBytesByType",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByType.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Total Bytes Received (MB)",
+              "data": [
+                2368.7
+              ],
+              "color": "rgb(0, 230, 230)"
+            },
+            {
+              "name": "Total Bytes Sent (MB)",
+              "data": [
+                1001
+              ],
+              "color": "rgb(230, 0, 0)"
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_StackedBar_Top10AppSessionsByHour",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_StackedBar_Top10AppSessionsByHour",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Top10AppSessionsByHour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "horizontal"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 15 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1834
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    618
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    371
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    308
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    187
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 16 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1848
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    610
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    395
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    270
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    207
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    79
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 17 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    2250
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    515
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    383
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    271
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    68
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    46
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 18 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1853
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    565
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    385
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    273
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    203
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1876
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    472
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    393
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    288
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    190
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    162
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    58
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1883
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    557
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    293
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    200
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    82
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    47
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 21 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1825
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    526
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    394
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    304
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    68
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    46
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 22 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1829
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    359
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    376
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    275
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 23 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1826
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    389
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    387
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    289
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    91
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    58
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 00 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1876
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    366
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    393
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    274
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    210
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    82
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    62
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 01 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1858
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    399
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    282
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    193
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    81
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    59
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 02 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1830
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    436
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    370
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    281
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    201
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    147
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    63
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 03 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1862
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    452
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    446
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    269
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    199
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    151
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 04 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1868
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    509
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    560
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    276
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    202
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    81
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    229
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 05 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1818
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    450
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    400
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    263
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    208
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    157
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    78
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    44
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 06 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1848
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    444
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    389
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    264
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    206
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    145
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 07 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1853
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    421
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    410
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    285
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    196
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    84
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 08 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1836
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    356
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    394
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    264
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    205
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 09 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1901
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    367
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    441
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    275
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    198
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    151
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    74
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 10 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1849
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    354
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    390
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    262
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    215
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    150
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    76
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 11 AM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1852
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    437
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    386
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    271
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    196
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    77
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    42
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1819
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    437
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    382
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    284
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    203
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    149
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    146
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    78
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    59
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1860
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    454
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    375
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    273
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    202
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    152
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    153
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    75
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    60
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    43
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "dns-base",
+                  "data": [
+                    1858
+                  ],
+                  "color": "rgb(122, 204, 204)"
+                },
+                {
+                  "name": "insufficient-data",
+                  "data": [
+                    358
+                  ],
+                  "color": "rgb(71, 122, 204)"
+                },
+                {
+                  "name": "ssl",
+                  "data": [
+                    376
+                  ],
+                  "color": "rgb(102, 122, 204)"
+                },
+                {
+                  "name": "incomplete",
+                  "data": [
+                    265
+                  ],
+                  "color": "rgb(204, 122, 276)"
+                },
+                {
+                  "name": "splunk",
+                  "data": [
+                    204
+                  ],
+                  "color": "rgb(204, 122, 245)"
+                },
+                {
+                  "name": "ocsp",
+                  "data": [
+                    155
+                  ],
+                  "color": "rgb(204, 122, 215)"
+                },
+                {
+                  "name": "traps-management-service",
+                  "data": [
+                    148
+                  ],
+                  "color": "rgb(204, 61, 122)"
+                },
+                {
+                  "name": "pan-db-cloud",
+                  "data": [
+                    80
+                  ],
+                  "color": "rgb(204, 92, 122)"
+                },
+                {
+                  "name": "paloalto-shared-services",
+                  "data": [
+                    61
+                  ],
+                  "color": "rgb(204, 122, 122)"
+                },
+                {
+                  "name": "netbios-ns",
+                  "data": [
+                    41
+                  ],
+                  "color": "rgb(204, 153, 122)"
+                },
+                {
+                  "name": "ms-update",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(204, 184, 122)"
+                },
+                {
+                  "name": "ldap",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(194, 204, 122)"
+                },
+                {
+                  "name": "web-browsing",
+                  "data": [
+                    0
+                  ],
+                  "color": "rgb(163, 204, 122)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_StackedBar_TransferBytesByHour",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_StackedBar_TransferBytesByHour",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_TransferBytesByHour.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "bar",
+        "Contents": {
+          "params": {
+            "layout": "vertical"
+          },
+          "stats": [
+            {
+              "name": "Dec 14 15 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 16 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    29.2
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    157.2
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 17 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    15.1
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 18 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    122.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 19 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    246.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    73.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 20 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    121.6
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    51
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 21 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    81.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 22 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    25.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    13.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 14 23 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    50
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 00 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.8
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    95.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 01 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    25.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    22.8
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 02 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.1
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 03 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    31.7
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    219.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 04 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    38.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    372.4
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 05 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.5
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    54.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 06 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.1
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 07 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.7
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    54.5
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 08 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    89.6
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 09 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    30.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    170.3
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 10 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    31.9
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    270.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 11 AM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    27.6
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    62.3
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 12 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    26.4
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    14
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 13 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    28
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    18.7
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            },
+            {
+              "name": "Dec 15 14 PM",
+              "groups": [
+                {
+                  "name": "Total Bytes Sent (MB)",
+                  "data": [
+                    32.3
+                  ],
+                  "color": "rgb(122, 204, 0)"
+                },
+                {
+                  "name": "Total Bytes Received (MB)",
+                  "data": [
+                    214.9
+                  ],
+                  "color": "rgb(0, 122, 204)"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Duration_LongestToDestIP",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Duration_LongestToDestIP",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Duration_LongestToDestIP.json"
+    },
+    "config": {
+      "is_xsiam": true
+    },
+    "alert": {
+      "remoteip": "dummy"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "duration",
+        "Contents": {
+          "stats": 86388
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Number",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Number",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Number.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "params": {
+            "name": "Sample Number - 1234",
+            "sign": "@",
+            "colors": {
+              "type": "above",
+              "items": {
+                "#FF0000": {
+                  "value": 300
+                },
+                "#FFFF00": {
+                  "value": 500
+                },
+                "green": {
+                  "value": 1000
+                }
+              }
+            }
+          },
+          "stats": 1234
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_NumberTrend",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_NumberTrend",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_NumberTrend.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 17,
+        "ContentsFormat": "number",
+        "Contents": {
+          "params": {
+            "name": "Sample Number Trend - 2000",
+            "sign": "@",
+            "colors": {
+              "type": "above",
+              "items": {
+                "#00CD33": {
+                  "value": 1000
+                },
+                "#FAC100": {
+                  "value": 1500
+                },
+                "green": {
+                  "value": 2000
+                }
+              }
+            }
+          },
+          "stats": {
+            "prevSum": 1000,
+            "currSum": 2000
+          }
+        }
+      }
+    }
+  },
+  "######### XQLDS_Sample_Markdown",
+  {
+    "args": {
+      "templates_type": "list",
+      "template_name": "XQLDS_Sample_Markdown",
+      "templates": "XQLDS_Sample_Templates",
+      "base_time": "2025-01-01T00:00:00Z",
+      "round_time": 0,
+      "earliest_time": "24 hours ago",
+      "latest_time": "0 seconds ago",
+      "variable_substitution": "${,}",
+      "cache_type": "recordset",
+      "retry_interval": 10,
+      "polling_interval": 10,
+      "xql_query_instance": ""
+    },
+    "lists": {
+      "*": [
+        {
+          "type": "content-bundle",
+          "data": "./test_data/XQLDS_Sample_content-bundle.tar.gz"
+        }
+      ]
+    },
+    "xql": {
+      "responses": "./test_data/qr_XQLDS_Sample_XQL_Markdown.json"
+    },
+    "results": {
+      "Entry": {
+        "Type": 1,
+        "ContentsFormat": "markdown",
+        "HumanReadable": "## Sample Markdown - Single Line\n - Sample Text\n\n\n## Sample Markdown - Multi Lines (1)\n - Sample Text\n\n## Sample Markdown - Multi Lines (2)\n - 1: Sample Text\n",
+        "Contents": null
+      }
+    }
+  }
+]

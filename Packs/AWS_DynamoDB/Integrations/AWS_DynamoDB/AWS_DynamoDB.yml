@@ -2998,7 +2998,7 @@ script:
       description: The name of the TTL attribute used to store the expiration time for items in the table.
     - contextPath: AWS-DynamoDB.TimeToLiveSpecification
       description: Represents the output of an UpdateTimeToLive operation.
-  dockerimage: demisto/boto3py3:1.0.0.115129
+  dockerimage: demisto/boto3py3:1.0.0.1894954
   script: ''
   subtype: python3
   type: python

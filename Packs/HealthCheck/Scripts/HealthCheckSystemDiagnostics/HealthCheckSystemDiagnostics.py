@@ -1,9 +1,8 @@
+import re
+from operator import itemgetter
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-
-
-from operator import itemgetter
-import re
 
 DESCRIPTION = [
     "Large incidents were found",
@@ -100,6 +99,7 @@ SystemDiagnosticsResults = {
 }
 
 out = []
+bigTasksNewFormat = []
 for key, value in SystemDiagnosticsResults.copy().items():
     if key != "bigTasks":
         res = FormatTableAndSet(value, key)

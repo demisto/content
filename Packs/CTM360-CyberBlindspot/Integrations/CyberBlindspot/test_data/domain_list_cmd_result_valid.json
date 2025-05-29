@@ -1,0 +1,60 @@
+[
+    {
+        "name": "RD-D7A4ABBC5",
+        "occurred": "2024-12-22T10:48:36+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "thismosfet2.tooo",
+            "cbs_type": "Domain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-12-22T10:48:36+00:00",
+            "confirmation_time": 1734864516150,
+            "risks": [
+                "Has DNS Record"
+            ],
+            "incident_status": "member_feedback",
+            "timestamp": 1734864516150
+        },
+        "rawJson": "{\"name\":\"thismosfet2.tooo\",\"occurred\":\"2024-12-22T10:48:36+00:00\",\"type\":\"Domain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-12-22T10:48:36+00:00\",\"risks\":[\"Has DNS Record\"],\"incident_status\":\"member_feedback\",\"timestamp\":1734864516150}}"
+    },
+    {
+        "name": "RD-E4F5B5E7E",
+        "occurred": "2024-10-31T13:44:50+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "thismosfet.tooo",
+            "cbs_type": "Domain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-12-04T12:24:25+00:00",
+            "risks": [
+                "Has DNS Record",
+                "Has MX Record",
+                "Has A Record",
+                "Has NS Record"
+            ],
+            "timestamp": 1730382290000
+        },
+        "rawJson": "{\"name\":\"thismosfet.tooo\",\"occurred\":\"2024-10-31T13:44:50+00:00\",\"type\":\"Domain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-12-04T12:24:25+00:00\",\"risks\":[\"Has DNS Record\",\"Has MX Record\",\"Has A Record\",\"Has NS Record\"],\"timestamp\":1730382290000}}"
+    },
+    {
+        "name": "RD-9F1AF54E4",
+        "occurred": "2024-11-05T21:01:00+00:00",
+        "externalstatus": "monitoring",
+        "severity": 3,
+        "CustomFields": {
+            "subject": "riksasis.too",
+            "cbs_type": "Domain Infringement",
+            "cbs_coa": "",
+            "cbs_updated_date": "2024-11-05T21:01:00+00:00",
+            "risks": [
+                "Has DNS Record",
+                "Has NS Record",
+                "Has A Record"
+            ],
+            "timestamp": 1730840460000
+        },
+        "rawJson": "{\"name\":\"riksasis.too\",\"occurred\":\"2024-11-05T21:01:00+00:00\",\"type\":\"Domain Infringement\",\"externalstatus\":\"monitoring\",\"severity\":3,\"CustomFields\":{\"cbs_coa\":\"\",\"cbs_updated_date\":\"2024-11-05T21:01:00+00:00\",\"risks\":[\"Has DNS Record\",\"Has NS Record\",\"Has A Record\"],\"timestamp\":1730840460000}}"
+    }
+]

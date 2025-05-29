@@ -46,16 +46,12 @@ EXPECTED_ALERT_RSLT = {
         "ExternalIP": [],
         "InternalIP": [],
         "Message": "FIREEYE H",
-        "Products": {
-            "hx": 2
-        },
+        "Products": {"hx": 2},
         "Risk": "Medium",
         "Severity": "Medium",
         "State": "Open",
-        "Tags": [
-            "fireeye"
-        ],
-        "Type": "fireeye_rule"
+        "Tags": ["fireeye"],
+        "Type": "fireeye_rule",
     }
 }
 
@@ -108,16 +104,12 @@ EXPECTED_ALERTS_RSLT = {
             "ExternalIP": [],
             "InternalIP": [],
             "Message": "FIREEYE H",
-            "Products": {
-                "hx": 2
-            },
+            "Products": {"hx": 2},
             "Risk": "Medium",
             "Severity": "Medium",
             "State": "Open",
-            "Tags": [
-                "fireeye"
-            ],
-            "Type": "fireeye_rule"
+            "Tags": ["fireeye"],
+            "Type": "fireeye_rule",
         },
         {
             "ID": 32,
@@ -166,33 +158,28 @@ EXPECTED_ALERTS_RSLT = {
             "ExternalIP": [],
             "InternalIP": [],
             "Message": "FIREEYE HX [IOC Process Event]",
-            "Products": {
-                "hx": 2
-            },
+            "Products": {"hx": 2},
             "Risk": "Medium",
             "Severity": "Medium",
             "State": "Open",
-            "Tags": [
-                "fireeye",
-                "helixhxrule"
-            ],
-            "Type": "fireeye_rule"
-        }
+            "Tags": ["fireeye", "helixhxrule"],
+            "Type": "fireeye_rule",
+        },
     ],
-    "FireEyeHelix.Alert(val.Count).Count": 115
+    "FireEyeHelix.Alert(val.Count).Count": 115,
 }
 
 EXPECTED_AGGREGATIONS_SINGLE_RSLT = [
-    {'subject': 'Test 1', 'DocCount': 1},
-    {'subject': 'Test 2', 'DocCount': 2},
-    {'subject': 'Test 3', 'DocCount': 3},
-    {'subject': 'Test 4', 'DocCount': 4}
+    {"subject": "Test 1", "DocCount": 1},
+    {"subject": "Test 2", "DocCount": 2},
+    {"subject": "Test 3", "DocCount": 3},
+    {"subject": "Test 4", "DocCount": 4},
 ]
 
 EXPECTED_AGGREGATIONS_MULTI_RSLT = [
-    {'srcipv4': '192.168.0.1', 'to': 'test1@demisto.com', 'subject': 'accepted', 'DocCount': 1},
-    {'srcipv4': '192.168.0.2', 'to': 'test2@demisto.com', 'subject': 'resume', 'DocCount': 2},
-    {'srcipv4': '192.168.0.3', 'to': 'test3@demisto.com', 'subject': 'position', 'DocCount': 3}
+    {"srcipv4": "192.168.0.1", "to": "test1@demisto.com", "subject": "accepted", "DocCount": 1},
+    {"srcipv4": "192.168.0.2", "to": "test2@demisto.com", "subject": "resume", "DocCount": 2},
+    {"srcipv4": "192.168.0.3", "to": "test3@demisto.com", "subject": "position", "DocCount": 3},
 ]
 
 EXPECTED_CASES_NY_ALERT_RSLT = {
@@ -219,7 +206,7 @@ EXPECTED_CASES_NY_ALERT_RSLT = {
             "State": "Testing",
             "Status": "Declared",
             "Tags": [],
-            "TotalDaysUnresolved": "16 23:52:09.819390"
+            "TotalDaysUnresolved": "16 23:52:09.819390",
         }
     ]
 }
@@ -236,10 +223,10 @@ EXPECTED_ENDPOINTS_BY_ALERT_RSLT = {
             "OS": "Windows 10 Pro",
             "IP": "primary_ip_address",
             "UpdatedTime": "updated_at",
-            "ContainmentState": "normal"
+            "ContainmentState": "normal",
         }
     ],
-    "FireEyeHelix.Endpoint(val.Count).Count": 1
+    "FireEyeHelix.Endpoint(val.Count).Count": 1,
 }
 
 EXPECTED_EVENTS_BY_ALERT_RSLT = {
@@ -252,9 +239,7 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
             "Confidence": None,
             "Status": None,
             "EventTime": "2019-09-13T06:51:59.000Z",
-            "DetectedRuleID": [
-                "99"
-            ],
+            "DetectedRuleID": ["99"],
             "PID": 404,
             "Process": "net1",
             "ProcessPath": "c:\\windows\\system32\\net1.exe",
@@ -287,10 +272,10 @@ EXPECTED_EVENTS_BY_ALERT_RSLT = {
             "RcpTo": None,
             "To": None,
             "InReplyTo": None,
-            "Attachment": None
+            "Attachment": None,
         }
     ],
-    "FireEyeHelix.Event(val.Count).Count": 10
+    "FireEyeHelix.Event(val.Count).Count": 10,
 }
 
 EXPECTED_RULES_RSLT = {
@@ -311,10 +296,10 @@ EXPECTED_RULES_RSLT = {
             "Confidence": "Medium",
             "Severity": "Medium",
             "Tags": ["demisto", "malware", "http", "md-info"],
-            "Type": "alert"
+            "Type": "alert",
         }
     ],
-    "FireEyeHelix.Rule(val.Count)": None
+    "FireEyeHelix.Rule(val.Count)": None,
 }
 
 EXPECTED_RULE_RSLT = {
@@ -335,7 +320,7 @@ EXPECTED_RULE_RSLT = {
             "Confidence": "Medium",
             "Severity": "Medium",
             "Tags": ["demisto", "malware", "http", "md-info"],
-            "Type": "alert"
+            "Type": "alert",
         }
     ]
 }
@@ -347,22 +332,15 @@ EXPECTED_SINGLE_LIST_ITEM_RSLT = {
         "Type": "misc",
         "Risk": "Medium",
         "Notes": "test ok",
-        "ListID": 3232
+        "ListID": 3232,
     }
 }
 
 EXPECTED_LIST_ITEMS_RSLT = {
     "FireEyeHelixList(val.ID && val.ID === 3232).Item(val.ID === obj.ID)": [
-        {
-            "ID": 163,
-            "Value": "Test list",
-            "Type": "misc",
-            "Risk": "Low",
-            "Notes": "",
-            "ListID": 3232
-        }
+        {"ID": 163, "Value": "Test list", "Type": "misc", "Risk": "Low", "Notes": "", "ListID": 3232}
     ],
-    "FireEyeHelixList(val.ID && val.ID === 3232).Count(val.Count)": 1
+    "FireEyeHelixList(val.ID && val.ID === 3232).Count(val.Count)": 1,
 }
 
 EXPECTED_LIST_ITEMS_UPDATE_RSLT = {
@@ -372,7 +350,7 @@ EXPECTED_LIST_ITEMS_UPDATE_RSLT = {
         "Type": "misc",
         "Risk": "Medium",
         "Notes": "test ok",
-        "ListID": 3232
+        "ListID": 3232,
     }
 }
 
@@ -421,7 +399,7 @@ EXPECTED_SEARCH_RSLT = {
                 "RcpTo": None,
                 "To": "demisto@demisto.com",
                 "InReplyTo": "demisto",
-                "Attachment": None
+                "Attachment": None,
             },
             {
                 "ID": "demisto",
@@ -464,57 +442,28 @@ EXPECTED_SEARCH_RSLT = {
                 "RcpTo": None,
                 "To": "demisto@demisto.com",
                 "InReplyTo": "demisto@demisto.com",
-                "Attachment": None
-            }
+                "Attachment": None,
+            },
         ],
         "GroupBy": [
-            {
-                "subject": "google alert - gold",
-                "DocCount": 3
-            },
-            {
-                "subject": "accepted: meeting",
-                "DocCount": 1
-            },
-            {
-                "subject": "invitation: Declined",
-                "DocCount": 1
-            }
-        ]
+            {"subject": "google alert - gold", "DocCount": 3},
+            {"subject": "accepted: meeting", "DocCount": 1},
+            {"subject": "invitation: Declined", "DocCount": 1},
+        ],
     }
 }
 
 EXPECTED_SEARCH_ARCHIVE_RSLT = {
     "FireEyeHelixSearch(val.ID === obj.ID)": [
-        {
-            "ID": "82",
-            "PercentComplete": 100.0,
-            "Query": "domain:[google,com] | groupby eventtype",
-            "State": "completed"
-        },
-        {
-            "ID": "83",
-            "PercentComplete": 100.0,
-            "Query": "domain:[google] | groupby eventtype",
-            "State": "completed"
-        }
+        {"ID": "82", "PercentComplete": 100.0, "Query": "domain:[google,com] | groupby eventtype", "State": "completed"},
+        {"ID": "83", "PercentComplete": 100.0, "Query": "domain:[google] | groupby eventtype", "State": "completed"},
     ]
 }
 
 EXPECTED_SEARCH_ARCHIVE_STATUS_RSLT = {
     "FireEyeHelixSearch(val.ID === obj.ID)": [
-        {
-            "ID": "82",
-            "PercentComplete": 100.0,
-            "Query": "domain:[google,com] | groupby eventtype",
-            "State": "completed"
-        },
-        {
-            "ID": "82",
-            "PercentComplete": 100.0,
-            "Query": "domain:[google,com] | groupby eventtype",
-            "State": "completed"
-        }
+        {"ID": "82", "PercentComplete": 100.0, "Query": "domain:[google,com] | groupby eventtype", "State": "completed"},
+        {"ID": "82", "PercentComplete": 100.0, "Query": "domain:[google,com] | groupby eventtype", "State": "completed"},
     ]
 }
 
@@ -564,7 +513,7 @@ EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT = {
                 "RcpTo": None,
                 "To": "demisto@demisto.com",
                 "InReplyTo": "squidward <squidward@demisto.com>",
-                "Attachment": None
+                "Attachment": None,
             },
             {
                 "ID": "demisto",
@@ -606,8 +555,8 @@ EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT = {
                 "DestinationISP": None,
                 "RcpTo": None,
                 "To": "squidward@demisto.com",
-                "InReplyTo": "\"squidward\" <fsquidward@demisto.com>",
-                "Attachment": None
+                "InReplyTo": '"squidward" <fsquidward@demisto.com>',
+                "Attachment": None,
             },
             {
                 "ID": "dwasdkffv",
@@ -650,7 +599,7 @@ EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT = {
                 "RcpTo": None,
                 "To": "squidward@demisto.com",
                 "InReplyTo": "squidward <squidward@demisto.com>",
-                "Attachment": None
+                "Attachment": None,
             },
             {
                 "ID": "93730",
@@ -693,10 +642,10 @@ EXPECTED_SEARCH_ARCHIVE_RESULTS_RSLT = {
                 "RcpTo": None,
                 "To": "squidward@demisto.com",
                 "InReplyTo": "geroge <hello@demisto.com>",
-                "Attachment": None
-            }
+                "Attachment": None,
+            },
         ],
-        "GroupBy": []
+        "GroupBy": [],
     }
 }
 
@@ -709,7 +658,7 @@ EXPECTED_NOTES_GET_RSLT = {
             "Message": "This is a note test",
             "CreatorID": "a",
             "CreatorName": "George",
-            "AlertID": None
+            "AlertID": None,
         },
         {
             "ID": 91,
@@ -718,10 +667,10 @@ EXPECTED_NOTES_GET_RSLT = {
             "Message": "What a great note this is",
             "CreatorID": "a",
             "CreatorName": "George",
-            "AlertID": None
-        }
+            "AlertID": None,
+        },
     ],
-    "FireEyeHelix.Note(val.Count && val.AlertID === None).Count": 2
+    "FireEyeHelix.Note(val.Count && val.AlertID === None).Count": 2,
 }
 
 EXPECTED_NOTES_CREATE_RSLT = {
@@ -732,6 +681,6 @@ EXPECTED_NOTES_CREATE_RSLT = {
         "Message": "This is a note test",
         "CreatorID": "a",
         "CreatorName": "George",
-        "AlertID": 3232
+        "AlertID": 3232,
     }
 }

@@ -48,6 +48,8 @@ _MODULES_LINE_MAPPING = {
 XSIAM_EVENT_CHUNK_SIZE = 2 ** 20  # 1 Mib
 XSIAM_EVENT_CHUNK_SIZE_LIMIT = 9 * (10 ** 6)  # 9 MB, note that the allowed max size for 1 entry is 5MB.
 # So if you're using a "heavy" API it is recommended to use maximum of 4MB chunk size.
+MAX_ALLOWED_ENTRY_SIZE = 5 * (10 ** 6)  # 5 MB, this is the maximum allowed size of a single entry.
+# So if you're using a "heavy" API it is recommended to use maximum of 9MB chunk size.
 ASSETS = "assets"
 EVENTS = "events"
 DATA_TYPES = [EVENTS, ASSETS]
@@ -56,28 +58,10 @@ SEND_PREFIX = "send: b'"
 SAFE_SLEEP_START_TIME = datetime.now()
 MAX_ERROR_MESSAGE_LENGTH = 50000
 NUM_OF_WORKERS = 20
+HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = False
 
 
 def register_module_line(module_name, start_end, line, wrapper=0):
-    """
-        Register a module in the line mapping for the traceback line correction algorithm.
-
-        :type module_name: ``str``
-        :param module_name: The name of the module. (required)
-
-        :type start_end: ``str``
-        :param start_end: Whether to register the line as the start or the end of the module.
-            Possible values: start, end. (required)
-
-        :type line: ``int``
-        :param line: the line number to record. (required)
-
-        :type wrapper: ``int``
-        :param wrapper: Wrapper size (used for inline replacements with headers such as ApiModules). (optional)
-
-        :return: None
-        :rtype: ``None``
-    """
     global _MODULES_LINE_MAPPING
     default_module_info = {'start': 0, 'start_wrapper': 0, 'end': float('inf'), 'end_wrapper': float('inf')}
     try:
@@ -97,15 +81,6 @@ def register_module_line(module_name, start_end, line, wrapper=0):
 
 
 def _find_relevant_module(line):
-    """
-    Find which module contains the given line number.
-
-    :type line: ``int``
-    :param trace_str: Line number to search. (required)
-
-    :return: The name of the module.
-    :rtype: ``str``
-    """
     global _MODULES_LINE_MAPPING
 
     relevant_module = ''
@@ -120,15 +95,6 @@ def _find_relevant_module(line):
 
 
 def fix_traceback_line_numbers(trace_str):
-    """
-    Fixes the given traceback line numbers.
-
-    :type trace_str: ``str``
-    :param trace_str: The traceback string to edit. (required)
-
-    :return: The new formated traceback.
-    :rtype: ``str``
-    """
 
     def is_adjusted_block(start, end, adjusted_lines):
         return any(
@@ -658,6 +624,7 @@ class ThreatIntel:
         TOOL = 'Tool'
         THREAT_ACTOR = 'Threat Actor'
         INFRASTRUCTURE = 'Infrastructure'
+        TACTIC = 'Tactic'
 
     class ObjectsScore(object):
         """
@@ -674,6 +641,7 @@ class ThreatIntel:
         TOOL = 2
         THREAT_ACTOR = 3
         INFRASTRUCTURE = 2
+        TACTIC = 0
 
     class KillChainPhases(object):
         """
@@ -1612,6 +1580,17 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
+def doubleBackslashes(st):
+    """
+       Double any backslashes in the given string if it contains two backslashes.
+       :type st: ``str``
+       :param st: The string to be modified (required).
+       :return: A modified string with doubled backslashes.
+       :rtype: ``str``
+    """
+    return st.replace('\\', '\\\\')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1692,6 +1671,7 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
@@ -2020,7 +2000,8 @@ def argToBoolean(value):
 
 def appendContext(key, data, dedup=False):
     """
-       Append data to the investigation context
+       Append data to the investigation context.
+       Usable by scripts not integrations, since it uses setContext
 
        :type key: ``str``
        :param key: The context path (required)
@@ -6435,6 +6416,95 @@ class Common(object):
 
             return ret_value
 
+    class Tactic(Indicator):
+        """
+        Tactic indicator
+
+        :type stix_id: ``str``
+        :param stix_id: The Tactic STIX ID
+
+        :type first_seen_by_source: ``str``
+        :param first_seen_by_source: The Tactic first seen by source
+
+        :type description: ``str``
+        :param description: The Tactic description
+
+        :type publications: ``str``
+        :param publications: The Tactic publications
+
+        :type mitre_id: ``str``
+        :param mitre_id: The Tactic mitre id.
+
+        :type tags: ``str``
+        :param tags: The Tactic tags.
+
+        :type dbot_score: ``DBotScore``
+        :param dbot_score:  If the address has reputation then create DBotScore object.
+
+        :type traffic_light_protocol: ``str``
+        :param traffic_light_protocol: The Traffic Light Protocol (TLP) color that is suitable for the Tactic.
+
+        :type community_notes: ``CommunityNotes``
+        :param community_notes:  A list of community notes for the Tactic.
+
+        :type external_references: ``ExternalReference``
+        :param external_references:  A list of id's and description of the Tactic via external refs.
+
+        :type value: ``str``
+        :param value: The Tactic value (name) - example: "Plist File Modification"
+
+        :return: None
+        :rtype: ``None``
+        """
+        CONTEXT_PATH = 'Tactic(val.Name && val.Name == obj.Name)'
+
+        def __init__(self, stix_id, first_seen_by_source=None, description=None, publications=None, mitre_id=None, tags=None,
+                     traffic_light_protocol=None, dbot_score=None, community_notes=None, external_references=None, value=None):
+
+            self.community_notes = community_notes
+            self.description = description
+            self.external_references = external_references
+            self.first_seen_by_source = first_seen_by_source
+            self.mitre_id = mitre_id
+            self.publications = publications
+            self.stix_id = stix_id
+            self.tags = tags
+            self.traffic_light_protocol = traffic_light_protocol
+            self.value = value
+            self.dbot_score = dbot_score
+
+        def to_context(self):
+            attack_pattern_context = {
+                'STIXID': self.stix_id,
+                "FirstSeenBySource": self.first_seen_by_source,
+                "Publications": self.publications,
+                "MITREID": self.mitre_id,
+                "Value": self.value,
+                "Tags": self.tags,
+                "Description": self.description
+            }
+
+            if self.external_references:
+                attack_pattern_context['ExternalReferences'] = self.create_context_table(self.external_references)
+
+            if self.traffic_light_protocol:
+                attack_pattern_context['TrafficLightProtocol'] = self.traffic_light_protocol
+
+            if self.dbot_score and self.dbot_score.score == Common.DBotScore.BAD:
+                attack_pattern_context['Malicious'] = {
+                    'Vendor': self.dbot_score.integration_name,
+                    'Description': self.dbot_score.malicious_description
+                }
+
+            ret_value = {
+                Common.AttackPattern.CONTEXT_PATH: attack_pattern_context
+            }
+
+            if self.dbot_score:
+                ret_value.update(self.dbot_score.to_context())
+
+            return ret_value
+
 
 class ScheduledCommand:
     """
@@ -6687,7 +6757,7 @@ def arg_to_datetime(arg, arg_name=None, is_utc=True, required=False, settings=No
             ms = ms / 1000.0
 
         if is_utc:
-            return datetime.utcfromtimestamp(ms).replace(tzinfo=timezone.utc)
+            return datetime.fromtimestamp(ms, tz=timezone.utc)
         else:
             return datetime.fromtimestamp(ms)
     if isinstance(arg, str):
@@ -8626,11 +8696,11 @@ def is_xsiam():
 
 def is_using_engine():
     """Determines whether or not the platform is using engine.
-    NOTE: 
+    NOTE:
      - This method works only for system integrations (not custom).
      - On xsoar 8, this method works only for integrations that runs on the xsoar pod - not on the engine-0 (mainly long running
        integrations) such as:  EDL, Cortex Core - IOC, Cortex Core - IR, ExportIndicators, Generic Webhook, PingCastle,
-       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator, 
+       Publish List, Simple API Proxy, Syslog v2, TAXII Server, TAXII2 Server, Web File Repository, Workday_IAM_Event_Generator,
        XSOAR-Web-Server, Microsoft Teams, AWS-SNS-Listener.
 
     :return: True iff the platform is using engine.
@@ -8674,7 +8744,7 @@ def is_integration_instance_running_on_engine():
 
 
 def get_engine_base_url(engine_id):
-    """Gets the xsoar engine id and returns it's base url. 
+    """Gets the xsoar engine id and returns it's base url.
     For example: for engine_id = '4ccccccc-5aaa-4000-b666-dummy_id', base url = '11.180.111.111:1443'.
 
     :type engine_id: ``str``
@@ -8729,7 +8799,7 @@ class DemistoHandler(logging.Handler):
 
 def censor_request_logs(request_log):
     """
-    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask. 
+    Censors the request logs generated from the urllib library directly by replacing sensitive information such as tokens and cookies with a mask.
     In most cases, the sensitive value is the first word after the keyword, but in some cases, it is the second one.
     :param request_log: The request log to censor
     :type request_log: ``str``
@@ -8737,7 +8807,8 @@ def censor_request_logs(request_log):
     :return: The censored request log
     :rtype: ``str``
     """
-    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username", "password", "apiKey"]
+    keywords_to_censor = ['Authorization:', 'Cookie', "Token", "username",
+                          "password", "Key", "identifier", "credential", "client"]
     lower_keywords_to_censor = [word.lower() for word in keywords_to_censor]
 
     trimed_request_log = request_log.lstrip(SEND_PREFIX)
@@ -8749,8 +8820,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT", "Basic" or "LOG" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic", "log"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -10646,7 +10717,7 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
             demisto.debug(
                 "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
-            demisto.debug(e)
+            demisto.debug(str(e))
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
@@ -10670,6 +10741,10 @@ def support_multithreading():  # pragma: no cover
     :return: No data returned
     :rtype: ``None``
     """
+    global HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE
+    if HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE:
+        return
+    HAVE_SUPPORT_MULTITHREADING_CALLED_ONCE = True
     global demisto
     prev_do = demisto._Demisto__do  # type: ignore[attr-defined]
     demisto.lock = Lock()  # type: ignore[attr-defined]
@@ -11962,8 +12037,14 @@ def split_data_to_chunks(data, target_chunk_size):
             yield chunk
             chunk = []
             chunk_size = 0
+        data_part_size = sys.getsizeof(data_part)
+        if data_part_size >= MAX_ALLOWED_ENTRY_SIZE:
+            demisto.error(
+                "entry size {} is larger than the maximum allowed entry size {}, skipping this entry".format(data_part_size,
+                                                                                                             MAX_ALLOWED_ENTRY_SIZE))
+            continue
         chunk.append(data_part)
-        chunk_size += sys.getsizeof(data_part)
+        chunk_size += data_part_size
     if chunk_size != 0:
         demisto.debug("sending the remaining chunk with size: {size}".format(size=chunk_size))
         yield chunk
@@ -12500,11 +12581,11 @@ def content_profiler(func):
             timeout_nanoseconds = demisto.callingContext["context"].get("TimeoutDuration") or default_timeout
             timeout_seconds = timeout_nanoseconds / 1e9
             event_set = signal_event.wait(timeout_seconds - 5)
-            if not event_set:
-                raise DemistoException("The profiled function '{}' failed due to a timeout.".format(func.__name__))
             profiler.disable()
             dump_result()
             demisto.debug("Profiler finished.")
+            if not event_set:
+                return_error("The profiled function '{}' failed due to a timeout.".format(func.__name__))
 
         def function_runner(func, profiler, signal_event,
                             results, *args, **kwargs):
@@ -12536,6 +12617,43 @@ def content_profiler(func):
         return results.get("function_results")
 
     return profiler_wrapper
+
+
+def find_and_remove_sensitive_text(text, pattern):
+    r"""
+    Finds all appearances of sensitive information in a string using regex and adds the sensitive
+    information to the list of strings that should not appear in any logs.
+    The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
+        Examples:
+    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
+    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ABC
+    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ID123 and id321
+    :param text: The input text containing the sensitive information.
+    :type text: str
+    :param pattern: The regex pattern to match the sensitive information.
+    :type pattern: str
+    :return: None
+    :rtype: ``None``
+    """
+
+    sensitive_pattern = re.compile(pattern)
+    matches = sensitive_pattern.findall(text)
+    if not matches:
+        return
+
+    for match in matches:
+        # in case the regex serches for a group pattern
+        if isinstance(match, tuple):
+            sensitive_text = match[1]
+        else:
+            # in case the regex serches for a specific word
+            sensitive_text = match
+        add_sensitive_log_strs(sensitive_text)
+    return
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

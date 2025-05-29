@@ -1,6 +1,7 @@
 """
 DomainTools Iris Detect Test Cases
 """
+
 import hmac
 import json
 import time
@@ -9,15 +10,25 @@ from typing import Any
 
 import pytest
 import requests
-
 from CommonServerPython import DemistoException
 from DomainToolsIrisDetect import (
-    DEFAULT_LIMIT, DEFAULT_OFFSET, DEFAULT_PAGE_SIZE,
-    DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT, DOMAINTOOLS_WATCHED_DOMAINS_HEADER,
-    INCLUDE_COUNTS_LIMIT, INCLUDE_DOMAIN_DATA_LIMIT, INTEGRATION_CONTEXT_NAME,
-    LIMIT_ERROR_MSG, MAX_DAYS_BACK, MONITOR_DOMAINS_LIMIT,
-    PAGE_NUMBER_ERROR_MSG, PAGE_SIZE_ERROR_MSG, Client, DTSigner,
-    create_common_api_arguments, create_escalated_api_arguments,
+    DEFAULT_LIMIT,
+    DEFAULT_OFFSET,
+    DEFAULT_PAGE_SIZE,
+    DOMAINTOOLS_MONITOR_DOMAINS_ENDPOINT,
+    DOMAINTOOLS_WATCHED_DOMAINS_HEADER,
+    INCLUDE_COUNTS_LIMIT,
+    INCLUDE_DOMAIN_DATA_LIMIT,
+    INTEGRATION_CONTEXT_NAME,
+    LIMIT_ERROR_MSG,
+    MAX_DAYS_BACK,
+    MONITOR_DOMAINS_LIMIT,
+    PAGE_NUMBER_ERROR_MSG,
+    PAGE_SIZE_ERROR_MSG,
+    Client,
+    DTSigner,
+    create_common_api_arguments,
+    create_escalated_api_arguments,
     domaintools_iris_detect_blocklist_domains_command,
     domaintools_iris_detect_escalate_domains_command,
     domaintools_iris_detect_get_blocklist_domains_command,
@@ -27,13 +38,27 @@ from DomainToolsIrisDetect import (
     domaintools_iris_detect_get_new_domains_command,
     domaintools_iris_detect_get_watched_domains_command,
     domaintools_iris_detect_ignore_domains_command,
-    domaintools_iris_detect_watch_domains_command, dt_error_handler,
-    fetch_domain_tools_api_results, fetch_domains, flatten_nested_dict,
-    format_blocklist_fields, format_common_fields, format_data, format_monitor_fields,
-    format_risk_score_components, format_watchlist_fields,
-    get_command_title_string, get_last_run, get_max_limit, get_results_helper,
-    handle_domain_action, join_dict_values_for_keys, module_test, pagination,
-    validate_first_fetch)
+    domaintools_iris_detect_watch_domains_command,
+    dt_error_handler,
+    fetch_domain_tools_api_results,
+    fetch_domains,
+    flatten_nested_dict,
+    format_blocklist_fields,
+    format_common_fields,
+    format_data,
+    format_monitor_fields,
+    format_risk_score_components,
+    format_watchlist_fields,
+    get_command_title_string,
+    get_last_run,
+    get_max_limit,
+    get_results_helper,
+    handle_domain_action,
+    join_dict_values_for_keys,
+    module_test,
+    pagination,
+    validate_first_fetch,
+)
 
 client = Client(
     username="test_user",
@@ -173,8 +198,7 @@ CREATE_COMMON_API_ARGUMENTS = {
     "search": None,
     "limit": 5,
     "page": None,
-    "page_size": None
-
+    "page_size": None,
 }
 
 
@@ -189,9 +213,7 @@ def test_dt_signer():
     signer = DTSigner(api_username, api_key)
     timestamp = str(int(time.time()))
     uri = "/v2/whois/example.com"
-    expected_signature = hmac.new(
-        api_key.encode("utf-8"), (api_username + timestamp + uri).encode("utf-8"), sha256
-    ).hexdigest()
+    expected_signature = hmac.new(api_key.encode("utf-8"), (api_username + timestamp + uri).encode("utf-8"), sha256).hexdigest()
 
     signature = signer.sign(timestamp, uri)
     assert signature == expected_signature
@@ -265,13 +287,15 @@ def test_test_module(mocker):
     "nested_dict, expected_output",
     [
         # Test case 1: Nested dict with primitive values.
-        ({"proximity": 22, "threat_profile": {"phishing": 74, "malware": 54, "spam": 32}},
-         {"proximity": 22, "phishing": 74, "malware": 54, "spam": 32}
-         ),
+        (
+            {"proximity": 22, "threat_profile": {"phishing": 74, "malware": 54, "spam": 32}},
+            {"proximity": 22, "phishing": 74, "malware": 54, "spam": 32},
+        ),
         # Test case 2: Nested dict with list values.
-        ({"proximity": 22, "threat_profile": {"phishing": 74,
-                                              "evidence": ["domain name", "name server", "registrant"]}},
-         {"proximity": 22, "phishing": 74, "evidence": ["domain name", "name server", "registrant"]}),
+        (
+            {"proximity": 22, "threat_profile": {"phishing": 74, "evidence": ["domain name", "name server", "registrant"]}},
+            {"proximity": 22, "phishing": 74, "evidence": ["domain name", "name server", "registrant"]},
+        ),
         # Test case 3: Empty nested dict.
         ({}, {}),
         # Test case 4: Nested dict with nested empty dict.
@@ -312,9 +336,7 @@ def test_get_last_run():
     assert response is None
 
 
-@pytest.mark.parametrize(
-    "expected_output", [CREATE_INDICATOR_FROM_DETECT_DOMAIN_OUTPUT]
-)
+@pytest.mark.parametrize("expected_output", [CREATE_INDICATOR_FROM_DETECT_DOMAIN_OUTPUT])
 def test_create_indicator_from_detect_domain(expected_output):
     """
     Test create_indicator_from_detect_domain function.
@@ -328,9 +350,7 @@ def test_create_indicator_from_detect_domain(expected_output):
     Then:
         -  Checks the output of the command function with the expected output.
     """
-    response = client.create_indicator_from_detect_domain(
-        item=INDICATOR_LIST, term={"rA7bn46jQ3": "dummy"}
-    )
+    response = client.create_indicator_from_detect_domain(item=INDICATOR_LIST, term={"rA7bn46jQ3": "dummy"})
     assert response == expected_output
 
 
@@ -451,7 +471,7 @@ def test_create_common_api_arguments(expected_output):
         "limit": 5,
         "offset": 0,
         "page": None,
-        "page_size": None
+        "page_size": None,
     }
     response = create_common_api_arguments(args=args)
     assert expected_output == response
@@ -558,9 +578,7 @@ def test_fetch_domains(mocker):
     Then:
         - Ensure that the function returns True as expected.
     """
-    mocker.patch.object(
-        client, "fetch_and_process_domains", side_effect=[INDICATOR_LIST]
-    )
+    mocker.patch.object(client, "fetch_and_process_domains", side_effect=[INDICATOR_LIST])
     response = fetch_domains(client)
     assert str(response) == str(True)
 
@@ -656,9 +674,7 @@ def test_fetch_domain_tools_api_results(mocker):
     """
     mocker.patch.object(client, "query_dt_api", side_effect=[GET_NEW_DOMAIN_LIST])
     args = {"include_domain_data": "True"}
-    response = fetch_domain_tools_api_results(
-        client, "/v1/iris-detect/domains/new/", "New Domains", dt_args=args
-    )
+    response = fetch_domain_tools_api_results(client, "/v1/iris-detect/domains/new/", "New Domains", dt_args=args)
     assert response.outputs == GET_NEW_DOMAIN_LIST.get("watchlist_domains", [])
     assert response.outputs_prefix == f"{INTEGRATION_CONTEXT_NAME}.New"
 
@@ -680,9 +696,7 @@ def test_process_dt_domains_into_xsoar():
     incident_name = "DomainTools Iris Detect Changed Domains Since"
     last_run = "changed_domain_last_run"
     term = {"MWpVbD0x5E": "dummy"}
-    res = client.process_dt_domains_into_xsoar(
-        domains_list, incident_name, last_run, term, enable_incidents=False
-    )
+    res = client.process_dt_domains_into_xsoar(domains_list, incident_name, last_run, term, enable_incidents=False)
     assert not res
 
 
@@ -917,17 +931,9 @@ def test_create_escalated_api_arguments():
         - The function should return a dictionary with the expected keys and corresponding
           values from the input dictionary for each test case.
     """
-    args = {
-        "escalated_since": "2023-01-01",
-        "escalation_types": ["type1", "type2"],
-        "changed_since": "2023-02-01"
-    }
+    args = {"escalated_since": "2023-01-01", "escalation_types": ["type1", "type2"], "changed_since": "2023-02-01"}
 
-    expected_output = {
-        "escalated_since": "2023-01-01",
-        "escalation_types[]": ["type1", "type2"],
-        "changed_since": "2023-02-01"
-    }
+    expected_output = {"escalated_since": "2023-01-01", "escalation_types[]": ["type1", "type2"], "changed_since": "2023-02-01"}
 
     assert create_escalated_api_arguments(args) == expected_output
 
@@ -937,20 +943,16 @@ def test_create_escalated_api_arguments():
         "escalation_types": ["type1", "type2"],
     }
 
-    expected_output = {
-        "escalated_since": "2023-01-01",
-        "escalation_types[]": ["type1", "type2"],
-        "changed_since": None
-    }
+    expected_output = {"escalated_since": "2023-01-01", "escalation_types[]": ["type1", "type2"], "changed_since": None}
 
     assert create_escalated_api_arguments(args) == expected_output
 
 
 def test_validate_first_fetch():
     """
-`   Test the validate_first_fetch function with various input cases, including valid input, input with extra spaces,
-    input with negative value, non-integer input, empty input, input with only spaces, and input exceeding
-    the MAX_DAYS_BACK limit.
+    `   Test the validate_first_fetch function with various input cases, including valid input, input with extra spaces,
+        input with negative value, non-integer input, empty input, input with only spaces, and input exceeding
+        the MAX_DAYS_BACK limit.
     """
 
     # Test valid input
@@ -976,16 +978,19 @@ def test_validate_first_fetch():
     assert validate_first_fetch(f"{MAX_DAYS_BACK + 5} days") == MAX_DAYS_BACK
 
 
-@pytest.mark.parametrize("value, expected", [
-    ("5 days", 5),
-    ("1 day", 1),
-    ("   3 days   ", 3),
-    ("-2 days", MAX_DAYS_BACK),
-    ("invalid days", MAX_DAYS_BACK),
-    ("", MAX_DAYS_BACK),
-    ("   ", MAX_DAYS_BACK),
-    (f"{MAX_DAYS_BACK + 5} days", MAX_DAYS_BACK)
-])
+@pytest.mark.parametrize(
+    "value, expected",
+    [
+        ("5 days", 5),
+        ("1 day", 1),
+        ("   3 days   ", 3),
+        ("-2 days", MAX_DAYS_BACK),
+        ("invalid days", MAX_DAYS_BACK),
+        ("", MAX_DAYS_BACK),
+        ("   ", MAX_DAYS_BACK),
+        (f"{MAX_DAYS_BACK + 5} days", MAX_DAYS_BACK),
+    ],
+)
 def test_validate_first_fetch_parametrized(value, expected):
     """
     Test the validate_first_fetch function with parameterized input cases, including valid input, input with extra
@@ -1060,8 +1065,9 @@ def test_pagination_errors(page: int | None, page_size: int | None, limit: int |
         ("Test Context", 1, 10, 0, "Test Context \nCurrent page size: 10\nShowing page 1 out of 1"),
     ],
 )
-def test_get_command_title_string(sub_context: str, page: int | None, page_size: int | None, hits: int | None,
-                                  expected_output: str):
+def test_get_command_title_string(
+    sub_context: str, page: int | None, page_size: int | None, hits: int | None, expected_output: str
+):
     """
     Test the get_command_title_string function with various input cases.
 

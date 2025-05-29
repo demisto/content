@@ -1,0 +1,6 @@
+fromversion: 8.3.0
+id: ProofpointServerProtection_ModelingRule
+name: ProofpointServerProtection Modeling Rule
+rules: ''
+schema: ''
+tags: proofpoint

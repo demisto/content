@@ -1,0 +1,6 @@
+fromversion: 8.7.0
+id: Azure_App_Service_ModelingRule
+name: Azure App Service Modeling Rule
+rules: ''
+schema: ''
+tags:

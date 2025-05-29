@@ -2,7 +2,7 @@
     "name": "Tanium Threat Response",
     "description": "Use the Tanium Threat Response integration to manage endpoints processes, evidence, alerts, files, snapshots, and connections.",
     "support": "xsoar",
-    "currentVersion": "2.2.18",
+    "currentVersion": "2.2.19",
     "author": "Cortex XSOAR",
     "url": "https://www.paloaltonetworks.com/cortex",
     "email": "",
@@ -15,7 +15,14 @@
     "keywords": [],
     "marketplaces": [
         "xsoar",
-        "marketplacev2"
+        "marketplacev2",
+        "platform"
     ],
-    "defaultDataSource": "Tanium Threat Response v2"
+    "defaultDataSource": "Tanium Threat Response v2",
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
 }

@@ -1,6 +1,9 @@
 commonfields:
   id: Server Message Block (SMB) v2
   version: -1
+sectionorder:
+- Connect
+- Collect
 name: Server Message Block (SMB) v2
 display: Server Message Block (SMB) v2
 category: Utilities
@@ -10,36 +13,43 @@ configuration:
   name: hostname
   type: 0
   required: false
+  section: Connect
 - display: Port
   name: port
   defaultvalue: "445"
   type: 0
   required: false
+  section: Connect
 - display: Domain Controller
   name: dc
   type: 0
   additionalinfo: The domain controller hostname. This is useful for environments with DFS servers as it is used to identify the DFS domain information automatically.
   required: false
+  section: Connect
 - display: Username
   name: credentials
   type: 9
   required: false
+  section: Connect
 - display: Client GUID
   name: client_guid
   type: 0
   additionalinfo: The client machine name to identify the client to the server on a new connection.
   required: false
+  section: Connect
 - display: Force Encryption
   name: encrypt
   type: 8
   additionalinfo: Force encryption on the connection, requires SMBv3 or newer on the remote server. Default is "false".
   required: false
+  section: Connect
 - display: Secure Dialect Negotiation
   name: require_secure_negotiate
   defaultvalue: "true"
   type: 8
   additionalinfo: Validate the negotiation info when connecting to a share. More information can be found on https://docs.microsoft.com/en-us/archive/blogs/openspecification/smb3-secure-dialect-negotiation
   required: false
+  section: Connect
 script:
   commands:
   - name: smb-download
@@ -47,7 +57,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -88,7 +98,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -105,7 +115,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/Folder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/Folder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname.  If empty, the hostname from the instance configuration is used.
     - name: username
@@ -128,7 +138,7 @@ script:
     - name: file_path
       required: true
       default: true
-      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive'
+      description: 'The path to the file, starting from the share, for example: Share/Folder/File. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
@@ -141,7 +151,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
@@ -154,7 +164,7 @@ script:
     - name: path
       required: true
       default: true
-      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive'
+      description: 'The path to the directory, starting from the share, for example: Share/NewFolder. This field is case-insensitive.'
     - name: hostname
       description: Server IP address / hostname. If empty, the hostname from the instance configuration is used.
     - name: username
@@ -162,7 +172,7 @@ script:
     - name: password
       description: The password to use for authentication. If empty, the password from the instance configuration is used.
     description: Removes a directory from the given path.
-  dockerimage: demisto/smbprotocol:1.0.0.113061
+  dockerimage: demisto/smbprotocol:1.0.0.2035850
   runonce: false
   script: '-'
   type: python

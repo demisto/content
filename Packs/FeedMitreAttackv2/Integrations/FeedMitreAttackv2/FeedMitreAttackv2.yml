@@ -41,6 +41,7 @@ configuration:
   - WHITE
   type: 15
   required: false
+  defaultvalue: WHITE
 - defaultvalue: indicatorType
   display: ''
   name: feedExpirationPolicy

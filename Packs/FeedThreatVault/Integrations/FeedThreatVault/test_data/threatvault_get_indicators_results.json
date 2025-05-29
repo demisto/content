@@ -1,0 +1,34 @@
+{
+    "Contents": {
+        "count": 1001,
+        "data": {
+            "ipaddr": [],
+            "name": "panw-bulletproof-ip-list",
+            "version": "1"
+        },
+        "link": {
+            "next": "null",
+            "previous": "null"
+        },
+        "message": "Successful",
+        "success": "true"
+    },
+    "ContentsFormat": "json",
+    "EntryContext": {
+        "ThreatVault.EDL": {
+            "Addresses": [
+                "192.168.1.0-192.168.1.255",
+                "192.168.0.0-192.168.0.255"
+            ],
+            "Content_Version": 1,
+            "Count": 1001,
+            "Name": "test"
+        }
+    },
+    "HumanReadable": "### ThreatVault EDL Results for: test\n\n|Content_Version|Count|Name|\n|---|---|---|\n| 1 | 1001 | test |\n",
+    "IgnoreAutoExtract": false,
+    "IndicatorTimeline": [],
+    "Note": false,
+    "Relationships": [],
+    "Type": 1
+}

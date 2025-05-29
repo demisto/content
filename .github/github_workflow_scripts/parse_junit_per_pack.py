@@ -24,7 +24,7 @@ def parse_pack_name(class_name: str):
     return parsed_pack_name
 
 
-def parse_xml(path: Path = Path(".report_pytest.xml")) -> dict[str, float]:
+def parse_xml(path: Path = Path("report_pytest.xml")) -> dict[str, float]:
     pack_times: defaultdict[str, float] = defaultdict(int)
 
     for suite in ET.parse(path).getroot().findall("testsuite"):

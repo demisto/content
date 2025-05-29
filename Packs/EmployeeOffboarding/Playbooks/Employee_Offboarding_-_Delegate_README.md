@@ -33,4 +33,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Employee_Offboarding_Delegate](../doc_files/Employee_Offboarding_Delegate.png)
+![Employee_Offboarding_Delegate](../doc_files/Employee_Offboarding_-_Delegate.png)

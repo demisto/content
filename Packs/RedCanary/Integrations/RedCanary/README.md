@@ -12,7 +12,7 @@
 <ul>
 <li>
 <strong>Name</strong>: a textual name for the integration instance.</li>
-<li><strong>Domain (e.g., https://demisto.my.redcanary.co)</strong></li>
+<li><strong>Domain (e.g., https://xsoar.my.redcanary.co)</strong></li>
 <li><strong>API Key</strong></li>
 <li><strong>Fetch incidents</strong></li>
 <li><strong>Incident type</strong></li>
@@ -77,7 +77,7 @@
 <h5>Command Example</h5>
 <pre><code>!redcanary-acknowledge-detection id=4</code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47007260-80928c00-d140-11e8-8d41-6c9e90a9d615.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47007260-80928c00-d140-11e8-8d41-6c9e90a9d615.png" alt="image"></a></p>
+<p><a href="../../doc_files/47007260-80928c00-d140-11e8-8d41-6c9e90a9d615.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47007260-80928c00-d140-11e8-8d41-6c9e90a9d615.png" alt="image"></a></p>
 <h3 id="h_554835331831540914848016">2. Update the remediation state of a detection</h3>
 <hr>
 <p>Updates the remediation state of a detection.</p>
@@ -116,7 +116,7 @@
 <h5>Command Example</h5>
 <pre><code>!redcanary-update-remediation-state id=4 remediation-state=not_remediated_false_positive comment="updated by DBot"</code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47007379-c0597380-d140-11e8-98aa-531be44f8c56.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47007379-c0597380-d140-11e8-98aa-531be44f8c56.png" alt="image" width="748" height="67"></a></p>
+<p><a href="../../doc_files/47007379-c0597380-d140-11e8-98aa-531be44f8c56.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47007379-c0597380-d140-11e8-98aa-531be44f8c56.png" alt="image" width="748" height="67"></a></p>
 <h3 id="h_5508092811591540915563778">3. Get a list of detections</h3>
 <hr>
 <p>Get a list of confirmed detections.</p>
@@ -279,44 +279,44 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
-        "Hostname": "demisto-host"
-    }, 
+        "Username": "administrator",
+        "Hostname": "xsoar-host"
+    },
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "demisto-host", 
-        "IsDecommissioned": true, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "xsoar-host",
+        "IsDecommissioned": true,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "181.61.87.106"
-        ], 
+        ],
         "ID": 2
-    }, 
+    },
     "RedCanary": {
         "Detection": [
             {
-                "Severity": "medium", 
-                "Classification": "Suspicious Activity", 
-                "Acknowledged": true, 
+                "Severity": "medium",
+                "Classification": "Suspicious Activity",
+                "Acknowledged": true,
                 "Subclassification": [
                     "Process"
-                ], 
-                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.", 
-                "Headline": "[DEM-6] Suspicious Activity (Process)", 
-                "Time": "2018-09-12T15:38:17Z", 
-                "Type": "RedCanaryDetection", 
+                ],
+                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.",
+                "Headline": "[DEM-6] Suspicious Activity (Process)",
+                "Time": "2018-09-12T15:38:17Z",
+                "Type": "RedCanaryDetection",
                 "ID": 6
-            }, 
+            },
         ]
-    }, 
+    },
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47003133-3c4ebe00-d137-11e8-98eb-ca627c18d7fd.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47003133-3c4ebe00-d137-11e8-98eb-ca627c18d7fd.png" alt="image" width="753" height="153"></a></p>
+<p><a href="../../doc_files/47003133-3c4ebe00-d137-11e8-98eb-ca627c18d7fd.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47003133-3c4ebe00-d137-11e8-98eb-ca627c18d7fd.png" alt="image" width="753" height="153"></a></p>
 <h3 id="h_7818398152361540915610809">4. Get a list of endpoints</h3>
 <hr>
 <p>Returns a list of endpoints.</p>
@@ -411,21 +411,21 @@
         {
             "MACAddress": [
                 "06:79:02:e0:b0:7c"
-            ], 
-            "OS": "Windows", 
-            "Hostname": "ec2amaz-tmlcd45", 
-            "IsDecommissioned": true, 
-            "IsIsolated": true, 
-            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+            ],
+            "OS": "Windows",
+            "Hostname": "ec2amaz-tmlcd45",
+            "IsDecommissioned": true,
+            "IsIsolated": true,
+            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
             "IPAddress": [
                 "172.31.37.106"
-            ], 
+            ],
             "ID": 2
-        }, 
+        },
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47007761-a0767f80-d141-11e8-90e2-09c67fea5381.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47007761-a0767f80-d141-11e8-90e2-09c67fea5381.png" alt="image" width="752" height="165"></a></p>
+<p><a href="../../doc_files/47007761-a0767f80-d141-11e8-90e2-09c67fea5381.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47007761-a0767f80-d141-11e8-90e2-09c67fea5381.png" alt="image" width="752" height="165"></a></p>
 <h3 id="h_5431581203121540915657263">5. Execute a playbook on a detection</h3>
 <hr>
 <p>Execute a predefined playbook on a detection.</p>
@@ -464,7 +464,7 @@
 <h5>Command Example</h5>
 <pre><code>!redcanary-execute-playbook detection-id=4 playbook-name=Isolate</code></pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47012290-9d34c100-d14c-11e8-971c-7cb6187fd010.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47012290-9d34c100-d14c-11e8-971c-7cb6187fd010.png" alt="image" width="666" height="59"></a></p>
+<p><a href="../../doc_files/47012290-9d34c100-d14c-11e8-971c-7cb6187fd010.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47012290-9d34c100-d14c-11e8-971c-7cb6187fd010.png" alt="image" width="666" height="59"></a></p>
 <h3 id="h_8786017753851540915713525">6. Get an endpoint by the endpoint ID</h3>
 <hr>
 <p>Get an endpoint by the endpoint ID.</p>
@@ -554,21 +554,21 @@
         {
             "MACAddress": [
                 "06:79:02:e0:b0:7c"
-            ], 
-            "OS": "Windows", 
-            "Hostname": "ec2amaz-tmlcd45", 
-            "IsDecommissioned": true, 
-            "IsIsolated": true, 
-            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+            ],
+            "OS": "Windows",
+            "Hostname": "ec2amaz-tmlcd45",
+            "IsDecommissioned": true,
+            "IsIsolated": true,
+            "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
             "IPAddress": [
                 "172.31.37.106"
-            ], 
+            ],
             "ID": 2
-        }, 
+        },
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47012455-f13fa580-d14c-11e8-98fa-a49e288d325f.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47012455-f13fa580-d14c-11e8-98fa-a49e288d325f.png" alt="image"></a></p>
+<p><a href="../../doc_files/47012455-f13fa580-d14c-11e8-98fa-a49e288d325f.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47012455-f13fa580-d14c-11e8-98fa-a49e288d325f.png" alt="image"></a></p>
 <h3 id="h_6027826694591540915770773">7. Get a list of detections</h3>
 <hr>
 <p>Get a list of detections associated with the endpoint.</p>
@@ -710,44 +710,44 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
-        "Hostname": "demisto-host"
-    }, 
+        "Username": "administrator",
+        "Hostname": "xsoar-host"
+    },
     "Endpoint": {
         "MACAddress": [
             "08:29:42:f0:b3:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "demisto-host", 
-        "IsDecommissioned": true, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "xsoar-host",
+        "IsDecommissioned": true,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "181.61.87.106"
-        ], 
+        ],
         "ID": 2
-    }, 
+    },
     "RedCanary": {
         "Detection": [
             {
-                "Severity": "medium", 
-                "Classification": "Suspicious Activity", 
-                "Acknowledged": true, 
+                "Severity": "medium",
+                "Classification": "Suspicious Activity",
+                "Acknowledged": true,
                 "Subclassification": [
                     "Process"
-                ], 
-                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.", 
-                "Headline": "[DEM-6] Suspicious Activity (Process)", 
-                "Time": "2018-09-12T15:38:17Z", 
-                "Type": "RedCanaryDetection", 
+                ],
+                "Summary": "The Windows Task Scheduler Configuration Tool was launched via command prompt and leveraged to create multiple suspicious scheduled tasks.",
+                "Headline": "[DEM-6] Suspicious Activity (Process)",
+                "Time": "2018-09-12T15:38:17Z",
+                "Type": "RedCanaryDetection",
                 "ID": 6
-            }, 
+            },
         ]
-    }, 
+    },
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47012686-7b880980-d14d-11e8-95be-8c88dfda4cbf.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47012686-7b880980-d14d-11e8-95be-8c88dfda4cbf.png" alt="image" width="756" height="101"></a></p>
+<p><a href="../../doc_files/47012686-7b880980-d14d-11e8-95be-8c88dfda4cbf.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47012686-7b880980-d14d-11e8-95be-8c88dfda4cbf.png" alt="image" width="756" height="101"></a></p>
 <h3 id="h_8166709515321540915812016">8. Get a detection by the detection ID</h3>
 <hr>
 <p>Returns a detection by the detection ID.</p>
@@ -974,58 +974,58 @@
 <h5>Context Example</h5>
 <pre>{
     "Account": {
-        "Username": "administrator", 
+        "Username": "administrator",
         "Hostname": "ec2amaz-tmlcd45"
-    }, 
+    },
     "Endpoint": {
         "MACAddress": [
             "06:79:02:e0:b0:7c"
-        ], 
-        "OS": "Windows", 
-        "Hostname": "ec2amaz-tmlcd45", 
-        "IsDecommissioned": false, 
-        "IsIsolated": true, 
-        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit", 
+        ],
+        "OS": "Windows",
+        "Hostname": "ec2amaz-tmlcd45",
+        "IsDecommissioned": false,
+        "IsIsolated": true,
+        "OSVersion": "Windows Server 2016 Server Datacenter, 64-bit",
         "IPAddress": [
             "172.31.37.106"
-        ], 
+        ],
         "ID": 4
-    }, 
+    },
     "Process": {
-        "Path": "c:\\windows\\system32\\regsvr32.exe", 
-        "CommandLine": "regsvr32.exe  /s /u /i:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1117/RegSvr32.sct scrobj.dll", 
-        "Name": "c:\\windows\\system32\\regsvr32.exe", 
-        "StartTime": "2018-09-12T11:30:23Z", 
+        "Path": "c:\\windows\\system32\\regsvr32.exe",
+        "CommandLine": "regsvr32.exe  /s /u /i:https://raw.githubusercontent.com/redcanaryco/atomic-red-team/master/atomics/T1117/RegSvr32.sct scrobj.dll",
+        "Name": "c:\\windows\\system32\\regsvr32.exe",
+        "StartTime": "2018-09-12T11:30:23Z",
         "MD5": "8cf9086be38a15e905924b4a45d814d9"
-    }, 
+    },
     "IP": {
-        "Port": 443, 
+        "Port": 443,
         "Address": "151.101.12.133"
-    }, 
+    },
     "Domain": {
         "Name": "raw.githubusercontent.com"
-    }, 
+    },
     "RedCanary": {
         "Detection": {
-            "Severity": "medium", 
-            "Classification": "Malicious Software", 
-            "Headline": "[DEM-4] Malicious Software", 
-            "Acknowledged": false, 
-            "Summary": "An instance of `Regsvr32` was leveraged to download Atomic Red Team code and execute it on this system.", 
-            "Time": "2018-09-12T11:15:55Z", 
-            "Type": "RedCanaryDetection", 
+            "Severity": "medium",
+            "Classification": "Malicious Software",
+            "Headline": "[DEM-4] Malicious Software",
+            "Acknowledged": false,
+            "Summary": "An instance of `Regsvr32` was leveraged to download Atomic Red Team code and execute it on this system.",
+            "Time": "2018-09-12T11:15:55Z",
+            "Type": "RedCanaryDetection",
             "ID": 4
         }
-    }, 
+    },
     "File": [
         {
-            "Path": "c:\\windows\\explorer.exe", 
-            "Name": "c:\\windows\\explorer.exe", 
-            "Extension": ".exe", 
+            "Path": "c:\\windows\\explorer.exe",
+            "Name": "c:\\windows\\explorer.exe",
+            "Extension": ".exe",
             "MD5": "a7190e945f2d00fe4af31289f4e64b8c"
-        }, 
+        },
     ]
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/30797606/47012822-e6d1db80-d14d-11e8-9773-0b69802f9ba8.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/30797606/47012822-e6d1db80-d14d-11e8-9773-0b69802f9ba8.png" alt="image" width="750" height="369"></a></p>
+<p><a href="../../doc_files/47012822-e6d1db80-d14d-11e8-9773-0b69802f9ba8.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47012822-e6d1db80-d14d-11e8-9773-0b69802f9ba8.png" alt="image" width="750" height="369"></a></p>

@@ -9,7 +9,7 @@ The feed does not require an API key but having one greatly increases the quota 
 free from NIST, just follow [this link and its instructions](https://nvd.nist.gov/developers/request-an-api-key).
 
 ### Filters
-1. **CVSS 3 Severity Filter** - Filters CVEs by their CVSS 3 Score.
+1. **CVSS Severity Filter** - Filters CVEs by their CVSS Score, Supporting the latest CVSS Common Vulnerability Scoring System standard.
 2. **Keyword Search** - Uses a keyword (or a sentence) to filter out CVEs by their description. You can test this prior to setup using [NIST website](https://nvd.nist.gov/vuln/search).
 3. **KEV Only** - Returns the CVE that appears in CISA's [Known Exploited Vulnerabilities (KEV) Catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog).
 

@@ -4,9 +4,10 @@ This integration was integrated and tested with version 1.0 of MISP Feed.
 MISP Feed integration allows you to ingest feeds into TIM via an MISP instance.
 To ingest feeds via MISP, you must first configure a MISP instance and have the proper credentials.
 
-To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace. 
+To ingest specific feeds (Bambenek Consulting Feed, BruteForceBlocker Feed, etc.) directly to TIM without any authorization, you can use one of our dedicated feed content packs available in Marketplace.
 
 To ingest feeds via a URL, you could use one of the following content packs:
+
 - CSV Feed
 - JSON Feed
 - Plain Text Feed
@@ -22,7 +23,6 @@ To ingest feeds via a URL, you could use one of the following content packs:
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 | Fetch indicators |  | False |
-| Incremental Feed | Incremental feeds pull only new or modified indicators that have been sent from the integration. The determination if the indicator is new or modified happens on the 3rd-party vendor's side, and only indicators that are new or modified are sent to Cortex XSOAR. Therefore, all indicators coming from these feeds are labeled new or modified. | False |
 | Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
 | Source Reliability | Reliability of the source providing the intelligence data. | True |
 | Feed Fetch Interval |  | False |
@@ -35,25 +35,27 @@ To ingest feeds via a URL, you could use one of the following content packs:
 | Tags | Supports CSV values. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### misp-feed-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `misp-feed-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 10. | Optional | 
-| tags | Tags of the attributes to search for. | Optional | 
-| attribute_type | Types of the attributes to search for. | Optional | 
-| query | JSON query to filter MISP attributes. When a query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional | 
-
+| limit | The maximum number of results to return. Default is 10. | Optional |
+| tags | Tags of the attributes to search for. | Optional |
+| attribute_type | Types of the attributes to search for. | Optional |
+| query | JSON query to filter MISP attributes. When a query argument is used attribute_type and tags arguments are not used. You can check for the correct syntax at https://&lt;Your MISP url&gt;/servers/openapi#operation/restSearchAttributes. | Optional |
 
 #### Context Output
 
@@ -110,15 +112,19 @@ Gets indicators from the feed.
 ```
 
 #### Command Example
+
 ``` !misp-feed-get-indicators tags=tlp:% attribute_type=ip-src ```
 
 #### Human Readable Output
+
 Retrieved 7 indicators.
 
 ## Additional Information
+
 If you experience a timeout error while fetching indicators, the following query configuration may be helpful for you.
 
 You can configure the feed to return results from the last 24 hours as shown below:
+
 ```json
 {
     "returnFormat": "json",

@@ -1,6 +1,7 @@
 Set a value in context under the key you entered.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,8 +10,10 @@ Set a value in context under the key you entered.
 | Tags | Utility |
 
 ## Used In
+
 ---
 Sample usage of this script can be found in the following playbooks and scripts.
+
 * Arcsight - Get events related to the Case
 * Detonate File - BitDam
 * Endace Search Archive Download PCAP v2
@@ -102,6 +105,7 @@ WildFire - Detonate file
  -->
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -112,14 +116,16 @@ WildFire - Detonate file
 | stringify | Whether the argument should be saved as a string. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!Set key="Data(val.ID == obj.ID)" value=`{"ID": "test_id", "Value": "test_val2"}` append="true"```
 
 ## Context Example
+
 ```json
 {
     "Data": {
@@ -134,12 +140,14 @@ There are no outputs for this script.
 >Key Data(val.ID == obj.ID) set
 
 ## Known Limitations
+
 The script has some limitations with appending to the context in different cases and formats:
-- The *value* argument can't be larger than 25MB. In general, it is not recommended to ingest large data to context values. 
-- When *append* is set to `false` - the script will not support [dt](https://xsoar.pan.dev/docs/integrations/dt) operations given as part of the *key* argument.
-- When **Set** is called from within another script - if *append* is set tot `true` it is necessary to manually
+* The *value* argument can't be larger than 25MB. In general, it is not recommended to ingest large data to context values.
+* When *append* is set to `false` - the script will not support [dt](https://xsoar.pan.dev/docs/integrations/dt) operations given as part of the *key* argument.
+* When **Set** is called from within another script - if *append* is set tot `true` it is necessary to manually
 return the results given by the `demisto.executeCommand`, for the context update to take place.
 For example:
+
     ```python
       res = execute_command('Set', {'append': 'true', 'key': 'MyKey', 'value': 'MyValue'})
     return_results(res)

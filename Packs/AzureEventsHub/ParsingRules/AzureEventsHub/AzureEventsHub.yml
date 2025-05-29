@@ -1,6 +1,11 @@
-name: Azure Events Hub Modeling Rule
-id: azure_events_hub_modeling_rule
 fromversion: 6.10.0
-tags: []
+id: Microsoft_Azure_Events_Hub_ParsingRule
+name: Microsoft Azure Events Hub Parsing Rule
 rules: ''
 samples: ''
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
+tags: []

@@ -1,0 +1,19 @@
+{
+    "description": "",
+    "feed": false,
+    "id": "Symantec Email Security Cloud - Classifier",
+    "keyTypeMap": {
+        "email_data_feed": "Symantec Email Security Cloud Incident",
+        "email_quarantine": "Symantec Email Security Cloud Quarantine"
+    },
+    "name": "Symantec Email Security Cloud - Classifier",
+    "propagationLabels": [
+        "all"
+    ],
+    "transformer": {
+        "simple": "incident_type"
+    },
+    "type": "classification",
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

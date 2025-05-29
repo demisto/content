@@ -2,7 +2,7 @@ import demistomock as demisto
 from CommonServerPython import *
 
 import urllib3
-from typing import Any, Dict, Optional, Union
+from typing import Any
 import ntpath
 from dateparser import parse
 
@@ -34,7 +34,7 @@ class Client(BaseClient):
         params,
         verify=True,
         proxy=False,
-        ok_codes=tuple(),
+        ok_codes=(),
         headers=None,
         auth=None,
     ):
@@ -43,9 +43,7 @@ class Client(BaseClient):
         super().__init__(base_url, verify, proxy, ok_codes, headers, auth)
 
     def get_project_list(self):
-        return self._http_request(
-            method="GET", url_suffix="/projects", params=self.params
-        )
+        return self._http_request(method="GET", url_suffix="/projects", params=self.params)
 
     def get_webhooks_list(self, project_name: str):
         if project_name:
@@ -81,7 +79,7 @@ class Client(BaseClient):
         :param project_name: A project name to list its jobs
         :return: api response.
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if id_list:
             request_params["idlist"] = ",".join(id_list)
@@ -130,7 +128,7 @@ class Client(BaseClient):
         :param run_at_time_raw: select a time to run the job in iso 8061 time as string
         :return: api response
         """
-        request_body: Dict[str, Any] = {}
+        request_body: dict[str, Any] = {}
 
         if arg_string:
             request_body["argString"] = arg_string
@@ -175,7 +173,7 @@ class Client(BaseClient):
         :param options: add options for running a job
         :return: api response
         """
-        request_body: Dict[str, Any] = {}
+        request_body: dict[str, Any] = {}
 
         if arg_string:
             request_body["argString"] = arg_string
@@ -218,8 +216,8 @@ class Client(BaseClient):
         job_exact_filter: str,
         exclude_job_exact_filter: str,
         execution_type_filter: str,
-        max_results: Optional[int],
-        offset: Optional[int],
+        max_results: int | None,
+        offset: int | None,
         project_name: str,
     ):
         """
@@ -253,7 +251,7 @@ class Client(BaseClient):
         :return: api response
         """
 
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if status_filter:
             request_params["statusFilter"] = status_filter
@@ -356,7 +354,7 @@ class Client(BaseClient):
         :param node_filter: node filter to add
         :return: api response
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if exec_command:
             request_params["exec"] = exec_command
@@ -409,7 +407,7 @@ class Client(BaseClient):
         :param arg_string: arguments to pass to the script when executed.
         :return: api response
         """
-        request_params: Dict[str, Any] = {}
+        request_params: dict[str, Any] = {}
 
         if node_thread_count:
             request_params["nodeThreadcount"] = node_thread_count
@@ -451,8 +449,9 @@ class Client(BaseClient):
         :return: api response
         """
 
+        request_params = ""
         if options:
-            request_params: str = options
+            request_params = options
         else:
             if free_json:
                 request_params = free_json
@@ -492,7 +491,7 @@ class Client(BaseClient):
         :return: api response
         """
 
-        request_params: Dict[str, str] = {}
+        request_params: dict[str, str] = {}
         if arg_string:
             request_params["argString"] = arg_string
         if node_thread_count:
@@ -516,21 +515,14 @@ class Client(BaseClient):
 
         file_path = demisto.getFilePath(entry_id).get("path", None)
         if not file_path:
-            raise DemistoException(
-                f"Could not find file path to the next entry id: {entry_id}. \n"
-                f"Please provide another one."
-            )
+            raise DemistoException(f"Could not find file path to the next entry id: {entry_id}. \nPlease provide another one.")
         else:
             file_name = ntpath.basename(file_path)
 
         request_params.update(self.params)
         del self._headers["Content-Type"]
         with open(file_path, "rb") as file:
-            self._headers.update(
-                {
-                    "Content-Disposition": f'form-data; name="file"; filename="{file_name}"'
-                }
-            )
+            self._headers.update({"Content-Disposition": f'form-data; name="file"; filename="{file_name}"'})
             return self._http_request(
                 method="POST",
                 files={"scriptFile": file},
@@ -542,9 +534,7 @@ class Client(BaseClient):
 """ HELPER FUNCTIONS """
 
 
-def filter_results(
-    results: Union[list, dict], fields_to_remove: list, remove_signs: list
-) -> Union[list, dict]:
+def filter_results(results: list | dict, fields_to_remove: list, remove_signs: list) -> list | dict:
     new_results = []
     if isinstance(results, dict):
         demisto.info("got results as dictionary")
@@ -554,22 +544,16 @@ def filter_results(
             if key not in fields_to_remove:
                 demisto.debug(f'add this key: "{key}" to filtered results')
                 if isinstance(value, dict):
-                    demisto.debug(
-                        f"found {value} is a dict, calling this function again"
-                    )
+                    demisto.debug(f"found {value} is a dict, calling this function again")
                     value = filter_results(value, fields_to_remove, remove_signs)
                 demisto.info("searching not allowed signs to remove")
                 for sign in remove_signs:
                     if sign in key:
-                        demisto.debug(
-                            f'found "{sign}" in the next key: "{key}". remove it.'
-                        )
+                        demisto.debug(f'found "{sign}" in the next key: "{key}". remove it.')
                         new_record[key.replace(sign, "")] = value
                         demisto.debug("finish remove it")
                     else:
-                        demisto.debug(
-                            f"not allowed signs were not found. add the next key to filter results: {key}"
-                        )
+                        demisto.debug(f"not allowed signs were not found. add the next key to filter results: {key}")
                         new_record[key] = value
                 demisto.info("finish remove not allowed signs in results keys")
         demisto.info("finish looping over results")
@@ -591,7 +575,7 @@ def filter_results(
     return new_results
 
 
-def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
+def attribute_pairs_to_dict(attrs_str: str | None, delim_char: str = ","):
     """
     Transforms a string of multiple inputs to a dictionary list
 
@@ -612,18 +596,14 @@ def attribute_pairs_to_dict(attrs_str: Optional[str], delim_char: str = ","):
         match = regex.match(f)
         if match is None:
             raise ValueError(f"Could not parse field: {f}")
-        demisto.debug(
-            f"add this key: {match.group(1)} and this value: {match.group(2)} to attrs"
-        )
+        demisto.debug(f"add this key: {match.group(1)} and this value: {match.group(2)} to attrs")
         attrs.update({match.group(1): match.group(2)})
-        demisto.debug(
-            f"finish adding this key: {match.group(1)} and this value: {match.group(2)} to attrs"
-        )
+        demisto.debug(f"finish adding this key: {match.group(1)} and this value: {match.group(2)} to attrs")
 
     return attrs
 
 
-def convert_str_to_int(val_to_convert: Optional[str], param_name: str):
+def convert_str_to_int(val_to_convert: str | None, param_name: str):
     """
     This function get a parameter from Demisto as string and try converting it to integer
     :param val_to_convert: the value to convert
@@ -640,6 +620,7 @@ def convert_str_to_int(val_to_convert: Optional[str], param_name: str):
             demisto.error(f"failed to convert {val_to_convert} to integer")
             raise
     demisto.info(f"finish converting {val_to_convert} to integer")
+    return None
 
 
 def calc_run_at_time(selected_time: str) -> str:
@@ -655,7 +636,7 @@ def calc_run_at_time(selected_time: str) -> str:
     if not selected_time:
         return selected_iso_time
     selected_time_date = parse(f"in {selected_time} UTC")
-    assert selected_time_date is not None, f'could not parse {selected_time} UTC'
+    assert selected_time_date is not None, f"could not parse {selected_time} UTC"
     iso_with_timezone = selected_time_date.isoformat()
     return iso_with_timezone
 
@@ -668,7 +649,7 @@ def collect_headers(entries_list: list) -> list:
     """
     headers = [""]
     for entry in entries_list:
-        for key, value in entry.items():
+        for key, _value in entry.items():
             if key == "log":
                 headers[0] = "log"
             headers.append(key.replace("_", " "))
@@ -714,9 +695,7 @@ def job_retry_command(client: Client, args: dict):
     filtered_results: dict = filter_results(result, ["href", "permalink"], ["-"])  # type: ignore
     headers = [key.replace("-", " ") for key in [*filtered_results.keys()]]
 
-    readable_output = tableToMarkdown(
-        "Execute Job:", filtered_results, headers=headers, headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown("Execute Job:", filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Rundeck.ExecutedJobs",
@@ -756,9 +735,7 @@ def execute_job_command(client: Client, args: dict):
 
     headers = [key.replace("-", " ") for key in [*filtered_results.keys()]]
 
-    readable_output = tableToMarkdown(
-        "Execute Job:", filtered_results, headers=headers, headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown("Execute Job:", filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Rundeck.ExecutedJobs",
@@ -811,9 +788,7 @@ def jobs_list_command(client: Client, args: dict):
     group_path_exact: str = args.get("group_path_exact", "")
     scheduled_filter: str = args.get("scheduled_filter", "")
     server_node_uuid_filter: str = args.get("server_node_uuid_filter", "")
-    max_results: Optional[int] = convert_str_to_int(
-        args.get("max_results", ""), "max_results"
-    )
+    max_results: int | None = convert_str_to_int(args.get("max_results", ""), "max_results")
     project_name: str = args.get("project_name", "")
     demisto.info("sending get jobs list request")
     result = client.get_jobs_list(
@@ -832,9 +807,7 @@ def jobs_list_command(client: Client, args: dict):
         raise DemistoException(f"Got unexpected output from api: {result}")
 
     if result:
-        max_entries: list = result[:max_results] if max_results else result[
-            :MAX_RESULTS
-        ]
+        max_entries: list = result[:max_results] if max_results else result[:MAX_RESULTS]
         filtered_results = filter_results(max_entries, ["href", "permalink"], ["-"])
         headers = [key.replace("_", " ") for key in [*filtered_results[0].keys()]]
         readable_output = tableToMarkdown(
@@ -863,7 +836,7 @@ def webhooks_list_command(client: Client, args: dict):
     :return: CommandResults object
     """
     project_name: str = args.get("project_name", "")
-    max_results: Optional[int] = convert_str_to_int(args.get('max_results', ''), 'max_results')
+    max_results: int | None = convert_str_to_int(args.get("max_results", ""), "max_results")
     demisto.info("sending get webhooks list request")
     result = client.get_webhooks_list(project_name)
     demisto.info("finish sending get webhooks list request")
@@ -874,9 +847,7 @@ def webhooks_list_command(client: Client, args: dict):
     headers = [key.replace("_", " ") for key in [*result[0].keys()]]
 
     returned_results = result[:max_results] if max_results else result[:MAX_RESULTS]
-    readable_output = tableToMarkdown(
-        "Webhooks List:", result, headers=headers, headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown("Webhooks List:", result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Rundeck.Webhooks",
@@ -901,9 +872,7 @@ def job_execution_query_command(client: Client, args: dict):
     end: str = args.get("end", "")
     adhoc: str = args.get("adhoc", "")
     job_id_list_filter: list = argToList(args.get("job_id_list_filter", []))
-    exclude_job_id_list_filter: list = argToList(
-        args.get("exclude_job_id_list_filter", [])
-    )
+    exclude_job_id_list_filter: list = argToList(args.get("exclude_job_id_list_filter", []))
     job_list_filter: list = argToList(args.get("job_list_filter", []))
     exclude_job_list_filter: list = argToList(args.get("exclude_job_list_filter", []))
     group_path: str = args.get("group_path", "")
@@ -914,8 +883,8 @@ def job_execution_query_command(client: Client, args: dict):
     job_exact_filter: str = args.get("job_exact_filter", "")
     exclude_job_exact_filter: str = args.get("exclude_job_exact_filter", "")
     execution_type_filter: str = args.get("execution_type_filter", "")
-    max_results: Optional[int] = convert_str_to_int(args.get("max_results"), "max")
-    offset: Optional[int] = convert_str_to_int(args.get("offset"), "offset")
+    max_results: int | None = convert_str_to_int(args.get("max_results"), "max")
+    offset: int | None = convert_str_to_int(args.get("offset"), "offset")
     project_name: str = args.get("project_name", "")
     exclude_group_path: str = args.get("exclude_group_path", "")
     demisto.info("sending job execution query request")
@@ -984,13 +953,9 @@ def job_execution_output_command(client: Client, args: dict):
     :param args: command's arguments
     :return: CommandRusult object
     """
-    execution_id: Optional[int] = convert_str_to_int(
-        args.get("execution_id"), "execution_id"
-    )
+    execution_id: int | None = convert_str_to_int(args.get("execution_id"), "execution_id")
     return_full_output: bool = argToBoolean(args.get("return_full_output", False))
-    max_results: Optional[int] = convert_str_to_int(
-        args.get("max_results", ""), "max_results"
-    )
+    max_results: int | None = convert_str_to_int(args.get("max_results", ""), "max_results")
     aggregate_log: bool = argToBoolean(args.get("aggregate_log", False))
     demisto.info("sending job execution output request")
     result: dict = client.job_execution_output(execution_id)  # type: ignore
@@ -1040,9 +1005,7 @@ def job_execution_abort_command(client: Client, args: dict):
     :param args: command's arguments
     :return: CommandRusult object
     """
-    execution_id: Optional[int] = convert_str_to_int(
-        args.get("execution_id"), "execution_id"
-    )
+    execution_id: int | None = convert_str_to_int(args.get("execution_id"), "execution_id")
 
     demisto.info("sending job execution abort request")
     result = client.job_execution_abort(execution_id)  # type: ignore
@@ -1097,9 +1060,7 @@ def adhoc_run_command(client: Client, args: dict):
     demisto.info("finish filter results from the api")
 
     headers = [key.replace("_", " ") for key in [*filtered_results.keys()]]
-    readable_output = tableToMarkdown(
-        "Adhoc Run:", filtered_results, headers=headers, headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown("Adhoc Run:", filtered_results, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Rundeck.ExecuteCommand",
@@ -1212,15 +1173,11 @@ def webhook_event_send_command(client: Client, args: dict):
             options_as_str = free_json
             demisto.info('finish convert "options" argument to str')
     except Exception as e:
-        raise DemistoException(
-            f'There was a problem converting "json" to json. The reason is: {e}'
-        )
+        raise DemistoException(f'There was a problem converting "json" to json. The reason is: {e}')
     result = client.webhook_event_send(auth_token, options_as_str, free_json)
 
     headers = [key.replace("_", " ") for key in [*result.keys()]]
-    readable_output = tableToMarkdown(
-        "Webhook event send:", result, headers=headers, headerTransform=pascalToSpace
-    )
+    readable_output = tableToMarkdown("Webhook event send:", result, headers=headers, headerTransform=pascalToSpace)
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="Rundeck.WebhookEvent",
@@ -1229,7 +1186,7 @@ def webhook_event_send_command(client: Client, args: dict):
     )
 
 
-def test_module(client: Client, project_name: Optional[str]) -> str:
+def test_module(client: Client, project_name: str | None) -> str:
     try:
         projects_list = client.get_project_list()
     except DemistoException as e:
@@ -1242,10 +1199,7 @@ def test_module(client: Client, project_name: Optional[str]) -> str:
             for project in projects_list:
                 if project_name == project.get("name"):
                     return "ok"
-            return (
-                f'Could not find the next project: "{project_name}"'
-                f". please enter another one or delete it completely."
-            )
+            return f'Could not find the next project: "{project_name}". please enter another one or delete it completely.'
         else:
             return "ok"
 
@@ -1260,7 +1214,7 @@ def main() -> None:
     :rtype:
     """
     params: dict = demisto.params()
-    token: str = params.get('token_creds', {}).get('password') or params.get("token", "")
+    token: str = params.get("token_creds", {}).get("password") or params.get("token", "")
     project_name: str = params.get("project_name", "")
 
     # get the service API url
@@ -1271,7 +1225,7 @@ def main() -> None:
     # out of the box by it, just pass ``proxy`` to the Client constructor
     proxy = demisto.params().get("proxy", False)
 
-    args: Dict = demisto.args()
+    args: dict = demisto.args()
     demisto.debug(f"Command being called is {demisto.command()}")
     try:
         headers = {"Accept": "application/json", "Content-Type": "application/json"}
@@ -1328,9 +1282,7 @@ def main() -> None:
     # Log exceptions and return errors
     except Exception as e:
         error_msg = str(e).replace("\\n", "\n")
-        return_error(
-            f"Failed to execute {demisto.command()} command.\n Error:\n {error_msg}"
-        )
+        return_error(f"Failed to execute {demisto.command()} command.\n Error:\n {error_msg}")
 
 
 """ ENTRY POINT """

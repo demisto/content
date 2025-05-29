@@ -32,4 +32,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![Employee_Status_Survey](https://raw.githubusercontent.com/demisto/content/ec6cda315c0d1e15cf36a3c93cc936dd90dfbc48/Packs/CrisisManagement/doc_files/Employee_Status_Survey.png)
+![Employee_Status_Survey](../doc_files/Employee_Status_Survey.png)

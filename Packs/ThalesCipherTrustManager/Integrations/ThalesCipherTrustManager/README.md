@@ -3,7 +3,6 @@ This integration was integrated and tested with version v1 of CipherTrust.
 
 ## Configure Thales CipherTrust Manager in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL | True |
@@ -11,7 +10,6 @@ This integration was integrated and tested with version v1 of CipherTrust.
 | Password | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
-
 
 ### Main Use Cases for the Thales CipherTrust Manager Integration
 
@@ -31,34 +29,31 @@ The CipherTrust Manager defines Special System Users, System Defined Groups, and
 User Defined Groups are created by Application Administrators. Administrators may use groups solely for organizing users, or may create policies that use group membership to assign other permissions. Adding group permissions to keys grants users in a User Defined Group the privileges to perform operations with those keys.
 Groups are stored in CipherTrust Manager's internal database.
 
-
 #### 2. Users Management
-   
+
  Users management is critical for ensuring secure access and proper account management within the Thales CipherTrust Manager.
 
 - **Overview**:
 
     Users are unique individuals or systems using the CipherTrust API. Users are authenticated against authentication systems, called "connections". A "connection" can be an identity provider, such as an OpenID endpoint, or a directory, such as LDAP or AD. CipherTrust Manager has a built-in, internal user directory, whose connection name is "local_account".
-    
+
     The User's connection property refers to the authentication system in which the user's credentials and identity reside. When you create a User, you must specify the connection: this tells CipherTrust Manager which authentication system it should use to authenticate the User. Some connections may require additional, connection-specific properties to create the User.
-    
+
     CipherTrust Manager supports external authentication systems. Once a user is authenticated against an external authentication system, a user will be created with connection|unique ID. This unique ID will be taken from an attribute associated with that user on the external authentication system.
-    
+
     The user_id identifies Users and it is in the form of: `connection|unique ID in that connection`
 
-    The internal user database uses UUIDs, so a user in the local_account connection might have a user_id of:`local_account|9cd4196b-b4b3-42d7-837f-d4fdeff36538` 
+    The internal user database uses UUIDs, so a user in the local_account connection might have a user_id of:`local_account|9cd4196b-b4b3-42d7-837f-d4fdeff36538`
 
     Users have two attributes, `user_metadata` and `app_metadata`, which can be used to store application-specific information. The system does not use this information; it just stores it for the convenience of applications using the API. These properties are unstructured JSON documents: the caller can put any JSON-structured information in them.
-    
+
     `user_metadata` is typically used to store application-specific data which the end user is allowed to see and modify, such as user preferences.
-    
+
     `app_metadata` is typically used to store application-specific data about the user which the end user is not allowed to view or modify, such as the user's security roles.
-    
+
     `certificate_subject_dn` is used to store Distinguished Name. To enable certificate-based authentication, add `"user_certificate"` authentication method in allowed_auth_methods. Value of Distinguished Name in the certificate and the value in the user object must match for successful authentication.
- 
+
     `allowed_client_types` and `allowed_auth_methods` do not control login behavior for users in admin group.
-
-
 
 #### 3. Certificate Authority
 
@@ -67,24 +62,23 @@ Managing digital certificates is crucial for maintaining secure communications a
 - **Overview**:
 
     A Certificate Authority (CA) issues and installs digital certificates and certificate signing requests (CSR).
-    
+
     A certificate generally acts as the identity of a server or client and this API can be used to issue server and client certificates in order to setup trusted communication channels to the system. A Certificate Authority acts as the initially trusted shared entity between peers and can issue signed certificates to make it possible for each party to trust the other.
-    
+
     The system distinguishes between local CAs and external CAs with the difference that a local CA can issue signed certificates as the private signing key is stored inside the system. An external CA does not store the private key and can instead be used as a trusted entity for various interfaces and services inside the system when certificates are issued externally. It is fine to have a mix of both.
-    
+
     During initial bootstrapping of a new server a new local CipherTrust Manager root CA is automatically generated. This CA is later used to issue a server certificate for the interfaces available in the system. An easy way to inspect the certificate chain is to view the certificates in your browser when you connect to the web interface. All interfaces and services will by default trust this CA which means that a client certificate issued from this initial CipherTrust Manager root CA will automatically be trusted by the system. If preferred it is possible to create new local CAs and/or external CAs and instead used them for the internal interfaces and services.
-    
+
     Creating a local CA is a two-step process:
   - Invoke Create local CA which creates a local CA in pending state and returns a CSR for signing. A pending local CA can then be activated in two ways:
     - Invoke Self-sign a local CA to let the CA sign itself. This is typically done for Root CAs.
     - Invoke Install a local CA which requires a signed certificate based on the CSR from the pending CA. This certificate can be signed by any other entity such as an external CA or even an other local CA.
   - Once a local CA exists a signed certificate can be issued by invoking Issue certificate and provide the CSR, the purpose and the duration. A new signed certificate will be returned.
-      
+
   CipherTrust Manager allows to revoke and resume certificates signed by local CA. User can specify a reason to revoke a certificate according to RFC 5280. Certificates revoked with certificateHold reason will only allow resuming.
-    
+
   Creating an external CA is a single step:
   - Invoke Upload external CA and provide the signed external CA certificate.
-
 
 ## Commands
 
@@ -104,30 +98,30 @@ Creates a Certificate Signing Request (CSR) and its corresponding private key. T
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cn | Common Name. | Required | 
-| algorithm | RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional | 
-| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional | 
-| email | A comma-separated list of e-mail addresses. | Optional | 
-| ip | A comma-separated list of IP addresses. | Optional | 
-| name | A unique name of the CSR. | Optional | 
-| encryption_algo | Private key encryption algorithm. Possible values are: AES256, AES192, AES128, TDES. | Optional | 
-| name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional | 
-| name_fields_json_entry_id | Entry ID of the file that contains the JSON representation of the name_fields_raw_json. | Optional | 
-| key_size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 1024, 2048, 3072, 4096, 256, 384, 521. | Optional | 
-| encryption_password | Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory. | Optional | 
-| private_key_file_password | Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided. | Optional | 
-| private_key_bytes | Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size. | Optional | 
+| cn | Common Name. | Required |
+| algorithm | RSA or ECDSA (default) algorithms are supported. A signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional |
+| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional |
+| email | A comma-separated list of e-mail addresses. | Optional |
+| ip | A comma-separated list of IP addresses. | Optional |
+| name | A unique name of the CSR. | Optional |
+| encryption_algo | Private key encryption algorithm. Possible values are: AES256, AES192, AES128, TDES. | Optional |
+| name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional |
+| name_fields_json_entry_id | Entry ID of the file that contains the JSON representation of the name_fields_raw_json. | Optional |
+| key_size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 1024, 2048, 3072, 4096, 256, 384, 521. | Optional |
+| encryption_password | Password to PEM-encrypt the private key. If not specified, the private key is not encrypted in return. It is strongly recommended to encrypt the private key. If not specified, the private_key_file_password is mandatory. | Optional |
+| private_key_file_password | Password to encrypt the private key file. It is strongly recommended to encrypt the private key. If not specified, the private key is encrypted with the password which must be provided. | Optional |
+| private_key_bytes | Private Key bytes of the key which is to be used while creating CSR. (The algorithm and size should be according to this key). If not given will generate key internally as per algorithm and size. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
 
 #### Command example
 
@@ -175,43 +169,43 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| csr_entry_id | The entry ID of the file to upload that contains CSR in PEM format. | Required | 
-| purpose | Purpose of the certificate. Possible values are: server, client, ca. | Required | 
-| duration | Duration in days of certificate. Either duration or not_after date must be specified. Default is 365. | Optional | 
-| name | A unique name of the certificate. If not provided, will be set to cert-&lt;id&gt;. | Optional | 
-| not_after | End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional | 
-| not_before | Start date of the certificate. | Optional | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| csr_entry_id | The entry ID of the file to upload that contains CSR in PEM format. | Required |
+| purpose | Purpose of the certificate. Possible values are: server, client, ca. | Required |
+| duration | Duration in days of certificate. Either duration or not_after date must be specified. Default is 365. | Optional |
+| name | A unique name of the certificate. If not provided, will be set to cert-&lt;id&gt;. | Optional |
+| not_after | End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional |
+| not_before | Start date of the certificate. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.CACertificate.id | String | A unique identifier for the certificate authority \(CA\). | 
-| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the CA. | 
-| CipherTrust.CACertificate.account | String | Account associated with the CA. | 
-| CipherTrust.CACertificate.application | String | Application associated with the CA. | 
-| CipherTrust.CACertificate.devAccount | String | Developer account associated with the CA. | 
-| CipherTrust.CACertificate.name | String | Name of the CA. | 
-| CipherTrust.CACertificate.state | String | Current state of the CA \(e.g., active, pending\). | 
-| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the CA was created. | 
-| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the CA. | 
-| CipherTrust.CACertificate.serialNumber | String | Serial number of the CA's certificate. | 
-| CipherTrust.CACertificate.subject | String | Subject of the CA's certificate. | 
-| CipherTrust.CACertificate.issuer | String | Issuer of the CA's certificate. | 
-| CipherTrust.CACertificate.ca | String | Certificate authority. | 
-| CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
-| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.CACertificate.id | String | A unique identifier for the certificate authority \(CA\). |
+| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the CA. |
+| CipherTrust.CACertificate.account | String | Account associated with the CA. |
+| CipherTrust.CACertificate.application | String | Application associated with the CA. |
+| CipherTrust.CACertificate.devAccount | String | Developer account associated with the CA. |
+| CipherTrust.CACertificate.name | String | Name of the CA. |
+| CipherTrust.CACertificate.state | String | Current state of the CA \(e.g., active, pending\). |
+| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the CA was created. |
+| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the CA. |
+| CipherTrust.CACertificate.serialNumber | String | Serial number of the CA's certificate. |
+| CipherTrust.CACertificate.subject | String | Subject of the CA's certificate. |
+| CipherTrust.CACertificate.issuer | String | Issuer of the CA's certificate. |
+| CipherTrust.CACertificate.ca | String | Certificate authority. |
+| CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. |
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. |
+| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. |
+| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. |
 
 #### Command example
 
@@ -257,7 +251,6 @@ Issues a certificate by signing the provided CSR with the CA. This is typically 
 
 >cert-d897c45c-30c7-4681-825d-4598e1234ddf has been issued successfully!
 
-
 ### ciphertrust-certificate-list
 
 ***
@@ -271,37 +264,37 @@ Returns a list of certificates issued by the specified CA. The results can be fi
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| subject | Filter by the subject. | Optional | 
-| issuer | Filter by the issuer. | Optional | 
-| cert | Filter by the cert. | Optional | 
-| id | Filter by ID or URI. | Optional | 
-| page | Page to return. | Optional | 
-| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Default is 50. | Optional | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| subject | Filter by the subject. | Optional |
+| issuer | Filter by the issuer. | Optional |
+| cert | Filter by the cert. | Optional |
+| id | Filter by ID or URI. | Optional |
+| page | Page to return. | Optional |
+| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.CACertificate.name | String | The name of the certificate. | 
-| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. | 
-| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. | 
-| CipherTrust.CACertificate.account | String | Account associated with the certificate. | 
-| CipherTrust.CACertificate.application | String | Application associated with the certificate. | 
-| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. | 
-| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. | 
-| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. | 
-| CipherTrust.CACertificate.ca | String | Certificate authority. | 
-| CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
-| CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
-| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
-| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
-| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
+| CipherTrust.CACertificate.name | String | The name of the certificate. |
+| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. |
+| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. |
+| CipherTrust.CACertificate.account | String | Account associated with the certificate. |
+| CipherTrust.CACertificate.application | String | Application associated with the certificate. |
+| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. |
+| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. |
+| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. |
+| CipherTrust.CACertificate.ca | String | Certificate authority. |
+| CipherTrust.CACertificate.revoked_at | String | Revocation timestamp. |
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. |
+| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. |
+| CipherTrust.CACertificate.subject | String | Subject of the certificate. |
+| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. |
+| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. |
+| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. |
 
 #### Command example
 
@@ -401,38 +394,38 @@ Certificate can be resumed only if it is revoked with reason certificateHold.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| cert_id | An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| cert_id | An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.CACertificate.name | String | The name of the certificate. | 
-| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. | 
-| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. | 
-| CipherTrust.CACertificate.account | String | Account associated with the certificate. | 
-| CipherTrust.CACertificate.application | String | Application associated with the certificate. | 
-| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. | 
-| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. | 
-| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. | 
-| CipherTrust.CACertificate.ca | String | Certificate authority. | 
-| CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. | 
-| CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
-| CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
-| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
-| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
-| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.CACertificate.name | String | The name of the certificate. |
+| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. |
+| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. |
+| CipherTrust.CACertificate.account | String | Account associated with the certificate. |
+| CipherTrust.CACertificate.application | String | Application associated with the certificate. |
+| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. |
+| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. |
+| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. |
+| CipherTrust.CACertificate.ca | String | Certificate authority. |
+| CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. |
+| CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). |
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. |
+| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. |
+| CipherTrust.CACertificate.subject | String | Subject of the certificate. |
+| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. |
+| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. |
+| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. |
 
 #### Command example
 
@@ -491,40 +484,40 @@ Revoke certificate with a given specific reason.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| cert_id | An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required | 
-| reason | Specify one of the reasons to revoke a certificate according to RFC 5280. Possible values are: unspecified, keyCompromise, cACompromise, affiliationChanged, superseded, cessationOfOperation, certificateHold, removeFromCRL, privilegeWithdrawn, aACompromise. | Required | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| cert_id | An identifier of the certificate resource. This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required |
+| reason | Specify one of the reasons to revoke a certificate according to RFC 5280. Possible values are: unspecified, keyCompromise, cACompromise, affiliationChanged, superseded, cessationOfOperation, certificateHold, removeFromCRL, privilegeWithdrawn, aACompromise. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.CACertificate.name | String | The name of the certificate. | 
-| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. | 
-| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. | 
-| CipherTrust.CACertificate.account | String | Account associated with the certificate. | 
-| CipherTrust.CACertificate.application | String | Application associated with the certificate. | 
-| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. | 
-| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. | 
-| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. | 
-| CipherTrust.CACertificate.ca | String | Certificate authority. | 
-| CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. | 
-| CipherTrust.CACertificate.revoked_reason | String | Reason for revocation. | 
-| CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). | 
-| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. | 
-| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. | 
-| CipherTrust.CACertificate.subject | String | Subject of the certificate. | 
-| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. | 
-| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. | 
-| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.CACertificate.name | String | The name of the certificate. |
+| CipherTrust.CACertificate.id | String | A unique identifier for the certificate. |
+| CipherTrust.CACertificate.uri | String | Uniform Resource Identifier associated with the certificate. |
+| CipherTrust.CACertificate.account | String | Account associated with the certificate. |
+| CipherTrust.CACertificate.application | String | Application associated with the certificate. |
+| CipherTrust.CACertificate.devAccount | String | Developer account associated with the certificate. |
+| CipherTrust.CACertificate.createdAt | Date | Timestamp of when the certificate was created. |
+| CipherTrust.CACertificate.updatedAt | Date | Timestamp of the last update of the certificate. |
+| CipherTrust.CACertificate.ca | String | Certificate authority. |
+| CipherTrust.CACertificate.revoked_at | Date | Revocation timestamp. |
+| CipherTrust.CACertificate.revoked_reason | String | Reason for revocation. |
+| CipherTrust.CACertificate.state | String | Current state of the certificate \(e.g., active, revoked\). |
+| CipherTrust.CACertificate.sha1Fingerprint | String | SHA1 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha256Fingerprint | String | SHA256 fingerprint of the certificate. |
+| CipherTrust.CACertificate.sha512Fingerprint | String | SHA512 fingerprint of the certificate. |
+| CipherTrust.CACertificate.serialNumber | String | Serial number of the certificate. |
+| CipherTrust.CACertificate.subject | String | Subject of the certificate. |
+| CipherTrust.CACertificate.issuer | String | Issuer of the certificate. |
+| CipherTrust.CACertificate.notBefore | Date | Timestamp of when the certificate is valid from. |
+| CipherTrust.CACertificate.notAfter | Date | Timestamp of when the certificate is valid until. |
 
 #### Command example
 
@@ -584,7 +577,7 @@ Deletes an external CA certificate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI). | Required | 
+| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the Name, the URI, or the slug (which is the last component of the URI). | Required |
 
 #### Context Output
 
@@ -611,43 +604,43 @@ Returns a list of external CA certificates. The results can be filtered, using t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional | 
-| subject | Filter by the subject. | Optional | 
-| issuer | Filter by the issuer. | Optional | 
-| serial_number | Filter by the serial number. | Optional | 
-| cert | Filter by the cert. | Optional | 
-| page | Page to return. | Optional | 
-| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Default is 50. | Optional | 
+| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional |
+| subject | Filter by the subject. | Optional |
+| issuer | Filter by the issuer. | Optional |
+| serial_number | Filter by the serial number. | Optional |
+| cert | Filter by the cert. | Optional |
+| page | Page to return. | Optional |
+| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g. ,"PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
-| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
-| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. | 
-| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
-| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
-| CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
-| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
-| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
-| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
-| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. | 
-| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. | 
-| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g. ,"PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. |
+| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. |
+| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. |
+| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. |
+| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. |
+| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. |
+| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. |
+| CipherTrust.ExternalCA.name | String | Name of the CA certificate. |
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. |
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. |
+| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. |
+| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. |
+| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. |
+| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. |
+| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. |
+| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. |
 
 #### Command example
 
@@ -812,38 +805,38 @@ Update an external CA.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| allow_client_authentication | If set to true, the certificates signed by the specified CA can be used for client authentication. Possible values are: true, false. | Optional | 
-| allow_user_authentication | If set to true, the certificates signed by the specified CA can be used for user authentication. Possible values are: true, false. | Optional | 
+| external_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| allow_client_authentication | If set to true, the certificates signed by the specified CA can be used for client authentication. Possible values are: true, false. | Optional |
+| allow_user_authentication | If set to true, the certificates signed by the specified CA can be used for user authentication. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
-| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
-| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. | 
-| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
-| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
-| CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
-| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
-| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
-| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
-| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. | 
-| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. | 
-| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. |
+| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. |
+| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. |
+| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. |
+| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. |
+| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. |
+| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. |
+| CipherTrust.ExternalCA.name | String | Name of the CA certificate. |
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. |
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. |
+| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. |
+| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. |
+| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. |
+| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. |
+| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. |
+| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. |
 
 #### Command example
 
@@ -903,38 +896,38 @@ Uploads an external CA certificate. These certificates can later be trusted by s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cert_entry_id | The entry ID of the file to upload that contains the external CA certificate in PEM format. | Required | 
-| name | A unique name of the CA. If not provided, will be set to externalca-&lt;id&gt;. | Optional | 
-| parent | URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy. | Optional | 
+| cert_entry_id | The entry ID of the file to upload that contains the external CA certificate in PEM format. | Required |
+| name | A unique name of the CA. If not provided, will be set to externalca-&lt;id&gt;. | Optional |
+| parent | URI reference to a parent external CA certificate. This information can be used to build a certificate hierarchy. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. | 
-| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. | 
-| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. | 
-| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. | 
-| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. | 
-| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. | 
-| CipherTrust.ExternalCA.name | String | Name of the CA certificate. | 
-| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. | 
-| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. | 
-| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. | 
-| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. | 
-| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. | 
-| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. | 
-| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. | 
-| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA-1 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. | 
-| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.ExternalCA.id | String | A unique identifier for the certificate authority \(CA\) certificate. |
+| CipherTrust.ExternalCA.uri | String | Uniform Resource Identifier associated with the CA certificate. |
+| CipherTrust.ExternalCA.account | String | Account associated with the CA certificate. |
+| CipherTrust.ExternalCA.devAccount | String | Developer account associated with the CA certificate. |
+| CipherTrust.ExternalCA.application | String | Application associated with the CA certificate. |
+| CipherTrust.ExternalCA.createdAt | Date | Timestamp of when the CA certificate was created. |
+| CipherTrust.ExternalCA.updatedAt | Date | Timestamp of the last update of the CA certificate. |
+| CipherTrust.ExternalCA.name | String | Name of the CA certificate. |
+| CipherTrust.ExternalCA.purpose.client_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for client authentication. |
+| CipherTrust.ExternalCA.purpose.user_authentication | String | If set to enabled, the certificates signed by the specified CA can be used for user authentication. |
+| CipherTrust.ExternalCA.serialNumber | String | Serial number of the CA certificate. |
+| CipherTrust.ExternalCA.subject | String | Subject of the CA certificate. |
+| CipherTrust.ExternalCA.issuer | String | Issuer of the CA certificate. |
+| CipherTrust.ExternalCA.notBefore | Date | Timestamp of when the CA certificate is valid from. |
+| CipherTrust.ExternalCA.notAfter | Date | Timestamp of when the CA certificate is valid until. |
+| CipherTrust.ExternalCA.sha1Fingerprint | String | SHA-1 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha256Fingerprint | String | SHA-256 fingerprint of the CA certificate. |
+| CipherTrust.ExternalCA.sha512Fingerprint | String | SHA-512 fingerprint of the CA certificate. |
 
 #### Command example
 
@@ -975,21 +968,21 @@ Create a new group. The group name is required.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the group. | Required | 
-| description | Description of the group. | Optional | 
+| name | Name of the group. | Required |
+| description | Description of the group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Group.name | String | The name of the group. | 
-| CipherTrust.Group.created_at | Date | The time the group was created. | 
-| CipherTrust.Group.updated_at | Date | The time the group was last updated. | 
-| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
-| CipherTrust.Group.description | String | The description of the group. | 
-| CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
+| CipherTrust.Group.name | String | The name of the group. |
+| CipherTrust.Group.created_at | Date | The time the group was created. |
+| CipherTrust.Group.updated_at | Date | The time the group was last updated. |
+| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. |
+| CipherTrust.Group.description | String | The description of the group. |
+| CipherTrust.Group.users_count | Number | The total user count associated with the group. |
 
 #### Command example
 
@@ -1027,8 +1020,8 @@ Deletes a group given the group name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Name of the group. | Required | 
-| force | When set to true, groupmaps within this group will be deleted. Possible values are: true, false. | Optional | 
+| group_name | Name of the group. | Required |
+| force | When set to true, groupmaps within this group will be deleted. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -1055,26 +1048,26 @@ Returns a list of group  Command arguments can be used to filter the results. Gr
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Filter by group name. | Optional | 
-| user_id | Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only a user ID. Using '-' at the beginning of user_id will return groups that the user is not part of. | Optional | 
-| connection | Filter by connection name or ID. | Optional | 
-| client_id | Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client_id will return groups that the client is not part of. | Optional | 
-| page | Page to return. | Optional | 
-| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Default is 50. | Optional | 
+| group_name | Filter by group name. | Optional |
+| user_id | Filter by user membership. Using the username 'nil' will return groups with no members. Accepts only a user ID. Using '-' at the beginning of user_id will return groups that the user is not part of. | Optional |
+| connection | Filter by connection name or ID. | Optional |
+| client_id | Filter by client membership. Using the client name 'nil' will return groups with no members. Using '-' at the beginning of client_id will return groups that the client is not part of. | Optional |
+| page | Page to return. | Optional |
+| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Group.name | String | Name of the group. | 
-| CipherTrust.Group.created_at | Date | The time the group was created. | 
-| CipherTrust.Group.updated_at | Date | The time the group was last updated. | 
-| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
-| CipherTrust.Group.description | String | Description of the group. | 
-| CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
+| CipherTrust.Group.name | String | Name of the group. |
+| CipherTrust.Group.created_at | Date | The time the group was created. |
+| CipherTrust.Group.updated_at | Date | The time the group was last updated. |
+| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. |
+| CipherTrust.Group.description | String | Description of the group. |
+| CipherTrust.Group.users_count | Number | The total user count associated with the group. |
 
 #### Command example
 
@@ -1204,22 +1197,22 @@ Update the properties of a group given the group name.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Name of the group to update. | Required | 
-| new_group_name | New name of the group. | Optional | 
-| description | New description of the group. | Optional | 
+| group_name | Name of the group to update. | Required |
+| new_group_name | New name of the group. | Optional |
+| description | New description of the group. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Group.name | String | The name of the group. | 
-| CipherTrust.Group.created_at | Date | The time the group was created. | 
-| CipherTrust.Group.updated_at | Date | The time the group was last updated. | 
-| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
-| CipherTrust.Group.description | String | The description of the group. | 
-| CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
+| CipherTrust.Group.name | String | The name of the group. |
+| CipherTrust.Group.created_at | Date | The time the group was created. |
+| CipherTrust.Group.updated_at | Date | The time the group was last updated. |
+| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. |
+| CipherTrust.Group.description | String | The description of the group. |
+| CipherTrust.Group.users_count | Number | The total user count associated with the group. |
 
 #### Command example
 
@@ -1257,42 +1250,42 @@ Creates a pending local CA. This operation returns a CSR that either can be self
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cn | Common name. | Required | 
-| algorithm | RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional | 
-| copy_from_ca | ID of any local CA. If given, the CSR properties are copied from the given CA. | Optional | 
-| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional | 
-| email | A comma-separated list of e-mail addresses. | Optional | 
-| ip | A comma-separated list of IP addresses. | Optional | 
-| name | A unique name of the CA. If not provided, will be set to localca-&lt;id&gt;. | Optional | 
-| name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional | 
-| name_fields_json_entry_id | Entry ID of the file that contains JSON representation of the name_fields_raw_json. | Optional | 
-| size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 256, 384, 521, 1024, 2048, 3072, 4096. | Optional | 
+| cn | Common name. | Required |
+| algorithm | RSA or ECDSA (default) algorithms are supported. Signature algorithm (SHA512WithRSA, SHA384WithRSA, SHA256WithRSA, SHA1WithRSA, ECDSAWithSHA512, ECDSAWithSHA384, ECDSAWithSHA256) is selected based on the algorithm and size. Possible values are: RSA, ECDSA. | Optional |
+| copy_from_ca | ID of any local CA. If given, the CSR properties are copied from the given CA. | Optional |
+| dns_names | A comma-separated list of Subject Alternative Names (SAN) values. | Optional |
+| email | A comma-separated list of e-mail addresses. | Optional |
+| ip | A comma-separated list of IP addresses. | Optional |
+| name | A unique name of the CA. If not provided, will be set to localca-&lt;id&gt;. | Optional |
+| name_fields_raw_json | Name fields are "O=organization, OU=organizational unit, L=location, ST=state/province, C=country". Fields can be duplicated if present in different objects. This is a raw json string, for example: "[{"O": "Thales", "OU": "RnD", "C": "US", "ST": "MD", "L": "Belcamp"}, {"OU": "Thales Group Inc."}]". | Optional |
+| name_fields_json_entry_id | Entry ID of the file that contains JSON representation of the name_fields_raw_json. | Optional |
+| size | Key size. RSA: 1024 - 4096 (default: 2048), ECDSA: 256 (default), 384, 521. Possible values are: 256, 384, 521, 1024, 2048, 3072, 4096. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.LocalCA.id | String | Unique identifier for the CA. | 
-| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier for the CA. | 
-| CipherTrust.LocalCA.account | String | Account associated with the CA. | 
-| CipherTrust.LocalCA.application | String | Application associated with the CA. | 
-| CipherTrust.LocalCA.devAccount | String | Developer account associated with the CA. | 
-| CipherTrust.LocalCA.createdAt | Date | Timestamp when the CA was created. | 
-| CipherTrust.LocalCA.updatedAt | Date | Timestamp when the CA was last updated. | 
-| CipherTrust.LocalCA.name | String | Name of the CA. | 
-| CipherTrust.LocalCA.state | String | State of the CA. | 
-| CipherTrust.LocalCA.subject | String | Distinguished Name \(DN\) of the CA subject. | 
-| CipherTrust.LocalCA.notBefore | Date | Timestamp before which the certificate is not valid. | 
-| CipherTrust.LocalCA.notAfter | Date | Timestamp after which the certificate is not valid. | 
-| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. | 
-| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. | 
-| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.LocalCA.id | String | Unique identifier for the CA. |
+| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier for the CA. |
+| CipherTrust.LocalCA.account | String | Account associated with the CA. |
+| CipherTrust.LocalCA.application | String | Application associated with the CA. |
+| CipherTrust.LocalCA.devAccount | String | Developer account associated with the CA. |
+| CipherTrust.LocalCA.createdAt | Date | Timestamp when the CA was created. |
+| CipherTrust.LocalCA.updatedAt | Date | Timestamp when the CA was last updated. |
+| CipherTrust.LocalCA.name | String | Name of the CA. |
+| CipherTrust.LocalCA.state | String | State of the CA. |
+| CipherTrust.LocalCA.subject | String | Distinguished Name \(DN\) of the CA subject. |
+| CipherTrust.LocalCA.notBefore | Date | Timestamp before which the certificate is not valid. |
+| CipherTrust.LocalCA.notAfter | Date | Timestamp after which the certificate is not valid. |
+| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA certificate. |
+| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA certificate. |
+| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA certificate. |
 
 #### Command example
 
@@ -1347,7 +1340,7 @@ Deletes a local CA certificate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
 
 #### Context Output
 
@@ -1374,39 +1367,39 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| cert_entry_id | The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA. | Required | 
-| parent_id | An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI. | Required | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| cert_entry_id | The entry ID of the file to upload that contains the signed certificate in PEM format to install as a local CA. | Required |
+| parent_id | An identifier of the parent resource. The resource can be either a local or an external CA. The identifier can be either the ID (a UUIDv4) or the URI. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.CAInstall.id | String | A unique identifier for the certificate authority \(CA\). | 
-| CipherTrust.CAInstall.uri | String | Uniform Resource Identifier associated with the CA. | 
-| CipherTrust.CAInstall.account | String | Account associated with the CA. | 
-| CipherTrust.CAInstall.application | String | Application associated with the CA. | 
-| CipherTrust.CAInstall.devAccount | String | Developer account associated with the CA. | 
-| CipherTrust.CAInstall.name | String | Name of the CA. | 
-| CipherTrust.CAInstall.state | String | Current state of the CA \(e.g., active, pending\). | 
-| CipherTrust.CAInstall.createdAt | Date | Timestamp of when the CA was created. | 
-| CipherTrust.CAInstall.updatedAt | Date | Timestamp of the last update of the CA. | 
-| CipherTrust.CAInstall.serialNumber | String | Serial number of the CA's certificate. | 
-| CipherTrust.CAInstall.subject | String | Subject of the CA's certificate. | 
-| CipherTrust.CAInstall.issuer | String | Issuer of the CA's certificate. | 
-| CipherTrust.CAInstall.notBefore | Date | Start date of the CA's certificate validity. | 
-| CipherTrust.CAInstall.notAfter | Date | End date of the CA's certificate validity. | 
-| CipherTrust.CAInstall.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. | 
-| CipherTrust.CAInstall.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. | 
-| CipherTrust.CAInstall.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
-| CipherTrust.CAInstall.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
-| CipherTrust.CAInstall.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.CAInstall.id | String | A unique identifier for the certificate authority \(CA\). |
+| CipherTrust.CAInstall.uri | String | Uniform Resource Identifier associated with the CA. |
+| CipherTrust.CAInstall.account | String | Account associated with the CA. |
+| CipherTrust.CAInstall.application | String | Application associated with the CA. |
+| CipherTrust.CAInstall.devAccount | String | Developer account associated with the CA. |
+| CipherTrust.CAInstall.name | String | Name of the CA. |
+| CipherTrust.CAInstall.state | String | Current state of the CA \(e.g., active, pending\). |
+| CipherTrust.CAInstall.createdAt | Date | Timestamp of when the CA was created. |
+| CipherTrust.CAInstall.updatedAt | Date | Timestamp of the last update of the CA. |
+| CipherTrust.CAInstall.serialNumber | String | Serial number of the CA's certificate. |
+| CipherTrust.CAInstall.subject | String | Subject of the CA's certificate. |
+| CipherTrust.CAInstall.issuer | String | Issuer of the CA's certificate. |
+| CipherTrust.CAInstall.notBefore | Date | Start date of the CA's certificate validity. |
+| CipherTrust.CAInstall.notAfter | Date | End date of the CA's certificate validity. |
+| CipherTrust.CAInstall.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. |
+| CipherTrust.CAInstall.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. |
+| CipherTrust.CAInstall.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. |
+| CipherTrust.CAInstall.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. |
+| CipherTrust.CAInstall.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. |
 
 #### Command example
 
@@ -1435,7 +1428,6 @@ Installs a certificate signed by other CA to act as a local CA. Issuer can be bo
 
 >7951163f-a91d-4b29-91f7-b8175d732fc2 has been installed successfully!
 
-
 ### ciphertrust-local-ca-list
 
 ***
@@ -1449,43 +1441,43 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| subject | Filter by subject. | Optional | 
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional | 
-| chained | When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID. Possible values are: true, false. | Optional | 
-| issuer | Filter by issuer. | Optional | 
-| state | Filter by state. Possible values are: pending, active. | Optional | 
-| cert | Filter by cert. | Optional | 
-| page | Page to return. | Optional | 
-| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Default is 50. | Optional | 
+| subject | Filter by subject. | Optional |
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Optional |
+| chained | When set to ‘true’ the full CA chain is returned with the certificate. Must be used with the local CA ID. Possible values are: true, false. | Optional |
+| issuer | Filter by issuer. | Optional |
+| state | Filter by state. Possible values are: pending, active. | Optional |
+| cert | Filter by cert. | Optional |
+| page | Page to return. | Optional |
+| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report. | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.LocalCA.id | String | A unique identifier for the certificate authority \(CA\). | 
-| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier associated with the CA. | 
-| CipherTrust.LocalCA.account | String | Account associated with the CA. | 
-| CipherTrust.LocalCA.name | String | Name of the CA. | 
-| CipherTrust.LocalCA.state | String | Current state of the CA \(e.g., pending, active\). | 
-| CipherTrust.LocalCA.createdAt | Date | Timestamp of when the CA was created. | 
-| CipherTrust.LocalCA.updatedAt | Date | Timestamp of last update of the CA. | 
-| CipherTrust.LocalCA.serialNumber | String | Serial number of the CA's certificate. | 
-| CipherTrust.LocalCA.subject | String | Subject of the CA's certificate. | 
-| CipherTrust.LocalCA.issuer | String | Issuer of the CA's certificate. | 
-| CipherTrust.LocalCA.notBefore | Date | Start date of the CA's certificate validity. | 
-| CipherTrust.LocalCA.notAfter | Date | End date of the CA's certificate validity. | 
-| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
-| CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report. |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.LocalCA.id | String | A unique identifier for the certificate authority \(CA\). |
+| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier associated with the CA. |
+| CipherTrust.LocalCA.account | String | Account associated with the CA. |
+| CipherTrust.LocalCA.name | String | Name of the CA. |
+| CipherTrust.LocalCA.state | String | Current state of the CA \(e.g., pending, active\). |
+| CipherTrust.LocalCA.createdAt | Date | Timestamp of when the CA was created. |
+| CipherTrust.LocalCA.updatedAt | Date | Timestamp of last update of the CA. |
+| CipherTrust.LocalCA.serialNumber | String | Serial number of the CA's certificate. |
+| CipherTrust.LocalCA.subject | String | Subject of the CA's certificate. |
+| CipherTrust.LocalCA.issuer | String | Issuer of the CA's certificate. |
+| CipherTrust.LocalCA.notBefore | Date | Start date of the CA's certificate validity. |
+| CipherTrust.LocalCA.notAfter | Date | End date of the CA's certificate validity. |
+| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. |
+| CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. |
 
 #### Command example
 
@@ -2458,7 +2450,7 @@ Returns a list of local CA certificates. The results can be filtered, using the 
 
 #### Human Readable Output
 
->### Local Certificate Authorities 
+>### Local Certificate Authorities
 
 >### Active CAs
 
@@ -2538,40 +2530,40 @@ Self-sign a local CA certificate. This is used to create a root CA. Either durat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| duration | The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given. Default is 365. | Optional | 
-| not_after | End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional | 
-| not_before | Start date of the certificate. | Optional | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| duration | The duration of the certificate in days. Either not_after date or duration must be specified. not_after overrides duration if both are given. Default is 365. | Optional |
+| not_after | End date of the certificate. Either not_after date or duration must be specified. not_after overrides duration if both are given. | Optional |
+| not_before | Start date of the certificate. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.CASelfSign.id | String | A unique identifier for the certificate authority \(CA\). | 
-| CipherTrust.CASelfSign.uri | String | Uniform Resource Identifier associated with the CA. | 
-| CipherTrust.CASelfSign.account | String | Account associated with the CA. | 
-| CipherTrust.CASelfSign.application | String | Application associated with the CA. | 
-| CipherTrust.CASelfSign.devAccount | String | Developer account associated with the CA. | 
-| CipherTrust.CASelfSign.name | String | Name of the CA. | 
-| CipherTrust.CASelfSign.state | String | Current state of the CA \(e.g., pending, active\). | 
-| CipherTrust.CASelfSign.createdAt | Date | Timestamp of when the CA was created. | 
-| CipherTrust.CASelfSign.updatedAt | Date | Timestamp of the last update of the CA. | 
-| CipherTrust.CASelfSign.serialNumber | String | Serial number of the CA's certificate. | 
-| CipherTrust.CASelfSign.subject | String | Subject of the CA's certificate. | 
-| CipherTrust.CASelfSign.issuer | String | Issuer of the CA's certificate. | 
-| CipherTrust.CASelfSign.notBefore | Date | Start date of the CA's certificate validity. | 
-| CipherTrust.CASelfSign.notAfter | Date | End date of the CA's certificate validity. | 
-| CipherTrust.CASelfSign.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. | 
-| CipherTrust.CASelfSign.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. | 
-| CipherTrust.CASelfSign.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
-| CipherTrust.CASelfSign.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
-| CipherTrust.CASelfSign.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.CASelfSign.id | String | A unique identifier for the certificate authority \(CA\). |
+| CipherTrust.CASelfSign.uri | String | Uniform Resource Identifier associated with the CA. |
+| CipherTrust.CASelfSign.account | String | Account associated with the CA. |
+| CipherTrust.CASelfSign.application | String | Application associated with the CA. |
+| CipherTrust.CASelfSign.devAccount | String | Developer account associated with the CA. |
+| CipherTrust.CASelfSign.name | String | Name of the CA. |
+| CipherTrust.CASelfSign.state | String | Current state of the CA \(e.g., pending, active\). |
+| CipherTrust.CASelfSign.createdAt | Date | Timestamp of when the CA was created. |
+| CipherTrust.CASelfSign.updatedAt | Date | Timestamp of the last update of the CA. |
+| CipherTrust.CASelfSign.serialNumber | String | Serial number of the CA's certificate. |
+| CipherTrust.CASelfSign.subject | String | Subject of the CA's certificate. |
+| CipherTrust.CASelfSign.issuer | String | Issuer of the CA's certificate. |
+| CipherTrust.CASelfSign.notBefore | Date | Start date of the CA's certificate validity. |
+| CipherTrust.CASelfSign.notAfter | Date | End date of the CA's certificate validity. |
+| CipherTrust.CASelfSign.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. |
+| CipherTrust.CASelfSign.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. |
+| CipherTrust.CASelfSign.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. |
+| CipherTrust.CASelfSign.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. |
+| CipherTrust.CASelfSign.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. |
 
 #### Command example
 
@@ -2632,37 +2624,37 @@ Update a local CA.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| allow_client_authentication | If set to true, the certificates signed by the specified CA can be used for client authentication. Possible values are: true, false. | Optional | 
-| allow_user_authentication | If set to true, the certificates signed by the specified CA can be used for user authentication. Possible values are: true, false. | Optional | 
+| local_ca_id | An identifier of the resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| allow_client_authentication | If set to true, the certificates signed by the specified CA can be used for client authentication. Possible values are: true, false. | Optional |
+| allow_user_authentication | If set to true, the certificates signed by the specified CA can be used for user authentication. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| InfoFile.Name | string | File name. | 
-| InfoFile.EntryID | string | The entry ID of the report | 
-| InfoFile.Size | number | File size. | 
-| InfoFile.Type | string | File type, e.g., "PE". | 
-| InfoFile.Info | string | Basic information of the file. | 
-| InfoFile.Extension | string | File extension. | 
-| CipherTrust.LocalCA.id | String | A unique identifier for the certificate authority \(CA\). | 
-| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier associated with the CA. | 
-| CipherTrust.LocalCA.account | String | Account associated with the CA. | 
-| CipherTrust.LocalCA.name | String | Name of the CA. | 
-| CipherTrust.LocalCA.state | String | Current state of the CA \(e.g., pending, active\). | 
-| CipherTrust.LocalCA.createdAt | Date | Timestamp of when the CA was created. | 
-| CipherTrust.LocalCA.updatedAt | Date | Timestamp of the last update of the CA. | 
-| CipherTrust.LocalCA.serialNumber | String | Serial number of the CA's certificate. | 
-| CipherTrust.LocalCA.subject | String | Subject of the CA's certificate. | 
-| CipherTrust.LocalCA.issuer | String | Issuer of the CA's certificate. | 
-| CipherTrust.LocalCA.notBefore | Date | Start date of the CA's certificate validity. | 
-| CipherTrust.LocalCA.notAfter | Date | End date of the CA's certificate validity. | 
-| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. | 
-| CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. | 
-| CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. | 
+| InfoFile.Name | string | File name. |
+| InfoFile.EntryID | string | The entry ID of the report |
+| InfoFile.Size | number | File size. |
+| InfoFile.Type | string | File type, e.g., "PE". |
+| InfoFile.Info | string | Basic information of the file. |
+| InfoFile.Extension | string | File extension. |
+| CipherTrust.LocalCA.id | String | A unique identifier for the certificate authority \(CA\). |
+| CipherTrust.LocalCA.uri | String | Uniform Resource Identifier associated with the CA. |
+| CipherTrust.LocalCA.account | String | Account associated with the CA. |
+| CipherTrust.LocalCA.name | String | Name of the CA. |
+| CipherTrust.LocalCA.state | String | Current state of the CA \(e.g., pending, active\). |
+| CipherTrust.LocalCA.createdAt | Date | Timestamp of when the CA was created. |
+| CipherTrust.LocalCA.updatedAt | Date | Timestamp of the last update of the CA. |
+| CipherTrust.LocalCA.serialNumber | String | Serial number of the CA's certificate. |
+| CipherTrust.LocalCA.subject | String | Subject of the CA's certificate. |
+| CipherTrust.LocalCA.issuer | String | Issuer of the CA's certificate. |
+| CipherTrust.LocalCA.notBefore | Date | Start date of the CA's certificate validity. |
+| CipherTrust.LocalCA.notAfter | Date | End date of the CA's certificate validity. |
+| CipherTrust.LocalCA.sha1Fingerprint | String | SHA1 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.sha256Fingerprint | String | SHA256 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.sha512Fingerprint | String | SHA512 fingerprint of the CA's certificate. |
+| CipherTrust.LocalCA.purpose.client_authentication | String | Indicates if client authentication is enabled for the CA. |
+| CipherTrust.LocalCA.purpose.user_authentication | String | Indicates if user authentication is enabled for the CA. |
 
 #### Command example
 
@@ -2723,8 +2715,8 @@ Deletes a local certificate.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required | 
-| local_ca_id | An identifier of the certificate resource.This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required | 
+| ca_id | An identifier of the issuer CA resource. This can be either the ID (a UUIDv4), the name, the URI, or the slug (which is the last component of the URI). | Required |
+| local_ca_id | An identifier of the certificate resource.This can be either the ID (a UUIDv4), the URI, or the slug (which is the last component of the URI). | Required |
 
 #### Context Output
 
@@ -2757,51 +2749,51 @@ To enable the two-factor authentication based on username-password and user cert
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | **Required** |
 | --- |---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| name | Full name of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| user_id | The ID of an existing root domain user. This field is used only when adding an existing root domain user to a different domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Optional | 
-| username | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| password | The password used to secure the users account. Allowed passwords are defined by the password policy. Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods. In all other cases, password is required. It is not included in user resource responses. Default global password complexity requirement: minimum characters = 8, maximum characters = 30, lower-case letters = 1, upper-case letters = 1, decimal digits = 1, special characters = 1.                                                                                                                                                                                                                   | Optional | 
-| email | E-mail of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional | 
-| allowed_auth_methods | A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group. Possible values are: password, user_certificate, password_with_user_certificate, none. | Optional | 
-| allowed_client_types | A comma-separated list of client types that can authenticate using the user's credentials. Default value - "unregistered,public,confidential" i.e., all clients can authenticate the user using user's credentials. Setting it to none, "none", authenticate the user using user's credentials. Setting it to none, "none", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group. Possible values are: unregistered, public, confidential.                                                                                                                                                          | Optional | 
-| certificate_subject_dn | The Distinguished Name of the user in certificate.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
-| connection | The name of a connection or "local_account" for a local user. Default is local_account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional | 
-| expires_at | The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "never", removes the expiration date of the user account.                                                                                                                                                                                                                                                                                           | Optional | 
-| is_domain_user | This flag can be used to create the user in a non-root domain where user management is allowed. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional | 
-| prevent_ui_login | If true, user is not allowed to login from the web UI. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional | 
-| password_change_required | If set to true, the user will be required to change their password on the next successful login. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
-| password_policy | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional | 
+| name | Full name of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| user_id | The ID of an existing root domain user. This field is used only when adding an existing root domain user to a different domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           | Optional |
+| username | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. This attribute may also be used (instead of the user_id) when adding an existing root domain user to a different domain.                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| password | The password used to secure the users account. Allowed passwords are defined by the password policy. Password is optional when "certificate_subject_dn" is set and "user_certificate" is in allowed_auth_methods. In all other cases, password is required. It is not included in user resource responses. Default global password complexity requirement: minimum characters = 8, maximum characters = 30, lower-case letters = 1, upper-case letters = 1, decimal digits = 1, special characters = 1.                                                                                                                                                                                                                   | Optional |
+| email | E-mail of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       | Optional |
+| allowed_auth_methods | A comma-separated list of login authentication methods allowed to the user. Default value - "password". Password Authentication is allowed by default. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. This property does not control login behavior for users in admin group. Possible values are: password, user_certificate, password_with_user_certificate, none. | Optional |
+| allowed_client_types | A comma-separated list of client types that can authenticate using the user's credentials. Default value - "unregistered,public,confidential" i.e., all clients can authenticate the user using user's credentials. Setting it to none, "none", authenticate the user using user's credentials. Setting it to none, "none", means no client can authenticate this user, which effectively means no one can login into this user This property does not control login behavior for users in admin group. Possible values are: unregistered, public, confidential.                                                                                                                                                          | Optional |
+| certificate_subject_dn | The Distinguished Name of the user in certificate.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional |
+| connection | The name of a connection or "local_account" for a local user. Default is local_account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional |
+| expires_at | The expires_at field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the expires_at field to "never", removes the expiration date of the user account.                                                                                                                                                                                                                                                                                           | Optional |
+| is_domain_user | This flag can be used to create the user in a non-root domain where user management is allowed. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
+| prevent_ui_login | If true, user is not allowed to login from the web UI. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                | Optional |
+| password_change_required | If set to true, the user will be required to change their password on the next successful login. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional |
+| password_policy | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Users.user_id | String | A unique identifier for API call usage. | 
-| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing user. It cannot be updated. | 
-| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user. Defaults to 'local_account'. | 
-| CipherTrust.Users.email | String | E-mail of the user. | 
-| CipherTrust.Users.name | String | Full name of the user. | 
-| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. | 
-| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. | 
-| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Users.logins_count | Number | The number of logins. | 
-| CipherTrust.Users.last_login | Date | Timestamp of the last login. | 
-| CipherTrust.Users.created_at | Date | Timestamp of when user was created. | 
-| CipherTrust.Users.updated_at | Date | Timestamp of last update of the user. | 
-| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. | 
-| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. | 
-| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. | 
-| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. | 
-| CipherTrust.Users.nickname | String | Nickname of the user. | 
-| CipherTrust.Users.failed_logins_count | Number | Number of failed login attempts. | 
-| CipherTrust.Users.account_lockout_at | Date | Timestamp when the account was locked out. | 
-| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the initial failed login attempt. | 
-| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login attempt. | 
-| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. | 
-| CipherTrust.Users.password_change_required | Boolean | Indicates if a password change is required. | 
-| CipherTrust.Users.auth_domain | String | Authentication domain of the user. | 
-| CipherTrust.Users.login_flags | Unknown | Flags related to login permissions. | 
+| CipherTrust.Users.user_id | String | A unique identifier for API call usage. |
+| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing user. It cannot be updated. |
+| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user. Defaults to 'local_account'. |
+| CipherTrust.Users.email | String | E-mail of the user. |
+| CipherTrust.Users.name | String | Full name of the user. |
+| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. |
+| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. |
+| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Users.logins_count | Number | The number of logins. |
+| CipherTrust.Users.last_login | Date | Timestamp of the last login. |
+| CipherTrust.Users.created_at | Date | Timestamp of when user was created. |
+| CipherTrust.Users.updated_at | Date | Timestamp of last update of the user. |
+| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. |
+| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. |
+| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. |
+| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. |
+| CipherTrust.Users.nickname | String | Nickname of the user. |
+| CipherTrust.Users.failed_logins_count | Number | Number of failed login attempts. |
+| CipherTrust.Users.account_lockout_at | Date | Timestamp when the account was locked out. |
+| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the initial failed login attempt. |
+| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login attempt. |
+| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. |
+| CipherTrust.Users.password_change_required | Boolean | Indicates if a password change is required. |
+| CipherTrust.Users.auth_domain | String | Authentication domain of the user. |
+| CipherTrust.Users.login_flags | Unknown | Flags related to login permissions. |
 
 #### Command example
 
@@ -2861,7 +2853,7 @@ Deletes a user given the user's user ID. If the current user is logged into a su
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_id | The user ID of the user. | Required | 
+| user_id | The user ID of the user. | Required |
 
 #### Context Output
 
@@ -2888,10 +2880,10 @@ Change the current user's password. Can only be used to change the password of t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| new_password | The new password. | Required | 
-| password | The user's current password. | Required | 
-| username | The login name of the current user. | Required | 
-| auth_domain | The domain where the user needs to be authenticated. This is the domain where the user is created. Defaults to the root domain. | Optional | 
+| new_password | The new password. | Required |
+| password | The user's current password. | Required |
+| username | The login name of the current user. | Required |
+| auth_domain | The domain where the user needs to be authenticated. This is the domain where the user is created. Defaults to the root domain. | Optional |
 
 #### Context Output
 
@@ -2918,21 +2910,21 @@ Add a user to a group. This command is idempotent: calls to add a user to a grou
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Name of the group. By default it will be added to the Key Users Group. Default is Key Users. | Required | 
-| user_id | The user ID of the user. Can be retrieved by using the command ciphertrust-users-list. | Required | 
+| group_name | Name of the group. By default it will be added to the Key Users Group. Default is Key Users. | Required |
+| user_id | The user ID of the user. Can be retrieved by using the command ciphertrust-users-list. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Group.name | String | The name of the group. | 
-| CipherTrust.Group.created_at | Date | The time the group was created. | 
-| CipherTrust.Group.updated_at | Date | The time the group was last updated. | 
-| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. | 
-| CipherTrust.Group.description | String | The description of the group. | 
-| CipherTrust.Group.users_count | Number | The total user count associated with the group. | 
+| CipherTrust.Group.name | String | The name of the group. |
+| CipherTrust.Group.created_at | Date | The time the group was created. |
+| CipherTrust.Group.updated_at | Date | The time the group was last updated. |
+| CipherTrust.Group.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Group.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Group.client_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. client_metadata is typically used by applications to store information about the resource, such as client preferences. |
+| CipherTrust.Group.description | String | The description of the group. |
+| CipherTrust.Group.users_count | Number | The total user count associated with the group. |
 
 #### Command example
 
@@ -2971,8 +2963,8 @@ Removes a user from a group.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| group_name | Name of the group. | Required | 
-| user_id | The user ID of the user. Can be retrieved by using the command ciphertrust-users-list. | Required | 
+| group_name | Name of the group. | Required |
+| user_id | The user ID of the user. Can be retrieved by using the command ciphertrust-users-list. | Required |
 
 #### Context Output
 
@@ -2999,49 +2991,49 @@ Change the properties of a user, for instance, the name, the password, or metada
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | **Required** |
 | --- |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| name | The user's full name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional | 
-| user_id | The user ID of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Required | 
-| username | The login name of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional | 
-| password | The password used to secure the user's account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Optional | 
-| email | The email of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional | 
-| password_change_required | If set to true, user will be required to change their password on next successful login. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| allowed_auth_methods | List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group. Possible values are: password, user_certificate, password_with_user_certificate, none. | Optional | 
-| allowed_client_types | A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., "none", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group. Possible values are: unregistered, public, confidential.                                                                                                                                                                                                                                                                                                                                                                            | Optional | 
-| certificate_subject_dn | The Distinguished Name of the user in certificate. For example, OU=organization unit,O=organization,L=location,ST=state,C=country.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional | 
-| expires_at | The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "never", removes the expiration date of the user account.                                                                                                                                                                                                                                                                                                      | Optional | 
-| failed_logins_count | Set it to 0 to unlock a locked user account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional | 
-| prevent_ui_login | If true, user is not allowed to login from the web UI. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional | 
-| password_policy | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Optional | 
+| name | The user's full name.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         | Optional |
+| user_id | The user ID of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      | Required |
+| username | The login name of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   | Optional |
+| password | The password used to secure the user's account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               | Optional |
+| email | The email of the user.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        | Optional |
+| password_change_required | If set to true, user will be required to change their password on next successful login. Possible values are: true, false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| allowed_auth_methods | List of login authentication methods allowed to the user. Setting it to none, i.e., "none", means no authentication method is allowed to the user. If both enable_cert_auth and allowed_auth_methods are provided in the request, enable_cert_auth is ignored. Setting it to "password_with_user_certificate", means two-factor authentication is enabled for the user. The user will require both username-password and user_certificate for authentication. User cannot have "password" or "user_certificate" with "password_with_user_certificate" in allowed_auth_methods. This property does not control login behavior for users in admin group. Possible values are: password, user_certificate, password_with_user_certificate, none. | Optional |
+| allowed_client_types | A comma-separated list of client types that can authenticate using the user's credentials. Setting it to none, i.e., "none", means no client can authenticate this user, which effectively means no one can login into this user. This property does not control login behavior for users in admin group. Possible values are: unregistered, public, confidential.                                                                                                                                                                                                                                                                                                                                                                            | Optional |
+| certificate_subject_dn | The Distinguished Name of the user in certificate. For example, OU=organization unit,O=organization,L=location,ST=state,C=country.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            | Optional |
+| expires_at | The "expires_at" field is applicable only for local user account. Only members of the 'admin' and 'User Admins' groups can add an expiration date to an existing local user account or modify the expiration date. Once the "expires_at" date is reached, the user account gets disabled and the user is not able to perform any actions. Setting the "expires_at" argument to "never", removes the expiration date of the user account.                                                                                                                                                                                                                                                                                                      | Optional |
+| failed_logins_count | Set it to 0 to unlock a locked user account.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  | Optional |
+| prevent_ui_login | If true, user is not allowed to login from the web UI. Possible values are: true, false. Default is false.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | Optional |
+| password_policy | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Users.user_id | String | A unique identifier for API call usage. | 
-| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. | 
-| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'. | 
-| CipherTrust.Users.email | String | E-mail of the user. | 
-| CipherTrust.Users.name | String | Full name of the user. | 
-| CipherTrust.Users.nickname | String | Nickname of the user. | 
-| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. | 
-| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. | 
-| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Users.logins_count | Number | Number of logins. | 
-| CipherTrust.Users.last_login | Date | Timestamp of the last login. | 
-| CipherTrust.Users.created_at | Date | Timestamp of when the user was created. | 
-| CipherTrust.Users.updated_at | Date | Timestamp of the last update of the user. | 
-| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. | 
-| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. | 
-| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. | 
-| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. | 
-| CipherTrust.Users.failed_logins_count | Number | Number of failed login attempts. | 
-| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the initial failed login attempt. | 
-| CipherTrust.Users.account_lockout_at | Date | Timestamp of when the account was locked. | 
-| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login attempt. | 
-| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. | 
-| CipherTrust.Users.password_change_required | Boolean | Indicates if a password change is required at next login. | 
-| CipherTrust.Users.login_flags | Unknown | Flags related to login, such as prevent_ui_login. | 
+| CipherTrust.Users.user_id | String | A unique identifier for API call usage. |
+| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. |
+| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'. |
+| CipherTrust.Users.email | String | E-mail of the user. |
+| CipherTrust.Users.name | String | Full name of the user. |
+| CipherTrust.Users.nickname | String | Nickname of the user. |
+| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. |
+| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. |
+| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Users.logins_count | Number | Number of logins. |
+| CipherTrust.Users.last_login | Date | Timestamp of the last login. |
+| CipherTrust.Users.created_at | Date | Timestamp of when the user was created. |
+| CipherTrust.Users.updated_at | Date | Timestamp of the last update of the user. |
+| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. |
+| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. |
+| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. |
+| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. |
+| CipherTrust.Users.failed_logins_count | Number | Number of failed login attempts. |
+| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the initial failed login attempt. |
+| CipherTrust.Users.account_lockout_at | Date | Timestamp of when the account was locked. |
+| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login attempt. |
+| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. |
+| CipherTrust.Users.password_change_required | Boolean | Indicates if a password change is required at next login. |
+| CipherTrust.Users.login_flags | Unknown | Flags related to login, such as prevent_ui_login. |
 
 #### Command example
 
@@ -3103,54 +3095,54 @@ Returns a list of users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Filter by the user's name. | Optional | 
-| user_id | If provided, gets the user with the specified user ID.  If the user ID 'self' is provided, it will return the current user's information. | Optional | 
-| username | The user’s username. | Optional | 
-| email | The user’s email. | Optional | 
-| groups | A comma-separated list of group names. Using 'nil' as the group name will return users that are not part of any group. | Optional | 
-| exclude_groups | A comma-separated list of groups to exclude. | Optional | 
-| auth_domain_name | The user’s auth domain. | Optional | 
-| account_expired | Whether to filter the list of users whose expiration time has passed. Possible values are: true, false. | Optional | 
-| allowed_auth_methods | A comma-separated list of login authentication methods allowed to the users. A special value `empty` can be specified to get users to whom no authentication method is allowed. Possible values are: password, user_certificate, password_with_user_certificate, empty. | Optional | 
-| allowed_client_types | A comma-separated list of client types that can authenticate the user. Possible values are: unregistered, public, confidential. | Optional | 
-| password_policy | The assigned password policy. | Optional | 
-| return_groups | If set to 'true', it returns the group's name in which user is associated along with all users information. Possible values are: true, false. | Optional | 
-| page | Page to return. | Optional | 
-| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional | 
-| limit | The maximum number of entries to return. Default is 50. | Optional | 
+| name | Filter by the user's name. | Optional |
+| user_id | If provided, gets the user with the specified user ID.  If the user ID 'self' is provided, it will return the current user's information. | Optional |
+| username | The user’s username. | Optional |
+| email | The user’s email. | Optional |
+| groups | A comma-separated list of group names. Using 'nil' as the group name will return users that are not part of any group. | Optional |
+| exclude_groups | A comma-separated list of groups to exclude. | Optional |
+| auth_domain_name | The user’s auth domain. | Optional |
+| account_expired | Whether to filter the list of users whose expiration time has passed. Possible values are: true, false. | Optional |
+| allowed_auth_methods | A comma-separated list of login authentication methods allowed to the users. A special value `empty` can be specified to get users to whom no authentication method is allowed. Possible values are: password, user_certificate, password_with_user_certificate, empty. | Optional |
+| allowed_client_types | A comma-separated list of client types that can authenticate the user. Possible values are: unregistered, public, confidential. | Optional |
+| password_policy | The assigned password policy. | Optional |
+| return_groups | If set to 'true', it returns the group's name in which user is associated along with all users information. Possible values are: true, false. | Optional |
+| page | Page to return. | Optional |
+| page_size | Number of entries per page. Defaults to 2000 (in case only page was provided). Maximum entries per page is 2000. | Optional |
+| limit | The maximum number of entries to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. | 
-| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'. | 
-| CipherTrust.Users.email | String | E-mail of the user. | 
-| CipherTrust.Users.name | String | Full name of the user. | 
-| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. | 
-| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. | 
-| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. | 
-| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. | 
-| CipherTrust.Users.logins_count | Number | Number of logins. | 
-| CipherTrust.Users.last_login | Date | Timestamp of the last login. | 
-| CipherTrust.Users.created_at | Date | Timestamp of when the user was created. | 
-| CipherTrust.Users.updated_at | Date | Timestamp of the last update of the user. | 
-| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. | 
-| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. | 
-| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. | 
-| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. | 
-| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login. | 
-| CipherTrust.Users.failed_logins_count | Number | Number of failed logins. | 
-| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the first failed login. | 
-| CipherTrust.Users.account_lockout_at | Date | Timestamp of the account lockout. | 
-| CipherTrust.Users.nickname | String | Nickname of the user. | 
-| CipherTrust.Users.user_id | String | The user's unique identifier. | 
-| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. | 
-| CipherTrust.Users.password_change_required | Boolean | Flag indicating if password change is required. | 
-| CipherTrust.Users.groups | Unknown | List of groups the user belongs to. | 
-| CipherTrust.Users.auth_domain | String | Authentication domain ID. | 
-| CipherTrust.Users.login_flags | Unknown | Flags related to user login. | 
-| CipherTrust.Users.auth_domain_name | String | Name of the authentication domain. | 
+| CipherTrust.Users.username | String | The login name of the user. This attribute is required to create a user, but is omitted when getting or listing a user. It cannot be updated. |
+| CipherTrust.Users.connection | String | This attribute is required to create a user, but is not included in user resource responses. Can be the name of a connection or 'local_account' for a local user, defaults to 'local_account'. |
+| CipherTrust.Users.email | String | E-mail of the user. |
+| CipherTrust.Users.name | String | Full name of the user. |
+| CipherTrust.Users.certificate_subject_dn | String | The Distinguished Name of the user in certificate. |
+| CipherTrust.Users.enable_cert_auth | Boolean | Deprecated: Use allowed_auth_methods instead. Enable certificate based authentication flag. If set to true, the user will be able to login using a certificate. |
+| CipherTrust.Users.user_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. user_metadata is typically used by applications to store information about the resource which the end-users are allowed to modify, such as user preferences. |
+| CipherTrust.Users.app_metadata | Unknown | A schema-less object, which can be used by applications to store information about the resource. app_metadata is typically used by applications to store information which the end-users are not themselves allowed to change, like group membership or security roles. |
+| CipherTrust.Users.logins_count | Number | Number of logins. |
+| CipherTrust.Users.last_login | Date | Timestamp of the last login. |
+| CipherTrust.Users.created_at | Date | Timestamp of when the user was created. |
+| CipherTrust.Users.updated_at | Date | Timestamp of the last update of the user. |
+| CipherTrust.Users.allowed_auth_methods | Unknown | List of login authentication methods allowed to the user. |
+| CipherTrust.Users.expires_at | Date | The expires_at is applicable only for local user accounts. The admin or a user who is part of the admin group can add an expiration date to an existing local user account or modify the expiration date. Once the expires_at date is reached, the user account gets disabled and the user is not able to perform any actions. |
+| CipherTrust.Users.password_policy | String | The password policy applies only to local user accounts and overrides the global password policy. By default, the global password policy is applied to the users. |
+| CipherTrust.Users.allowed_client_types | Unknown | List of client types allowed to the user. |
+| CipherTrust.Users.last_failed_login_at | Date | Timestamp of the last failed login. |
+| CipherTrust.Users.failed_logins_count | Number | Number of failed logins. |
+| CipherTrust.Users.failed_logins_initial_attempt_at | Date | Timestamp of the first failed login. |
+| CipherTrust.Users.account_lockout_at | Date | Timestamp of the account lockout. |
+| CipherTrust.Users.nickname | String | Nickname of the user. |
+| CipherTrust.Users.user_id | String | The user's unique identifier. |
+| CipherTrust.Users.password_changed_at | Date | Timestamp of when the password was last changed. |
+| CipherTrust.Users.password_change_required | Boolean | Flag indicating if password change is required. |
+| CipherTrust.Users.groups | Unknown | List of groups the user belongs to. |
+| CipherTrust.Users.auth_domain | String | Authentication domain ID. |
+| CipherTrust.Users.login_flags | Unknown | Flags related to user login. |
+| CipherTrust.Users.auth_domain_name | String | Name of the authentication domain. |
 
 #### Command example
 
