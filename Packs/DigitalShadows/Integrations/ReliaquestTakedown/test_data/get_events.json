@@ -1,0 +1,72 @@
+[
+    {
+        "takedown-id": "1f1fe26c-b310-415d-9c02-6212a692cbd7",
+        "status": "NO_ACTION_REQUIRED",
+        "event-action": "CREATED",
+        "event-created": "2019-08-18T14:38:40.108Z",
+        "event-num": 1
+    },
+    {
+        "takedown-id": "59df3261-a5fd-4353-8f7b-32f64d2c5016",
+        "status": "SUBMITTED",
+        "event-action": "CREATED",
+        "event-created": "2025-04-15T09:58:55.617400Z",
+        "event-num": 2
+    },
+    {
+        "takedown-id": "9c4a5e44-5c64-46b8-ae9f-72a5316ae07c",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-15T20:10:08.993217Z",
+        "event-num": 3
+    },
+    {
+        "takedown-id": "18a9e57c-39c8-4799-b1e8-75f582bad994",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-16T06:58:48.143977Z",
+        "event-num": 4
+    },
+    {
+        "takedown-id": "04fc661f-e940-4acf-bbc3-8ba44c39270d",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-16T11:41:03.232688Z",
+        "event-num": 5
+    },
+    {
+        "takedown-id": "e0837d78-9b88-47c8-8f13-fc4474243867",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-16T11:41:57.599935Z",
+        "event-num": 6
+    },
+    {
+        "takedown-id": "e796945e-943c-4b44-a5d2-4f897d04f81f",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-17T09:20:31.744191Z",
+        "event-num": 7
+    },
+    {
+        "takedown-id": "ba269067-1b08-46ce-99af-c6fff088d0e7",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-17T09:20:37.239151Z",
+        "event-num": 8
+    },
+    {
+        "takedown-id": "93a41e46-185b-4ed1-a9a2-1999234a6fb8",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-17T09:22:33.736488Z",
+        "event-num": 9
+    },
+    {
+        "takedown-id": "1f1fe26c-b310-415d-9c02-6212a692cbd7",
+        "status": "SUBMITTED",
+        "event-action": "UPDATED",
+        "event-created": "2025-04-18T09:22:33.736488Z",
+        "event-num": 10
+    }
+]

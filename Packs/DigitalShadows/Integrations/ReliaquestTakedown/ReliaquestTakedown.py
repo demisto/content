@@ -1,13 +1,13 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-# register_module_line('ReliaquestTakedown', 'start', __line__())
 from contextlib import contextmanager
 from dataclasses import dataclass
 from threading import RLock
 from time import monotonic, sleep
 import urllib3
 import json
+
 """Digital Shadows for Cortex XSOAR."""
 
 ''' IMPORTS '''
@@ -25,20 +25,6 @@ DS_BASE_URL = 'https://portal-digitalshadows.com'
 class RQPollResult:
     does_all_fetched: bool
     takedown_data: Any
-
-
-def chunks(lst, n):
-    """
-    Yield successive n-sized chunks from lst.
-
-    From: https://stackoverflow.com/a/312464
-    """
-    to_chunk = lst
-    if not hasattr(lst, '__getitem__'):
-        # not subscriptable so push into a list
-        to_chunk = list(lst)
-    for i in range(0, len(to_chunk), n):
-        yield to_chunk[i:i + n]
 
 
 def test_module(client):

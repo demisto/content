@@ -1,7 +1,8 @@
 from __future__ import annotations
+
+import random
 import re
 import uuid
-
 
 import pytest
 
@@ -9,10 +10,11 @@ from CommonServerPython import *
 from ReliaquestTakedown import \
     Client
 
-from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import create_comment, list_brands, create_takedown
+from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import create_comment, list_brands, create_takedown, \
+    download_attachment, test_module, upload_attachment, get_modified_remote_data_command
 
 UUID_REGEX = r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
-
+NUMBER_REGEX = r'[0-9]{1,}'
 TEST_URL = "https://test.com/api"
 
 
@@ -144,37 +146,79 @@ class ClientMock:
         self.num_of_fetched_incidents = 0
 
     def http_request_side_effect(self, method: str, url_suffix: str, params: Dict | None = None, **kwargs):
-        if url_suffix == "/v1/triage-item-events":
-            if self.num_of_fetched_events >= self.num_of_events:
-                return create_mocked_response([])
-            limit = params["limit"]
-            event_num_after = params["event-num-after"]
-            if event_num_after:
-                event_num_after += 1
-            response = create_triage_item_events(limit, start_event_num=event_num_after or 1)
-            self.num_of_fetched_events += len(response)
-            if self.num_of_fetched_events > self.num_of_events:
-                response = response[:self.num_of_fetched_events - self.num_of_events]
+        if url_suffix == '/v1/test':
+            response = test_response()
+        elif re.match(r"/v1/takedowns/attachments/%s/download" % UUID_REGEX, url_suffix) and method == 'GET':
+            return download_attachment_get()
+        elif re.match(r"/v1/takedowns/%s/attachments" % UUID_REGEX, url_suffix) and method == 'POST':
+            response = {}
         elif url_suffix == '/api/search/find':
             response = create_comments_post()
         elif re.match(r'/v1/takedowns/%s/comments' % UUID_REGEX, url_suffix) and method == 'GET':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_get(takedownid)
-
         elif re.match(r'/v1/takedowns/%s/comments' % UUID_REGEX, url_suffix) and method == 'POST':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_post(takedownid)
+
+        elif re.match(r'^/v1/takedown-events\?limit=[^&]+&event-num-after=[^&]+$', url_suffix) and method == 'GET':
+            response = get_takedown_events()
         elif url_suffix == '/v1/takedown-brands':
             response = create_brand_list()
         elif url_suffix == '/v1/takedowns' and method == "GET":
             limit = params['limit']
             response = create_takedown_get(limit)
+        elif url_suffix == '/v1/takedowns' and method == "POST" and kwargs['json_data']['brand'] == 'rate_limit':
+            return create_takedown_rate_limit()
         elif url_suffix == '/v1/takedowns' and method == "POST":
             response = create_takedown_post(kwargs['json_data'])
         else:
             response = []
 
         return create_mocked_response(response)
+
+
+def create_takedown_rate_limit():
+    response = requests.Response()
+    response.headers = {"ratelimit-limit": "10",
+                        'ratelimit-remaining': '3',
+                        'ratelimit-reset': '1'}
+    response.status_code = 403
+    return response
+
+
+def test_response():
+    data = [
+        {"message": "accountId' is invalid"},
+        {"api-key-valid": "accountId' is invalid"},
+        {"access-account-enabled": "accountId' is invalid"},
+        {"account-api-enabled": "accountId' is invalid"},
+        {"account-id-valid": "accountId' is invalid"},
+        {},
+    ]
+    random.shuffle(data)
+    return data[1]
+
+
+def get_takedown_events():
+    get_incidents_list_response = load_test_data('./test_data/get_events.json')
+    return get_incidents_list_response
+
+
+def download_attachment_get():
+    path = 'test_data/file-sample.pdf'
+    try:
+        with open(path, 'rb') as file:
+            file_data = file.read()
+        response = requests.Response()
+        response.status_code = 200
+        response._content = file_data
+        response.headers = {"Content-Type": "application/octet-stream",
+                            'Content-Disposition': 'attachment; filename="test_data/file-sample1.pdf"'}
+
+        return response
+    except FileNotFoundError:
+        return requests.Response("File not found.", status_code=404)
 
 
 def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
@@ -257,3 +301,72 @@ def test_create_takedown_command(mocker, client: Client):
     res = create_takedown(client, {"brandId": "14718933-7fdf-484b-bd45-a873c8ac2fba", "type": "impersonation",
                                    "target": "https://www.digitalshadowsresearch13.com/adobe"})
     assert len(res) is not None
+
+
+def test_download_attachment_command(mocker, client: Client):
+    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+    try:
+        download_attachment(client, {"attachmentId": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
+    except Exception:
+        pass
+
+
+def test_upload_download_attachment_command(mocker, client: Client):
+    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+    upload_attachment(client, {"fileId": "test_data/file-sample.pdf", 'takedownId': "14718933-7fdf-484b-bd45-a873c8ac2fba"})
+
+
+def test_test_module_command(mocker, client: Client):
+    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+    for i in range(20):
+        test_module(client)
+
+
+def load_test_data(json_path):
+    with open(json_path) as f:
+        return json.load(f)
+
+
+def test_get_modified_remote_data(mocker, client: Client):
+    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+    modified_ids, last_num = get_modified_remote_data_command(client, '0')
+    assert len(modified_ids.modified_incident_ids) == 10
+    assert modified_ids.modified_incident_ids == ['1f1fe26c-b310-415d-9c02-6212a692cbd7', '59df3261-a5fd-4353-8f7b-32f64d2c5016',
+                                                  '9c4a5e44-5c64-46b8-ae9f-72a5316ae07c', '18a9e57c-39c8-4799-b1e8-75f582bad994',
+                                                  '04fc661f-e940-4acf-bbc3-8ba44c39270d', 'e0837d78-9b88-47c8-8f13-fc4474243867',
+                                                  'e796945e-943c-4b44-a5d2-4f897d04f81f', 'ba269067-1b08-46ce-99af-c6fff088d0e7',
+                                                  '93a41e46-185b-4ed1-a9a2-1999234a6fb8', '1f1fe26c-b310-415d-9c02-6212a692cbd7']
+
+
+def test_create_takedown_command_ratelimit(mocker, client: Client):
+    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    mocker.patch.object(
+        client,
+        "_http_request",
+        side_effect=http_mocker.http_request_side_effect
+    )
+    try:
+        create_takedown(client, {"brandId": "rate_limit", "type": "impersonation",
+                                 "target": "https://www.digitalshadowsresearch13.com/adobe"})
+    except Exception:
+        pass
