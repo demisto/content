@@ -3676,7 +3676,7 @@ def main():
             version=version,
             look_back=look_back,
             use_display_value=use_display_value,
-            display_date_format=display_date_format, 
+            display_date_format=display_date_format,
             jwt_params=jwt_params,
         )
         commands: dict[str, Callable[[Client, dict[str, str]], tuple[str, dict[Any, Any], dict[Any, Any], bool]]] = {
