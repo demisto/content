@@ -997,6 +997,100 @@ def test_fetch_notables(mocker):
     assert not incidents[0].get("owner")
 
 
+def test_fetch_notables_with_creation_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "creation time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the earliest_time and latest_time fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "creation time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "earliest_time" in call_args
+    assert "latest_time" in call_args
+    assert "index_earliest" not in call_args
+    assert "index_latest" not in call_args
+
+
+def test_fetch_notables_with_index_time1(mocker: MockerFixture):
+    """
+    Given: A configuration using "index time" as the notable time source in demisto parameters.
+    When: The fetch_notables function is called.
+    Then: The function should query Splunk using the index_earliest and index_latest fields in the search kwargs.
+    """
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"notable_time_source": "index time", "fetchQuery": "something", "occurrence_look_behind": "0"},
+    )
+    mocker.patch.object(splunk, "parse_time_to_minutes", return_value=10)
+    mocker.patch.object(results, "JSONResultsReader", return_value=[])
+    # Mock the service object
+    mock_service = mocker.MagicMock()
+    mock_search = mocker.MagicMock()
+    mock_service.jobs.oneshot.return_value = mock_search
+
+    # Mock the search results
+    mock_search.results = mocker.MagicMock(return_value=[])
+
+    # Mock the mapper object
+    mock_mapper = mocker.MagicMock()
+
+    # Create a mock for the Cache
+    mock_cache = mocker.MagicMock()
+
+    # Call the function
+    splunk.fetch_notables(
+        service=mock_service,
+        mapper=mock_mapper,
+        comment_tag_to_splunk="comment_to_splunk",
+        comment_tag_from_splunk="comment_from_splunk",
+        cache_object=mock_cache,
+        enrich_notables=False,
+    )
+
+    # Verify that the service.jobs.oneshot was called with "creation time" in the kwargs
+    call_args = mock_service.jobs.oneshot.call_args[1]
+
+    # The query should include "creation time" in the search criteria
+    assert "index_earliest" in call_args
+    assert "index_latest" in call_args
+    assert "earliest_time" not in call_args
+    assert "latest_time" not in call_args
+
+
 """ ========== Enriching Fetch Mechanism Tests ========== """
 
 
@@ -3965,6 +4059,7 @@ def mock_service_job(sid):
     class MockBody:
         def __init__(self, message):
             self.message = message
+
         def read(self):
             return self.message
 
@@ -4018,7 +4113,6 @@ def test_splunk_job_status_not_found(mock_service):
 
 @patch("SplunkPy.client.Service")
 def test_splunk_job_status_418_error(mock_service):
-
     mock_service.job.side_effect = mock_service_job
 
     service = mock_service
@@ -4026,8 +4120,10 @@ def test_splunk_job_status_418_error(mock_service):
     result = splunk.splunk_job_status(service, args)
 
     assert len(result) == 1
-    assert ("Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
-            in result[0].readable_output)
+    assert (
+        "Querying splunk for SID: error_sid resulted in the following error HTTP 418 I'm a teapot -- I won't brew coffee"
+        in result[0].readable_output
+    )
 
 
 @patch("SplunkPy.client.Service")
@@ -4043,6 +4139,7 @@ def test_splunk_job_status_multiple_sids(mock_service):
     assert result[1].outputs == {"SID": "running_sid", "Status": "RUNNING"}
     assert result[2].readable_output == "Not found job for SID: invalid_sid"
 
+
 def test_splunk_search_parse_bad_chars():
     """
     Given:
@@ -4053,8 +4150,8 @@ def test_splunk_search_parse_bad_chars():
         The parsing removes the bad chars and proceeds successfully.
     """
     import io
-    bad_search_output = (
-b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
+
+    bad_search_output = b'{"preview": false, "init_offset": 0, "messages": [], "fields": [{"name": "Message"}, {"name": "_bkt"}, \
 {"name": "_cd"}, {"name": "_indextime"}, {"name": "_pre_msg"}, {"name": "_raw"}, {"name": "_serial"}, {"name": "_si"}, \
 {"name": "_sourcetype"}, {"name": "_time"}, {"name": "host"}, {"name": "index"}, {"name": "linecount"}, \
 {"name": "source"}, {"name": "sourcetype"}, {"name": "splunk_server"}], \
@@ -4067,37 +4164,39 @@ Server\\nOpCode=Info\\nRecordNumber=3\\nKeywords=Classic\\nMessage=Service start
 "_si": ["ip-000-00-00-000", "main"], "_sourcetype": "WinEventLog", "_time": "2025-04-23T05:04:41.000-03:00", \
 "host": "127.0.0.1", "index": "main", "linecount": "13", "source": "WinEventLog:Server", "sourcetype": "WinEventLog", \
 "splunk_server": "ip-000-00-00-000"}], "highlighted": {}}'
-    )
 
     expected_res = (
-        [{
-            'Message': 'Service started successfully.',
-            '_bkt': 'main~1111~00000000-0000-0000-0000-000000000000',
-            '_cd': '1111:0000000',
-            '_indextime': '5555555555',
-            '_pre_msg': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
-                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic'
-            ),
-            '_raw': (
-                '04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n'
-                'ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n'
-                'Message=Service started successfully.\n'
-            ),
-            '_serial': '1',
-            '_si': ['ip-000-00-00-000', 'main'],
-            '_sourcetype': 'WinEventLog',
-            '_time': '2025-04-23T05:04:41.000-03:00',
-            'host': '127.0.0.1',
-            'index': 'main',
-            'linecount': '13',
-            'source': 'WinEventLog:Server',
-            'sourcetype': 'WinEventLog',
-            'splunk_server': 'ip-000-00-00-000'}],
-        [{'Indicator': '127.0.0.1', 'Type': 'hostname', 'Vendor': 'Splunk', 'Score': 0, 'isTypedIndicator': True}]
+        [
+            {
+                "Message": "Service started successfully.",
+                "_bkt": "main~1111~00000000-0000-0000-0000-000000000000",
+                "_cd": "1111:0000000",
+                "_indextime": "5555555555",
+                "_pre_msg": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic"
+                ),
+                "_raw": (
+                    "04/23/2025 08:04:41 AM\nLogName=Test log\nSourceName=Server\nEventCode=0\nEventType=4\nType=Information\n"
+                    "ComputerName=#COMPUTERNAME#\nTaskCategory=Test log Server\nOpCode=Info\nRecordNumber=3\nKeywords=Classic\n"
+                    "Message=Service started successfully.\n"
+                ),
+                "_serial": "1",
+                "_si": ["ip-000-00-00-000", "main"],
+                "_sourcetype": "WinEventLog",
+                "_time": "2025-04-23T05:04:41.000-03:00",
+                "host": "127.0.0.1",
+                "index": "main",
+                "linecount": "13",
+                "source": "WinEventLog:Server",
+                "sourcetype": "WinEventLog",
+                "splunk_server": "ip-000-00-00-000",
+            }
+        ],
+        [{"Indicator": "127.0.0.1", "Type": "hostname", "Vendor": "Splunk", "Score": 0, "isTypedIndicator": True}],
     )
     mock_result_batch = io.BytesIO(bad_search_output)
 
-    res = splunk.parse_batch_of_results(mock_result_batch, 10, '')
+    res = splunk.parse_batch_of_results(mock_result_batch, 10, "")
 
     assert res == expected_res

@@ -2,7 +2,7 @@ import importlib
 import unittest
 from datetime import datetime
 from unittest import mock
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 import dateparser
 import demistomock as demisto
@@ -90,6 +90,13 @@ ES_V8_RESPONSE = {
         ],
     },
 }
+
+# ES_V9_RESPONSE = {
+#     "took": 11,
+#     "is_partial": False,
+#     "columns": [{"name": "alertDetails.alertuser", "type": "text"}],
+#     "values": [["karl@test.io"]],
+# }
 
 MOCK_ES7_SEARCH_CONTEXT = str(
     {
@@ -1137,3 +1144,40 @@ def test_verify_es_server_version_errors(mocker, server_details, server_version,
     with pytest.raises(ValueError) as e:
         Elasticsearch_v2.verify_es_server_version(server_details)
     assert server_version in str(e.value)
+
+
+def test_search_command_with_query_esql(mocker):
+    """
+    Given
+      - query to the search command with esql
+
+    When
+    - executing the es-esql-search command
+
+    Then
+     - Make sure that the expected message is returned.
+    """
+    MOCKER_RES = {"columns": [{"name": "col_1"}, {"name": "col_2"}], "values": [["val_1", "val_2"], ["val_1_1", "val_2_2"]]}
+    EXPECTED_HEADERS = {
+        "Content-Type": "application/vnd.elasticsearch+json; compatible-with=9",
+        "Accept": "application/vnd.elasticsearch+json; compatible-with=9",
+    }
+    magic_mock = MagicMock()
+    magic_mock.body = MOCKER_RES
+    magic_mock.__getitem__.side_effect = lambda key: magic_mock.body[key]
+
+    import Elasticsearch_v2
+
+    mocked_builder = mocker.patch.object(Elasticsearch_v2, "elasticsearch_builder")
+    mocked_builder().perform_request.return_value = magic_mock
+    mocker.patch.object(Elasticsearch_v2, "ELASTIC_SEARCH_CLIENT", new=Elasticsearch_v2.ELASTICSEARCH_V9)
+
+    query = """FROM alerts | WHERE alertDetails.alertuser LIKE "*karl*"| KEEP *"""
+    res = Elasticsearch_v2.search_esql_command({"query": query, "limit": 2}, {})
+
+    call_args = mocked_builder().perform_request.call_args[1]
+    assert res.outputs_prefix == "Elasticsearch.ESQLSearch"
+    assert res.outputs == [{"col_1": "val_1", "col_2": "val_2"}, {"col_1": "val_1_1", "col_2": "val_2_2"}]
+    assert res.raw_response == magic_mock.body
+    assert call_args["headers"] == EXPECTED_HEADERS
+    assert call_args["body"] == {"query": f"{query}| LIMIT 2"}
