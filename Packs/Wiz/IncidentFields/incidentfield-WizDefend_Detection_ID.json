@@ -27,5 +27,5 @@
     "description": "Wiz Detection ID for the threat detection",
     "sla": 0,
     "threshold": 72,
-    "fromVersion": "6.10.0"
+    "fromVersion": "6.0.0"
 }
