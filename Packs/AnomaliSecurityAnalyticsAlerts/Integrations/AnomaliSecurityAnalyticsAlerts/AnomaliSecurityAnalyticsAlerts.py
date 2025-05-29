@@ -336,7 +336,10 @@ def fetch_incidents(client: Client) -> list:
     has_new = False
     for alert in incidents_list:
         raw_ts = alert.get(timestamp_field)
-        alert_time = int(raw_ts) // 1000 if raw_ts else int(to_dt.timestamp())
+        if not raw_ts:
+            continue
+
+        alert_time = int(raw_ts) // 1000
         if alert_time > latest_ts:
             latest_ts = alert_time
             has_new = True
