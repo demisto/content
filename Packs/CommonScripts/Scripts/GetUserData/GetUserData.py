@@ -725,7 +725,7 @@ def main():
                     single_user_outputs.append(outputs)
                 aws_iam_get_user_command = Command(
                     brand="AWS - IAM",
-                    name="aws-iam-get-user", 
+                    name="aws-iam-get-user",
                     args={"userName": user_name},
                 )
                 if modules.is_brand_available(aws_iam_get_user_command) and is_valid_args(aws_iam_get_user_command):
