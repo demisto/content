@@ -740,7 +740,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: "0.6354129314422607"
+              simple: "0.6354129910469055"
     continueonerrortype: ""
     view: |-
       {

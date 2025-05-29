@@ -617,7 +617,7 @@ tasks:
             args:
               prefix:
                 value:
-                  simple: 'name:fine_tune_1|fine_tune_2|fine_tune_3 and uuid:'
+                  simple: '(name:fine_tune_1 or name:fine_tune_2 or name:fine_tune_3) and uuid:'
               suffix: {}
       tagField:
         simple: name
