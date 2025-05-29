@@ -659,8 +659,9 @@ def url_submission(
     )
 
 
+# The interval timeout should be set between 30 and 60 seconds for optimal server usage.
 @polling_function(
-    name=demisto.command(), timeout=arg_to_number(demisto.args().get("timeout", 1200)), interval=10, requires_polling_arg=False
+    name=demisto.command(), timeout=arg_to_number(demisto.args().get("timeout", 1200)), interval=45, requires_polling_arg=False
 )
 def polling_submit_command(
     args: Dict[str, Any], client: Client, params: Dict[str, Any], exe_metrics: ExecutionMetrics
