@@ -9,6 +9,7 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 DEFAULT_MALICIOUS_THRESHOLD = 65
 DEFAULT_SUSPICIOUS_THRESHOLD = 25
+DEFAULT_BENIGN_THRESHOLD = 0
 THREAT_STREAM = "Anomali ThreatStream Feed"
 RETRY_COUNT = 2
 LIMIT = 1000
@@ -141,7 +142,6 @@ class DBotScoreCalculator:
     Class for DBot score calculation based on thresholds and confidence.
     It supports instance-defined thresholds per indicator type or default thresholds.
     """
-    # TODO check this is the correct calculation
     def calculate_score(self, indicator):
         """
         Calculate the DBot score according to the indicator's confidence.
@@ -152,21 +152,23 @@ class DBotScoreCalculator:
         Returns:
             int: The calculated DBot score (Common.DBotScore.NONE, GOOD, SUSPICIOUS, BAD).
         """
-        # confidence = arg_to_number(indicator.get("confidence", Common.DBotScore.NONE))
-        # if confidence is None:
-        #     demisto.debug(f"{THREAT_STREAM} - Confidence not found for indicator. Assigning default score.")
-        #     return Common.DBotScore.NONE
+        confidence = arg_to_number(indicator.get("confidence", None))
+        if confidence is None:
+            demisto.debug(f"{THREAT_STREAM} - Confidence not found for indicator. Assigning default score.")
+            return Common.DBotScore.NONE
     
-        # else:
-        #     if confidence > DEFAULT_MALICIOUS_THRESHOLD:
-        #         return Common.DBotScore.BAD
-        #     if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
-        #         return Common.DBotScore.SUSPICIOUS
-        #     if confidence > DEFAULT_BENIGN_THRESHOLD:
-        #         return Common.DBotScore.GOOD
-        #     else:
-        #         return Common.DBotScore.NONE
-        return Common.DBotScore.GOOD
+        else:
+            if confidence > DEFAULT_MALICIOUS_THRESHOLD:
+                return Common.DBotScore.BAD
+            if confidence > DEFAULT_SUSPICIOUS_THRESHOLD:
+                return Common.DBotScore.SUSPICIOUS
+            if confidence > DEFAULT_BENIGN_THRESHOLD:
+                return Common.DBotScore.GOOD
+            else:
+                return Common.DBotScore.NONE
+        # if confidence > 65:
+        #     return Common.DBotScore.BAD
+        # return Common.DBotScore.GOOD
 
 def test_module(client: Client) -> str:
     """
@@ -310,10 +312,6 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
             - str: The timestamp for the next successful run.
             - list[dict[str, Any]]: A list of parsed indicators ready for Cortex XSOAR.
     """
-    
-    # reputation = params.get("feedReputation", "Unknown")
-    # expiration_method = params.get("indicatorExpirationMethod", "Indicator Type")
-    
     create_relationship = argToBoolean(params.get("createRelationships", True))
     tlp_color = params.get("tlp_color", "WHITE")
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
@@ -342,7 +340,7 @@ def fetch_indicators_command(client: Client, params: dict[str, Any], last_run: d
     )
 
     if order_by == "modified_ts":
-        query['modified_ts__gte'] = "2023-08-04T11:57:00.001Z"
+        query['modified_ts__gte'] = last_fetch_time # "2023-08-04T11:57:00.001Z"
     else: # order_by == "created_ts"
         query['created_ts__gte'] = last_fetch_time
     
@@ -513,10 +511,9 @@ def parse_indicator_for_fetch(indicator: dict[str, Any], tlp_color: str, create_
         fields=fields,
         relationships=relationships,
         rawJSON=indicator,
-        # score=dbot_score, # TODO check is this Indicator Reputation?
+        score=dbot_score,
         # "expiration_date" here # TODO is this Indicator Expiration Method?
     )
-
 
 def main():
     """

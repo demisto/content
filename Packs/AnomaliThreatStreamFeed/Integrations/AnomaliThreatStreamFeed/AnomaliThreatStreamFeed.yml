@@ -75,8 +75,8 @@ configuration:
   required: false
   section: Collect
 - display: Indicator Reputation
-  defaultvalue: None
   name: feedReputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation
   options:
   - None
   - Good
