@@ -6047,6 +6047,8 @@ def get_live_response_file_action(client, args):
 
 def get_file_get_successfull_action_results(client, res):
     machine_action_id = res["id"]
+    result_filename = "Response Result"
+
     try:
         for command in res["commands"]:
             if command.get('command').get('type') == "GetFile":
@@ -6054,7 +6056,7 @@ def get_file_get_successfull_action_results(client, res):
                     if params.get('key') == "Path":
                         result_filename = sanitize_path_to_filename(params.get('value'))
     except Exception:
-        result_filename = "Response Result"
+        raise Exception(f"Machine {machine_id} was not found")
 
     # get file link from action:
     file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)["value"]
@@ -6071,7 +6073,7 @@ def get_file_get_successfull_action_results(client, res):
         "Commands": res.get("commands"),
     }
     return [
-        fileResult("Response Result.gz", f_data.content),
+        fileResult(f"{result_filename}.gz", f_data.content),
         CommandResults(
             outputs_prefix="MicrosoftATP.LiveResponseAction",
             outputs=res,
