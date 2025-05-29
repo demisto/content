@@ -13,20 +13,28 @@ class CloudTypes(Enum):
     OCI = "OCI"
 
 
+# Provider-specific account identifier names
+PROVIDER_ACCOUNT_NAMES = {
+    CloudTypes.GCP.value: "Project ID",
+    CloudTypes.AWS.value: "AWS Account ID",
+    CloudTypes.AZURE.value: "Subscription ID",
+    CloudTypes.OCI.value: "Oracle Cloud Account ID",
+}
+
 # Platform API paths
 GET_CTS_ACCOUNTS_TOKEN = "/cts/accounts/token"
 GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
 
-def get_cloud_credentials(
-    cloud_type: str, scopes: list = None
-) -> dict:  # todo will need to pass the accountID and outpostID from the integration
+def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
 
     Args:
         cloud_type (str): Cloud provider type ("GCP", "AWS", "AZURE", "OCI").
+        account_id (str): Cloud account identifier - GCP: Project ID, AWS: Account ID,
+                          AZURE: Subscription ID
         scopes (list, optional): Authorization scopes. Defaults to None.
 
     Returns:
@@ -44,7 +52,12 @@ def get_cloud_credentials(
 
     Raises:
         DemistoException: If token retrieval fails or response parsing fails.
+        ValueError: If account_id is not provided.
     """
+    if not account_id:
+        name = PROVIDER_ACCOUNT_NAMES.get(cloud_type, "account identifier")
+        raise ValueError(f"Missing {name} for {cloud_type}")
+
     context = demisto.callingContext.get("context", {})
     cloud_info = context.get("CloudIntegrationProviderInfo", {})
 
@@ -52,7 +65,7 @@ def get_cloud_credentials(
 
     request_data = {
         "connector_id": cloud_info.get("connectorID"),
-        "account_id": cloud_info.get("accountID"),
+        "account_id": account_id,
         "outpost_id": cloud_info.get("outpostID"),
         "cloud_type": cloud_type,
     }
