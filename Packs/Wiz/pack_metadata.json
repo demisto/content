@@ -1,6 +1,6 @@
 {
     "name": "Wiz",
-    "description": "Integrate with Wiz for bidirectional Issue management and fetching of resource information. \n",
+    "description": "Integrate with Wiz for bidirectional Issue management, Detections investigation, and fetching of resource information. \n",
     "support": "partner",
     "currentVersion": "2.0.0",
     "author": "Wiz Inc.",
