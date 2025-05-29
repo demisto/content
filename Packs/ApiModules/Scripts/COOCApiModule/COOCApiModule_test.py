@@ -30,7 +30,7 @@ def test_get_cloud_credentials_success(mocker):
     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
 
     # Call the function
-    result = get_cloud_credentials(CloudTypes.AWS.value)
+    result = get_cloud_credentials(CloudTypes.AWS.value, account_id="test-account-id")
 
     # Verify result
     assert result == credentials
@@ -69,7 +69,7 @@ def test_get_cloud_credentials_with_scopes(mocker):
 
     # Call the function with scopes
     test_scopes = ["scope1", "scope2"]
-    result = get_cloud_credentials(CloudTypes.GCP.value, scopes=test_scopes)
+    result = get_cloud_credentials(CloudTypes.GCP.value, account_id="test-account-id", scopes=test_scopes)
 
     # Verify result
     assert result == credentials
@@ -102,7 +102,7 @@ def test_get_cloud_credentials_api_error(mocker):
 
     # Call the function and expect an exception
     with pytest.raises(DemistoException) as excinfo:
-        get_cloud_credentials(CloudTypes.AZURE.value)
+        get_cloud_credentials(CloudTypes.AZURE.value, account_id="test-account-id")
 
     # Verify exception message
     assert "Failed to get credentials from CTS for AZURE" in str(excinfo.value)
@@ -131,7 +131,7 @@ def test_get_cloud_credentials_parse_error(mocker):
 
     # Call the function and expect an exception
     with pytest.raises(DemistoException) as excinfo:
-        get_cloud_credentials(CloudTypes.OCI.value)
+        get_cloud_credentials(CloudTypes.OCI.value, account_id="test-account-id")
 
     # Verify exception message
     assert "Failed to parse credentials from CTS response for OCI" in str(excinfo.value)
