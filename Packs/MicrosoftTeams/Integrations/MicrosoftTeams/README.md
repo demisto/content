@@ -931,10 +931,10 @@ Note: Chat.Create is needed only when sending to one-on-one chats.
 ***
 Adds a member (user) to a group chat.
 
-Notes: 
-- This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot. 
-- This command will fail if the consent user is not a member of the destination chat.
+Notes:
 
+- This command works with the consent user, not with the bot. Which means, the member will be added to the given chat by the consent user, not the bot.
+- This command will fail if the consent user is not a member of the destination chat.
 
 #### Base Command
 
@@ -971,10 +971,9 @@ The User "Bruce Willis" has been added to chat "example chat" successfully.
 ***
 Retrieves a list of members from a chat.
 
+Notes:
 
-Notes: 
 - This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
-
 
 #### Base Command
 
@@ -1077,9 +1076,9 @@ Retrieves a list of chats that the consent user is a member of. If 'chat' is spe
 ***
 Retrieves a list of messages in a chat.
 
-Notes: 
-- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+Notes:
 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
 
 #### Base Command
 
@@ -1147,9 +1146,9 @@ Notes:
 ***
 Updates the chat name. It can only be set for group chats.
 
-Notes: 
-- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
+Notes:
 
+- This command works with the consent user, not with the bot. Which means, that the chat must include the consent user.
 
 #### Base Command
 

@@ -690,7 +690,7 @@ Search into firewall logs
 | OPNSense.Logs.dst           | Unknown | DST in logs |
 | OPNSense.Logs.dstport       | Unknown | DSTPORT in logs |
 | OPNSense.Logs.action        | Unknown | Action in logs |
-| OPNSense.Logs.__timestamp__ | Unknown | timestamp in logs |
+| OPNSense.Logs.**timestamp** | Unknown | timestamp in logs |
 | OPNSense.Logs.label         | Unknown | label in logs |
 | OPNSense.Logs.protoname     | Unknown | protoname in logs |
 

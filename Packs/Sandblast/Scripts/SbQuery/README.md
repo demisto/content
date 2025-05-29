@@ -9,7 +9,6 @@ Uses the Query API to have a client application look for either the analysis rep
 | Script Type | python |
 | Tags | sandblast |
 
-
 ## Dependencies
 
 ---

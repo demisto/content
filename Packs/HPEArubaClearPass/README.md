@@ -36,6 +36,7 @@ Use this content pack to help automate adding devices in the network to a block 
 ## What does this pack do?
 
 The integration in this pack enables you to:
+
 * Get a list of endpoints.
 * Update fields of an endpoint.
 * Get a list of attributes.

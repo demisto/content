@@ -3,7 +3,6 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 
 ## Configure Palo Alto Networks Threat Vault in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | api_key | API Key | True |
@@ -11,41 +10,44 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 | proxy | Use system proxy settings | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### threatvault-antivirus-signature-get
+
 ***
 Gets the antivirus signature.
-
 
 #### Base Command
 
 `threatvault-antivirus-signature-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sha256 | The SHA256 hash of the antivirus signature. | Optional | 
-| signature_id | The signature ID of the antivirus. | Optional | 
-
+| sha256 | The SHA256 hash of the antivirus signature. | Optional |
+| signature_id | The signature ID of the antivirus. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.Antivirus.active | Bool | Whether the antivirus signature is active. | 
-| ThreatVault.Antivirus.category | String | The category of the antivirus signature. | 
-| ThreatVault.Antivirus.createTime | String | The time the antivirus signature was created. | 
-| ThreatVault.Antivirus.release | Unknown | The release details of the antivirus signature. | 
-| ThreatVault.Antivirus.sha256 | String | The sha256 hash of the antivirus signature. | 
-| ThreatVault.Antivirus.signatureId | Number | The ID of the antivirus signature. | 
-| ThreatVault.Antivirus.signatureName | String | The name of the antivirus signature. | 
-
+| ThreatVault.Antivirus.active | Bool | Whether the antivirus signature is active. |
+| ThreatVault.Antivirus.category | String | The category of the antivirus signature. |
+| ThreatVault.Antivirus.createTime | String | The time the antivirus signature was created. |
+| ThreatVault.Antivirus.release | Unknown | The release details of the antivirus signature. |
+| ThreatVault.Antivirus.sha256 | String | The sha256 hash of the antivirus signature. |
+| ThreatVault.Antivirus.signatureId | Number | The ID of the antivirus signature. |
+| ThreatVault.Antivirus.signatureName | String | The name of the antivirus signature. |
 
 #### Command Example
+
 ```!threatvault-antivirus-signature-get signature_id=93534285```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -76,45 +78,46 @@ Gets the antivirus signature.
 
 #### Human Readable Output
 
->### Antivirus:
+>### Antivirus
+>
 >|active|createTime|release|sha256|signatureId|signatureName|
 >|---|---|---|---|---|---|
 >| true | 2010-10-01 10:28:57 (UTC) | wildfire: {"latestReleaseVersion": 0, "firstReleaseVersion": 0}<br/>antivirus: {"latestReleaseVersion": 0, "firstReleaseVersion": 334, "firstReleaseTime": "2010-10-03 15:04:58 UTC"} | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8,<br/>9e12c5cdb069f74487c11758e732d72047b72bedf4373aa9e3a58e8e158380f8 | 93534285 | Worm/Win32.autorun.crck |
 
-
 ### file
+
 ***
 Checks the reputation of an antivirus in Threat Vault.
-
 
 #### Base Command
 
 `file`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The SHA256 hash of the antivirus signature. | Optional | 
-
+| file | The SHA256 hash of the antivirus signature. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. | 
-
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | For malicious files, the vendor that made the decision. |
 
 #### Command Example
+
 ```!file file= 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": [
@@ -192,12 +195,13 @@ Checks the reputation of an antivirus in Threat Vault.
 #### Human Readable Output
 
 >### WildFire File Report
+>
 >|FileType|MD5|SHA256|Size|Status|
 >|---|---|---|---|---|
 >| PE | 7e8d3744c0a06d3c7ca7f6dbfce3d576 | 7a520be9db919a09d8ccd9b78c11885a6e97bc9cc87414558254cef3081dccf8 | 117760 | Completed |
 
-
 ### threatvault-dns-signature-get-by-id
+
 ***
 Gets the DNS signature.
 For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
@@ -205,30 +209,31 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 #### Base Command
 
 `threatvault-dns-signature-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| dns_signature_id | The ID of the DNS signature. | Optional | 
-
+| dns_signature_id | The ID of the DNS signature. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.DNS.active | Bool | Whether the DNS signature is active. | 
-| ThreatVault.DNS.category | String | The category of the DNS signature. | 
-| ThreatVault.DNS.createTime | String | The time the DNS signature was created. | 
-| ThreatVault.DNS.domainName | String | The domain name of the DNS signature. | 
-| ThreatVault.DNS.release | Unknown | The release details of the DNS signature. | 
-| ThreatVault.DNS.signatureId | Number | The ID of the DNS signature. | 
-| ThreatVault.DNS.signatureName | String | The name of the DNS signature. | 
-
+| ThreatVault.DNS.active | Bool | Whether the DNS signature is active. |
+| ThreatVault.DNS.category | String | The category of the DNS signature. |
+| ThreatVault.DNS.createTime | String | The time the DNS signature was created. |
+| ThreatVault.DNS.domainName | String | The domain name of the DNS signature. |
+| ThreatVault.DNS.release | Unknown | The release details of the DNS signature. |
+| ThreatVault.DNS.signatureId | Number | The ID of the DNS signature. |
+| ThreatVault.DNS.signatureName | String | The name of the DNS signature. |
 
 #### Command Example
+
 ```!threatvault-dns-signature-get-by-id signature_id=325235352```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -242,6 +247,7 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 >DNS signature was not found. Please try with a different dns_signature_id.
 
 ### threatvault-antispyware-signature-get-by-id
+
 ***
 Gets the antispyware signature.
 For more information about getting the IDs, see: https://docs.paloaltonetworks.com/pan-os/10-0/pan-os-admin/threat-prevention/learn-more-about-and-assess-threats/learn-more-about-threat-signatures.html
@@ -249,34 +255,35 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 #### Base Command
 
 `threatvault-antispyware-signature-get-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signature_id | ID of the antispyware signature. | Optional | 
-
+| signature_id | ID of the antispyware signature. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.AntiSpyware.firstReleaseVersion | Number | The first released version of the antispyware. | 
-| ThreatVault.AntiSpyware.signatureName | String | The name of the antispyware signature. | 
-| ThreatVault.AntiSpyware.firstReleaseTime | AntiSpyware | The time the antispyware was first released. | 
-| ThreatVault.AntiSpyware.vendor | String | The antispyware vendor. | 
-| ThreatVault.AntiSpyware.latestReleaseTime | String | The latest release time of the antispyware. | 
-| ThreatVault.AntiSpyware.metadata | Unknown | The metadata of the antispyware. | 
-| ThreatVault.AntiSpyware.signatureType | String | The signature type of the antispyware. | 
-| ThreatVault.AntiSpyware.cve | String | The status of the antispyware CVE. | 
-| ThreatVault.AntiSpyware.status | String | The status of the antispyware. | 
-| ThreatVault.AntiSpyware.signatureId | Number | The antispyware signature ID. | 
-| ThreatVault.AntiSpyware.latestReleaseVersion | Number | The latest released version of the antispyware. | 
-
+| ThreatVault.AntiSpyware.firstReleaseVersion | Number | The first released version of the antispyware. |
+| ThreatVault.AntiSpyware.signatureName | String | The name of the antispyware signature. |
+| ThreatVault.AntiSpyware.firstReleaseTime | AntiSpyware | The time the antispyware was first released. |
+| ThreatVault.AntiSpyware.vendor | String | The antispyware vendor. |
+| ThreatVault.AntiSpyware.latestReleaseTime | String | The latest release time of the antispyware. |
+| ThreatVault.AntiSpyware.metadata | Unknown | The metadata of the antispyware. |
+| ThreatVault.AntiSpyware.signatureType | String | The signature type of the antispyware. |
+| ThreatVault.AntiSpyware.cve | String | The status of the antispyware CVE. |
+| ThreatVault.AntiSpyware.status | String | The status of the antispyware. |
+| ThreatVault.AntiSpyware.signatureId | Number | The antispyware signature ID. |
+| ThreatVault.AntiSpyware.latestReleaseVersion | Number | The latest released version of the antispyware. |
 
 #### Command Example
+
 ```!threatvault-antispyware-signature-get-by-id signature_id=10001```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -308,40 +315,41 @@ For more information about getting the IDs, see: https://docs.paloaltonetworks.c
 
 #### Human Readable Output
 
->### Anti Spyware Signature:
+>### Anti Spyware Signature
+>
 >|signatureId|signatureName|signatureType|status|firstReleaseTime|latestReleaseTime|
 >|---|---|---|---|---|---|
 >| 10001 | Autorun User-Agent Traffic | spyware | released | 2011-05-23 UTC | 2020-11-06 UTC |
 
-
 ### threatvault-ip-geo-get
+
 ***
 Get the IP address geolocation.
-
 
 #### Base Command
 
 `threatvault-ip-geo-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to search. | Optional | 
-
+| ip | The IP address to search. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.IP.CountryCode | String | The country code. | 
-| ThreatVault.IP.CountryName | String | The country name. | 
-| ThreatVault.IP.ipAddress | String | The IP address. | 
-
+| ThreatVault.IP.CountryCode | String | The country code. |
+| ThreatVault.IP.CountryName | String | The country name. |
+| ThreatVault.IP.ipAddress | String | The IP address. |
 
 #### Command Example
+
 ```!threatvault-ip-geo-get ip=8.8.8.8```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -356,43 +364,44 @@ Get the IP address geolocation.
 
 #### Human Readable Output
 
->### IP location:
+>### IP location
+>
 >|countryCode|countryName|ipAddress|
 >|---|---|---|
 >| US | United States | 8.8.8.8 |
 
-
 ### ip
+
 ***
 Check IP location.
-
 
 #### Base Command
 
 `ip`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address to query, e.g., !ip 1.1.1.1 | Optional | 
-
+| ip | IP address to query, e.g., !ip 1.1.1.1 | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| IP.Address | String | The IP address. | 
-| IP.Geo.Country | String | The country of the IP address. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-
+| IP.Address | String | The IP address. |
+| IP.Geo.Country | String | The country of the IP address. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
 
 #### Command Example
+
 ```!ip ip=1.1.1.1```
 
 #### Context Example
+
 ```json
 {
     "DBotScore": {
@@ -419,41 +428,42 @@ Check IP location.
 
 #### Human Readable Output
 
->### IP location:
+>### IP location
+>
 >|countryCode|countryName|ipAddress|
 >|---|---|---|
 >| AU | Australia | 1.1.1.1 |
 
-
 ### threatvault-antivirus-signature-search
+
 ***
 Initiates an antivirus signature search.
-
 
 #### Base Command
 
 `threatvault-antivirus-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signature_name | The signature name to search. | Required | 
-| from | From which signature to return results. Default is 0. | Optional | 
-| to | To which signature to return results. Default is from plus 10. | Optional | 
-
+| signature_name | The signature name to search. | Required |
+| from | From which signature to return results. Default is 0. | Optional |
+| to | To which signature to return results. Default is from plus 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.Search.search_request_id | String | The ID that was searched. | 
-| ThreatVault.Search.status | String | The status of the search. | 
-
+| ThreatVault.Search.search_request_id | String | The ID that was searched. |
+| ThreatVault.Search.status | String | The status of the search. |
 
 #### Command Example
+
 ```!threatvault-antivirus-signature-search signature_name=Worm/Win32.autorun.crck```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -470,42 +480,43 @@ Initiates an antivirus signature search.
 
 #### Human Readable Output
 
->### Antivirus Signature Search:
+>### Antivirus Signature Search
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5d10d1f1-2191-11eb-8c3b-396ee8360b80 | panav | submitted | 10 |
 
-
 ### threatvault-dns-signature-search
+
 ***
 Initiates a DNS signature search.
-
 
 #### Base Command
 
 `threatvault-dns-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signature_name | The signature name to search. | Optional | 
-| domain_name | The domain name to search. | Optional | 
-| from | From which signature to return results. Default is 0. | Optional | 
-| to | To which signature to return results. Default is from plus 10. | Optional | 
-
+| signature_name | The signature name to search. | Optional |
+| domain_name | The domain name to search. | Optional |
+| from | From which signature to return results. Default is 0. | Optional |
+| to | To which signature to return results. Default is from plus 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.Search.search_request_id | String | The ID to search. | 
-| ThreatVault.Search.status | String | The status of the search. | 
-
+| ThreatVault.Search.search_request_id | String | The ID to search. |
+| ThreatVault.Search.status | String | The status of the search. |
 
 #### Command Example
+
 ```!threatvault-dns-signature-search domain_name=google.com```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -522,43 +533,44 @@ Initiates a DNS signature search.
 
 #### Human Readable Output
 
->### DNS Signature Search:
+>### DNS Signature Search
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5a2e4b67-2191-11eb-aaa0-476a91ad21a0 | dns | submitted | 10 |
 
-
 ### threatvault-antispyware-signature-search
+
 ***
 Initiates an antispyware signature search.
-
 
 #### Base Command
 
 `threatvault-antispyware-signature-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| signature_name | The signature name to search. | Optional | 
-| vendor | The vendor name to search. | Optional | 
-| cve | The CVE name to search. | Optional | 
-| from | From which signature to return results. Default is 0. | Optional | 
-| to | To which signature to return results. Default is from plus 10. | Optional | 
-
+| signature_name | The signature name to search. | Optional |
+| vendor | The vendor name to search. | Optional |
+| cve | The CVE name to search. | Optional |
+| from | From which signature to return results. Default is 0. | Optional |
+| to | To which signature to return results. Default is from plus 10. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.Search.search_request_id | String | The ID to search. | 
-| ThreatVault.Search.status | String | The status of the search. | 
-
+| ThreatVault.Search.search_request_id | String | The ID to search. |
+| ThreatVault.Search.status | String | The status of the search. |
 
 #### Command Example
+
 ```!threatvault-antispyware-signature-search cve=CVE-2015-8650```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -575,44 +587,45 @@ Initiates an antispyware signature search.
 
 #### Human Readable Output
 
->### Anti Spyware Signature Search:
+>### Anti Spyware Signature Search
+>
 >|from|search_request_id|search_type|status|to|
 >|---|---|---|---|---|
 >| 0 | 5bb4285c-2191-11eb-b288-43f099eed11d | ips | submitted | 10 |
 
-
 ### threatvault-signature-search-results
+
 ***
 Initiates an antispyware signature search.
-
 
 #### Base Command
 
 `threatvault-signature-search-results`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search_request_id | The ID to search. | Required | 
-| search_type | Search type. "ips" for antispyware, "dns" for DNS, and "panav" for antivirus. | Required | 
-
+| search_request_id | The ID to search. | Required |
+| search_type | Search type. "ips" for antispyware, "dns" for DNS, and "panav" for antivirus. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatVault.Search.search_request_id | String | The ID that was searched. | 
-| ThreatVault.Search.status | String | The status of the search. | 
-| ThreatVault.Search.page_count | Number | The number of results returned in this specific search. | 
-| ThreatVault.Search.total_count | Number | The number of results available for this specific search. | 
-| ThreatVault.Search.search_type | String | The search type. Can be either "ips", "dns". or "panav". | 
-| ThreatVault.Searchf.signatures | Unknown | A list of all the signatures found for this specific search. | 
-
+| ThreatVault.Search.search_request_id | String | The ID that was searched. |
+| ThreatVault.Search.status | String | The status of the search. |
+| ThreatVault.Search.page_count | Number | The number of results returned in this specific search. |
+| ThreatVault.Search.total_count | Number | The number of results available for this specific search. |
+| ThreatVault.Search.search_type | String | The search type. Can be either "ips", "dns". or "panav". |
+| ThreatVault.Searchf.signatures | Unknown | A list of all the signatures found for this specific search. |
 
 #### Command Example
+
 ```!threatvault-signature-search-results search_type=dns search_request_id=8e9e2289-218f-11eb-b876-aba382af19b4```
 
 #### Context Example
+
 ```json
 {
     "ThreatVault": {
@@ -818,7 +831,8 @@ Initiates an antispyware signature search.
 
 #### Human Readable Output
 
->### Signature search are showing 10 of 5385 results:
+>### Signature search are showing 10 of 5385 results
+>
 >|signatureId|signatureName|domainName|category|
 >|---|---|---|---|
 >| 44101494 | generic:mail-google.com.co | `mail-google.com.co` | malware |

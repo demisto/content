@@ -45,4 +45,5 @@ Manual command to fetch events and display them.
 There is no context output for this command.
 
 ## Additional information
+
 - The Duo eventing system is not real-time. It takes a few minutes for the events to be indexed and available for an API call due to consolidation. As a result the parameter "End of the fetch window" to adjust XSIAM to Duo's delay was added.

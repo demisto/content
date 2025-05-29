@@ -9,7 +9,6 @@ Sends an invitation to join Cortex XSOAR.
 | Script Type | javascript |
 | Tags | DemistoAPI |
 
-
 ## Dependencies
 
 ---

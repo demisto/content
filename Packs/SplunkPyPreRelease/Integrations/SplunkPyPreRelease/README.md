@@ -9,6 +9,7 @@ This integration was integrated and tested with Splunk v7.2.
 ## Use Cases
 
 ---
+
 - Query Splunk for events.
 - Create a new event in Splunk.
 - Get results of a search that was executed in Splunk.
@@ -259,7 +260,7 @@ Searches Splunk for events.
 | latest_time | Specifies the latest time in the time range to search. The time string can be a UTC time (with fractional seconds), a relative time specifier (to now), or a formatted time string. For example: "2014-06-19T12:00:00.000-07:00" or "-3d" (for 3 days ago). | Optional |
 | event_limit | The maximum number of events to return. The default is 100. If "0" is selected, all results are returned. | Optional |
 | app | The string that contains the application namespace in which to restrict searches. | Optional|
-| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional | 
+| batch_limit | The maximum number of returned results to process at a time. For example, if 100 results are returned, and you specify a `batch_limit` of 10, the results will be processed 10 at a time over 10 iterations. This does not affect the search or the context and outputs returned. In some cases, specifying a `batch_size` enhances search performance. If you think that the search execution is suboptimal, it is  recommended to try several `batch_size` values to determine which works best for your search. The default is 25,000. | Optional |
 | update_context | Determines whether the results will be entered into the context. | Optional |
 
 ##### Context Output
@@ -392,9 +393,9 @@ Creates a new search job in Splunk.
 
 ```!splunk-job-create query="index=* | head 3"```
 
-##### Context Example 
+##### Context Example
 
-``` 
+```
 {
     "Splunk.Job": "1566221733.1628"
 }

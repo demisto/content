@@ -1,6 +1,7 @@
 Generates and prints a report in markdown format containing useful suggestions for the Analyst to attribute an Expanse Issue to an owner.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Generates and prints a report in markdown format containing useful suggestions f
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -30,5 +32,6 @@ Generates and prints a report in markdown format containing useful suggestions f
 | expanse_business_units | List of Expanse Business Units. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
