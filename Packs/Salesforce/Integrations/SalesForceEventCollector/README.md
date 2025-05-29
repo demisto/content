@@ -2,7 +2,6 @@ Deprecated. Use XSIAM/XDR Salesforce integration instead.
 
 ## Configure Salesforce Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -15,7 +14,6 @@ Deprecated. Use XSIAM/XDR Salesforce integration instead.
 | First fetch time interval |  | False |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
-
 
 ## Commands
 
@@ -35,8 +33,8 @@ Manual command to fetch events.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| files_limit | The maximum number of log files to fetch. Default is 1. | Optional | 
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| files_limit | The maximum number of log files to fetch. Default is 1. | Optional |
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
 
 #### Context Output
 

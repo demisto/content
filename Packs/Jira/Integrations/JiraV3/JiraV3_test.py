@@ -2750,7 +2750,7 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import parse_issue_times_for_next_run
 
-        parsed_created_time, parsed_updated_time  = parse_issue_times_for_next_run(
+        parsed_created_time, parsed_updated_time = parse_issue_times_for_next_run(
             issue_id=1234,
             issue_created_time="2025-03-14T06:54:33.000-0700",
             issue_updated_time="2025-03-14T07:59:09.000-0700",
@@ -2819,14 +2819,15 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch("JiraV3.demisto.getLastRun",
+        mocker.patch(
+            "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": [1],
                 "id": 1,
                 "created_date": "2023-12-11 21:04",
                 "updated_date": "2023-12-12 22:08",
                 "convert_timezone": True,
-            }
+            },
         )
         get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC-4")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})

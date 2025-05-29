@@ -14,11 +14,7 @@ from typing import Any
 import tabulate
 from utils import get_logger
 
-from github import (
-    Github,
-    RateLimitExceededException,
-    GithubException
-)
+from github import Github, RateLimitExceededException, GithubException
 import github
 import github.Requester
 
@@ -67,6 +63,7 @@ DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE = """mutation deleteBranchProtectio
 
 # Helper Functions
 
+
 def get_repo_owner_and_name() -> tuple[str, str]:
     """
     Extracts the repository owner and name from a given repository string.
@@ -83,7 +80,7 @@ def get_repo_owner_and_name() -> tuple[str, str]:
     if not repo:
         raise OSError(f"Environmental variable '{GH_REPO_ENV_VAR}' not set.")
 
-    parts = repo.split('/')
+    parts = repo.split("/")
 
     if len(parts) != 2:
         raise ValueError("Input string must be in the format 'owner/repository'.")
@@ -110,11 +107,11 @@ def convert_response_to_rules(response: dict[str, Any]) -> list[BranchProtection
     rules: list[BranchProtectionRule] = []
 
     try:
-        for node in response.get('data', {}).get('repository').get('branchProtectionRules').get('nodes'):
+        for node in response.get("data", {}).get("repository").get("branchProtectionRules").get("nodes"):
             rule = BranchProtectionRule(
                 id=node.get("id"),
                 pattern=node.get("pattern"),  # ignore: type
-                matching_refs=node.get("matchingRefs").get("totalCount")
+                matching_refs=node.get("matchingRefs").get("totalCount"),
             )
 
             rules.append(rule)
@@ -171,11 +168,7 @@ def write_deleted_summary_to_file(processed: list[BranchProtectionRule]) -> None
             headers = ["ID", "Pattern", "Matching Refs", "Deleted", "Error"]
             table_rows = [[rule.id, rule.pattern, rule.matching_refs, rule.deleted, rule.error] for rule in processed]
 
-            table_body = tabulate.tabulate(
-                tabular_data=table_rows,
-                headers=headers,
-                tablefmt='github'
-            )
+            table_body = tabulate.tabulate(tabular_data=table_rows, headers=headers, tablefmt="github")
             markdown_content = f"{header}\n\n{table_body}\n"
 
         logger.debug(f"Writing deleted jobs summary to Markdown to file '{fp}'...")
@@ -184,7 +177,8 @@ def write_deleted_summary_to_file(processed: list[BranchProtectionRule]) -> None
         logger.debug("Finished writing jobs summary to Markdown to file")
     else:
         logger.info(
-            f"Environmental variable '{GH_JOB_SUMMARY_ENV_VAR}' not set. Skipping writing job summary for deleted rules...")
+            f"Environmental variable '{GH_JOB_SUMMARY_ENV_VAR}' not set. Skipping writing job summary for deleted rules..."
+        )
 
 
 def get_token():
@@ -222,8 +216,7 @@ def send_request(gh_requester: github.Requester.Requester, query: str, variables
     logger.debug(f"Sending GraphQL request...\n{query=}\n{variables=}\n")
 
     response_headers, response_data = gh_requester.graphql_query(  # type:ignore[attr-defined]
-        query=query,
-        variables=variables
+        query=query, variables=variables
     )
 
     logger.debug(f"Response received:\n{response_data=}\n{response_headers=}")
@@ -233,8 +226,7 @@ def send_request(gh_requester: github.Requester.Requester, query: str, variables
 
 # API Functions
 def purge_branch_protection_rules(
-    gh_requester: github.Requester.Requester,
-    rules: list[BranchProtectionRule]
+    gh_requester: github.Requester.Requester, rules: list[BranchProtectionRule]
 ) -> list[BranchProtectionRule]:
     """
     Delete all branch protection rules except for the ones
@@ -254,16 +246,13 @@ def purge_branch_protection_rules(
 
     num_of_rules = len(rules)
     for i, rule in enumerate(rules, start=1):
-
         progress = f"({i}/{num_of_rules})"
         msg = shouldnt_delete_rule(rule)
         if not msg:
             logger.info(f"{progress} Deleting {rule}...")
 
             query = DELETE_BRANCH_PROTECTION_RULE_QUERY_TEMPLATE
-            variables = {
-                "branchProtectionRuleId": rule.id
-            }
+            variables = {"branchProtectionRuleId": rule.id}
             try:
                 send_request(gh_requester, query, variables)
                 rule.deleted = True
@@ -284,9 +273,7 @@ def purge_branch_protection_rules(
 
 
 def get_branch_protection_rules(
-    gh_requester: github.Requester.Requester,
-    owner: str,
-    repo_name: str
+    gh_requester: github.Requester.Requester, owner: str, repo_name: str
 ) -> list[BranchProtectionRule]:
     """
     Retrieve all branch protection rules. The API limits us to getting
@@ -306,7 +293,7 @@ def get_branch_protection_rules(
     data = send_request(
         gh_requester=gh_requester,
         query=GET_BRANCH_PROTECTION_GRAPHQL_QUERY_TEMPLATE,
-        variables={"owner": owner, "name": repo_name}
+        variables={"owner": owner, "name": repo_name},
     )
 
     logger.debug("Converting response to BranchProtectionRules...")
@@ -316,6 +303,7 @@ def get_branch_protection_rules(
 
 
 # Entrypoint
+
 
 def main():
     """
@@ -344,11 +332,7 @@ def main():
         requester: github.Requester.Requester = gh_client._Github__requester  # type:ignore[attr-defined]
 
         logger.info("Sending request to get protection rules...")
-        existing_rules = get_branch_protection_rules(
-            requester,
-            owner,
-            repo_name
-        )
+        existing_rules = get_branch_protection_rules(requester, owner, repo_name)
         logger.info(f"{len(existing_rules)} rules returned.")
         logger.debug(f"{existing_rules=}")
 

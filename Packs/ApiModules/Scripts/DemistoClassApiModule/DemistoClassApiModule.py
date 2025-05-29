@@ -3,10 +3,11 @@ import sys
 
 if sys.version_info[0] >= 3:
     try:
+
         class DemistoWrapper(Demisto):  # type:ignore  [name-defined] # noqa: F821 # pylint: disable=E0602
             """A content-side wrapper to the builtin Demisto class.
             All methods of this class can be executed in both scripts and integrations
-            (E.g., self.results). """
+            (E.g., self.results)."""
 
         class DemistoScript(DemistoWrapper):
             def getFilePath(self, id):
@@ -19,9 +20,9 @@ if sys.version_info[0] >= 3:
                     self.debug("[fetch-incidents] Creating {} incidents".format(len(incidents)))
                 super(DemistoIntegration, self).incidents(incidents)
 
-        if demisto.callingContext.get('context', {}).get('IntegrationBrand'):
+        if demisto.callingContext.get("context", {}).get("IntegrationBrand"):
             demisto.__class__ = DemistoIntegration
-        elif demisto.callingContext.get('context', {}).get('ScriptName'):
+        elif demisto.callingContext.get("context", {}).get("ScriptName"):
             demisto.__class__ = DemistoScript
 
     except NameError:

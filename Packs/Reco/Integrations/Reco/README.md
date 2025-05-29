@@ -454,14 +454,14 @@ Get all assets from Reco by id
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Reco.SensitiveAssets.file_name | String | The name of the asset | 
-| Reco.SensitiveAssets.file_owner | String | The owner of the asset | 
-| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name | 
-| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users | 
-| Reco.SensitiveAssets.visibility | String | Visibility of the asset | 
-| Reco.SensitiveAssets.location | String | The path of the asset | 
-| Reco.SensitiveAssets.source | String | SaaS tool source of the asset | 
-| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset | 
+| Reco.SensitiveAssets.file_name | String | The name of the asset |
+| Reco.SensitiveAssets.file_owner | String | The owner of the asset |
+| Reco.SensitiveAssets.file_url | Unknown | Json string of the asset's url and the name |
+| Reco.SensitiveAssets.currently_permitted_users | String | List of currently permitted users |
+| Reco.SensitiveAssets.visibility | String | Visibility of the asset |
+| Reco.SensitiveAssets.location | String | The path of the asset |
+| Reco.SensitiveAssets.source | String | SaaS tool source of the asset |
+| Reco.SensitiveAssets.sensitivity_level | Number | The sensitivity level of the asset |
 
 ### reco-get-alert-ai-summary
 

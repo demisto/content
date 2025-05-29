@@ -182,7 +182,7 @@ def get_token_from_response(resp):
     if resp.get("token"):
         return resp.get("token")
     else:
-        return_error(f"No token: {resp}")     # noqa: RET503
+        return_error(f"No token: {resp}")  # noqa: RET503
 
 
 def choose_columns(column_arg, default_list):
@@ -213,9 +213,7 @@ def build_client_xml(data):
 
 
 def get_command_status_details(token, command_id):
-    xml = build_command_xml(
-        f"<com:getCommandStatusDetails><commandID>{command_id}</commandID></com:getCommandStatusDetails>"
-    )
+    xml = build_command_xml(f"<com:getCommandStatusDetails><commandID>{command_id}</commandID></com:getCommandStatusDetails>")
     res_json = do_post(token, True, "sepm/ws/v1/CommandService", xml)
     return res_json
 
@@ -373,7 +371,7 @@ def sanitize_policies_list_for_md(policies_list):
 
 
 def sanitize_policies_list(policies_list):
-    return list(     # noqa: C417
+    return list(  # noqa: C417
         map(
             lambda policy: {
                 "PolicyName": policy["name"],
@@ -387,7 +385,7 @@ def sanitize_policies_list(policies_list):
                         policy.get("assignedtolocations") if policy.get("assignedtolocations") else [],
                     )
                 ),
-                "AssignedCloudGroups": list(    # noqa: C417
+                "AssignedCloudGroups": list(  # noqa: C417
                     map(
                         lambda location: {"GroupID": location.get("groupId"), "Locations": location.get("locationIds")},
                         policy.get("assignedtocloudgroups") if policy.get("assignedtocloudgroups") else [],
@@ -697,9 +695,7 @@ def assign_policie_command(token):
     locatoion_id = demisto.getArg("locationID")
     policy_type = demisto.getArg("policyType").lower()
     policy_id = demisto.getArg("policyID")
-    do_put(
-        token, f"sepm/api/v1/groups/{group_id}/locations/{locatoion_id}/policies/{policy_type}", {"id": policy_id}
-    )
+    do_put(token, f"sepm/api/v1/groups/{group_id}/locations/{locatoion_id}/policies/{policy_type}", {"id": policy_id})
     md = f"### Policy: {policy_id}, of type: {policy_type}, was assigned to location: {locatoion_id}, in group: {group_id}"
     demisto.results(
         {"Type": entryTypes["note"], "ContentsFormat": formats["json"], "Contents": "", "HumanReadable": md, "EntryContext": {}}
@@ -715,7 +711,8 @@ def list_locations_command(token):
             "ContentsFormat": formats["json"],
             "Contents": url_resp,
             "HumanReadable": tableToMarkdown(
-                "Locations", list(map(lambda location: {"Location ID": location.get("ID")}, location_ids))  # noqa: C417
+                "Locations",
+                list(map(lambda location: {"Location ID": location.get("ID")}, location_ids)),  # noqa: C417
             ),
             "IgnoreAutoExtract": True,
             "EntryContext": {"SEPM.Locations": location_ids},

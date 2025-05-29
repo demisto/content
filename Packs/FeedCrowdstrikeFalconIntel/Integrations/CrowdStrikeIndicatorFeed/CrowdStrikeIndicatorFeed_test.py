@@ -404,8 +404,9 @@ def test_get_actors_names_request_called_with(mocker, requests_mock):
         crowdstrike_client, "_http_request", return_value={"resources": {"name": "TEST TEST"}}
     )
     crowdstrike_client.get_actors_names_request(params_string="ids=123&fields=name")
-    http_request_mock.assert_called_once_with(method="GET", url_suffix="intel/entities/actors/v1?ids=123&fields=name",
-                                              timeout=30, ok_codes=(200, 401))
+    http_request_mock.assert_called_once_with(
+        method="GET", url_suffix="intel/entities/actors/v1?ids=123&fields=name", timeout=30, ok_codes=(200, 401)
+    )
 
 
 def test_crowdstrike_indicators_list_command_check_actors_convert(mocker, requests_mock):
@@ -477,7 +478,7 @@ def test_change_actors_from_id_to_name(mocker, requests_mock):
 
 
 # This function will alternate the response each time it's called
-def mock_alternate_response(request,context):
+def mock_alternate_response(request, context):
     # Track the number of times the post request has been called
     if not hasattr(mock_alternate_response, "call_count"):
         mock_alternate_response.call_count = 0
@@ -486,11 +487,12 @@ def mock_alternate_response(request,context):
     if mock_alternate_response.call_count == 1:
         # First call: Return 401 Unauthorized
         context.status_code = 401
-        return {'errors': [{'code': 401, 'message': 'access denied, authorization failed'}]}
+        return {"errors": [{"code": 401, "message": "access denied, authorization failed"}]}
     else:
         # Second call: Return 200 OK with the access token
         context.status_code = 200
-        return {'resources': []}
+        return {"resources": []}
+
 
 def test_fetch_no_indicators_regenerate_token(requests_mock):
     """
@@ -517,6 +519,7 @@ def test_fetch_no_indicators_regenerate_token(requests_mock):
     )
 
     assert client.fetch_indicators(limit=10, offset=5, fetch_command=True) == []
+
 
 def test_get_actors_names_request_regenerate_token(requests_mock):
     """

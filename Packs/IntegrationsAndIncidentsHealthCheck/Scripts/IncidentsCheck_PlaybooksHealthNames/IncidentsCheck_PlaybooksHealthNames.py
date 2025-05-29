@@ -32,7 +32,7 @@ def parse_data(playbook_names):
                 playbook_number += 1
 
         return {"Type": 17, "ContentsFormat": "bar", "Contents": {"stats": playbooks_data, "params": {"layout": "horizontal"}}}
-    return {}   # pragma: no cover
+    return {}  # pragma: no cover
 
 
 def main():

@@ -17,8 +17,7 @@ This integration was integrated and tested with version 1.0 of Group-IB Threat I
 | Number of requests per collection | A number of requests per collection that integration sends in one faetch iteration \(each request picks up to 200 incidents\). If you face some runtime errors, lower the value. | False |
 | Hunting Rules | To enable the collection of data using hunting rules, please select this parameter. | False |
 
-
-## Note:
+## Note
 
 Requests to the following collections come with the Hunting Rules parameter by default: `osi/git_repository, osi/public_leak, compromised/breached`
 
@@ -241,7 +240,6 @@ Command performs Group IB event lookup in compromised/account collection with pr
 >|asn|geocountry|geolocation|gibid|severity|value|
 >|---|---|---|---|---|---|
 >| AS1111 | Russian Federation | Moscow | 253b9a136f0d574149fc43691eaf7ae27aff141a | red | 11.11.11.11 |
-
 
 ### gibtia-get-compromised-breached-info
 
@@ -501,7 +499,6 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 >|gibid|severity|value|
 >|---|---|---|
 >| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | 11.11.11.11 |
-
 
 ### gibtia-get-osi-git-leak-info
 
@@ -890,7 +887,6 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 >|os|osVendor|osVersion|vendor|
 >|---|---|---|---|
 >| some_firmware | some | some | some |
-
 
 ### gibtia-get-attacks-ddos-info
 
@@ -1865,7 +1861,6 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
 >|asn|geocountry|gibid|severity|value|
 >|---|---|---|---|---|
 >| AS11111 | Lebanon | 02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e | green | 11.11.11.11 |
-
 
 ### gibtia-get-malware-cnc-info
 

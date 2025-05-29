@@ -22,7 +22,7 @@ from utils import (
     get_content_reviewers,
     get_support_level,
     get_content_roles,
-    get_metadata
+    get_metadata,
 )
 from demisto_sdk.commands.common.tools import get_pack_name
 from urllib3.exceptions import InsecureRequestWarning
@@ -30,23 +30,27 @@ from urllib3.exceptions import InsecureRequestWarning
 urllib3.disable_warnings(InsecureRequestWarning)
 print = timestamped_print
 
-MARKETPLACE_CONTRIBUTION_PR_AUTHOR = 'xsoar-bot'
-WELCOME_MSG = 'Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content ' \
-              'wizard @{selected_reviewer} will very shortly look over your proposed changes.\n' \
-              'For your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) to the contributions ' \
-              'SLAs document.'
+MARKETPLACE_CONTRIBUTION_PR_AUTHOR = "xsoar-bot"
+WELCOME_MSG = (
+    "Thank you for your contribution. Your generosity and caring are unrivaled! Rest assured - our content "
+    "wizard @{selected_reviewer} will very shortly look over your proposed changes.\n"
+    "For your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) to the contributions "
+    "SLAs document."
+)
 
-WELCOME_MSG_WITH_GFORM = 'Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to ' \
-                         'register your contribution by filling the [Contribution Registration]' \
-                         '(https://forms.gle/XDfxU4E61ZwEESSMA) form, ' \
-                         'so our content wizard @{selected_reviewer} will know the proposed changes are ready to be ' \
-                         'reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) ' \
-                         'to the contributions SLAs document.'
+WELCOME_MSG_WITH_GFORM = (
+    "Thank you for your contribution. Your generosity and caring are unrivaled! Make sure to "
+    "register your contribution by filling the [Contribution Registration]"
+    "(https://forms.gle/XDfxU4E61ZwEESSMA) form, "
+    "so our content wizard @{selected_reviewer} will know the proposed changes are ready to be "
+    "reviewed.\nFor your convenience, here is a [link](https://xsoar.pan.dev/docs/contributing/sla) "
+    "to the contributions SLAs document."
+)
 
-XSOAR_SUPPORT_LEVEL_LABEL = 'Xsoar Support Level'
-PARTNER_SUPPORT_LEVEL_LABEL = 'Partner Support Level'
-COMMUNITY_SUPPORT_LEVEL_LABEL = 'Community Support Level'
-CONTRIBUTION_LABEL = 'Contribution'
+XSOAR_SUPPORT_LEVEL_LABEL = "Xsoar Support Level"
+PARTNER_SUPPORT_LEVEL_LABEL = "Partner Support Level"
+COMMUNITY_SUPPORT_LEVEL_LABEL = "Community Support Level"
+CONTRIBUTION_LABEL = "Contribution"
 EXTERNAL_LABEL = "External PR"
 SECURITY_LABEL = "Security Review"
 TIM_LABEL = "TIM Review"
@@ -62,28 +66,28 @@ SECURITY_CONTENT_ITEMS = [
     "Classifiers",
     "Wizards",
     "Dashboards",
-    "Triggers"
+    "Triggers",
 ]
-PR_AUTHOR_PATTERN = '## Contributor\n@(.*)'
-LABELS_TO_SKIP_PR_REVIEW = {'contribution on hold'}
+PR_AUTHOR_PATTERN = "## Contributor\n@(.*)"
+LABELS_TO_SKIP_PR_REVIEW = {"contribution on hold"}
 
 
 def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
     """Check if there is more than one reviewer with the lowest number of assigned contribution PRs.
-        If yes, choose one randomly.
-        If no, choose the one with the lowest number of assigned contribution PRs.
+    If yes, choose one randomly.
+    If no, choose the one with the lowest number of assigned contribution PRs.
 
-        Args:
-            assigned_prs_per_potential_reviewer (dict): A dict of the reviewers and the amount of assigned PRs each has.
-            an example of this dictionary:
-            {
-                'reviewer1': 1,
-                'reviewer2': 2,
-                'reviewer3': 3,
-            }
+    Args:
+        assigned_prs_per_potential_reviewer (dict): A dict of the reviewers and the amount of assigned PRs each has.
+        an example of this dictionary:
+        {
+            'reviewer1': 1,
+            'reviewer2': 2,
+            'reviewer3': 3,
+        }
 
-        Returns:
-            int: The location of the chosen assignee in the sorted array.
+    Returns:
+        int: The location of the chosen assignee in the sorted array.
     """
     values = sorted([assigned_prs_per_potential_reviewer[key] for key in assigned_prs_per_potential_reviewer])
     while len(values) > 1:
@@ -95,19 +99,19 @@ def get_location_of_reviewer(assigned_prs_per_potential_reviewer: dict) -> int:
 
 
 def skip_pr_from_count_for_reviewer(pr: PullRequest, pr_labels: list[str]) -> bool:
-    """ Checks if the current PR has the label "contribution on hold" or pr is in draft state,
-        if so - the PR won't be counted for the PR count to determine reviewer
+    """Checks if the current PR has the label "contribution on hold" or pr is in draft state,
+    if so - the PR won't be counted for the PR count to determine reviewer
 
-        Args:
-            pr (PullRequest): The PR
-            pr_labels (list): The PR labels
+    Args:
+        pr (PullRequest): The PR
+        pr_labels (list): The PR labels
 
-        Returns:
-            bool: if PR need to be skipped
+    Returns:
+        bool: if PR need to be skipped
     """
     pr_labels_set = set(pr_labels)
     if pr.draft or LABELS_TO_SKIP_PR_REVIEW.issubset(pr_labels_set):
-        print(f'PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ')
+        print(f"PR number {pr.number} with draft status {pr.draft} and labels {pr_labels_set} will be skipped from count ")
         return True
     return False
 
@@ -125,10 +129,10 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
         str: The github username to assign to a PR
     """
     if len(potential_reviewers) == 1:
-        print(f'There is only 1 potential reviewer {potential_reviewers}')
+        print(f"There is only 1 potential reviewer {potential_reviewers}")
         return potential_reviewers[0]
-    label_to_consider = 'contribution'
-    pulls = repo.get_pulls(state='OPEN')
+    label_to_consider = "contribution"
+    pulls = repo.get_pulls(state="OPEN")
     assigned_prs_per_potential_reviewer = {reviewer: 0 for reviewer in potential_reviewers}
     for pull in pulls:
         # we only consider 'Contribution' prs when computing who to assign
@@ -139,12 +143,11 @@ def determine_random_reviewer(potential_reviewers: list[str], repo: Repository) 
         for reviewer in potential_reviewers:
             if reviewer in assignees:
                 assigned_prs_per_potential_reviewer[reviewer] = assigned_prs_per_potential_reviewer.get(reviewer, 0) + 1
-    print(f'{assigned_prs_per_potential_reviewer=}')
+    print(f"{assigned_prs_per_potential_reviewer=}")
     n = get_location_of_reviewer(assigned_prs_per_potential_reviewer)
-    print(f'the chosen location in the sorted array is: {n}')
-    selected_reviewer = sorted(assigned_prs_per_potential_reviewer,
-                               key=assigned_prs_per_potential_reviewer.get)[n]  # type: ignore
-    print(f'{selected_reviewer=}')
+    print(f"the chosen location in the sorted array is: {n}")
+    selected_reviewer = sorted(assigned_prs_per_potential_reviewer, key=assigned_prs_per_potential_reviewer.get)[n]  # type: ignore
+    print(f"{selected_reviewer=}")
     return selected_reviewer
 
 
@@ -161,17 +164,18 @@ def packs_to_check_in_pr(file_paths: list[str]) -> set:
 
     for file_path in file_paths:
         try:
-            if 'Packs' in file_path and (pack_name := get_pack_name(file_path)):
-                pack_dirs_to_check.add(f'Packs/{pack_name}')
+            if "Packs" in file_path and (pack_name := get_pack_name(file_path)):
+                pack_dirs_to_check.add(f"Packs/{pack_name}")
         except Exception as err:
-            print(f'Could not retrieve pack name from file {file_path}, {err=}')
+            print(f"Could not retrieve pack name from file {file_path}, {err=}")
 
-    print(f'{pack_dirs_to_check=}')
+    print(f"{pack_dirs_to_check=}")
     return pack_dirs_to_check
 
 
-def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str, remote_fork_owner: str,
-                                  repo_name: str = 'content') -> str:
+def get_packs_support_level_label(
+    file_paths: list[str], external_pr_branch: str, remote_fork_owner: str, repo_name: str = "content"
+) -> str:
     """
     Get The contributions' support level label.
 
@@ -194,32 +198,32 @@ def get_packs_support_level_label(file_paths: list[str], external_pr_branch: str
         highest support level of the packs that were changed, empty string in case no packs were changed.
     """
     pack_dirs_to_check_support_levels_labels = packs_to_check_in_pr(file_paths)
-    print(f'{pack_dirs_to_check_support_levels_labels=}')
+    print(f"{pack_dirs_to_check_support_levels_labels=}")
 
     # # we need to check out to the contributor branch in his forked repo in order to retrieve the files cause workflow
     # runs on demisto master while the contributions changes are on the contributors branch
     print(
-        f'Trying to checkout to forked branch {external_pr_branch} '
-        f'to retrieve support level of {pack_dirs_to_check_support_levels_labels}'
+        f"Trying to checkout to forked branch {external_pr_branch} "
+        f"to retrieve support level of {pack_dirs_to_check_support_levels_labels}"
     )
     try:
         with Checkout(
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=remote_fork_owner if remote_fork_owner != 'xsoar-bot' else 'xsoar-contrib',
-            repo_name=repo_name
+            fork_owner=remote_fork_owner if remote_fork_owner != "xsoar-bot" else "xsoar-contrib",
+            repo_name=repo_name,
         ):
             packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
     except Exception as error:
         # in case we were not able to checkout correctly, fallback to the files in the master branch to retrieve support labels
         # in case those files exist.
-        print(f'Received error when trying to checkout to {external_pr_branch} \n{error=}')
-        print('Trying to retrieve support levels from the master branch')
+        print(f"Received error when trying to checkout to {external_pr_branch} \n{error=}")
+        print("Trying to retrieve support levels from the master branch")
         packs_support_levels = get_support_level(pack_dirs_to_check_support_levels_labels)
 
-    print(f'{packs_support_levels=}')
-    return get_highest_support_label(packs_support_levels) if packs_support_levels else ''
+    print(f"{packs_support_levels=}")
+    return get_highest_support_label(packs_support_levels) if packs_support_levels else ""
 
 
 def get_highest_support_label(packs_support_levels: set[str]) -> str:
@@ -230,9 +234,9 @@ def get_highest_support_label(packs_support_levels: set[str]) -> str:
     partner - support level of review for partner packs.
     community - usually an individual contributor, lowest support level possible.
     """
-    if 'xsoar' in packs_support_levels:
+    if "xsoar" in packs_support_levels:
         return XSOAR_SUPPORT_LEVEL_LABEL
-    elif 'partner' in packs_support_levels:
+    elif "partner" in packs_support_levels:
         return PARTNER_SUPPORT_LEVEL_LABEL
     else:
         return COMMUNITY_SUPPORT_LEVEL_LABEL
@@ -297,11 +301,11 @@ def check_files_of_pr_manually(pr_files: list[str]) -> bool:
         if "yml" in file and "Integrations" in file:
             content_yml = get_yaml(file_path=file)
             is_feed = content_yml.get("script").get("feed", "False")
-            print(f'Is it a feed: {is_feed}')
+            print(f"Is it a feed: {is_feed}")
             if is_feed:
                 return True
     for pack_metadata in pack_metadata_list:
-        print(f'the metadata is: {pack_metadata}')
+        print(f"the metadata is: {pack_metadata}")
         tags = pack_metadata.get("tags")
         categories = pack_metadata.get("categories")
         if TIM_TAGS in tags or TIM_CATEGORIES in categories:  # type: ignore
@@ -328,11 +332,11 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_own
             repo=Repo(Path().cwd(), search_parent_directories=True),
             branch_to_checkout=external_pr_branch,
             # in marketplace contributions the name of the owner should be xsoar-contrib
-            fork_owner=remote_fork_owner if remote_fork_owner != 'xsoar-bot' else 'xsoar-contrib',
-            repo_name=repo_name
+            fork_owner=remote_fork_owner if remote_fork_owner != "xsoar-bot" else "xsoar-contrib",
+            repo_name=repo_name,
         ):
             for file in pr_files:
-                if 'CONTRIBUTORS.json' in file or 'Author_image' in file or 'README.md' in file or ".pack-ignore" in file:
+                if "CONTRIBUTORS.json" in file or "Author_image" in file or "README.md" in file or ".pack-ignore" in file:
                     continue
                 content_object = BaseContent.from_path(CONTENT_PATH / file)
                 is_tim_needed = check_if_item_is_tim(content_object)
@@ -345,8 +349,9 @@ def is_tim_content(pr_files: list[str], external_pr_branch: str, remote_fork_own
     return False
 
 
-def is_tim_reviewer_needed(pr_files: list[str], support_label: str, external_pr_branch: str,
-                           remote_fork_owner: str, repo_name: str) -> bool:
+def is_tim_reviewer_needed(
+    pr_files: list[str], support_label: str, external_pr_branch: str, remote_fork_owner: str, repo_name: str
+) -> bool:
     """
     Checks whether the PR need to be reviewed by a TIM reviewer.
     It check the yml file of the integration - if it has the feed: True
@@ -394,7 +399,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
     Returns:
     - list of all open PR's with similar author as the current PR
     """
-    print(f'PR author is: {pr_creator}')
+    print(f"PR author is: {pr_creator}")
     all_prs = content_repo.get_pulls()
     similar_prs = []
     for pr in all_prs:
@@ -403,7 +408,7 @@ def find_all_open_prs_by_user(content_repo: Repository, pr_creator: str, pr_numb
         existing_pr_author = get_user_from_pr_body(pr) if pr.user.login in ["xsoar-bot", "content-bot"] else pr.user.login
         if existing_pr_author == pr_creator:
             similar_prs.append(pr)
-    print(f'PR\'s by the same author: {similar_prs}')
+    print(f"PR's by the same author: {similar_prs}")
     return similar_prs
 
 
@@ -420,14 +425,14 @@ def reviewer_of_prs_from_current_round(other_prs_by_same_user: list, content_rev
     """
     content_reviewers_set = set(content_reviewers)
     for pr in other_prs_by_same_user:
-        print(f'the requested assignees are : {pr.assignees}')
+        print(f"the requested assignees are : {pr.assignees}")
         assignee_names = {assignee.login for assignee in pr.assignees}
         existing_reviewer = content_reviewers_set.intersection(assignee_names)
         if existing_reviewer:
             return existing_reviewer.pop()
         else:
             print("There are other PR's by same author, but their reviewer is not in the current contribution round")
-    return ''
+    return ""
 
 
 def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number: str, content_reviewers: list[str]) -> str:
@@ -451,12 +456,12 @@ def find_reviewer_to_assign(content_repo: Repository, pr: PullRequest, pr_number
 
     reviewer_to_assign = reviewer_of_prs_from_current_round(other_prs_by_same_user, content_reviewers)
     if reviewer_to_assign:
-        print(f'The reviewer from other PR\'s by similar author is: {reviewer_to_assign}')
+        print(f"The reviewer from other PR's by similar author is: {reviewer_to_assign}")
         content_reviewer = reviewer_to_assign
     else:
-        print('The reviewer is going to be determined randomly')
+        print("The reviewer is going to be determined randomly")
         content_reviewer = determine_random_reviewer(content_reviewers, content_repo)
-        print(f'Determined random reviewer, who is: {content_reviewer}')
+        print(f"Determined random reviewer, who is: {content_reviewer}")
     return content_reviewer
 
 
@@ -476,27 +481,27 @@ def main():
     """
     t = Terminal()
 
-    payload_str = get_env_var('EVENT_PAYLOAD')
+    payload_str = get_env_var("EVENT_PAYLOAD")
     if not payload_str:
-        raise ValueError('EVENT_PAYLOAD env variable not set or empty')
+        raise ValueError("EVENT_PAYLOAD env variable not set or empty")
     payload: dict = json.loads(payload_str)
-    print(f'{t.cyan}Processing PR started{t.normal}')
+    print(f"{t.cyan}Processing PR started{t.normal}")
 
-    org_name = 'demisto'
-    repo_name = 'content'
-    gh = Github(get_env_var('CONTENTBOT_GH_ADMIN_TOKEN'), verify=False)
-    content_repo = gh.get_repo(f'{org_name}/{repo_name}')
+    org_name = "demisto"
+    repo_name = "content"
+    gh = Github(get_env_var("CONTENTBOT_GH_ADMIN_TOKEN"), verify=False)
+    content_repo = gh.get_repo(f"{org_name}/{repo_name}")
 
-    pr_number = payload.get('pull_request', {}).get('number')
-    repo_name = payload.get('pull_request', {}).get('head', {}).get('repo', {}).get('name')
+    pr_number = payload.get("pull_request", {}).get("number")
+    repo_name = payload.get("pull_request", {}).get("head", {}).get("repo", {}).get("name")
 
-    print(f'{t.cyan}PR origin repo: {repo_name} {t.normal}')
+    print(f"{t.cyan}PR origin repo: {repo_name} {t.normal}")
 
     pr = content_repo.get_pull(pr_number)
 
     pr_files = [file.filename for file in pr.get_files()]
-    print(f'{pr_files=} for {pr_number=}')
-    remote_fork_owner = pr.head.repo.full_name.split('/')[0]
+    print(f"{pr_files=} for {pr_number=}")
+    remote_fork_owner = pr.head.repo.full_name.split("/")[0]
     labels_to_add = [CONTRIBUTION_LABEL, EXTERNAL_LABEL]
     if support_label := get_packs_support_level_label(pr_files, pr.head.ref, remote_fork_owner, repo_name):
         labels_to_add.append(support_label)
@@ -510,24 +515,24 @@ def main():
         print(f'{t.cyan}Added "{label}" label to the PR{t.normal}')
 
     # check base branch is master
-    if pr.base.ref == 'master':
-        print(f'{t.cyan}Determining name for new base branch{t.normal}')
-        branch_prefix = 'contrib/'
+    if pr.base.ref == "master":
+        print(f"{t.cyan}Determining name for new base branch{t.normal}")
+        branch_prefix = "contrib/"
         new_branch_name = f'{branch_prefix}{pr.head.label.replace(":", "_")}'
-        existing_branches = content_repo.get_git_matching_refs(f'heads/{branch_prefix}')
-        potential_conflicting_branch_names = [branch.ref.removeprefix('refs/heads/') for branch in existing_branches]
+        existing_branches = content_repo.get_git_matching_refs(f"heads/{branch_prefix}")
+        potential_conflicting_branch_names = [branch.ref.removeprefix("refs/heads/") for branch in existing_branches]
         # make sure new branch name does not conflict with existing branch name
         while new_branch_name in potential_conflicting_branch_names:
             # append or increment digit
             if not new_branch_name[-1].isdigit():
-                new_branch_name += '-1'
+                new_branch_name += "-1"
             else:
                 digit = str(int(new_branch_name[-1]) + 1)
-                new_branch_name = f'{new_branch_name[:-1]}{digit}'
-        master_branch_commit_sha = content_repo.get_branch('master').commit.sha
+                new_branch_name = f"{new_branch_name[:-1]}{digit}"
+        master_branch_commit_sha = content_repo.get_branch("master").commit.sha
         # create new branch
         print(f'{t.cyan}Creating new branch "{new_branch_name}"{t.normal}')
-        content_repo.create_git_ref(f'refs/heads/{new_branch_name}', master_branch_commit_sha)
+        content_repo.create_git_ref(f"refs/heads/{new_branch_name}", master_branch_commit_sha)
         # update base branch of the PR
         pr.edit(base=new_branch_name)
         print(f'{t.cyan}Updated base branch of PR "{pr_number}" to "{new_branch_name}"{t.normal}')
@@ -556,7 +561,7 @@ def main():
         if isinstance(security_reviewer, list):
             security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
         # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
-        print(f'The selected security reviewer {security_reviewer}')
+        print(f"The selected security reviewer {security_reviewer}")
         if security_reviewer:
             reviewers.append(security_reviewer)
             pr.add_to_assignees(security_reviewer)
@@ -574,21 +579,25 @@ def main():
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
     body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
-    print(f'{t.cyan}Created welcome comment{t.normal}')
+    print(f"{t.cyan}Created welcome comment{t.normal}")
 
-    print('contributors.md section')
-    print(f'pack path: {pr_files[0]}')
-    ver = get_pack_metadata(pr_files[0]).get('currentVersion')
-    print(f'version is: {ver}')
+    print("contributors.md section")
+    print(f"pack path: {pr_files[0]}")
+    ver = get_pack_metadata(pr_files[0]).get("currentVersion")
+    print(f"version is: {ver}")
     if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR:
-        contributors_body = 'Thanks for contributing to the XSOAR marketplace. To receive credit for your generous' \
-                            ' contribution, please ask the reviewer to update your information in the pack contributors file.' \
-                            ' See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)'
+        contributors_body = (
+            "Thanks for contributing to the XSOAR marketplace. To receive credit for your generous"
+            " contribution, please ask the reviewer to update your information in the pack contributors file."
+            " See more information here [link](https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)"
+        )
     else:
-        contributors_body = f'Hi @{pr.user.login}, thanks for contributing to the XSOAR marketplace. To receive ' \
-            f'credit for your generous contribution please follow this [link]' \
-            f'(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson).'
-    if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != '1.0.0':
+        contributors_body = (
+            f"Hi @{pr.user.login}, thanks for contributing to the XSOAR marketplace. To receive "
+            f"credit for your generous contribution please follow this [link]"
+            f"(https://xsoar.pan.dev/docs/packs/packs-format#contributorsjson)."
+        )
+    if XSOAR_SUPPORT_LEVEL_LABEL or COMMUNITY_SUPPORT_LEVEL_LABEL in labels_to_add and ver != "1.0.0":
         pr.create_issue_comment(contributors_body)
 
 

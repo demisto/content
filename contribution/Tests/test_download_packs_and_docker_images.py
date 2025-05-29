@@ -5,7 +5,7 @@ from Utils.download_packs_and_docker_images import (
     create_content_item_id_set,
     get_docker_images_with_tag,
     get_pack_names,
-    should_filter_out_pack
+    should_filter_out_pack,
 )
 
 MOCK_ID_SET = {
@@ -76,25 +76,24 @@ MOCK_ID_SET = {
 }
 
 PACK1_DATA_MOCK = {
-    'name': 'Pack1 (Deprecated)',
-    'field': 'value',
-    'field2': 'value2',
+    "name": "Pack1 (Deprecated)",
+    "field": "value",
+    "field2": "value2",
 }
 
 PACK2_DATA_MOCK = {
-    'name': 'Pack2',
-    'field': 'value',
-    'field2': 'value2',
+    "name": "Pack2",
+    "field": "value",
+    "field2": "value2",
 }
 
 
 @pytest.mark.usefixtures("mock_print_patch")
 class TestDownloadPacksAndDockerImages:
-
     @pytest.fixture(autouse=True)
     def mock_print_setup(self, mocker):
         # Mocking the print function
-        self.mock_print = mocker.patch.object(builtins, 'print')
+        self.mock_print = mocker.patch.object(builtins, "print")
 
     @pytest.mark.parametrize(
         "id_set, expected_output",
@@ -119,14 +118,10 @@ class TestDownloadPacksAndDockerImages:
                         "tests": ["No tests"],
                     },
                 },
-                id="valid items"
+                id="valid items",
             ),
-            pytest.param(
-                [],
-                {},
-                id="Empty item list"
-            ),
-        ]
+            pytest.param([], {}, id="Empty item list"),
+        ],
     )
     def test_create_content_item_id_set(self, id_set, expected_output):
         """
@@ -151,15 +146,10 @@ class TestDownloadPacksAndDockerImages:
                     "demisto/python3:3.9.8.24399",
                     "demisto/python:2.7.18.20958",
                 },
-                id="duplicate valid items"
+                id="duplicate valid items",
             ),
-            pytest.param(
-                set(),
-                "\tPack d_no_pack was not found in id_set.json.",
-                {"d_no_pack": "no_pack"},
-                id="Empty item list"
-            ),
-        ]
+            pytest.param(set(), "\tPack d_no_pack was not found in id_set.json.", {"d_no_pack": "no_pack"}, id="Empty item list"),
+        ],
     )
     def test_get_docker_images_with_tag(self, packs, print_res, expected_res):
         """
@@ -186,9 +176,7 @@ class TestDownloadPacksAndDockerImages:
         )
         pack_name, pack_name_2 = "mock_pack", "mock_pack_2"
         expected = {pack_display_name: pack_name, pack_display_name_2: pack_name_2}
-        res = get_pack_names(
-            [pack_display_name, pack_display_name_2, invalid_pack], MOCK_ID_SET
-        )
+        res = get_pack_names([pack_display_name, pack_display_name_2, invalid_pack], MOCK_ID_SET)
         assert res == expected
         self.mock_print.assert_called_with("Couldn't find pack invalid pack. Skipping pack.")
 
@@ -197,63 +185,61 @@ class TestDownloadPacksAndDockerImages:
         [
             pytest.param(
                 PACK1_DATA_MOCK,
-                {'field': 'value', 'field2': 'value2'},
+                {"field": "value", "field2": "value2"},
                 False,
                 False,
-                id="not removing - Deprecated pack, multiple fields, without deprecated"
+                id="not removing - Deprecated pack, multiple fields, without deprecated",
             ),
             pytest.param(
                 PACK1_DATA_MOCK,
-                {'field': 'other value', 'field2': 'value'},
+                {"field": "other value", "field2": "value"},
                 False,
                 True,
-                id="removing - Deprecated pack, multiple fields, not matching, without deprecated"
+                id="removing - Deprecated pack, multiple fields, not matching, without deprecated",
             ),
             pytest.param(
                 PACK1_DATA_MOCK,
-                {'field': 'value', 'field2': 'value2'},
+                {"field": "value", "field2": "value2"},
                 True,
                 True,
-                id="removing - Deprecated pack, multiple fields with deprecated"
+                id="removing - Deprecated pack, multiple fields with deprecated",
             ),
-
             pytest.param(
                 PACK1_DATA_MOCK,
-                {'field': 'value', 'field2': 'value2'},
+                {"field": "value", "field2": "value2"},
                 True,
                 True,
-                id="removing - Deprecated pack, multiple fields, not matching, with deprecated"
+                id="removing - Deprecated pack, multiple fields, not matching, with deprecated",
             ),
             pytest.param(
                 PACK2_DATA_MOCK,
-                {'field': 'value', 'field2': 'value2'},
+                {"field": "value", "field2": "value2"},
                 False,
                 False,
-                id="not removing - multiple fields, without deprecated"
+                id="not removing - multiple fields, without deprecated",
             ),
             pytest.param(
                 PACK2_DATA_MOCK,
-                {'field': 'other value', 'field2': 'value'},
+                {"field": "other value", "field2": "value"},
                 False,
                 True,
-                id="removing - multiple fields, not matching, without deprecated"
+                id="removing - multiple fields, not matching, without deprecated",
             ),
             pytest.param(
                 PACK2_DATA_MOCK,
-                {'field': 'value', 'field2': 'value2'},
+                {"field": "value", "field2": "value2"},
                 True,
                 False,
-                id="not removing - multiple fields with deprecated"
+                id="not removing - multiple fields with deprecated",
             ),
-
             pytest.param(
                 PACK2_DATA_MOCK,
-                {'field': 'other value', 'field2': 'value2'},
+                {"field": "other value", "field2": "value2"},
                 True,
                 True,
-                id="removing - multiple fields, not matching, with deprecated"
+                id="removing - multiple fields, not matching, with deprecated",
             ),
-        ]
+        ],
     )
     def test_should_filter_out_pack(self, pack_data, fields, deprecated, expected):
         assert should_filter_out_pack(pack_data, fields, deprecated) == expected
