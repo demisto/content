@@ -27,8 +27,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -391
+          "x": 316,
+          "y": -230
         }
       }
     note: false
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -117
+          "x": 316,
+          "y": 32
         }
       }
     note: false
@@ -73,10 +73,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 6bb1c178-245f-467e-8423-ba307ba62b6c
+    taskid: b32f4be2-f37e-4593-bc41-c27e782a6bed
     type: regular
     task:
-      id: 6bb1c178-245f-467e-8423-ba307ba62b6c
+      id: b32f4be2-f37e-4593-bc41-c27e782a6bed
       version: -1
       name: Get Initiator Process Hash Reputation
       description: Retrieve results for a file hash using WildFire.
@@ -95,23 +95,24 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 9
+          "x": 316,
+          "y": 162
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
   "3":
     id: "3"
-    taskid: 73114ccb-21b0-4042-8775-745935e4bd4c
+    taskid: c9ff2846-d697-4a6c-845e-6892971be0a7
     type: regular
     task:
-      id: 73114ccb-21b0-4042-8775-745935e4bd4c
+      id: c9ff2846-d697-4a6c-845e-6892971be0a7
       version: -1
       name: Get Domain Reputation
       description: Checks the reputation of a domain.
@@ -131,23 +132,23 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 497.5,
-          "y": 9
+          "x": 753.5,
+          "y": 162
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 88aa7701-484f-45aa-8dee-e00be79d01c6
+    taskid: ec1c74ae-82d4-48a3-b4f9-1e22c7438317
     type: condition
     task:
-      id: 88aa7701-484f-45aa-8dee-e00be79d01c6
+      id: ec1c74ae-82d4-48a3-b4f9-1e22c7438317
       version: -1
       name: Check for Bad Reputation
       description: Check if the process hash or domain has a suspicious/malicious reputation.
@@ -158,7 +159,7 @@ tasks:
       '#default#':
       - "20"
       "yes":
-      - "21"
+      - "7"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -188,8 +189,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 133
+          "x": 316,
+          "y": 295
         }
       }
     note: false
@@ -268,8 +269,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": 829
+          "x": 998,
+          "y": 879
         }
       }
     note: false
@@ -311,8 +312,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58.5,
-          "y": 522
+          "x": 1435.5,
+          "y": 610
         }
       }
     note: false
@@ -342,8 +343,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 62,
-          "y": 999
+          "x": 316,
+          "y": 1031
         }
       }
     note: false
@@ -373,8 +374,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 545.5,
-          "y": 999
+          "x": 998,
+          "y": 1031
         }
       }
     note: false
@@ -386,10 +387,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: d17b132c-b5a2-4497-83aa-8dc22a290f6b
+    taskid: 25dd8866-9439-4c81-b0fe-6c31a82110cd
     type: regular
     task:
-      id: d17b132c-b5a2-4497-83aa-8dc22a290f6b
+      id: 25dd8866-9439-4c81-b0fe-6c31a82110cd
       version: -1
       name: Terminate Causality
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -426,8 +427,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60.5,
-          "y": 1161
+          "x": 316,
+          "y": 1183
         }
       }
     note: false
@@ -465,8 +466,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60.5,
-          "y": 1865
+          "x": 316,
+          "y": 1748
         }
       }
     note: false
@@ -493,8 +494,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60.5,
-          "y": 2029
+          "x": 316,
+          "y": 1891
         }
       }
     note: false
@@ -506,10 +507,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: aeadf2a8-beb7-4c4a-8a8e-556f40400434
+    taskid: ce11ae55-93fa-4515-90af-6807ed7cd09c
     type: regular
     task:
-      id: aeadf2a8-beb7-4c4a-8a8e-556f40400434
+      id: ce11ae55-93fa-4515-90af-6807ed7cd09c
       version: -1
       name: Get Domain from Alert Extra Data
       description: Retrieves the suspicious domain name from the alert's extra data.
@@ -530,8 +531,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60,
-          "y": -256
+          "x": 316,
+          "y": -100
         }
       }
     note: false
@@ -563,39 +564,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 58.5,
-          "y": 364
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "21":
-    id: "21"
-    taskid: 44e33922-fd9b-4cdf-877b-5f9027e79256
-    type: title
-    task:
-      id: 44e33922-fd9b-4cdf-877b-5f9027e79256
-      version: -1
-      name: Remediation
-      type: title
-      iscommand: false
-      brand: ""
-      description: ''
-    nexttasks:
-      '#none#':
-      - "7"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": -868,
-          "y": 266
+          "x": 998,
+          "y": 461
         }
       }
     note: false
@@ -629,8 +599,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 497.5,
-          "y": 522
+          "x": 998,
+          "y": 610
         }
       }
     note: false
@@ -642,10 +612,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: 5c304134-f487-433d-8c99-3d4091a8adbc
+    taskid: e97340f6-a6f6-42c0-9e5e-59bbc69646fd
     type: regular
     task:
-      id: 5c304134-f487-433d-8c99-3d4091a8adbc
+      id: e97340f6-a6f6-42c0-9e5e-59bbc69646fd
       version: -1
       name: Check Risky Path
       description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
@@ -700,8 +670,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -384,
-          "y": 522
+          "x": 553,
+          "y": 610
         }
       }
     note: false
@@ -753,8 +723,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 59.5,
-          "y": 654
+          "x": 998,
+          "y": 750
         }
       }
     note: false
@@ -766,10 +736,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: d4e6a6d7-eae4-4243-89f9-5f0df756dd6c
+    taskid: 2d14ffaa-3e85-4203-ae76-12f9107e26e0
     type: regular
     task:
-      id: d4e6a6d7-eae4-4243-89f9-5f0df756dd6c
+      id: 2d14ffaa-3e85-4203-ae76-12f9107e26e0
       version: -1
       name: Add Suspicious Domain Monitoring
       description: Send HTTP POST request.
@@ -794,8 +764,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 60.5,
-          "y": 1697
+          "x": 316,
+          "y": 1608
         }
       }
     note: false
@@ -849,8 +819,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 61,
-          "y": 1514
+          "x": 316,
+          "y": 1470
         }
       }
     note: false
@@ -885,7 +855,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 61,
+          "x": 316,
           "y": 1325
         }
       }
@@ -898,10 +868,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 37038ca9-5c35-41a3-8774-2869d8329361
+    taskid: 221ecafa-0a11-42a9-965b-36baca901e0f
     type: regular
     task:
-      id: 37038ca9-5c35-41a3-8774-2869d8329361
+      id: 221ecafa-0a11-42a9-965b-36baca901e0f
       version: -1
       name: Get Actor Hash WF Category
       description: Returns a verdict for a hash.
@@ -920,28 +890,32 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -384,
-          "y": 9
+          "x": -129,
+          "y": 162
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
 view: |-
   {
     "linkLabelsPosition": {
-      "5_7_Malicious": 0.39
+      "4_20_#default#": 0.37,
+      "4_7_yes": 0.21,
+      "5_7_Malicious": 0.55,
+      "5_8_#default#": 0.53
     },
     "paper": {
       "dimensions": {
-        "height": 2480,
-        "width": 1794.5,
-        "x": -868,
-        "y": -391
+        "height": 2181,
+        "width": 1945.5,
+        "x": -129,
+        "y": -230
       }
     }
   }
