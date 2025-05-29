@@ -1,0 +1,116 @@
+category: Vulnerability Management
+commonfields:
+  id: ReliaquestTakedown
+  version: -1
+configuration:
+- additionalinfo: Enter the Digital Shadows SearchLight API URL
+  defaultvalue: https://api.searchlight.app
+  display: DS SearchLight API URL
+  name: searchLightUrl
+  required: true
+  type: 0
+- additionalinfo: Account ID associated with this account.
+  display: Account ID
+  name: accountId
+  required: true
+  type: 0
+- additionalinfo: Enter the API Key for this account.
+  display: ""
+  displaypassword: API Key
+  hiddenusername: true
+  name: apiKey
+  required: true
+  type: 9
+- additionalinfo: Enter the API Secret for this account.
+  display: ""
+  displaypassword: API Secret
+  hiddenusername: true
+  name: apiSecret
+  required: true
+  type: 9
+- additionalinfo: Verify certificate
+  display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+- additionalinfo: First fetch
+  defaultvalue: 2 years
+  display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days, 2 months, 1 years or datetime in "%Y-%m-%d %H:%M:%S" format)
+  name: first_fetch
+  required: false
+  type: 0
+- additionalinfo: The maximum number of takedown to fetch
+  defaultvalue: "50"
+  display: Fetch Limit
+  name: max_fetch
+  required: true
+  type: 0
+- additionalinfo: This controls how often the integration will perform a fetch takwdown command
+  defaultvalue: "1"
+  display: Takedown
+  name: incidentFetchInterval
+  required: false
+  type: 19
+- display: Incident type
+  name: incidentType
+  required: false
+  type: 13
+- display: Fetch incidents
+  name: isFetch
+  required: false
+  type: 8
+description: 'This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns. '
+display: ReliaquestTakedown (Partner Contribution)
+name: ReliaquestTakedown
+script:
+  commands:
+  - arguments:
+    - description: Brand Id
+      name: brandId
+      required: true
+    - description: Takedown Type
+      name: type
+      required: true
+    - description: 'Target URL '
+      name: target
+      required: true
+    - description: Portal shortcode
+      name: portalId
+    description: 'Create takedown command takes brand id, type, target and portal shortcode (optional) and returns the created takedown in response. '
+    name: create-takedown
+  - arguments: []
+    description: Returns list of allowed brand details for takedown
+    name: list-brand
+  - arguments:
+    - defaultValue: Investigate the tekedown
+      description: Comment for takedown
+      name: comment
+      required: true
+    - defaultValue: UUID
+      description: 'Takedown id '
+      name: takedownId
+      required: true
+    description: Create comment for a takedown
+    name: create-comment
+  - arguments:
+    - name: fileId
+      required: true
+    - name: takedownId
+      required: true
+    name: upload-attachment
+  - arguments:
+    - name: attachmentId
+      required: true
+    name: download-attachment
+  dockerimage: demisto/python3:3.10.13.74666
+  runonce: false
+  script: ''
+  subtype: python3
+  type: python
+  isfetch: true
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
+fromversion: 6.0.0
+defaultmapperin: Reliaquest Takedown Mapper
+defaultclassifier: Reliaquest Takedown Classifier
