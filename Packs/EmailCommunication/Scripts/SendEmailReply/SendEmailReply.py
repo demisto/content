@@ -651,8 +651,8 @@ def get_query_window():
     to query back for related incidents. If yes, use this value, else use the default value of 60 days.
     """
     demisto.debug("Getting the number of days to query back for related incidents")
-    user_defined_time = demisto.executeCommand("getList", {"listName": "XSOAR - Email Communication Days To Query"})
-    if is_error(user_defined_time):
+    is_succeed, user_defined_time = execute_command("getList", {"listName": "XSOAR - Email Communication Days To Query"}, extract_contents=False, fail_on_error=False)
+    if not is_succeed:
         demisto.debug(
             "Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using"
             " the default query time - 60 days"
@@ -688,14 +688,18 @@ def get_incident_by_query(query):
 
     query += f' modified:>="{query_from_date}"'
     demisto.debug(f"Querying for incidents with the following query: {query}")
-    res = demisto.executeCommand("getIncidents", {"query": query, "populateFields": "id,status"})[0]
-    if is_error(res):
-        return_results(ERROR_TEMPLATE.format("getIncidents", res["Contents"]))
-        raise DemistoException(ERROR_TEMPLATE.format("getIncidents", res["Contents"]))
+    is_succeed, res = execute_command(
+        "getIncidents", {"query": query, "populateFields": "id,status"},
+        extract_contents=False,
+        fail_on_error=False)
+    extracted_results = res[0]
+    if is_succeed:
+        incidents_details = extracted_results["Contents"]["data"]
+        return incidents_details
 
-    incidents_details = res["Contents"]["data"]
+    return_results(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
+    raise DemistoException(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
 
-    return incidents_details
 
 
 def get_unique_code(incident_id, max_tries=1000):
