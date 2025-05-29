@@ -46,11 +46,15 @@ def test_append_email_signature_fails(mocker):
     """
     from SendEmailReply import append_email_signature
 
-    get_list_error_response = util_load_json("test_data/getList_signature_error.json")
+    get_list_error_response = False, util_load_json("test_data/getList_signature_error.json")
     mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
-    res = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
-    assert "Item not found" in res
-
+    debug_mocker = mocker.patch.object(demisto, "debug")
+    append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
+    debug_mocker_call_args = debug_mocker.call_args
+    assert (
+        debug_mocker_call_args.args[0] == "Error occurred while trying to load the `XSOAR - Email Communication "
+        "Signature` list. No signature added to email"
+    )
 
 @pytest.mark.parametrize(
     "email_cc, email_bcc, expected_result",
@@ -107,12 +111,12 @@ def test_validate_email_sent_fails(mocker):
     """
     from SendEmailReply import validate_email_sent
 
-    reply_mail_error = util_load_json("test_data/reply_mail_error.json")
-    mocker.patch("SendEmailReply.execute_reply_mail", return_value=reply_mail_error)
+    reply_mail_error = False, get_error(util_load_json("test_data/reply_mail_error.json"))
+    mocker.patch("SendEmailReply.execute_command", return_value=reply_mail_error)
 
     return_error_mock = mocker.patch("SendEmailReply.return_error")
     validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
-    assert return_error_mock.call_count == 1
+    assert return_error_mock.call_count == 2
     assert (
         return_error_mock.call_args[0][0]
         == "Error:\n Command reply-mail in module EWS Mail Sender requires argument inReplyTo that is missing (7)"
@@ -1574,7 +1578,7 @@ def test_format_body(mocker):
     from SendEmailReply import format_body
 
     html_body = "![image](/markdown/image/aljhgfghdjakldvygi)"
-    mocker.patch("SendEmailReply.execute_command", return_value=[{"FileID": "111"}])
+    mocker.patch("SendEmailReply.execute_command", return_value=(True, [{"FileID": "111"}]))
     mocker.patch.object(demisto, "investigation", return_value={"id": "1234"})
     open_mock = mocker.mock_open(read_data=b"some binary data")
     mocker.patch("builtins.open", open_mock)
