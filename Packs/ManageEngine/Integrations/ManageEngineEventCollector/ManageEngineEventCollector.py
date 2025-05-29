@@ -173,7 +173,7 @@ def test_module(client: Client) -> str:
 
     try:
         _ = client.search_events(str(one_min_ago_ts), str(now_ts), 1)
-        return "ok"
+        return "Connection is valid."
     except Exception as e:
         msg = str(e).lower()
         if "unauthorized" in msg or "forbidden" in msg:
