@@ -6056,7 +6056,7 @@ def get_file_get_successfull_action_results(client, res):
                     if params.get('key') == "Path":
                         result_filename = sanitize_path_to_filename(params.get('value'))
     except Exception:
-        raise Exception(f"Machine {machine_id} was not found")
+        demisto.debug("Could not generate descriptive name for collected file")
 
     # get file link from action:
     file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)["value"]
