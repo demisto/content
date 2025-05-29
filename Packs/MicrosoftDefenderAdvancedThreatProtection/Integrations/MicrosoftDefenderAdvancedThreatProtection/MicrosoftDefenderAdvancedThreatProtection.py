@@ -5997,6 +5997,34 @@ def get_live_response_file_with_polling(client, args):
         get_file_get_successfull_action_results,
     )
 
+def sanitize_path_to_filename(path):
+    """
+    Converts a file path into a safe, flattened filename.
+    Replaces unsafe characters and separators to produce a portable filename.
+    """
+    # Replace path separators (both Windows '\' and Unix '/') with underscores
+    filename = path.replace("\\", "_").replace("/", "_")
+
+    # Remove control characters (ASCII < 32)
+    filename = ''.join(ch for ch in filename if ord(ch) >= 32)
+
+    # Replace characters generally invalid or problematic
+    filename = re.sub(r'[:*?"<>|]', '_', filename)
+
+    # Remove trailing spaces or periods
+    filename = filename.rstrip(' .')
+
+    # Prevent dangerous names
+    if filename in ('.', '..'):
+        filename = filename.replace('.', '_')
+
+    #Trim to a max length (e.g., 255 characters)
+    max_length = 255
+    if len(filename) > max_length:
+        filename = filename[:max_length]
+
+    return filename
+
 
 def get_live_response_file_action(client, args):
     machine_id = args["machine_id"]
@@ -6019,6 +6047,14 @@ def get_live_response_file_action(client, args):
 
 def get_file_get_successfull_action_results(client, res):
     machine_action_id = res["id"]
+    try:
+        for command in res["commands"]:
+            if command.get('command').get('type') == "GetFile":
+                for params in command.get('command').get('params'):
+                    if params.get('key') == "Path":
+                        result_filename = sanitize_path_to_filename(params.get('value'))
+    except Exception:
+        result_filename = "Response Result"
 
     # get file link from action:
     file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)["value"]
