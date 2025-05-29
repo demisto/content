@@ -32,14 +32,14 @@ COLLECTION_NAMES = [
 
 realpath = os.path.join(os.path.dirname(os.path.realpath(__file__)))
 
-with open(f'{realpath}/test_data/avalible_collections_example.json') as example:
+with open(f"{realpath}/test_data/avalible_collections_example.json") as example:
     AVALIBLE_COLLECTIONS_RAW_JSON = load(example)
 
-with open(f'{realpath}/test_data/main_collections_examples.json') as example:
+with open(f"{realpath}/test_data/main_collections_examples.json") as example:
     COLLECTIONS_RAW_JSON = load(example)
 
 
-@pytest.fixture(scope='function', params=COLLECTION_NAMES)
+@pytest.fixture(scope="function", params=COLLECTION_NAMES)
 def session_fixture(request):
     """
     Fixture for setting up a session with a client instance specific to each collection.
@@ -126,9 +126,12 @@ def test_fetch_indicators_command(mocker, session_fixture):
     else:
         first_fetch_time = "15 days"
 
-    mocker.patch.object(client, 'get_available_collections_proxy_function', return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
-    mocker.patch.object(client, 'create_update_generator_proxy_functions', return_value=[
-                        Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])])
+    mocker.patch.object(client, "get_available_collections_proxy_function", return_value=AVALIBLE_COLLECTIONS_RAW_JSON)
+    mocker.patch.object(
+        client,
+        "create_update_generator_proxy_functions",
+        return_value=[Parser(chunk=COLLECTIONS_RAW_JSON[collection_name], keys=[], iocs_keys=[])],
+    )
 
     next_run, indicators = fetch_indicators_command(
         client=client,
@@ -136,14 +139,12 @@ def test_fetch_indicators_command(mocker, session_fixture):
         first_fetch_time=first_fetch_time,
         indicator_collections=[collection_name],
         requests_count=3,
-        common_fields={}
+        common_fields={},
     )
 
-    assert "last_fetch" in next_run, (
-        "Expected 'last_fetch' key in next_run to indicate the last data retrieval time."
-    )
+    assert "last_fetch" in next_run, "Expected 'last_fetch' key in next_run to indicate the last data retrieval time."
     if len(indicators) > 0:
-        assert "gibid" in indicators[0].get('fields'), (
+        assert "gibid" in indicators[0].get("fields"), (
             "Expected 'gibid' field in the first indicator's 'fields' dictionary, ensuring each indicator "
             "includes unique identifier data."
         )
