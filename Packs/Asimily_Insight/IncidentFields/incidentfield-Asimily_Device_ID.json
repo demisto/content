@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Asimily Asset",
+        "Asimily CVE",
+        "Asimily Anomaly"
+    ],
+    "caseInsensitive": true,
+    "cliName": "asimilydeviceid",
+    "closeForm": true,
+    "content": true,
+    "description": "Asset Unique ID from Asimily Platform",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asimilydeviceid",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Asimily Device ID",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "number",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

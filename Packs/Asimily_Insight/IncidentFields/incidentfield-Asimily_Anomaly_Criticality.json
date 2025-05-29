@@ -1,0 +1,36 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Asimily Anomaly"
+    ],
+    "caseInsensitive": true,
+    "cliName": "asimilyanomalycriticality",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asimilyanomalycriticality",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Asimily Anomaly Criticality",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "selectValues": [
+        "",
+        "High",
+        "Medium",
+        "Low"
+    ],
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "singleSelect",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

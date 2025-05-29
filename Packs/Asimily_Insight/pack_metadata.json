@@ -1,0 +1,46 @@
+{
+    "name": "Asimily Insight",
+    "description": "Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.",
+    "support": "partner",
+    "currentVersion": "1.0.0",
+    "author": "Asimily",
+    "url": "http://asimily.zendesk.com/",
+    "email": "support@asimily.com",
+    "categories": [
+        "Vulnerability Management",
+        "Data Enrichment & Threat Intelligence",
+        "Network Security"
+    ],
+    "tags": [
+        "Alerts",
+        "Forensics",
+        "Incident Response",
+        "IoT",
+        "Security",
+        "MITRE ATT&CK"
+    ],
+    "useCases": [
+        "Asset Management",
+        "Network Security",
+        "Vulnerability Management",
+        "Incident Response"
+    ],
+    "keywords": [
+        "Asimily",
+        "Insight",
+        "Risk",
+        "Likelihood",
+        "Forensic Analysis",
+        "Configuration Control",
+        "IoT Patching",
+        "ProSecure",
+        "IoMT",
+        "OT"
+    ],
+    "marketplaces": [
+        "xsoar"
+    ],
+    "githubUser": [
+        "amelia-asimily"
+    ]
+}

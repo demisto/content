@@ -1,0 +1,1125 @@
+{
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"definitionId": "",
+	"description": "",
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 26,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 26,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 26,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 26,
+								"id": "incident-sourceBrand-field",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceid",
+								"height": 26,
+								"id": "98a86f70-bfb4-483c-83b4-d8f96c609d8c",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "asimilycvename",
+								"height": 26,
+								"id": "34d571ef-7237-4235-ae0b-bb3a06ac0f5c",
+								"index": 5,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 26,
+								"id": "incident-sourceInstance-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 26,
+								"id": "incident-playbookId-field",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 53,
+								"id": "incident-occurred-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 53,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 53,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 53,
+								"id": "incident-created-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 53,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 26,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 26,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 26,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 26,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "vpwdxffssz",
+				"name": "Incident Details",
+				"sections": [
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 6,
+						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-8eeec6a0-8cd1-11ed-9266-b9dd58d778f0",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_labels",
+								"height": 22,
+								"id": "8eecf1e0-8cd1-11ed-9266-b9dd58d778f0",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Unmapped Data",
+						"static": false,
+						"type": "labels",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "Displays incident fields that are mapped.",
+						"h": 6,
+						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-a9dc1a50-8f3b-11ed-872a-572a967f8d9f",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Data",
+						"query": "displayMappedFields",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 6,
+						"hideName": false,
+						"i": "vpwdxffssz-446498be-240c-4bc2-9b4e-8570b560646c",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceid",
+								"height": 26,
+								"id": "30375390-f25e-452c-9fc0-4100ea7f8694",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemacaddress",
+								"height": 26,
+								"id": "36b02a88-acee-4d10-bad0-f315b58dc36a",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceipv4address",
+								"height": 26,
+								"id": "8b363661-18b3-40e7-9740-ffca4ae343be",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemacaddress",
+								"height": 26,
+								"id": "7d86e3a8-5532-4fc4-bcb6-f18f160c4dc8",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicehostname",
+								"height": 26,
+								"id": "777cde37-c8cc-4603-8ea2-08f2e54ca2d0",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicetype",
+								"height": 26,
+								"id": "25a7c67e-ea5d-4039-9384-649a1cf96916",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemodel",
+								"height": 26,
+								"id": "2d084d9d-d2fa-435c-99f3-5d80f0df0f46",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemanufacturer",
+								"height": 26,
+								"id": "2af0ae15-c816-40fd-85fe-bb978ce07f52",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceos",
+								"height": 26,
+								"id": "bbb7ec3f-3379-4742-85b1-fc778f73924d",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicefamilies",
+								"height": 26,
+								"id": "d2505e4d-27fe-4504-b786-97b3d8c127a6",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvename",
+								"height": 26,
+								"id": "21393a63-fd30-4932-9cd2-2ffb17a19920",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvecwetype",
+								"height": 26,
+								"id": "224c94c4-f238-463d-9ead-b8aa3ef775a5",
+								"index": 11,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvecvss3basescore",
+								"height": 26,
+								"id": "2d6fbc38-4655-4077-8b51-92f97df56746",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "asimilycvescore",
+								"height": 26,
+								"id": "a2137810-1043-406b-976c-7df216bdc044",
+								"index": 13,
+								"listId": "vpwdxffssz-446498be-240c-4bc2-9b4e-8570b560646c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveentityname",
+								"height": 26,
+								"id": "a24a276f-05aa-4c45-91ab-3e7849205aa8",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveentitytype",
+								"height": 26,
+								"id": "9b238183-42ba-4a47-a83b-5c1b9d0989e0",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveexploitableinwild",
+								"height": 26,
+								"id": "beb65cdd-d3c6-4f60-9ab4-57e4d0ae1107",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveoempatched",
+								"height": 26,
+								"id": "c98d3394-c773-4e70-93bc-d4df680d21b5",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveopendate",
+								"height": 26,
+								"id": "6f52d371-0c3f-4918-bfd5-ed14a1ef463a",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvepublisheddate",
+								"height": 26,
+								"id": "3d2bb99f-9fe5-48cd-8f0e-c1c5cbed4bd0",
+								"index": 19,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "asimilycveismuted",
+								"height": 26,
+								"id": "d97e331d-2c96-4391-8a03-6793c71018cc",
+								"index": 20,
+								"listId": "vpwdxffssz-446498be-240c-4bc2-9b4e-8570b560646c",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvedescription",
+								"height": 26,
+								"id": "afa44b7f-f8bf-4587-913f-26a2b8822ddf",
+								"index": 21,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycveisfixed",
+								"height": 26,
+								"id": "81dd5e51-52b3-4912-8833-14d7c2fae517",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvefixedby",
+								"height": 26,
+								"id": "255f4e65-4f51-4c70-9a93-495dc1cdc278",
+								"index": 23,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilycvefixeddate",
+								"height": 26,
+								"id": "7114d796-1b0a-4ae3-907c-94b8d7b9be0e",
+								"index": 24,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Fields",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": true,
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilycvename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvecwetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveentityname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveentitytype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvescore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvecvss3basescore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveoempatched",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveexploitableinwild",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvepublisheddate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveopendate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveismuted",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvedescription",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveisfixed",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvefixedby",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvefixeddate",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily CVE Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_deviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_vendorid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "System Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilydeviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv4address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanufacturer",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceos",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefamilies",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily Asset Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"group": "incident",
+	"id": "Asimily CVE Layout",
+	"name": "Asimily CVE Layout",
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilycvename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvecwetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveentitytype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveentityname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvescore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvecvss3basescore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveoempatched",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveexploitableinwild",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvepublisheddate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveopendate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveismuted",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvedescription",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycveisfixed",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvefixedby",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilycvefixeddate",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily CVE Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_deviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_vendorid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "System Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilydeviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv4address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanufacturer",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceos",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefamilies",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily Asset Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"system": false,
+	"version": -1,
+        "fromVersion": "6.10.0"
+}
