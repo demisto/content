@@ -76,3 +76,22 @@ Gets events from ManageEngine.
 #### Context Output
 
 There is no context output for this command.
+
+
+### manage-engine-test
+
+***
+Tests connectivity of the server.
+
+#### Base Command
+
+`manage-engine-test`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+
+#### Context Output
+
+There is no context output for this command.

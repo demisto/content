@@ -62,11 +62,12 @@ class Client(BaseClient):
             DemistoException: If neither an authorization code nor refresh token is available.
         """
         ctx = get_integration_context() or {}
+        demisto.debug(f"Get::Integration Context: {ctx}")
         now = datetime.now()
         if "access_token" in ctx and now < datetime.fromisoformat(ctx.get("expire_date")):  # type: ignore
             demisto.debug(f"Using cached access token. Expires at {ctx.get('expire_date')}")
             return ctx.get("access_token")  # type: ignore
-
+        demisto.debug("No valid access token exists.")
         data = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
@@ -77,7 +78,7 @@ class Client(BaseClient):
             data.update({"grant_type": "refresh_token", "refresh_token": ctx.get("refresh_token")})  # type: ignore
 
         elif self.client_code:
-            demisto.debug("Refresh token not token found in context")
+            demisto.debug("Refresh token not found in context.")
             data.update({"grant_type": "authorization_code", "code": self.client_code})
         else:
             raise DemistoException(message="Either grant code or refresh token must be provided.")
@@ -100,7 +101,7 @@ class Client(BaseClient):
         }
 
         set_integration_context(new_ctx)
-
+        demisto.debug(f"Set::Integration Context: {new_ctx}")
         return response.get("access_token")
 
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
@@ -118,10 +119,14 @@ class Client(BaseClient):
         """
         events: List[Dict] = []
         page = 1
-        headers = {
-            "Authorization": f"Zoho-oauthtoken {self.get_access_token()}",
-            "Accept": "application/auditlogsdata.v1+json",
-        }
+        access_token = self.get_access_token()
+        if access_token:
+            headers = {
+                "Authorization": f"Zoho-oauthtoken {access_token}",
+                "Accept": "application/auditlogsdata.v1+json",
+            }
+        else:
+            return_error("Couldnt get any access token!!!!")
         params = {"startTime": start_time, "endTime": end_time, "pageLimit": PAGE_LIMIT_DEFAULT}
         demisto.debug(f"Time intervarl: {start_time} --- {end_time}")
 
@@ -285,8 +290,9 @@ def main() -> None:  # pragma: no cover
             proxy=proxy,
         )
         if command == "test-module":
+            raise Exception("Please use !manage-engine-test instead")
+        if command == "manage-engine-test":
             return_results(test_module(client))
-
         elif command == "manage-engine-get-events":
             return_results(get_events(client, demisto.args()))
         elif command == "fetch-events":

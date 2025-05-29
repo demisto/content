@@ -57,6 +57,9 @@ display: ManageEngine
 name: ManageEngine
 script:
   commands:
+  - description: Tests connectivity of the server.
+    name: manage-engine-test
+    arguments: []
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
