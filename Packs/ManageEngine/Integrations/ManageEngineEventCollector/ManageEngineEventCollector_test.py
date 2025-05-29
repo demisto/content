@@ -70,13 +70,13 @@ def test_get_access_token_code(client: Client, mocker):
 
 
 def test_test_module_success(client: Client, mocker):
-    """test_module returns 'ok' when search_events succeeds."""
+    """test_module returns 'Connection is valid.' when search_events succeeds."""
     from ManageEngineEventCollector import test_module
 
     mocker.patch.object(client, "search_events", return_value=[{}])
 
     result = test_module(client)
-    assert result == "ok"
+    assert result == "Connection is valid."
 
 
 def test_test_module_auth_error(client: Client, mocker):

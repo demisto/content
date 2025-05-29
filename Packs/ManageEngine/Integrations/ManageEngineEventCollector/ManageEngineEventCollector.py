@@ -62,7 +62,6 @@ class Client(BaseClient):
             DemistoException: If neither an authorization code nor refresh token is available.
         """
         ctx = get_integration_context() or {}
-        demisto.debug(f"Get::Integration Context: {ctx}")
         now = datetime.now()
         if "access_token" in ctx and now < datetime.fromisoformat(ctx.get("expire_date")):  # type: ignore
             demisto.debug(f"Using cached access token. Expires at {ctx.get('expire_date')}")
@@ -101,7 +100,6 @@ class Client(BaseClient):
         }
 
         set_integration_context(new_ctx)
-        demisto.debug(f"Set::Integration Context: {new_ctx}")
         return response.get("access_token")
 
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
@@ -120,15 +118,13 @@ class Client(BaseClient):
         events: List[Dict] = []
         page = 1
         access_token = self.get_access_token()
-        if access_token:
-            headers = {
-                "Authorization": f"Zoho-oauthtoken {access_token}",
-                "Accept": "application/auditlogsdata.v1+json",
-            }
-        else:
-            return_error("Couldnt get any access token!!!!")
+        headers = {
+            "Authorization": f"Zoho-oauthtoken {access_token}",
+            "Accept": "application/auditlogsdata.v1+json",
+        }
+
         params = {"startTime": start_time, "endTime": end_time, "pageLimit": PAGE_LIMIT_DEFAULT}
-        demisto.debug(f"Time intervarl: {start_time} --- {end_time}")
+        demisto.debug(f"Time intervarl: {start_time} to {end_time}.")
 
         while True:
             params["page"] = str(page)
