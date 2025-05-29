@@ -49,7 +49,7 @@ configuration:
   additionalinfo: Will only return indicators above the confidence threshold.
 - display: Source Reliability
   defaultvalue: C - Fairly reliable
-  name: sourceReliability
+  name: feedReliability
   options:
   - A - Completely reliable
   - B - Usually reliable
@@ -75,26 +75,26 @@ configuration:
   required: false
   section: Collect
 - display: Indicator Reputation
-  defaultvalue: Unknown
+  defaultvalue: None
   name: feedReputation
   options:
-  - Unknown
-  - Benign
+  - None
+  - Good
   - Suspicious
-  - Malicious
-  type: 15
+  - Bad
+  type: 18
   advanced: true
   required: false
   section: Collect
-- display: Indicator Expiration Method 
-  defaultvalue: Indicator Type
-  name: indicatorExpirationMethod 
+- defaultvalue: indicatorType
+  display: ""
+  name: feedExpirationPolicy 
   options:
-  - Indicator Type
-  - Time Interval
-  - Never Expired
-  - When removed from the Feed  
-  type: 15
+  - never
+  - interval
+  - indicatorType
+  - suddenDeath
+  type: 17
   advanced: true
   required: false
   section: Collect
@@ -106,7 +106,7 @@ configuration:
   advanced: true
   required: false
 - display: Trust any certificate (not secure)
-  defaultvalue: 'false'
+  defaultvalue: false
   name: insecure
   type: 8
   section: Connect

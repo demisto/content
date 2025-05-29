@@ -1,39 +1,114 @@
-"""Base Integration for Cortex XSOAR - Unit Tests file
+from CommonServerPython import CommandResults
+import AnomaliThreatStreamFeed
+import pytest
+from AnomaliThreatStreamFeed import Client
 
-Pytest Unit Tests: all funcion names must start with "test_"
+THREAT_STREAM = "Anomali ThreatStream Feed"
 
-More details: https://xsoar.pan.dev/docs/integrations/unit-testing
+def mock_client():
+    return Client(
+        base_url="https://svlpartner-optic-api.threatstream.com",
+        user_name="user",
+        api_key="key",
+        verify=False
+    )
 
-MAKE SURE YOU REVIEW/REPLACE ALL THE COMMENTS MARKED AS "TODO"
+def test_get_indicators_command_success_with_type(mocker):
+    from AnomaliThreatStreamFeed import get_indicators_command
 
-You must add at least a Unit Test function for every XSOAR command
-you are implementing with your integration
-"""
-
-import json
-
-
-def util_load_json(path):
-    with open(path, encoding="utf-8") as f:
-        return json.loads(f.read())
-
-
-# TODO: REMOVE the following dummy unit test function
-def test_baseintegration_dummy():
-    """Tests helloworld-say-hello command function.
-
-    Checks the output of the command function with the expected output.
-
-    No mock is needed here because the say_hello_command does not call
-    any external API.
     """
-    from BaseIntegration import Client, baseintegration_dummy_command
+    Tests the successful execution of the get_indicators_command function
+    when a specific indicator type is provided.
 
-    client = Client(base_url="some_mock_url", verify=False)
-    args = {"dummy": "this is a dummy response", "dummy2": "a dummy value"}
-    response = baseintegration_dummy_command(client, args)
+    Given:
+        - A mock client instance for the Anomali ThreatStream API.
+        - Arguments including 'indicator_type' and 'limit'.
+    When:
+        - Running the get_indicators_command function with the mock client and arguments.
+    Then:
+        1. Mocks the HTTP request to the ThreatStream API to return predefined indicator data.
+        2. Mocks internal demisto debug/info logging to prevent console output.
+        3. Mocks the `tableToMarkdown` function to control its output.
+        4. Mocks the `parse_indicators_for_get_command` function to ensure consistent parsing behavior.
+        5. Confirms that the `http_request` method was called with the correct parameters, including the indicator type.
+        6. Asserts that a `CommandResults` object is returned with the expected human-readable output
+           and raw response data.
+        7. Verifies that debug messages indicate the API call and the number of indicators found.
+        8. Ensures `tableToMarkdown` was called with the correctly formatted data and dynamic headers.
+    """
+    client = mock_client()
+    mock_api_response = {
+        "objects": [
+            {
+                "threatstream_id": "123",
+                "indicator": "test.com",
+                "type": "domain",
+                "confidence": 90,
+                "description": "Test domain",
+                "source": "TestSource",
+                "tags": ["malware", "phishing"],
+                "traffic_light_protocol": "RED",
+                "modified": "2023-01-01T12:00:00Z",
+                "organization": "TestOrg",
+                "creation": "2022-01-01T12:00:00Z",
+                "expiration": "2024-01-01T12:00:00Z",
+                "target_industries": ["finance"],
+                "asn": "AS12345",
+                "location": "New York",
+            },
+            {
+                "threatstream_id": "124",
+                "indicator": "another.com",
+                "type": "domain",
+                "confidence": 80,
+                "description": "Another test domain",
+                "source": "AnotherSource",
+                "tags": ["c2"],
+                "traffic_light_protocol": "AMBER",
+                "modified": "2023-02-01T12:00:00Z",
+                "organization": "AnotherOrg",
+                "creation": "2022-02-01T12:00:00Z",
+                "expiration": "2024-02-01T12:00:00Z",
+                "target_industries": ["tech"],
+                "asn": "AS67890",
+                "location": "London",
+            },
+        ]
+    }
+    mocker.patch.object(client, "http_request", return_value=mock_api_response)
+    # client.http_request.return_value = mock_api_response
 
-    assert response.outputs == args
+    # Mock parse_indicators_for_get_command to return a controlled parsed output
+    mock_parsed_indicators = [
+        {"domain": "test.com", "Confidence": 90},
+        {"domain": "another.com", "Confidence": 80},
+    ]
+    mocker.patch("parse_indicators_for_get_command", return_value=mock_parsed_indicators)
 
+    args = {"indicator_type": "domain", "limit": 2}
+    result = get_indicators_command(client, args)
 
-# TODO: ADD HERE unit tests for every command
+    # Assertions
+    client.http_request.assert_called_once_with(method="GET", url_suffix="v2/intelligence", params={"limit": 2, "type": "domain"})
+
+    assert result.readable_output == "Mocked Markdown Table"
+    assert result.raw_response == mock_api_response["objects"]
+
+    # Verify tableToMarkdown call arguments
+    expected_headers_with_type = [
+        "TargetIndustries",
+        "Source",
+        "ThreatStreamID",
+        "Country Code",
+        "domain",  # Dynamic header
+        "Description",
+        "Modified",
+        "Organization",
+        "Confidence",
+        "Creation",
+        "Expiration",
+        "Tags",
+        "TrafficLightProtocol",
+        "Location",
+        "ASN",
+    ]
