@@ -1,0 +1,1417 @@
+{
+	"close": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_closereason",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_closenotes",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"isVisible": true,
+				"name": "Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"definitionId": "",
+	"description": "",
+	"detailsV2": {
+		"tabs": [
+			{
+				"id": "summary",
+				"name": "Legacy Summary",
+				"type": "summary"
+			},
+			{
+				"id": "caseinfoid",
+				"name": "Incident Info",
+				"sections": [
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "type",
+								"height": 26,
+								"id": "incident-type-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "severity",
+								"height": 26,
+								"id": "incident-severity-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "owner",
+								"height": 26,
+								"id": "incident-owner-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "sourcebrand",
+								"height": 26,
+								"id": "incident-sourceBrand-field",
+								"index": 3,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceid",
+								"height": 26,
+								"id": "7864bc74-f0dd-4fde-babe-63a5c889f866",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceurl",
+								"height": 26,
+								"id": "3c80f050-3255-4f79-a52c-ea073adb030e",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "sourceinstance",
+								"height": 26,
+								"id": "incident-sourceInstance-field",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "playbookid",
+								"height": 26,
+								"id": "incident-playbookId-field",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Case Details",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Notes",
+						"static": false,
+						"type": "notes",
+						"w": 1,
+						"x": 2,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
+						"isVisible": true,
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Linked Incidents",
+						"static": false,
+						"type": "linkedIncidents",
+						"w": 1,
+						"x": 1,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Child Incidents",
+						"static": false,
+						"type": "childInv",
+						"w": 1,
+						"x": 2,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Team Members",
+						"static": false,
+						"type": "team",
+						"w": 1,
+						"x": 2,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-ac32f620-a0b0-11e9-b27f-13ae1773d289",
+						"items": [
+							{
+								"endCol": 1,
+								"fieldId": "occurred",
+								"height": 26,
+								"id": "incident-occurred-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 1,
+								"fieldId": "dbotmodified",
+								"height": 26,
+								"id": "incident-modified-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotduedate",
+								"height": 26,
+								"id": "incident-dueDate-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotcreated",
+								"height": 26,
+								"id": "incident-created-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 1
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 26,
+								"id": "incident-closed-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 1
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Timeline Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"i": "caseinfoid-88e6bf70-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dbotclosed",
+								"height": 26,
+								"id": "incident-dbotClosed-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closereason",
+								"height": 26,
+								"id": "incident-closeReason-field",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "closenotes",
+								"height": 26,
+								"id": "incident-closeNotes-field",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Closing Information",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 4
+					},
+					{
+						"displayType": "CARD",
+						"h": 2,
+						"i": "caseinfoid-e54b1770-a0b1-11e9-b27f-13ae1773d289",
+						"isVisible": true,
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "details",
+								"height": 26,
+								"id": "incident-details-field",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Investigation Data",
+						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"hidden": false,
+				"id": "vpwdxffssz",
+				"name": "Incident Details",
+				"sections": [
+					{
+						"description": "",
+						"displayType": "ROW",
+						"h": 6,
+						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-8eeec6a0-8cd1-11ed-9266-b9dd58d778f0",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "incident_labels",
+								"height": 22,
+								"id": "8eecf1e0-8cd1-11ed-9266-b9dd58d778f0",
+								"index": 0,
+								"isVisible": true,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Unmapped Data",
+						"static": false,
+						"type": "labels",
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"description": "Displays incident fields that are mapped.",
+						"h": 6,
+						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-a9dc1a50-8f3b-11ed-872a-572a967f8d9f",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Data",
+						"query": "displayMappedFields",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
+						"x": 0,
+						"y": 0
+					},
+					{
+						"displayType": "ROW",
+						"h": 6,
+						"hideName": false,
+						"i": "vpwdxffssz-09e94263-126c-409e-8461-ed26cf311d26",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceid",
+								"height": 26,
+								"id": "8735aed7-e787-4d9d-9b78-559ea049a45c",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemacaddress",
+								"height": 26,
+								"id": "782e9eaa-0187-4e0c-b952-2c3b8e8708b1",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceipv4address",
+								"height": 26,
+								"id": "f1e2e4ae-caee-4ada-a2ef-2450a26314b8",
+								"index": 2,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicehostname",
+								"height": 26,
+								"id": "83c40c80-e576-4df8-8146-752565feb7b8",
+								"index": 3,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemanufacturer",
+								"height": 26,
+								"id": "d987ea3f-5486-43d5-96c6-940cccd55630",
+								"index": 4,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemodel",
+								"height": 26,
+								"id": "c2d95e53-c23b-4238-9742-e3d4ff56e856",
+								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicetype",
+								"height": 26,
+								"id": "b2f5902c-237e-4ec1-be16-a9d081e92760",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceos",
+								"height": 26,
+								"id": "e971fecd-96d4-47cc-836e-805a32d7a393",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceosversion",
+								"height": 26,
+								"id": "dfbbb7e4-d371-4bab-9c93-8f92c8d68b2a",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceserialnumber",
+								"height": 26,
+								"id": "b8e51b64-ffb2-419d-93fd-f715dbe38aad",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicesoftwareverison",
+								"height": 26,
+								"id": "d6c618b8-d9d3-4d41-823f-ee726f5e5b78",
+								"index": 10,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "asimilydevicecmmsid",
+								"height": 26,
+								"id": "d770b9b3-ab6c-4c7c-afde-7001fe6b85da",
+								"index": 11,
+								"listId": "vpwdxffssz-09e94263-126c-409e-8461-ed26cf311d26",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicefamilies",
+								"height": 26,
+								"id": "80007f07-2f8d-4354-b759-f1e70a3d7ea3",
+								"index": 12,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicetag",
+								"height": 26,
+								"id": "d548ed4d-a60f-4169-a498-5b3fe4e00125",
+								"index": 13,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicefacility",
+								"height": 26,
+								"id": "ad104e6d-1447-40d2-b1da-ff4a3de88248",
+								"index": 14,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemanagedby",
+								"height": 26,
+								"id": "a36458c2-d9bc-4951-a2de-26a94e664828",
+								"index": 15,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicedepartment",
+								"height": 26,
+								"id": "71ccd2e2-a99b-453b-9cce-af06569bb389",
+								"index": 16,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicehardwarearchitecture",
+								"height": 26,
+								"id": "41a67571-aa77-4996-8c48-3d3eabadf8a0",
+								"index": 17,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicediscoverysource",
+								"height": 26,
+								"id": "bda42428-589b-4b47-87e3-de682df4b928",
+								"index": 18,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceapplications",
+								"height": 26,
+								"id": "135e7c7f-1a69-4869-9ed0-524198cfe769",
+								"index": 19,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceanomalypresent",
+								"height": 26,
+								"id": "d69f432c-df93-4df5-ac4a-24dbe1d04338",
+								"index": 20,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceaverageutilizationpercent",
+								"height": 26,
+								"id": "4abe4a7a-b6b3-499d-b115-8c9a6bf18574",
+								"index": 21,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceuptime",
+								"height": 26,
+								"id": "a95e69ab-6686-4c8b-bedd-663165942304",
+								"index": 22,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceclass",
+								"height": 26,
+								"id": "cbf37116-7792-4cf9-93df-59b7e77aac1a",
+								"index": 23,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceifstoreephi",
+								"height": 26,
+								"id": "f57c179b-5a69-41d5-8ef2-a90ff44ed9d4",
+								"index": 24,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceiftransmitephi",
+								"height": 26,
+								"id": "2915b3c4-a1ab-4903-a6b1-051e764ffa0a",
+								"index": 25,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceifusingendpointsecurity",
+								"height": 26,
+								"id": "a56ac09d-d7b2-4136-9b48-3b7059d1d230",
+								"index": 26,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceimpact",
+								"height": 26,
+								"id": "f99192d7-1132-435f-a2ef-7d2899e9db6f",
+								"index": 27,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceisconnected",
+								"height": 26,
+								"id": "1b988244-53d6-4c32-87a3-51aec356844b",
+								"index": 28,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceiscurrentlyinuse",
+								"height": 26,
+								"id": "fe04e9cb-dd75-485b-b862-53254177a947",
+								"index": 29,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceisnetworkingdevice",
+								"height": 26,
+								"id": "12b1b16b-fc7f-4bff-8b2c-bb82844f06f1",
+								"index": 30,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceiswireless",
+								"height": 26,
+								"id": "1c0cb60a-8e98-4427-98d3-69619496992c",
+								"index": 31,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicemds2",
+								"height": 26,
+								"id": "4a93165f-98ee-457d-a28c-c292eeb9830e",
+								"index": 32,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicelastdiscoveredtime",
+								"height": 26,
+								"id": "6fd3ef3c-ac39-4e11-a972-7f7d65dd5cb0",
+								"index": 33,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicelikelihood",
+								"height": 26,
+								"id": "8b778924-b6bc-4b81-8115-deb8ce943291",
+								"index": 34,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceriskscore",
+								"height": 26,
+								"id": "7c247886-4bff-499a-a61d-0ce05c70a092",
+								"index": 35,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydevicelocation",
+								"height": 26,
+								"id": "8cd6c105-29fa-4bfc-9d75-c5b8a7673af3",
+								"index": 36,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "asimilydeviceregion",
+								"height": 26,
+								"id": "df76ab5f-3d6f-4a2d-a1a0-87b500e2e7c2",
+								"index": 37,
+								"listId": "vpwdxffssz-09e94263-126c-409e-8461-ed26cf311d26",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "asimilydeviceurl",
+								"height": 26,
+								"id": "2f7b6871-6e4c-421c-b553-f36de1a07535",
+								"index": 38,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Fields",
+						"static": false,
+						"w": 1,
+						"x": 2,
+						"y": 0
+					}
+				],
+				"type": "custom"
+			},
+			{
+				"id": "warRoom",
+				"name": "War Room",
+				"type": "warRoom"
+			},
+			{
+				"id": "workPlan",
+				"name": "Work Plan",
+				"type": "workPlan"
+			},
+			{
+				"id": "canvas",
+				"name": "Canvas",
+				"type": "canvas"
+			},
+			{
+				"hidden": true,
+				"id": "evidenceBoard",
+				"name": "Evidence Board",
+				"type": "evidenceBoard"
+			}
+		]
+	},
+	"edit": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_deviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_department",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_vendorid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_hostnames",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_location",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_riskscore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assetid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_managername",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "System Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilydeviceanomalypresent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceaverageutilizationpercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceclass",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicecmmsid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicedepartment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefacility",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehardwarearchitecture",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceifstoreephi",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiftransmitephi",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceimpact",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceisconnected",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiscurrentlyinuse",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceisnetworkingdevice",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiswireless",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelastdiscoveredtime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelikelihood",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelocation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanufacturer",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemasterfamily",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemds2",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceos",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceosversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceregion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceriskscore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceserialnumber",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicesoftwareverison",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceuptime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefamilies",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetag",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv4address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv6address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceurl",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceapplications",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicediscoverysource",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceifusingendpointsecurity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanagedby",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily Asset Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_name",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_reminder",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_details",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_attachment",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			}
+		]
+	},
+	"group": "incident",
+	"id": "Asimily Asset Layout",
+	"name": "Asimily Asset Layout",
+	"quickView": {
+		"sections": [
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_deviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicelocalip",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_devicename",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_deviceosversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_vendorid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_department",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_hostnames",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_location",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_riskscore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_managername",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_assetid",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "System Custom Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_asimilydeviceanomalypresent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceaverageutilizationpercent",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceclass",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicecmmsid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicedepartment",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefacility",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehardwarearchitecture",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicehostname",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceifstoreephi",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiftransmitephi",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceimpact",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceisconnected",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiscurrentlyinuse",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceisnetworkingdevice",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceiswireless",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelastdiscoveredtime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelikelihood",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicelocation",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemacaddress",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanufacturer",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemasterfamily",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemds2",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemodel",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceos",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceosversion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceregion",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceriskscore",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicesoftwareverison",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetype",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceuptime",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicefamilies",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicetag",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv4address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceipv6address",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceurl",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceapplications",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicediscoverysource",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydeviceifusingendpointsecurity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_asimilydevicemanagedby",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Asimily Asset Fields",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_type",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_severity",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_owner",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotstatus",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourcebrand",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_sourceinstance",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_playbookid",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_phase",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_roles",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Basic Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_dbotcreated",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_occurred",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotduedate",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbotmodified",
+						"isVisible": true
+					},
+					{
+						"fieldId": "incident_dbottotaltime",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Timeline Information",
+				"query": null,
+				"queryType": "",
+				"readOnly": false,
+				"type": ""
+			},
+			{
+				"description": "",
+				"fields": [
+					{
+						"fieldId": "incident_labels",
+						"isVisible": true
+					}
+				],
+				"isVisible": true,
+				"name": "Labels",
+				"query": null,
+				"queryType": "",
+				"readOnly": true,
+				"type": "labels"
+			}
+		]
+	},
+	"system": false,
+	"fromVersion": "6.10.0",
+	"version": -1
+}

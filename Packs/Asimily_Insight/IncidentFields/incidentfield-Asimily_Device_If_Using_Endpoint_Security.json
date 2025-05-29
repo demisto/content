@@ -1,0 +1,30 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Asimily Asset"
+    ],
+    "caseInsensitive": true,
+    "cliName": "asimilydeviceifusingendpointsecurity",
+    "closeForm": true,
+    "content": true,
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_asimilydeviceifusingendpointsecurity",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Asimily Device If Using Endpoint Security",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "boolean",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}

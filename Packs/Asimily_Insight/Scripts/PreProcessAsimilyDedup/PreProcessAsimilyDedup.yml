@@ -1,0 +1,22 @@
+commonfields:
+  id: PreProcessAsimilyDedup
+  version: -1
+name: PreProcessAsimilyDedup
+script: ''
+type: python
+tags:
+- preProcessing
+comment: Asimily Preprocessing Rule for Deduplication of incoming incident. The script will be used for creating Pre-Process Rules for Incidents to avoid creating duplicate incidents. Comparison is based on incident type and dbotMirrorId.
+enabled: true
+scripttarget: 0
+subtype: python3
+dependson:
+  must: []
+timeout: 5m0s
+runonce: false
+dockerimage: demisto/python3:3.10.13.83255
+runas: DBotWeakRole
+engineinfo: {}
+tests:
+- No test - this is a preprocessing script
+fromversion: 6.10.0
