@@ -16,7 +16,7 @@ def oob_model_exists_and_updated():
     res_model = demisto.executeCommand("getMLModel", {"modelName": OUT_OF_THE_BOX_MODEL_NAME})[0]
     if is_error(res_model):
         return False
-    model_type = dict_safe_get(res_model, [0, "Contents", "model", "type", "type"], 'UNKNOWN_MODEL_TYPE')
+    model_type = dict_safe_get(res_model, [0, "Contents", "model", "type", "type"], "UNKNOWN_MODEL_TYPE")
     return model_type == demisto_ml.ModelType.Torch.value
 
 
