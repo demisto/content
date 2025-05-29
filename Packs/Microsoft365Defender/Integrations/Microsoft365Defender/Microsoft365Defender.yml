@@ -498,9 +498,6 @@ script:
   script: ''
   subtype: python3
   type: python
-  ismappable: true
-  isremotesyncin: true
-  isremotesyncout: true
 fromversion: 5.5.0
 tests:
 - No tests
