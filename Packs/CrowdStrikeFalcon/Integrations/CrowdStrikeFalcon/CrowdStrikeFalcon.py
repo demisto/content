@@ -9,7 +9,7 @@ import json
 from collections.abc import Callable
 from enum import Enum, IntEnum
 from threading import Timer
-from typing import Any
+from typing import Any 
 
 import requests
 
