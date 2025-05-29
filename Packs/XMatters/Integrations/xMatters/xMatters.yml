@@ -92,20 +92,20 @@ script:
     arguments:
     - name: recipients
       required: true
-      description: Recipients of the xMatters Message
+      description: Recipients of the xMatters Message.
     - name: subject
-      description: Subject of the xMatters Message
+      description: Subject of the xMatters Message.
     - name: body
-      description: Body of the xMatters Message
+      description: Body of the xMatters Message.
     - name: incident_id
-      description: Incident ID of Incident referenced
+      description: Incident ID of Incident referenced.
     - name: close_task_id
       description: Id of task to close in playbook. Requires an incident_id as the investigation id.
     outputs:
     - contextPath: xMatters.Workflow.request_id
-      description: Request ID from xMatters
+      description: Request ID from xMatters.
       type: string
-    description: sends the event to xMatters
+    description: sends the event to xMatters.
   - name: xm-get-events
     arguments:
     - name: request_id
@@ -125,71 +125,71 @@ script:
       - HIGH
       description: Priority of the event.
     - name: from
-      description: A date and time in UTC format that represents the start of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the start of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`).
     - name: to
-      description: A date and time in UTC format that represents the end of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`)
+      description: A date and time in UTC format that represents the end of the time range you want to search. (i.e. `2020-01-01T00:11:22Z`).
     - name: workflow
       description: The name of the workflow the event is tied to.
     - name: form
       description: The name of the form the event is tied to.
     - name: property_name
-      description: An event property name to filter the events
+      description: An event property name to filter the events.
     - name: property_value
-      description: An event property value to filter the events
+      description: An event property value to filter the events.
     outputs:
     - contextPath: xMatters.GetEvents.Events
       description: Events from xMatters.
     - contextPath: xMatters.GetEvents.Created
-      description: The date and time the event was created
+      description: The date and time the event was created.
     - contextPath: xMatters.GetEvents.Terminated
       description: The date and time the event was terminated. Populated only if the event is terminated.
     - contextPath: xMatters.GetEvents.ID
-      description: The UUID of the event
+      description: The UUID of the event.
     - contextPath: xMatters.GetEvents.Name
-      description: The subject of the event as seen in the event report
+      description: The subject of the event as seen in the event report.
     - contextPath: xMatters.GetEvents.PlanName
-      description: The name of the workflow the event is tied to
+      description: The name of the workflow the event is tied to.
     - contextPath: xMatters.GetEvents.FormName
-      description: The name of the form the event is tied to
+      description: The name of the form the event is tied to.
     - contextPath: xMatters.GetEvents.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED.
     - contextPath: xMatters.GetEvents.Priority
-      description: The priority of the event. LOW, MEDIUM, HIGH
+      description: The priority of the event. LOW, MEDIUM, HIGH.
     - contextPath: xMatters.GetEvents.Properties
-      description: The list of properties tied to the event in name/value pairs
+      description: The list of properties tied to the event in name/value pairs.
     - contextPath: xMatters.GetEvents.SubmitterName
-      description: The user or integration that created the event
+      description: The user or integration that created the event.
     description: Get events from xMatters.
   - name: xm-get-event
     arguments:
     - name: event_id
       required: true
-      description: Unique identifier of the event
+      description: Unique identifier of the event.
     outputs:
     - contextPath: xMatters.GetEvent.Events
       description: Events from xMatters.
     - contextPath: xMatters.GetEvent.Created
-      description: The date and time the event was created
+      description: The date and time the event was created.
     - contextPath: xMatters.GetEvent.Terminated
       description: The date and time the event was terminated. Populated only if the event is terminated.
     - contextPath: xMatters.GetEvent.ID
-      description: The UUID of the event
+      description: The UUID of the event.
     - contextPath: xMatters.GetEvent.Name
-      description: The subject of the event as seen in the event report
+      description: The subject of the event as seen in the event report.
     - contextPath: xMatters.GetEvent.PlanName
-      description: The name of the workflow the event is tied to
+      description: The name of the workflow the event is tied to.
     - contextPath: xMatters.GetEvent.FormName
-      description: The name of the form the event is tied to
+      description: The name of the form the event is tied to.
     - contextPath: xMatters.GetEvent.Status
-      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED
+      description: The status of the event ACTIVE, SUSPENDED, TERMINATED, TERMINATED_EXTERNAL, SUPRESSED.
     - contextPath: xMatters.GetEvent.Priority
-      description: The priority of the event. LOW, MEDIUM, HIGH
+      description: The priority of the event. LOW, MEDIUM, HIGH.
     - contextPath: xMatters.GetEvent.Properties
-      description: The list of properties tied to the event in name/value pairs
+      description: The list of properties tied to the event in name/value pairs.
     - contextPath: xMatters.GetEvent.SubmitterName
-      description: The user or integration that created the event
+      description: The user or integration that created the event.
     description: Get a single event from xMatters.
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.11.10.116949
   isfetch: true
   script: '-'
   subtype: python3

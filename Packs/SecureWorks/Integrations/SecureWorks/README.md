@@ -255,7 +255,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/40768782-f4c671ca-64be-11e8-9380-3240eb3629a3.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/40768782-f4c671ca-64be-11e8-9380-3240eb3629a3.png" alt="image"></a></p>
+<p><a href="../../doc_files/40768782-f4c671ca-64be-11e8-9380-3240eb3629a3.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/40768782-f4c671ca-64be-11e8-9380-3240eb3629a3.png" alt="image"></a></p>
 <h3 id="h_9085029801081541591856856">2. Update a ticket</h3>
 <hr>
 <p>Updates an existing ticket.</p>
@@ -360,7 +360,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46961277-1a0e5f00-d0a9-11e8-946c-42bedfe8d4ac.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46961277-1a0e5f00-d0a9-11e8-946c-42bedfe8d4ac.png" alt="image" width="750" height="110"></a></p>
+<p><a href="../../doc_files/46961277-1a0e5f00-d0a9-11e8-946c-42bedfe8d4ac.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46961277-1a0e5f00-d0a9-11e8-946c-42bedfe8d4ac.png" alt="image" width="750" height="110"></a></p>
 <h3 id="h_1546949482081541591862045">3. Close a ticket</h3>
 <hr>
 <p>Closes a ticket.</p>
@@ -430,7 +430,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/46999808-5f756f80-d12f-11e8-9219-108908a2bdfc.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/46999808-5f756f80-d12f-11e8-9219-108908a2bdfc.png" alt="image"></a></p>
+<p><a href="../../doc_files/46999808-5f756f80-d12f-11e8-9219-108908a2bdfc.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/46999808-5f756f80-d12f-11e8-9219-108908a2bdfc.png" alt="image"></a></p>
 <h3 id="h_501830193971541591872743">4. Add worklogs to a ticket</h3>
 <hr>
 <p>Adds worklogs to a ticket.</p>
@@ -485,7 +485,7 @@
 <h5>Command Example</h5>
 <pre>!secure-works-add-worklogs-ticket content="worklog" id="SR11525106"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/40653720-a9dd4e52-6344-11e8-8911-1988d74f4eb4.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/40653720-a9dd4e52-6344-11e8-8911-1988d74f4eb4.png" alt="image"></a></p>
+<p><a href="../../doc_files/40653720-a9dd4e52-6344-11e8-8911-1988d74f4eb4.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/40653720-a9dd4e52-6344-11e8-8911-1988d74f4eb4.png" alt="image"></a></p>
 <h3 id="h_2886968124941541591878149">5. Get ticket details</h3>
 <hr>
 <p>Returns the details of a specific ticket, by  ticket ID.</p>
@@ -962,7 +962,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/47001732-d7459900-d133-11e8-90c4-4436dd18bf29.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/47001732-d7459900-d133-11e8-90c4-4436dd18bf29.png" alt="image" width="750" height="407"></a></p>
+<p><a href="../../doc_files/47001732-d7459900-d133-11e8-90c4-4436dd18bf29.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47001732-d7459900-d133-11e8-90c4-4436dd18bf29.png" alt="image" width="750" height="407"></a></p>
 <h3 id="h_5362456495891541591882972">6. Assign a ticket</h3>
 <hr>
 <p>Assigns a ticket to the Secureworks Security Operations Center (SOC).</p>
@@ -1024,7 +1024,7 @@
 <h5>Command Example</h5>
 <pre>!secure-works-assign-ticket id="SR11525106" worklog="test"</pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/40656711-f069e7be-634d-11e8-834e-23f454a48067.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/40656711-f069e7be-634d-11e8-834e-23f454a48067.png" alt="image"></a></p>
+<p><a href="../../doc_files/40656711-f069e7be-634d-11e8-834e-23f454a48067.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/40656711-f069e7be-634d-11e8-834e-23f454a48067.png" alt="image"></a></p>
 <h3 id="h_7882869456841541591888341">7. Retrieve tickets from previous 24 hours</h3>
 <hr>
 <p>Retrieves tickets from the 24 hours prior to when the updates command is executed. If a limit is specified, it will retrieve up to that many tickets (max is 500 tickets). Tickets must be updated within the last 24 hours to be visible in the command results. When executing this command you also receive the ticket worklogs. In order to view the attachment information of a specific ticket, you must use the get-ticket command. This command will return the list of attachments available for that particular ticket. Use acknowledge to confirm the updates.</p>
@@ -1462,7 +1462,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/47002456-b5e5ac80-d135-11e8-905b-f7f41c8e062c.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/47002456-b5e5ac80-d135-11e8-905b-f7f41c8e062c.png" alt="image" width="750" height="177"></a></p>
+<p><a href="../../doc_files/47002456-b5e5ac80-d135-11e8-905b-f7f41c8e062c.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47002456-b5e5ac80-d135-11e8-905b-f7f41c8e062c.png" alt="image" width="750" height="177"></a></p>
 <h3 id="h_5594867877791541591893275">8. Get close codes for a ticket</h3>
 <hr>
 <p>Returns a list of close codes for a ticket.</p>
@@ -1531,7 +1531,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/47002702-5cca4880-d136-11e8-826f-0f2400771017.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/47002702-5cca4880-d136-11e8-826f-0f2400771017.png" alt="image" width="747" height="119"></a></p>
+<p><a href="../../doc_files/47002702-5cca4880-d136-11e8-826f-0f2400771017.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47002702-5cca4880-d136-11e8-826f-0f2400771017.png" alt="image" width="747" height="119"></a></p>
 <h3 id="h_1879153928731541591898364">9. Get a list of ticket IDs</h3>
 <hr>
 <p>Returns a list of ticket IDs in the same order as the tickets returned by the GET /tickets/updates command.</p>
@@ -1594,7 +1594,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/40658614-78930ba6-6354-11e8-9b87-a125bd8d6d81.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/40658614-78930ba6-6354-11e8-9b87-a125bd8d6d81.png" alt="image"></a></p>
+<p><a href="../../doc_files/40658614-78930ba6-6354-11e8-9b87-a125bd8d6d81.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/40658614-78930ba6-6354-11e8-9b87-a125bd8d6d81.png" alt="image"></a></p>
 <h3 id="h_6997498989661541591904498">10. Get the count of updated tickets</h3>
 <hr>
 <p>Retrieves a count of tickets that have been updated, but are not yet acknowledged.</p>
@@ -1644,7 +1644,7 @@
 }
 </pre>
 <h5>Human Readable Output</h5>
-<p><a href="https://user-images.githubusercontent.com/35098543/47002995-ef6ae780-d136-11e8-8c71-ce8d2d0e481e.png" target="_blank" rel="noopener noreferrer"><img src="https://user-images.githubusercontent.com/35098543/47002995-ef6ae780-d136-11e8-8c71-ce8d2d0e481e.png" alt="image"></a></p>
+<p><a href="../../doc_files/47002995-ef6ae780-d136-11e8-8c71-ce8d2d0e481e.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/47002995-ef6ae780-d136-11e8-8c71-ce8d2d0e481e.png" alt="image"></a></p>
 <h2>Error Codes</h2>
 <hr>
 <p>If you receive an error code, refer to this table for the potential cause of the error.</p>

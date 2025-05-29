@@ -19,13 +19,13 @@ comment: |-
 enabled: true
 args:
 - name: value
-  description: The HTML to extract tables from
+  description: The HTML to extract tables from.
 - name: title
-  description: The title for tables
+  description: The title for tables.
 - name: filter_indexes
-  description: Extract only the tables with given indexes - 0 based
+  description: Extract only the tables with given indexes - 0 based.
 - name: filter_titles
-  description: Extract only the tables with given titles
+  description: Extract only the tables with given titles.
 - name: default_header_line
   auto: PREDEFINED
   predefined:

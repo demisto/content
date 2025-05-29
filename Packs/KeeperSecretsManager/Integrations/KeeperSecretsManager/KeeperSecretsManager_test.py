@@ -2,13 +2,19 @@
 
 from unittest.mock import patch
 
-from keeper_secrets_manager_core import SecretsManager
-from keeper_secrets_manager_core import mock
+from keeper_secrets_manager_core import SecretsManager, mock
 from keeper_secrets_manager_core.mock import MockConfig
-
-from KeeperSecretsManager import Client, get_field_command, list_credentials_command, \
-    list_records_command, find_records_command, list_files_command, find_files_command, \
-    get_file_command, get_infofile_command
+from KeeperSecretsManager import (
+    Client,
+    find_files_command,
+    find_records_command,
+    get_field_command,
+    get_file_command,
+    get_infofile_command,
+    list_credentials_command,
+    list_files_command,
+    list_records_command,
+)
 
 
 def get_mock_client() -> Client:
@@ -32,7 +38,7 @@ def test_get_field_command():
     resp_queue.add_response(mock_response)
 
     prefix = SecretsManager.notation_prefix
-    notation = "{}://{}/field/login".format(prefix, mock_record.uid)
+    notation = f"{prefix}://{mock_record.uid}/field/login"
     resp = get_field_command(client, {"notation": notation})
     assert resp.outputs == "My Login 1"
     assert resp.outputs_prefix == "KeeperSecretsManager.Field"
@@ -194,6 +200,7 @@ def test_get_file_command():
         mock_res.reason = "OK"
         mock_res.content = mock_file.downloadable_content()
         return mock_res
+
     with patch("requests.get", side_effect=mock_download_get):
         resp = get_file_command(client, {"file_uid": mock_file.uid})
 
@@ -221,6 +228,7 @@ def test_get_infofile_command():
         mock_res.reason = "OK"
         mock_res.content = mock_file.downloadable_content()
         return mock_res
+
     with patch("requests.get", side_effect=mock_download_get):
         resp = get_infofile_command(client, {"file_uid": mock_file.uid})
 

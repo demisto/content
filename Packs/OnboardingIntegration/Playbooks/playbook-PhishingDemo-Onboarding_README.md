@@ -34,4 +34,4 @@ There are no outputs for this playbook.
 
 ## Playbook Image
 ---
-![PhishingDemo-Onboarding](https://raw.githubusercontent.com/demisto/content/1bdd5229392bd86f0cc58265a24df23ee3f7e662/docs/images/playbooks/PhishingDemo-Onboarding.png)
+![PhishingDemo-Onboarding](../doc_files//PhishingDemo-Onboarding.png)

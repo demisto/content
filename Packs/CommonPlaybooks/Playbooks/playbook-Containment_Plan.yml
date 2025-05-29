@@ -1351,6 +1351,13 @@ outputs:
   description: The isolated endpoint ID.
 tests:
 - Containment Plan - Test
+- Containment_Plan_use_case_test
 fromversion: 6.6.0
 marketplaces:
 - marketplacev2
+- platform
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

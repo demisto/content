@@ -1,21 +1,23 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-'''Imports'''
+
+"""Imports"""
 
 import json
 import traceback
 from datetime import datetime
 from typing import Any
+
 import dateparser
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-'''CONSTANTS'''
-URL = demisto.params().get('url')
+"""CONSTANTS"""
+URL = demisto.params().get("url")
 ASM_URI = "/graph/v1.0/api"
-ASM_RISK_QUERY = '''
+ASM_RISK_QUERY = """
                     id
                     type
                     startedAt
@@ -44,8 +46,8 @@ ASM_RISK_QUERY = '''
                             }
                         }
                     }
-                    '''
-ASM_ASSET_QUERY = '''
+                    """
+ASM_ASSET_QUERY = """
                     id
                     state
                     brand
@@ -66,9 +68,10 @@ ASM_ASSET_QUERY = '''
                         id
                         title
                     }
-                '''
+                """
 ASM_ASSET_QUERY_DICT = {
-    'application': ASM_ASSET_QUERY + '''
+    "application": ASM_ASSET_QUERY
+    + """
             protocol
             uri
             fqdns {
@@ -84,7 +87,9 @@ ASM_ASSET_QUERY_DICT = {
                 id
                 name
             }
-            ''', 'fqdn': ASM_ASSET_QUERY + '''
+            """,
+    "fqdn": ASM_ASSET_QUERY
+    + """
             name
             dnsRecords
             resolvesTo {
@@ -96,7 +101,9 @@ ASM_ASSET_QUERY_DICT = {
                 id
                 name
             }
-            ''', 'ipaddress': ASM_ASSET_QUERY + '''
+            """,
+    "ipaddress": ASM_ASSET_QUERY
+    + """
             lat
             lon
             geoCity
@@ -106,34 +113,32 @@ ASM_ASSET_QUERY_DICT = {
                 id
                 netname
             }
-            ''', 'netblock': ASM_ASSET_QUERY + '''
+            """,
+    "netblock": ASM_ASSET_QUERY
+    + """
             netname
             ipAddresses {
                 id
                 address
             }
-            '''
+            """,
 }
 
-SEVERITY_MAP = {"Low": 1,
-                "Medium": 2,
-                "High": 3,
-                "Critical": 4
-                }
+SEVERITY_MAP = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
 MIN_SEVERITY_TO_FETCH = 1
 MAX_INCIDENTS_TO_FETCH = 50
-ALERT_TYPES = ['gdpr', 'informational', 'misconfiguration', 'reported', 'ssl', 'vulnerable software']
+ALERT_TYPES = ["gdpr", "informational", "misconfiguration", "reported", "ssl", "vulnerable software"]
 PLEASE_CONTACT = "Please contact your Darktrace representative."
 
 DARKTRACE_API_ERRORS = {
-    'SIGNATURE_ERROR': 'API Signature Error. You have invalid credentials in your config.',
-    'DATE_ERROR': 'API Date Error. Check that the time on this machine matches that of the Darktrace instance.',
-    'ENDPOINT_ERROR': f'Invalid Endpoint. - {PLEASE_CONTACT}',
-    'PRIVILEGE_ERROR': 'User has insufficient permissions to access the API endpoint.',
-    'UNDETERMINED_ERROR': f'Darktrace was unable to process your request - {PLEASE_CONTACT}',
-    'FAILED_TO_PARSE': 'N/A'
+    "SIGNATURE_ERROR": "API Signature Error. You have invalid credentials in your config.",
+    "DATE_ERROR": "API Date Error. Check that the time on this machine matches that of the Darktrace instance.",
+    "ENDPOINT_ERROR": f"Invalid Endpoint. - {PLEASE_CONTACT}",
+    "PRIVILEGE_ERROR": "User has insufficient permissions to access the API endpoint.",
+    "UNDETERMINED_ERROR": f"Darktrace was unable to process your request - {PLEASE_CONTACT}",
+    "FAILED_TO_PARSE": "N/A",
 }
 
 """*****CUSTOM EXCEPTIONS*****"""
@@ -146,37 +151,37 @@ class InvalidAssetStateError(Exception):
 
 class InvalidAssetID(Exception):
     def __init__(self, asset_id: Optional[str] = None):
-        super().__init__(f"ASM Asset ID \"{asset_id}\" is not a valid ID.")
+        super().__init__(f'ASM Asset ID "{asset_id}" is not a valid ID.')
 
 
 class AssetNotFound(Exception):
     def __init__(self, asset_type: str, id: Optional[str] = None, message: Optional[str] = None):
-        super().__init__(f"ASM {asset_type} Asset with id \"{id}\" not found. {message}")
+        super().__init__(f'ASM {asset_type} Asset with id "{id}" not found. {message}')
 
 
 class MitigationError(Exception):
     def __init__(self, risk_id: str, message: Optional[str] = ""):
-        super().__init__(f"Could not mitigate ASM Risk \"{risk_id}\" due to the following:\n{message}")
+        super().__init__(f'Could not mitigate ASM Risk "{risk_id}" due to the following:\n{message}')
 
 
 class TagError(Exception):
     def __init__(self, action: str, name: str, id: Optional[str] = "", message: Optional[str] = ""):
-        if action == 'create':
-            super().__init__(f"Could not create ASM Tag \"{name}\" due to the following:\n{message}")
-        if action == 'assign':
-            super().__init__(f"Could not assign ASM Tag \"{name}\" to ASM object \"{id}\" due to the following:\n{message}")
-        if action == 'unassign':
-            super().__init__(f"Could not unassign ASM Tag \"{name}\" from ASM object \"{id}\" due to the following:\n{message}")
+        if action == "create":
+            super().__init__(f'Could not create ASM Tag "{name}" due to the following:\n{message}')
+        if action == "assign":
+            super().__init__(f'Could not assign ASM Tag "{name}" to ASM object "{id}" due to the following:\n{message}')
+        if action == "unassign":
+            super().__init__(f'Could not unassign ASM Tag "{name}" from ASM object "{id}" due to the following:\n{message}')
 
 
 class CommentError(Exception):
     def __init__(self, action: str, id: Optional[str] = "", message: Optional[str] = ""):
-        if action == 'post':
-            super().__init__(f"Could not post comment to ASM object \"{id}\" due to the following:\n{message}")
-        elif action == 'edit':
-            super().__init__(f"Could not edit comment \"{id}\" due to the following:\n{message}")
-        elif action == 'delete':
-            super().__init__(f"Could not delete comment \"{id}\" due to the following:\n{message}")
+        if action == "post":
+            super().__init__(f'Could not post comment to ASM object "{id}" due to the following:\n{message}')
+        elif action == "edit":
+            super().__init__(f'Could not edit comment "{id}" due to the following:\n{message}')
+        elif action == "delete":
+            super().__init__(f'Could not delete comment "{id}" due to the following:\n{message}')
 
 
 """*****CLIENT CLASS*****
@@ -193,7 +198,7 @@ class Client(BaseClient):
 
     def asm_post(self, query_uri: str, json: Optional[dict] = None):
         headers = self._headers
-        return self._asm_api_call(query_uri, method='POST', json=json, headers=headers)
+        return self._asm_api_call(query_uri, method="POST", json=json, headers=headers)
 
     def _asm_api_call(
         self,
@@ -212,29 +217,31 @@ class Client(BaseClient):
                 params=params,
                 data=data,
                 json_data=json,
-                resp_type='response',
+                resp_type="response",
                 headers=headers,
                 error_handler=self.error_handler,
             )
 
             if res.status_code not in [200, 204]:
-                raise Exception('Your request failed with the following error: ' + str(res.content)
-                                + '. Response Status code: ' + str(res.status_code))
+                raise Exception(
+                    "Your request failed with the following error: "
+                    + str(res.content)
+                    + ". Response Status code: "
+                    + str(res.status_code)
+                )
         except Exception as e:
             raise Exception(e)
         try:
             return res.json()
         except Exception as e:
-            raise ValueError(
-                f'Failed to process the API response - {str(e)}'
-            )
+            raise ValueError(f"Failed to process the API response - {e!s}")
 
     def error_handler(self, res: requests.Response):
         """Handles authentication errors"""
         if res.status_code == 400:
-            raise_message = 'Invalid field names in query:\n'
-            for error in res.json()['errors']:
-                error_message = error['message']
+            raise_message = "Invalid field names in query:\n"
+            for error in res.json()["errors"]:
+                error_message = error["message"]
                 error_location = f"Line {error['locations'][0]['line']}, column {error['locations'][0]['column']}."
                 raise_message += f"{error_message} {error_location}\n"
             raise ValueError(raise_message)
@@ -252,7 +259,7 @@ class Client(BaseClient):
         :return: dict containing Risk info.
         :rtype: ``Dict[str, Any]``
         """
-        query = f'''query risk {{
+        query = f"""query risk {{
                         risk(id:"{risk_id}") {{
                             id
                             type
@@ -284,7 +291,7 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": query}
         response = self.asm_post(ASM_URI, payload)
         return response["data"]["risk"]
@@ -296,17 +303,17 @@ class Client(BaseClient):
         :return: dict containing status of mitigation.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     closeRisk(id:"{risk_id}") {{
                         success
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
         if not response["data"]["closeRisk"]:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
             raise MitigationError(risk_id, errors_string)
         return response["data"]["closeRisk"]
 
@@ -317,21 +324,21 @@ class Client(BaseClient):
         :return: dict containing Asset info.
         :rtype: ``Dict[str, Any]``
         """
-        if asset_id[0] == 'Q':
-            asset_type = 'application'
-        elif asset_id[0] == 'R':
-            asset_type = 'fqdn'
-        elif asset_id[0] == 'T':
-            asset_type = 'netblock'
-        elif asset_id[0] == 'S':
-            asset_type = 'ipaddress'
+        if asset_id[0] == "Q":
+            asset_type = "application"
+        elif asset_id[0] == "R":
+            asset_type = "fqdn"
+        elif asset_id[0] == "T":
+            asset_type = "netblock"
+        elif asset_id[0] == "S":
+            asset_type = "ipaddress"
         else:
             raise InvalidAssetID(asset_id)
         query_type = ASM_ASSET_QUERY_DICT[asset_type]
-        query = f'''query {asset_type} {{ {asset_type}(id:"{asset_id}") {{
+        query = f"""query {asset_type} {{ {asset_type}(id:"{asset_id}") {{
                 {query_type}
                 }}
-            }}'''
+            }}"""
         payload = {"query": query}
         response = self.asm_post(ASM_URI, payload)
         if not response["data"][asset_type]:
@@ -350,7 +357,7 @@ class Client(BaseClient):
         :return: dict containing status of comment.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     placeComment(text:"{comment}", objectId:"{id}") {{
                         success
                         comment {{
@@ -359,13 +366,13 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['placeComment']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise CommentError('post', id, errors_string)
+        if not response["data"]["placeComment"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise CommentError("post", id, errors_string)
         return response["data"]["placeComment"]
 
     def edit_asm_comment(self, comment_id: str, comment: str):
@@ -377,7 +384,7 @@ class Client(BaseClient):
         :return: dict containing status of comment edit.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     editComment(text:"{comment}", id:"{comment_id}") {{
                         success
                         comment {{
@@ -386,13 +393,13 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['editComment']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise CommentError('edit', comment_id, errors_string)
+        if not response["data"]["editComment"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise CommentError("edit", comment_id, errors_string)
         return response["data"]["editComment"]
 
     def delete_asm_comment(self, comment_id: str):
@@ -402,18 +409,18 @@ class Client(BaseClient):
         :return: dict containing status of comment deletion.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     deleteComment(id:"{comment_id}") {{
                         success
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['deleteComment']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise CommentError('delete', comment_id, errors_string)
+        if not response["data"]["deleteComment"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise CommentError("delete", comment_id, errors_string)
         return response["data"]["deleteComment"]
 
     def create_asm_tag(self, tag_name: str):
@@ -423,7 +430,7 @@ class Client(BaseClient):
         :return: dict including the status and info of the new Tag.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     createTag(name:"{tag_name}") {{
                         success
                         tag {{
@@ -432,14 +439,14 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['createTag']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise TagError('create', name=tag_name, message=errors_string)
-        return response['data']['createTag']
+        if not response["data"]["createTag"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise TagError("create", name=tag_name, message=errors_string)
+        return response["data"]["createTag"]
 
     def assign_asm_tag(self, tag_name: str, asset_id: str):
         """Function to assign an existing tag to an Asset.
@@ -450,7 +457,7 @@ class Client(BaseClient):
         :return: dict including the status of assignment and info on Asset.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     assignTag(id:"{asset_id}", tagName:"{tag_name}") {{
                         success
                         asset {{
@@ -459,14 +466,14 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['assignTag']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise TagError('assign', id=asset_id, name=tag_name, message=errors_string)
-        return response['data']['assignTag']
+        if not response["data"]["assignTag"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise TagError("assign", id=asset_id, name=tag_name, message=errors_string)
+        return response["data"]["assignTag"]
 
     def unassign_asm_tag(self, tag_name: str, asset_id: str):
         """Function to unassign an existing tag from an Asset.
@@ -477,7 +484,7 @@ class Client(BaseClient):
         :return: dict including the status of unassignment and info on Asset.
         :rtype: ``Dict[str, Any]``
         """
-        mutation = f'''mutation MyMutation {{
+        mutation = f"""mutation MyMutation {{
                     unassignTag(id:"{asset_id}", tagName:"{tag_name}") {{
                         success
                         asset {{
@@ -486,14 +493,14 @@ class Client(BaseClient):
                             }}
                         }}
                     }}
-                    '''
+                    """
         payload = {"query": mutation}
         response = self.asm_post(ASM_URI, payload)
-        if not response['data']['unassignTag']:
-            errors = [error.get("message", '') for error in response.get("errors", {})]
-            errors_string = '\n'.join(errors)
-            raise TagError('unassign', id=asset_id, name=tag_name, message=errors_string)
-        return response['data']['unassignTag']
+        if not response["data"]["unassignTag"]:
+            errors = [error.get("message", "") for error in response.get("errors", {})]
+            errors_string = "\n".join(errors)
+            raise TagError("unassign", id=asset_id, name=tag_name, message=errors_string)
+        return response["data"]["unassignTag"]
 
     def get_asm_risks(self, start_time) -> List[Dict[str, Any]]:
         """Function to pull all Risks after a given start time.
@@ -503,7 +510,7 @@ class Client(BaseClient):
         :rtype: ``List[Dict[str, Any]]``
         """
         start_string = start_time.strftime(DATE_FORMAT)
-        query = f'''query allRisks {{
+        query = f"""query allRisks {{
                         allRisks(startedAt:"{start_string}", orderBy:"startedAt") {{
                             edges {{
                                 node {{
@@ -512,7 +519,7 @@ class Client(BaseClient):
                                 }}
                             }}
                         }}
-                    '''
+                    """
         payload = {"query": query}
         response = self.asm_post(ASM_URI, payload)
         return response["data"]["allRisks"]["edges"]
@@ -543,7 +550,7 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> float:
 
     if arg is None:
         if required is True:
-            raise ValueError(f'Missing \'{arg_name}\'')
+            raise ValueError(f"Missing '{arg_name}'")
         raise ValueError(f"'{arg_name}' cannot be None.")
 
     if isinstance(arg, str) and arg.isdigit():
@@ -553,16 +560,16 @@ def arg_to_timestamp(arg: Any, arg_name: str, required: bool = False) -> float:
         # we use dateparser to handle strings either in ISO8601 format, or
         # relative time stamps.
         # For example: format 2019-10-23T00:00:00 or "3 days", etc
-        date = dateparser.parse(arg, settings={'TIMEZONE': 'UTC'})
+        date = dateparser.parse(arg, settings={"TIMEZONE": "UTC"})
         if date is None:
             # if d is None it means dateparser failed to parse it
-            raise ValueError(f'Invalid date: {arg_name}')
+            raise ValueError(f"Invalid date: {arg_name}")
 
         return float(date.timestamp())
     if isinstance(arg, int):
         # Convert to float if the input is an int
         return float(arg)
-    raise ValueError(f'Invalid date: \'{arg_name}\'')
+    raise ValueError(f"Invalid date: '{arg_name}'")
 
 
 def check_required_fields(args, *fields):
@@ -575,7 +582,7 @@ def check_required_fields(args, *fields):
     """
     for field in fields:
         if field not in args:
-            raise ValueError(f'Argument error could not find {field} in {args}')
+            raise ValueError(f"Argument error could not find {field} in {args}")
 
 
 def format_JSON_for_risk(risk: dict[str, Any]) -> dict[str, Any]:
@@ -587,18 +594,18 @@ def format_JSON_for_risk(risk: dict[str, Any]) -> dict[str, Any]:
     """
     new_json: Dict[str, Any] = {}
     for key in risk:
-        if key == 'comments':
+        if key == "comments":
             if risk[key] is None:
                 new_json[key] = {}
             else:
-                comments = {comment['node']['id']: comment['node']['text'] for comment in risk[key]['edges']}
+                comments = {comment["node"]["id"]: comment["node"]["text"] for comment in risk[key]["edges"]}
                 new_json[key] = comments
         else:
             new_json[key] = risk[key]
-    decoded_risk_id = decode_asm_id(risk['id'])
-    decoded_asset_id = decode_asm_id(risk['asset']['id'])
-    new_json['risk_url'] = f'{URL}/app/#/detail/direct-risks/{decoded_asset_id}?risk_id={decoded_risk_id}'
-    new_json['asset']['asset_url'] = f'{URL}/app/#/detail/overview/{decoded_asset_id}'
+    decoded_risk_id = decode_asm_id(risk["id"])
+    decoded_asset_id = decode_asm_id(risk["asset"]["id"])
+    new_json["risk_url"] = f"{URL}/app/#/detail/direct-risks/{decoded_asset_id}?risk_id={decoded_risk_id}"
+    new_json["asset"]["asset_url"] = f"{URL}/app/#/detail/overview/{decoded_asset_id}"
     return new_json
 
 
@@ -611,31 +618,31 @@ def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
     """
     new_json: Dict[str, Any] = {}
     for key in asset:
-        if key == 'comments':
+        if key == "comments":
             if asset[key] is None:
                 new_json[key] = {}
             else:
-                comments = {comment['id']: comment['text'] for comment in asset[key]}
+                comments = {comment["id"]: comment["text"] for comment in asset[key]}
                 new_json[key] = comments
-        elif key == 'discoverySources':
+        elif key == "discoverySources":
             if asset[key] is None:
                 new_json[key] = {}
             else:
                 sources = {source["id"]: source["description"] for source in asset[key]}
                 new_json[key] = sources
-        elif key == 'risks':
+        elif key == "risks":
             if asset[key] is None:
                 new_json[key] = {}
             else:
                 risks = {risk["id"]: risk["title"] for risk in asset[key]}
                 new_json[key] = risks
-        elif key in ['fqdns', 'technologies']:
+        elif key in ["fqdns", "technologies"]:
             if asset[key] is None:
                 new_json[key] = {}
             else:
                 values = {value["id"]: value["name"] for value in asset[key]}
                 new_json[key] = values
-        elif key in ['ipaddresses', 'ipAddresses', 'resolvesTo']:
+        elif key in ["ipaddresses", "ipAddresses", "resolvesTo"]:
             if asset[key] is None:
                 new_json[key] = {}
             else:
@@ -643,8 +650,8 @@ def format_JSON_for_asset(asset: dict[str, Any]) -> dict[str, Any]:
                 new_json[key] = addresses
         else:
             new_json[key] = asset[key]
-    decoded_asset_id = decode_asm_id(asset['id'])
-    new_json['asset_url'] = f'{URL}/app/#/detail/overview/{decoded_asset_id}'
+    decoded_asset_id = decode_asm_id(asset["id"])
+    new_json["asset_url"] = f"{URL}/app/#/detail/overview/{decoded_asset_id}"
     return new_json
 
 
@@ -655,11 +662,11 @@ def _compute_xsoar_severity(security_rating: str) -> int:
     :return: Integer equivalent of XSOAR severity scores.
     :rtype: ``int``
     """
-    if security_rating in ['c', 'd']:
+    if security_rating in ["c", "d"]:
         return 2
-    if security_rating in ['e']:
+    if security_rating in ["e"]:
         return 3
-    if security_rating in ['f']:
+    if security_rating in ["f"]:
         return 4
     return 1
 
@@ -672,7 +679,7 @@ def decode_asm_id(id: str):
     :return: Decoded ID of ASM object used in UI.
     :rtype: ``str``
     """
-    decoded = str(base64.b64decode(id), encoding='utf-8').split(':')[1]
+    decoded = str(base64.b64decode(id), encoding="utf-8").split(":")[1]
     return decoded
 
 
@@ -698,23 +705,20 @@ def test_module(client: Client, first_fetch_time: float) -> str:
         client.get_asm_risks(start_time=first_fetch_datetime)
 
     except DemistoException as e:
-        if 'Forbidden' in str(e):
-            return 'Authorization Error: make sure API Key is correctly set'
+        if "Forbidden" in str(e):
+            return "Authorization Error: make sure API Key is correctly set"
         else:
             raise e
-    return 'ok'
+    return "ok"
 
 
-def fetch_incidents(client: Client,
-                    last_run: dict[str, str],
-                    first_fetch_time: float,
-                    max_alerts: int,
-                    min_severity: int,
-                    alert_types: list[str]) -> tuple[dict[str, Any], list[dict]]:
-    """Function used to pull incidents into XSOAR every few minutes.  """
+def fetch_incidents(
+    client: Client, last_run: dict[str, str], first_fetch_time: float, max_alerts: int, min_severity: int, alert_types: list[str]
+) -> tuple[dict[str, Any], list[dict]]:
+    """Function used to pull incidents into XSOAR every few minutes."""
     # Get the last fetch time, if exists
     # last_run is a dict with a single key, called last_fetch
-    last_fetch = last_run.get('last_fetch', None)
+    last_fetch = last_run.get("last_fetch", None)
     first_fetch_datetime = datetime.fromtimestamp(first_fetch_time)
     # Handle first fetch time
     if last_fetch is None:
@@ -732,27 +736,28 @@ def fetch_incidents(client: Client,
     for alert in asm_risks:
         # Convert startedAt time to datetime object and add to alert
         # grabbing first 26 characters from start time since that provides ms resolution
-        incident_created_time = datetime.strptime(alert['node']['startedAt'][:26], DATE_FORMAT)
+        incident_created_time = datetime.strptime(alert["node"]["startedAt"][:26], DATE_FORMAT)
 
         # to prevent duplicates, we are only adding incidents with creation_time > last fetched incident
         if last_fetch_datetime and incident_created_time <= last_fetch_datetime:
             demisto.debug(
-                f'''Incident created time: {incident_created_time} was part of a previous poll cycle.
-                Last fetch time: {last_fetch_datetime}''')
+                f"""Incident created time: {incident_created_time} was part of a previous poll cycle.
+                Last fetch time: {last_fetch_datetime}"""
+            )
             continue
 
-        brand = alert.get('node', {}).get('asset', {}).get('brand')
-        title = alert['node']['title']
-        incident_name = f'Darktrace ASM | Risk Title: {title} | Brand: {brand}'
+        brand = alert.get("node", {}).get("asset", {}).get("brand")
+        title = alert["node"]["title"]
+        incident_name = f"Darktrace ASM | Risk Title: {title} | Brand: {brand}"
 
-        xsoar_severity = _compute_xsoar_severity(alert['node']['securityRating'])
+        xsoar_severity = _compute_xsoar_severity(alert["node"]["securityRating"])
 
         # Skip incidents with a lower severity score than the desired minimum
         if xsoar_severity < min_severity:
             demisto.debug(f"Incident severity: {xsoar_severity} is lower than chosen minimum threshold: {min_severity}")
             continue
 
-        incident_type = alert['node']['type'].lower()
+        incident_type = alert["node"]["type"].lower()
 
         # Skip incidents with a type not included in the chosen alert types to ingest
         if incident_type not in alert_types:
@@ -760,10 +765,10 @@ def fetch_incidents(client: Client,
             continue
 
         incident = {
-            'name': incident_name,
-            'occurred': alert['node']['startedAt'],
-            'rawJSON': json.dumps(alert['node']),
-            'severity': xsoar_severity
+            "name": incident_name,
+            "occurred": alert["node"]["startedAt"],
+            "rawJSON": json.dumps(alert["node"]),
+            "severity": xsoar_severity,
         }
 
         incidents.append(incident)
@@ -776,125 +781,123 @@ def fetch_incidents(client: Client,
             break
 
     # Save the next_run as a dict with the last_fetch key to be stored
-    next_run = {'last_fetch': latest_created_time.strftime(DATE_FORMAT)}
+    next_run = {"last_fetch": latest_created_time.strftime(DATE_FORMAT)}
     return next_run, incidents
 
 
 def get_asm_risk_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    check_required_fields(args, 'risk_id')
-    risk_id = str(args.get('risk_id', None))
+    check_required_fields(args, "risk_id")
+    risk_id = str(args.get("risk_id", None))
 
     response = client.get_asm_risk(risk_id)
 
     formatted_response = format_JSON_for_risk(response)
 
-    readable_output = tableToMarkdown('Darktrace ASM Risk', formatted_response)
+    readable_output = tableToMarkdown("Darktrace ASM Risk", formatted_response)
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.risk',
-        outputs_key_field='id',
-        outputs=response
+        readable_output=readable_output, outputs_prefix="Darktrace.risk", outputs_key_field="id", outputs=response
     )
 
 
 def mitigate_asm_risk_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'risk_id')
-    risk_id = str(args.get('risk_id', None))
+    check_required_fields(args, "risk_id")
+    risk_id = str(args.get("risk_id", None))
 
     client.mitigate_asm_risk(risk_id)
 
-    readable_output = f'Successfully mitigated risk. Risk ID: {risk_id}'
+    readable_output = f"Successfully mitigated risk. Risk ID: {risk_id}"
     return readable_output
 
 
 def get_asm_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
-    check_required_fields(args, 'asset_id')
-    asset_id = str(args.get('asset_id', None))
+    check_required_fields(args, "asset_id")
+    asset_id = str(args.get("asset_id", None))
 
     response = client.get_asm_asset(asset_id)
 
     formatted_response = format_JSON_for_asset(response)
 
-    readable_output = tableToMarkdown('Darktrace ASM Asset', formatted_response)
+    readable_output = tableToMarkdown("Darktrace ASM Asset", formatted_response)
 
     return CommandResults(
-        readable_output=readable_output,
-        outputs_prefix='Darktrace.asset',
-        outputs_key_field='id',
-        outputs=response
+        readable_output=readable_output, outputs_prefix="Darktrace.asset", outputs_key_field="id", outputs=response
     )
 
 
 def post_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'id', 'comment')
-    id = str(args.get('id', None))
-    comment = str(args.get('comment', None))
+    check_required_fields(args, "id", "comment")
+    id = str(args.get("id", None))
+    comment = str(args.get("comment", None))
 
     response = client.post_asm_comment(id, comment)
 
     if response.get("success", False):
         comment_dict = response.get("comment", {})
-        readable_output = 'Comment successful.\n'\
-            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'\
+        readable_output = (
+            'Comment successful.\n'
+            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'
             f'Comment Text: {comment_dict.get("text", "Failed to get comment text.")}'
+        )
     else:
-        errors = [error.get("message", '') for error in response.get("errors", {})]
-        errors_string = '\n'.join(errors)
-        readable_output = f'Comment failed due to following errors:\n{errors_string}'
+        errors = [error.get("message", "") for error in response.get("errors", {})]
+        errors_string = "\n".join(errors)
+        readable_output = f"Comment failed due to following errors:\n{errors_string}"
     return readable_output
 
 
 def edit_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'comment_id', 'comment')
-    comment_id = str(args.get('comment_id', None))
-    comment = str(args.get('comment', None))
+    check_required_fields(args, "comment_id", "comment")
+    comment_id = str(args.get("comment_id", None))
+    comment = str(args.get("comment", None))
 
     response = client.edit_asm_comment(comment_id, comment)
 
     if response.get("success", False):
         comment_dict = response.get("comment", {})
-        readable_output = 'Comment successfully edited.\n'\
-            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'\
+        readable_output = (
+            'Comment successfully edited.\n'
+            f'Comment ID: {comment_dict.get("id", "Failed to get comment ID.")}\n'
             f'Comment Text: {comment_dict.get("text", "Failed to get comment text.")}'
+        )
     else:
-        errors = [error.get("message", '') for error in response.get("errors", {})]
-        errors_string = '\n'.join(errors)
-        readable_output = f'Failed to edit comment due to following errors:\n{errors_string}'
+        errors = [error.get("message", "") for error in response.get("errors", {})]
+        errors_string = "\n".join(errors)
+        readable_output = f"Failed to edit comment due to following errors:\n{errors_string}"
     return readable_output
 
 
 def delete_asm_comment_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'comment_id')
-    comment_id = str(args.get('comment_id', None))
+    check_required_fields(args, "comment_id")
+    comment_id = str(args.get("comment_id", None))
 
     response = client.delete_asm_comment(comment_id)
 
     if response.get("success", False):
-        readable_output = f'Comment successfully deleted. Comment ID: {comment_id}'
+        readable_output = f"Comment successfully deleted. Comment ID: {comment_id}"
     else:
-        errors = [error.get("message", '') for error in response.get("errors", {})]
-        errors_string = '\n'.join(errors)
-        readable_output = f'Comment deletion failed due to following errors:\n{errors_string}'
+        errors = [error.get("message", "") for error in response.get("errors", {})]
+        errors_string = "\n".join(errors)
+        readable_output = f"Comment deletion failed due to following errors:\n{errors_string}"
     return readable_output
 
 
 def create_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'tag_name')
-    tag_name = str(args.get('tag_name', None))
+    check_required_fields(args, "tag_name")
+    tag_name = str(args.get("tag_name", None))
 
     client.create_asm_tag(tag_name)
 
     # TODO: add error handling depending on XSOAR response on best practice
 
-    readable_output = f'Successfully created tag {tag_name}.'
+    readable_output = f"Successfully created tag {tag_name}."
     return readable_output
 
 
 def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'tag_name', 'asset_id')
-    tag_name = str(args.get('tag_name', None))
-    asset_id = str(args.get('asset_id', None))
+    check_required_fields(args, "tag_name", "asset_id")
+    tag_name = str(args.get("tag_name", None))
+    asset_id = str(args.get("asset_id", None))
 
     response = client.assign_asm_tag(tag_name, asset_id)
 
@@ -902,14 +905,14 @@ def assign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     tags = asset.get("tags")
     tags_string = "\n".join(tags)
 
-    readable_output = f'Successfully assigned tag {tag_name} to asset {asset_id}.  Tags applied to asset:\n{tags_string}'
+    readable_output = f"Successfully assigned tag {tag_name} to asset {asset_id}.  Tags applied to asset:\n{tags_string}"
     return readable_output
 
 
 def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
-    check_required_fields(args, 'tag_name', 'asset_id')
-    tag_name = str(args.get('tag_name', None))
-    asset_id = str(args.get('asset_id', None))
+    check_required_fields(args, "tag_name", "asset_id")
+    tag_name = str(args.get("tag_name", None))
+    asset_id = str(args.get("asset_id", None))
 
     response = client.unassign_asm_tag(tag_name, asset_id)
 
@@ -917,7 +920,7 @@ def unassign_asm_tag_command(client: Client, args: dict[str, Any]) -> str:
     tags = asset.get("tags")
     tags_string = "\n".join(tags)
 
-    readable_output = f'Successfully unassigned tag {tag_name} from asset {asset_id}.  Tags applied to asset:\n{tags_string}'
+    readable_output = f"Successfully unassigned tag {tag_name} from asset {asset_id}.  Tags applied to asset:\n{tags_string}"
     return readable_output
 
 
@@ -933,60 +936,53 @@ returns an error message via ``return_error()``.
 """
 
 
-def main() -> None:     # pragma: no cover
+def main() -> None:  # pragma: no cover
     """main function, parses params and runs command functions
     :return:
     :rtype:
     """
 
     # Collect Darktrace URL
-    base_url = demisto.params().get('url')
+    base_url = demisto.params().get("url")
 
     # API key
-    api_token = (demisto.params().get('apikey', ''))
+    api_token = demisto.params().get("apikey", "")
     headers = {"Authorization": f"Token {api_token}"}
 
     # Client class inherits from BaseClient, so SSL verification is
     # handled out of the box by it. Pass ``verify_certificate`` to
     # the Client constructor.
-    verify_certificate = not demisto.params().get('insecure', False)
+    verify_certificate = not demisto.params().get("insecure", False)
 
     # How much time before the first fetch to retrieve incidents
     first_fetch_time = arg_to_timestamp(
-        arg=demisto.params().get('first_fetch', '1 day'),
-        arg_name='First fetch time',
-        required=True
+        arg=demisto.params().get("first_fetch", "1 day"), arg_name="First fetch time", required=True
     )
 
     # Client class inherits from BaseClient, so system proxy is handled
     # out of the box by it, just pass ``proxy`` to the Client constructor
-    proxy = demisto.params().get('proxy', False)
+    proxy = demisto.params().get("proxy", False)
 
     # ``demisto.debug()``, ``demisto.info()``, prints information in the XSOAR server log.
-    demisto.debug(f'Command being called is {demisto.command()}')
+    demisto.debug(f"Command being called is {demisto.command()}")
 
     try:
-        client = Client(
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy,
-            headers=headers
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, headers=headers)
 
-        if demisto.command() == 'test-module':
+        if demisto.command() == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(client, first_fetch_time))
 
-        elif demisto.command() == 'fetch-incidents':
+        elif demisto.command() == "fetch-incidents":
             # Set and define the fetch incidents command to run after activated via integration settings.
 
             # Convert the argument to an int using helper map or set to MIN_SEVERITY_TO_FETCH
-            min_severity = SEVERITY_MAP.get(demisto.params().get('min_severity', None), None)
+            min_severity = SEVERITY_MAP.get(demisto.params().get("min_severity", None), None)
             if not min_severity or min_severity < MIN_SEVERITY_TO_FETCH:
                 min_severity = MIN_SEVERITY_TO_FETCH
 
             # Get the list of alert types to ingest and make sure each item is all lower case or set to ALERT_TYPES
-            alert_types = demisto.params().get('alert_type', None)
+            alert_types = demisto.params().get("alert_type", None)
             if not alert_types:
                 alert_types = ALERT_TYPES
             else:
@@ -994,9 +990,7 @@ def main() -> None:     # pragma: no cover
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_alerts = arg_to_number(
-                arg=demisto.params().get('max_fetch', MAX_INCIDENTS_TO_FETCH),
-                arg_name='max_fetch',
-                required=False
+                arg=demisto.params().get("max_fetch", MAX_INCIDENTS_TO_FETCH), arg_name="max_fetch", required=False
             )
             if not max_alerts or max_alerts > MAX_INCIDENTS_TO_FETCH:
                 max_alerts = MAX_INCIDENTS_TO_FETCH
@@ -1007,7 +1001,7 @@ def main() -> None:     # pragma: no cover
                 min_severity=min_severity,
                 alert_types=alert_types,
                 last_run=demisto.getLastRun(),  # getLastRun() gets the last run dict
-                first_fetch_time=first_fetch_time
+                first_fetch_time=first_fetch_time,
             )
 
             # Use the variables defined above as the outputs of fetch_incidents to set up the next call and create incidents:
@@ -1017,38 +1011,38 @@ def main() -> None:     # pragma: no cover
             # of incidents to create
             demisto.incidents(incidents)
 
-        elif demisto.command() == 'darktrace-asm-get-risk':
+        elif demisto.command() == "darktrace-asm-get-risk":
             return_results(get_asm_risk_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-mitigate-risk':
+        elif demisto.command() == "darktrace-asm-mitigate-risk":
             return_results(mitigate_asm_risk_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-post-comment':
+        elif demisto.command() == "darktrace-asm-post-comment":
             return_results(post_asm_comment_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-edit-comment':
+        elif demisto.command() == "darktrace-asm-edit-comment":
             return_results(edit_asm_comment_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-delete-comment':
+        elif demisto.command() == "darktrace-asm-delete-comment":
             return_results(delete_asm_comment_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-get-asset':
+        elif demisto.command() == "darktrace-asm-get-asset":
             return_results(get_asm_asset_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-create-tag':
+        elif demisto.command() == "darktrace-asm-create-tag":
             return_results(create_asm_tag_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-assign-tag':
+        elif demisto.command() == "darktrace-asm-assign-tag":
             return_results(assign_asm_tag_command(client, demisto.args()))
 
-        elif demisto.command() == 'darktrace-asm-unassign-tag':
+        elif demisto.command() == "darktrace-asm-unassign-tag":
             return_results(unassign_asm_tag_command(client, demisto.args()))
 
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')
+        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
 
 
 """*****ENTRY POINT****"""
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

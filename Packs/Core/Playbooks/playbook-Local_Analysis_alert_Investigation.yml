@@ -2457,4 +2457,12 @@ tests:
 - No tests (auto formatted)
 fromversion: 6.6.0
 marketplaces:
-  - marketplacev2
+- platform
+- marketplacev2
+
+
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

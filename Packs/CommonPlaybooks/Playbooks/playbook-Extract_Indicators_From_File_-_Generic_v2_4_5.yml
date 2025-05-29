@@ -21,7 +21,11 @@ description: |-
   - DOTM
   - XLSB
   - DOT
-  - PPSM.
+  - PPSM
+  - PNG
+  - JPG/JPEG
+  - GIF (when Image OCR is enabled).
+  In addition, the playbook supports QR codes.
   The playbook does not support encrypted / password-protected files such as XLSB. Such files will be skipped.
 starttaskid: "0"
 tasks:
@@ -117,7 +121,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1740
+          "y": 1744
         }
       }
     note: false
@@ -484,10 +488,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 4126190b-f834-4906-858c-7645baea24d0
+    taskid: 2c302a24-52da-4372-b33e-0bb513877c85
     type: condition
     task:
-      id: 4126190b-f834-4906-858c-7645baea24d0
+      id: 2c302a24-52da-4372-b33e-0bb513877c85
       version: -1
       name: Is there a PDF file?
       description: Checks if there is a PDF file in context.
@@ -498,7 +502,7 @@ tasks:
       '#default#':
       - "10"
       "yes":
-      - "8"
+      - "29"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -540,75 +544,6 @@ tasks:
         "position": {
           "x": 1320,
           "y": 460
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: effd1883-322e-43b7-8ce7-0f8c87f29df2
-    type: regular
-    task:
-      id: effd1883-322e-43b7-8ce7-0f8c87f29df2
-      version: -1
-      name: Extract indicators from PDF file
-      description: Load a PDF file's content and metadata into context.
-      scriptName: ReadPDFFileV2
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "19"
-      - "25"
-    scriptarguments:
-      entryID:
-        complex:
-          root: inputs.File
-          filters:
-          - - operator: containsString
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-            - operator: containsString
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-          accessor: EntryID
-          transformers:
-          - operator: AppendIfNotEmpty
-            args:
-              item:
-                value:
-                  simple: ${File(val.Info=="application/pdf").EntryID}
-              raw: {}
-          - operator: uniq
-      maxImages:
-        complex:
-          root: inputs.MaxImagesFromPDF
-    reputationcalc: 2
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 1320,
-          "y": 900
         }
       }
     note: false
@@ -1113,8 +1048,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2190,
-          "y": 900
+          "x": 2809,
+          "y": 718
         }
       }
     note: false
@@ -1190,8 +1125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2640,
-          "y": 1320
+          "x": 2778,
+          "y": 1099
         }
       }
     note: false
@@ -1389,10 +1324,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 44043d32-09a6-4681-8091-12ad898a44d0
+    taskid: db39f917-db86-4591-861a-6a1f1220f5c2
     type: regular
     task:
-      id: 44043d32-09a6-4681-8091-12ad898a44d0
+      id: db39f917-db86-4591-861a-6a1f1220f5c2
       version: -1
       name: Convert a document to PDF
       description: |-
@@ -1409,7 +1344,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "8"
+      - "32"
     scriptarguments:
       all_files:
         simple: "yes"
@@ -1550,6 +1485,8 @@ tasks:
           accessor: EntryID
           transformers:
           - operator: uniq
+      ignore-outputs:
+        simple: "false"
     reputationcalc: 2
     separatecontext: false
     continueonerrortype: ""
@@ -1569,10 +1506,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+    taskid: fbb64cc1-e15c-4dc9-b71d-5b65885d3549
     type: regular
     task:
-      id: 44201d6c-9d35-47b0-836f-48bbf43f0bc6
+      id: fbb64cc1-e15c-4dc9-b71d-5b65885d3549
       version: -1
       name: Set ExtractedURLsFromFiles
       description: |-
@@ -1600,7 +1537,7 @@ tasks:
       {
         "position": {
           "x": 915,
-          "y": 1550
+          "y": 1608
         }
       }
     note: false
@@ -1739,7 +1676,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2190,
+          "x": 2397,
           "y": 460
         }
       }
@@ -1895,10 +1832,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: ca969180-8bc8-43a8-8018-6fc398457815
+    taskid: 5c6cf188-f1e8-45ea-9d0b-41bcae9be38f
     type: regular
     task:
-      id: ca969180-8bc8-43a8-8018-6fc398457815
+      id: 5c6cf188-f1e8-45ea-9d0b-41bcae9be38f
       version: -1
       name: Extract Text from QR Code
       description: Extracts the text from a QR code. The output of this script includes the output of the script "extractIndicators" run on the text extracted from the QR code.
@@ -1960,8 +1897,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1330
+          "x": 1606,
+          "y": 1418
         }
       }
     note: false
@@ -1973,10 +1910,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 01fbc9fb-75db-4c5a-8336-c97950443b5e
+    taskid: 6a981b49-f471-48e1-9b3b-a084646c1cdd
     type: regular
     task:
-      id: 01fbc9fb-75db-4c5a-8336-c97950443b5e
+      id: 6a981b49-f471-48e1-9b3b-a084646c1cdd
       version: -1
       name: Convert PDF to Image
       description: Converts a PDF file to an image file.
@@ -1990,34 +1927,15 @@ tasks:
     scriptarguments:
       EntryID:
         complex:
-          root: inputs.File
-          filters:
-          - - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.File.Type
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-            - operator: containsGeneral
-              left:
-                value:
-                  simple: inputs.File.Info
-                iscontext: true
-              right:
-                value:
-                  simple: pdf
-              ignorecase: true
-          accessor: EntryID
+          root: ValidPDFEntryIDs
           transformers:
-          - operator: append
+          - operator: AppendIfNotEmpty
             args:
               item:
                 value:
-                  simple: ${File(val.Info=="application/pdf").EntryID}
+                  simple: AdditionalPDFs
                 iscontext: true
+              raw: {}
           - operator: uniq
           - operator: RemoveEmpty
             args:
@@ -2030,8 +1948,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 1130
+          "x": 1606,
+          "y": 1282
         }
       }
     note: false
@@ -2229,9 +2147,9 @@ tasks:
       version: -1
       name: Does ReadQRCode support the image?
       type: condition
+      description: ""
       iscommand: false
       brand: ""
-      description: ""
     nexttasks:
       '#default#':
       - "19"
@@ -2269,8 +2187,282 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1820,
-          "y": 1050
+          "x": 2398,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 4e00d382-41da-410c-b7dd-e856e2f60023
+    type: regular
+    task:
+      id: 4e00d382-41da-410c-b7dd-e856e2f60023
+      version: -1
+      name: Check validity of PDF files
+      description: Returns wether a PDF is both valid and encrypted.
+      scriptName: CheckPDFEncryptionAndValidity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      EntryID:
+        complex:
+          root: inputs.File
+          filters:
+          - - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Type
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          - - operator: containsString
+              left:
+                value:
+                  simple: inputs.File.Info
+                iscontext: true
+              right:
+                value:
+                  simple: pdf
+              ignorecase: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+      extend-context:
+        simple: CheckedPDFs=
+      ignore-outputs:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 720
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 449b1e01-91c0-4853-a8fe-008500281d54
+    type: condition
+    task:
+      id: 449b1e01-91c0-4853-a8fe-008500281d54
+      version: -1
+      name: Any readable PDF files?
+      description: Checks if there are valid, non-encrypted PDFs.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "19"
+      "yes":
+      - "33"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: CheckedPDFs
+                filters:
+                - - operator: isTrue
+                    left:
+                      value:
+                        simple: CheckedPDFs.IsValid
+                      iscontext: true
+                - - operator: isFalse
+                    left:
+                      value:
+                        simple: CheckedPDFs.IsEncrypted
+                      iscontext: true
+                    ignorecase: true
+                accessor: EntryID
+                transformers:
+                - operator: uniq
+            iscontext: true
+          right:
+            value: {}
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1320,
+          "y": 870
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 3b75e6ba-be07-4108-9c6b-69e6dc9479aa
+    type: regular
+    task:
+      id: 3b75e6ba-be07-4108-9c6b-69e6dc9479aa
+      version: -1
+      name: Extract indicators from PDF files
+      description: Load a PDF file's content and metadata into context.
+      scriptName: ReadPDFFileV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      entryID:
+        complex:
+          root: ValidPDFEntryIDs
+          transformers:
+          - operator: AppendIfNotEmpty
+            args:
+              item:
+                value:
+                  simple: AdditionalPDFs
+                iscontext: true
+              raw: {}
+          - operator: uniq
+      maxImages:
+        complex:
+          root: inputs.MaxImagesFromPDF
+    reputationcalc: 2
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1606,
+          "y": 1143
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 48a9949e-eefc-4718-a81e-fbbf1c29609f
+    type: regular
+    task:
+      id: 48a9949e-eefc-4718-a81e-fbbf1c29609f
+      version: -1
+      name: Save converted PDFs separately
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: AdditionalPDFs
+      value:
+        complex:
+          root: File
+          filters:
+          - - operator: in
+              left:
+                value:
+                  simple: File.SHA256
+                iscontext: true
+              right:
+                value:
+                  simple: ConvertedFile.FileSHA256
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1740,
+          "y": 860
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 0b9fdb0b-fe2b-4ebe-9bc9-1cf25c15a577
+    type: regular
+    task:
+      id: 0b9fdb0b-fe2b-4ebe-9bc9-1cf25c15a577
+      version: -1
+      name: Save valid PDFs separately
+      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      key:
+        simple: ValidPDFEntryIDs
+      value:
+        complex:
+          root: CheckedPDFs
+          filters:
+          - - operator: isTrue
+              left:
+                value:
+                  simple: CheckedPDFs.IsValid
+                iscontext: true
+          - - operator: isFalse
+              left:
+                value:
+                  simple: CheckedPDFs.IsEncrypted
+                iscontext: true
+          accessor: EntryID
+          transformers:
+          - operator: uniq
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1311,
+          "y": 1007
         }
       }
     note: false
@@ -2290,17 +2482,17 @@ view: |-
       "21_10_#default#": 0.1,
       "23_10_#default#": 0.14,
       "23_22_yes": 0.43,
+      "28_24_yes": 0.88,
       "5_10_#default#": 0.33,
       "5_6_yes": 0.36,
       "7_10_#default#": 0.1,
-      "7_8_yes": 0.24,
       "9_10_#default#": 0.18,
       "9_11_yes": 0.35
     },
     "paper": {
       "dimensions": {
-        "height": 1815,
-        "width": 3995,
+        "height": 1814,
+        "width": 4165,
         "x": -975,
         "y": -10
       }

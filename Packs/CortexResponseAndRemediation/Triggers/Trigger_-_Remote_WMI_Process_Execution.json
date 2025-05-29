@@ -1,0 +1,32 @@
+{
+  "trigger_id": "edbc729e3551d463dc2e16d3838c9af3",
+  "playbook_id": "Remote WMI Process Execution",
+  "suggestion_reason": "Recommended for Remote WMI Process Execution alerts",
+  "description": "This trigger is responsible for handling Remote WMI Process Execution alerts",
+  "trigger_name": "Remote WMI Process Execution",
+  "alerts_filter": {
+    "filter": {
+        "AND": [
+            {
+            "OR": [
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Remote WMI process execution"
+                },
+                {
+                "SEARCH_FIELD": "alert_name",
+                "SEARCH_TYPE": "EQ",
+                "SEARCH_VALUE": "Suspicious remote WMI process execution"
+                }
+                ]
+        },
+      {
+            "SEARCH_FIELD": "alert_type",
+            "SEARCH_TYPE": "NEQ",
+            "SEARCH_VALUE": "Correlation"
+      }
+      ]
+    }
+  }
+}

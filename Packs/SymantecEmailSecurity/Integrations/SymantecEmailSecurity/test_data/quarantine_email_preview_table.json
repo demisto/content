@@ -1,0 +1,22 @@
+{
+    "headers": {
+        "Date": "Wed, 02 Oct 2024 04:37:01 +0000",
+        "From": "xxx",
+        "To": "xxx",
+        "Subject": "xxx"
+    },
+    "attachments": [
+        {
+            "Name": "hello",
+            "Type": "world"
+        }
+    ],
+    "bodypart": [
+        {
+            "Content": "xxx"
+        },
+        {
+            "Content": "xxx"
+        }
+    ]
+}

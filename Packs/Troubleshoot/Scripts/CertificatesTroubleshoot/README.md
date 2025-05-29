@@ -4,7 +4,7 @@ This automation exports all custom certificate-related information from the Pyth
 
 ---
 
-After following the [tutorial](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.10/Cortex-XSOAR-Administrator-Guide/Configure-Python-Docker-Integrations-to-Trust-Custom-Certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
+After following the [tutorial (Cortex XSOAR 6.13)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.13/Cortex-XSOAR-Administrator-Guide/Configure-Python-Docker-Integrations-to-Trust-Custom-Certificates) or [tutorial (Cortex XSOAR 8 Cloud)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Configure-Docker-integrations-to-trust-custom-certificates) or [tutorial (Cortex XSOAR 8.7 On-prem)](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Configure-Docker-integrations-to-trust-custom-certificates) to update your custom certificate in `Cortex XSOAR Server`/ `Cortex XSOAR Engine`, validate the configuration applied using this script.
 
 The script supports two modes of operation:
 
@@ -342,41 +342,53 @@ When reporting issues always run this script with `debug-mode=true` and include 
 #### Human Readable Output
 
 > ## Docker container engine - custom certificate
+>
 > ### Enviorment variables
+>
 > |CERT_FILE|SSL_CERT_FILE|
 > |---|---|
 > | /etc/custom-python-ssl/certs.pem | /etc/custom-python-ssl/certs.pem |
 >
 > ### General
+>
 > |NotValidBefore|NotValidAfter|Version|
 > |---|---|---|
 > | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
+>
 > ### Issuer
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ### Subject
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
 >
 > ## Endpoint certificate - ec2.eu.compute-1.amazonaws.com
+>
 > ### General
+>
 > |NotValidBefore|NotValidAfter|Version|
 > |---|---|---|
 > | 2020-09-22 15:22:19 | 2020-12-15 15:22:19 | 2 |
+>
 > ### Issuer
+>
 > |CommonName|CountryName|EmailAddress|LocalityName|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|---|
 > | Demisto TLS | IL | all@paloaltonetworks.com | Tel Aviv | Demisto | Content | Hamerkaz |
+>
 > ### Subject
+>
 > |CommonName|CountryName|EmailAddress|OrganizationName|OrganizationalUnitName|StateOrProvinceName|
 > |---|---|---|---|---|---|
 > | ec2.eu.compute-1.amazonaws.com | IL | test@gmail.com | Content | Test | Demisto |
+>
 > ### Extentions
+>
 > |IssuerAlternativeName|
 > |---|
 > | *.google.com,*.android.com,*.appengine.google.com,*.bdn.dev,*.cloud.google.com |
-
-
- 

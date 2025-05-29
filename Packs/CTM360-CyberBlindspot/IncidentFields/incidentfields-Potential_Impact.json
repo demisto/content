@@ -1,0 +1,31 @@
+{
+    "id": "incident_ctm360_hackerview_potentialimpact",
+    "fromVersion": "6.10.0",
+    "version": -1,
+    "name": "CTM360 HackerView Potential Impact",
+    "ownerOnly": false,
+    "description": "Actions that can be taken on a HackerView incident.",
+    "cliName": "ctm360hackerviewpotentialimpact",
+    "type": "multiSelect",
+    "closeForm": false,
+    "editForm": true,
+    "required": false,
+    "neverSetAsRequired": false,
+    "isReadOnly": false,
+    "useAsKpi": false,
+    "locked": false,
+    "system": false,
+    "content": true,
+    "group": 0,
+    "hidden": false,
+    "openEnded": false,
+    "associatedTypes": [
+        "HackerView Incident"
+    ],
+    "associatedToAll": false,
+    "unmapped": false,
+    "unsearchable": true,
+    "caseInsensitive": true,
+    "sla": 0,
+    "threshold": 72
+}

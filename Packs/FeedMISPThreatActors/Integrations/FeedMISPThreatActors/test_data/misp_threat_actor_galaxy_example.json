@@ -1,0 +1,28 @@
+{
+    "authors": [],
+    "category": "actor",
+    "description": "Known or estimated adversary groups targeting organizations and employees. Adversary groups are regularly confused with their initial operation or campaign. Threat-actor-classification meta can be used to clarify the understanding of the threat-actor, if also considered as operation, campaign or activity group.",
+    "name": "Threat Actor",
+    "source": "MISP Project",
+    "type": "threat-actor",
+    "uuid": "7cdff317-a673-4474-84ec-4f1754947823",
+    "version": 100,
+    "values": [
+        {
+            "description": "test",
+            "meta": {
+                "attribution-confidence": "50",
+                "cfr-suspected-state-sponsor": "country",
+                "cfr-suspected-victims": ["victim"],
+                "cfr-target-category": ["sector"],
+                "cfr-type-of-incident": "Espionage",
+                "country": "country",
+                "refs": ["https://test.com"],
+                "synonyms": ["AKA"]
+            },
+            "related": [],
+            "uuid": "some_uuid",
+            "value": "TEST"
+        }
+    ]
+}

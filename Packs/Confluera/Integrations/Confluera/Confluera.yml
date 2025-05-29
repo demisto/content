@@ -31,20 +31,20 @@ script:
   - name: confluera-fetch-detections
     arguments:
     - name: hours
-      description: 'Specifies the time duration for which detections need to be fetched '
+      description: 'Specifies the time duration for which detections need to be fetched.'
       defaultValue: "72"
     outputs:
     - contextPath: Confluera.Detections
-      description: Detections Response
+      description: Detections Response.
     description: Fetches list of detections in confluera for past x hours.
   - name: confluera-fetch-progressions
     arguments:
     - name: hours
-      description: 'Specifies the time duration for which progressions need to be fetched '
+      description: 'Specifies the time duration for which progressions need to be fetched.'
       defaultValue: "72"
     outputs:
     - contextPath: Confluera.Progressions
-      description: Progressions response
+      description: Progressions response.
     description: Fetches list of progressions in confluera for past x hours.
   - name: confluera-fetch-trail-details
     arguments:
@@ -53,9 +53,9 @@ script:
       description: Id of a detection in iq-hub protal.
     outputs:
     - contextPath: Confluera.TrailDetails
-      description: Progression Details
+      description: Progression Details.
     description: Fetches progression details of which provided trailId is a part of.
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   subtype: python3
 fromversion: 6.0.0

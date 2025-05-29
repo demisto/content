@@ -11,4 +11,5 @@ jobs:
       contents: write
 
     uses: ./.github/workflows/pre-commit-reuse.yml
+    secrets: inherit
       

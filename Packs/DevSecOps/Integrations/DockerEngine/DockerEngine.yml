@@ -47,17 +47,17 @@ name: Docker Engine API
 script:
   commands:
   - arguments:
-    - description: Amount of disk space in bytes to keep for cache
+    - description: Amount of disk space in bytes to keep for cache.
       name: keep_storage
-    - description: Remove all types of build cache
+    - description: Remove all types of build cache.
       name: prune_all
-    - description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private` "
+    - description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the list of build cache objects.  Available filters:  - `until= duration `: duration relative to daemon's time, during which build cache was not used, in Go's duration format (e.g., '24h') - `id= id ` - `parent= id ` - `type= string ` - `description= string ` - `inuse` - `shared` - `private`."
       name: filters
-    description: Delete builder cache
+    description: Delete builder cache.
     name: docker-build-prune
     outputs:
     - contextPath: Docker.BuildPruneResponse.SpaceReclaimed
-      description: Disk space reclaimed in bytes
+      description: Disk space reclaimed in bytes.
       type: Number
   - arguments:
     - description: User-defined name of the config.
@@ -66,55 +66,55 @@ script:
       name: configspec_labels
     - description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) config data. '
       name: configspec_data
-    - description: configspec_templating Name
+    - description: configspec_templating Name.
       name: configspec_templating_Name
-    - description: configspec_templating Options
+    - description: configspec_templating Options.
       name: configspec_templating_Options
-    description: Create a config
+    description: Create a config.
     name: docker-config-create
   - arguments:
-    - description: ID of the config
+    - description: ID of the config.
       name: id
       required: true
-    description: Inspect a config
+    description: Inspect a config.
     name: docker-config-inspect
     outputs:
     - contextPath: Docker.Config.ID
-      description: Docker Config ID
+      description: Docker Config ID.
       type: String
     - contextPath: Docker.Config.CreatedAt
-      description: Docker Config CreatedAt
+      description: Docker Config CreatedAt.
       type: String
     - contextPath: Docker.Config.UpdatedAt
-      description: Docker Config UpdatedAt
+      description: Docker Config UpdatedAt.
       type: String
   - arguments:
-    - description: 'A JSON encoded value of the filters '
+    - description: 'A JSON encoded value of the filters.'
       name: filters
-    description: List configs
+    description: List configs.
     name: docker-config-list
     outputs:
     - contextPath: Docker.Config.ID
-      description: Docker Config ID
+      description: Docker Config ID.
       type: String
     - contextPath: Docker.Config.CreatedAt
-      description: Docker Config CreatedAt
+      description: Docker Config CreatedAt.
       type: String
     - contextPath: Docker.Config.UpdatedAt
-      description: Docker Config UpdatedAt
+      description: Docker Config UpdatedAt.
       type: String
   - arguments:
-    - description: ID or name of the container
+    - description: ID or name of the container.
       name: id
       required: true
-    description: Get changes on a container's filesystem
+    description: Get changes on a container's filesystem.
     name: docker-container-changes
     outputs:
     - contextPath: Docker.ContainerChangeResponseItem.Path
-      description: Path to file that has changed
+      description: Path to file that has changed.
       type: String
     - contextPath: Docker.ContainerChangeResponseItem.Kind
-      description: Kind of change
+      description: Kind of change.
       type: Number
   - arguments:
     - description: 'Assign the specified name to the container. Must match `/?[a-zA-Z0-9][a-zA-Z0-9_.-]+`. '
@@ -131,13 +131,13 @@ script:
       name: containerconfig_attachstdout
     - description: Whether to attach to `stderr`.
       name: containerconfig_attachstderr
-    - description: 'An object mapping ports to an empty object in the form:  `{" port / tcp|udp|sctp ": {}}` '
+    - description: 'An object mapping ports to an empty object in the form:  `{" port / tcp|udp|sctp ": {}}`.'
       name: containerconfig_exposedports
     - description: 'Attach standard streams to a TTY, including `stdin` if it is not closed. '
       name: containerconfig_tty
-    - description: Open `stdin`
+    - description: Open `stdin`.
       name: containerconfig_openstdin
-    - description: Close `stdin` after one attached client disconnects
+    - description: Close `stdin` after one attached client disconnects.
       name: containerconfig_stdinonce
     - description: 'A list of environment variables to set inside the container in the form `["VAR=value", ...]`. A variable without `=` is removed from the environment, rather than to have an empty value. '
       isArray: true
@@ -145,19 +145,19 @@ script:
     - description: 'Command to run specified as a string or an array of strings. '
       isArray: true
       name: containerconfig_cmd
-    - description: containerconfig_healthcheck Test
+    - description: containerconfig_healthcheck Test.
       name: containerconfig_healthcheck_Test
-    - description: containerconfig_healthcheck Interval
+    - description: containerconfig_healthcheck Interval.
       name: containerconfig_healthcheck_Interval
-    - description: containerconfig_healthcheck Timeout
+    - description: containerconfig_healthcheck Timeout.
       name: containerconfig_healthcheck_Timeout
-    - description: containerconfig_healthcheck Retries
+    - description: containerconfig_healthcheck Retries.
       name: containerconfig_healthcheck_Retries
-    - description: containerconfig_healthcheck StartPeriod
+    - description: containerconfig_healthcheck StartPeriod.
       name: containerconfig_healthcheck_StartPeriod
-    - description: Command is already escaped (Windows only)
+    - description: Command is already escaped (Windows only).
       name: containerconfig_argsescaped
-    - description: 'The name of the image to use when creating the container/ '
+    - description: 'The name of the image to use when creating the container/.'
       name: containerconfig_image
     - description: 'An object mapping mount point paths inside the container to empty objects. '
       name: containerconfig_volumes
@@ -185,25 +185,25 @@ script:
     - description: A list of volume bindings for this container.
       isArray: true
       name: hostconfig_binds
-    - description: Path to a file where the container ID is written
+    - description: Path to a file where the container ID is written.
       name: hostconfig_containeridfile
-    - description: hostconfig_logconfig Type
+    - description: hostconfig_logconfig Type.
       name: hostconfig_logconfig_Type
-    - description: Log Config
+    - description: Log Config.
       name: hostconfig_logconfig_Config
     - description: Network mode to use for this container.
       name: hostconfig_networkmode
-    - description: hostconfig port bindings
+    - description: hostconfig port bindings.
       name: hostconfig_portbindings
-    - description: hostconfig_restartpolicy Name
+    - description: hostconfig_restartpolicy Name.
       name: hostconfig_restartpolicy_Name
-    - description: hostconfig_restartpolicy MaximumRetryCount
+    - description: hostconfig_restartpolicy MaximumRetryCount.
       name: hostconfig_restartpolicy_MaximumRetryCount
     - description: "Automatically remove the container when the container's process exits. This has no effect if `RestartPolicy` is set. "
       name: hostconfig_autoremove
     - description: Driver that this container uses to mount volumes.
       name: hostconfig_volumedriver
-    - description: A list of volumes to inherit from another container
+    - description: A list of volumes to inherit from another container.
       isArray: true
       name: hostconfig_volumesfrom
     - description: 'Specification for mounts to be added to the container. '
@@ -245,7 +245,7 @@ script:
       name: hostconfig_links
     - description: 'An integer value containing the score given to the container in order to tune OOM killer preferences. '
       name: hostconfig_oomscoreadj
-    - description: "Set the PID (Process) Namespace mode for the container. It can be either:  - `\"container: name|id \"`: joins another container's PID namespace - `\"host\"`: use the host's PID namespace inside the container "
+    - description: "Set the PID (Process) Namespace mode for the container. It can be either:  - `\"container: name|id \"`: joins another container's PID namespace - `\"host\"`: use the host's PID namespace inside the container."
       name: hostconfig_pidmode
     - description: Gives the container full access to the host.
       name: hostconfig_privileged
@@ -258,7 +258,7 @@ script:
       name: hostconfig_securityopt
     - description: 'Storage driver options for this container, in the form `{"size": "120G"}`. '
       name: hostconfig_storageopt
-    - description: 'A map of container directories which should be replaced by tmpfs mounts, and their corresponding mount options. For example:  ``` { "/run": "rw,noexec,nosuid,size=65536k" } ``` '
+    - description: 'A map of container directories which should be replaced by tmpfs mounts, and their corresponding mount options. For example:  ``` { "/run": "rw,noexec,nosuid,size=65536k" } ```.'
       name: hostconfig_tmpfs
     - description: UTS namespace to use for the container.
       name: hostconfig_utsmode
@@ -266,15 +266,15 @@ script:
       name: hostconfig_usernsmode
     - description: 'Size of `/dev/shm` in bytes. If omitted, the system uses 64MB. '
       name: hostconfig_shmsize
-    - description: 'A list of kernel  meters (sysctls) to set in the container. For example:  ``` {"net.ipv4.ip_forward": "1"} ``` '
+    - description: 'A list of kernel  meters (sysctls) to set in the container. For example:  ``` {"net.ipv4.ip_forward": "1"} ```.'
       name: hostconfig_sysctls
     - description: Runtime to use with this container.
       name: hostconfig_runtime
-    - description: 'Initial console size, as an `[height, width]` array. (Windows only) '
+    - description: 'Initial console size, as an `[height, width]` array. (Windows only).'
       isArray: true
       name: hostconfig_consolesize
     - auto: PREDEFINED
-      description: 'Isolation technology of the container. (Windows only) '
+      description: 'Isolation technology of the container. (Windows only).'
       name: hostconfig_isolation
       predefined:
       - default
@@ -288,61 +288,61 @@ script:
       name: hostconfig_readonlypaths
     - description: 'A mapping of network name to endpoint configuration for that network. '
       name: networkingconfig_endpointsconfig
-    description: Create a container
+    description: Create a container.
     name: docker-container-create
   - arguments:
-    - description: ID or name of the container
+    - description: ID or name of the container.
       name: id
       required: true
-    - description: Return the size of container as fields `SizeRw` and `SizeRootFs`
+    - description: Return the size of container as fields `SizeRw` and `SizeRootFs`.
       name: size
-    description: Inspect a container
+    description: Inspect a container.
     name: docker-container-inspect
     outputs:
     - contextPath: Docker.ContainerInspectResponse.Id
-      description: The ID of the container
+      description: The ID of the container.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Created
-      description: The time the container was created
+      description: The time the container was created.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Path
-      description: The path to the command being run
+      description: The path to the command being run.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Image
-      description: The container's image ID
+      description: The container's image ID.
       type: String
     - contextPath: Docker.ContainerInspectResponse.ResolvConfPath
-      description: Docker ContainerInspectResponse ResolvConfPath
+      description: Docker ContainerInspectResponse ResolvConfPath.
       type: String
     - contextPath: Docker.ContainerInspectResponse.HostnamePath
-      description: Docker ContainerInspectResponse HostnamePath
+      description: Docker ContainerInspectResponse HostnamePath.
       type: String
     - contextPath: Docker.ContainerInspectResponse.HostsPath
-      description: Docker ContainerInspectResponse HostsPath
+      description: Docker ContainerInspectResponse HostsPath.
       type: String
     - contextPath: Docker.ContainerInspectResponse.LogPath
-      description: Docker ContainerInspectResponse LogPath
+      description: Docker ContainerInspectResponse LogPath.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Name
-      description: Docker ContainerInspectResponse Name
+      description: Docker ContainerInspectResponse Name.
       type: String
     - contextPath: Docker.ContainerInspectResponse.RestartCount
-      description: Docker ContainerInspectResponse RestartCount
+      description: Docker ContainerInspectResponse RestartCount.
       type: Number
     - contextPath: Docker.ContainerInspectResponse.Driver
-      description: Docker ContainerInspectResponse Driver
+      description: Docker ContainerInspectResponse Driver.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Platform
-      description: Docker ContainerInspectResponse Platform
+      description: Docker ContainerInspectResponse Platform.
       type: String
     - contextPath: Docker.ContainerInspectResponse.MountLabel
-      description: Docker ContainerInspectResponse MountLabel
+      description: Docker ContainerInspectResponse MountLabel.
       type: String
     - contextPath: Docker.ContainerInspectResponse.ProcessLabel
-      description: Docker ContainerInspectResponse ProcessLabel
+      description: Docker ContainerInspectResponse ProcessLabel.
       type: String
     - contextPath: Docker.ContainerInspectResponse.AppArmorProfile
-      description: Docker ContainerInspectResponse AppArmorProfile
+      description: Docker ContainerInspectResponse AppArmorProfile.
       type: String
     - contextPath: Docker.ContainerInspectResponse.SizeRw
       description: 'The size of files that have been created or changed by this container. '
@@ -351,28 +351,28 @@ script:
       description: The total size of all the files in this container.
       type: Number
     - contextPath: Docker.ContainerInspectResponse.Mounts.Type
-      description: Docker ContainerInspectResponse Mounts Type
+      description: Docker ContainerInspectResponse Mounts Type.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Name
-      description: Docker ContainerInspectResponse Mounts Name
+      description: Docker ContainerInspectResponse Mounts Name.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Source
-      description: Docker ContainerInspectResponse Mounts Source
+      description: Docker ContainerInspectResponse Mounts Source.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Destination
-      description: Docker ContainerInspectResponse Mounts Destination
+      description: Docker ContainerInspectResponse Mounts Destination.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Driver
-      description: Docker ContainerInspectResponse Mounts Driver
+      description: Docker ContainerInspectResponse Mounts Driver.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.Mode
-      description: Docker ContainerInspectResponse Mounts Mode
+      description: Docker ContainerInspectResponse Mounts Mode.
       type: String
     - contextPath: Docker.ContainerInspectResponse.Mounts.RW
-      description: Docker ContainerInspectResponse Mounts RW
+      description: Docker ContainerInspectResponse Mounts RW.
       type: Boolean
     - contextPath: Docker.ContainerInspectResponse.Mounts.Propagation
-      description: Docker ContainerInspectResponse Mounts Propagation
+      description: Docker ContainerInspectResponse Mounts Propagation.
       type: String
   - arguments:
     - description: 'Return all containers. By default, only running containers are shown. '
@@ -381,168 +381,168 @@ script:
       name: limit
     - description: 'Return the size of container as fields `SizeRw` and `SizeRootFs`. '
       name: size
-    - description: "Filters to process on the container list, encoded as JSON (a `map[string][]string`). For example, `{\"status\": [\"paused\"]}` will only return paused containers.  Available filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest `) - `before`=(` container id ` or ` container name `) - `expose`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`) - `id= ID ` a container's ID - `isolation=`(`default`|`process`|`hyperv`) (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label=\"key=value\"` of a container label - `name= name ` a container's name - `network`=(` network id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`) - `volume`=(` volume name ` or ` mount point destination `) "
+    - description: "Filters to process on the container list, encoded as JSON (a `map[string][]string`). For example, `{\"status\": [\"paused\"]}` will only return paused containers.  Available filters:  - `ancestor`=(` image-name [: tag ]`, ` image id `, or ` image@digest `) - `before`=(` container id ` or ` container name `) - `expose`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `exited= int ` containers with exit code of ` int ` - `health`=(`starting`|`healthy`|`unhealthy`|`none`) - `id= ID ` a container's ID - `isolation=`(`default`|`process`|`hyperv`) (Windows daemon only) - `is-task=`(`true`|`false`) - `label=key` or `label=\"key=value\"` of a container label - `name= name ` a container's name - `network`=(` network id ` or ` network name `) - `publish`=(` port [/ proto ]`|` startport-endport /[ proto ]`) - `since`=(` container id ` or ` container name `) - `status=`(`created`|`restarting`|`running`|`removing`|`paused`|`exited`|`dead`) - `volume`=(` volume name ` or ` mount point destination `)."
       name: filters
-    description: List containers
+    description: List containers.
     name: docker-container-list
   - arguments:
-    - description: ID or name of the container
+    - description: ID or name of the container.
       name: id
       required: true
     - description: 'Stream the output. If false, the stats will be output once and then it will disconnect. '
       name: stream
     - description: 'Only get a single stat instead of waiting for 2 cycles. Must be used with `stream=false`. '
       name: one_shot
-    description: Get container stats based on resource usage
+    description: Get container stats based on resource usage.
     name: docker-container-stats
   - arguments:
-    - description: ID or name of the container
+    - description: ID or name of the container.
       name: id
       required: true
-    - description: The arguments to pass to `ps`. For example, `aux`
+    - description: The arguments to pass to `ps`. For example, `aux`.
       name: ps_args
-    description: List processes running inside a container
+    description: List processes running inside a container.
     name: docker-container-top
     outputs:
     - contextPath: Docker.ContainerTopResponse.Processes
-      description: Docker ContainerTopResponse Processes
+      description: Docker ContainerTopResponse Processes.
       type: String
   - arguments:
-    - description: Image name or ID
+    - description: Image name or ID.
       name: name
       required: true
-    description: Get the history of an image
+    description: Get the history of an image.
     name: docker-image-history
     outputs:
     - contextPath: Docker.HistoryResponseItem.Id
-      description: Docker HistoryResponseItem Id
+      description: Docker HistoryResponseItem Id.
       type: String
     - contextPath: Docker.HistoryResponseItem.Created
-      description: Docker HistoryResponseItem Created
+      description: Docker HistoryResponseItem Created.
       type: Number
     - contextPath: Docker.HistoryResponseItem.CreatedBy
-      description: Docker HistoryResponseItem CreatedBy
+      description: Docker HistoryResponseItem CreatedBy.
       type: String
     - contextPath: Docker.HistoryResponseItem.Size
-      description: Docker HistoryResponseItem Size
+      description: Docker HistoryResponseItem Size.
       type: Number
     - contextPath: Docker.HistoryResponseItem.Comment
-      description: Docker HistoryResponseItem Comment
+      description: Docker HistoryResponseItem Comment.
       type: String
   - arguments:
-    - description: Image name or id
+    - description: Image name or id.
       name: name
       required: true
-    description: Inspect an image
+    description: Inspect an image.
     name: docker-image-inspect
     outputs:
     - contextPath: Docker.Image.Id
-      description: Docker Image ID
+      description: Docker Image ID.
       type: String
     - contextPath: Docker.Image.Parent
-      description: Docker Image Parent
+      description: Docker Image Parent.
       type: String
     - contextPath: Docker.Image.Comment
-      description: Docker Image Comment
+      description: Docker Image Comment.
       type: String
     - contextPath: Docker.Image.Created
-      description: Docker Image Created
+      description: Docker Image Created.
       type: String
     - contextPath: Docker.Image.Container
-      description: Docker Image Container
+      description: Docker Image Container.
       type: String
     - contextPath: Docker.Image.DockerVersion
-      description: Docker Image DockerVersion
+      description: Docker Image DockerVersion.
       type: String
     - contextPath: Docker.Image.Author
-      description: Docker Image Author
+      description: Docker Image Author.
       type: String
     - contextPath: Docker.Image.Architecture
-      description: Docker Image Architecture
+      description: Docker Image Architecture.
       type: String
     - contextPath: Docker.Image.Os
-      description: Docker Image Os
+      description: Docker Image Os.
       type: String
     - contextPath: Docker.Image.OsVersion
-      description: Docker Image OsVersion
+      description: Docker Image OsVersion.
       type: String
     - contextPath: Docker.Image.Size
-      description: Docker Image Size
+      description: Docker Image Size.
       type: Number
     - contextPath: Docker.Image.VirtualSize
-      description: Docker Image VirtualSize
+      description: Docker Image VirtualSize.
       type: Number
   - arguments:
     - description: Show all images. Only images from a final layer (no children) are shown by default.
       name: list_all
-    - description: A JSON encoded value of the filters
+    - description: A JSON encoded value of the filters.
       name: filters
     - description: Show digest information as a `RepoDigests` field on each image.
       name: digests
-    description: List Images
+    description: List Images.
     name: docker-image-list
     outputs:
     - contextPath: Docker.ImageSummary.Id
-      description: Docker Image Summary ID
+      description: Docker Image Summary ID.
       type: String
     - contextPath: Docker.ImageSummary.ParentId
-      description: Docker Image Summary ParentId
+      description: Docker Image Summary ParentId.
       type: String
     - contextPath: Docker.ImageSummary.Created
-      description: Docker Image Summary Created
+      description: Docker Image Summary Created.
       type: Number
     - contextPath: Docker.ImageSummary.Size
-      description: Docker Image Summary Size
+      description: Docker Image Summary Size.
       type: Number
     - contextPath: Docker.ImageSummary.SharedSize
-      description: Docker Image Summary SharedSize
+      description: Docker Image Summary SharedSize.
       type: Number
     - contextPath: Docker.ImageSummary.VirtualSize
-      description: Docker Image Summary VirtualSize
+      description: Docker Image Summary VirtualSize.
       type: Number
     - contextPath: Docker.ImageSummary.Containers
-      description: Docker Image Summary Containers
+      description: Docker Image Summary Containers.
       type: Number
   - arguments:
-    - description: Filters to process on the prune list
+    - description: Filters to process on the prune list.
       name: filters
-    description: Delete unused images
+    description: Delete unused images.
     name: docker-image-prune
     outputs:
     - contextPath: Docker.ImagePruneResponse.ImagesDeleted.Untagged
-      description: The image ID of an image that was untagged
+      description: The image ID of an image that was untagged.
       type: String
     - contextPath: Docker.ImagePruneResponse.ImagesDeleted.Deleted
-      description: The image ID of an image that was deleted
+      description: The image ID of an image that was deleted.
       type: String
     - contextPath: Docker.ImagePruneResponse.SpaceReclaimed
-      description: Disk space reclaimed in bytes
+      description: Disk space reclaimed in bytes.
       type: Number
   - arguments:
-    - description: Term to search
+    - description: Term to search.
       name: term
       required: true
-    - description: Maximum number of results to return
+    - description: Maximum number of results to return.
       name: limit
     - description: "A JSON encoded value of the filters (a `map[string][]string`) to process on the images list. Available filters:  - `is-automated=(true|false)` - `is-official=(true|false)` - `stars= number ` Matches images that has at least 'number' stars. "
       name: filters
-    description: Search images
+    description: Search images.
     name: docker-image-search
     outputs:
     - contextPath: Docker.ImageSearchResponseItem.description
-      description: Docker ImageSearchResponseItem description
+      description: Docker ImageSearchResponseItem description.
       type: String
     - contextPath: Docker.ImageSearchResponseItem.is_official
-      description: Docker ImageSearchResponseItem is_official
+      description: Docker ImageSearchResponseItem is_official.
       type: Boolean
     - contextPath: Docker.ImageSearchResponseItem.is_automated
-      description: Docker ImageSearchResponseItem is_automated
+      description: Docker ImageSearchResponseItem is_automated.
       type: Boolean
     - contextPath: Docker.ImageSearchResponseItem.name
-      description: Docker ImageSearchResponseItem name
+      description: Docker ImageSearchResponseItem name.
       type: String
     - contextPath: Docker.ImageSearchResponseItem.star_count
-      description: Docker ImageSearchResponseItem star_count
+      description: Docker ImageSearchResponseItem star_count.
       type: Number
   - arguments:
     - description: The network's name.
@@ -558,11 +558,11 @@ script:
       name: networkconfig_attachable
     - description: 'Ingress network is the network which provides the routing-mesh in swarm mode. '
       name: networkconfig_ingress
-    - description: networkconfig_ipam Driver
+    - description: networkconfig_ipam Driver.
       name: networkconfig_ipam_Driver
-    - description: networkconfig_ipam Config
+    - description: networkconfig_ipam Config.
       name: networkconfig_ipam_Config
-    - description: networkconfig_ipam Options
+    - description: networkconfig_ipam Options.
       name: networkconfig_ipam_Options
     - description: Enable IPv6 on the network.
       name: networkconfig_enableipv6
@@ -570,70 +570,70 @@ script:
       name: networkconfig_options
     - description: User-defined key/value metadata.
       name: networkconfig_labels
-    description: Create a network
+    description: Create a network.
     name: docker-network-create
   - arguments:
-    - description: 'JSON encoded value of the filters  '
+    - description: 'JSON encoded value of the filters.'
       name: filters
-    description: List networks
+    description: List networks.
     name: docker-network-list
     outputs:
     - contextPath: Docker.Network.Name
-      description: Docker Network Name
+      description: Docker Network Name.
       type: String
     - contextPath: Docker.Network.Id
-      description: Docker Network Id
+      description: Docker Network Id.
       type: String
     - contextPath: Docker.Network.Created
-      description: Docker Network Created
+      description: Docker Network Created.
       type: String
     - contextPath: Docker.Network.Scope
-      description: Docker Network Scope
+      description: Docker Network Scope.
       type: String
     - contextPath: Docker.Network.Driver
-      description: Docker Network Driver
+      description: Docker Network Driver.
       type: String
     - contextPath: Docker.Network.EnableIPv6
-      description: Docker Network EnableIPv6
+      description: Docker Network EnableIPv6.
       type: Boolean
     - contextPath: Docker.Network.Internal
-      description: Docker Network Internal
+      description: Docker Network Internal.
       type: Boolean
     - contextPath: Docker.Network.Attachable
-      description: Docker Network Attachable
+      description: Docker Network Attachable.
       type: Boolean
     - contextPath: Docker.Network.Ingress
-      description: Docker Network Ingress
+      description: Docker Network Ingress.
       type: Boolean
     - contextPath: Docker.Network.Containers.Name
-      description: Docker Network Containers Name
+      description: Docker Network Containers Name.
       type: String
     - contextPath: Docker.Network.Containers.EndpointID
-      description: Docker Network Containers EndpointID
+      description: Docker Network Containers EndpointID.
       type: String
     - contextPath: Docker.Network.Containers.MacAddress
-      description: Docker Network Containers MacAddress
+      description: Docker Network Containers MacAddress.
       type: String
     - contextPath: Docker.Network.Containers.IPv4Address
-      description: Docker Network Containers IPv4Address
+      description: Docker Network Containers IPv4Address.
       type: String
     - contextPath: Docker.Network.Containers.IPv6Address
-      description: Docker Network Containers IPv6Address
+      description: Docker Network Containers IPv6Address.
       type: String
   - arguments:
     - description: 'Filters to process on the prune list. '
       name: filters
-    description: Delete unused networks
+    description: Delete unused networks.
     name: docker-network-prune
   - arguments:
-    - description: The ID or name of the node
+    - description: The ID or name of the node.
       name: id
       required: true
-    description: Inspect a node
+    description: Inspect a node.
     name: docker-node-inspect
     outputs:
     - contextPath: Docker.Node.ID
-      description: Docker Node ID
+      description: Docker Node ID.
       type: String
     - contextPath: Docker.Node.CreatedAt
       description: 'Date and time at which the node was added to the swarm in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
@@ -642,13 +642,13 @@ script:
       description: 'Date and time at which the node was last updated in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
       type: String
   - arguments:
-    - description: 'Filters to process on the nodes list, encoded as JSON (a `map[string][]string`).  Available filters: - `id= node id ` - `label= engine label ` - `membership=`(`accepted`|`pending`)` - `name= node name ` - `node.label= node label ` - `role=`(`manager`|`worker`)` '
+    - description: 'Filters to process on the nodes list, encoded as JSON (a `map[string][]string`).  Available filters: - `id= node id ` - `label= engine label ` - `membership=`(`accepted`|`pending`)` - `name= node name ` - `node.label= node label ` - `role=`(`manager`|`worker`)`.'
       name: filters
-    description: List nodes
+    description: List nodes.
     name: docker-node-list
     outputs:
     - contextPath: Docker.Node.ID
-      description: Docker Node ID
+      description: Docker Node ID.
       type: String
     - contextPath: Docker.Node.CreatedAt
       description: 'Date and time at which the node was added to the swarm in [RFC 3339](https://www.ietf.org/rfc/rfc3339.txt) format with nano-seconds. '
@@ -663,46 +663,46 @@ script:
       name: secretspec_labels
     - description: 'Base64-url-safe-encoded ([RFC 4648](https://tools.ietf.org/html/rfc4648#section-5)) data to store as secret.  This field is only used to _create_ a secret, and is not returned by other endpoints. '
       name: secretspec_data
-    - description: secretspec_driver Name
+    - description: secretspec_driver Name.
       name: secretspec_driver_Name
-    - description: secretspec_driver Options
+    - description: secretspec_driver Options.
       name: secretspec_driver_Options
-    - description: secretspec_templating Name
+    - description: secretspec_templating Name.
       name: secretspec_templating_Name
-    - description: secretspec_templating Options
+    - description: secretspec_templating Options.
       name: secretspec_templating_Options
-    description: Create a secret
+    description: Create a secret.
     name: docker-secret-create
   - arguments:
-    - description: ID of the secret
+    - description: ID of the secret.
       name: id
       required: true
-    description: Inspect a secret
+    description: Inspect a secret.
     name: docker-secret-inspect
     outputs:
     - contextPath: Docker.Secret.ID
-      description: Docker Secret ID
+      description: Docker Secret ID.
       type: String
     - contextPath: Docker.Secret.CreatedAt
-      description: Docker Secret CreatedAt
+      description: Docker Secret CreatedAt.
       type: String
     - contextPath: Docker.Secret.UpdatedAt
-      description: Docker Secret UpdatedAt
+      description: Docker Secret UpdatedAt.
       type: String
   - arguments:
-    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the secrets list.  Available filters:  - `id= secret id ` - `label= key  or label= key =value` - `name= secret name ` - `names= secret name ` '
+    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the secrets list.  Available filters:  - `id= secret id ` - `label= key  or label= key =value` - `name= secret name ` - `names= secret name `.'
       name: filters
-    description: List secrets
+    description: List secrets.
     name: docker-secret-list
     outputs:
     - contextPath: Docker.Secret.ID
-      description: Docker Secret ID
+      description: Docker Secret ID.
       type: String
     - contextPath: Docker.Secret.CreatedAt
-      description: Docker Secret CreatedAt
+      description: Docker Secret CreatedAt.
       type: String
     - contextPath: Docker.Secret.UpdatedAt
-      description: Docker Secret UpdatedAt
+      description: Docker Secret UpdatedAt.
       type: String
   - arguments:
     - description: 'Listen address used for inter-manager communication, as well as determining the networking interface used for the VXLAN Tunnel Endpoint (VTEP). This can either be an address/port combination in the form `192.168.1.1:4567`, or an interface followed by a port number, like `eth0:4567`. If the port number is omitted, the default swarm listening port is used. '
@@ -720,25 +720,25 @@ script:
       name: forcenewcluster
     - description: 'SubnetSize specifies the subnet size of the networks created from the default subnet pool. '
       name: subnetsize
-    - description: spec Name
+    - description: spec Name.
       name: spec_Name
-    - description: spec Labels
+    - description: spec Labels.
       name: spec_Labels
-    - description: spec Orchestration
+    - description: spec Orchestration.
       name: spec_Orchestration
-    - description: spec Raft
+    - description: spec Raft.
       name: spec_Raft
-    - description: spec Dispatcher
+    - description: spec Dispatcher.
       name: spec_Dispatcher
-    - description: spec CAConfig
+    - description: spec CAConfig.
       name: spec_CAConfig
-    - description: spec EncryptionConfig
+    - description: spec EncryptionConfig.
       name: spec_EncryptionConfig
-    - description: spec TaskDefaults
+    - description: spec TaskDefaults.
       name: spec_TaskDefaults
-    description: Initialize a new swarm
+    description: Initialize a new swarm.
     name: docker-swarm-init
-  - description: Inspect swarm
+  - description: Inspect swarm.
     name: docker-swarm-inspect
   - arguments:
     - description: 'Listen address used for inter-manager communication if the node gets promoted to manager, as well as determining the networking interface used for the VXLAN Tunnel Endpoint (VTEP). '
@@ -752,50 +752,50 @@ script:
       name: remoteaddrs
     - description: Secret token for joining this swarm.
       name: jointoken
-    description: Join an existing swarm
+    description: Join an existing swarm.
     name: docker-swarm-join
   - arguments:
     - description: 'Force leave swarm, even if this is the last manager or that it will  eak the cluster. '
       name: force
-    description: Leave a swarm
+    description: Leave a swarm.
     name: docker-swarm-leave
   - arguments:
     - description: The swarm's unlock key.
       name: unlockkey
-    description: Unlock a locked manager
+    description: Unlock a locked manager.
     name: docker-swarm-unlock
-  - description: Get the unlock key
+  - description: Get the unlock key.
     name: docker-swarm-unlockkey
     outputs:
     - contextPath: Docker.UnlockKeyResponse.UnlockKey
       description: The swarm's unlock key.
       type: String
-  - description: Get data usage information
+  - description: Get data usage information.
     name: docker-system-data-usage
     outputs:
     - contextPath: Docker.SystemDataUsageResponse.LayersSize
-      description: Docker SystemDataUsageResponse LayersSize
+      description: Docker SystemDataUsageResponse LayersSize.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Id
-      description: Docker SystemDataUsageResponse Images ID
+      description: Docker SystemDataUsageResponse Images ID.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.Images.ParentId
-      description: Docker SystemDataUsageResponse Images ParentId
+      description: Docker SystemDataUsageResponse Images ParentId.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.Images.Created
-      description: Docker SystemDataUsageResponse Images Created
+      description: Docker SystemDataUsageResponse Images Created.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Size
-      description: Docker SystemDataUsageResponse Images Size
+      description: Docker SystemDataUsageResponse Images Size.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.SharedSize
-      description: Docker SystemDataUsageResponse Images SharedSize
+      description: Docker SystemDataUsageResponse Images SharedSize.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.VirtualSize
-      description: Docker SystemDataUsageResponse Images VirtualSize
+      description: Docker SystemDataUsageResponse Images VirtualSize.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Images.Containers
-      description: Docker SystemDataUsageResponse Images Containers
+      description: Docker SystemDataUsageResponse Images Containers.
       type: Number
     - contextPath: Docker.SystemDataUsageResponse.Volumes.Name
       description: Name of the volume.
@@ -813,22 +813,22 @@ script:
       description: 'The level at which the volume exists. Either `global` for cluster-wide, or `local` for machine level. '
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.ID
-      description: Docker SystemDataUsageResponse BuildCache ID
+      description: Docker SystemDataUsageResponse BuildCache ID.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Parent
-      description: Docker SystemDataUsageResponse BuildCache Parent
+      description: Docker SystemDataUsageResponse BuildCache Parent.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Type
-      description: Docker SystemDataUsageResponse BuildCache Type
+      description: Docker SystemDataUsageResponse BuildCache Type.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Description
-      description: Docker SystemDataUsageResponse BuildCache Description
+      description: Docker SystemDataUsageResponse BuildCache Description.
       type: String
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.InUse
-      description: Docker SystemDataUsageResponse BuildCache InUse
+      description: Docker SystemDataUsageResponse BuildCache InUse.
       type: Boolean
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Shared
-      description: Docker SystemDataUsageResponse BuildCache Shared
+      description: Docker SystemDataUsageResponse BuildCache Shared.
       type: Boolean
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.Size
       description: 'Amount of disk space used by the build cache (in bytes). '
@@ -842,7 +842,7 @@ script:
     - contextPath: Docker.SystemDataUsageResponse.BuildCache.UsageCount
       description: Docker SystemDataUsageResponse BuildCache UsageCount.
       type: Number
-  - description: Get system information
+  - description: Get system information.
     name: docker-system-info
     outputs:
     - contextPath: Docker.SystemInfo.ID
@@ -891,7 +891,7 @@ script:
       description: 'Indicates if CPU Shares limiting is supported by the host. '
       type: Boolean
     - contextPath: Docker.SystemInfo.CPUSet
-      description: 'Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.  See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt) '
+      description: 'Indicates if CPUsets (cpuset.cpus, cpuset.mems) are supported by the host.  See [cpuset(7)](https://www.kernel.org/doc/Documentation/cgroup-v1/cpusets.txt).'
       type: Boolean
     - contextPath: Docker.SystemInfo.PidsLimit
       description: Indicates if the host kernel has PID limit support enabled.
@@ -936,7 +936,7 @@ script:
       description: 'Kernel version of the host.  On Linux, this information obtained from `uname`. On Windows this information is queried from the  kbd HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\ /kbd  registry value, for example _"10.0 14393 (14393.1198.amd64fre.rs1_release_sec.170427-1353)"_. '
       type: String
     - contextPath: Docker.SystemInfo.OperatingSystem
-      description: "Name of the host's operating system, for example: \"Ubuntu 16.04.2 LTS\" or \"Windows Server 2016 Datacenter\" "
+      description: "Name of the host's operating system, for example: \"Ubuntu 16.04.2 LTS\" or \"Windows Server 2016 Datacenter\"."
       type: String
     - contextPath: Docker.SystemInfo.OSVersion
       description: "Version of the host's operating system   p    /  /p       Note  : The information returned in this field, including its   very existence, and the formatting of values, should not be considered   stable, and may change without notice. "
@@ -999,40 +999,40 @@ script:
       description: 'Reports a summary of the product license on the daemon.  If a commercial license has been applied to the daemon, information such as number of nodes, and expiration are included. '
       type: String
     - contextPath: Docker.SystemInfo.DefaultAddressPools.Base
-      description: The network address in CIDR format
+      description: The network address in CIDR format.
       type: String
     - contextPath: Docker.SystemInfo.DefaultAddressPools.Size
-      description: The network pool size
+      description: The network pool size.
       type: Number
-  - description: Get version
+  - description: Get version.
     name: docker-system-version
     outputs:
     - contextPath: Docker.SystemVersion.Components.Name
-      description: 'Name of the component '
+      description: 'Name of the component.'
       type: String
     - contextPath: Docker.SystemVersion.Components.Version
-      description: 'Version of the component '
+      description: 'Version of the component.'
       type: String
     - contextPath: Docker.SystemVersion.Version
-      description: The version of the daemon
+      description: The version of the daemon.
       type: String
     - contextPath: Docker.SystemVersion.ApiVersion
-      description: 'The default (and highest) API version that is supported by the daemon '
+      description: 'The default (and highest) API version that is supported by the daemon.'
       type: String
     - contextPath: Docker.SystemVersion.MinAPIVersion
-      description: 'The minimum API version that is supported by the daemon '
+      description: 'The minimum API version that is supported by the daemon.'
       type: String
     - contextPath: Docker.SystemVersion.GitCommit
-      description: 'The Git commit of the source code that was used to build the daemon '
+      description: 'The Git commit of the source code that was used to build the daemon.'
       type: String
     - contextPath: Docker.SystemVersion.GoVersion
       description: 'The version Go used to compile the daemon, and the version of the Go runtime in use. '
       type: String
     - contextPath: Docker.SystemVersion.Os
-      description: 'The operating system that the daemon is running on ("linux" or "windows") '
+      description: 'The operating system that the daemon is running on ("linux" or "windows").'
       type: String
     - contextPath: Docker.SystemVersion.Arch
-      description: 'The architecture that the daemon is running on '
+      description: 'The architecture that the daemon is running on.'
       type: String
     - contextPath: Docker.SystemVersion.KernelVersion
       description: 'The kernel version (`uname -r`) that the daemon is running on.  This field is omitted when empty. '
@@ -1044,9 +1044,9 @@ script:
       description: 'The date and time that the daemon was compiled. '
       type: String
   - arguments:
-    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the tasks list.  Available filters:  - `desired-state=(running | shutdown | accepted)` - `id= task id ` - `label=key` or `label="key=value"` - `name= task name ` - `node= node id or name ` - `service= service name ` '
+    - description: 'A JSON encoded value of the filters (a `map[string][]string`) to process on the tasks list.  Available filters:  - `desired-state=(running | shutdown | accepted)` - `id= task id ` - `label=key` or `label="key=value"` - `name= task name ` - `node= node id or name ` - `service= service name `.'
       name: filters
-    description: List tasks
+    description: List tasks.
     name: docker-task-list
     outputs:
     - contextPath: Docker.Task.ID
@@ -1065,7 +1065,7 @@ script:
       description: The ID of the service this task is part of.
       type: String
     - contextPath: Docker.Task.Slot
-      description: Docker Task Slot
+      description: Docker Task Slot.
       type: Number
     - contextPath: Docker.Task.NodeID
       description: The ID of the node that this task is on.
@@ -1079,13 +1079,13 @@ script:
       name: volumeconfig_driveropts
     - description: User-defined key/value metadata.
       name: volumeconfig_labels
-    description: Create a volume
+    description: Create a volume.
     name: docker-volume-create
   - arguments:
-    - description: Volume name or ID
+    - description: Volume name or ID.
       name: name
       required: true
-    description: Inspect a volume
+    description: Inspect a volume.
     name: docker-volume-inspect
     outputs:
     - contextPath: Docker.Volume.Name
@@ -1106,7 +1106,7 @@ script:
   - arguments:
     - description: 'JSON encoded value of the filters (a `map[string][]string`) to process on the volumes list. Available filters:  - `dangling= boolean ` When set to `true` (or `1`), returns all    volumes that are not in use by a container. When set to `false`    (or `0`), only volumes that are in use by one or more    containers are returned. - `driver= volume-driver-name ` Matches volumes based on their driver. - `label= key ` or `label= key : value ` Matches volumes based on    the presence of a `label` alone or a `label` and a value. - `name= volume-name ` Matches all or part of a volume name. '
       name: filters
-    description: List volumes
+    description: List volumes.
     name: docker-volume-list
     outputs:
     - contextPath: Docker.VolumeListResponse.Volumes.Name
@@ -1127,20 +1127,20 @@ script:
   - arguments:
     - description: 'Filters to process on the prune list, encoded as JSON (a `map[string][]string`).  Available filters: - `label` (`label= key `, `label= key = value `, `label!= key `, or `label!= key = value `) Prune volumes with (or without, in case `label!=...` is used) the specified labels. '
       name: filters
-    description: Delete unused volumes
+    description: Delete unused volumes.
     name: docker-volume-prune
     outputs:
     - contextPath: Docker.VolumePruneResponse.SpaceReclaimed
-      description: Disk space reclaimed in bytes
+      description: Disk space reclaimed in bytes.
       type: Number
   - name: docker-container-delete
-    description: Remove a container
+    description: Remove a container.
     outputs:
     - contextPath: Docker.ContainerDelete.Status Code
-      description: Image Tag Result
+      description: Image Tag Result.
       type: String
     arguments:
-    - description: ID or name of the container
+    - description: ID or name of the container.
       name: id
       required: true
     - description: Remove anonymous volumes associated with the container.
@@ -1168,20 +1168,20 @@ script:
     description: Remove an image, along with any untagged parent images that were referenced by that image. Images can't be removed if they have descendant images, are being used by a running container or are being used by a build.
     outputs:
     - contextPath: Docker.ImageDeleteResponseItem
-      description: Deletion Response
+      description: Deletion Response.
       type: string
     arguments:
-    - description: Image name or ID
+    - description: Image name or ID.
       name: name
       required: true
-    - description: Remove the image even if it is being used by stopped containers or has other tags
+    - description: Remove the image even if it is being used by stopped containers or has other tags.
       name: force
       auto: PREDEFINED
       defaultValue: 'false'
       predefined:
       - 'false'
       - 'true'
-    - description: Do not delete untagged parent images
+    - description: Do not delete untagged parent images.
       name: noprune
       auto: PREDEFINED
       defaultValue: 'false'
@@ -1201,12 +1201,12 @@ script:
       name: tag
     - description: Set commit message for imported image.
       name: message
-    - description: Platform in the format os[/arch[/variant]]
+    - description: Platform in the format os[/arch[/variant]].
       name: platform
     description: Create an image by either pulling it from a registry or importing it.
     outputs:
     - contextPath: Docker.ImageCreate.Status
-      description: Image Create result
+      description: Image Create result.
       type: String
   - name: docker-image-push
     arguments:
@@ -1218,7 +1218,7 @@ script:
     description: Push an image to a registry. If you wish to push an image on to a private registry, that image must already have a tag which references the registry. For example, registry.example.com/myimage:latest. The push is cancelled if the HTTP connection is closed.
     outputs:
     - contextPath: Docker.ImagePush
-      description: Image Push Result
+      description: Image Push Result.
       type: String
   - name: docker-image-tag
     arguments:
@@ -1232,9 +1232,9 @@ script:
     description: Tag an image so that it becomes part of a repository.
     outputs:
     - contextPath: Docker.ImageTag.Status Code
-      description: Image Tag Result
+      description: Image Tag Result.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.11.10.116949
   runonce: false
   script: '-'
   subtype: python3

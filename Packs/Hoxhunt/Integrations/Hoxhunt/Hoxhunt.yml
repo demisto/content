@@ -2,9 +2,9 @@ commonfields:
   id: Hoxhunt
   version: -1
 name: Hoxhunt
-display: Hoxhunt
+display: Hoxhunt (Deprecated)
 category: Email
-description: "Use the Hoxhunt integration to send feedback to reporters of incidents, set incident sensitivity, and apply SOC classification to incidents."
+description: "Deprecated. Use Hoxhunt V2 instead."
 configuration:
 - display: Server URL (e.g. https://api.hoxhunt.com/graphql-external)
   name: url
@@ -183,3 +183,4 @@ script:
 fromversion: 6.10.0
 tests:
 - No tests (auto formatted)
+deprecated: true

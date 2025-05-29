@@ -1,4 +1,4 @@
-id: Ivanti_Connect_Secure_Parsing_Rules
+id: Ivanti_Connect_Secure_ParsingRule
 name: Ivanti Connect Secure Parsing Rules
 fromversion: 8.2.0
 tags: [Ivanti, Pulse, Connect Secure, Pulse Secure, VPN]

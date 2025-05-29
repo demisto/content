@@ -60,7 +60,7 @@ script:
       description: Expiration date of the domain.
       type: Date
     - contextPath: Domain.WHOIS.Registrant.Name
-      description: Registrant name
+      description: Registrant name.
       type: String
     - contextPath: Domain.WHOIS.Registrant.Email
       description: Registrant email address.

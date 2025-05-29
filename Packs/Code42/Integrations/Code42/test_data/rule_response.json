@@ -1,0 +1,34 @@
+{
+  "createdAt": "2024-06-10T17:06:15.3250920Z",
+  "createdBy": "example@domain.com",
+  "modifiedAt": "2024-06-10T17:09:01.1308010Z",
+  "modifiedBy": "example@domain.com",
+  "isSystemRule": false,
+  "systemRemovedRiskIndicators": [],
+  "id": "64a7ec18-f83c-4c93-adc8-c17529b16eaf",
+  "name": "example rule name",
+  "description": "",
+  "isEnabled": true,
+  "source": "Alerting",
+  "notifications": {
+    "isEnabled": true,
+    "contacts": [
+      {
+        "isEnabled": true,
+        "type": "Email",
+        "address": "example@domain.com"
+      }
+    ]
+  },
+  "filters": {
+    "riskIndicator": {
+      "categories": [],
+      "indicators": [
+        "Acquired from Outlook",
+        "Sent from corporate Microsoft Office 365"
+      ],
+      "criteriaOrder": 1
+    }
+  },
+  "alertOnBlockedBrowserActivity": false
+}

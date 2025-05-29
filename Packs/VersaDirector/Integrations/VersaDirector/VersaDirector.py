@@ -1,7 +1,8 @@
-import demistomock as demisto
-from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
 from typing import Any
+
+import demistomock as demisto
 import urllib3
+from CommonServerPython import *  # noqa #! pylint: disable=unused-wildcard-import
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -81,7 +82,6 @@ class Client(BaseClient):
         user_defined_application: list,
         custom_url_categories: list,
     ):
-
         request_body = {
             "access-policy": {
                 "name": rule_name,
@@ -148,7 +148,6 @@ class Client(BaseClient):
         user_defined_application: list,
         rule_disable: str,
     ):
-
         request_body: dict[str, dict] = {
             "rule": {
                 "name": rule_name,
@@ -203,7 +202,6 @@ class Client(BaseClient):
     def _create_address_object_request_body(
         self, object_name: str, description: str, tags: list, address_object_type: str, object_value: str
     ):
-
         request_body = {
             "address": {
                 "name": object_name,
@@ -225,7 +223,6 @@ class Client(BaseClient):
         patterns: list,
         pattern_reputation: list,
     ):
-
         urls_dict: dict[str, list] = {
             "strings": [],
             "patterns": [],
@@ -364,9 +361,7 @@ class Client(BaseClient):
 
         return response
 
-    def appliances_list_by_organization_request(
-        self, organization: str, offset: int | None = None, limit: int | None = None
-    ):
+    def appliances_list_by_organization_request(self, organization: str, offset: int | None = None, limit: int | None = None):
         params = assign_params(offset=offset, limit=limit)
 
         response = self._http_request(
@@ -436,7 +431,6 @@ class Client(BaseClient):
             url_suffix=f"api/config/devices/template/{organization}-DataStore/config/orgs/org",
             params=params,
             headers=headers,
-
         )
 
         return response
@@ -504,7 +498,6 @@ class Client(BaseClient):
             + "/url-filtering/user-defined-url-categories/url-category",
             params=params,
             headers=headers,
-
         )
 
         return response
@@ -521,7 +514,6 @@ class Client(BaseClient):
         patterns: list,
         pattern_reputation: list,
     ):
-
         request_body = self._create_custom_url_category_request_body(
             url_category_name,
             description,
@@ -708,7 +700,6 @@ class Client(BaseClient):
             + "/security/access-policies/access-policy-group",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -729,7 +720,6 @@ class Client(BaseClient):
             + f"/security/access-policies/access-policy-group/{access_policy_name}/rules/access-policy",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -748,7 +738,6 @@ class Client(BaseClient):
         user_defined_application: list,
         custom_url_categories: list,
     ):
-
         request_body = self._create_access_policy_rule_request_body(
             rule_name,
             description,
@@ -788,7 +777,6 @@ class Client(BaseClient):
         user_defined_application: list,
         custom_url_categories: list,
     ):
-
         request_body = self._create_access_policy_rule_request_body(
             rule_name,
             description,
@@ -846,7 +834,6 @@ class Client(BaseClient):
             params=params,
             headers=headers,
             ok_codes=(200, 201),
-
         )
         return response
 
@@ -867,7 +854,6 @@ class Client(BaseClient):
             + f"/security/access-policies/access-policy-group/{access_policy_name}/rules/access-policy",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -886,7 +872,6 @@ class Client(BaseClient):
         user_defined_application: list,
         custom_url_categories: list,
     ):
-
         request_body = self._create_access_policy_rule_request_body(
             rule_name,
             description,
@@ -926,7 +911,6 @@ class Client(BaseClient):
         user_defined_application: list,
         custom_url_categories: list,
     ):
-
         request_body = self._create_access_policy_rule_request_body(
             rule_name,
             description,
@@ -983,7 +967,6 @@ class Client(BaseClient):
             + "/sd-wan/policies/sdwan-policy-group",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1004,7 +987,6 @@ class Client(BaseClient):
             + f"/sd-wan/policies/sdwan-policy-group/{sdwan_policy_name}/rules/rule",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1028,7 +1010,6 @@ class Client(BaseClient):
         user_defined_application: list,
         rule_disable: str,
     ):
-
         request_body = self._create_sdwan_policy_rule_request_body(
             rule_name,
             description,
@@ -1078,7 +1059,6 @@ class Client(BaseClient):
         predefined_application: list,
         user_defined_application: list,
     ):
-
         request_body = self._create_sdwan_policy_rule_request_body(
             rule_name,
             description,
@@ -1141,7 +1121,6 @@ class Client(BaseClient):
             + "/sd-wan/policies/sdwan-policy-group",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1162,7 +1141,6 @@ class Client(BaseClient):
             + f"/sd-wan/policies/sdwan-policy-group/{sdwan_policy_name}/rules/rule",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1186,7 +1164,6 @@ class Client(BaseClient):
         user_defined_application: list,
         rule_disable: str,
     ):
-
         request_body = self._create_sdwan_policy_rule_request_body(
             rule_name,
             description,
@@ -1235,7 +1212,6 @@ class Client(BaseClient):
         predefined_application: list,
         user_defined_application: list,
     ):
-
         request_body = self._create_sdwan_policy_rule_request_body(
             rule_name,
             description,
@@ -1298,7 +1274,6 @@ class Client(BaseClient):
             + f"{organization}/objects/addresses/address",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1335,7 +1310,6 @@ class Client(BaseClient):
         address_object_type: str,
         object_value: str,
     ):
-
         request_body = self._create_address_object_request_body(object_name, description, tags, address_object_type, object_value)
 
         response = self._http_request(
@@ -1380,7 +1354,6 @@ class Client(BaseClient):
             + "/objects/addresses/address",
             params=params,
             headers=headers,
-
         )
         return response
 
@@ -1417,7 +1390,6 @@ class Client(BaseClient):
         address_object_type: str,
         object_value: str,
     ):
-
         request_body = self._create_address_object_request_body(object_name, description, tags, address_object_type, object_value)
 
         response = self._http_request(
@@ -1462,7 +1434,6 @@ class Client(BaseClient):
             + "/application-identification/user-defined-applications/user-defined-application",
             params=params,
             headers=headers,
-
             ok_codes=(200, 201, 204),
         )
         return response
@@ -1483,7 +1454,6 @@ class Client(BaseClient):
             + "/application-identification/user-defined-applications/user-defined-application",
             params=params,
             headers=headers,
-
             ok_codes=(200, 201),
         )
         return response
@@ -1504,7 +1474,6 @@ class Client(BaseClient):
             + "/application-identification/application-specific-options/app-specific-option-list",
             params=params,
             headers=headers,
-
             ok_codes=(200, 201),
         )
         return response
@@ -1525,7 +1494,6 @@ class Client(BaseClient):
             + "/application-identification/application-specific-options/app-specific-option-list",
             params=params,
             headers=headers,
-
             ok_codes=(200, 201),
         )
         return response
@@ -1693,10 +1661,14 @@ def create_client_header(
         if username and password:
             credentials = f"{username}:{password}"
             auth_header = f"Basic {b64_encode(credentials)}"
-            return (username, password), {"Authorization": auth_header, 'Accept': 'application/json',
-                                          'Content-Type': 'application/json'}
+            return (username, password), {
+                "Authorization": auth_header,
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
         else:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
+            return None
 
     elif not use_basic_auth:
         # Auth Token authentication using Auth token parameter
@@ -1705,8 +1677,11 @@ def create_client_header(
         case_context = all([client_id, client_secret, access_token])
 
         if case_auth_token or case_context:
-            return None, {"Authorization": f"Bearer {access_token}", 'Accept': 'application/json',
-                          'Content-Type': 'application/json'}
+            return None, {
+                "Authorization": f"Bearer {access_token}",
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
 
         else:
             raise DemistoException(
@@ -3506,6 +3481,7 @@ def test_module(
     case_not_client_id_and_not_client_secret_and_not_access_token = bool(not client_id and not client_secret and not access_token)
 
     # Case: using Basic authentication with Username and Password parameter
+    message = ""
     if use_basic_auth and client:
         if case_missing_username_or_password:
             return_error("Basic Authentication method chosen but Username or Password parameters are missing.")
@@ -3532,7 +3508,7 @@ def test_module(
         message = test_connectivity(client)
 
     # Case: using Auth Token method with Client ID and Client Secret parameters
-    elif not use_basic_auth and case_not_client_id_and_not_client_secret or case_client_id_and_client_secret:
+    elif (not use_basic_auth and case_not_client_id_and_not_client_secret) or case_client_id_and_client_secret:
         return_error(
             "When using Auth Token authentication method with Client ID and Client Secret, please follow these steps:\n"
             "Input Client ID and Client Secret Parameters if available OR run '!vd-auth-start' "
@@ -3578,8 +3554,9 @@ def main() -> None:
     username = params.get("credentials", {}).get("identifier", "")
     password = params.get("credentials", {}).get("password", "")
     client_id = params.get("credentials_client", {}).get("identifier") or params.get("client_id") or context.get("client_id")
-    client_secret = params.get("credentials_client", {}).get(
-        "password") or params.get("client_secret") or context.get("client_secret")
+    client_secret = (
+        params.get("credentials_client", {}).get("password") or params.get("client_secret") or context.get("client_secret")
+    )
     access_token = params.get("access_token") or context.get("access_token")
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
@@ -3683,11 +3660,11 @@ def main() -> None:
             raise NotImplementedError(f"{command} command is not implemented.")
     except DemistoException as e:
         if e.res and e.res.status_code == 204:
-            return_results(f"Empty response has returned from {command} command.\nMessage:\n{str(e)}")
+            return_results(f"Empty response has returned from {command} command.\nMessage:\n{e!s}")
         else:
             raise e
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

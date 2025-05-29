@@ -1,73 +1,16 @@
 [
   {
     "id": "1",
-    "accountUid": "e7a9fb73-44b0-4f5d-990b-39ff884425eb",
-    "actionRequestUid": "e416f97e-dc43-4ed0-88c3-b33ea66c660f",
+    "requestUid": "e416f97e-dc43-4ed0-88c3-b33ea66c660f",
     "deviceUid": "56be8d1f-2eb8-4e9b-bbd6-1aab032abcde",
-    "name": "On-demand Freeze request",
-    "statuses": [
-      {
-        "actionUid": null,
-        "statusUid": "5336db35-ae66-435e-a29d-41ef2f10a86c",
-        "status": "Launching",
-        "messageKey": null,
-        "messageParams": null,
-        "message": null,
-        "updatedBy": "example@test.com",
-        "updatedUTC": "2021-11-03T07:33:55.966+00:00",
-        "triggerActionUid": null,
-        "eventType": null,
-        "ackClientTS": 1548265912126,
-        "ackClientUTC": 1548294712126,
-        "instruction": "",
-        "scheduledFreezeDateUTC": 0
-      },
-      {
-        "actionUid": null,
-        "statusUid": null,
-        "status": "FreezeRequested",
-        "messageKey": null,
-        "messageParams": null,
-        "message": null,
-        "updatedBy": "example@test.com",
-        "updatedUTC": 1548294707085,
-        "triggerActionUid": null,
-        "eventType": null,
-        "ackClientTS": 0,
-        "ackClientUTC": 0,
-        "instruction": null,
-        "scheduledFreezeDateUTC": 0
-      }
-    ],
-    "configuration": {
-      "messageName": "On-demand Freeze message",
-      "htmlClear": "some html",
-      "passcodeClear": "12345678",
-      "passcodeOption": "RandomForEach",
-      "freezeMessage": "This device has been frozen by a Company",
-      "freezeId": "DeviceFreeze-0864",
-      "configurationUid": "c132d6aa-03b5-483d-89ab-77f45f7346cc",
-      "action": "DFZ",
-      "type": "OnDemand",
-      "passcodeLength": 8,
-      "passcodeSalt": "P0efY",
-      "passcodeHashed": "+AG=",
-      "html": null,
-      "disableRemoteLogin": true,
-      "disableFileSharing": true,
-      "forceReboot": false,
-      "conditions": [
-        {}
-      ],
-      "issuedUTC": "2021-11-03T07:33:55.966+00:00",
-      "preLoginEnabled": true,
-      "serviceControlList": null
-    },
+    "requestTitle": "On-demand Freeze request",
+    "statuses": [],
+    "configuration": {},
     "requester": "example@test.com",
     "requesterUid": "1abc2de3-fa45-67b8-9cde-0f12a34bc567",
     "customAttributes": null,
-    "createdUTC": "2021-11-03T07:33:56.004+00:00",
-    "changedUTC": "2021-11-03T07:33:55.966+00:00",
+    "createdDateTimeUtc": "2021-11-03T07:33:56.004+00:00",
+    "changedDateTimeUtc": "2021-11-03T07:33:55.966+00:00",
     "notificationEmails": [
       "example1@test.com",
       "example2@test.com"
@@ -76,7 +19,7 @@
     "policyGroupUid": null,
     "policyConfigurationVersion": 0,
     "freezePolicyUid": null,
-    "downloaded": false,
+    "isDownloaded": false,
     "isCurrent": true
   }
 ]

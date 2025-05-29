@@ -4,7 +4,8 @@
 		"CrowdStrike Falcon Detection",
         "CrowdStrike Falcon IDP Detection",
         "CrowdStrike Falcon Mobile Detection",
-        "CrowdStrike Falcon On-Demand Scans Detection"
+        "CrowdStrike Falcon On-Demand Scans Detection",
+        "CrowdStrike Falcon OFP Detection"
 	],
 	"breachScript": "",
 	"caseInsensitive": true,
@@ -38,6 +39,9 @@
 	"useAsKpi": false,
 	"validationRegex": "",
 	"version": -1,
-	"fromVersion": "5.0.0"
+	"fromVersion": "5.0.0",
+    "marketplaces": [
+        "xsoar"
+    ]
 }
 

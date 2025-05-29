@@ -1,0 +1,699 @@
+category: Messaging and Conferencing
+name: OpenAi ChatGPT v3
+display: OpenAI GPT
+description: Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging OpenAI GPT models' natural language conversational capabilities
+commonfields:
+  id: OpenAi ChatGPT v3
+  version: -1
+configuration:
+- display: Server URL
+  name: url
+  required: true
+  defaultvalue: https://api.openai.com/
+  section: Connect
+  type: 0
+- displaypassword: API Key
+  name: apikey
+  type: 9
+  required: true
+  section: Connect
+  hiddenusername: true
+- display: Model
+  additionalinfo: The model that will process the inputs and generate the completion.
+  name: model-select
+  type: 15
+  required: false
+  section: Connect
+  defaultvalue: gpt-3.5-turbo
+  options:
+  - gpt-3.5-turbo
+  - gpt-3.5-turbo-0125
+  - gpt-3.5-turbo-1106
+  - gpt-3.5-turbo-16k
+  - gpt-4-turbo
+  - gpt-4-turbo-preview
+  - gpt-4-0125-preview
+  - gpt-4-1106-preview
+  - gpt-4-vision-preview
+  - gpt-4-1106-vision-preview
+  - gpt-4
+  - gpt-4-0613
+  - gpt-4-32k
+  - gpt-4-32k-0613
+- display: Model (Optional - overrides selected choice)
+  additionalinfo: The model that will process the inputs and generate the completion.
+  name: model-freetext
+  type: 0
+  required: false
+  section: Connect
+- display: Max tokens
+  name: max_tokens
+  additionalinfo: The maximum number of tokens that can be generated for the response. (Allows controlling tokens' consumption).
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: Temperature
+  name: temperature
+  additionalinfo: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: Top P
+  name: top_p
+  additionalinfo: Enables nucleus sampling where only the top 'p' percent (0 to 1) of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+  type: 0
+  required: false
+  section: Collect
+  advanced: true
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 9
+  required: true
+- display: Use system proxy settings
+  name: proxy
+  type: 7
+  required: true
+script:
+  commands:
+  - name: gpt-send-message
+    description: Send a plain message to the selected GPT model and receive the generated response
+    arguments:
+    - name: message
+      required: true
+      description: The message that the GPT model will respond to.
+    - name: message
+      required: true
+      description: DUPLICATE ON PURPOSE
+    - name: reset_conversation_history
+      required: false
+      description: Whether to keep previously sent messages in a conversation context or start a new conversation
+      predefined:
+      - yes
+      - no
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: top_p
+      required: false
+      description: (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+  - name: gpt-check-email-header
+    description: Checking email header for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+  - name: gpt-check-email-body
+    description: Check email body for possible security issues. It is possible to keep asking questions on the provided info using 'gpt-send-message'. Resets conversation context by default.
+    arguments:
+    - name: entry_id
+      description: Entry ID of an uploaded '.eml' file.
+      required: true
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+  - name: gpt-create-soc-email-template
+    description: Create an email template out of the conversation context to be sent from the SOC.
+    arguments:
+    - name: additional_instructions
+      description: Additional instructions or security issue to focus on.
+      required: false
+    - name: max_tokens
+      required: false
+      description: The maximum number of tokens that can be generated for the response.
+    - name: temperature
+      required: false
+      description: Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 2) increase randomness and variety. It is generally recommended altering this or top_p but not both.
+    - name: top_p
+      required: false
+      description: Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. It is generally recommended altering this or temperature but not both.
+    outputs:
+    - contextPath: OpenAiChatGPTV3.Conversation
+      description: Entire conversation (if not reset) between the user and the GPT model.
+      type: Dictionary
+  runonce: false
+  script: >
+    register_module_line('OpenAi ChatGPT v3', 'start', __line__())
+
+    demisto.debug('pack name = OpenAI, pack version = 2.0.0')
+
+
+
+
+
+    import urllib3
+
+    import parse_emails
+
+
+    # Disable insecure warnings
+
+    urllib3.disable_warnings()
+
+
+    ''' CONSTANTS '''
+
+    DATE_FORMAT = '%Y-%m-%dT%H:%M:%SZ'  # ISO8601 format with UTC, default in XSOAR
+
+
+    EML_FILE_PREFIX = '.eml'
+
+
+    CHECK_EMAIL_HEADERS_PROMPT = """
+
+    I have a set of email headers.
+
+    Analyze these headers for any potential security issues such as spoofing, phishing attempts, or other malicious activity.
+
+    Please identify any suspicious fields, explain why they might be concerning, and suggest any further actions that could be taken \
+
+    to investigate or mitigate these issues.
+
+    Additional instructions: {}
+
+
+    '''
+
+    {}
+
+    '''
+
+
+    Please, review each header, highlighting any red flags and explaining the potential risks associated with them.
+
+    Make you answer very concise and easily readable, with references to the email headers if there are, otherwise do not refer to \
+
+    hypothetical problems.
+
+    """
+
+
+    CHECK_EMAIL_BODY_PROMPT = """
+
+    I have this email body that I suspect may contain security risks such as phishing links, suspicious attachments,
+
+    or signs of social engineering. Please analyze the content of this email body, identify any elements that may pose security
+
+    threats, and explain why these elements are concerning. Also, suggest any steps that could be taken to further verify these risks
+
+    or protect against these threats.
+
+    {}
+
+    '''
+
+    {}
+
+    '''
+
+
+    Highlight potential security risks, and explain the implications of such risks.
+
+    Make you answer very concise and easily readable, with references to the email body if there are, otherwise do not refer to \
+
+    hypothetical problems.
+
+    """
+
+
+    CREATE_SOC_EMAIL_TEMPLATE_PROMPT = """
+
+    Based on the details provided in our conversation and any specific instructions you have been given,
+
+    create a professional email template suitable for a Security Operations Center (SOC).
+
+    The template should be adaptable, clearly structured, and include placeholders for specific incident details,
+
+    recommendations for action, and any necessary escalation points.
+
+    Please ensure the tone is appropriate for communication within a cybersecurity context.
+
+    {}
+
+    """
+
+
+
+    class ArgAndParamNames:
+        MODEL = "model"
+        MESSAGE = "message"
+        RESET_CONVERSATION_HISTORY = "reset_conversation_history"
+        ENTRY_ID = "entry_id"
+        ADDITIONAL_INSTRUCTIONS = "additional_instructions"
+        MAX_TOKENS = "max_tokens"
+        TEMPERATURE = "temperature"
+        TOP_P = "top_p"
+
+
+    class Roles:
+        ASSISTANT = 'assistant'
+        USER = 'user'
+
+
+    class EmailParts:
+        HEADERS = 'headers'
+        BODY = 'body'
+
+
+    ''' CLIENT CLASS '''
+
+
+
+    class OpenAiClient(BaseClient):
+        CHAT_COMPLETIONS_ENDPOINT = 'v1/chat/completions'
+
+        def __init__(self, url: str, api_key: str, model: str, proxy: bool, verify: bool):
+            super().__init__(base_url=url, proxy=proxy, verify=verify)
+
+            self.api_key = api_key
+            self.model = model
+            self.headers = {'Authorization': f'Bearer {self.api_key}', 'Content-Type': 'application/json'}
+
+        def get_chat_completions(self,
+                                 chat_context: List[dict[str, str]],
+                                 completion_params: dict[str, str | None]) -> dict[str, Any]:
+            """ Gets the response to a chat_completions request using the OpenAI API. """
+
+            options: Dict[str, Any] = {ArgAndParamNames.MODEL: self.model}
+            max_tokens = completion_params.get(ArgAndParamNames.MAX_TOKENS, None)
+            if max_tokens:
+                options[ArgAndParamNames.MAX_TOKENS] = max_tokens
+
+            temperature = completion_params.get(ArgAndParamNames.TEMPERATURE, None)
+            if temperature:
+                options[ArgAndParamNames.TEMPERATURE] = temperature
+
+            top_p = completion_params.get(ArgAndParamNames.TOP_P, None)
+            if top_p:
+                options[ArgAndParamNames.TOP_P] = top_p
+
+            options['messages'] = chat_context
+            demisto.debug(f"openai-gpt Using options for chat completion: {options=}")
+            return self._http_request(method='POST',
+                                      url_suffix=OpenAiClient.CHAT_COMPLETIONS_ENDPOINT,
+                                      json_data=options,
+                                      headers=self.headers)
+
+
+    ''' HELPER FUNCTIONS '''
+
+
+
+    def setup_args(args: Dict[str, Any], params: Dict[str, Any]):
+        """ Using instance params for model configuration, if command args were not provided."""
+        if not args.get(ArgAndParamNames.MAX_TOKENS, None) and params.get(ArgAndParamNames.MAX_TOKENS, None):
+            args[ArgAndParamNames.MAX_TOKENS] = params.get(ArgAndParamNames.MAX_TOKENS)
+        if not args.get(ArgAndParamNames.TEMPERATURE, None) and params.get(ArgAndParamNames.TEMPERATURE, None):
+            args[ArgAndParamNames.TEMPERATURE] = params.get(ArgAndParamNames.TEMPERATURE)
+        if not args.get(ArgAndParamNames.TOP_P, None) and params.get(ArgAndParamNames.TOP_P, False):
+            args[ArgAndParamNames.TOP_P] = params.get(ArgAndParamNames.TOP_P)
+
+
+    def conversation_to_chat_context(conversation: List[dict[str, str]]) -> List[dict[str, str]]:
+        """ A 'Conversation' list that was retrieved from 'demisto.context()' is formatted to be more intuitive for XSOAR users
+        and is formatted as: [
+                                {'user': '<USER_MESSAGE_0>, 'assistant': '<ASSISTANT_MESSAGE_0>},
+                                {'user': '<USER_MESSAGE_1>', 'assistant': '<ASSISTANT_MESSAGE_1>'},
+                                 ...
+                            ].
+
+        The conversational format that is supported by the 'Chat Completions' endpoint is a sequence of messages,
+         labeled with roles:
+            [
+                {'role': 'user', 'content': '<USER_MESSAGE_0>'},
+                {'role': 'assistant', 'content': '<ASSISTANT_MESSAGE_0>'},
+                {'role': 'user', 'content': '<USER_MESSAGE_1>'},
+                {'role': 'assistant', 'content': '<ASSISTANT_MESSAGE_1>'},
+                ...
+            ]
+
+        Therefore, it has to be transformed.
+         """
+
+        chat_context = []
+        for element in conversation:
+            demisto.debug(f'openai-gpt conversation_to_chat_context reading {element=} from conversation')
+            chat_context.append({'role': Roles.USER, 'content': element.get(Roles.USER, '')})
+            chat_context.append({'role': Roles.ASSISTANT, 'content': element.get(Roles.ASSISTANT, '')})
+
+        return chat_context
+
+
+    def get_chat_context(reset_conversation_history: bool, message: str) -> List[dict[str, str]]:
+        """
+        Retrieves the existing chat conversation history from the incident context, if exists.
+        If `reset_conversation_history` is True, or if no conversation history exists, it initializes a new conversation list
+        with the given message and returns it.
+
+        Args:
+            reset_conversation_history (bool): Flag to determine whether to reset the existing conversation history.
+            message (str): The new message to be added to the conversation.
+
+        Returns:
+            List[Dict[str, str]]: The updated conversation history with the new message appended.
+        """
+        # Retrieve or initialize conversation history based on the context and reset flag
+        conversation = demisto.context().get('OpenAiChatGPTV3', {}).get('Conversation')
+
+        if reset_conversation_history or not conversation:
+            conversation = []
+            demisto.debug('openai-gpt get_chat_context conversation history reset or initialized as empty.')
+        else:
+            demisto.debug(f'openai-gpt get_chat_context using conversation history from context:'
+                          f' [type(conversation)={type(conversation)}]{conversation=}')
+
+        # Create the chat context which is suitable with the required format for a 'chat-completions' request.
+        chat_context = conversation_to_chat_context(conversation)
+        chat_context.append({"role": Roles.USER, "content": message})
+        demisto.debug(f'openai-gpt get_chat_context updated chat_context with new message: {chat_context=}')
+        return chat_context
+
+
+    def extract_assistant_message(response: dict[str, Any]) -> str:
+        """
+            Extracts the assistant message from a response.
+            Returns:
+            The assistant message as a string.
+        """
+
+        choices: list = response.get('choices', [])
+        if not choices:
+            return_error("Could not retrieve message from response.")
+
+        message = choices[0].get('message', {})
+        if not message:
+            return_error("Could not retrieve message from response.")
+
+        response_content = message.get('content', '')
+        if not response_content:
+            return_error("Could not retrieve message from response.")
+
+        return response_content
+
+
+    def get_email_parts(entry_id: str) -> tuple[List[dict[str, str]] | None, str | None, str | None, str | None]:
+        """
+            Extracts and parses the headers, text body, and HTML body from an .eml file identified by a given entry ID.
+
+            Args:
+            - entry_id (str): The unique identifier for the uploaded .eml file in the war room.
+
+            Returns:
+            - tuple[List[Dict[str, str]] | None, str | None, str | None]: A tuple containing three elements:
+                - headers (List[Dict[str, str]] | None): A list of dictionaries where each dictionary represents an email header.
+                - text_body (str | None): The plain text body of the email, if available.
+                - html_body (str | None): The HTML body of the email, if available.
+        """
+        if not entry_id:
+            DemistoException("Provide an entryId of an uploaded '.eml' file.")
+
+        get_file_path_res = demisto.getFilePath(entry_id)
+        file_path = get_file_path_res["path"]
+        file_name = get_file_path_res["name"]
+
+        if not file_name.endswith(EML_FILE_PREFIX):
+            DemistoException("Provided 'entry_id' does not point to a valid '.eml' file.")
+
+        email_parser = parse_emails.EmailParser(file_path=file_path)
+        email_parser.parse()
+
+        headers, text_body, html_body = (email_parser.parsed_email.get('Headers', None),
+                                         email_parser.parsed_email.get('Text', None),
+                                         email_parser.parsed_email.get('HTML', None))
+        return headers, text_body, html_body, file_name
+
+
+    def check_email_part(email_part: str, client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+        """
+            Checks email parts (headers/body) for potential security issues using predefined prompts
+            ('CHECK_EMAIL_HEADERS_PROMPT', 'CHECK_EMAIL_BODY_PROMPT') that are sent to the GPT model.
+        """
+        entry_id: str = args.get(ArgAndParamNames.ENTRY_ID, '')
+        email_headers, email_text_body, email_html_body, file_name = get_email_parts(entry_id)
+        additional_instructions = (f'openai-gpt check_email_part '
+                                   f'Additional instructions: {ArgAndParamNames.ADDITIONAL_INSTRUCTIONS}\n') \
+            if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ''
+
+        if email_part == EmailParts.HEADERS:
+            demisto.debug(f'openai-gpt checking email headers: {email_headers=}')
+            if email_headers:
+                email_headers_formatted = {
+                    header['name']: header['value']
+                    for header in email_headers
+                    if 'name' in header and 'value' in header
+                }
+                readable_input = tableToMarkdown(name=f'{file_name} headers:', t=email_headers_formatted, sort_headers=False)
+                check_email_part_message = CHECK_EMAIL_HEADERS_PROMPT.format(additional_instructions, readable_input)
+
+            else:
+                raise DemistoException("'parse_emails' did not extract any email headers from the provided file..")
+        elif email_part == EmailParts.BODY:
+            demisto.debug(f'openai-gpt checking email body: {email_text_body=} {email_html_body=}')
+
+            if not email_text_body and not email_html_body:
+                raise DemistoException("'email_parser' did not extract any email body from the provided file.")
+
+            email_text_body = email_text_body if email_text_body else ''
+            email_html_body = email_html_body if email_html_body else ''
+
+            email_body = {'Body/Text': email_text_body, 'HTML/Text': email_html_body}
+
+            readable_input = tableToMarkdown(name=f'{file_name} body:', t=email_body, sort_headers=False)
+            check_email_part_message = CHECK_EMAIL_BODY_PROMPT.format(additional_instructions, readable_input)
+        else:
+            raise DemistoException("Invalid email part to check provided.")
+
+        demisto.debug(f'openai-gpt check_email_part {check_email_part_message=}')
+
+        # Starting a new conversation as of a new topic discussed.
+        args.update({ArgAndParamNames.RESET_CONVERSATION_HISTORY: 'yes', ArgAndParamNames.MESSAGE: check_email_part_message})
+        send_message_command_results, response = send_message_command(client, args)
+
+        # Displaying the analyzed email part to the war room and setting the context for the email checking response
+        # prior to returning the 'send-message-command' results and the entire conversation to the context.
+        return_results(
+            CommandResults(readable_output=readable_input,
+                           outputs_prefix='OpenAiChatGPTV3.Email' + email_part.capitalize(),
+                           outputs={
+                               'Email' + email_part.capitalize(): readable_input,
+                               'Response': response
+                           },
+                           replace_existing=True
+                           )
+        )
+        return send_message_command_results
+
+
+    ''' COMMAND FUNCTIONS '''
+
+
+
+    def test_module(client: OpenAiClient, params: dict) -> str:
+        """Tests API connectivity and authentication along with model compatability with 'Chat Completions' endpoint.
+
+        Returning 'ok' indicates that the integration works like it is supposed to.
+        Connection to the service is successful.
+        Raises exceptions if something goes wrong.
+
+        :type client: ``OpenAiClient``
+        :param client: client to use
+
+        :return: 'ok' if test passed, anything else will fail the test.
+        :rtype: ``str``
+        """
+        message = ''
+        try:
+            chat_message = {"role": "user", "content": ""}
+            completion_params = {
+                ArgAndParamNames.MAX_TOKENS: params.get(ArgAndParamNames.MAX_TOKENS, None),
+                ArgAndParamNames.TEMPERATURE: params.get(ArgAndParamNames.TEMPERATURE, None),
+                ArgAndParamNames.TOP_P: params.get(ArgAndParamNames.TOP_P, None)
+            }
+            client.get_chat_completions(chat_context=[chat_message], completion_params=completion_params)
+            message = 'ok'
+        except DemistoException as e:
+            if 'Forbidden' in str(e) or 'Authorization' in str(e):
+                message = 'Authorization Error: make sure API Key is correctly set'
+            else:
+                raise e
+        return message
+
+
+    def send_message_command(client: OpenAiClient,
+                             args: dict[str, Any]) -> tuple[CommandResults, dict[str, Any]]:
+        """
+            Sending a message with conversation context to an OpenAI GPT model and retrieving the generated response.
+        """
+        message = args.get(ArgAndParamNames.MESSAGE, "")
+        if not message:
+            raise ValueError('Message not provided')
+
+        completion_params = {
+            ArgAndParamNames.MAX_TOKENS: args.get(ArgAndParamNames.MAX_TOKENS, None),
+            ArgAndParamNames.TEMPERATURE: args.get(ArgAndParamNames.TEMPERATURE, None),
+            ArgAndParamNames.TOP_P: args.get(ArgAndParamNames.TOP_P, None)
+        }
+
+        reset_conversation_history = args.get(ArgAndParamNames.RESET_CONVERSATION_HISTORY, '') == 'yes'
+        chat_context = get_chat_context(reset_conversation_history, message)
+        demisto.debug(f'openai-gpt send_message_command {chat_context=}, {completion_params=}')
+
+        response = client.get_chat_completions(chat_context=chat_context, completion_params=completion_params)
+        demisto.debug(f'openai-gpt send_message_command {response=}')
+
+        assistant_message = extract_assistant_message(response)
+        conversation_step = [{Roles.USER: message, Roles.ASSISTANT: assistant_message}]
+
+        usage: dict[str, str] = response.get('usage', {})
+
+        readable_output = assistant_message + '\n' + tableToMarkdown(name=f'{response.get(ArgAndParamNames.MODEL, "")} response:',
+                                                                     sort_headers=False,
+                                                                     t={
+                                                                         'Prompt tokens': usage.get('prompt_tokens', ''),
+                                                                         'Completion tokens': usage.get('completion_tokens', ''),
+                                                                         'Total tokens': usage.get('total_tokens', ''),
+                                                                         'Context messages': str(len(chat_context))
+                                                                     }
+                                                                     )
+        return CommandResults(
+            outputs_prefix='OpenAiChatGPTV3.Conversation',
+            outputs=conversation_step,
+            replace_existing=reset_conversation_history,
+            readable_output=readable_output
+        ), response
+
+
+    def check_email_headers_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+        return check_email_part(EmailParts.HEADERS, client, args)
+
+
+    def check_email_body_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+        return check_email_part(EmailParts.BODY, client, args)
+
+
+    def create_soc_email_template_command(client: OpenAiClient, args: dict[str, Any]) -> CommandResults:
+        additional_instructions = f'Additional instructions: {args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS)}\n'\
+            if args.get(ArgAndParamNames.ADDITIONAL_INSTRUCTIONS, "") else ''
+        create_soc_email_template_message = CREATE_SOC_EMAIL_TEMPLATE_PROMPT.format(additional_instructions)
+        args.update({ArgAndParamNames.MESSAGE: create_soc_email_template_message})
+        send_message_command_results, response = send_message_command(client, args)
+        # Setting the SOCEmailTemplate context prior to returning the 'send-message-command' results
+        # and setting the entire conversation in the context.
+        return_results(
+            CommandResults(
+                outputs_prefix='OpenAiChatGPTV3.SocEmailTemplate',
+                outputs={'Response': response},
+                replace_existing=True
+            )
+        )
+        return send_message_command_results
+
+
+    ''' MAIN FUNCTION '''
+
+
+
+    def main() -> None:  # pragma: no cover
+        """main function, parses params and runs command functions
+
+        :return:
+        :rtype:
+        """
+
+        params = demisto.params()
+        args = demisto.args()
+        command = demisto.command()
+
+        api_key = params.get('apikey', {}).get('password')
+        # If a model name was provided within the free text box, it will override the selected one from the model selection box.
+        # The provided model will be tested for compatability within the test module.
+        model = params.get('model-freetext') if params.get('model-freetext') else params.get('model-select')
+
+        setup_args(args, params)
+
+        verify = not params.get('insecure', False)
+        proxy = params.get('proxy', False)
+        try:
+            client = OpenAiClient(
+                url=params.get('url'),
+                api_key=api_key,
+                model=model,
+                verify=verify,
+                proxy=proxy
+            )
+
+            if command == 'test-module':
+                return_results(test_module(client=client, params=params))
+
+            elif command == "gpt-send-message":
+                return_results(send_message_command(client=client, args=args)[0])
+
+            elif command == "gpt-check-email-header":
+                return_results(check_email_headers_command(client=client, args=args))
+
+            elif command == "gpt-check-email-body":
+                return_results(check_email_body_command(client=client, args=args))
+
+            elif command == "gpt-create-soc-email-template":
+                return_results(create_soc_email_template_command(client=client, args=args))
+
+        except Exception as e:
+            demisto.error(traceback.format_exc())
+            return_error(f'Failed to execute {demisto.command()} command. Error: {str(e)}')
+
+
+    ''' ENTRY POINT '''
+
+
+    if __name__ in ('__main__', '__builtin__', 'builtins'):
+        main()
+
+    register_module_line('OpenAi ChatGPT v3', 'end', __line__())
+  type: python
+  subtype: python3
+  dockerimage: demisto/parse-emails:1.0.0.93148
+  nativeimage:
+  - '8.8'
+  - '8.6'
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
+image: data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAHgAAAAyCAQAAAA9rtdTAAAC7HpUWHRSYXcgcHJvZmlsZSB0eXBlIGV4aWYAAHja7ZZRkuQmDIbfOUWOYEkIieNgMFV7gxw/vzDdme6ZrcpkXwfKgIUsCX1Ad7r+/jXTXyiU6UhZzUst5UDJNVduGPhxl7ZaOvJqV7HHHL3Kk/CeYIgEvdyvXrb+Q05PA3fXMNIPhrzvifN1ouZt398MbccSEcV4bEN1GxK+J2gbaPeyjlLdPi7hvO5+f3+nAU+KJvtr2J/eDdkbCj/CfAnJgVZkByDxcJKGCUZ7iEKRRJekolWp2xgS8lWengV6aUao+UulFyrP0RutslOQ3mll3iryluTy7L+UJ9K3CXn654+es+8Rv8qRqnxH9Jb9eOYcPteasYqWC1Jd9qIeS1wj6J1wEa49IbRyGB6FCVu1ojp2dcdWGEc/TtROlRi4Jo7DoEaTrtV36ggx85XYMGDuLEvoYly5S/DLUWmygeEQB9u+sGfhZyy03Najp+XN4XkQVJlgLLbDt2v67gdzxlEgilyWtnKFuJgj2QgjyEULNTCguZOqK8GP+l6CazDTyHIckYrEnreJU+nfm0AWaIGior/PINnYBpAiuFYEQwICoIZTQYUOYzYiJNIBqCF0lswnCJAqDwTJWaSAjXO4xidGS5WVIU6Q4zIDCZUiBjY4ZYCVs2L/WHbsoaaiWVWLmrpWbUVKLlpKsRKXYjOxnEytmJlbtebi2dWLm7tXb5Wr4NLUWqpVr7W2Bp8Nlhu+blBo7eRTznxqOstpp5/1bB3bp+euvXTr3mtvg4cM3B+jDBs+6mgXXdhKV770KpddftWrTWy1KWnmqbNMmz7rbE9qG+un+g1qtKnxIhWK9qQGqdnDBMV1osEMwDhlAnELBNjQHMwOp5w5yAWzozJOhTKC1GA2KIiBYL6IddKDXeKbaJD7I27J8gs3/r/kUqD7JrnP3L6iNuIO7ovYfQojqYfg9GH+8sbe4sfuU59+N/Hd/sfQj6EfQ//B0MRhjX9d/wD0sozpdVfjlAAAASRpQ0NQSUNDIHByb2ZpbGUAAHicnZC/SsNQFMZ/qX+R6qDiIA4ZXAsuzeRSFYKgEGMFq1OapFhMYkhSim/gm+jDdBAEH8EHUHD2u9HBwSxeOHw/Dud8370XWnYSpuX8HqRZVbh+b3A5uLKX3mizwBrrdIOwzHued0Lj+XzFMvrSMV7Nc3+exSguQ+lMlYV5UYG1L3amVW5YxeZt3z8UP4jtKM0i8ZN4N0ojw2bXT5NJ+ONpbtOOs4tz01ft4HLMKR42QyaMSajoSDN1jnDoSl0KAu4pCaUJsXpTzVTciEo5uRyI+iLdpiFvu87zlDKUx1heJuGOVJ4mD/O/32sfZ/WmtTXLgyKoW3Oq1mgE74+wOoCNZ1i5bsha/v22hhmnnvnnG78A9ntQbHCFARIAAA0aaVRYdFhNTDpjb20uYWRvYmUueG1wAAAAAAA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/Pgo8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJYTVAgQ29yZSA0LjQuMC1FeGl2MiI+CiA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogIDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiCiAgICB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIKICAgIHhtbG5zOnN0RXZ0PSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvc1R5cGUvUmVzb3VyY2VFdmVudCMiCiAgICB4bWxuczpkYz0iaHR0cDovL3B1cmwub3JnL2RjL2VsZW1lbnRzLzEuMS8iCiAgICB4bWxuczpHSU1QPSJodHRwOi8vd3d3LmdpbXAub3JnL3htcC8iCiAgICB4bWxuczp0aWZmPSJodHRwOi8vbnMuYWRvYmUuY29tL3RpZmYvMS4wLyIKICAgIHhtbG5zOnhtcD0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLyIKICAgeG1wTU06RG9jdW1lbnRJRD0iZ2ltcDpkb2NpZDpnaW1wOjExZWVlMTlmLWRhNjEtNDliNi05MjEwLTcxM2UwOTFiMWViNiIKICAgeG1wTU06SW5zdGFuY2VJRD0ieG1wLmlpZDo4MGRiNGZhMS1lYWRmLTQ2MjQtOTM3MS1kNjY3MTI4ZjFkMDYiCiAgIHhtcE1NOk9yaWdpbmFsRG9jdW1lbnRJRD0ieG1wLmRpZDpiMGJhYmZlYy1mNDk1LTRlMDQtODYzYS05ZjQ0OWM4NDg5YjQiCiAgIGRjOkZvcm1hdD0iaW1hZ2UvcG5nIgogICBHSU1QOkFQST0iMi4wIgogICBHSU1QOlBsYXRmb3JtPSJMaW51eCIKICAgR0lNUDpUaW1lU3RhbXA9IjE2NzAyNTAwMDEyMzI1MTgiCiAgIEdJTVA6VmVyc2lvbj0iMi4xMC4zMCIKICAgdGlmZjpPcmllbnRhdGlvbj0iMSIKICAgeG1wOkNyZWF0b3JUb29sPSJHSU1QIDIuMTAiPgogICA8eG1wTU06SGlzdG9yeT4KICAgIDxyZGY6U2VxPgogICAgIDxyZGY6bGkKICAgICAgc3RFdnQ6YWN0aW9uPSJzYXZlZCIKICAgICAgc3RFdnQ6Y2hhbmdlZD0iLyIKICAgICAgc3RFdnQ6aW5zdGFuY2VJRD0ieG1wLmlpZDpiYjY4ZjJmOC1lNGUwLTRiNGItYmM5Ni1jMWIxNTcwYTk0NDEiCiAgICAgIHN0RXZ0OnNvZnR3YXJlQWdlbnQ9IkdpbXAgMi4xMCAoTGludXgpIgogICAgICBzdEV2dDp3aGVuPSIyMDIyLTEyLTA1VDE1OjIwOjAxKzAxOjAwIi8+CiAgICA8L3JkZjpTZXE+CiAgIDwveG1wTU06SGlzdG9yeT4KICA8L3JkZjpEZXNjcmlwdGlvbj4KIDwvcmRmOlJERj4KPC94OnhtcG1ldGE+CiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICAgICAgICAKPD94cGFja2V0IGVuZD0idyI/PljaFOkAAAACYktHRAD/h4/MvwAAAAlwSFlzAAALEwAACxMBAJqcGAAA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
+detaileddescription: "## OpenAI GPT\n\n\n### Generate an API Key\n1. Sign-up or login to [https://platform.openai.com](https://platform.openai.com).\n2. Generate a new API Key at [https://platform.openai.com/api-keys](https://platform.openai.com/api-keys).\n\n### Models & Rate Limits\nThe integration utilizes the **'Chat Completions'** endpoint merely. Therefore, it will only be possible to configure models that support the following endpoint: _https://api.openai.com/v1/chat/completions_.\n\n_For many basic tasks, the difference between GPT-4 and GPT-3.5 models is not significant. However, in more complex reasoning situations, GPT-4 is much more capable than any of our previous models._\n\nFor tasks requiring deep understanding and extensive inputs, opt for more advanced models (e.g. gpt-4). These models offer a larger context window, allowing them to process bigger documents, and provide more refined and comprehensive responses.\nThe more elementary models (e.g. gpt-3.5) often provide shallower answers with a smaller input tokens' limit, but are less costly.\n- [Models overview](https://platform.openai.com/docs/models/overview)\n\n- Each model has its own requests' rate-limit: Refer to [rate-limits](https://platform.openai.com/docs/guides/rate-limits).\n\n\n### How to use this integration with XSOAR\n#### The following blog post ['Palo Alto Networks - Playbook of the week'](https://www.paloaltonetworks.com/blog/security-operations/using-chatgpt-in-cortex-xsoar/) by Sameh Elhakim explains how to use this integration in your playbooks:\n\n---\n[View Integration Documentation](https://xsoar.pan.dev/docs/reference/integrations/open-ai-chat-gpt-v3)"

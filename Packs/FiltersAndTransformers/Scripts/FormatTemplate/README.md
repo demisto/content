@@ -1,6 +1,7 @@
 Build text from a template that can include DT expressions.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Build text from a template that can include DT expressions.
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,11 +26,12 @@ Build text from a template that can include DT expressions.
 | keep_symbol_to_null | Set to true not to replace a value if the variable is null, otherwise false. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Getting Started
+
 ---
 The transformer builds a text from a template text which includes variables just like:
 This is a test message for ${user_name}.
@@ -38,11 +41,13 @@ The template will be formatted to `This is a test message for John Doe.` by repl
 By default, a variable name starts with `${` and ends with `}` . You can change the start marker and end marker by specifying the `variable_markers` parameter.
 
 ## Examples
+
 ---
 
-### Replace variables in a text based on the context data.
+### Replace variables in a text based on the context data
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -55,6 +60,7 @@ By default, a variable name starts with `${` and ends with `}` . You can change 
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -63,15 +69,17 @@ By default, a variable name starts with `${` and ends with `}` . You can change 
 ```
 
 #### Output
+
 ```
 My name is John Doe.
 ```
 
 ---
 
-### Replace variables in a text based on the value.
+### Replace variables in a text based on the value
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | *See the value* | |
@@ -84,6 +92,7 @@ My name is John Doe.
 | keep_symbol_to_null | | |
 
 #### value (structured)
+
 ```
 {
   "first_name": "John",
@@ -92,15 +101,17 @@ My name is John Doe.
 ```
 
 #### Output
+
 ```
 My name is John Doe.
 ```
 
 ---
 
-### Format the template given to the value.
+### Format the template given to the value
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | My name is ${first_name} ${last_name}. | |
@@ -113,6 +124,7 @@ My name is John Doe.
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -121,15 +133,17 @@ My name is John Doe.
 ```
 
 #### Output
+
 ```
 My name is John Doe.
 ```
 
 ---
 
-### Change the variable start and end marker to the windows command shell style such as %name%.
+### Change the variable start and end marker to the windows command shell style such as %name%
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -142,6 +156,7 @@ My name is John Doe.
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -150,15 +165,17 @@ My name is John Doe.
 ```
 
 #### Output
+
 ```
 My name is John Doe.
 ```
 
 ---
 
-### Change the variable start and end marker to the UNIX shell style such as $name.
+### Change the variable start and end marker to the UNIX shell style such as $name
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -171,6 +188,7 @@ My name is John Doe.
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -179,15 +197,17 @@ My name is John Doe.
 ```
 
 #### Output
+
 ```
 My name is John Doe.
 ```
 
 ---
 
-### Keep variable names if they are missing in the context.
+### Keep variable names if they are missing in the context
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -200,6 +220,7 @@ My name is John Doe.
 | keep_symbol_to_null | true | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John"
@@ -207,15 +228,17 @@ My name is John Doe.
 ```
 
 #### Output
+
 ```
 My name is John ${last_name}
 ```
 
 ---
 
-### Use DTs to build variables.
+### Use DTs to build variables
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -228,6 +251,7 @@ My name is John ${last_name}
 | keep_symbol_to_null | | |
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -236,6 +260,7 @@ My name is John ${last_name}
 ```
 
 #### Output
+
 ```
 My name is JOHN DOE.
 ```
@@ -245,6 +270,7 @@ My name is JOHN DOE.
 ### Convert all the values in a structured data
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -257,6 +283,7 @@ My name is JOHN DOE.
 | keep_symbol_to_null | | |
 
 #### template (structured)
+
 ```
 {
   "1": "First name is ${first_name}",
@@ -269,6 +296,7 @@ My name is JOHN DOE.
 ```
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -277,6 +305,7 @@ My name is JOHN DOE.
 ```
 
 #### Output
+
 ```
 {
   "1": "First name is John",
@@ -293,6 +322,7 @@ My name is JOHN DOE.
 ### Convert all the values in a JSON text
 
 #### Parameters
+
 | **Argument Name** | **Value** | **Note** |
 | --- | --- | --- |
 | value | | Any value |
@@ -305,6 +335,7 @@ My name is JOHN DOE.
 | keep_symbol_to_null | | |
 
 #### template
+
 ```
 {
   "1": "First name is ${first_name}",
@@ -317,6 +348,7 @@ My name is JOHN DOE.
 ```
 
 #### Context Data
+
 ```
 {
   "first_name": "John",
@@ -325,6 +357,7 @@ My name is JOHN DOE.
 ```
 
 #### Output
+
 ```
 {
   "1": "First name is John",

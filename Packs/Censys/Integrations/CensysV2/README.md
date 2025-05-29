@@ -1,11 +1,10 @@
 Censys is a search engine that allows computer scientists to ask questions about the devices and networks that compose the internet. Driven by internet-wide scanning, Censys lets researchers find specific hosts and create aggregate reports on how devices, and certificates are configured and deployed.
 This integration was integrated and tested with version 2.0 of Censys.
 
-Some changes have been made that might affect your existing content. 
+Some changes have been made that might affect your existing content.
 If you are upgrading from a previous of this integration, see [Breaking Changes](#additional-considerations-for-this-version).
 
 ## Configure Censys v2 in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -19,118 +18,122 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Malicious labels threshold | False |
 | Suspicious labels threshold | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### cen-view
+
 ***
 Returns detailed information for an IP address or SHA256 within the specified index.
-
 
 #### Base Command
 
 `cen-view`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The IP address of the requested host. | Required | 
-| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required | 
-
+| query | The IP address of the requested host. | Required |
+| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.View.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
-| Censys.View.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
-| Censys.View.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.View.autonomous_system.description | String | A brief description of the autonomous system. | 
-| Censys.View.autonomous_system.name | String | The friendly name of the autonomous system. | 
-| Censys.View.autonomous_system_updated_at | Date | When the autonomous system was updated. | 
-| Censys.View.dns.names | String | DNS Names. | 
-| Censys.View.dns.records | Unknown | DNS records. | 
-| Censys.View.dns.reverse_dns.names | String | Reverse DNS names. | 
-| Censys.View.ip | String | The host’s IP address. | 
-| Censys.View.last_updated_at | Date | When the host was last updated. | 
-| Censys.View.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). | 
-| Censys.View.location.coordinates | Unknown | The estimated coordinates of the host's detected location. | 
-| Censys.View.location.country | String | The name of the country of the host's detected location. | 
-| Censys.View.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
-| Censys.View.location.postal_code | String | The postal code \(if applicable\) of the host's detected location. | 
-| Censys.View.location.registered_country | String | The English name of the host's registered country. | 
-| Censys.View.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.View.location.timezone | String | The IANA time zone database name of the host's detected location. | 
-| Censys.View.services.dns | Unknown | DNS information. | 
-| Censys.View.services.extended_service_name | String | The service name with the TLS encryption indicator if the service is using it. | 
-| Censys.View.services.observed_at | Date | The UTC timestamp of when Censys scanned the service. | 
-| Censys.View.services.perspective_id | String | The upstream internet service provider Censys peered with to scan the service - NTT Communications, TATA, Telia Carrier, or Hurricane Electric. | 
-| Censys.View.services.port | Number | The port the service was reached at. | 
-| Censys.View.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
-| Censys.View.services.source_ip | String | The IP address from which Censys scanned the service. | 
-| Censys.View.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
-| Censys.View.services.banner | String | The banner as a part of the protocol scan. That field will be nested in the protocol-specific data under the service_name field. | 
-| Censys.View.services.tls.certificates | Unknown | A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature. | 
-| Censys.View.services.tls.session_ticket | Unknown | Details about the session ticket provided by the server at the end of the TLS handshake. | 
-| Censys.View.ct | Unknown | When a certificate was added to a CT log. | 
-| Censys.View.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. | 
-| Censys.View.metadata | Unknown | Whether the certificate was \(ever\) seen during a Censys scan of the internet. | 
-| Censys.View.parent_spki_subject_fingerprint | String | Parent simple public key infrastructure \(SPKI\) subject fingerprint. | 
-| Censys.View.parsed.extensions | Unknown | Additional fields that extend the X.509 spec. | 
-| Censys.View.parsed.fingerprint_md5 | String | The MD5 digest over the DER encoding of the certificate. | 
-| Censys.View.parsed.fingerprint_sha1 | String | The SHA1 digest over the DER encoding of the certificate. | 
-| Censys.View.parsed.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. | 
-| Censys.View.parsed.issuer.common_name | String | Common name. | 
-| Censys.View.parsed.issuer.country | String | Country name. | 
-| Censys.View.parsed.issuer.organization | String | Organization name. | 
-| Censys.View.parsed.issuer_dn | String | Information about the certificate authority that issued the certificate. | 
-| Censys.View.parsed.names | String | Any names for which the certificate can be used for identity verification. | 
-| Censys.View.parsed.redacted | Boolean | Indicates whether the certificate redacted. | 
-| Censys.View.parsed.serial_number | String | The issuer-specific identifier of the certificate. | 
-| Censys.View.parsed.signature.self_signed | Boolean | Indicates whether the subject key was also used to sign the certificate. | 
-| Censys.View.parsed.signature.signature_algorithm.name | String | Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID. | 
-| Censys.View.parsed.signature.signature_algorithm.oid | String | The object identifier of the signature algorithm, in dotted-decimal notation. | 
-| Censys.View.parsed.signature.valid | Boolean | Whether the signature is valid. | 
-| Censys.View.parsed.signature.value | String | Contents of the signature as a bit string. | 
-| Censys.View.parsed.signature_algorithm.name | String | Name of the signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID. | 
-| Censys.View.parsed.signature_algorithm.oid | String | The object identifier of the signature algorithm, in dotted-decimal notation. | 
-| Censys.View.parsed.spki_subject_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo, as a hexadecimal string. | 
-| Censys.View.parsed.subject.common_name | String | Common name. | 
-| Censys.View.parsed.subject.country | String | Country name. | 
-| Censys.View.parsed.subject.locality | String | Locality name. | 
-| Censys.View.parsed.subject.organization | String | The name of the organization to which the certificate was issued, if available. | 
-| Censys.View.parsed.subject.province | String | State of province name. | 
-| Censys.View.parsed.subject_dn | String | Information about the entity that was issued the certificate. | 
-| Censys.View.parsed.subject_key_info.ecdsa_public_key | Unknown | The public portion of an ECDSA asymmetric key. | 
-| Censys.View.parsed.subject_key_info.fingerprint_sha256 | String | The SHA2-256 digest calculated over the certificate's DER encoding. | 
-| Censys.View.parsed.subject_key_info.key_algorithm.name | String | Name of public key type, e.g., RSA or ECDSA. | 
-| Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. | 
-| Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. | 
-| Censys.View.parsed.validation_level | String | How the certificate is validated - Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. | 
-| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
-| Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. | 
-| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Time zone is UTC. | 
-| Censys.View.parsed.version | Number | The x.509 certificate version number. | 
-| Censys.View.precert | Boolean | Whether the certificate is pre-cert. | 
-| Censys.View.raw | String | The raw certificate. | 
-| Censys.View.tags | String | Tags applied to the certificate. | 
-| Censys.View.validation | Unknown | Whether the certificate is trusted by modern web browsers \(Mozilla NSS, Microsoft, and Apple\). | 
-| Censys.View.zlint | Unknown | Whether the certificate has any zlint errors. | 
-| IP.Address | String | IP address | 
-| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". | 
-| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. | 
-| IP.Geo.Country | String | The country in which the IP address is located. | 
-| IP.Geo.Description | String | Additional information about the location. | 
-| IP.ASOwner | String | The autonomous system owner of the IP. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
+| Censys.View.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
+| Censys.View.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
+| Censys.View.autonomous_system.country_code | String | The autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
+| Censys.View.autonomous_system.description | String | A brief description of the autonomous system. |
+| Censys.View.autonomous_system.name | String | The friendly name of the autonomous system. |
+| Censys.View.autonomous_system_updated_at | Date | When the autonomous system was updated. |
+| Censys.View.dns.names | String | DNS Names. |
+| Censys.View.dns.records | Unknown | DNS records. |
+| Censys.View.dns.reverse_dns.names | String | Reverse DNS names. |
+| Censys.View.ip | String | The host’s IP address. |
+| Censys.View.last_updated_at | Date | When the host was last updated. |
+| Censys.View.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). |
+| Censys.View.location.coordinates | Unknown | The estimated coordinates of the host's detected location. |
+| Censys.View.location.country | String | The name of the country of the host's detected location. |
+| Censys.View.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). |
+| Censys.View.location.postal_code | String | The postal code \(if applicable\) of the host's detected location. |
+| Censys.View.location.registered_country | String | The English name of the host's registered country. |
+| Censys.View.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
+| Censys.View.location.timezone | String | The IANA time zone database name of the host's detected location. |
+| Censys.View.services.dns | Unknown | DNS information. |
+| Censys.View.services.extended_service_name | String | The service name with the TLS encryption indicator if the service is using it. |
+| Censys.View.services.observed_at | Date | The UTC timestamp of when Censys scanned the service. |
+| Censys.View.services.perspective_id | String | The upstream internet service provider Censys peered with to scan the service - NTT Communications, TATA, Telia Carrier, or Hurricane Electric. |
+| Censys.View.services.port | Number | The port the service was reached at. |
+| Censys.View.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. |
+| Censys.View.services.source_ip | String | The IP address from which Censys scanned the service. |
+| Censys.View.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). |
+| Censys.View.services.banner | String | The banner as a part of the protocol scan. That field will be nested in the protocol-specific data under the service_name field. |
+| Censys.View.services.tls.certificates | Unknown | A subset of the parsed details of the certificate, including the issuer, subject, fingerprint, names, public keys, and signature. |
+| Censys.View.services.tls.session_ticket | Unknown | Details about the session ticket provided by the server at the end of the TLS handshake. |
+| Censys.View.ct | Unknown | When a certificate was added to a CT log. |
+| Censys.View.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. |
+| Censys.View.metadata | Unknown | Whether the certificate was \(ever\) seen during a Censys scan of the internet. |
+| Censys.View.parent_spki_subject_fingerprint | String | Parent simple public key infrastructure \(SPKI\) subject fingerprint. |
+| Censys.View.parsed.extensions | Unknown | Additional fields that extend the X.509 spec. |
+| Censys.View.parsed.fingerprint_md5 | String | The MD5 digest over the DER encoding of the certificate. |
+| Censys.View.parsed.fingerprint_sha1 | String | The SHA1 digest over the DER encoding of the certificate. |
+| Censys.View.parsed.fingerprint_sha256 | String | The SHA2-256 digest over the DER encoding of the certificate. |
+| Censys.View.parsed.issuer.common_name | String | Common name. |
+| Censys.View.parsed.issuer.country | String | Country name. |
+| Censys.View.parsed.issuer.organization | String | Organization name. |
+| Censys.View.parsed.issuer_dn | String | Information about the certificate authority that issued the certificate. |
+| Censys.View.parsed.names | String | Any names for which the certificate can be used for identity verification. |
+| Censys.View.parsed.redacted | Boolean | Indicates whether the certificate redacted. |
+| Censys.View.parsed.serial_number | String | The issuer-specific identifier of the certificate. |
+| Censys.View.parsed.signature.self_signed | Boolean | Indicates whether the subject key was also used to sign the certificate. |
+| Censys.View.parsed.signature.signature_algorithm.name | String | Name of signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID. |
+| Censys.View.parsed.signature.signature_algorithm.oid | String | The object identifier of the signature algorithm, in dotted-decimal notation. |
+| Censys.View.parsed.signature.valid | Boolean | Whether the signature is valid. |
+| Censys.View.parsed.signature.value | String | Contents of the signature as a bit string. |
+| Censys.View.parsed.signature_algorithm.name | String | Name of the signature algorithm, e.g., SHA1-RSA or ECDSA-SHA512. Unknown algorithms get an integer ID. |
+| Censys.View.parsed.signature_algorithm.oid | String | The object identifier of the signature algorithm, in dotted-decimal notation. |
+| Censys.View.parsed.spki_subject_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's SubjectPublicKeyInfo, as a hexadecimal string. |
+| Censys.View.parsed.subject.common_name | String | Common name. |
+| Censys.View.parsed.subject.country | String | Country name. |
+| Censys.View.parsed.subject.locality | String | Locality name. |
+| Censys.View.parsed.subject.organization | String | The name of the organization to which the certificate was issued, if available. |
+| Censys.View.parsed.subject.province | String | State of province name. |
+| Censys.View.parsed.subject_dn | String | Information about the entity that was issued the certificate. |
+| Censys.View.parsed.subject_key_info.ecdsa_public_key | Unknown | The public portion of an ECDSA asymmetric key. |
+| Censys.View.parsed.subject_key_info.fingerprint_sha256 | String | The SHA2-256 digest calculated over the certificate's DER encoding. |
+| Censys.View.parsed.subject_key_info.key_algorithm.name | String | Name of public key type, e.g., RSA or ECDSA. |
+| Censys.View.parsed.tbs_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate. |
+| Censys.View.parsed.tbs_noct_fingerprint | String | The SHA2-256 digest over the DER encoding of the certificate's TBSCertificate with any CT extensions omitted. |
+| Censys.View.parsed.validation_level | String | How the certificate is validated - Domain validated \(DV\), Organization Validated \(OV\), Extended Validation \(EV\), or unknown. |
+| Censys.View.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. |
+| Censys.View.parsed.validity.length | Number | The length of time, in seconds, that the certificate is valid. |
+| Censys.View.parsed.validity.start | Date | Timestamp of when certificate is first valid. Time zone is UTC. |
+| Censys.View.parsed.version | Number | The x.509 certificate version number. |
+| Censys.View.precert | Boolean | Whether the certificate is pre-cert. |
+| Censys.View.raw | String | The raw certificate. |
+| Censys.View.tags | String | Tags applied to the certificate. |
+| Censys.View.validation | Unknown | Whether the certificate is trusted by modern web browsers \(Mozilla NSS, Microsoft, and Apple\). |
+| Censys.View.zlint | Unknown | Whether the certificate has any zlint errors. |
+| IP.Address | String | IP address |
+| IP.ASN | String | The autonomous system name for the IP address, for example: "AS8948". |
+| IP.Geo.Location | String | The geolocation where the IP address is located, in the format: latitude:longitude. |
+| IP.Geo.Country | String | The country in which the IP address is located. |
+| IP.Geo.Description | String | Additional information about the location. |
+| IP.ASOwner | String | The autonomous system owner of the IP. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
 
 #### Command example
+
 ```!cen-view index=ipv4 query=8.8.8.8```
+
 #### Context Example
+
 ```json
 {
     "Censys": {
@@ -447,64 +450,65 @@ Returns detailed information for an IP address or SHA256 within the specified in
 #### Human Readable Output
 
 >### Information for IP 8.8.8.8
+>
 >|ASN|Routing|Last Updated|Network|Protocols|
 >|---|---|---|---|---|
 >| 15169 | 8.8.8.0/24 | 2022-08-30T06:39:12.356Z | GOOGLE | {'Port': 53, 'Service Name': 'DNS'},<br/>{'Port': 443, 'Service Name': 'HTTP'},<br/>{'Port': 853, 'Service Name': 'UNKNOWN'} |
 
-
 ### cen-search
+
 ***
 Returns previews of hosts matching a specified search query, or a list of certificates that match the given query.
-
 
 #### Base Command
 
 `cen-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required | 
-| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. (Applies for the host search.) | Optional | 
-| limit | The number of results to return. Default is 50. | Optional | 
-| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required | 
-| fields | The fields to return. (Applies for the certificates search). | Optional | 
-| page | The page to return. (Applies for the certificates search). Default is 1. | Optional | 
-
+| query | Query used to search for hosts with matching attributes. Uses the Censys Search Language. | Required |
+| page_size | The maximum number of hits to return in each response (minimum of 0, maximum of 100). Default is 50. (Applies for the host search.) | Optional |
+| limit | The number of results to return. Default is 50. | Optional |
+| index | The index from which to retrieve data. Possible values are: ipv4, certificates. | Required |
+| fields | The fields to return. (Applies for the certificates search). | Optional |
+| page | The page to return. (Applies for the certificates search). Default is 1. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Censys.Search.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. | 
-| Censys.Search.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. | 
-| Censys.Search.autonomous_system.country_code | String | he autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.Search.autonomous_system.description | String | A brief description of the autonomous system. | 
-| Censys.Search.autonomous_system.name | String | The friendly name of the autonomous system. | 
-| Censys.Search.ip | String | The host’s IP address. | 
-| Censys.Search.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). | 
-| Censys.Search.location.coordinates | Unknown | The estimated coordinates of the host's detected location. | 
-| Censys.Search.location.country | String | The country of the host's detected location. | 
-| Censys.Search.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). | 
-| Censys.Search.location.registered_country | String | The host's registered country. | 
-| Censys.Search.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). | 
-| Censys.Search.location.timezone | String | The IANA time zone database name of the host's detected location. | 
-| Censys.Search.services.port | Number | The port the service was reached at. | 
-| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. | 
-| Censys.Search.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). | 
-| Censys.Search.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. | 
-| Censys.Search.parsed.issuer.organization | Unknown | The organization name. | 
-| Censys.Search.parsed.names | Unknown | Common names for the entity. | 
-| Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. | 
-| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. | 
-| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Time zone is UTC. | 
-| Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. | 
-
+| Censys.Search.autonomous_system.asn | Number | The autonomous system number \(ASN\) that the host is in. |
+| Censys.Search.autonomous_system.bgp_prefix | String | The autonomous system's CIDR. |
+| Censys.Search.autonomous_system.country_code | String | he autonomous system's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
+| Censys.Search.autonomous_system.description | String | A brief description of the autonomous system. |
+| Censys.Search.autonomous_system.name | String | The friendly name of the autonomous system. |
+| Censys.Search.ip | String | The host’s IP address. |
+| Censys.Search.location.continent | String | The continent of the host's detected location \(e.g., North America, Europe, Asia, South America, Africa, Oceania\). |
+| Censys.Search.location.coordinates | Unknown | The estimated coordinates of the host's detected location. |
+| Censys.Search.location.country | String | The country of the host's detected location. |
+| Censys.Search.location.country_code | String | The two-letter ISO 3166-1 alpha-2 country code of the host's detected location \(e.g., US, CN, GB, RU\). |
+| Censys.Search.location.registered_country | String | The host's registered country. |
+| Censys.Search.location.registered_country_code | String | The registered country's two-letter, ISO 3166-1 alpha-2 country code \(e.g., US, CN, GB, RU\). |
+| Censys.Search.location.timezone | String | The IANA time zone database name of the host's detected location. |
+| Censys.Search.services.port | Number | The port the service was reached at. |
+| Censys.Search.services.service_name | String | The name of the service on the port. This is typically the L7 protocol \(e.g., “HTTP”\); however, in the case that a more specific HTTP-based protocol is found \(e.g., Kubernetes or Prometheus\), the field will show that. This field indicates where protocol-specific data will be located. |
+| Censys.Search.services.transport_protocol | String | The transport protocol \(known in OSI model as L4\) used to contact this service \(i.e., UDP or TCP\). |
+| Censys.Search.parsed.fingerprint_sha256 | String | SHA 256 fingerprint. |
+| Censys.Search.parsed.issuer.organization | Unknown | The organization name. |
+| Censys.Search.parsed.names | Unknown | Common names for the entity. |
+| Censys.Search.parsed.subject_dn | String | Distinguished name of the entity that the certificate belongs to. |
+| Censys.Search.parsed.validity.end | Date | Timestamp of when the certificate expires. Time zone is UTC. |
+| Censys.Search.parsed.validity.start | Date | Timestamp of when the certificate is first valid. Time zone is UTC. |
+| Censys.Search.parsed.issuer_dn | String | Distinguished name of the entity that has signed and issued the certificate. |
 
 #### Command Example
+
 ```!cen-search index=certificates query="parsed.issuer.common_name: \"Let's Encrypt\"" limit=1```
 
 #### Context Example
+
 ```json
 {
     "Censys": {
@@ -535,15 +539,15 @@ Returns previews of hosts matching a specified search query, or a list of certif
 #### Human Readable Output
 
 >### Search results for query "parsed.issuer.common_name: "Let's Encrypt""
+>
 >|Issuer|Issuer DN|Names|SHA256|Subject DN|Validity|
 >|---|---|---|---|---|---|
 >| organization: Let's Encrypt | C=US, O=Let's Encrypt, CN=Let's Encrypt Authority X3 | *.45g4rg43g4fr3434g.gb.net,<br/>45g4rg43g4fr3434g.gb.net | f3ade17dffcadd9532aeb2514f10d66e22941393725aa65366ac286df9b442ec | CN=45g4rg43g4fr3434g.gb.net | start: 2020-10-12T14:46:11Z<br/>end: 2021-01-10T14:46:11Z |
 
-
 ## Additional Considerations for this Version
-* This version supports API v2 from Censys. 
-* Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
 
+* This version supports API v2 from Censys.
+* Breaking backward compatibility: The Censys v2 integration does not support *websites* searches.
 
 ### ip
 
@@ -558,7 +562,7 @@ Runs reputation on IPs.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | IP address or a list of IP addresses to assess reputation. | Required | 
+| ip | IP address or a list of IP addresses to assess reputation. | Required |
 
 #### Context Output
 
@@ -587,17 +591,17 @@ Runs reputation on IPs.
 | Censys.IP.location.city | String | City name of the location associated with the IP address. |
 | Censys.IP.location.country_code | String   | Country code of the location associated with the IP address. |
 | Censys.IP.last_updated_at | Date | The date and time when the information about the IP address was last updated. |
-| IP.Address | unknown | The IP address. | 
-| IP.ASN | unknown | The IP ASN. | 
-| IP.Geo.Country | unknown | The IP country. | 
-| IP.Geo.Location | unknown | The IP location. | 
-| IP.UpdatedDate | unknown | The IP last update | 
-| IP.Port | unknown | The IP port | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | The indicator type. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| IP.Address | unknown | The IP address. |
+| IP.ASN | unknown | The IP ASN. |
+| IP.Geo.Country | unknown | The IP country. |
+| IP.Geo.Location | unknown | The IP location. |
+| IP.UpdatedDate | unknown | The IP last update |
+| IP.Port | unknown | The IP port |
+| DBotScore.Indicator | unknown | The indicator that was tested. |
+| DBotScore.Type | unknown | The indicator type. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
 
 #### Command example
 
@@ -671,10 +675,10 @@ Runs reputation on IPs.
 #### Human Readable Output
 
 >### censys results for IP: 8.8.8.8
+>
 >| **Asn** | **Geo Country** | **Geo Latitude** | **Geo Longitude** | **Ip** | **Port** | **Reputation** | **Updated** |
 >| --- | --- | --- | --- | --- | --- | --- |  --- |
 >| 15169 | United States | 37.4056 | -122.0775 | 8.8.8.8 | 53, 443, 443, 853 | 0 | 2024-04-14T08:03:28.159Z |
-
 
 ### domain
 
@@ -689,7 +693,7 @@ Return all related IPs as relationships.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | Domain to check. | Required | 
+| domain | Domain to check. | Required |
 
 #### Context Output
 
@@ -717,16 +721,16 @@ Return all related IPs as relationships.
 | Censys.Domain.last_updated_at | Date | The date and time when the information about the domain was last updated. |
 | Censys.Domain.ip | String | The IP address associated with the domain. |
 | Censys.Domain.dns.reverse_dns.names | String | The reverse DNS names associated with the domain. |
-| Domain.Name | string. | The domain. | 
-| Domain.Relationships.EntityA | string. | The domain name. | 
-| Domain.Relationships.EntityAType | string. | The entity type. | 
-| Domain.Relationships.EntityB | string. | The entity B. | 
-| Domain.Relationships.EntityBType | string. | The entity B type. | 
-| Domain.Relationships.Relationship | string. | The relationship type. | 
-| DBotScore.Indicator | unknown | The indicator that was tested. | 
-| DBotScore.Type | unknown | The indicator type.| 
-| DBotScore.Score | unknown | The actual score. | 
-| DBotScore.Vendor | unknown | The vendor used to calculate the score. | 
+| Domain.Name | string. | The domain. |
+| Domain.Relationships.EntityA | string. | The domain name. |
+| Domain.Relationships.EntityAType | string. | The entity type. |
+| Domain.Relationships.EntityB | string. | The entity B. |
+| Domain.Relationships.EntityBType | string. | The entity B type. |
+| Domain.Relationships.Relationship | string. | The relationship type. |
+| DBotScore.Indicator | unknown | The indicator that was tested. |
+| DBotScore.Type | unknown | The indicator type.|
+| DBotScore.Score | unknown | The actual score. |
+| DBotScore.Vendor | unknown | The vendor used to calculate the score. |
 
 #### Command example
 

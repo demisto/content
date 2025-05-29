@@ -1,0 +1,78 @@
+{
+    "associatedToAll": true,
+    "caseInsensitive": true,
+    "cliName": "anythingllmembeddings",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "Action",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "action",
+            "orgType": "singleSelect",
+            "required": false,
+            "script": "",
+            "selectValues": [
+                "",
+                "Remove",
+                "Pin",
+                "Unpin"
+            ],
+            "type": "singleSelect",
+            "width": 100
+        },
+        {
+            "displayName": "Title",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "title",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 444
+        },
+        {
+            "displayName": "Pinned",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "pinned",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [],
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_anythingllmembeddings",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "Anything LLM Embeddings",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "propagationLabels": [
+        "all"
+    ],
+    "required": false,
+    "script": "AnyLlmWorkspaceEmbeddingsUpdate",
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.10.0"
+}
