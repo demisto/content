@@ -44,3 +44,4 @@
 !qualys-schedule-scan-update id=783969 active=0
 !qualys-schedule-scan-delete id=783969
 !qualys-time-zone-code
+!qualys-get-quid-by-cve cve="CVE-2017-0144"
