@@ -435,7 +435,7 @@ def vulndb_fetch_incidents_command(
     ignore_deprecated: bool,
     client: Client,
 ):  # pragma: no cover
-    demisto.info("[VulnDB]: Running Fetch Incidents")
+    demisto.debug("[VulnDB]: Running Fetch Incidents")
     last_run = demisto.getLastRun()
     hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
     # Calculate the hours difference since the last run
@@ -449,8 +449,8 @@ def vulndb_fetch_incidents_command(
             delta: timedelta = datetime.now(timezone.utc) - start_time
             hours_ago = math.ceil(delta.total_seconds() / 3600)
     hours_ago = max(1, hours_ago)  # Make sure we use at least one hour
-    demisto.info(f"[VulnDB]: VulnDB fetch for last {hours_ago} hours")
-    demisto.info(f"[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}")
+    demisto.debug(f"[VulnDB]: VulnDB fetch for last {hours_ago} hours")
+    demisto.debug(f"[VulnDB]: Skipping entries disclosed before: {min_disclosure_date}")
 
     incidents: list[dict] = []
     page = 1
@@ -482,8 +482,7 @@ def vulndb_fetch_incidents_command(
         results = res.get("results", [])
         count = count + len(results)
         total_results = res.get("total_entries", 0)
-        demisto.info(f"[VulnDB]: Total count: {total_results}")
-        demisto.info(f"[VulnDB]: Count: {count}")
+        demisto.debug(f"[VulnDB]: Total count: {total_results}, Count: {count}")
         for result in results:
             disclosure_date = dateparser.parse(result.get("disclosure_date"))
             if disclosure_date and disclosure_date < min_disclosure_date:
@@ -511,7 +510,7 @@ def vulndb_fetch_incidents_command(
             break
 
     incidents = sorted(incidents, key=lambda x: x["occured"])
-    demisto.info(f"[VulnDB]: Total Incident Count: {len(incidents)}")
+    demisto.debug(f"[VulnDB]: Total Incident Count: {len(incidents)}")
     incidents_slice = incidents[:max_size] if len(incidents) > max_size else incidents
     last_date = last_timestamp.isoformat()
     if len(incidents_slice) > 0:
