@@ -1,4 +1,4 @@
-This playbook handles exposre issues by enriching assets to find potential remediation owners.
+This playbook handles exposure issues by enriching assets to find potential remediation owners.
 
 ## Dependencies
 

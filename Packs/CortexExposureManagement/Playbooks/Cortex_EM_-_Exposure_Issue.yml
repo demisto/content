@@ -1,6 +1,6 @@
 contentitemexportablefields:
   contentitemfields: {}
-description: This playbook handles exposre issues by enriching assets to find potential remediation owners.
+description: This playbook handles exposure issues by enriching assets to find potential remediation owners.
 id: Cortex EM - Exposure Issue
 inputs: []
 name: Cortex EM - Exposure Issue
