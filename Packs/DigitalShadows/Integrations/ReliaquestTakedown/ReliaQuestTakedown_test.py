@@ -1,7 +1,4 @@
-from __future__ import annotations
-
 import random
-import re
 import uuid
 
 import pytest
@@ -10,11 +7,11 @@ from CommonServerPython import *
 from ReliaquestTakedown import \
     Client
 
-from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import create_comment, list_brands, create_takedown, \
-    download_attachment, test_module, upload_attachment, get_modified_remote_data_command
+from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import (
+    create_comment, list_brands, create_takedown,
+    download_attachment, test_module, upload_attachment, get_modified_remote_data_command)
 
 UUID_REGEX = r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
-NUMBER_REGEX = r'[0-9]{1,}'
 TEST_URL = "https://test.com/api"
 
 
@@ -135,29 +132,22 @@ def create_takedown_post(kwags):
 
 
 class ClientMock:
-    LAST_EVENT_TIME_AND_NUM = None
-
-    def __init__(self, num_of_events: int, num_of_alerts: int, num_of_incidents: int):
+    def __init__(self, num_of_events: int):
         self.num_of_events = num_of_events
-        self.num_of_fetched_events = 0
-        self.num_of_alerts = num_of_alerts
-        self.num_of_fetched_alerts = 0
-        self.num_of_incidents = num_of_incidents
-        self.num_of_fetched_incidents = 0
 
-    def http_request_side_effect(self, method: str, url_suffix: str, params: Dict | None = None, **kwargs):
+    def http_request_side_effect(self, method, url_suffix, params, **kwargs):
         if url_suffix == '/v1/test':
             response = test_response()
-        elif re.match(r"/v1/takedowns/attachments/%s/download" % UUID_REGEX, url_suffix) and method == 'GET':
+        elif re.match(r"/v1/takedowns/attachments/{}/download".format(UUID_REGEX), url_suffix) and method == 'GET':
             return download_attachment_get()
-        elif re.match(r"/v1/takedowns/%s/attachments" % UUID_REGEX, url_suffix) and method == 'POST':
+        elif re.match(r"/v1/takedowns/{}/attachments".format(UUID_REGEX), url_suffix) and method == 'POST':
             response = {}
         elif url_suffix == '/api/search/find':
             response = create_comments_post()
-        elif re.match(r'/v1/takedowns/%s/comments' % UUID_REGEX, url_suffix) and method == 'GET':
+        elif re.match(r'/v1/takedowns/{}/comments'.format(UUID_REGEX), url_suffix) and method == 'GET':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_get(takedownid)
-        elif re.match(r'/v1/takedowns/%s/comments' % UUID_REGEX, url_suffix) and method == 'POST':
+        elif re.match(r'/v1/takedowns/{}/comments'.format(UUID_REGEX), url_suffix) and method == 'POST':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_post(takedownid)
 
@@ -221,7 +211,7 @@ def download_attachment_get():
         return requests.Response("File not found.", status_code=404)
 
 
-def create_mocked_response(response: List[Dict] | Dict, status_code: int = 200) -> requests.Response:
+def create_mocked_response(response, status_code: int = 200) -> requests.Response:
     mocked_response = requests.Response()
     mocked_response._content = json.dumps(response).encode('utf-8')
     mocked_response.status_code = status_code
@@ -255,7 +245,7 @@ def test_fetch_takedown_command(mocker, client: Client):
      - make sure that all events are enriched and fetched (5000)
     """
     from ReliaquestTakedown import fetch_takedowns
-    http_mocker = ClientMock(100, num_of_alerts=100, num_of_incidents=100)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -268,7 +258,7 @@ def test_fetch_takedown_command(mocker, client: Client):
 
 
 def test_create_comment_command(mocker, client: Client):
-    http_mocker = ClientMock(5000, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -281,7 +271,7 @@ def test_create_comment_command(mocker, client: Client):
 
 
 def test_list_brands_command(mocker, client: Client):
-    http_mocker = ClientMock(5000, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -292,7 +282,7 @@ def test_list_brands_command(mocker, client: Client):
 
 
 def test_create_takedown_command(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -304,7 +294,7 @@ def test_create_takedown_command(mocker, client: Client):
 
 
 def test_download_attachment_command(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -317,7 +307,7 @@ def test_download_attachment_command(mocker, client: Client):
 
 
 def test_upload_download_attachment_command(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -327,13 +317,13 @@ def test_upload_download_attachment_command(mocker, client: Client):
 
 
 def test_test_module_command(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
         side_effect=http_mocker.http_request_side_effect
     )
-    for i in range(20):
+    for _ in range(20):
         test_module(client)
 
 
@@ -343,7 +333,7 @@ def load_test_data(json_path):
 
 
 def test_get_modified_remote_data(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
@@ -359,7 +349,7 @@ def test_get_modified_remote_data(mocker, client: Client):
 
 
 def test_create_takedown_command_ratelimit(mocker, client: Client):
-    http_mocker = ClientMock(100, num_of_alerts=2500, num_of_incidents=2500)
+    http_mocker = ClientMock(100)
     mocker.patch.object(
         client,
         "_http_request",
