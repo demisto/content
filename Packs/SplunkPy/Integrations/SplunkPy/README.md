@@ -100,6 +100,7 @@ Configured by the instance configuration fetch_limit (behind the scenes an query
 
 ## Configure SplunkPy in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
