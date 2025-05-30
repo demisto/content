@@ -1,5 +1,12 @@
 [file:README.md]
 ignore=RM104
 
+[file:FeedCyCognito_image.png]
+ignore=IM111
+
 [file:FeedCyCognitoGetAssetEndpoint.yml]
 ignore=BA124
+
+[known_words]
+dropdown
+Cognito
