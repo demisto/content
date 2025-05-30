@@ -1,0 +1,35 @@
+{
+    "name": "Google Gemini",
+    "description": "Leverage Google's advanced AI models for intelligent analysis, content generation, and conversational capabilities in your workflows.",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "Mu Wang",
+    "url": "https://github.com/warm200/content/issues",
+    "email": "",
+    "categories": [
+        "Cloud Services"
+    ],
+    "tags": [
+        "IT",
+        "Network",
+        "Trending"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
+    "keywords": [
+        "gemini",
+        "llm",
+        "ai",
+        "google",
+        "chat",
+        "language",
+        "artificial intelligence",
+        "machine learning",
+        "nlp",
+        "analysis",
+        "content generation"
+    ],
+    "marketplaces": [],
+    "githubUser": ["warm200"]
+}
