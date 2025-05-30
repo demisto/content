@@ -1,0 +1,42 @@
+{
+    "name": "Google Gemini",
+    "description": "Google Gemini Large Language Model Integration for AI-powered analysis and chat capabilities in XSOAR",
+    "support": "developer",
+    "currentVersion": "1.0.0",
+    "author": "USTLD - A&E",
+    "url": "",
+    "email": "",
+    "categories": [
+        "AI/ML"
+    ],
+    "tags": [
+        "AI",
+        "LLM",
+        "Gemini",
+        "Google",
+        "Chat",
+        "Language Model",
+        "Natural Language Processing"
+    ],
+    "useCases": [
+        "AI-powered incident analysis",
+        "Automated text generation",
+        "Interactive AI chat",
+        "Natural language processing",
+        "Content analysis and summarization"
+    ],
+    "keywords": [
+        "gemini",
+        "llm",
+        "ai",
+        "google",
+        "chat",
+        "language",
+        "artificial intelligence",
+        "machine learning",
+        "nlp"
+    ],
+    "marketplaces": [
+    ],
+    "githubUser": []
+}
