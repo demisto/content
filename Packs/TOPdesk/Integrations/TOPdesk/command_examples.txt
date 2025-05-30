@@ -1,0 +1,21 @@
+!topdesk-subcategories-list
+!topdesk-categories-list
+!topdesk-entry-types-list
+!topdesk-call-types-list
+!topdesk-deescalation-reasons-list
+!topdesk-escalation-reasons-list
+!topdesk-archiving-reasons-list
+!topdesk-persons-list
+!topdesk-operators-list
+!topdesk-branches-list start=5
+!topdesk-incidents-list
+!topdesk-incident-create caller=some-caller
+!topdesk-incident-update description=some-updated-description number=XSOAR-1337
+!topdesk-incident-escalate number=XSOAR-1337 escalate_reason_id=some-escalation-id-1
+!topdesk-incident-deescalate number=XSOAR-1337 deescalate_reason_id=some-deescalation-id-1
+!topdesk-incident-archive archive_reason_id=some-reason-id-1 number=XSOAR-1337
+!topdesk-incident-unarchive number=XSOAR-1337
+!topdesk-incident-attachment-upload number=XSOAR-1337 file=932@some-file-entry
+!topdesk-incident-attachments-list number=XSOAR-1337
+!topdesk-assets-list page_size=10 fields="archived,etag,id,text,name,mac-address"
+!topdesk-asset-update asset_id="4a5ef5e0-41fa-4a25-a5f4-8c4ea2780c69" data="{\"edr-status\":\"Not OK\"}"
