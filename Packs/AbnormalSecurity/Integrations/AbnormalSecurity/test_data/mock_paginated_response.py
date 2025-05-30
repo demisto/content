@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*- # noqa: UP009
 
 """
 Utility module for generating paginated mock responses for testing.
@@ -17,7 +17,7 @@ import os
 
 def util_load_json(path):
     """Load a JSON file from the given path."""
-    with open(path, encoding='utf-8') as f:
+    with open(path, encoding="utf-8") as f:
         return json.loads(f.read())
 
 
@@ -41,24 +41,20 @@ def create_paginated_response(template_item, item_key, count=10, items_per_page=
         item = copy.deepcopy(template_item)
 
         # Add unique ID if it exists in template
-        for id_field in ['threatId', 'caseId', 'campaignId']:
+        for id_field in ["threatId", "caseId", "campaignId"]:
             if id_field in item:
                 item[id_field] = f"{id_field.replace('Id', '')}-{i+1}"
 
         # Add any other unique identifiers if needed
-        if 'abxMessageId' in item:
-            item['abxMessageId'] = str(uuid.uuid4())
+        if "abxMessageId" in item:
+            item["abxMessageId"] = str(uuid.uuid4())
 
         items.append(item)
 
     # Create the paginated structure
     if items_per_page is None:
         # Return all items in a single page
-        return {
-            item_key: items,
-            "pageNumber": 1,
-            "nextPageNumber": None
-        }
+        return {item_key: items, "pageNumber": 1, "nextPageNumber": None}
 
     # Calculate how many pages we need
     total_pages = (count + items_per_page - 1) // items_per_page
@@ -73,11 +69,7 @@ def create_paginated_response(template_item, item_key, count=10, items_per_page=
 
         next_page = page_num + 1 if page_num < total_pages else None
 
-        pages[f"page{page_num}"] = {
-            item_key: items[start_idx:end_idx],
-            "pageNumber": page_num,
-            "nextPageNumber": next_page
-        }
+        pages[f"page{page_num}"] = {item_key: items[start_idx:end_idx], "pageNumber": page_num, "nextPageNumber": next_page}
 
     return pages
 
@@ -94,11 +86,7 @@ def create_mock_paginator_side_effect(item_type):
         function: A function to use as a side effect for mocked API calls
     """
     # Map item types to their plural forms for API responses
-    item_key_map = {
-        'threat': 'threats',
-        'case': 'cases',
-        'campaign': 'campaigns'
-    }
+    item_key_map = {"threat": "threats", "case": "cases", "campaign": "campaigns"}
 
     # Derive the item_key from the item_type
     item_key = item_key_map.get(item_type)
@@ -107,7 +95,7 @@ def create_mock_paginator_side_effect(item_type):
 
     # Load template items from JSON
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    template_path = os.path.join(current_dir, 'template_items.json')
+    template_path = os.path.join(current_dir, "template_items.json")
     template_items = util_load_json(template_path)
 
     # Get the list template for the current item type
@@ -117,15 +105,15 @@ def create_mock_paginator_side_effect(item_type):
 
     # Create a large pool of items to draw from
     all_items = []
-    for i in range(100):  # Create 100 items as a pool
+    for _i in range(100):  # Create 100 items as a pool
         item = copy.deepcopy(template_item)
 
         all_items.append(item)
 
     def side_effect(**kwargs):
         """Side effect function for mocking paginated API responses"""
-        page_number = kwargs.get('page_number', 1)
-        page_size = kwargs.get('page_size', 10)
+        page_number = kwargs.get("page_number", 1)
+        page_size = kwargs.get("page_size", 10)
 
         # Calculate start and end indices
         start_idx = (page_number - 1) * page_size
@@ -133,11 +121,7 @@ def create_mock_paginator_side_effect(item_type):
 
         # If start_idx is beyond our data, return empty page
         if start_idx >= len(all_items):
-            return {
-                item_key: [],
-                "pageNumber": page_number,
-                "nextPageNumber": None
-            }
+            return {item_key: [], "pageNumber": page_number, "nextPageNumber": None}
 
         # Get the requested slice of items
         page_items = all_items[start_idx:end_idx]
@@ -146,11 +130,7 @@ def create_mock_paginator_side_effect(item_type):
         next_page = page_number + 1 if end_idx < len(all_items) else None
 
         # Build the response
-        response = {
-            item_key: page_items,
-            "pageNumber": page_number,
-            "nextPageNumber": next_page
-        }
+        response = {item_key: page_items, "pageNumber": page_number, "nextPageNumber": next_page}
 
         return response
 
@@ -170,7 +150,7 @@ def create_mock_detail_side_effect(item_type):
     """
     # Load template items from JSON
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    template_path = os.path.join(current_dir, 'template_items.json')
+    template_path = os.path.join(current_dir, "template_items.json")
     template_items = util_load_json(template_path)
 
     # Load the detail template
@@ -186,7 +166,7 @@ def create_mock_detail_side_effect(item_type):
         detail_item = copy.deepcopy(detail_template)
 
         # Set the correct ID
-        for id_field in ['threatId', 'caseId', 'campaignId']:
+        for id_field in ["threatId", "caseId", "campaignId"]:
             if id_field in detail_item:
                 detail_item[id_field] = item_id
 
@@ -200,7 +180,7 @@ def create_mock_detail_side_effect(item_type):
 
         # If not, create a new one based on the template
         detail_item = copy.deepcopy(detail_template)
-        for id_field in ['threatId', 'caseId', 'campaignId']:
+        for id_field in ["threatId", "caseId", "campaignId"]:
             if id_field in detail_item:
                 detail_item[id_field] = item_id
 

@@ -1,5 +1,5 @@
 import re
-
+from unittest.mock import Mock
 import Qualysv2
 import pytest
 import requests
@@ -61,8 +61,6 @@ WARNING
 ?action=list&since_datetime=2022-12-21T03:42:05Z&truncation_limit=10&id_max=123456"
 ----END_RESPONSE_FOOTER_CSV"""
 
-HOST_LIST_DETECTIONS_RAW_RESPONSE = "<HOST_LIST_VM_DETECTION_OUTPUT> <RESPONSE> </RESPONSE> </HOST_LIST_VM_DETECTION_OUTPUT>"
-
 BASE_URL = "https://server_url.com/"
 SNAPSHOT_ID = "1737885000"
 
@@ -78,22 +76,20 @@ def util_load_json(path: str):
         return json.loads(f.read())
 
 
-def mock_client_get_host_list_detection(*args, sleep_time: int | float) -> tuple[str, bool]:
-    """Mocks `Client.get_host_list_detection` method by introducing an artificial delay using the `sleep_time` argument.
+def sleep_delay(sleep_time: int | float) -> bool:
+    """Mocks a slow function by introducing an artificial delay using the `sleep_time` argument.
 
     Args:
         sleep_time (int | float): The number of seconds to sleep.
 
     Returns:
-        tuple[str, bool]: Raw API response XML string and set_new_limit boolean (indicates if to make the next API call smaller).
+       bool: True to indicate the function is finished.
     """
     if sleep_time:
         time.sleep(sleep_time)  # sleep to simulate slow API response
 
-    set_new_limit = False
-    host_list_detections = HOST_LIST_DETECTIONS_RAW_RESPONSE
-
-    return host_list_detections, set_new_limit
+    is_finished = True
+    return is_finished
 
 
 def test_get_activity_logs_events_command(requests_mock: RequestsMocker, client: Client):
@@ -1138,7 +1134,7 @@ class TestClientClass:
         self.client.get_host_list_detection(since_datetime=since_datetime, limit=HOST_LIMIT)
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "GET"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "asset/host/vm/detection/?action=list")
         assert http_request_kwargs["params"] == {
@@ -1175,7 +1171,7 @@ class TestClientClass:
 
         http_request_kwargs = client_http_request.call_args.kwargs
 
-        assert client_http_request.called_once
+        assert client_http_request.call_count == 1
         assert http_request_kwargs["method"] == "POST"
         assert http_request_kwargs["url_suffix"] == urljoin(API_SUFFIX, "knowledge_base/vuln/?action=list")
         assert http_request_kwargs["params"] == expected_params
@@ -1925,48 +1921,105 @@ def test_send_assets_and_vulnerabilities_to_xsiam(
     assert not send_data_to_xsiam_vulns_kwargs["should_update_health_module"]
 
 
+# The unit test below will fail if run on Windows systems due to limited signal handling capabilities compared to Unix systems
 @pytest.mark.parametrize(
-    "sleep_time, expected_response, expected_set_new_limit",
+    "sleep_time, expected_is_finished",
     [
-        pytest.param(3, "", True, id="Slow response"),
-        pytest.param(0, HOST_LIST_DETECTIONS_RAW_RESPONSE, False, id="Fast response"),
+        pytest.param(3, False, id="Slow execution"),
+        pytest.param(0, True, id="Fast execution"),
     ],
 )
-def test_get_client_host_list_detection_with_timeout(
-    mocker: MockerFixture,
-    client: Client,
-    sleep_time: int | float,
-    expected_response: str,
-    expected_set_new_limit: bool,
-):
+def test_execution_timeout(sleep_time: int | float, expected_is_finished: bool):
     """
     Given:
-        - A since_datetime, no next_page, and the default HOST_LIMIT.
+        - An execution timeout value of 2 seconds.
 
     When:
-        - When calling get_client_host_list_detection_with_timeout with a simulated "slow" and "fast" API responses.
+        - When calling sleep_delay with a simulated "slow" and "fast" executions.
 
     Assert:
-        - Case A (Slow): Ensure empty raw API response and set_new_limit boolean is True (next API call needs to be smaller).
-        - Case B (Fast): Ensure raw API response is unchanged from the original value and set_new_limit boolean is False.
+        - Case A (Slow): Ensure is_finished is False since sleep_delay timed out (sleep_time > execution_timeout).
+        - Case B (Fast): Ensure is_finished is True since sleep_delay finished in time (sleep_time < execution_timeout).
     """
-    from Qualysv2 import get_client_host_list_detection_with_timeout
+    from Qualysv2 import ExecutionTimeout
 
-    thread_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
+    execution_timeout = 2  # Slow: Sleep one second more than timeout. Fast: Don't sleep.
 
-    mocker.patch.object(
-        client,
-        "get_host_list_detection",
-        side_effect=lambda *args: mock_client_get_host_list_detection(*args, sleep_time=sleep_time),
-    )
+    is_finished = False
+    with ExecutionTimeout(seconds=execution_timeout):
+        is_finished = sleep_delay(sleep_time)
 
-    raw_response, set_new_limit = get_client_host_list_detection_with_timeout(
-        client=client,
-        since_datetime="2025-01-25",
-        next_page="",
-        limit=HOST_LIMIT,
-        thread_timeout=thread_timeout,
-    )
+    assert is_finished == expected_is_finished
 
-    assert raw_response == expected_response
-    assert set_new_limit is expected_set_new_limit
+
+@pytest.fixture
+def mock_client():
+    client = Mock()
+    return client
+
+
+def test_get_qid_for_cve_single_qid(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the function returns CommandResults
+        - Ensure the outputs contain the right value
+        - Ensure the outputs_prefix
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN>
+                <QID>12345</QID>
+            </VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve  # Replace 'your_module' with your filename (without .py)
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-0001")
+
+    assert isinstance(result, CommandResults)
+    assert result.outputs == ["12345"]
+    assert result.outputs_prefix == "Qualys.QID"
+
+
+def test_get_qid_for_cve_multiple_qids(mock_client):
+    """
+    Given:
+        - A single CVE
+
+    When:
+        - When executing the get_qid_for_cve function
+
+    Then:
+        - Ensure the outputs contain the right values ( in this case there are 2 qids for the given CVE)
+    """
+    xml_response = b"""
+    <RESPONSE>
+        <VULN_LIST>
+            <VULN><QID>12345</QID></VULN>
+            <VULN><QID>67890</QID></VULN>
+        </VULN_LIST>
+    </RESPONSE>
+    """
+
+    mock_response = Mock()
+    mock_response.content = xml_response
+    mock_client.get_qid_for_cve.return_value = mock_response
+
+    from Qualysv2 import get_qid_for_cve
+
+    result = get_qid_for_cve(mock_client, "CVE-2024-9999")
+
+    assert result.outputs == ["12345", "67890"]
