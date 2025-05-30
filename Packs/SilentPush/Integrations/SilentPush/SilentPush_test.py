@@ -211,9 +211,7 @@ def test_get_asns_for_domain_command_success(mock_client, mocker):
 
     # Mock response from client
     mock_response = {
-        "response": {
-            "records": [{"domain_asns": {"12345": "Example ASN Description", "67890": "Another ASN Description"}}]
-        }
+        "response": {"records": [{"domain_asns": {"12345": "Example ASN Description", "67890": "Another ASN Description"}}]}
     }
     mock_client.get_asns_for_domain.return_value = mock_response
 
@@ -945,9 +943,7 @@ def test_live_url_scan_command_success(mock_client, mocker):
     mock_client.live_url_scan.return_value = mock_response
 
     # Mock format_scan_results
-    mocker.patch(
-        "SilentPush.format_scan_results", return_value=("Mocked Readable Output", mock_response["response"]["scan"])
-    )
+    mocker.patch("SilentPush.format_scan_results", return_value=("Mocked Readable Output", mock_response["response"]["scan"]))
 
     # Call the function
     result = live_url_scan_command(mock_client, args)
