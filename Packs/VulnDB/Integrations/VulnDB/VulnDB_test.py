@@ -13,6 +13,6 @@ def test_http_request_json_negative(requests_mock, argument):
         f"{base_path}/api/v1/vulnerabilities/{cve_id}/find_by_cve_id",
         json={"details": "You have exceeded your API usage for the month. Please contact support"},
     )
-    client = Client(False, False, f"{base_path}/api/v1", "client_id", "client_secret")
+    client = Client(False, False, f"{base_path}/api/v1", "client_id", "client_secret", 60)
     with pytest.raises(DemistoException, match="You have exceeded your API usage for the month"):
         vulndb_get_cve_command({argument: cve_id}, client, DBotScoreReliability.C)
