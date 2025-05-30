@@ -435,6 +435,7 @@ def vulndb_fetch_incidents_command(
     ignore_deprecated: bool,
     client: Client,
 ):  # pragma: no cover
+    PAGE_SIZE = 300  # Number of entries per Page. 300 is max supported by API
     demisto.debug("[VulnDB]: Running Fetch Incidents")
     last_run = demisto.getLastRun()
     hours_ago: int = math.ceil((datetime.now(timezone.utc) - first_fetch).total_seconds() / 3600)
@@ -455,7 +456,7 @@ def vulndb_fetch_incidents_command(
     incidents: list[dict] = []
     page = 1
     count = 0
-
+    all_results: list[dict] = []
     while True:
         params = {
             "size": PAGE_SIZE,
@@ -492,22 +493,28 @@ def vulndb_fetch_incidents_command(
                 continue
 
             result_date = dateparser.parse(result.get("vulndb_last_modified"))
-            if result_date and (
-                result_date < last_timestamp or (result_date == last_timestamp and int(result["vulndb_id"]) <= last_id)
-            ):
+            if result_date and result_date < last_timestamp:
                 continue  # Skip entries, that are from before the last run date
-            mirror_id = f'{result["vulndb_id"]}@{result.get("vulndb_last_modified", datetime.now(timezone.utc).isoformat())}'
-            incidents.append(
-                {
-                    "name": result.get("title", ""),  # name is required field, must be set
-                    "occured": result.get("vulndb_last_modified"),  # must be string of a format ISO8601
-                    "rawJSON": json.dumps(result),
-                    "dbotMirrorId": mirror_id,
-                }
-            )
-        # Exit loop once we received the last last page
-        if len(results) < 300:
+
+            all_results.append(result)
+        if len(results) < PAGE_SIZE:  # Exit loop once we received the last last page
             break
+        
+    for result in sorted(all_results, key=lambda res: (res.get("vulndb_last_modified"), int(res["vulndb_id"]))):
+        result_date = dateparser.parse(result.get("vulndb_last_modified",""))
+        # Skip entries, that were already processed during the previous run
+        if result_date and result_date == last_timestamp and int(result["vulndb_id"]) <= last_id:
+            continue
+
+        mirror_id = f'{result["vulndb_id"]}@{result.get("vulndb_last_modified", datetime.now(timezone.utc).isoformat())}'
+        incidents.append(
+            {
+                "name": result.get("title", ""),  # name is required field, must be set
+                "occured": result.get("vulndb_last_modified"),  # must be string of a format ISO8601
+                "rawJSON": json.dumps(result),
+                "dbotMirrorId": mirror_id,
+            }
+        )
 
     incidents = sorted(incidents, key=lambda x: x["occured"])
     demisto.debug(f"[VulnDB]: Total Incident Count: {len(incidents)}")
