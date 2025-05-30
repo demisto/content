@@ -489,7 +489,7 @@ def vulndb_fetch_incidents_command(
             if disclosure_date and disclosure_date < min_disclosure_date:
                 continue
 
-            if ignore_deprecated and result.get("title", "").casefold().startswith("DEPRECATED: See ID #".casefold()):
+            if ignore_deprecated and result.get("title", "").casefold().startswith("deprecated: see id #"):
                 continue
 
             result_date = dateparser.parse(result.get("vulndb_last_modified"))
@@ -499,9 +499,9 @@ def vulndb_fetch_incidents_command(
             all_results.append(result)
         if len(results) < PAGE_SIZE:  # Exit loop once we received the last last page
             break
-        
+
     for result in sorted(all_results, key=lambda res: (res.get("vulndb_last_modified"), int(res["vulndb_id"]))):
-        result_date = dateparser.parse(result.get("vulndb_last_modified",""))
+        result_date = dateparser.parse(result.get("vulndb_last_modified", ""))
         # Skip entries, that were already processed during the previous run
         if result_date and result_date == last_timestamp and int(result["vulndb_id"]) <= last_id:
             continue
@@ -518,7 +518,7 @@ def vulndb_fetch_incidents_command(
 
     incidents = sorted(incidents, key=lambda x: x["occured"])
     demisto.debug(f"[VulnDB]: Total Incident Count: {len(incidents)}")
-    incidents_slice = incidents[:max_size] if len(incidents) > max_size else incidents
+    incidents_slice = incidents[:max_size]
     last_date = last_timestamp.isoformat()
     if len(incidents_slice) > 0:
         last_date = incidents_slice[-1]["occured"]
@@ -556,13 +556,13 @@ def main():
             min_disclosure_date = dateparser.parse(params["disclosure_after"], settings={"RETURN_AS_TIMEZONE_AWARE": True})
             if not min_disclosure_date:
                 min_disclosure_date = datetime.min.replace(tzinfo=timezone.utc)
-            ignore_deprecated: bool = params.get("ignore_deprecated", False)
+            ignore_deprecated: bool = argToBoolean(params.get("ignore_deprecated", False))
             vulndb_fetch_incidents_command(
                 args,
                 int(params["max_fetch"]),
                 first_fetch,
-                params.get("include_all_cvss", False),
-                params.get("include_cpe", False),
+                argToBoolean(params.get("include_all_cvss", False)),
+                argToBoolean(params.get("include_cpe", False)),
                 min_disclosure_date,
                 ignore_deprecated,
                 client,
