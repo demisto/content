@@ -56,8 +56,9 @@ def main():
     except Exception as ex:
         return_error(f"Failed to execute ContextSetup. Error: {str(ex)}")
 
-''' ENTRY POINT '''
+
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()
