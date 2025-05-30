@@ -268,6 +268,13 @@ class ExceptionCommandType(enum.Enum):
     LIST = "get"
 
 
+class DynamicUpdateType(enum.Enum):
+    """Enum for dynamic update types to download/install"""
+    APP_THREAT = "content"
+    ANTIVIRUS = "anti-virus"
+    WILDFIRE = "wildfire"
+    GP = "global-protect-clientless-vpn"
+
 class QueryMap(TypedDict):
     """dict[str, str]
     Contains the log types mapped to the query
@@ -6532,10 +6539,10 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
-def panorama_download_latest_content_update_content(target: Optional[str] = None):
+def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><download><latest/></download></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><download><latest/></download></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6546,21 +6553,30 @@ def panorama_download_latest_content_update_content(target: Optional[str] = None
     return result
 
 
-def panorama_download_latest_content_update_command(args: dict):
+def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
     """
-    Download content and show message in war room
+    Download dynamic update content and show message in war room
     """
     target = args.get("target", None)
     if DEVICE_GROUP and not target:
         raise Exception("Download latest content is only supported on Firewall (not Panorama).")
 
-    result = panorama_download_latest_content_update_content(target)
+    result = panorama_download_latest_dynamic_update_content(update_type, target)
 
     if "result" in result["response"]:
         # download has been given a jobid
+        entry_context_prefix_map = {
+            DynamicUpdateType.APP_THREAT: "Content",
+            DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+            DynamicUpdateType.WILDFIRE: "WildFire",
+            DynamicUpdateType.GP: "GP",
+        }
+        
+        entry_context_prefix = entry_context_prefix_map.get(update_type)
+        
         download_status_output = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown("Content download:", download_status_output, ["JobID", "Status"], removeNull=True)
+        entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": download_status_output}
+        human_readable = tableToMarkdown(f"{entry_context_prefix} update download:", download_status_output, ["JobID", "Status"], removeNull=True)
 
         return_results(
             {
@@ -6588,9 +6604,9 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_download_status_command(args: dict):
+def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateType, args: dict):
     """
-    Check jobID of content update download status
+    Check jobID of dynamic update download status
     """
     target = str(args["target"]) if "target" in args else None
     if DEVICE_GROUP and not target:
@@ -6612,9 +6628,18 @@ def panorama_content_update_download_status_command(args: dict):
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_download_status["Status"] = "Pending"
 
-    entry_context = {"Panorama.Content.Download(val.JobID == obj.JobID)": content_download_status}
+    entry_context_prefix_map = {
+            DynamicUpdateType.APP_THREAT: "Content",
+            DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+            DynamicUpdateType.WILDFIRE: "WildFire",
+            DynamicUpdateType.GP: "GP",
+        }
+        
+    entry_context_prefix = entry_context_prefix_map.get(update_type)
+    
+    entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown(
-        "Content download status:", content_download_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} update download status:", content_download_status, ["JobID", "Status", "Details"], removeNull=True
     )
 
     return_results(
@@ -6630,10 +6655,10 @@ def panorama_content_update_download_status_command(args: dict):
 
 
 @logger
-def panorama_install_latest_content_update(target: str):
+def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, target: str):
     params = {
         "type": "op",
-        "cmd": "<request><content><upgrade><install><version>latest</version></install></upgrade></content></request>",
+        "cmd": f"<request><{update_type.value}><upgrade><install><version>latest</version></install></upgrade></{update_type.value}></request>",
         "key": API_KEY,
     }
     if target:
@@ -6643,16 +6668,25 @@ def panorama_install_latest_content_update(target: str):
     return result
 
 
-def panorama_install_latest_content_update_command(target: Optional[str] = None):
+def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateType, target: Optional[str] = None):
     """
     Check jobID of content content install status
     """
-    result = panorama_install_latest_content_update(target)
+    result = panorama_install_latest_dynamic_update(update_type, target)
 
     if "result" in result["response"]:
         # installation has been given a jobid
+        entry_context_prefix_map = {
+            DynamicUpdateType.APP_THREAT: "Content",
+            DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+            DynamicUpdateType.WILDFIRE: "WildFire",
+            DynamicUpdateType.GP: "GP",
+        }
+        
+        entry_context_prefix = entry_context_prefix_map.get(update_type)
+        
         content_install_info = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_info}
+        entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_info}
         human_readable = tableToMarkdown("Result:", content_install_info, ["JobID", "Status"], removeNull=True)
 
         return_results(
@@ -6679,7 +6713,7 @@ def panorama_content_update_install_status(target: str, job_id: str):
     return result
 
 
-def panorama_content_update_install_status_command(args: dict):
+def panorama_dynamic_update_install_status_command(update_type: DynamicUpdateType, args: dict):
     """
     Check jobID of content update install status
     """
@@ -6701,10 +6735,19 @@ def panorama_content_update_install_status_command(args: dict):
 
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_install_status["Status"] = "Pending"
+        
+    entry_context_prefix_map = {
+            DynamicUpdateType.APP_THREAT: "Content",
+            DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+            DynamicUpdateType.WILDFIRE: "WildFire",
+            DynamicUpdateType.GP: "GP",
+        }
+        
+    entry_context_prefix = entry_context_prefix_map.get(update_type)
 
-    entry_context = {"Panorama.Content.Install(val.JobID == obj.JobID)": content_install_status}
+    entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
     human_readable = tableToMarkdown(
-        "Content install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} install status:", content_install_status, ["JobID", "Status", "Details"], removeNull=True
     )
     return_results(
         {
@@ -15442,21 +15485,69 @@ def main():  # pragma: no cover
         elif command == "panorama-show-device-version" or command == "pan-os-show-device-version":
             panorama_show_device_version_command(args.get("target"))
 
-        # Download the latest content update
+        # Download the latest app/threat content update
         elif command == "panorama-download-latest-content-update" or command == "pan-os-download-latest-content-update":
-            panorama_download_latest_content_update_command(args)
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)
 
-        # Download the latest content update
-        elif command == "panorama-content-update-download-status" or command == "pan-os-content-update-download-status":
-            panorama_content_update_download_status_command(args)
+        # Download the latest antivirus content update
+        elif command == "pan-os-download-latest-antivirus-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args)
 
-        # Install the latest content update
+        # Download the latest wildfire content update
+        elif command == "pan-os-download-latest-wildfire-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Download the latest GP content update
+        elif command == "pan-os-download-latest-gp-update":
+            panorama_download_latest_dynamic_update_command(DynamicUpdateType.GP, args)
+
+        # Check download status of the latest app/threat content update
+        elif command == "pan-os-content-update-download-status":
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.APP_THREAT, args)
+
+        # Check download status of the latest antivirus content update
+        elif command == "pan-os-antivirus-update-download-status":
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # Check download status of the latest wildfire content update
+        elif command == "pan-os-wildfire-update-download-status":
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.WILDFIRE, args)
+
+        # Check download status of the latest GP content update
+        elif command == "pan-os-gp-update-download-status":
+            panorama_dynamic_update_download_status_command(DynamicUpdateType.GP, args)
+
+        # Install the latest app/threat content update
         elif command == "panorama-install-latest-content-update" or command == "pan-os-install-latest-content-update":
-            panorama_install_latest_content_update_command(args.get("target"))
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args.get("target"))
 
-        # Content update install status
+        # Install the latest antivirus content update
+        elif command == "pan-os-install-latest-antivirus-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.ANTIVIRUS, args.get("target"))
+
+        # Install the latest wildfire content update
+        elif command == "pan-os-install-latest-wildfire-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.WILDFIRE, args.get("target"))
+
+        # Install the latest GP content update
+        elif command == "pan-os-install-latest-gp-update":
+            panorama_install_latest_dynamic_update_command(DynamicUpdateType.GP, args.get("target"))
+
+        # App/Threat update install status
         elif command == "panorama-content-update-install-status" or command == "pan-os-content-update-install-status":
-            panorama_content_update_install_status_command(args)
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.APP_THREAT, args)
+
+        # Antivirus update install status
+        elif command == "pan-os-antivirus-update-install-status":
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.ANTIVIRUS, args)
+
+        # WildFire update install status
+        elif command == "pan-os-wildfire-update-install-status":
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.WILDFIRE, args)
+
+        # GP update install status
+        elif command == "pan-os-gp-update-install-status":
+            panorama_dynamic_update_install_status_command(DynamicUpdateType.GP, args)
 
         # Check PAN-OS latest software update
         elif command == "panorama-check-latest-panos-software" or command == "pan-os-check-latest-panos-software":
