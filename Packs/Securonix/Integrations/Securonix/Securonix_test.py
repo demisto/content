@@ -6,6 +6,7 @@ import pytest
 from CommonServerPython import *
 from Securonix import (
     Client,
+    MESSAGE,
     add_comment_to_incident,
     add_entity_to_watchlist,
     add_entry_to_lookup_table,
@@ -732,7 +733,7 @@ def test_delete_lookup_table_entries_for_invalid_arguments(mock_client, name, ke
 @pytest.mark.parametrize("name,keys", [("test_table", "key1"), ("test_table", "key1,key2")])
 def test_delete_lookup_table_entries_for_valid_arguments(mock_client, mocker, name, keys):
     """Test case to validate that valid human-readable and raw response should be returned for valid arguments."""
-    expected_human_readable = f'Successfully deleted following entries from {name}: {", ".join(argToList(keys))}.'
+    expected_human_readable = f"Successfully deleted following entries from {name}: {', '.join(argToList(keys))}."
 
     mocker.patch.object(mock_client, "http_request", return_value=RESPONSE_DELETE_LOOKUP_ENTRIES_DELETE)
     args = {"name": name, "lookup_unique_keys": keys}
@@ -964,8 +965,7 @@ def test_validate_mirroring_parameters_for_outgoing_mirroring_direction(
 
 
 @pytest.mark.parametrize(
-    "active_state_action,active_state_status,close_state_action,close_state_status,"
-    "comment_entry_tag,close_states_of_securonix",
+    "active_state_action,active_state_status,close_state_action,close_state_status,comment_entry_tag,close_states_of_securonix",
     [
         ("", "In Progress", "Close Investigation", "Completed", "Comment", "Closed"),
         ("  ", "In Progress", "Close Investigation", "Completed", "Comment", "Closed"),
@@ -1158,7 +1158,7 @@ def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
             create_lookup_table,
             {},
             "Error in command.",
-            "Failed to create lookup table.\nResponse from Securonix is:Error in command.",
+            "Failed to create lookup table.\nResponse from Securonix is: Error in command.",
         ),
         (
             add_entry_to_lookup_table,
@@ -1170,7 +1170,7 @@ def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
             delete_whitelist_entry,
             {"tenant_name": "test", "whitelist_name": "test_whitelist", "entity_id": "test_entity"},
             {"result": "Error in command."},
-            "Failed to remove entry from whitelist.\nResponse from Securonix is:Error in command.",
+            "Failed to remove entry from whitelist.\nResponse from Securonix is: Error in command.",
         ),
         (
             delete_lookup_table_config_and_data,
@@ -1182,7 +1182,7 @@ def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
             create_whitelist,
             {"whitelist_name": "test_whitelist", "entity_type": "Activityaccount"},
             {"messages": "Error in command."},
-            "Failed to create whitelist.\nResponse from Securonix is:{'messages': 'Error in command.'}",
+            "Failed to create whitelist.\nResponse from Securonix is: {'messages': 'Error in command.'}",
         ),
         (
             get_whitelist_entry,
@@ -1194,14 +1194,13 @@ def test_whitelist_entry_add_for_invalid_arguments(mock_client, args, err_msg):
             add_entity_to_watchlist,
             {"watchlist_name": "test_watchlist", "entity_name": {"test_entity"}},
             "Error in command",
-            "Failed to add entity {'test_entity'} to the watchlist test_watchlist.\nError from Securonix is: Error in "
-            "command.",
+            "Failed to add entity {'test_entity'} to the watchlist test_watchlist.\nError from Securonix is: Error in command.",
         ),
         (
             create_watchlist,
             {"watchlist_name": "test_watchlist"},
             "Error in command.",
-            "Failed to list watchlists.\nResponse from Securonix is:Error in command.",
+            "Failed to list watchlists.\nResponse from Securonix is: Error in command.",
         ),
         (
             list_activity_data,
@@ -1218,5 +1217,21 @@ def test_exceptions_in_command(command_name, args, response, err_msg, mocker):
     mocker.patch.object(client, "http_request", return_value=response)
     with pytest.raises(Exception) as error:
         command_name(client, args)
+
+    assert str(error.value) == err_msg
+
+
+@pytest.mark.parametrize(
+    "max,err_msg",
+    [
+        ("-1", MESSAGE["INVALID_MAX_VALUE"]),
+        ("0", MESSAGE["INVALID_MAX_VALUE"]),
+    ],
+)
+def test_list_violation_data_command_for_invalid_arguments(mock_client, max, err_msg):
+    """Test case to validate that ValueError should be raised for invalid arguments."""
+    with pytest.raises(ValueError) as error:
+        args = {"max": max}
+        list_violation_data(mock_client, args)
 
     assert str(error.value) == err_msg
