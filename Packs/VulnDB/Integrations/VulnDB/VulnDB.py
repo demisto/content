@@ -426,7 +426,6 @@ def vulndb_get_cve_command(args: dict, client: Client, dbot_score_reliability: D
 
 
 def vulndb_fetch_incidents_command(
-    args: dict,
     max_size: int,
     first_fetch: datetime,
     all_cvss: bool,
@@ -558,7 +557,6 @@ def main():
                 min_disclosure_date = datetime.min.replace(tzinfo=timezone.utc)
             ignore_deprecated: bool = argToBoolean(params.get("ignore_deprecated", False))
             vulndb_fetch_incidents_command(
-                args,
                 int(params["max_fetch"]),
                 first_fetch,
                 argToBoolean(params.get("include_all_cvss", False)),
