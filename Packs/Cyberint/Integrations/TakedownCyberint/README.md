@@ -1,9 +1,9 @@
-Use the Cyberint Feed integration to get indicators from the feed.
+Use the Cyberint Takedowns integration to submit takedown request.
 
-## Configure Cyberint Feed on Cortex XSOAR
+## Configure Cyberint Takedowns on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
-2. Search for Cyberint Feed.
+2. Search for Cyberint Takedowns.
 3. Click **Add instance** to create and configure a new integration instance.
 
     | **Parameter** | **Description**                                                                                                                                                                                        | **Required** |

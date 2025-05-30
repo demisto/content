@@ -8,6 +8,8 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
+from ..version import __version__
+
 urllib3.disable_warnings()
 
 DATE_FORMAT = "%Y-%m-%d"
@@ -36,7 +38,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.6",
+            "X-Integration-Version": __version__,
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 

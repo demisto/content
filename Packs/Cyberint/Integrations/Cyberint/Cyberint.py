@@ -8,6 +8,8 @@ from contextlib import closing
 from CommonServerPython import *
 from requests import Response
 
+from ..version import __version__
+
 """ CONSTANTS """
 STRFTIME = "%Y-%m-%d"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
@@ -61,7 +63,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": "1.1.9",
+            "X-Integration-Version": __version__,
         }
         super().__init__(base_url=base_url, verify=verify_ssl, proxy=proxy)
 
