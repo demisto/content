@@ -510,7 +510,7 @@ def get_modified_remote_data_command(client, mirroring_last_update):
     takedown_ids = []
     demisto.info(f"after api call response: {takedown_events}")
     max_event_num = mirroring_last_update
-    if type(mirroring_last_update) == str:
+    if isinstance(mirroring_last_update, str):
         mirroring_last_update = int(mirroring_last_update)
     if takedown_events:
         max_event_num = max(max([int(t['event-num']) for t in takedown_events]), mirroring_last_update)

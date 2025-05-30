@@ -174,11 +174,11 @@ def create_takedown_rate_limit():
 
 def test_response():
     data = [
-        {"message": "accountId' is invalid"},
-        {"api-key-valid": "accountId' is invalid"},
-        {"access-account-enabled": "accountId' is invalid"},
-        {"account-api-enabled": "accountId' is invalid"},
-        {"account-id-valid": "accountId' is invalid"},
+        {"message": "'accountId' is invalid"},
+        {"api-key-valid": "accountId is invalid"},
+        {"access-account-enabled": "accountId is invalid"},
+        {"account-api-enabled": "accountId is invalid"},
+        {"account-id-valid": "accountId is invalid"},
         {},
     ]
     random.shuffle(data)
