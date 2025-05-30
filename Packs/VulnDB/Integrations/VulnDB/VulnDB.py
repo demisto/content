@@ -40,11 +40,14 @@ class Client(BaseClient):
     def http_request(self, url_suffix, size=None):
         params = {"size": size} if size else None
         res = self._http_request("GET", url_suffix=url_suffix, params=params)
+        self.raise_on_error_response(res)
+        return res
+
+    def raise_on_error_response(self, res):
         # The details could reside in either error or details, not both
         for error_attribute in ["error", "details"]:
             if error_attribute in res:
                 raise DemistoException(res[error_attribute])
-        return res
 
 
 def vulndb_vulnerability_to_entry(vuln):
@@ -454,15 +457,19 @@ def vulndb_fetch_incidents_command(
     count = 0
 
     while True:
-        url_suffix = f"/vulnerabilities/find_by_time?page={page}&hours_ago={hours_ago}"  # noqa: E501
-        if all_cvss:
-            url_suffix = f"{url_suffix}&show_cvss_v3=true&show_cvss=true"
-        if include_cpe:
-            url_suffix = f"{url_suffix}&show_cpe_full=true"
+        params = {
+            "size": PAGE_SIZE,
+            "page": page,
+            "hours_ago": hours_ago,
+            "show_cpe_full": include_cpe,
+            "show_cvss_v3": all_cvss,
+            "show_cvss": all_cvss,
+        }
         try:
-            res = client.http_request(url_suffix, 300)
+            res = client._http_request("GET", "/vulnerabilities/find_by_time", params=params)
+            client.raise_on_error_response(res)
         except Exception as e:
-            demisto.error(f"[VulnDB]: Error {str(e)}")  # Log the error
+            demisto.error(f"[VulnDB]: Error {str(e)}")
             # If the Web Request failed, there is no guarantee, we got all the Information required
             # So return nothing and don't set the lastFetch, so the next run can try again
             demisto.updateModuleHealth(
