@@ -1,0 +1,96 @@
+{
+	"brands": null,
+	"cacheVersn": 0,
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "",
+	"feed": false,
+	"fromServerVersion": "",
+	"id": "Reliaquest Takedown Mapper",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 8,
+	"mapping": {
+		"Reliaquest Takedown Type": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"External Last Updated Time": {
+					"simple": "updated"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {
+				"Comments": {
+					"simple": "comments"
+				},
+				"Domain Name": {
+					"simple": "brand.domain-name"
+				},
+				"Event Type": {
+					"simple": "type"
+				},
+				"External Last Updated Time": {
+					"simple": "updated"
+				},
+				"Source Create time": {
+					"simple": "created"
+				},
+				"Source Created By": {
+					"simple": "brand.created"
+				},
+				"Source Id": {
+					"simple": "id"
+				},
+				"Source Status": {
+					"simple": "status"
+				},
+				"Source Updated by": {
+					"simple": "brand.updated"
+				},
+				"Takedown Attachments": {
+					"complex": {
+						"filters": [],
+						"root": "attachments",
+						"transformers": []
+					}
+				},
+				"Targets": {
+					"simple": "targets"
+				},
+				"dbotMirrorDirection": {
+					"simple": "dbotMirrorDirection"
+				},
+				"dbotMirrorId": {
+					"simple": "dbotMirrorId"
+				},
+				"dbotMirrorInstance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"dbotMirrorLastSync": {
+					"simple": "updated"
+				},
+				"name": {
+					"simple": "brand.name"
+				}
+			}
+		}
+	},
+	"name": "Reliaquest Takedown Mapper",
+	"nameRaw": "Reliaquest Takedown Mapper",
+	"packID": "",
+	"packName": "",
+	"sourceClassifierId": "",
+	"system": false,
+	"toServerVersion": "",
+	"transformer": {},
+	"type": "mapping-incoming",
+	"unclassifiedCases": null,
+	"version": -1,
+    "fromVersion": "6.10.0"
+}
