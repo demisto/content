@@ -92,27 +92,14 @@ class Client(BaseClient):
         if sort_by:
             request_params["sort"] = sort_by
 
-        return self._http_request(
-            method="GET", url_suffix="/v1/sic/alerts", params=request_params
-        )
-        return self._http_request(
-            method="GET", url_suffix="/v1/sic/alerts", params=request_params
-        )
+        return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
+        return self._http_request(method="GET", url_suffix="/v1/sic/alerts", params=request_params)
 
     def get_alert(self, alert_uuid: str) -> dict[str, Any]:
-        return self._http_request(
-            method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
-        )
-        return self._http_request(
-            method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}"
-        )
+        return self._http_request(method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}")
+        return self._http_request(method="GET", url_suffix=f"/v1/sic/alerts/{alert_uuid}")
 
-    def update_status_alert(
-        self, alert_uuid: str, action_uuid: str, comment: str | None
-    ) -> dict[str, Any]:
-    def update_status_alert(
-        self, alert_uuid: str, action_uuid: str, comment: str | None
-    ) -> dict[str, Any]:
+    def update_status_alert(self, alert_uuid: str, action_uuid: str, comment: str | None) -> dict[str, Any]:
         request_params: dict[str, Any] = {"action_uuid": action_uuid}
 
         """ Normal parameters"""
@@ -125,12 +112,7 @@ class Client(BaseClient):
             json_data=request_params,
         )
 
-    def post_comment_alert(
-        self, alert_uuid: str, content: str, author: str | None
-    ) -> dict[str, Any]:
-    def post_comment_alert(
-        self, alert_uuid: str, content: str, author: str | None
-    ) -> dict[str, Any]:
+    def post_comment_alert(self, alert_uuid: str, content: str, author: str | None) -> dict[str, Any]:
         request_params: dict[str, Any] = {"content": content}
 
         """ Normal parameters"""
@@ -227,12 +209,7 @@ class Client(BaseClient):
             params=request_params,
         )
 
-    def add_attributes_asset(
-        self, asset_uuid: str, name: str, value: str
-    ) -> dict[str, Any]:
-    def add_attributes_asset(
-        self, asset_uuid: str, name: str, value: str
-    ) -> dict[str, Any]:
+    def add_attributes_asset(self, asset_uuid: str, name: str, value: str) -> dict[str, Any]:
         request_params: dict[str, Any] = {"name": name, "value": value}
 
         return self._http_request(
@@ -250,12 +227,7 @@ class Client(BaseClient):
             params=request_params,
         )
 
-    def remove_attribute_asset(
-        self, asset_uuid: str, attribute_uuid: str
-    ) -> list[dict[str, Any]]:
-    def remove_attribute_asset(
-        self, asset_uuid: str, attribute_uuid: str
-    ) -> list[dict[str, Any]]:
+    def remove_attribute_asset(self, asset_uuid: str, attribute_uuid: str) -> list[dict[str, Any]]:
         return self._http_request(
             method="DELETE",
             url_suffix=f"/v1/asset-management/assets/{asset_uuid}/attr/{attribute_uuid}",
@@ -273,19 +245,10 @@ class Client(BaseClient):
         return self._http_request(method="GET", url_suffix=f"/v1/users/{user_uuid}")
 
     def get_kill_chain(self, kill_chain_uuid: str) -> dict[str, Any]:
-        return self._http_request(
-            method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
-        )
-        return self._http_request(
-            method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}"
-        )
+        return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
+        return self._http_request(method="GET", url_suffix=f"/v1/sic/kill-chains/{kill_chain_uuid}")
 
-    def http_request(
-        self, method: str, url_suffix: str, params: dict
-    ) -> dict[str, Any]:
-    def http_request(
-        self, method: str, url_suffix: str, params: dict
-    ) -> dict[str, Any]:
+    def http_request(self, method: str, url_suffix: str, params: dict) -> dict[str, Any]:
         if not params:
             params = {}
 
@@ -367,12 +330,8 @@ def time_converter(time):
     """
 
     # Regular expression patterns
-    iso_8601_pattern = re.compile(
-        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$"
-    )
-    iso_8601_pattern = re.compile(
-        r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$"
-    )
+    iso_8601_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$")
+    iso_8601_pattern = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$")
     unix_timestamp_pattern = re.compile(r"^\d+$")
 
     if iso_8601_pattern.match(time):
@@ -447,12 +406,8 @@ def undot(json_data: dict) -> str:
     elif isinstance(json_data, dict):
         data = json_data
     else:
-        raise TypeError(
-            "JSON data sent to undot function must be a string or a dictionary"
-        )
-        raise TypeError(
-            "JSON data sent to undot function must be a string or a dictionary"
-        )
+        raise TypeError("JSON data sent to undot function must be a string or a dictionary")
+        raise TypeError("JSON data sent to undot function must be a string or a dictionary")
 
     # Iterate over each item in the items array
     for item in data["items"]:
@@ -496,36 +451,6 @@ def filter_dict_by_keys(input_dict: dict, keys_to_keep: list) -> dict:
     """
     return {key: value for key, value in input_dict.items() if key in keys_to_keep}
 
-
-def handle_alert_events_query(
-    client: Client, alert: dict, earliest_time: str, latest_time: str, events_term: str
-) -> dict[str, Any]:
-    # Create a query to get events
-    search = client.query_events(
-        events_earliest_time=earliest_time,
-        events_latest_time=latest_time,
-        events_term=events_term,
-        max_last_events=None,
-    )
-
-    # Get the search job uuid
-    search_job_uuid = search["uuid"]
-
-    # Check the state of the job
-    query_status = client.query_events_status(event_search_job_uuid=search_job_uuid)
-    finished_status = query_status["status"] == 2
-
-    # If it's not finished, add the job uuid to the alert
-    if not finished_status:
-        alert["job_uuid"] = search_job_uuid
-
-    else:
-        # If it's finished, get the events
-        # This case is rare but can happen if the fetch is too fast
-        events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-        alert["events"] = events
-
-    return alert
 
 
 def fetch_alerts_with_pagination(
@@ -672,9 +597,7 @@ def fetch_incidents(
             for incident in fetch_context:
                 incident_job_uuid = incident["rawJSON"]["job_uuid"]
                 try:
-                    query_status = client.query_events_status(
-                        event_search_job_uuid=incident_job_uuid
-                    )
+                    query_status = client.query_events_status(event_search_job_uuid=incident_job_uuid)
                     finished_status = query_status["status"] == 2
 
                     if not finished_status:
@@ -688,18 +611,14 @@ def fetch_incidents(
                     incidents.append(incident)
                 except Exception as e:
                     # Case where the job uuid is not valid anymore
-                    demisto.debug(
-                        f"Error fetching incident {incident['rawJSON']['short_id']}: {e}"
-                    )
+                    demisto.debug(f"Error fetching incident {incident['rawJSON']['short_id']}: {e}")
                     # Rerun command to get events
-                    earliest_time = incident['rawJSON']["first_seen_at"]
+                    earliest_time = incident["rawJSON"]["first_seen_at"]
                     latest_time = "now"
                     term = f"alert_short_ids:{incident['rawJSON']['short_id']}"
 
-                    alert = handle_alert_events_query(
-                        client, alert, earliest_time, latest_time, term
-                    )
-                    incident['rawJSON'] = alert
+                    alert = handle_alert_events_query(client, incident["rawJSON"], earliest_time, latest_time, term)
+                    incident["rawJSON"] = alert
                     # If the incident is not finished, we will keep it in the cache
                     not_finished_incident.append(incident)
 
@@ -745,7 +664,7 @@ def fetch_incidents(
 
     # Initiate an empty list to store cached incidents
     cached_incidents = []
-    
+
     for alert in alerts:
         # If no created_time set is as epoch (0). We use time in ms so we must
         # convert it from the Sekoia XDR API response
@@ -775,14 +694,10 @@ def fetch_incidents(
         # Add kill chain information to the alert, if fetch_with_kill_chain is set to True
         if fetch_with_kill_chain and alert["kill_chain_short_id"]:
             try:
-                kill_chain = client.get_kill_chain(
-                    kill_chain_uuid=alert["kill_chain_short_id"]
-                )
+                kill_chain = client.get_kill_chain(kill_chain_uuid=alert["kill_chain_short_id"])
                 alert["kill_chain"] = kill_chain
             except Exception as e:
-                demisto.debug(
-                    f"Error fetching kill chain information {kill_chain}: {e}"
-                )
+                demisto.debug(f"Error fetching kill chain information {kill_chain}: {e}")
 
         # Add events information to the alert, if fetch_mode is set to "Fetch With All Events"
         if fetch_mode == "Fetch With All Events":
@@ -790,9 +705,7 @@ def fetch_incidents(
             latest_time = "now"
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(
-                client, alert, earliest_time, latest_time, term
-            )
+            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # Start building the incident
         incident = {
@@ -846,30 +759,7 @@ def fetch_incidents(
 # =========== Mirroring Mechanism ===========
 
 
-def check_id_in_context(
-    alert_id: str, cache: dict[str, Any] | None
-) -> tuple[dict[str, Any], int] | None:
-    """
-    Check if the alert id is in the context cache
-    Args:
-        alert_id (str): The alert id to check.
-        cache (dict): The context cache.
-    Returns:
-        tuple: The alert object and the index of the alert in the cache.
-    """
-    if cache:
-        mirror_cache = cache.get("mirroring_cache")
-        if mirror_cache:
-            for item in mirror_cache:
-                cached_alert_id = item.get("alert").get("short_id")
-                if alert_id == cached_alert_id:
-                    return item, mirror_cache.index(item)
-    return None
-
-
-def check_id_in_context(
-    alert_id: str, cache: dict[str, Any] | None
-) -> tuple[dict[str, Any], int] | None:
+def check_id_in_context(alert_id: str, cache: dict[str, Any] | None) -> tuple[dict[str, Any], int] | None:
     """
     Check if the alert id is in the context cache
     Args:
@@ -921,9 +811,7 @@ def get_remote_data_command(
     context_cache = get_integration_context()
 
     # Check if alert id is the same as the one in the context
-    check_id: tuple[dict[str, Any], int] | None = check_id_in_context(
-        alert_id_args, context_cache
-    )
+    check_id: tuple[dict[str, Any], int] | None = check_id_in_context(alert_id_args, context_cache)
 
     if not check_id:
         entries = []  # List to store the entries
@@ -931,12 +819,8 @@ def get_remote_data_command(
         # If the alert id is not in the context, we will get the alert from Sekoia
         alert = client.get_alert(alert_uuid=alert_id_args)
         alert_short_id, alert_status = alert["short_id"], alert["status"]["name"]
-        last_update = arg_to_timestamp(
-            arg=parsed_args.last_update, arg_name="lastUpdate", required=True
-        )
-        alert_last_update = arg_to_timestamp(
-            arg=alert.get("updated_at"), arg_name="updated_at", required=False
-        )
+        last_update = arg_to_timestamp(arg=parsed_args.last_update, arg_name="lastUpdate", required=True)
+        alert_last_update = arg_to_timestamp(arg=alert.get("updated_at"), arg_name="updated_at", required=False)
 
         demisto.debug(
             f"Alert {alert_short_id} with status {alert_status} : last_update is {last_update} , alert_last_update is {alert_last_update}"  # noqa: E501
@@ -945,9 +829,7 @@ def get_remote_data_command(
         # Add the kill chain information to the alert if mirror_kill_chain is set to True
         if mirror_kill_chain and alert["kill_chain_short_id"]:
             try:
-                kill_chain = client.get_kill_chain(
-                    kill_chain_uuid=alert["kill_chain_short_id"]
-                )
+                kill_chain = client.get_kill_chain(kill_chain_uuid=alert["kill_chain_short_id"])
                 alert["kill_chain"] = kill_chain
             except Exception as e:
                 demisto.debug(f"Error fetching kill_chain : {e}")
@@ -958,14 +840,10 @@ def get_remote_data_command(
             latest_time = "now"
             term = f"alert_short_ids:{alert['short_id']}"
 
-            alert = handle_alert_events_query(
-                client, alert, earliest_time, latest_time, term
-            )
+            alert = handle_alert_events_query(client, alert, earliest_time, latest_time, term)
 
         # This adds all the information from the XSOAR incident.
-        demisto.debug(
-            f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}"
-        )
+        demisto.debug(f"Alert {alert_short_id} with status {alert_status} have this info updated: {alert}")
 
         investigation = demisto.investigation()
         demisto.debug(f"The investigation information is {investigation}")
@@ -978,11 +856,7 @@ def get_remote_data_command(
         )
 
         # Close the XSOAR incident using mirroring
-        if (
-            (close_incident)
-            and (alert_status in ["Closed", "Rejected"])
-            and (investigation["status"] != 1)
-        ):
+        if (close_incident) and (alert_status in ["Closed", "Rejected"]) and (investigation["status"] != 1):
             demisto.debug(
                 f"Alert {alert_short_id} with status {alert_status} was closed or rejected in Sekoia, closing incident {incident_id} in XSOAR"  # noqa: E501
             )
@@ -999,11 +873,7 @@ def get_remote_data_command(
             ]
 
         # Reopen the XSOAR incident using mirroring
-        if (
-            (reopen_incident)
-            and (alert_status not in ["Closed", "Rejected"])
-            and (investigation["status"] == 1)
-        ):
+        if (reopen_incident) and (alert_status not in ["Closed", "Rejected"]) and (investigation["status"] == 1):
             demisto.debug(
                 f"Alert {alert_short_id} with status {alert_status} was reopened in Sekoia, "
                 f"reopening incident {incident_id} in XSOAR"
@@ -1027,9 +897,7 @@ def get_remote_data_command(
             alert_dict = {"alert": alert, "entries": entries}
             if not mirroring_cache:
                 context_cache["mirroring_cache"] = [alert_dict]
-                demisto.debug(
-                    f"mirroring cache in the first condition : {context_cache}"
-                )
+                demisto.debug(f"mirroring cache in the first condition : {context_cache}")
                 set_integration_context(context_cache)
             else:
                 mirroring_cache.append(alert_dict)
@@ -1054,28 +922,22 @@ def get_remote_data_command(
             # Delete the object from the context
             del context_cache["mirroring_cache"][index]
             set_integration_context(context_cache)
-            
-            return GetRemoteDataResponse(
-                mirrored_object=alert_object["alert"], entries=alert_object["entries"]
-            )
+
+            return GetRemoteDataResponse(mirrored_object=alert_object["alert"], entries=alert_object["entries"])
         except Exception as e:
             # Case where the job uuid is not valid anymore
-            demisto.debug(
-                f"Error fetching incident {alert_object['alert']['short_id']}: {e}"
-            )
+            demisto.debug(f"Error fetching incident {alert_object['alert']['short_id']}: {e}")
             # Rerun command to get events
             earliest_time = alert_object["alert"]["first_seen_at"]
             latest_time = "now"
             term = f"alert_short_ids:{alert_object['alert']['short_id']}"
 
-            alert = handle_alert_events_query(
-                client, alert_object["alert"], earliest_time, latest_time, term
-            )
+            alert = handle_alert_events_query(client, alert_object["alert"], earliest_time, latest_time, term)
             alert_object["alert"] = alert
 
             # Update the cached alert in the context
             context_cache["mirroring_cache"][index]["alert"] = alert_object["alert"]
-            
+
             return None
 
 
@@ -1104,9 +966,7 @@ def get_modified_remote_data_command(client: Client, args):
     # Continue with normal way to get the modified alerts
     remote_args = GetModifiedRemoteDataArgs(args)
     last_update = remote_args.last_update
-    last_update_utc = dateparser.parse(
-        last_update, settings={"TIMEZONE": "UTC"}
-    )  # Converts to a UTC timestamp
+    last_update_utc = dateparser.parse(last_update, settings={"TIMEZONE": "UTC"})  # Converts to a UTC timestamp
     formatted_last_update = last_update_utc.strftime("%Y-%m-%dT%H:%M:%S.%f+00:00")  # type: ignore
     converted_time = time_converter(formatted_last_update)
     last_update_time = f"{converted_time},now"
@@ -1145,7 +1005,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
 
 
 def list_alerts_command(client: Client, args: dict[str, Any]) -> CommandResults:
-
     alerts = client.list_alerts(
         alerts_limit=args.get("limit"),
         alerts_status=args.get("status"),
@@ -1182,9 +1041,7 @@ def get_alert_command(client: Client, args: dict[str, Any]) -> CommandResults:
         "rule",
     ]
     command_output = filter_dict_by_keys(alert, header)
-    readable_output = tableToMarkdown(
-        f"Alert {alert_uuid}:", command_output, headers=header
-    )
+    readable_output = tableToMarkdown(f"Alert {alert_uuid}:", command_output, headers=header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1207,9 +1064,7 @@ def query_events_command(client: Client, args: dict[str, Any]) -> CommandResults
         events_term=term,
         max_last_events=max_last_events,
     )
-    readable_output = tableToMarkdown(
-        f"Event search created using the term {term}:", jobQuery
-    )
+    readable_output = tableToMarkdown(f"Event search created using the term {term}:", jobQuery)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1239,9 +1094,7 @@ def retrieve_events_command(client: Client, args: dict[str, Any]) -> CommandResu
     search_job_uuid = args["uuid"]
 
     events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
-    readable_output = tableToMarkdown(
-        f"Events retrieved for the search {search_job_uuid}:", events
-    )
+    readable_output = tableToMarkdown(f"Events retrieved for the search {search_job_uuid}:", events)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1279,9 +1132,7 @@ def search_events_command(args: dict[str, Any], client: Client) -> PollResult:
             response=None,
             continue_to_poll=True,
             args_for_next_run=(args | {"job_uuid": search_job_uuid}),
-            partial_result=CommandResults(
-                readable_output=f"Query is still running. Current state: {query_status['status']}."
-            ),
+            partial_result=CommandResults(readable_output=f"Query is still running. Current state: {query_status['status']}."),
         )
 
     events = client.retrieve_events(event_search_job_uuid=search_job_uuid)
@@ -1289,9 +1140,7 @@ def search_events_command(args: dict[str, Any], client: Client) -> PollResult:
 
     if len(events["items"]) > 0:
         if exclude_info_arg:
-            headers = exclude_info_events(
-                event_info=events, exclude_info=exclude_info_arg
-            )
+            headers = exclude_info_events(event_info=events, exclude_info=exclude_info_arg)
             headers = [header.replace(".", replace_symbol) for header in headers]
             undot(json_data=events)
             readable_output = tableToMarkdown(
@@ -1300,9 +1149,7 @@ def search_events_command(args: dict[str, Any], client: Client) -> PollResult:
                 headers=headers,
             )
         elif exclude_info_param:
-            headers = exclude_info_events(
-                event_info=events, exclude_info=",".join(exclude_info_param)
-            )
+            headers = exclude_info_events(event_info=events, exclude_info=",".join(exclude_info_param))
             headers = [header.replace(".", replace_symbol) for header in headers]
             undot(json_data=events)
             readable_output = tableToMarkdown(
@@ -1349,13 +1196,9 @@ def update_status_alert_command(client: Client, args: dict[str, Any]) -> Command
 
     for action in workflow["actions"]:
         if action["name"] == sekoia_transition:
-            update = client.update_status_alert(
-                alert_uuid=alert_uuid, action_uuid=action["id"], comment=comment
-            )
+            update = client.update_status_alert(alert_uuid=alert_uuid, action_uuid=action["id"], comment=comment)
             if update or update == {}:
-                readable_output = (
-                    f"### Alert {alert_uuid} updated to status: {updated_status}"
-                )
+                readable_output = f"### Alert {alert_uuid} updated to status: {updated_status}"
             else:
                 raise DemistoException(
                     "Failure to update the status of the alert. \
@@ -1374,14 +1217,10 @@ def post_comment_alert_command(client: Client, args: dict[str, Any]) -> CommandR
         args.get("author"),
     )
 
-    response = client.post_comment_alert(
-        alert_uuid=alert_uuid, content=comment, author=author
-    )
+    response = client.post_comment_alert(alert_uuid=alert_uuid, content=comment, author=author)
     response["date"] = timezone_format(response["date"])
 
-    readable_output = tableToMarkdown(
-        f"Alert {alert_uuid} updated with the comment: \n {comment}:", response
-    )
+    readable_output = tableToMarkdown(f"Alert {alert_uuid} updated with the comment: \n {comment}:", response)
 
     return CommandResults(readable_output=readable_output, outputs=response)
 
@@ -1405,9 +1244,7 @@ def get_comments_alert_command(client: Client, args: dict[str, Any]) -> CommandR
         # Add formatted date of the comment
         item["date"] = timezone_format(item["date"])
 
-    readable_output = tableToMarkdown(
-        f"Alert {alert_uuid} have the following comments:", response["items"]
-    )
+    readable_output = tableToMarkdown(f"Alert {alert_uuid} have the following comments:", response["items"])
 
     return CommandResults(
         readable_output=readable_output,
@@ -1449,9 +1286,7 @@ def get_cases_alert_command(client: Client, args: dict[str, Any]) -> CommandResu
         "community_uuid",
     ]
     command_output = filter_list_by_keys(response["items"], header)
-    readable_output = tableToMarkdown(
-        f"Alert {alert_uuid} have the following cases:", command_output, headers=header
-    )
+    readable_output = tableToMarkdown(f"Alert {alert_uuid} have the following cases:", command_output, headers=header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1489,9 +1324,7 @@ def list_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     assets = client.list_asset(limit=limit, assets_type=assets_type)
     header = ["name", "uuid", "description"]
     command_output = filter_list_by_keys(assets["items"], header)
-    readable_output = tableToMarkdown(
-        f"List of {assets['total']} assets found:", command_output, headers=header
-    )
+    readable_output = tableToMarkdown(f"List of {assets['total']} assets found:", command_output, headers=header)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1506,9 +1339,7 @@ def get_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     user_uuid = args["user_uuid"]
 
     user = client.get_user(user_uuid=user_uuid)
-    readable_output = tableToMarkdown(
-        f"User {user_uuid} have the following information:", user
-    )
+    readable_output = tableToMarkdown(f"User {user_uuid} have the following information:", user)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1518,9 +1349,7 @@ def get_user_command(client: Client, args: dict[str, Any]) -> CommandResults:
     )
 
 
-def add_attributes_asset_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def add_attributes_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid, name, value = (
         args["asset_uuid"],
@@ -1528,12 +1357,8 @@ def add_attributes_asset_command(
         args["value"],
     )
 
-    asset_attributes = client.add_attributes_asset(
-        asset_uuid=asset_uuid, name=name, value=value
-    )
-    readable_output = tableToMarkdown(
-        f"Asset {asset_uuid} was updated with new attributes:", asset_attributes
-    )
+    asset_attributes = client.add_attributes_asset(asset_uuid=asset_uuid, name=name, value=value)
+    readable_output = tableToMarkdown(f"Asset {asset_uuid} was updated with new attributes:", asset_attributes)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1551,9 +1376,7 @@ def add_keys_asset_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
     asset_keys = client.add_keys_asset(asset_uuid=asset_uuid, name=name, value=value)
-    readable_output = tableToMarkdown(
-        f"Asset {asset_uuid} was updated with new keys:", asset_keys
-    )
+    readable_output = tableToMarkdown(f"Asset {asset_uuid} was updated with new keys:", asset_keys)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1562,16 +1385,12 @@ def add_keys_asset_command(client: Client, args: dict[str, Any]) -> CommandResul
     )
 
 
-def remove_attribute_asset_command(
-    client: Client, args: dict[str, Any]
-) -> CommandResults:
+def remove_attribute_asset_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """Parameters"""
     asset_uuid, attribute_uuid = args["asset_uuid"], args["attribute_uuid"]
 
     client.remove_attribute_asset(asset_uuid=asset_uuid, attribute_uuid=attribute_uuid)
-    readable_output = (
-        f"Asset {asset_uuid} had the following attribute removed:\n{attribute_uuid}"
-    )
+    readable_output = f"Asset {asset_uuid} had the following attribute removed:\n{attribute_uuid}"
 
     return CommandResults(readable_output=readable_output)
 
@@ -1591,9 +1410,7 @@ def get_kill_chain_command(client: Client, args: dict[str, Any]) -> CommandResul
     kill_chain_uuid = args["kill_chain_uuid"]
 
     kill_chain = client.get_kill_chain(kill_chain_uuid=kill_chain_uuid)
-    readable_output = tableToMarkdown(
-        f"Kill chain {kill_chain_uuid} have the following information:", kill_chain
-    )
+    readable_output = tableToMarkdown(f"Kill chain {kill_chain_uuid} have the following information:", kill_chain)
 
     return CommandResults(
         readable_output=readable_output,
@@ -1680,16 +1497,12 @@ def main() -> None:
         arg_name="First fetch time",
         required=True,
     )
-    first_fetch_timestamp = (
-        int(first_fetch_time.timestamp()) if first_fetch_time else None
-    )
+    first_fetch_timestamp = int(first_fetch_time.timestamp()) if first_fetch_time else None
 
     demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -1708,9 +1521,7 @@ def main() -> None:
 
             # Convert the argument to an int using helper function or set to MAX_INCIDENTS_TO_FETCH
             max_results = arg_to_number(params["max_fetch"])
-            last_run: dict[str, Any] = (
-                demisto.getLastRun()
-            )  # getLastRun() gets the last run dict
+            last_run: dict[str, Any] = demisto.getLastRun()  # getLastRun() gets the last run dict
 
             next_run, incidents = fetch_incidents(
                 client=client,
