@@ -39,27 +39,28 @@ DEVICES_DEFAULT_MAX_FETCH = 10000
 EVENT_TYPES = {
     "Alerts": EVENT_TYPE(
         unique_id_key="alertId",
-        aql_query=f"in:{EVENT_TYPE_ALERTS}",
+        aql_query=f"in:{EVENT_TYPE_ALERTS}",  # noqa: E231
         type=EVENT_TYPE_ALERTS,
         order_by="time",
         dataset_name=EVENT_TYPE_ALERTS,
     ),
     "Activities": EVENT_TYPE(
         unique_id_key="activityUUID",
-        aql_query=f"in:{EVENT_TYPE_ACTIVITIES}",
+        aql_query=f"in:{EVENT_TYPE_ACTIVITIES}",  # noqa: E231
         type=EVENT_TYPE_ACTIVITIES,
         order_by="time",
         dataset_name="activities",
     ),
     "Devices": EVENT_TYPE(
         unique_id_key="id",
-        aql_query=f"in:{EVENT_TYPE_DEVICES}",
+        aql_query=f"in:{EVENT_TYPE_DEVICES}",  # noqa: E231
         type=EVENT_TYPE_DEVICES,
         order_by="lastSeen",
         dataset_name=EVENT_TYPE_DEVICES,
     ),
 }
 DEVICES_LAST_FETCH = "devices_last_fetch_time"
+API_TIMEOUT = BaseClient.REQUESTS_TIMEOUT * 3
 
 """ CLIENT CLASS """
 
@@ -83,12 +84,16 @@ class Client(BaseClient):
 
     def perform_fetch(self, params):
         try:
-            raw_response = self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers)
+            raw_response = self._http_request(
+                url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+            )
         except Exception as e:
             if "Invalid access token" in str(e):
                 demisto.debug("debug-log: Invalid access token")
                 self.update_access_token()
-                raw_response = self._http_request(url_suffix="/search/", method="GET", params=params, headers=self._headers)
+                raw_response = self._http_request(
+                    url_suffix="/search/", method="GET", params=params, headers=self._headers, timeout=API_TIMEOUT
+                )
             else:
                 demisto.debug(f"debug-log: Error occurred while fetching events: {e}")
                 raise e
@@ -104,7 +109,7 @@ class Client(BaseClient):
         Returns:
             list[dict]: List of events objects represented as dictionaries.
         """
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "true", "orderBy": order_by}
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "orderBy": order_by}
         raw_response = self.perform_fetch(params)
         return raw_response.get("data", {}).get("results", [])
 
@@ -129,11 +134,11 @@ class Client(BaseClient):
         Returns:
             (list[dict], int): A tuple with the List of events objects represented as dictionaries and the next event pointer.
         """
-        aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"
+        aql_query = f"{aql_query} after:{after.strftime(DATE_FORMAT)}"  # noqa: E231
         if before:
-            aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"
+            aql_query = f"{aql_query} before:{before.strftime(DATE_FORMAT)}"  # noqa: E231
             demisto.info(f"info-log: Fetching events until {before}.")
-        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "true", "length": max_fetch, "orderBy": order_by}
+        params: dict[str, Any] = {"aql": aql_query, "includeTotal": "false", "length": max_fetch, "orderBy": order_by}
         if from_param:
             params["from"] = from_param
         raw_response = self.perform_fetch(params)
@@ -153,7 +158,7 @@ class Client(BaseClient):
                 results.extend(current_results)
                 demisto.info(f"info-log: fetched {len(current_results)} results, total is {len(results)}, and {next=}.")
         except Exception as e:
-            demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")
+            demisto.info(f"info-log: caught an exception during pagination:\n{str(e)}")  # noqa: E231
 
         return results, next
 
@@ -168,7 +173,7 @@ class Client(BaseClient):
         """
         try:
             headers = {"Authorization": f"{access_token}", "Accept": "application/json"}
-            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "true", "length": 1, "orderBy": "time"}
+            params = {"aql": 'in:alerts timeFrame:"1 seconds"', "includeTotal": "false", "length": 1, "orderBy": "time"}
             self._http_request(url_suffix="/search/", method="GET", params=params, headers=headers)
         except Exception:
             return False
@@ -477,7 +482,7 @@ def fetch_events(
         if events and events.get(EVENT_TYPE_ALERTS):
             for alert in events[EVENT_TYPE_ALERTS]:
                 alert_id = alert.get("alertId")
-                aql_with_alerts_id = f"alert:(alertId:({alert_id}))"
+                aql_with_alerts_id = f"alert:(alertId:({alert_id}))"  # noqa: E231
                 fetch_events_for_specific_alert_ids(client, alert, aql_with_alerts_id)
         event_types_to_fetch.remove("Alerts")
     for event_type in event_types_to_fetch:
@@ -677,14 +682,15 @@ def main():  # pragma: no cover
                 handle_fetched_events(events, next_run)
 
             if should_return_results:
-                return_results(events_to_command_results(
-                    events=events, event_type=event_type.dataset_name))  # pylint: disable=E0606
+                return_results(
+                    events_to_command_results(events=events, event_type=event_type.dataset_name)  # pylint: disable=E0606
+                )
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
 
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")  # noqa: E231
 
 
 """ ENTRY POINT """
