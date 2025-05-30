@@ -4,12 +4,10 @@ import uuid
 import pytest
 
 from CommonServerPython import *
-from ReliaquestTakedown import \
-    Client
-
 from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import (
     create_comment, list_brands, create_takedown,
     download_attachment, test_module, upload_attachment, get_modified_remote_data_command)
+from ReliaquestTakedown import Client
 
 UUID_REGEX = r'[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 TEST_URL = "https://test.com/api"
@@ -132,22 +130,19 @@ def create_takedown_post(kwags):
 
 
 class ClientMock:
-    def __init__(self, num_of_events: int):
-        self.num_of_events = num_of_events
-
-    def http_request_side_effect(self, method, url_suffix, params, **kwargs):
+    def http_request_side_effect(self, method, url_suffix, params=None, **kwargs):
         if url_suffix == '/v1/test':
             response = test_response()
-        elif re.match(r"/v1/takedowns/attachments/{}/download".format(UUID_REGEX), url_suffix) and method == 'GET':
+        elif re.match(f"/v1/takedowns/attachments/{UUID_REGEX}/download", url_suffix) and method == 'GET':
             return download_attachment_get()
-        elif re.match(r"/v1/takedowns/{}/attachments".format(UUID_REGEX), url_suffix) and method == 'POST':
+        elif re.match(f"/v1/takedowns/{UUID_REGEX}/attachments", url_suffix) and method == 'POST':
             response = {}
         elif url_suffix == '/api/search/find':
             response = create_comments_post()
-        elif re.match(r'/v1/takedowns/{}/comments'.format(UUID_REGEX), url_suffix) and method == 'GET':
+        elif re.match(f'/v1/takedowns/{UUID_REGEX}/comments', url_suffix) and method == 'GET':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_get(takedownid)
-        elif re.match(r'/v1/takedowns/{}/comments'.format(UUID_REGEX), url_suffix) and method == 'POST':
+        elif re.match(f'/v1/takedowns/{UUID_REGEX}/comments', url_suffix) and method == 'POST':
             takedownid = url_suffix.split('/')[3]
             response = create_comments_post(takedownid)
 
@@ -245,7 +240,7 @@ def test_fetch_takedown_command(mocker, client: Client):
      - make sure that all events are enriched and fetched (5000)
     """
     from ReliaquestTakedown import fetch_takedowns
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -258,7 +253,7 @@ def test_fetch_takedown_command(mocker, client: Client):
 
 
 def test_create_comment_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -271,7 +266,7 @@ def test_create_comment_command(mocker, client: Client):
 
 
 def test_list_brands_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -282,7 +277,7 @@ def test_list_brands_command(mocker, client: Client):
 
 
 def test_create_takedown_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -294,7 +289,7 @@ def test_create_takedown_command(mocker, client: Client):
 
 
 def test_download_attachment_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -307,7 +302,7 @@ def test_download_attachment_command(mocker, client: Client):
 
 
 def test_upload_download_attachment_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -317,7 +312,7 @@ def test_upload_download_attachment_command(mocker, client: Client):
 
 
 def test_test_module_command(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -333,7 +328,7 @@ def load_test_data(json_path):
 
 
 def test_get_modified_remote_data(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
@@ -349,7 +344,7 @@ def test_get_modified_remote_data(mocker, client: Client):
 
 
 def test_create_takedown_command_ratelimit(mocker, client: Client):
-    http_mocker = ClientMock(100)
+    http_mocker = ClientMock()
     mocker.patch.object(
         client,
         "_http_request",
