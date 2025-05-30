@@ -3,7 +3,7 @@
         {
             "id": " dummy_id_123",
             "type": "ipv4",
-            "value": "0.0.0.1",
+            "value": "0.0.0.0",
             "href": "https://dummy.href.com",
             "entity_type": "indicator",
             "score": {
