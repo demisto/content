@@ -1,0 +1,242 @@
+{
+    "total": 11,
+    "items": [
+        {
+            "id": "exampleID12234567890",
+            "brand": "Example 1 inc.",
+            "company": "Example 2, Inc",
+            "images": null,
+            "violation": {
+                "id": "exampleID12234567890",
+                "uri": "//example.com",
+                "approveStatus": 1,
+                "approveState": "not_required",
+                "workerCodes": [
+                    "domain"
+                ],
+                "scores": [
+                    {
+                        "score": 100,
+                        "type": "domain",
+                        "version": 7
+                    },
+                    {
+                        "score": 40,
+                        "type": "risk",
+                        "version": 7
+                    },
+                    {
+                        "score": 0,
+                        "type": "position",
+                        "version": 0
+                    }
+                ],
+                "status": "no_content",
+                "detected": "2024-11-17T12:07:16+0000",
+                "source": 1,
+                "violationType": "scam",
+                "violationSubtype": "no_violation",
+                "title": "",
+                "description": "",
+                "stages": [
+                    {
+                        "type": 4,
+                        "datetime": "2024-11-17T12:52:59+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 5,
+                        "datetime": "2024-11-17T12:44:03+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 7,
+                        "datetime": "2024-11-17T19:52:49+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 11,
+                        "datetime": "2024-11-17T12:52:59+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 12,
+                        "datetime": "2024-11-17T12:52:59+0000",
+                        "times": 0
+                    }
+                ],
+                "tags": null,
+                "firstDetected": null,
+                "firstActive": null,
+                "firstSolved": null,
+                "seqUpdate": 1731873171526824,
+                "dates": {
+                    "createdDate": "2024-11-17T12:07:16+0000",
+                    "foundDate": "2024-11-17T12:07:16+0000",
+                    "detectedDate": null,
+                    "approvedDate": null,
+                    "currentStatusDate": "2024-11-17T12:52:59+0000"
+                }
+            },
+            "link": "https://drp.group-ib.com/p/violation/?id=exampleID"
+        },
+        {
+            "id": "exampleID12234567890",
+            "brand": "Example 1 inc.",
+            "company": "Example 2, Inc",
+            "images": [
+                "c38defaaf38b863c258e98e5db70ea6628645fcde096c86f5e47ec7af3cffde8"
+            ],
+            "violation": {
+                "id": "exampleID12234567890",
+                "uri": "https://www.example.com/example/exam-p-le/example-ocean-example.html",
+                "approveStatus": 1,
+                "approveState": "not_required",
+                "workerCodes": [
+                    "exampleen"
+                ],
+                "scores": [
+                    {
+                        "score": 80,
+                        "type": "domain",
+                        "version": 7
+                    },
+                    {
+                        "score": 32,
+                        "type": "risk",
+                        "version": 7
+                    },
+                    {
+                        "score": 0,
+                        "type": "position",
+                        "version": 0
+                    }
+                ],
+                "status": "legal",
+                "detected": "2024-11-15T14:43:08+0000",
+                "source": 1,
+                "violationType": "scam",
+                "violationSubtype": "no_violation",
+                "title": "",
+                "description": "",
+                "stages": [
+                    {
+                        "type": 4,
+                        "datetime": "2024-11-15T15:37:58+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 5,
+                        "datetime": "2024-11-15T14:43:08+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 7,
+                        "datetime": "2024-11-16T08:23:34+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 11,
+                        "datetime": "2024-11-15T14:43:08+0000",
+                        "times": 0
+                    }
+                ],
+                "tags": null,
+                "firstDetected": null,
+                "firstActive": null,
+                "firstSolved": null,
+                "seqUpdate": 1731745416570604,
+                "dates": {
+                    "createdDate": "2024-11-15T14:43:08+0000",
+                    "foundDate": "2024-11-15T14:43:08+0000",
+                    "detectedDate": null,
+                    "approvedDate": null,
+                    "currentStatusDate": "2024-11-15T14:43:08+0000"
+                }
+            },
+            "link": "https://drp.group-ib.com/p/violation/?id=exampleID"
+        },
+        {
+            "id": "exampleID12234567890",
+            "brand": "Example 1 inc.",
+            "company": "Example 2, Inc",
+            "images": [
+                "d8c6bb176cfd743238fbec7cddc08a6d856316d5e828a0438881f563177254d0"
+            ],
+            "violation": {
+                "id": "exampleID12234567890",
+                "uri": "https://www.sportexample.com/catalog/example/example/t-shirts/",
+                "approveStatus": 1,
+                "approveState": "not_required",
+                "workerCodes": [
+                    "exampleen"
+                ],
+                "scores": [
+                    {
+                        "score": 65,
+                        "type": "domain",
+                        "version": 7
+                    },
+                    {
+                        "score": 26,
+                        "type": "risk",
+                        "version": 7
+                    },
+                    {
+                        "score": 0,
+                        "type": "position",
+                        "version": 0
+                    }
+                ],
+                "status": "legal",
+                "detected": "2024-11-11T09:53:43+0000",
+                "source": 1,
+                "violationType": "scam",
+                "violationSubtype": "no_violation",
+                "title": "",
+                "description": "",
+                "stages": [
+                    {
+                        "type": 4,
+                        "datetime": "2024-11-12T05:14:36+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 5,
+                        "datetime": "2024-11-11T09:53:43+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 7,
+                        "datetime": "2024-11-17T21:16:41+0000",
+                        "times": 0
+                    },
+                    {
+                        "type": 11,
+                        "datetime": "2024-11-11T09:53:43+0000",
+                        "times": 0
+                    }
+                ],
+                "tags": [
+                    {
+                        "type": "_notype",
+                        "id": "j4FZJpMBIFN29UPG8ZKl"
+                    }
+                ],
+                "firstDetected": null,
+                "firstActive": null,
+                "firstSolved": null,
+                "seqUpdate": 1731878205143257,
+                "dates": {
+                    "createdDate": "2024-11-11T09:53:43+0000",
+                    "foundDate": "2024-11-11T09:53:43+0000",
+                    "detectedDate": null,
+                    "approvedDate": null,
+                    "currentStatusDate": "2024-11-11T09:53:43+0000"
+                }
+            },
+            "link": "https://drp.group-ib.com/p/violation/?id=exampleID"
+        }
+    ],
+    "seqUpdate": 1731878205143257
+}
