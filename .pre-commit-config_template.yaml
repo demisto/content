@@ -64,15 +64,6 @@ repos:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
       - "fs-extra@11.3.0"
     skip: true
-  - id: mdx-validation
-    name: Validate README.md files with MDX
-    entry: node .hooks/validate-mdx.js
-    language: node
-    files: "^(.*/)?README\\.md$"
-    additional_dependencies:
-      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
-      - "fs-extra@11.3.0"
-    skip: true
   - id: ruff-version
     name: ruff-version
     description: ruff version
@@ -81,7 +72,7 @@ repos:
     - --version
     require_serial: true
     language: system
-    skip:nightly: true
+    skip:nightly: false
     skip:docker_autoupdate: true
   - id: pylint-in-docker
     name: pylint-in-docker
@@ -103,6 +94,7 @@ repos:
       arg_name: --rcfile
       file_name: .pylintrc
     skip:commit: true
+    skip:nightly: true
     pass_docker_extra_args:ci: --rm=false
     pass_docker_extra_args:nightly: --rm=false
 
