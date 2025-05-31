@@ -70,6 +70,7 @@ repos:
     entry: demisto-sdk xsoar-lint
     files: ^Packs\/.*\.py$
     exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
+    language: python
   - id: ruff-version
     name: ruff-version
     description: ruff version
