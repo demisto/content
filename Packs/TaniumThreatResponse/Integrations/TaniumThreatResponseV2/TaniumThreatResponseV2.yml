@@ -1930,7 +1930,7 @@ script:
     - contextPath: Tanium.ResponseActions.eid
       description: ''
       type: String
-  dockerimage: demisto/lxml:1.0.0.117194
+  dockerimage: demisto/lxml:1.0.0.3547829
   isfetch: true
   script: ''
   subtype: python3
