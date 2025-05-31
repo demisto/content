@@ -46,7 +46,7 @@ repos:
     parallel: false
     min_py_version: '3.7'
     args:
-    - --version
+    - --fix
     args:nightly:
     - --config=nightly_ruff.toml
     args:ci:
@@ -64,19 +64,25 @@ repos:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
       - "fs-extra@11.3.0"
     skip: true
-
-  - id: xsoar-lint
-    name: xsoar-lint
-    description: Run xsoar-linter on the code in content packs
-    entry: demisto-sdk xsoar-lint
-    files: ^Packs\/.*\.py$
-    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
+  - id: mdx-validation
+    name: Validate README.md files with MDX
+    entry: node .hooks/validate-mdx.js
+    language: node
+    files: "^(.*/)?README\\.md$"
+    additional_dependencies:
+      - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
+      - "fs-extra@11.3.0"
+    skip: true
+  - id: ruff-version
+    name: ruff-version
+    description: ruff version
+    entry: ruff
+    args:
+    - --version
     require_serial: true
     language: system
-    # skip nightly since we don't care about warnings in nightly
     skip:nightly: true
     skip:docker_autoupdate: true
-
   - id: pylint-in-docker
     name: pylint-in-docker
     description: Run pylint on the code in content packs
