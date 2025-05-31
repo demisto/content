@@ -39,7 +39,6 @@ repos:
   hooks:
   - id: ruff-format
     min_py_version: '3.7'
-    skip:nightly: false
     skip:docker_autoupdate: true
     parallel: false
   - id: ruff
@@ -79,7 +78,6 @@ repos:
     - --version
     require_serial: true
     language: system
-    skip:nightly: false
     skip:docker_autoupdate: true
   - id: pylint-in-docker
     name: pylint-in-docker
