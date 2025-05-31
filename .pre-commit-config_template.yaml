@@ -39,7 +39,7 @@ repos:
   hooks:
   - id: ruff-format
     min_py_version: '3.7'
-    skip:nightly: true
+    skip:nightly: false
     skip:docker_autoupdate: true
     parallel: false
   - id: ruff
@@ -64,6 +64,12 @@ repos:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
       - "fs-extra@11.3.0"
     skip: true
+  - id: xsoar-lint
+    name: xsoar-lint
+    description: Run xsoar-linter on the code in content packs
+    entry: demisto-sdk xsoar-lint
+    files: ^Packs\/.*\.py$
+    exclude: _test\.py|\.vulture_whitelist\.py|test_data|tests_data|TestData
   - id: ruff-version
     name: ruff-version
     description: ruff version
