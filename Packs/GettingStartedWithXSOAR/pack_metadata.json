@@ -23,9 +23,7 @@
         "Case Management"
     ],
     "marketplaces": [
-        "xsoar",
-        "marketplacev2",
-        "platform"
+        "xsoar"
     ],
     "devEmail": [
         "joecosgrove@paloaltonetworks.com"
@@ -139,11 +137,5 @@
         "CoreAlertFields",
         "CommonTypes",
         "CoreAlertFields"
-    ],
-    "supportedModules": [
-        "X1",
-        "X3",
-        "X5",
-        "ENT_PLUS"
     ]
 }
