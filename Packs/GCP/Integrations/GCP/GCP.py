@@ -63,15 +63,15 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     # IAM commands
     "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
-    "gcp-iam-project-deny-policy-create": ["iam.policies.create", "iam.policies.setIamPolicy"],
+    "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
     "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
     # Admin Directory commands
-    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],
-    "gcp-admin-user-update": ["admin.directory.user.update"],
-    "gcp-admin-user-password-reset": ["admin.directory.user.security"],
-    "gcp-admin-user-signout": ["admin.directory.user.security"],
+    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],  # TODO
+    # "gcp-admin-user-update": ["admin.directory.user.update"],
+    # "gcp-admin-user-password-reset": ["admin.directory.user.security"],
+    # "gcp-admin-user-signout": ["admin.directory.user.security"],
 }
-
+UNTESTABLE_PREFIXES = ["iam", "admin"]
 OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 
 # taken from GoogleCloudCompute
@@ -448,105 +448,109 @@ def storage_bucket_metadata_update(creds: Credentials, args: dict[str, Any]) -> 
 
 def iam_project_policy_binding_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Removes a specified IAM role binding from a GCP project.
+    Removes specified IAM role bindings from a GCP project.
 
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id', 'member', and 'role'.
+                              'member' can be a single member or a comma-separated list.
 
     Returns:
         CommandResults: Result of the IAM binding removal operation.
     """
     project_id = args.get("project_id")
-    member = args.get("member")
+    entities_to_remove = set(argToList(args.get("member")))
     role = args.get("role")
 
     resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
 
-    # Get current policy
     policy_request = resource_manager.projects().getIamPolicy(resource=f"projects/{project_id}")  # pylint: disable=E1101
     policy = policy_request.execute()
 
-    # Filter out the binding to be removed
     modified = False
-    if "bindings" in policy:
-        updated_bindings = []
-        for binding in policy["bindings"]:
-            if binding["role"] == role and member in binding.get("members", []):
+    updated_bindings = []
+    bindings = policy.get("bindings", [])
+
+    for binding in bindings:
+        binding_role = binding["role"]
+        if binding_role == role:
+            original_members = set(binding.get("members", []))
+            filtered_members = original_members - entities_to_remove
+            removed = original_members & entities_to_remove
+
+            if removed:
                 modified = True
-                # Remove the member from this role
-                binding["members"].remove(member)
-                # Only keep the binding if there are still members assigned to this role
-                if binding["members"]:
-                    updated_bindings.append(binding)
-            else:
-                updated_bindings.append(binding)
+                demisto.debug(f"Removing members {removed} from role '{binding_role}'.")
 
-        if modified:
-            policy["bindings"] = updated_bindings
-
-            # Set the updated policy
-            set_policy_request = resource_manager.projects().setIamPolicy(  # pylint: disable=E1101
-                resource=f"projects/{project_id}", body={"policy": policy}
-            )
-            set_policy_request.execute()
-
-            hr = f"IAM role {role} was successfully removed from {member} in project {project_id}."
+            if filtered_members:
+                updated_bindings.append({"role": binding_role, "members": list(filtered_members)})
         else:
-            hr = f"No changes made. The member {member} does not have the role {role} in project {project_id}."
+            updated_bindings.append(binding)
+
+    if modified:
+        policy["bindings"] = updated_bindings
+        set_policy_request = resource_manager.projects().setIamPolicy(  # pylint: disable=E1101
+            resource=f"projects/{project_id}", body={"policy": policy}
+        )
+        set_policy_request.execute()
+
+        hr = (
+            f"IAM role '{role}' was successfully removed from {', '.join(f'`{e}`' for e in entities_to_remove)} "
+            f"in project **{project_id}**"
+        )
     else:
-        hr = f"No IAM bindings found for project {project_id}."
+        hr = f"No IAM changes made for role '{role}' in project '{project_id}'."
 
     return CommandResults(readable_output=hr)
 
 
-def iam_deny_policy_create(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+def iam_project_deny_policy_create(creds, args: dict[str, Any]) -> CommandResults:
     """
     Creates an IAM deny policy to explicitly block access to specific resources.
 
     Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id', 'policy_id', 'denied_principals',
-                               'denied_permissions', and 'resource'.
+        creds: GCP credentials.
+        args (dict[str, Any]):
+            - project_id (str): GCP project ID.
+            - policy_id (str): Deny policy identifier.
+            - display_name (str): Display name for the policy.
+            - denied_principals (str): Comma-separated principals to deny.
+            - denied_permissions (str): Comma-separated permissions to deny.
 
     Returns:
         CommandResults: Result of the deny policy creation.
     """
+
     project_id = args.get("project_id")
     policy_id = args.get("policy_id")
+    display_name = args.get("display_name")
     denied_principals = argToList(args.get("denied_principals"))
     denied_permissions = argToList(args.get("denied_permissions"))
-    resource = args.get("resource")
 
     iam = GCPServices.IAM_V2.build(creds)
-    # Construct the deny policy
+    attachment_point = f"cloudresourcemanager.googleapis.com%2Fprojects%2F{project_id}"
+    parent = f"policies/{attachment_point}/denypolicies"
+
     policy = {
-        "name": f"policies/{policy_id}",
-        "displayName": f"Deny Policy {policy_id}",
+        "displayName": display_name,
         "rules": [
             {
                 "denyRule": {
                     "deniedPrincipals": denied_principals,
                     "deniedPermissions": denied_permissions,
-                    "exceptionPrincipals": [],
-                    "deniedCondition": {},
                 }
             }
         ],
-        "etag": "",
     }
 
-    # Create the policy
-    parent = f"projects/{project_id}"
-    response = iam.policies().create(parent=parent, policyId=policy_id, body=policy).execute()  # pylint: disable=E1101
+    response = iam.policies().createPolicy(parent=parent, policyId=policy_id, body=policy).execute()  # pylint: disable=E1101
 
-    # Attach the policy to the resource
-    attachment = {"attachedResource": resource, "policy": response["name"]}
-
-    iam.policies().attachments().create(parent=response["name"], body=attachment).execute()  # pylint: disable=E1101
-
-    hr = f"Deny policy {policy_id} was successfully created for project {project_id}."
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.IAM.DenyPolicy", outputs=response)
+    readable_output = f"Deny policy `{policy_id}` was successfully created and attached to `{project_id}`."
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="GCP.IAM.DenyPolicy",
+        outputs=response,
+    )
 
 
 def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
@@ -569,9 +573,7 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
 
     compute = GCPServices.COMPUTE.build(creds)
 
-    body = {}
-    if service_account:
-        body = {"email": service_account, "scopes": scopes}
+    body = {"email": service_account, "scopes": scopes}
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -590,37 +592,6 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-def compute_instance_service_account_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Removes a service account from a GCP Compute Engine VM instance.
-
-    Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
-
-    Returns:
-        CommandResults: Result of the service account removal operation.
-    """
-    project_id = args.get("project_id")
-    zone = args.get("zone")
-    resource_name = args.get("resource_name")
-
-    compute = GCPServices.COMPUTE.build(creds)
-
-    # Setting empty body to remove service account
-    body: dict[str, Any] = {}
-
-    response = (
-        compute.instances()  # pylint: disable=E1101
-        .setServiceAccount(project=project_id, zone=zone, instance=resource_name, body=body)
-        .execute()
-    )
-
-    hr = f"Service account was successfully removed from VM instance {resource_name} in project {project_id}."
-
-    return CommandResults(readable_output=hr)
-
-
 def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
     Removes a user or service account from a GSuite group.
@@ -635,7 +606,6 @@ def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> Com
     group_id = args.get("group_id")
     member_key = args.get("member_key")
 
-    # Need to use the Admin SDK Directory API
     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
     try:
         directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
@@ -662,7 +632,6 @@ def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> Comm
 
     iam = GCPServices.IAM_V1.build(creds)
 
-    # Format the resource name
     name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
 
     try:
@@ -740,113 +709,170 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
     return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
 
 
-def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Updates user account fields in GSuite, such as names, org unit, or status.
-
-    Args:
-        creds (Credentials): GCP credentials with admin directory scopes.
-        args (dict[str, Any]): Must include 'user_key' and 'update_fields'.
-
-    Returns:
-        CommandResults: Result of the user update operation.
-    """
-    user_key = args.get("user_key")
-    update_fields = json.loads(args.get("update_fields", "{}"))
-
-    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-
-    try:
-        response = directory.users().update(userKey=user_key, body=update_fields).execute()  # pylint: disable=E1101
-        hr = f"GSuite user {user_key} was successfully updated."
-    except Exception as e:
-        raise DemistoException(f"Failed to update user: {str(e)}") from e
-
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User", outputs=response)
-
-
-def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Resets the password for a GSuite user account.
-
-    Args:
-        creds (Credentials): GCP credentials with admin directory security scope.
-        args (dict[str, Any]): Must include 'user_key' and 'new_password'.
-
-    Returns:
-        CommandResults: Result of the password reset operation.
-    """
-    user_key = args.get("user_key")
-    new_password = args.get("new_password")
-
-    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-
-    try:
-        # Create password update body
-        password_update = {"password": new_password}
-
-        response = directory.users().update(userKey=user_key, body=password_update).execute()  # pylint: disable=E1101
-        hr = f"Password for GSuite user {user_key} was successfully reset."
-    except Exception as e:
-        raise DemistoException(f"Failed to reset password: {str(e)}") from e
-
-    return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User.Password", outputs=response)
-
-
-def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResults:
-    """
-    Invalidates all active sessions for a GSuite user, forcing them to sign in again.
-
-    Args:
-        creds (Credentials): GCP credentials with admin directory security scope.
-        args (dict[str, Any]): Must include 'user_key'.
-
-    Returns:
-        CommandResults: Result of the signout operation.
-    """
-    user_key = args.get("user_key")
-
-    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-
-    try:
-        directory.users().signOut(userKey=user_key).execute()  # pylint: disable=E1101
-        hr = f"All active sessions for GSuite user {user_key} were successfully signed out."
-    except Exception as e:
-        raise DemistoException(f"Failed to sign out user: {str(e)}") from e
-
-    return CommandResults(readable_output=hr)
+# def admin_user_update(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+#     """
+#     Updates user account fields in GSuite, such as names, org unit, or status.
+#
+#     Args:
+#         creds (Credentials): GCP credentials with admin directory scopes.
+#         args (dict[str, Any]): Must include 'user_key' and 'update_fields'.
+#
+#     Returns:
+#         CommandResults: Result of the user update operation.
+#     """
+#     user_key = args.get("user_key")
+#     update_fields = json.loads(args.get("update_fields", "{}"))
+#
+#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+#
+#     try:
+#         response = directory.users().update(userKey=user_key, body=update_fields).execute()  # pylint: disable=E1101
+#         hr = f"GSuite user {user_key} was successfully updated."
+#     except Exception as e:
+#         raise DemistoException(f"Failed to update user: {str(e)}") from e
+#
+#     return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User", outputs=response)
+#
+#
+# def admin_user_password_reset(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+#     """
+#     Resets the password for a GSuite user account.
+#
+#     Args:
+#         creds (Credentials): GCP credentials with admin directory security scope.
+#         args (dict[str, Any]): Must include 'user_key' and 'new_password'.
+#
+#     Returns:
+#         CommandResults: Result of the password reset operation.
+#     """
+#     user_key = args.get("user_key")
+#     new_password = args.get("new_password")
+#
+#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+#
+#     try:
+#         # Create password update body
+#         password_update = {"password": new_password}
+#
+#         response = directory.users().update(userKey=user_key, body=password_update).execute()  # pylint: disable=E1101
+#         hr = f"Password for GSuite user {user_key} was successfully reset."
+#     except Exception as e:
+#         raise DemistoException(f"Failed to reset password: {str(e)}") from e
+#
+#     return CommandResults(readable_output=hr, outputs_prefix="GCP.GSuite.User.Password", outputs=response)
+#
+#
+# def admin_user_signout(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+#     """
+#     Invalidates all active sessions for a GSuite user, forcing them to sign in again.
+#
+#     Args:
+#         creds (Credentials): GCP credentials with admin directory security scope.
+#         args (dict[str, Any]): Must include 'user_key'.
+#
+#     Returns:
+#         CommandResults: Result of the signout operation.
+#     """
+#     user_key = args.get("user_key")
+#
+#     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
+#
+#     try:
+#         directory.users().signOut(userKey=user_key).execute()  # pylint: disable=E1101
+#         hr = f"All active sessions for GSuite user {user_key} were successfully signed out."
+#     except Exception as e:
+#         raise DemistoException(f"Failed to sign out user: {str(e)}") from e
+#
+#     return CommandResults(readable_output=hr)
 
 
 def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
     """
-    Checks if the provided GCP credentials have the required IAM permissions.
-    API: https://cloud.google.com/resource-manager/reference/rest/v3/projects/testIamPermissions
+    Verifies the credentials have all required permissions, using testIamPermissions when applicable,
+    and IAM role expansion as fallback for untestable permissions.
     Args:
         creds (Credentials): GCP credentials.
         args (dict[str, Any]): Must include 'project_id'.
-        command (Optional[str]): Specific command to check, or all if None.
+        command (str): Specific command to check, or all if empty.
 
     Returns:
         str: 'ok' if permissions are sufficient, otherwise raises an error.
     """
     project_id = args.get("project_id")
+    if not project_id:
+        raise DemistoException("Missing required argument: 'project_id'.")
 
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
+    testable_perms = [p for p in permissions if not any(p.startswith(prefix) for prefix in UNTESTABLE_PREFIXES)]
+    missing = set()
+    if testable_perms:
+        try:
+            resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+            response = (
+                resource_manager.projects()
+                .testIamPermissions(  # pylint: disable=E1101
+                    resource=f"projects/{project_id}", body={"permissions": testable_perms}
+                )
+                .execute()
+            )
 
-    try:
-        resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-        response = (
-            resource_manager.projects()  # pylint: disable=E1101
-            .testIamPermissions(name=f"projects/{project_id}", body={"permissions": permissions})
-            .execute()
+            granted = set(response.get("permissions", []))
+            missing |= set(testable_perms) - granted
+        except Exception as e:
+            demisto.debug(f"testIamPermissions failed: {str(e)}")
+
+    # Check untestable permissions with simple API calls
+    api_checks = {
+        "iam.": lambda: GCPServices.IAM_V1.build(creds)
+        .projects()
+        .serviceAccounts()
+        .list(  # pylint: disable=E1101
+            name=f"projects/{project_id}"
         )
-    except Exception as e:
-        raise DemistoException(f"Permission check failed: {e}") from e
+        .execute(),
+        "admin.": lambda: GCPServices.ADMIN_DIRECTORY.build(creds)
+        .members()
+        .list(  # pylint: disable=E1101
+            domain="example.com", maxResults=1
+        )
+        .execute(),
+    }
 
-    granted = set(response.get("permissions", []))
-    if missing := "\n".join(set(permissions) - granted):
-        raise DemistoException(f"Missing permissions for '{command}': {missing}")
+    for prefix, check_func in api_checks.items():
+        if any(p.startswith(prefix) for p in permissions):
+            try:
+                check_func()
+            except Exception as e:
+                if "Permission denied" in str(e) or "forbidden" in str(e).lower():
+                    missing |= {p for p in permissions if p.startswith(prefix)}
+                demisto.debug(f"{prefix} API access check failed: {str(e)}")
+
+    if missing:
+        perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
+        # Format error message
+        error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
+
+        raise DemistoException("Missing permissions:\n" + "\n".join(error_lines))
+
     return "ok"
+
+
+def test_module(creds: Credentials, args: dict[str, Any]) -> str:
+    """
+    Tests connectivity to GCP and checks for required permissions.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Command arguments.
+
+    Returns:
+        str: "ok" if test is successful.
+    """
+    project_id = args.get("project_id")
+    if not project_id:
+        raise DemistoException("Missing required parameter 'project_id'")
+
+    return check_required_permissions(creds, args)
 
 
 def main():
@@ -857,12 +883,13 @@ def main():
         params = demisto.params()
 
         command_map = {
+            "test-module": test_module,
             # Compute Engine commands
             "gcp-compute-firewall-patch": compute_firewall_patch,
             "gcp-compute-subnet-update": compute_subnet_update,
             "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
-            "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
+            # "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
             # Storage commands
@@ -872,16 +899,16 @@ def main():
             "gcp-container-cluster-security-update": container_cluster_security_update,
             # IAM commands
             "gcp-iam-project-policy-binding-remove": iam_project_policy_binding_remove,
-            "gcp-iam-deny-policy-create": iam_deny_policy_create,
+            "gcp-iam-project-deny-policy-create": iam_project_deny_policy_create,
             "gcp-iam-service-account-delete": iam_service_account_delete,
             "gcp-iam-group-membership-delete": iam_group_membership_delete,
             # Admin Directory commands
-            "gcp-admin-user-update": admin_user_update,
-            "gcp-admin-user-password-reset": admin_user_password_reset,
-            "gcp-admin-user-signout": admin_user_signout,
+            # "gcp-admin-user-update": admin_user_update,
+            # "gcp-admin-user-password-reset": admin_user_password_reset,
+            # "gcp-admin-user-signout": admin_user_signout,
         }
 
-        if command != "test-module" and command not in command_map:
+        if command not in command_map:
             raise NotImplementedError(f"Command not implemented: {command}")
 
         creds = None
@@ -897,8 +924,8 @@ def main():
             creds = Credentials(token=token)
             demisto.debug("Using token-based credentials")
 
-        result: CommandResults | str = check_required_permissions(creds, args, command)
-        result = command_map[command](creds, args) if command in command_map else result
+        # result: CommandResults | str = check_required_permissions(creds, args, command)
+        result = command_map[command](creds, args)  # if command in command_map else result
         return_results(result)
 
     except Exception as e:

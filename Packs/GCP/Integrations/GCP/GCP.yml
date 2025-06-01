@@ -477,47 +477,51 @@ script:
     - name: member
       description: Member to remove (e.g., user:test@example.com).
       required: true
+      isArray: true
     - name: role
       description: Role to remove (e.g., roles/viewer).
       required: true
     outputs: []
 
   - name: gcp-iam-project-deny-policy-create
-    description: Creates an IAM deny policy to explicitly block access to specific resources, services, or permissions.
+    description: Creates an IAM deny policy that explicitly blocks specified principals from performing specified permissions on a GCP project.
     arguments:
-    - name: project_id
-      description: GCP project ID.
-      required: true
-    - name: policy_id
-      description: ID of the deny policy.
-      required: true
-    - name: denied_principals
-      description: List of members to deny access.
-      isArray: true
-      required: true
-    - name: denied_permissions
-      description: List of permissions to deny.
-      isArray: true
-      required: true
-    - name: resource
-      description: Full resource name (e.g., //cloudresourcemanager.googleapis.com/projects/my-project).
-      required: true
+      - name: project_id
+        description: GCP project ID.
+        required: true
+        type: string
+      - name: policy_id
+        description: Unique identifier for the deny policy (0-63 chars, starts with lowercase letter).
+        required: true
+        type: string
+      - name: display_name
+        description: Display name for the deny policy.
+        required: true
+        type: string
+      - name: denied_principals
+        description: Comma-separated list of principals to deny (e.g., principalSet://goog/public:all).
+        required: true
+        type: string
+      - name: denied_permissions
+        description: Comma-separated list of permissions to deny (e.g., cloudresourcemanager.googleapis.com/projects.delete).
+        required: true
+        type: string
     outputs:
-    - contextPath: GCP.IAM.DenyPolicy.policyId
-      description: ID of the deny policy.
-      type: string
-    - contextPath: GCP.IAM.DenyPolicy.name
-      description: Full resource name of the policy.
-      type: string
-    - contextPath: GCP.IAM.DenyPolicy.rules
-      description: Deny rules in the policy.
-      type: unknown
-    - contextPath: GCP.IAM.DenyPolicy.etag
-      description: Etag of the policy for concurrency control.
-      type: string
+      - contextPath: GCP.IAM.DenyPolicy.name
+        description: Full resource name of the created deny policy.
+        type: string
+      - contextPath: GCP.IAM.DenyPolicy.displayName
+        description: Display name of the deny policy.
+        type: string
+      - contextPath: GCP.IAM.DenyPolicy.rules
+        description: List of deny rules included in the policy.
+        type: unknown
+      - contextPath: GCP.IAM.DenyPolicy.etag
+        description: Etag for concurrency control.
+        type: string
 
   - name: gcp-compute-instance-service-account-set
-    description: Sets or removes a service account from a GCP Compute Engine VM instance.
+    description: Sets or removes a service account from a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -530,9 +534,11 @@ script:
       required: true
     - name: service_account
       description: Email of the service account.
+      required: true
     - name: scopes
-      description: OAuth scopes to assign.
+      description: OAuth scopes to assign (full URLs), e.g., `https://www.googleapis.com/auth/cloud-platform`. Empty list means no scopes.
       isArray: true
+      required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
@@ -601,24 +607,24 @@ script:
       description: Type of the resource. Always compute#operation for Operation resources.
       type: string
 
-
-  - name: gcp-compute-instance-service-account-remove
-    deprecated: false
-    description: Removes the service account associated with a GCP Compute Engine VM instance.
-    arguments:
-    - name: project_id
-      description: GCP project ID.
-      required: true
-      isArray: false
-    - name: zone
-      description: The name of the zone for this request.
-      required: true
-      isArray: false
-    - name: resource_name
-      description: Name of the VM instance.
-      required: true
-      isArray: false
-    outputs: []
+#
+#  - name: gcp-compute-instance-service-account-remove
+#    deprecated: false
+#    description: Removes the service account associated with a GCP Compute Engine VM instance.
+#    arguments:
+#    - name: project_id
+#      description: GCP project ID.
+#      required: true
+#      isArray: false
+#    - name: zone
+#      description: The name of the zone for this request.
+#      required: true
+#      isArray: false
+#    - name: resource_name
+#      description: Name of the VM instance.
+#      required: true
+#      isArray: false
+#    outputs: []
 
   - name: gcp-iam-group-membership-delete
     deprecated: false
@@ -735,7 +741,7 @@ script:
 
 
   - name: gcp-compute-instance-stop
-    description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+    description: Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
     arguments:
     - name: project_id
       description: GCP project ID.
