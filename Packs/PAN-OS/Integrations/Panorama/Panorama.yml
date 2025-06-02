@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama_mrizzo_copy
+  id: Panorama
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -228,8 +228,8 @@ configuration:
   section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS mrizzo copy
-name: Panorama_mrizzo_copy
+display: Palo Alto Networks PAN-OS
+name: Panorama
 script:
   commands:
   - arguments:
