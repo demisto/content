@@ -39,7 +39,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, 10.xx and 1
 
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
 * After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
-* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
+* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the <https://urlfiltering.paloaltonetworks.com> website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
   * [pan-os-get-url-category](#pan-os-get-url-category)
   * [pan-os-commit](#pan-os-commit)
@@ -61,16 +61,19 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
+
 * The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
 * Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
+
 * Selecting "All" will use all the log type queries in the fetch.
 * To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
 
 ##### Log Type Query
+
 * Each log type has its own query field in the instance configuration.
 * Note that the default query values has some example text in it, make sure to enter a valid query.
 * Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device.
@@ -357,7 +360,7 @@ Run any command supported in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional |
+| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api> | Optional |
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional |
 | cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional |
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional |
@@ -369,7 +372,7 @@ Run any command supported in the API.
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional |
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional |
 | period | Time period. For example, period=last-24-hrs | Optional |
-| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional |
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath>. | Optional |
 | pcap-id | PCAP ID included in the threat log. | Optional |
 | serialno | Specifies the device serial number. | Optional |
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional |
@@ -2095,7 +2098,7 @@ Returns a list of external dynamic lists.
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
 >| blabla3 | url | lolo | hourly | 6u4ju7 |
->| bad_ip_edl_demisot_web_server | ip | http://192.168.1.15/files/very_bad_ip2.txt | five-minute | ip |
+>| bad_ip_edl_demisot_web_server | ip | <http://192.168.1.15/files/very_bad_ip2.txt> | five-minute | ip |
 
 ### pan-os-get-edl
 
@@ -2151,7 +2154,7 @@ Returns information for an external dynamic list
 >
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
->| test_pb_domain_edl_DONT_DEL | url | https://test_pb_task.not.real | hourly | new description3 |
+>| test_pb_domain_edl_DONT_DEL | url | <https://test_pb_task.not.real> | hourly | new description3 |
 
 ### pan-os-create-edl
 
@@ -4078,7 +4081,7 @@ Installs the latest content update.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Content.Install.JobID | String | Job ID of the installation. |
-| Content.Install.Status | String | Installation status. |
+| Panorama.Content.Install.Status | String | Installation status. |
 
 #### Command Example
 
@@ -7692,7 +7695,7 @@ Searches and returns a reference for the given object type and name. If no name 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required |
+| object_type | The type of object to search; see <https://pandevice.readthedocs.io/en/latest/module-objects.html>. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required |
 | device_filter_string | If provided, only objects from the given device are returned. | Optional |
 | object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional |
 | parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional |

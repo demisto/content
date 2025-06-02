@@ -270,6 +270,7 @@ class ExceptionCommandType(enum.Enum):
 
 class DynamicUpdateType(enum.Enum):
     """Enum for dynamic update types to download/install"""
+
     APP_THREAT = "content"
     ANTIVIRUS = "anti-virus"
     WILDFIRE = "wildfire"
@@ -277,12 +278,13 @@ class DynamicUpdateType(enum.Enum):
 
 
 DynamicUpdateContextPrefixMap = {
-            DynamicUpdateType.APP_THREAT: "Content",
-            DynamicUpdateType.ANTIVIRUS: "AntiVirus",
-            DynamicUpdateType.WILDFIRE: "WildFire",
-            DynamicUpdateType.GP: "GP",
+    DynamicUpdateType.APP_THREAT: "Content",
+    DynamicUpdateType.ANTIVIRUS: "AntiVirus",
+    DynamicUpdateType.WILDFIRE: "WildFire",
+    DynamicUpdateType.GP: "GP",
+}
 
-        }
+
 class QueryMap(TypedDict):
     """dict[str, str]
     Contains the log types mapped to the query
@@ -6574,10 +6576,12 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     if "result" in result["response"]:
         # download has been given a jobid
         entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-        
+
         download_status_output = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
         entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown(f"{entry_context_prefix} update download:", download_status_output, ["JobID", "Status"], removeNull=True)
+        human_readable = tableToMarkdown(
+            f"{entry_context_prefix} update download:", download_status_output, ["JobID", "Status"], removeNull=True
+        )
 
         return_results(
             {
@@ -6630,10 +6634,13 @@ def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateTy
         content_download_status["Status"] = "Pending"
 
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-    
+
     entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown(
-        f"{entry_context_prefix} update download status:", content_download_status, ["JobID", "Status", "Details"], removeNull=True
+        f"{entry_context_prefix} update download status:",
+        content_download_status,
+        ["JobID", "Status", "Details"],
+        removeNull=True,
     )
 
     return_results(
@@ -6669,9 +6676,9 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     result = panorama_install_latest_dynamic_update(update_type, target)
 
     if "result" in result["response"]:
-        # installation has been given a jobid        
+        # installation has been given a jobid
         entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-        
+
         content_install_info = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
         entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_info}
         human_readable = tableToMarkdown("Result:", content_install_info, ["JobID", "Status"], removeNull=True)
@@ -6722,7 +6729,7 @@ def panorama_dynamic_update_install_status_command(update_type: DynamicUpdateTyp
 
     if result["response"]["result"]["job"]["status"] == "PEND":
         content_install_status["Status"] = "Pending"
-        
+
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
     entry_context = {f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": content_install_status}
