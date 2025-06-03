@@ -97,10 +97,12 @@ script:
       required: true
     - name: takedownId
       required: true
+    description: Uploads attachment for takedown
     name: upload-attachment
   - arguments:
     - name: attachmentId
       required: true
+    description: Downloads attachment for takedown
     name: download-attachment
   dockerimage: demisto/python3:3.10.13.74666
   runonce: false
