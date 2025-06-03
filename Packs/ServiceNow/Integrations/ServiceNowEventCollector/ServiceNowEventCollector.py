@@ -275,16 +275,37 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     return collected_events, last_run
 
 
-def login_command(client: Client, user_name:str, password:str) -> CommandResults:
+def login_command(client: Client, user_name:str, password:str) -> str:
     """
-    This command resets the integration context and re-login to create new refresh token.
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        user_name: Username.
+        password: Password.
+    Returns:
+        Demisto Outputs.
     """
-    demisto.debug("Reset integration-context")
-    set_integration_context({})
-    client.sn_client.login(username=user_name, password=password)
-    return CommandResults(
-        readable_output="Login successful."
-    )
+    # Verify that the user selected the `Use OAuth Login` checkbox:
+    if not client.sn_client.use_oauth:
+        return_error(
+            "!service-now-login command can be used only when using OAuth 2.0 authorization.\n "
+            "Please select the `Use OAuth Login` checkbox in the instance configuration before running this "
+            "command."
+        )
+
+    try:
+        client.sn_client.login(user_name, password)
+        hr = (
+            "### Logged in successfully.\n A refresh token was saved to the integration context and will be "
+            "used to generate a new access token once the current one expires."
+        )
+    except Exception as e:
+        return_error(
+            f"Failed to login. Please verify that the provided username and password are correct, and that you"
+            f" entered the correct client id and client secret in the instance configuration (see ? for"
+            f"correct usage when using OAuth).\n\n{e}"
+        )
+    return hr
 
 
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover
