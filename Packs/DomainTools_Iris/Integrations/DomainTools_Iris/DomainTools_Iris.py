@@ -1646,7 +1646,7 @@ def test_module():
     Tests the API key for a user.
     """
 
-    http_request("iris-investigate", {"domains": "demisto.com"})
+    http_request("iris-investigate", {"domains": "domaintools.com"})
 
     return "ok"
 
