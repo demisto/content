@@ -1770,7 +1770,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: ""
+      description: "Check if a forwarding IP address exists"
     nexttasks:
       '#default#':
       - "6"
