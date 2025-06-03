@@ -2,7 +2,7 @@ from CommonServerPython import *  # noqa
 from CommonServerUserPython import *  # noqa
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from google.oauth2 import service_account
+from google.oauth2 import service_account as google_service_account
 import urllib3
 from enum import Enum
 from COOCApiModule import *
@@ -573,7 +573,10 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
 
     compute = GCPServices.COMPUTE.build(creds)
 
-    body = {"email": service_account, "scopes": scopes}
+    body = {
+        "email": service_account,  # Empty string is treated as "remove"
+        "scopes": scopes if service_account else [],  # Empty list required
+    }
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -914,7 +917,7 @@ def main():
         creds = None
         if (credentials := params.get("credentials")) and (password := credentials.get("password")):
             service_account_info = json.loads(password)
-            creds = service_account.Credentials.from_service_account_info(service_account_info)
+            creds = google_service_account.Credentials.from_service_account_info(service_account_info)
             args["project_id"] = service_account_info.get("project_id")
             demisto.debug("Using service account credentials")
         if not creds:

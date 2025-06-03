@@ -534,11 +534,9 @@ script:
       required: true
     - name: service_account
       description: Email of the service account.
-      required: true
     - name: scopes
       description: OAuth scopes to assign (full URLs), e.g., `https://www.googleapis.com/auth/cloud-platform`. Empty list means no scopes.
       isArray: true
-      required: true
     outputs:
     - contextPath: GCP.Compute.Operations.id
       description: The unique identifier for the resource. This identifier is defined by the server.
