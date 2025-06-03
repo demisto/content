@@ -275,7 +275,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     return collected_events, last_run
 
 
-def login_command(client: Client, user_name: str, password: str) -> str:
+def login_command(client: Client, user_name: str, password: str):
     """
     Login the user using OAuth authorization
     Args:
@@ -295,7 +295,7 @@ def login_command(client: Client, user_name: str, password: str) -> str:
 
     try:
         client.sn_client.login(user_name, password)
-        hr = (
+        return (
             "Logged in successfully.\n A refresh token was saved to the integration context and will be "
             "used to generate a new access token once the current one expires."
         )
@@ -305,7 +305,6 @@ def login_command(client: Client, user_name: str, password: str) -> str:
             f" entered the correct client id and client secret in the instance configuration (see ? for"
             f"correct usage when using OAuth).\n\n{e}"
         )
-    return hr
 
 
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover

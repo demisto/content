@@ -997,3 +997,28 @@ def test_module_of_testing_success_and_failure(mocker):
 
     mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
     assert module_of_testing(client, [AUDIT]) == "ok"
+
+
+def test_login_command_failure(mocker):
+    """
+    Test login_command when login fails.
+
+    Given:
+        - OAuth is enabled.
+        - login raises an exception.
+    When:
+        - login_command is called.
+    Then:
+        - return_error is called with the appropriate failure message.
+    """
+    client = mocker.Mock()
+    client.sn_client.use_oauth = True
+    client.sn_client.login.side_effect = Exception("Invalid credentials")
+
+    return_error_mock = mocker.patch("ServiceNowEventCollector.return_error")
+
+    login_command(client, "user", "pass")
+
+    return_error_mock.assert_called_once()
+    assert "Failed to login" in return_error_mock.call_args[0][0]
+    assert "Invalid credentials" in return_error_mock.call_args[0][0]
