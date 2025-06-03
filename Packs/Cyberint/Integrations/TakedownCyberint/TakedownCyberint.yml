@@ -7,7 +7,7 @@ fromversion: 6.9.0
 name: Cyberint Takedowns
 display: Cyberint Takedowns
 category: Data Enrichment & Threat Intelligence
-description: Use the Cyberint Takedowns integration to control takedowns requests.
+description: Use the Cyberint Takedowns integration to manage takedowns requests.
 configuration:
 - display: Cyberint API URL
   additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
@@ -45,57 +45,72 @@ script:
   - name: cyberint-retrieve-takedowns
     description: Retrieve takedowns requests.
     arguments:
-    - name: reason
+    - name: customer_id
       type: String
-      description: Reason for the takedown request.
-    - name: url
-      type: String
-      description: URL for the takedown request.
-    - name: original_url
-      type: String
-      description: Original URL.
-    - name: customer
-      type: String
-      description: Customer.
-    - name: status
-      type: String
-      description: Status.
-    - name: brand
-      type: String
-      description: Brand.
-    - name: alert_ref_id
-      type: String
-      description: Alert reference ID.
+      description: Customer ID.
+    - name: actions
+      type: Object
+      description: "Actions taken, e.g., {\"action\": value}."
     - name: alert_id
       type: Number
       description: Alert ID.
-    - name: hosting_providers
+    - name: alert_ref_id
       type: String
-      description: Hosting providers.
-    - name: name_servers
+      description: Alert reference ID.
+    - name: blocklist_requests
+      type: Object
+      description: "Blocklist request data, including blocked and sent dates, e.g. {\"blocked_date\": blocked_date, \"sent_date\": sent_date}".
+    - name: brand
       type: String
-      description: Name servers.
-    - name: escalation_actions
-      type: String
-      description: Escalation actions.
-    - name: last_escalation_date
-      type: String
-      description: Last escalation date.
-    - name: last_status_change_date
-      type: String
-      description: Last status change date.
-    - name: last_seen_date
-      type: String
-      description: Last seen date.
+      description: Brand.
     - name: created_date
       type: String
       description: Created date.
-    - name: status_reason
+    - name: customer
       type: String
-      description: Status reason.
+      description: Customer.
+    - name: domain
+      type: String
+      description: Domain.
+    - name: email_ticket_id
+      type: String
+      description: Email ticket ID.
+    - name: hostname
+      type: String
+      description: Hostname.
     - name: id
       type: String
       description: Takedown request ID.
+    - name: last_action_date
+      type: String
+      description: Last action date.
+    - name: last_email_date
+      type: String
+      description: Last email date.
+    - name: last_monitored_date
+      type: String
+      description: Last monitored date.
+    - name: last_seen_date
+      type: String
+      description: Last seen date.
+    - name: last_submit_date
+      type: String
+      description: Last submit date.
+    - name: metadata
+      type: Object
+      description: "Metadata object, e.g., {\"date\": value}".
+    - name: reason
+      type: String
+      description: Reason for the takedown request.
+    - name: requested_by
+      type: String
+      description: Requested by.
+    - name: status
+      type: String
+      description: Status.
+    - name: url
+      type: String
+      description: URL for the takedown request.
     outputs:
     - contextPath: Cyberint.takedowns.reason
       description: Reason.
@@ -151,7 +166,13 @@ script:
   - name: cyberint-takedown-url
     description: Submit takedown request.
     arguments:
-    - name: value
+    - name: customer
+      type: String
+      description: Customer name
+    - name: reason
+      type: String
+      description: Reason for takedown request
+    - name: url
       type: String
       description: URL for takedown request
     outputs:

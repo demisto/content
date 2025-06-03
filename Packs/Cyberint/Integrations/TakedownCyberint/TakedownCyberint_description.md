@@ -1,1 +1,1 @@
-Use the Cyberint Feed integration to get indicators from the feed.
+Use the Cyberint Takedowns integration to manage takedowns requests
