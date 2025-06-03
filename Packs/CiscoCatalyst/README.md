@@ -27,13 +27,19 @@ configure terminal
 logging timestamp datetime UTC
 ```
 
-5. Exit configuration mode:
+5. Enter the following command with the IP address of BrokerVM:
+
+```
+logging host <BrokerVM IP>
+```
+
+6. Exit configuration mode:
 
 ```
 exit
 ```
 
-6. To save the configuration changes run the command:
+7. To save the configuration changes run the command:
 
 ```
 write memory
