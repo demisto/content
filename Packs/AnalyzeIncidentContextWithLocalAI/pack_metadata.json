@@ -1,0 +1,21 @@
+{
+    "name": "Analyze Incident Context with Local AI",
+    "description": "✅ Name:\nAnalyze Incident Context with Local AI\n\n✅ Purpose:\nThis content pack enhances incident management in Cortex XSOAR by providing:\n\nA custom layout for rich incident visualization\n\nA playbook to automate incident investigation using local AI models (e.g., Ollama)\n\nAn automation script to query AI for summaries, recommended actions, or answers based on incident data\n\nDesigned to integrate Ollama LLM (Local Ollama AI models) into XSOAR’s investigation process.\n\n🎨 1. Custom Layout\nProvides a detailed two-tab interface for incident visualization:\n\nTab 1: Legacy Summary\nHigh-level summary fields (ID, severity, type, status)\n\nTab 2: Incident Info\nIncludes multiple sections:\n\n📝 Case Information (name, status, severity, owner)\n\n📄 Notes (interactive widget for analyst comments)\n\n✅ Work Plan (dynamic investigation tasks view)\n\n🔗 Linked Incidents (related incidents table)\n\n👶 Child Incidents (if part of larger investigation)\n\n🧾 Evidence (uploaded files, investigation artifacts)\n\n👥 Team (assigned analysts and collaborators)\n\n🛰️ Indicators (IOCs, artifacts linked to incident)\n\n🕒 Timeline (chronological view of incident progress)\n\n🚪 Closing Information (resolution notes, final classification)\n\nAll widgets and fields are organized in cards and rows for clarity.\n\n🤖 2. Automation Script\nA Python automation named \"OllamaIncidentSummary\":\n\nTakes incident fields (description, logs, indicators)\n\nQueries Ollama AI locally (via HTTP API) for:\n\nIncident summary\n\nRecommended next steps\n\nExplanation of potential threats\n\nWrites AI response back to incident notes or custom fields\n\n🔄 3. Playbook\nName: \"Analyze Incident Context With Local AI\"\n\nSteps:\n\nGet incident details (inputs: description, logs, indicators)\n\nCall OllamaIncidentSummary automation\n\nStore AI response in incident notes & custom field\n\nUpdate incident status based on analyst input\n\nClose or escalate based on findings\n\n🛠️ Dependencies & Installation\nOllama (LLM Model API)\nOllama must be installed and running locally to serve AI queries.\n\nInstall Ollama (Linux):\n\ncurl -fsSL https://ollama.com/install.sh | sh\nStart server:\n\nollama serve\nDownload model:\n\nModel pull:\nollama pull llama3.2\nollama pull deepseek-r1\n\nConfirm API running at http://localhost:11434\n\nDocker Image Creation:\nThe content pack relies on the following Docker image to ensure that all dependencies are properly integrated using the XSOAR UI CLI:\n\n/docker_image_create name=AIDockerImage base=\"demisto/python3:3.12.8.1983910\" dependencies=\"langchain,ollama,langchain_community,langchain_ollama,deepseek\"\n\nThis command creates a Docker image based on the demisto/python3:3.12.8.1983910 base image, ensuring that all necessary dependencies like LangChain, Ollama, LangChain Community, LangChain Ollama, and DeepSeek are included and ready for use.\n\n✅ Ensure XSOAR can reach Ollama endpoint (network/firewall).\n\n🚩 Test Environment Validation\n✅ This content pack was successfully tested in the following environment:\n\nComponent\tSpecification\nGPU\tNVIDIA RTX 4080 12GB \nCPU\t24-core processor\nRAM\t64 GB\nOllama Model\tllama3.2, deepseek-r1\nAverage API Response\t~5-20 seconds (short input)\n\n\n✅ This pack allows analysts to leverage AI-powered insights during incident triage, directly inside XSOAR’s investigation interface, with tested high-performance inference on RTX 4080 + 24-core + 64GB RAM systems.",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "nikosxsoarlab",
+    "url": "",
+    "email": "",
+    "created": "2025-06-03T02:10:41Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "nikosxsoarlab"
+    ]
+}
