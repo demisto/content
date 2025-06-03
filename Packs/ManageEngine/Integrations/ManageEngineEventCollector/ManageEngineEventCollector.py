@@ -192,7 +192,7 @@ def get_events(client: Client, args: dict) -> CommandResults:
     human_readable = tableToMarkdown(
         name="ManageEngine Audit Logs",
         t=events,
-        headers=list(events[0].keys()) if events else [],
+        headers="_time",
     )
     results = CommandResults(
         readable_output=human_readable,

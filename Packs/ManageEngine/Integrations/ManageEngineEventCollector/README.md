@@ -35,7 +35,7 @@ Self Client Method - For Self Client type.
 Click Create to generate `Code`.
 
 
-## Configure ManageEngineEventCollector in Cortex
+## Configure ManageEngine in Cortex
 
 
 | **Parameter** | **Required** |
@@ -43,9 +43,7 @@ Click Create to generate `Code`.
 | Server URL | True |
 | Client ID | True |
 | Client Secret | True |
-| Password | True |
 | Code | True |
-| Password | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
 | Max number of audit events per fetch | False |
@@ -55,6 +53,15 @@ Click Create to generate `Code`.
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
+### manage-engine-test
+
+***
+Tests connectivity of the server.
+
+#### Base Command
+
+`manage-engine-test`
 
 ### manage-engine-get-events
 
@@ -76,23 +83,7 @@ Gets events from ManageEngine.
 
 #### Context Output
 
-There is no context output for this command.
-
-
-### manage-engine-test
-
-***
-Tests connectivity of the server.
-
-#### Base Command
-
-`manage-engine-test`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
+##### Context Output
+| **Path** | **Type** | **Description** |
 | --- | --- | --- |
-
-#### Context Output
-
-There is no context output for this command.
+| ManageEngine.Event._time | string | _time | 
