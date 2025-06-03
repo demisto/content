@@ -80,13 +80,13 @@ Command performs Group IB event lookup in compromised/account collection with pr
 {
     "DBotScore": [
         {
-            "Indicator": "http://some.ru",
+            "Indicator": "http://some.com",
             "Score": 3,
             "Type": "url",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 3,
             "Type": "domain",
             "Vendor": "GIB TI&A"
@@ -103,7 +103,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
             "Description": null,
             "Vendor": "GIB TI&A"
         },
-        "Name": "some.ru"
+        "Name": "some.com"
     },
     "GIBTIA": {
         "CompromisedAccount": {
@@ -120,26 +120,26 @@ Command performs Group IB event lookup in compromised/account collection with pr
                 }
             },
             "cnc": {
-                "cnc": "http://some.ru",
-                "domain": "some.ru",
+                "cnc": "http://some.com",
+                "domain": "some.com",
                 "ipv4": {
                     "asn": "AS1111",
                     "city": "Moscow",
                     "countryCode": "RU",
                     "countryName": "Russian Federation",
                     "ip": "11.11.11.11",
-                    "provider": "some.ru",
+                    "provider": "some.com",
                     "region": "Moscow"
                 },
                 "ipv6": null,
-                "url": "http://some.ru"
+                "url": "http://some.com"
             },
             "company": null,
             "companyId": -1,
             "dateCompromised": null,
             "dateDetected": "2020-02-22T01:21:03+00:00",
             "device": null,
-            "domain": "some.ru",
+            "domain": "some.com",
             "dropEmail": {
                 "domain": null,
                 "email": "",
@@ -164,7 +164,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
             "favouriteForCompanies": [],
             "hideForCompanies": [],
             "id": "253b9a136f0d574149fc43691eaf7ae27aff141a",
-            "login": "some.ru",
+            "login": "some.com",
             "malware": {
                 "id": "411ac9df6c5515922a56e30013e8b8b366eeec80",
                 "name": "PredatorStealer",
@@ -207,7 +207,7 @@ Command performs Group IB event lookup in compromised/account collection with pr
         }
     },
     "URL": {
-        "Data": "http://some.ru",
+        "Data": "http://some.com",
         "Malicious": {
             "Description": null,
             "Vendor": "GIB TI&A"
@@ -222,19 +222,19 @@ Command performs Group IB event lookup in compromised/account collection with pr
 
 >|client ipv4 ip|cnc cnc|cnc domain|cnc ipv4 asn|cnc ipv4 city|cnc ipv4 countryCode|cnc ipv4 countryName|cnc ipv4 ip|cnc ipv4 provider|cnc ipv4 region|cnc url|companyId|dateDetected|domain|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|login|malware id|malware name|malware stixGuid|oldId|password|portalLink|silentInsert|sourceType|stixGuid|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 0.0.0.0 | <<<<<http://some.ru>>>>> | some.ru | AS1111 | Moscow | RU | Russian Federation | 11.11.11.11 | some.ru | Moscow | http://some.ru | -1 | 2020-02-22T01:21:03+00:00 | some.ru | A2 | 80 | 100 | red | red | 90 | 253b9a136f0d574149fc43691eaf7ae27aff141a | some.ru | 411ac9df6c5515922a56e30013e8b8b366eeec80 | PredatorStealer | 2f7650f4-bc72-2068-d1a5-467b688975d8 | 396792583 | @some@ | <https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a> | 0 | Botnet | 8abb3aa9-e351-f837-d61a-856901c3dc9d |
+>| 0.0.0.0 | <<<<<<<<<http://some.com>>>>>>>>> | some.com | AS1111 | Moscow | RU | Russian Federation | 11.11.11.11 | some.com | Moscow | http://some.com | -1 | 2020-02-22T01:21:03+00:00 | some.com | A2 | 80 | 100 | red | red | 90 | 253b9a136f0d574149fc43691eaf7ae27aff141a | some.com | 411ac9df6c5515922a56e30013e8b8b366eeec80 | PredatorStealer | 2f7650f4-bc72-2068-d1a5-467b688975d8 | 396792583 | @some@ | <https://bt.group-ib.com/cd/accounts?searchValue=id:253b9a136f0d574149fc43691eaf7ae27aff141a> | 0 | Botnet | 8abb3aa9-e351-f837-d61a-856901c3dc9d |
 
 >### URL indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 253b9a136f0d574149fc43691eaf7ae27aff141a | red | <http://some.ru> |
+>| 253b9a136f0d574149fc43691eaf7ae27aff141a | red | <http://some.com> |
 
 >### Domain indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 253b9a136f0d574149fc43691eaf7ae27aff141a | red | some.ru |
+>| 253b9a136f0d574149fc43691eaf7ae27aff141a | red | some.com |
 
 >### IP indicator
 
@@ -366,13 +366,13 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 {
     "DBotScore": [
         {
-            "Indicator": "http://some.ru",
+            "Indicator": "http://some.com",
             "Score": 3,
             "Type": "url",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 3,
             "Type": "domain",
             "Vendor": "GIB TI&A"
@@ -395,8 +395,8 @@ Command performs Group IB event lookup in compromised/mule collection with provi
         "CompromisedMule": {
             "account": "XXXXXXXXXXXXXXXX",
             "cnc": {
-                "cnc": "http://some.ru",
-                "domain": "some.ru",
+                "cnc": "http://some.com",
+                "domain": "some.com",
                 "ipv4": {
                     "asn": null,
                     "city": null,
@@ -407,7 +407,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
                     "region": null
                 },
                 "ipv6": null,
-                "url": "http://some.ru"
+                "url": "http://some.com"
             },
             "dateAdd": "2020-02-21T13:02:00+00:00",
             "dateIncident": null,
@@ -467,7 +467,7 @@ Command performs Group IB event lookup in compromised/mule collection with provi
         }
     },
     "URL": {
-        "Data": "http://some.ru",
+        "Data": "http://some.com",
         "Malicious": {
             "Description": null,
             "Vendor": "GIB TI&A"
@@ -482,13 +482,13 @@ Command performs Group IB event lookup in compromised/mule collection with provi
 
 >|account|cnc cnc|cnc domain|cnc ipv4 ip|cnc url|dateAdd|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|hash|id|malware id|malware name|malware stixGuid|oldId|organization name|portalLink|sourceType|stixGuid|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 1111111111111111 | <<<<<http://some.ru>>>>> | some | 11.11.11.11 | http://some.ru | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://bt.group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
+>| 1111111111111111 | <<<<<<<<<http://some.com>>>>>>>>> | some | 11.11.11.11 | http://some.com | 2020-02-21T13:02:00+00:00 | A2 | 80 | 100 | red | amber | 30 | some | 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | 5a2b741f8593f88178623848573abc899f9157d4 | Anubis | 7d837524-7b01-ddc9-a357-46e7136a9852 | 392993084 | Some | <https://bt.group-ib.com/cd/mules?searchValue=id:50a3b4abbfca5dcbec9c8b3a110598f61ba90a99> | Botnet | 2da6b164-9a12-6db5-4346-2a80a4e03255 | Person |
 
 >### URL indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | <http://some.ru> |
+>| 50a3b4abbfca5dcbec9c8b3a110598f61ba90a99 | red | <http://some.com> |
 
 >### Domain indicator
 
@@ -588,7 +588,7 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
                 "ssh": 0
             },
             "name": "some",
-            "repository": "some.ru",
+            "repository": "some.com",
             "revisions": [
                 {
                     "bind": [
@@ -617,7 +617,7 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
                     "fileId": "391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7",
                     "hash": "Some",
                     "info": {
-                        "authorEmail": "some@gmail.ru",
+                        "authorEmail": "some@gmail.com",
                         "authorName": "some",
                         "dateCreated": "2020-01-03T11:17:52+00:00",
                         "timestamp": 1617794272
@@ -637,13 +637,13 @@ Command performs Group IB event lookup in osi/git_leak collection with provided 
 
 >|companyId|dateDetected|dateUpdated|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|file|fileId|id|matchesType|matchesTypeCount card|matchesTypeCount cisco|matchesTypeCount commonKeywords|matchesTypeCount domain|matchesTypeCount dsn|matchesTypeCount email|matchesTypeCount google|matchesTypeCount ip|matchesTypeCount keyword|matchesTypeCount login|matchesTypeCount metasploit|matchesTypeCount nmap|matchesTypeCount pgp|matchesTypeCount sha|matchesTypeCount slackAPI|matchesTypeCount ssh|name|repository|source|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 40,<br>1872,<br>2060,<br>2248,<br>2522,<br>2692 | 2020-03-12T01:12:00+00:00 | 2020-02-11T01:12:00+00:00 | A6 | 100 | 100 | green | amber | 30 | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/bWFpbi0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 | commonKeywords,<br>keyword | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | some | some.ru | github |
+>| 40,<br>1872,<br>2060,<br>2248,<br>2522,<br>2692 | 2020-03-12T01:12:00+00:00 | 2020-02-11T01:12:00+00:00 | A6 | 100 | 100 | green | amber | 30 | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/bWFpbi0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 | commonKeywords,<br>keyword | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 1 | 0 | 0 | 0 | 0 | 0 | 0 | 0 | some | some.com | github |
 
 >### revisions table
 
 >|bind|companyId|data|file|fileDiff|fileDiffId|fileId|hash|info|parentFileId|
 >|---|---|---|---|---|---|---|---|---|---|
->| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.ru <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
+>| {'bindBy': 'cert', 'companyId': [2692], 'data': 'cert', 'type': 'keyword'} | 2692 | commonKeywords: {"password": ["password"]} | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZS0zOTFkYjVkNWYxN2FiNmNiYmJmN2MzNWQxZjRkMDc2Y2I0YzgzMGYwOTdiMmE5ZWRkZDJkZjdiMDY1MDcwOWE3> | <https://bt.group-ib.com/api/v2/osi/git_leak/ead0d8ae9f2347789941ebacde88ad2e3b1ef691/file/cmV2aXNpb24tZmlsZURpZmYtMzkxZGI1ZDVmMTdhYjZjYmJiZjdjMzVkMWY0ZDA3NmNiNGM4MzBmMDk3YjJhOWVkZGQyZGY3YjA2NTA3MDlhNw>== | a2187ee179076a22e550e8f7fbc51840e87aba260431ab9cb2d4e0192ad4134c | 391db5d5f17ab6cbbbf7c35d1f4d076cb4c830f097b2a9eddd2df7b0650709a7 | Some | authorEmail: some@gmail.com <br>authorName: some<br>dateCreated: 2020-01-03T11:17:52+00:00<br>timestamp: 1617794272 | ead0d8ae9f2347789941ebacde88ad2e3b1ef691 |
 
 ### gibtia-get-osi-public-leak-info
 
@@ -709,10 +709,10 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
                     "datePublished": "2021-04-01T14:50:45+03:00",
                     "hash": "5d9657dbdf59487a6031820add2cacbe54e86814",
                     "itemSource": "api",
-                    "link": "https://some.ru",
+                    "link": "https://some.com",
                     "sequenceUpdate": null,
                     "size": 709,
-                    "source": "some.ru",
+                    "source": "some.com",
                     "status": 1,
                     "title": ""
                 }
@@ -740,7 +740,7 @@ Command performs Group IB event lookup in osi/public_leak collection with provid
 
 >|dateDetected|datePublished|hash|itemSource|link|size|source|status|
 >|---|---|---|---|---|---|---|---|
->| 2021-04-01T14:57:01+03:00 | 2021-04-01T14:50:45+03:00 | 5d9657dbdf59487a6031820add2cacbe54e86814 | api | <https://some.ru> | 709 | some.ru | 1 |
+>| 2021-04-01T14:57:01+03:00 | 2021-04-01T14:50:45+03:00 | 5d9657dbdf59487a6031820add2cacbe54e86814 | api | <https://some.com> | 709 | some.com | 1 |
 
 ### gibtia-get-osi-vulnerability-info
 
@@ -836,18 +836,18 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
                 "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H"
             },
             "extDescription": "Big description",
-            "href": "https://some.ru",
+            "href": "https://some.com",
             "id": "CVE-2021-27152",
             "lastseen": "2021-02-11T14:35:24+03:00",
             "modified": "2021-02-11T00:45:00+03:00",
             "portalLink": "https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152",
-            "provider": "some.ru",
+            "provider": "some.com",
             "published": "2021-02-10T19:15:00+03:00",
             "references": [
                 "https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials",
                 "https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152"
             ],
-            "reporter": "some.ru",
+            "reporter": "some.com",
             "softwareMixed": [
                 {
                     "arch": [],
@@ -883,7 +883,7 @@ Command performs Group IB event lookup in osi/vulnerability collection with prov
 
 >|bulletinFamily|cvss score|cvss vector|dateLastSeen|dateModified|datePublished|description|displayOptions isFavourite|displayOptions isHidden|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|exploitCount|extCvss base|extCvss environmental|extCvss exploitability|extCvss impact|extCvss mImpact|extCvss overall|extCvss temporal|extCvss vector|extDescription|href|id|lastseen|modified|portalLink|provider|published|references|reporter|title|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| NVD | 7.5 | AV:N/AC:L/Au:N/C:P/I:P/A:P | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | 2021-02-10T19:15:00+03:00 | Description | false | false | A1 | 100 | 100 | red | green | 30 | 0 | 9.8 | 0.0 | 3.9 | 5.9 | 0.0 | 9.8 | 0.0 | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H | Big description | <<<<<https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152>>>>> | CVE-2021-27152 | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | <https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152> | some.ru | 2021-02-10T19:15:00+03:00 | <https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials>,<br>https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152 | some.ru | CVE-2021-27152 | cve |
+>| NVD | 7.5 | AV:N/AC:L/Au:N/C:P/I:P/A:P | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | 2021-02-10T19:15:00+03:00 | Description | false | false | A1 | 100 | 100 | red | green | 30 | 0 | 9.8 | 0.0 | 3.9 | 5.9 | 0.0 | 9.8 | 0.0 | CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H | Big description | <<<<<<<<<https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152>>>>>>>>> | CVE-2021-27152 | 2021-02-11T14:35:24+03:00 | 2021-02-11T00:45:00+03:00 | <https://bt.group-ib.com/osi/vulnerabilities?searchValue=id:CVE-2021-27152> | some.com | 2021-02-10T19:15:00+03:00 | <https://pierrekim.github.io/blog/2021-01-12-fiberhome-ont-0day-vulnerabilities.html#httpd-hardcoded-credentials>,<br>https://web.nvd.nist.gov/view/vuln/detail?vulnId=CVE-2021-27152 | some.com | CVE-2021-27152 | cve |
 
 >### softwareMixed table
 
@@ -939,7 +939,7 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
 {
     "DBotScore": [
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 3,
             "Type": "domain",
             "Vendor": "GIB TI&A"
@@ -956,13 +956,13 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
             "Description": null,
             "Vendor": "GIB TI&A"
         },
-        "Name": "some.ru"
+        "Name": "some.com"
     },
     "GIBTIA": {
         "AttacksDDoS": {
             "cnc": {
-                "cnc": "some.ru",
-                "domain": "some.ru",
+                "cnc": "some.com",
+                "domain": "some.com",
                 "ipv4": {
                     "asn": "AS11111",
                     "city": "Some",
@@ -1039,13 +1039,13 @@ Command performs Group IB event lookup in attacks/ddos collection with provided 
 
 >|cnc cnc|cnc domain|cnc ipv4 asn|cnc ipv4 city|cnc ipv4 countryCode|cnc ipv4 countryName|cnc ipv4 ip|cnc ipv4 provider|cnc ipv4 region|companyId|dateBegin|dateEnd|dateReg|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|oldId|portalLink|protocol|source|stixGuid|target domainsCount|target ipv4 asn|target ipv4 city|target ipv4 countryCode|target ipv4 countryName|target ipv4 ip|target ipv4 provider|target ipv4 region|target port|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| some.ru | some.ru | AS11111 | Some | US | United States | 11.11.11.11 | Some | Some | -1 | 2021-01-16T02:58:53+00:00 | 2021-01-16T02:58:55+00:00 | 2021-01-16 | A2 | 90 | 90 | red | green | 30 | 26a05baa4025edff367b058b13c6b43e820538a5 | 394657345 | <https://bt.group-ib.com/attacks/ddos?searchValue=id:26a05baa4025edff367b058b13c6b43e820538a5> | udp | honeypot_logs:1 | ea05c117-2cca-b3cd-f033-a8e16e5db3c2 | 0 | AS11111 | Some | US | United States | 11.11.11.11 | Some | Some | 55843 | DNS Reflection |
+>| some.com | some.com | AS11111 | Some | US | United States | 11.11.11.11 | Some | Some | -1 | 2021-01-16T02:58:53+00:00 | 2021-01-16T02:58:55+00:00 | 2021-01-16 | A2 | 90 | 90 | red | green | 30 | 26a05baa4025edff367b058b13c6b43e820538a5 | 394657345 | <https://bt.group-ib.com/attacks/ddos?searchValue=id:26a05baa4025edff367b058b13c6b43e820538a5> | udp | honeypot_logs:1 | ea05c117-2cca-b3cd-f033-a8e16e5db3c2 | 0 | AS11111 | Some | US | United States | 11.11.11.11 | Some | Some | 55843 | DNS Reflection |
 
 >### Domain indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 26a05baa4025edff367b058b13c6b43e820538a5 | red | some.ru |
+>| 26a05baa4025edff367b058b13c6b43e820538a5 | red | some.com |
 
 >### IP indicator
 
@@ -1093,13 +1093,13 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 {
     "DBotScore": [
         {
-            "Indicator": "http://some.ru",
+            "Indicator": "http://some.com",
             "Score": 2,
             "Type": "url",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 2,
             "Type": "domain",
             "Vendor": "GIB TI&A"
@@ -1112,7 +1112,7 @@ Command performs Group IB event lookup in attacks/deface collection with provide
         }
     ],
     "Domain": {
-        "Name": "some.ru"
+        "Name": "some.com"
     },
     "GIBTIA": {
         "AttacksDeface": {
@@ -1127,12 +1127,12 @@ Command performs Group IB event lookup in attacks/deface collection with provide
                 "ttl": 30
             },
             "id": "6009637a1135cd001ef46e21",
-            "mirrorLink": "https://some.ru/id:-6009637a1135cd001ef46e21:",
+            "mirrorLink": "https://some.com/id:-6009637a1135cd001ef46e21:",
             "portalLink": "https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21",
-            "providerDomain": "some.ru",
-            "siteUrl": "http://some.ru",
-            "source": "some.ru",
-            "targetDomain": "some.ru",
+            "providerDomain": "some.com",
+            "siteUrl": "http://some.com",
+            "source": "some.com",
+            "targetDomain": "some.com",
             "targetDomainProvider": null,
             "targetIp": {
                 "asn": null,
@@ -1151,7 +1151,7 @@ Command performs Group IB event lookup in attacks/deface collection with provide
                 "stixGuid": null
             },
             "tsCreate": "2021-01-21T11:19:52+00:00",
-            "url": "http://some.ru"
+            "url": "http://some.com"
         }
     },
     "IP": {
@@ -1161,7 +1161,7 @@ Command performs Group IB event lookup in attacks/deface collection with provide
         }
     },
     "URL": {
-        "Data": "http://some.ru"
+        "Data": "http://some.com"
     }
 }
 ```
@@ -1172,19 +1172,19 @@ Command performs Group IB event lookup in attacks/deface collection with provide
 
 >|date|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|mirrorLink|portalLink|providerDomain|siteUrl|source|targetDomain|targetIp countryName|targetIp ip|threatActor id|threatActor isAPT|threatActor name|tsCreate|url|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.ru/id:-6009637a1135cd001ef46e21>: | <https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.ru | <<<<<http://some.ru>>>>> | some.ru | some.ru | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.ru |
+>| 2021-01-21T02:22:18+00:00 | B2 | 80 | 80 | orange | amber | 30 | 6009637a1135cd001ef46e21 | <https://some.com/id:-6009637a1135cd001ef46e21>: | <https://bt.group-ib.com/attacks/deface?searchValue=id:6009637a1135cd001ef46e21> | some.com | <<<<<<<<<http://some.com>>>>>>>>> | some.com | some.com | Indonesia | 11.11.11.11 | d7ff75c35f93dce6f5410bba9a6c206bdff66555 | false | FRK48 | 2021-01-21T11:19:52+00:00 | http://some.com |
 
 >### URL indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 6009637a1135cd001ef46e21 | orange | <http://some.ru> |
+>| 6009637a1135cd001ef46e21 | orange | <http://some.com> |
 
 >### Domain indicator
 
 >|gibid|severity|value|
 >|---|---|---|
->| 6009637a1135cd001ef46e21 | orange | some.ru |
+>| 6009637a1135cd001ef46e21 | orange | some.com |
 
 >### IP indicator
 
@@ -1258,25 +1258,25 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 {
     "DBotScore": [
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 2,
             "Type": "domain",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 2,
             "Type": "domain",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "https://some.ru",
+            "Indicator": "https://some.com",
             "Score": 2,
             "Type": "url",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "https://some.ru",
+            "Indicator": "https://some.com",
             "Score": 2,
             "Type": "url",
             "Vendor": "GIB TI&A"
@@ -1296,16 +1296,16 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
     ],
     "Domain": [
         {
-            "Name": "some.ru"
+            "Name": "some.com"
         },
         {
-            "Name": "some.ru"
+            "Name": "some.com"
         }
     ],
     "File": [
         {
             "MD5": "8397ea747d2ab50da4f876a36d673211",
-            "Name": "some.ru",
+            "Name": "some.com",
             "SHA1": "48a6d5141e25b6c63ad8da20b954b56afe589011",
             "SHA256": "89b5e248c222ebf2cb3b525d3650259e01cf7d8fff5e4aa15ccd7512b1e63951"
         },
@@ -1370,7 +1370,7 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
             "labels": [],
             "langs": [
                 "en",
-                "ru"
+                "com"
             ],
             "malwareList": [],
             "mitreMatrix": [
@@ -1415,10 +1415,10 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
     },
     "URL": [
         {
-            "Data": "https://some.ru"
+            "Data": "https://some.com"
         },
         {
-            "Data": "https://some.ru"
+            "Data": "https://some.com"
         }
     ]
 }
@@ -1430,7 +1430,7 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 
 >|createdAt|dateFirstSeen|dateLastSeen|datePublished|deleted|description|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|id|isPublished|isTailored|langs|oldId|reportNumber|sectors|threatActor country|threatActor id|threatActor isAPT|threatActor name|title|type|updatedAt|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2021-01-15T16:53:20+03:00 | 2021-01-15 | 2021-01-15 | 2021-01-15 | false | Big description | B1 | 100 | 80 | orange | amber | 1b09d389d016121afbffe481a14b30ea995876e4 | true | false | en,<br>ru | 4c01c2d4-5ebb-44d8-9e91-be89231b0eb3 | CP-2501-1653 | financial-services,<br>finance | KP | 5e9f20fdcf5876b5772b3d09b432f4080711ac5f | true | Lazarus | Lazarus launches new attack with cryptocurrency trading platforms | threat | 2021-04-02T14:08:03+03:00 |
+>| 2021-01-15T16:53:20+03:00 | 2021-01-15 | 2021-01-15 | 2021-01-15 | false | Big description | B1 | 100 | 80 | orange | amber | 1b09d389d016121afbffe481a14b30ea995876e4 | true | false | en,<br>com | 4c01c2d4-5ebb-44d8-9e91-be89231b0eb3 | CP-2501-1653 | financial-services,<br>finance | KP | 5e9f20fdcf5876b5772b3d09b432f4080711ac5f | true | Lazarus | Lazarus launches new attack with cryptocurrency trading platforms | threat | 2021-04-02T14:08:03+03:00 |
 
 >### files table
 
@@ -1457,10 +1457,10 @@ Command performs Group IB event lookup in hi/threat (or in apt/threat if the APT
 
 >|deleted|id|langs|params|seqUpdate|type|
 >|---|---|---|---|---|---|
->| false | 9f3a2a244570a38e772a35d7c9171eed12bec6f7 | en | hashes: {"md4": "", "md5": "8397ea747d2ab50da4f876a36d631272", "md6": "", "ripemd160": "", "sha1": "48a6d5141e25b6c63ad8da20b954b56afe512031", "sha224": "", "sha256": "89b5e248c222ebf2cb3b525d3650259e01cf7d8fff5e1aa15ccd7512b1e63957", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: some.ru <br>size: null | 16107188499162 | file |
->| false | 8b96c56cbc980c1e3362060ffa953e65281fb1df | en | domain: some.ru <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.ru> | 16107188498393 | network |
+>| false | 9f3a2a244570a38e772a35d7c9171eed12bec6f7 | en | hashes: {"md4": "", "md5": "8397ea747d2ab50da4f876a36d631272", "md6": "", "ripemd160": "", "sha1": "48a6d5141e25b6c63ad8da20b954b56afe512031", "sha224": "", "sha256": "89b5e248c222ebf2cb3b525d3650259e01cf7d8fff5e1aa15ccd7512b1e63957", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: some.com <br>size: null | 16107188499162 | file |
+>| false | 8b96c56cbc980c1e3362060ffa953e65281fb1df | en | domain: some.com <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.com> | 16107188498393 | network |
 >| false | 42a9929807fd954918f9bb603135754be7a6e11c | en | hashes: {"md4": "", "md5": "5d43baf1c9e9e3a939e5defd8f3fbd1d", "md6": "", "ripemd120": "", "sha1": "d5ff73c043f3bb75dd749636307500b60a336150", "sha224": "", "sha256": "867c8b49d29ae1f6e4a7cd31b6fe7e278753a1ba03d4be338ed11fd1efc3dd12", "sha384": "", "sha512": "", "whirlpool": ""}<br>name: 5d43baf1c9e9e3a939e5defd8f8fbd1d<br>size: null | 16107188498634 | file |
->| false | 12cad1ca535a92a2ed306c0edf3025e7d9776612 | en | domain: some.ru <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.ru> | 16107188498908 | network |
+>| false | 12cad1ca535a92a2ed306c0edf3025e7d9776612 | en | domain: some.com <br>ipv4: <br>ipv6: <br>ssl: <br>url: <https://some.com> | 16107188498908 | network |
 
 ### gibtia-get-threat-actor-info
 
@@ -1539,7 +1539,7 @@ Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_acto
                 "agent"
             ],
             "spokenOnLangs": [
-                "ru"
+                "com"
             ],
             "stat": {
                 "countries": [
@@ -1577,7 +1577,7 @@ Command performs Group IB event lookup in hi/threat_actor (or in apt/threat_acto
 
 >|aliases|country|createdAt|deleted|description|goals|id|isAPT|isPublished|labels|langs|name|roles|spokenOnLangs|stat countries|stat dateFirstSeen|stat dateLastSeen|stat regions|stat sectors|stixGuid|updatedAt|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| SectorC08 | RU | 2018-09-26T16:59:50+03:00 | false | Big description | Information | 0d4496592ac3a0f5511cd62ef29887f48d9cb545 | true | true | spy | en | Gamaredon | agent | ru | US | 2013-06-01 | 2021-03-19 | asia | non-profit | 63d0e4d4-9f55-4fa2-87af-b6c91ded80e0 | 2021-04-08T22:09:07+03:00 |
+>| SectorC08 | RU | 2018-09-26T16:59:50+03:00 | false | Big description | Information | 0d4496592ac3a0f5511cd62ef29887f48d9cb545 | true | true | spy | en | Gamaredon | agent | com | US | 2013-06-01 | 2021-03-19 | asia | non-profit | 63d0e4d4-9f55-4fa2-87af-b6c91ded80e0 | 2021-04-08T22:09:07+03:00 |
 
 >### stat reports table
 
@@ -1649,7 +1649,7 @@ Command performs Group IB event lookup in suspicious_ip/tor_node collection with
             },
             "nodes": [],
             "portalLink": "https://bt.group-ib.com/suspicious/tor?searchValue=id:11.11.1.1",
-            "source": "some.ru"
+            "source": "some.com"
         }
     },
     "IP": {
@@ -1664,7 +1664,7 @@ Command performs Group IB event lookup in suspicious_ip/tor_node collection with
 
 >|dateFirstSeen|dateLastSeen|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|ipv4 ip|portalLink|source|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
->| 2020-09-03T14:15:25+00:00 | 2021-04-25T03:15:29+00:00 | A1 | 90 | 90 | green | green | 30 | 11.11.11.11 | 11.11.11.11 | <https://bt.group-ib.com/suspicious/tor?searchValue=id:11.11.11.11> | some.ru |
+>| 2020-09-03T14:15:25+00:00 | 2021-04-25T03:15:29+00:00 | A1 | 90 | 90 | green | green | 30 | 11.11.11.11 | 11.11.11.11 | <https://bt.group-ib.com/suspicious/tor?searchValue=id:11.11.11.11> | some.com |
 
 >### IP indicator
 
@@ -1743,7 +1743,7 @@ Command performs Group IB event lookup in suspicious_ip/open_proxy collection wi
             "oldId": "241549215",
             "port": 80,
             "portalLink": "https://bt.group-ib.com/suspicious/proxies?searchValue=id:cc6a2856da2806b03839f81aa214f22dbcfd7369",
-            "source": "some.ru",
+            "source": "some.com",
             "stixGuid": "c30604ac-94d5-b514-f1d1-7230ec13c739",
             "type": "http"
         }
@@ -1763,13 +1763,13 @@ Command performs Group IB event lookup in suspicious_ip/open_proxy collection wi
 
 >|anonymous|dateDetected|dateFirstSeen|evaluation admiraltyCode|evaluation credibility|evaluation reliability|evaluation severity|evaluation tlp|evaluation ttl|id|ipv4 countryCode|ipv4 countryName|ipv4 ip|ipv4 provider|oldId|port|portalLink|source|stixGuid|type|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
->| 11.11.11.11 | 2021-01-21T11:01:02+00:00 | 2020-03-19T23:01:01+00:00 | C3 | 50 | 50 | green | white | 15 | cc6a2856da2806b03839f81aa214f22dbcfd7369 | CZ | Czech Republic | 11.11.11.11 | Some | 241549215 | 80 | <https://bt.group-ib.com/suspicious/proxies?searchValue=id:cc6a2856da2806b03839f81aa214f22dbcfd7369> | some.ru | c30604ac-94d5-b514-f1d1-7230ec13c739 | http |
+>| 11.11.11.11 | 2021-01-21T11:01:02+00:00 | 2020-03-19T23:01:01+00:00 | C3 | 50 | 50 | green | white | 15 | cc6a2856da2806b03839f81aa214f22dbcfd7369 | CZ | Czech Republic | 11.11.11.11 | Some | 241549215 | 80 | <https://bt.group-ib.com/suspicious/proxies?searchValue=id:cc6a2856da2806b03839f81aa214f22dbcfd7369> | some.com | c30604ac-94d5-b514-f1d1-7230ec13c739 | http |
 
 >### IP indicator
 
 >|geocountry|gibid|gibproxyanonymous|gibproxyport|severity|source|value|
 >|---|---|---|---|---|---|---|
->| Czech Republic | cc6a2856da2806b03839f81aa214f22dbcfd7369 | 11.11.11.11 | 80 | green | some.ru | 11.11.11.11 |
+>| Czech Republic | cc6a2856da2806b03839f81aa214f22dbcfd7369 | 11.11.11.11 | 80 | green | some.com | 11.11.11.11 |
 
 ### gibtia-get-suspicious-ip-socks-proxy-info
 
@@ -1838,7 +1838,7 @@ Command performs Group IB event lookup in suspicious_ip/socks_proxy collection w
             },
             "oldId": "395880626",
             "portalLink": "https://bt.group-ib.com/suspicious/socks?searchValue=id:02e385600dfc5bf9b3b3656df8e0e20f5fc5c86e",
-            "source": "some.ru",
+            "source": "some.com",
             "stixGuid": "78cd5f78-e542-bf2c-fc40-e2a41b36dd97"
         }
     },
@@ -1910,13 +1910,13 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 {
     "DBotScore": [
         {
-            "Indicator": "https://some.ru",
+            "Indicator": "https://some.com",
             "Score": 0,
             "Type": "url",
             "Vendor": "GIB TI&A"
         },
         {
-            "Indicator": "some.ru",
+            "Indicator": "some.com",
             "Score": 0,
             "Type": "domain",
             "Vendor": "GIB TI&A"
@@ -1929,14 +1929,14 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
         }
     ],
     "Domain": {
-        "Name": "some.ru"
+        "Name": "some.com"
     },
     "GIBTIA": {
         "MalwareCNC": {
-            "cnc": "https://some.ru",
+            "cnc": "https://some.com",
             "dateDetected": "2021-04-25T13:37:23+00:00",
             "dateLastSeen": "2021-04-25T13:37:23+00:00",
-            "domain": "some.ru",
+            "domain": "some.com",
             "favouriteForCompanies": [],
             "file": [],
             "hideForCompanies": [],
@@ -1965,7 +1965,7 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
             "ssl": [],
             "stixGuid": "417b2644-1105-d65b-4b67-a78e82f59b65",
             "threatActor": null,
-            "url": "https://some.ru",
+            "url": "https://some.com",
             "vtAll": null,
             "vtDetected": null
         }
@@ -1978,7 +1978,7 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
         }
     },
     "URL": {
-        "Data": "https://some.ru"
+        "Data": "https://some.com"
     }
 }
 ```
@@ -1989,7 +1989,7 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 
 >|cnc|dateDetected|dateLastSeen|domain|id|oldId|stixGuid|url|
 >|---|---|---|---|---|---|---|---|
->| <<<<<https://some.ru>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.ru | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.ru |
+>| <<<<<<<<<https://some.com>>>>>>>>> | 2021-04-25T13:37:23+00:00 | 2021-04-25T13:37:23+00:00 | some.com | aeed277396e27e375d030a91533aa232444d0089 | 211146923 | 417b2644-1105-d65b-4b67-a78e82f59b65 | https://some.com |
 
 >### ipv4 table
 
@@ -2007,13 +2007,13 @@ Command performs Group IB event lookup in malware/cnc collection by provided ID.
 
 >|gibid|value|
 >|---|---|
->| aeed277396e27e375d030a91533aa232444d0089 | <https://some.ru> |
+>| aeed277396e27e375d030a91533aa232444d0089 | <https://some.com> |
 
 >### Domain indicator
 
 >|gibid|value|
 >|---|---|
->| aeed277396e27e375d030a91533aa232444d0089 | some.ru |
+>| aeed277396e27e375d030a91533aa232444d0089 | some.com |
 
 >### IP indicator
 
@@ -2205,7 +2205,7 @@ Command performs Group IB search in selected collection.
     "GIBTIA": {
         "search": {
             "local": {
-                "additional_info": "phishingDomain_domain: some.ru",
+                "additional_info": "phishingDomain_domain: some.com",
                 "id": "8bd7e5cef2290b0c3f04bf283586406dceffe25d"
             }
         }
@@ -2215,8 +2215,8 @@ Command performs Group IB search in selected collection.
 
 #### Human Readable Output
 
->### Search results
+### Search results
 
->|id|additional_info|
->|---|---|
->| 8bd7e5cef2290b0c3f04bf283586406dceffe25d | phishingDomain_domain: some.ru |
+|id|additional_info|
+|---|---|
+| 8bd7e5cef2290b0c3f04bf283586406dceffe25d | phishingDomain_domain: some.com |

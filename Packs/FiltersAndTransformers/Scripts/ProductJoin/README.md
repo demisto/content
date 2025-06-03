@@ -1,6 +1,7 @@
 Returns the product of two lists, joined by a separator, as a list of strings.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Returns the product of two lists, joined by a separator, as a list of strings.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Returns the product of two lists, joined by a separator, as a list of strings.
 | join | Separator |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

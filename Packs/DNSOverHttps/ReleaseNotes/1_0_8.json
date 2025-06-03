@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Fixed a typo in the context path of the doh-resolve command outputs: from DNSoOverHTTPS.Results to DNSOverHTTPS.Results."
+}

@@ -4183,7 +4183,7 @@ tasks:
             value:
               complex:
                 root: CrowdStrike.IDPEntity
-                accessor: PrimaryDisplayName
+                accessor: Primarydisplayname
                 transformers:
                 - operator: FirstArrayElement
             iscontext: true

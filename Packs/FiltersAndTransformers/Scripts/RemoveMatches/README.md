@@ -1,11 +1,11 @@
 Removes items from the given list of values if they match any of the patterns in the provided `filters`.
 If the match_exact argument is 'yes', direct string compare is used, otherwise the comparison is done using regex.
 
-### Example:
+### Example
 
 ---
 
-##### value (Get):
+##### value (Get)
 
 ```json
 [
@@ -17,7 +17,7 @@ If the match_exact argument is 'yes', direct string compare is used, otherwise t
 ]
 ```
 
-##### filters:
+##### filters
 
 ```text
 ^*.\.domain1.com/.*\n
@@ -25,7 +25,7 @@ If the match_exact argument is 'yes', direct string compare is used, otherwise t
 ^sub.domain3.com/.*
 ```
 
-##### Result:
+##### Result
 
 ```json
 [    
@@ -60,4 +60,3 @@ If the match_exact argument is 'yes', direct string compare is used, otherwise t
 
 ---
 There are no outputs for this script.
-

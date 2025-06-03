@@ -1,6 +1,7 @@
 Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,8 +11,10 @@ Checks the authenticity of an email based on the email's SPF, DMARC, and DKIM.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * Agari Message Remediation - Agari Phishing Defense
 * Email Headers Check - Generic
 * Phishing - Generic v3
@@ -19,6 +22,7 @@ This script is used in the following playbooks and scripts.
 * Report Categorization - Cofense Triage v3
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -46,6 +50,7 @@ This script is used in the following playbooks and scripts.
 | DMARC_override_permerror | Override value for DMARC=permerror. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

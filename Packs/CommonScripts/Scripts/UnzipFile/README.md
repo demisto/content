@@ -1,6 +1,7 @@
 Unzip a file using fileName or entryID to specify a file. Unzipped files will be loaded to the War Room and names will be put into the context.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,8 +11,10 @@ Unzip a file using fileName or entryID to specify a file. Unzipped files will be
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 Sample usage of this script can be found in the following playbooks and scripts.
+
 * Comprehensive PAN-OS Best Practice Assessment
 * Cortex XDR - Retrieve File by sha256
 * CrowdStrike Falcon - Retrieve File
@@ -24,6 +27,7 @@ Sample usage of this script can be found in the following playbooks and scripts.
 * Pull Request Creation - Generic
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -36,6 +40,7 @@ Sample usage of this script can be found in the following playbooks and scripts.
 | zipTool | Tool to extract zip |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

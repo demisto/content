@@ -3,13 +3,11 @@ This integration was integrated and tested with version 1.0.0 of Roksit DNS Secu
 
 ## Configure Roksit DNS Security (DNSSense) in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. https://portal.roksit.com/api/integration/blacklist) | True |
 | API Key | True |
 | Trust any certificate (not secure) | False |
-
 
 ## Commands
 
@@ -29,13 +27,16 @@ This command adds a given domain to tha Roksit blacklist.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| Domain | The Domain to send to the blacklist. | Required | 
+| Domain | The Domain to send to the blacklist. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!Roksit-add-to-blacklist Domain=dummy.com```
+
 #### Human Readable Output
 
 >dummy.com was successfully added to the blacklist.

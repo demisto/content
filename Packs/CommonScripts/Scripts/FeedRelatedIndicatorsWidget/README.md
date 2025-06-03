@@ -1,7 +1,9 @@
 Widget script to view information about the relationship between an indicator, entity and other indicators and connect to indicators, if relevant.
 
-The script will be used in the **Feed Related Indicators** section in the indicators layouts. 
+The script will be used in the **Feed Related Indicators** section in the indicators layouts.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,14 +13,17 @@ The script will be used in the **Feed Related Indicators** section in the indica
 | XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Human Readable Output
+
 ---
 
 Type|Value|Description

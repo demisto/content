@@ -1,6 +1,7 @@
 Verify that the address is a valid IPv6 address.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Verify that the address is a valid IPv6 address.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Verify that the address is a valid IPv6 address.
 | input | The IPv6 to vriefy. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

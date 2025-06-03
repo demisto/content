@@ -1,6 +1,7 @@
 Prints a value to the specified incident's war-room.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Prints a value to the specified incident's war-room.
 | Cortex XSOAR Version | 8.7.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,14 +20,16 @@ Prints a value to the specified incident's war-room.
 | incident_id | The incident ID to print to. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!PrintToIncident incident_id=INCIDENT-8 value="Hello from the other side"```
 
 ## Context Example
+
 ```json
 {}
 ```

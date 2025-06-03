@@ -1,10 +1,11 @@
-Searches Cortex XSOAR Incidents. Default search range is the last 30 days, if you want to change this, use the fromDate argument. 
+Searches Cortex XSOAR Incidents. Default search range is the last 30 days, if you want to change this, use the fromDate argument.
 
 Returns the id, name, type, severity, status, owner, and created/closed times to context.  You can add additional fields using the add_field_to_context argument.
 
 This automation runs using the default Limited User role, unless you explicitly change the permissions.  Based on the SearchIncidentsV2 from the Common Scripts pack, but more efficient.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ This automation runs using the default Limited User role, unless you explicitly 
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -41,6 +43,7 @@ This automation runs using the default Limited User role, unless you explicitly 
 | add_fields_to_context | A comma seperated list of fields to return to the context, \(default: id,name,type,severity,status,owner,created,closed\) |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

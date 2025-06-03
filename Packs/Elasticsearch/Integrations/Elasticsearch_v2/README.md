@@ -276,3 +276,25 @@ Returns Elasticsearch indices statistics and information. This command is not su
 | Elasticsearch.IndexStatistics.UUID | String | The UUID of the index. |
 | Elasticsearch.IndexStatistics.DocumentsCount | Number | The number of documents that are indexed in the index. |
 | Elasticsearch.IndexStatistics.DocumentsDeleted | Number | The number of documents that were deleted from the index. |
+
+### es-esql-search
+
+***
+Search using ES|QL query (Elasticsearch 8.11 and above).
+
+#### Base Command
+
+`es-esql-search`
+
+#### Input
+
+| **Argument Name** | **Description**                                                                | **Required** |
+| --- |--------------------------------------------------------------------------------| --- |
+| query | The ES\|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value"). | Required | 
+| limit | Maximum number of results to return.                                           | Optional | 
+
+#### Context Output
+
+| **Path**                 | **Description**      | **Type** |
+|--------------------------|----------------------|----------------------|
+| Elasticsearch.ESQLSearch | ES\|QL search result | unknown |

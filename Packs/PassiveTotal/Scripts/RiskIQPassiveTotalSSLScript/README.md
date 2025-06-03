@@ -1,10 +1,12 @@
 Enhancement script to enrich SSL information for Email, File SHA-1 and RiskIQSerialNumber type of indicators.
 It can be set by following these steps:
- - Settings > ADVANCED > Indicator Type
- - Edit Email, File SHA-1 and RiskIQSerialNumber Indicator one by one 
- - Add this script into Enhancement Scripts
+
+- Settings > ADVANCED > Indicator Type
+- Edit Email, File SHA-1 and RiskIQSerialNumber Indicator one by one
+- Add this script into Enhancement Scripts
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,11 +16,13 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* pt-ssl-cert-search
+- pt-ssl-cert-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,13 +30,16 @@ This script uses the following commands and scripts.
 | indicator_value | Email, File SHA-1 and RiskIQSerialNumber indicator value that need to enrich |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Script Example
+
 ```!RiskIQPassiveTotalSSLScript indicator_value=61135c80f8ed28d2```
 
 ## Context Example
+
 ```
 {
     "PassiveTotal": {
@@ -89,7 +96,9 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 2
+>
 >### SSL certificate(s)
+>
 >|Sha1|Serial Number|Issued (GMT)|Expires (GMT)|SSL Version|First Seen (GMT)|Last Seen (GMT)|Issuer Common Name|Subject Common Name|Subject Alternative Names|Issuer Organization Name|Subject Organization Name|Subject Locality Name|Subject State/Province Name|Issuer Country|Subject Country|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 8848e868b190d0fdcb6f39c37b5382c87e0976b0 | 6995036355238373586 | Jan 15 13:15:00 2019 GMT | Apr 09 13:15:00 2019 GMT | 3 | 2019-01-15 13:40:31 | 2019-01-16 03:00:34 | Google Internet Authority G3 | www.google.com | www.google.com | Google Trust Services | Google LLC | Mountain View | California | US | US |

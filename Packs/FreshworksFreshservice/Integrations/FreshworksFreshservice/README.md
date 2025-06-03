@@ -103,8 +103,11 @@ Retrieve all existing tickets or a specific ticket by specifying the ticket ID. 
 | Freshservice.Ticket.workspace_id | Number | Ticket workspace ID. |
 
 #### Command example
+
 ```!freshservice-ticket-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1210,8 +1213,10 @@ Retrieve all existing tickets or a specific ticket by specifying the ticket ID. 
 #### Human Readable Output
 
 >### Ticket
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description Text|Requester Id|Type|Subject|Status|Source|Impact|Priority|Custom Fields|Category|Created At|Updated At|Due By|Fr Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 244 | s | 21001792073 | Incident | d | Open | Portal |  | Medium |  |  | 2023-04-09T11:21:47Z | 2023-04-09T11:21:47Z | 2023-04-12T18:00:00Z | 2023-04-10T20:00:00Z |
@@ -1244,7 +1249,6 @@ Retrieve all existing tickets or a specific ticket by specifying the ticket ID. 
 >| 207 | 123456 | 21001932798 | Incident | abc | Pending | Portal |  | Low |  |  | 2023-03-26T09:30:30Z | 2023-04-02T09:19:07Z | 2023-04-05T21:00:00Z | 2023-03-29T18:00:00Z |
 >| 205 | abc | 21001932798 | Incident | abc | Pending | Portal |  | Low |  | Software | 2023-03-26T09:24:30Z | 2023-03-26T09:24:53Z | 2023-04-05T21:00:00Z | 2023-03-29T18:00:00Z |
 >| 204 | Mirroring 204 | 21001932798 | Incident | abc | Pending | Portal |  | Low |  | Software | 2023-03-26T09:23:05Z | 2023-03-30T12:35:07Z | 2023-04-05T21:00:00Z | 2023-03-29T18:00:00Z |
-
 
 ### freshservice-ticket-create
 
@@ -1320,8 +1324,11 @@ type 'incident'.
 | Freshservice.Ticket.updated_at | Date | Ticket updated at. |
 
 #### Command example
+
 ```!freshservice-ticket-create description=description email=liors@qmasters.co status=Open priority=Low subject=subject```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1368,11 +1375,12 @@ type 'incident'.
 #### Human Readable Output
 
 >### Ticket
+>
 >Ticket created successfully
+>
 >|Id|Description Text|Requester Id|Type|Subject|Status|Source|Impact|Priority|Custom Fields|Category|Created At|Updated At|Due By|Fr Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 247 | description | 21001792073 | Incident | subject | Open | Portal |  | Low |  |  | 2023-04-13T14:15:15Z | 2023-04-13T14:15:15Z | 2023-04-25T14:15:15Z | 2023-04-17T20:15:15Z |
-
 
 ### freshservice-ticket-update
 
@@ -1446,8 +1454,11 @@ Update an existing Ticket in Freshservice.
 | Freshservice.Ticket.updated_at | Date | Ticket updated at. |
 
 #### Command example
+
 ```!freshservice-ticket-update ticket_id=245 description=description```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1496,11 +1507,12 @@ Update an existing Ticket in Freshservice.
 #### Human Readable Output
 
 >### Ticket
+>
 >Ticket updated successfully
+>
 >|Id|Description Text|Requester Id|Type|Subject|Status|Source|Impact|Priority|Custom Fields|Category|Created At|Updated At|Due By|Fr Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 245 | description | 21001523121 | Request | Support Needed... | Open | Portal |  | Low | test_tal: sd |  | 2023-04-13T13:06:39Z | 2023-04-13T14:15:21Z | 2023-04-25T13:06:39Z | 2023-04-17T19:06:40Z |
-
 
 ### freshservice-ticket-delete
 
@@ -1520,8 +1532,11 @@ Delete an existing Ticket in Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-ticket-delete ticket_id=246```
+
 #### Human Readable Output
 
 >Ticket deleted successfully
@@ -1563,8 +1578,11 @@ Retrieve tasks list (or a specific task) on a Ticket with the given ID from Fres
 | Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-ticket-task-list ticket_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1596,12 +1614,13 @@ Retrieve tasks list (or a specific task) on a Ticket with the given ID from Fres
 #### Human Readable Output
 
 >### Ticket
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 107 | description | test | 7200 | Open | false |  | 2023-03-26T10:13:03Z | 2023-03-26T10:13:03Z | 2023-03-29T18:00:00Z |
-
 
 ### freshservice-ticket-task-create
 
@@ -1641,8 +1660,11 @@ Create a new task on a Ticket request in Freshservice.
 | Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-ticket-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open ticket_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1674,11 +1696,12 @@ Create a new task on a Ticket request in Freshservice.
 #### Human Readable Output
 
 >### Ticket
+>
 >Ticket Task created successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 192 | description | title | 7200 | Open | false |  | 2023-04-13T14:15:38Z | 2023-04-13T14:15:38Z | 2023-04-17T20:15:38Z |
-
 
 ### freshservice-ticket-task-update
 
@@ -1719,8 +1742,11 @@ Update an existing task on an existing Ticket in Freshservice.
 | Freshservice.Ticket.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-ticket-task-update description=updated ticket_id=220 task_id=183```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -1752,11 +1778,12 @@ Update an existing task on an existing Ticket in Freshservice.
 #### Human Readable Output
 
 >### Ticket
+>
 >Ticket Task updated successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 183 | updated | Supply lightsabers to all the Jedis-tese | 0 | Open | false |  | 2023-04-13T13:48:07Z | 2023-04-13T14:15:44Z | 2023-04-17T19:48:07Z |
-
 
 ### freshservice-ticket-task-delete
 
@@ -1777,8 +1804,11 @@ Delete the task on a Ticket with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-ticket-task-delete ticket_id=220 task_id=184```
+
 #### Human Readable Output
 
 >Ticket Task deleted successfully
@@ -1821,8 +1851,11 @@ Retrieve all Conversations of a Ticket. Conversations consist of replies as well
 | Freshservice.Ticket.Conversation.meta.count | Number | Conversation meta count. |
 
 #### Command example
+
 ```!freshservice-ticket-conversation-list ticket_id=6```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -2629,8 +2662,10 @@ Retrieve all Conversations of a Ticket. Conversations consist of replies as well
 #### Human Readable Output
 
 >### Ticket conversations
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|User Id|Body Text|To Emails|Incoming|Private|Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 21010429932 | 21001397559 | Can you provide some screenshots? | jack@freshservice.com | false | false | 0 | 2023-04-13T13:55:40Z | 2023-04-13T13:55:40Z |
@@ -2671,7 +2706,6 @@ Retrieve all Conversations of a Ticket. Conversations consist of replies as well
 >| 21006225815 | 21001397559 | Can you provide some screenshots? | jack@freshservice.com | false | false | 0 | 2023-01-15T14:15:14Z | 2023-01-15T14:15:14Z |
 >| 21006225647 | 21001397559 | We are working on this issue. Will keep you posted. | jack@freshservice.com | false | false | 0 | 2023-01-15T13:11:25Z | 2023-01-15T13:11:25Z |
 
-
 ### freshservice-ticket-conversation-reply-create
 
 ***
@@ -2708,8 +2742,11 @@ Create a new reply for an existing Ticket Conversation.
 | Freshservice.Ticket.Conversation.Reply.from_email | String | Ticket Conversation Reply from email. |
 
 #### Command example
+
 ```!freshservice-ticket-conversation-reply-create body=body ticket_id=6```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -2739,10 +2776,10 @@ Create a new reply for an existing Ticket Conversation.
 #### Human Readable Output
 
 >### Ticket conversation reply created successfully
+>
 >|Id|User Id|Body Text|To Emails|From Email|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 21010431439 | 21001397559 | body | jack@freshservice.com | QDEV@qmasters.freshservice.com | 2023-04-13T14:16:01Z | 2023-04-13T14:16:01Z |
-
 
 ### freshservice-ticket-conversation-note-create
 
@@ -2781,8 +2818,11 @@ Create a new note for an existing Ticket Conversation.
 | Freshservice.Ticket.Conversation.Note.support_email | String | Ticket Conversation Note support email. |
 
 #### Command example
+
 ```!freshservice-ticket-conversation-note-create body=body ticket_id=6```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -2810,10 +2850,10 @@ Create a new note for an existing Ticket Conversation.
 #### Human Readable Output
 
 >### Ticket conversation note created successfully
+>
 >|Id|User Id|Body Text|To Emails|Incoming|Private|Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 21010431444 | 21001397559 | body |  | false | true |  | 2023-04-13T14:16:06Z | 2023-04-13T14:16:06Z |
-
 
 ### freshservice-ticket-conversation-update
 
@@ -2849,8 +2889,11 @@ Update an existing Conversation on an existing Ticket in Freshservice.
 | Freshservice.Ticket.Conversation.support_email | String | Conversation support email. |
 
 #### Command example
+
 ```!freshservice-ticket-conversation-update body=body conversation_id=21009603527```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -2878,10 +2921,10 @@ Update an existing Conversation on an existing Ticket in Freshservice.
 #### Human Readable Output
 
 >### Ticket conversation updated successfully
+>
 >|Id|User Id|Body Text|To Emails|Incoming|Private|Source|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 21009603527 | 21001397559 | body |  | false | false |  | 2023-03-26T11:42:56Z | 2023-04-13T14:16:12Z |
-
 
 ### freshservice-ticket-conversation-delete
 
@@ -2901,8 +2944,11 @@ Delete the Conversation on a Ticket with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-ticket-conversation-delete conversation_id=21010429932```
+
 #### Human Readable Output
 
 >Conversation deleted successfully
@@ -2948,8 +2994,11 @@ Retrieve a list of all Problems or a specific problem with the given ID from Fre
 | Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
+
 ```!freshservice-problem-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -3917,8 +3966,10 @@ Retrieve a list of all Problems or a specific problem with the given ID from Fre
 #### Human Readable Output
 
 >### Problem
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description Text|Requester Id|Subject|Impact|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 39 | Hi guys,   We have been facing issues when we try to reach Email Server 3. Looks like there is something wrong here.  Regards  Rachel | 21001523090 | Unable to reach email server | Low | Change Requested | Medium |  | false |  | 2023-04-13T14:02:45Z | 2023-04-13T14:02:45Z | 2023-07-20T16:18:46Z |
@@ -3952,7 +4003,6 @@ Retrieve a list of all Problems or a specific problem with the given ID from Fre
 >| 4 | Hi guys,   We have been facing issues when we try to reach Email Server 3. Looks like there is something wrong here.  Regards  Rachel | 21001523090 | Unable to reach email server | Low | Change Requested | Medium |  | false |  | 2023-02-02T11:32:07Z | 2023-02-02T11:32:07Z | 2023-07-20T16:18:46Z |
 >| 3 | Hi guys,   We have been facing issues when we try to reach Email Server 3. Looks like there is something wrong here.  Regards  Rachel | 21001523090 | Unable to reach email server | Low | Change Requested | Medium |  | false |  | 2023-02-01T15:49:11Z | 2023-02-01T15:49:11Z | 2023-07-20T16:18:46Z |
 >| 1 |  | 21001397561 | Unable to reach email server | High | Open | High | 21000478053 | true | Hardware | 2022-12-25T08:38:06Z | 2023-03-26T11:49:59Z | 2023-01-08T08:38:00Z |
-
 
 ### freshservice-problem-create
 
@@ -4007,8 +4057,11 @@ Create a new problem request in Freshservice. Creating a problem required one of
 | Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
+
 ```!freshservice-problem-create description=description subject=subject email=sample@freshservice.com priority=Low status=Open due_by="2023-07-20T16:18:46Z" impact=Low```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4044,11 +4097,12 @@ Create a new problem request in Freshservice. Creating a problem required one of
 #### Human Readable Output
 
 >### Problem
+>
 >Problem created successfully
+>
 >|Id|Description Text|Requester Id|Subject|Impact|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 40 | description | 21001523090 | subject | Low | Open | Low |  | false |  | 2023-04-13T14:16:29Z | 2023-04-13T14:16:29Z | 2023-07-20T16:18:46Z |
-
 
 ### freshservice-problem-update
 
@@ -4103,8 +4157,11 @@ Update an existing Problem in Freshservice.
 | Freshservice.Problem.updated_at | Date | Problem updated at. |
 
 #### Command example
+
 ```!freshservice-problem-update problem_id=38 description=description```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4140,11 +4197,12 @@ Update an existing Problem in Freshservice.
 #### Human Readable Output
 
 >### Problem
+>
 >Problem updated successfully
+>
 >|Id|Description Text|Requester Id|Subject|Impact|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Due By|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 38 | description | 21001523090 | Unable to reach email server | Low | Change Requested | Medium |  | false |  | 2023-04-13T14:00:51Z | 2023-04-13T14:00:51Z | 2023-07-20T16:18:46Z |
-
 
 ### freshservice-problem-delete
 
@@ -4164,8 +4222,11 @@ Delete the Problem with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-problem-delete problem_id=37```
+
 #### Human Readable Output
 
 >Problem deleted successfully
@@ -4207,8 +4268,11 @@ Retrieve the tasks on a Problem with the given ID from Freshservice.
 | Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-problem-task-list problem_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4320,8 +4384,10 @@ Retrieve the tasks on a Problem with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Problem
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 6 | test | Supply lightsabers to all the Jedis | 0 | Completed | false | 2023-03-26T12:22:36Z | 2023-01-15T16:03:37Z | 2023-03-26T12:22:36Z | 2023-01-19T19:00:00Z |
@@ -4330,7 +4396,6 @@ Retrieve the tasks on a Problem with the given ID from Freshservice.
 >| 24 | d | d | 0 | Completed | false | 2023-03-22T15:01:00Z | 2023-03-08T10:52:46Z | 2023-03-22T15:01:00Z | 2023-03-10T19:00:00Z |
 >| 185 | We need to re-supply to win the war! | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:01:04Z | 2023-04-13T14:01:04Z | 2023-04-17T20:01:04Z |
 >| 186 | We need to re-supply to win the war! | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:03:02Z | 2023-04-13T14:03:02Z | 2023-04-17T20:03:02Z |
-
 
 ### freshservice-problem-task-create
 
@@ -4370,8 +4435,11 @@ Create a new task on a problem in Freshservice.
 | Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-problem-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open problem_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4403,11 +4471,12 @@ Create a new task on a problem in Freshservice.
 #### Human Readable Output
 
 >### Problem
+>
 >Problem Task created successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 193 | description | title | 7200 | Open | false |  | 2023-04-13T14:16:52Z | 2023-04-13T14:16:52Z | 2023-04-17T20:16:52Z |
-
 
 ### freshservice-problem-task-update
 
@@ -4448,8 +4517,11 @@ Update an existing task on an existing Problem in Freshservice.
 | Freshservice.Problem.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-problem-task-update description=description problem_id=2 task_id=185```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4481,11 +4553,12 @@ Update an existing task on an existing Problem in Freshservice.
 #### Human Readable Output
 
 >### Problem
+>
 >Problem Task updated successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 185 | description | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:01:04Z | 2023-04-13T14:16:58Z | 2023-04-17T20:01:04Z |
-
 
 ### freshservice-problem-task-delete
 
@@ -4506,8 +4579,11 @@ Delete the task on a Problem with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-problem-task-delete problem_id=2 task_id=186```
+
 #### Human Readable Output
 
 >Problem Task deleted successfully
@@ -4557,8 +4633,11 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 | Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
+
 ```!freshservice-change-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4827,8 +4906,10 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 #### Human Readable Output
 
 >### Change
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description Text|Requester Id|Subject|Risk|Impact|Status|Priority|Change Type|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 29 | Hi Team,    One of our email servers, Exchange Server (ES3) has been acting up. We tried rebooting it, but that didn’t help. We need to get it replaced ASAP.   Regards  Rachel | 21001523121 | Getting ES3 back up to speed | Low | Low | Open | Low | Minor |  | 2023-04-13T14:06:10Z | 2023-04-13T14:06:10Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
@@ -4837,7 +4918,6 @@ Retrieve a list of all Change requests or the Change request with the given ID f
 >| 19 | mirroring OUT 16:49 | 21001397559 | oj[oko' | Medium | Medium | Open | High | Standard | Travel | 2023-03-23T17:01:01Z | 2023-04-04T13:50:11Z | 2023-03-27T21:30:00Z | 2023-03-29T22:00:00Z |
 >| 11 | 14:08 | 21001894392 | New test by ben | High | High | Open | Low | Emergency |  | 2023-03-19T12:49:52Z | 2023-04-02T11:07:57Z | 2023-10-02T00:00:00Z | 2023-11-01T00:00:00Z |
 >| 10 | test description | 21001894392 | New test by ben | High | High | Open | High | Emergency |  | 2023-03-19T12:38:33Z | 2023-03-19T12:38:33Z | 2023-10-02T00:00:00Z | 2023-11-01T00:00:00Z |
-
 
 ### freshservice-change-create
 
@@ -4896,8 +4976,11 @@ Create a new Change request in Freshservice. Creating a ticket required one of t
 | Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
+
 ```!freshservice-change-create description=description priority=Low impact=Low status=Open risk=Low change_type=Minor planned_start_date="2019-03-20T16:18:46Z" planned_end_date="2019-03-23T16:18:46Z" subject=subject email=sample@freshservice.com```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -4941,11 +5024,12 @@ Create a new Change request in Freshservice. Creating a ticket required one of t
 #### Human Readable Output
 
 >### Change
+>
 >Change created successfully
+>
 >|Id|Description Text|Requester Id|Subject|Risk|Impact|Status|Priority|Change Type|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 30 | description | 21001523090 | subject | Low | Low | Open | Low | Minor |  | 2023-04-13T14:17:14Z | 2023-04-13T14:17:14Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
-
 
 ### freshservice-change-update
 
@@ -5004,8 +5088,11 @@ Update an existing Change request in Freshservice.
 | Freshservice.Change.updated_at | Date | Change updated at. |
 
 #### Command example
+
 ```!freshservice-change-update description=description change_id=28 subject=subject```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5049,11 +5136,12 @@ Update an existing Change request in Freshservice.
 #### Human Readable Output
 
 >### Change
+>
 >Change updated successfully
+>
 >|Id|Description Text|Requester Id|Subject|Risk|Impact|Status|Priority|Change Type|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 28 | description | 21001523121 | subject | Low | Low | Open | Low | Minor |  | 2023-04-13T14:03:42Z | 2023-04-13T14:17:20Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
-
 
 ### freshservice-change-delete
 
@@ -5073,8 +5161,11 @@ Delete the Change request with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-change-delete change_id=29```
+
 #### Human Readable Output
 
 >Change deleted successfully
@@ -5116,8 +5207,11 @@ Retrieve the tasks on a Change request with the given ID from Freshservice.
 | Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-change-task-list change_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5261,8 +5355,10 @@ Retrieve the tasks on a Change request with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Change
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 8 | We need to re-supply to win the war! | Supply lightsabers to all the Jedis | 0 | Completed | false | 2023-03-26T09:58:58Z | 2023-01-15T16:05:20Z | 2023-03-26T09:58:59Z | 2020-04-27T13:23:20Z |
@@ -5273,7 +5369,6 @@ Retrieve the tasks on a Change request with the given ID from Freshservice.
 >| 37 | dsa | sd | 7200 | Completed | false | 2023-03-26T09:58:59Z | 2023-03-19T12:47:29Z | 2023-03-26T09:58:59Z | 2023-03-22T18:00:00Z |
 >| 187 | We need to re-supply to win the war! | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:08:05Z | 2023-04-13T14:08:05Z | 2023-04-17T20:08:05Z |
 >| 188 | We need to re-supply to win the war! | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:08:32Z | 2023-04-13T14:08:32Z | 2023-04-17T20:08:32Z |
-
 
 ### freshservice-change-task-create
 
@@ -5313,8 +5408,11 @@ Create a new task on a change request in Freshservice.
 | Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-change-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open change_id=2```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5346,11 +5444,12 @@ Create a new task on a change request in Freshservice.
 #### Human Readable Output
 
 >### Change
+>
 >Change Task created successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 194 | description | title | 7200 | Open | false |  | 2023-04-13T14:17:37Z | 2023-04-13T14:17:37Z | 2023-04-17T20:17:37Z |
-
 
 ### freshservice-change-task-update
 
@@ -5391,8 +5490,11 @@ Update an existing task on an existing Change request in Freshservice.
 | Freshservice.Change.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-change-task-update description=description change_id=2 task_id=188```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5424,11 +5526,12 @@ Update an existing task on an existing Change request in Freshservice.
 #### Human Readable Output
 
 >### Change
+>
 >Change Task updated successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 188 | description | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:08:32Z | 2023-04-13T14:17:43Z | 2023-04-17T20:08:32Z |
-
 
 ### freshservice-change-task-delete
 
@@ -5449,8 +5552,11 @@ Delete the task on a Change request with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-change-task-delete change_id=187 task_id=2```
+
 #### Human Readable Output
 
 >Task 2 does not exist
@@ -5499,8 +5605,11 @@ Retrieve a list of all Releases (or specific by ID) in Freshservice.
 | Freshservice.Release.associated_change_ids | Number | release associated change IDs. |
 
 #### Command example
+
 ```!freshservice-release-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5650,15 +5759,16 @@ Retrieve a list of all Releases (or specific by ID) in Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Description Text|Subject|Release Type|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 41 | Not given. | string | Minor | In Progress | Low |  |  | Hardware | 2023-04-13T14:11:15Z | 2023-04-13T14:11:15Z | 2020-03-31T10:35:47Z | 2023-03-31T10:35:47Z |
 >| 40 | Not given. | string | Minor | In Progress | Low |  |  | Hardware | 2023-04-13T14:09:07Z | 2023-04-13T14:09:07Z | 2020-03-31T10:35:47Z | 2023-03-31T10:35:47Z |
 >| 39 | fdbfdsghdfsgh 19:05 | test test test | Standard | In Progress | Medium | 21000478053 |  | Network | 2023-04-03T15:13:12Z | 2023-04-03T16:06:18Z | 2023-04-02T21:15:00Z | 2023-04-02T22:15:00Z |
 >| 38 | Not given. | string | Minor | In Progress | Low |  |  | Hardware | 2023-03-28T10:13:28Z | 2023-03-28T10:13:28Z | 2020-03-31T10:35:47Z | 2023-03-31T10:35:47Z |
-
 
 ### freshservice-release-create
 
@@ -5711,8 +5821,11 @@ Create a new Release request in Freshservice.
 | Freshservice.Release.updated_at | Date | Release updated at. |
 
 #### Command example
+
 ```!freshservice-release-create priority=Low status=Open release_type=Minor subject=subject description=description planned_start_date="2019-03-20T16:18:46Z" planned_end_date="2019-03-23T16:18:46Z"```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5749,11 +5862,12 @@ Create a new Release request in Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Release created successfully
+>
 >|Id|Description Text|Subject|Release Type|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 42 | description | subject | Minor | Open | Low |  |  |  | 2023-04-13T14:18:00Z | 2023-04-13T14:18:00Z | 2019-03-20T16:18:46Z | 2019-03-23T16:18:46Z |
-
 
 ### freshservice-release-update
 
@@ -5806,8 +5920,11 @@ Update an existing Release in Freshservice.
 | Freshservice.Release.updated_at | Date | Release updated at. |
 
 #### Command example
+
 ```!freshservice-release-update description=description release_id=40```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5844,11 +5961,12 @@ Update an existing Release in Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Release updated successfully
+>
 >|Id|Description Text|Subject|Release Type|Status|Priority|Group Id|Known Error|Category|Created At|Updated At|Planned Start Date|Planned End Date|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 40 | description | string | Minor | In Progress | Low |  |  | Hardware | 2023-04-13T14:09:07Z | 2023-04-13T14:09:07Z | 2020-03-31T10:35:47Z | 2023-03-31T10:35:47Z |
-
 
 ### freshservice-release-delete
 
@@ -5868,8 +5986,11 @@ Delete a Release with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-release-delete release_id=41```
+
 #### Human Readable Output
 
 >Release deleted successfully
@@ -5911,8 +6032,11 @@ Retrieve the tasks on a Release with the given ID from Freshservice.
 | Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-release-task-list release_id=40```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -5927,10 +6051,10 @@ Retrieve the tasks on a Release with the given ID from Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Showing page 1.
 > Current page size: 50.
 >**No entries.**
-
 
 ### freshservice-release-task-create
 
@@ -5970,8 +6094,11 @@ Create a new task on a Release in Freshservice.
 | Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-release-task-create due_date="2020-04-03T10:26:13.067Z" notify_before="2020-05-03T10:26:13.067Z" title=title description=description status=Open release_id=34```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -6003,11 +6130,12 @@ Create a new task on a Release in Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Release Task created successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 195 | description | title | 7200 | Open | false |  | 2023-04-13T14:18:22Z | 2023-04-13T14:18:22Z | 2023-04-17T20:18:22Z |
-
 
 ### freshservice-release-task-update
 
@@ -6048,8 +6176,11 @@ Update an existing task on an existing Release in Freshservice.
 | Freshservice.Release.Task.deleted | Boolean | Task deleted. |
 
 #### Command example
+
 ```!freshservice-release-task-update description=description status=Open release_id=34 task_id=190```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -6081,11 +6212,12 @@ Update an existing task on an existing Release in Freshservice.
 #### Human Readable Output
 
 >### Release
+>
 >Release Task updated successfully
+>
 >|Id|Description|Title|Notify Before|Status|Deleted|Closed At|Created At|Updated At|Due Date|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 190 | description | Supply lightsabers to all the Jedis | 0 | Open | false |  | 2023-04-13T14:12:11Z | 2023-04-13T14:18:28Z | 2023-04-17T20:12:11Z |
-
 
 ### freshservice-release-task-delete
 
@@ -6106,8 +6238,11 @@ Delete the task on a Release with the given ID from Freshservice.
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!freshservice-release-task-delete release_id=34 task_id=191```
+
 #### Human Readable Output
 
 >Release Task deleted successfully
@@ -6176,8 +6311,11 @@ Lists all the requesters (information about a user) in a Freshservice account. Y
 | Freshservice.Requester.work_phone_number | Unknown | Requester work phone number. |
 
 #### Command example
+
 ```!freshservice-requester-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -6736,8 +6874,10 @@ Lists all the requesters (information about a user) in a Freshservice account. Y
 #### Human Readable Output
 
 >### Requester
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|First Name|Last Name|Primary Email|Active|Created At|Updated At|Time Zone|Department Id|Department Name|Can See All Tickets From Associated Departments|Can See All Changes From Associated Departments|
 >|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 21001894858 | asdasdas |  |  | true | 2023-03-15T18:52:53Z | 2023-03-15T18:52:53Z | Eastern Time (US & Canada) |  |  | false | false |
@@ -6758,7 +6898,6 @@ Lists all the requesters (information about a user) in a Freshservice account. Y
 >| 21001793038 | Tal |  | tal@gamil.com | true | 2023-03-02T16:02:38Z | 2023-03-02T16:02:38Z | Eastern Time (US & Canada) |  |  | false | false |
 >| 21001776393 | Tal | Gumi | tal@gmail.com | true | 2023-02-26T16:01:32Z | 2023-03-02T14:30:27Z | Monterrey |  |  | false | false |
 >| 21001523121 | Tom |  | tom@outerspace.com | true | 2023-01-15T15:52:00Z | 2023-01-15T15:52:00Z | Eastern Time (US & Canada) |  |  | false | false |
-
 
 ### freshservice-agent-list
 
@@ -6833,8 +6972,11 @@ Retrieve a list of all Agents (or specific by ID) in Freshservice. You can speci
 | Freshservice.Agent.workspace_ids | Number | Agent workspace IDs. |
 
 #### Command example
+
 ```!freshservice-agent-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7015,14 +7157,15 @@ Retrieve a list of all Agents (or specific by ID) in Freshservice. You can speci
 #### Human Readable Output
 
 >### Agent
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|First Name|Last Name|Email|Active|Created At|Updated At|Time Zone|Language|Can See All Tickets From Associated Departments|Auto Assign Status Changed At|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 21001397559 | Beni | Manela | benim@qmasters.co | true | 2022-12-25T08:37:27Z | 2022-12-25T09:53:00Z | Athens | en | false | 2023-03-13T11:27:46Z |
 >| 21001397561 | Rachel |  | rachel@freshservice.com | false | 2022-12-25T08:37:28Z | 2022-12-25T08:37:28Z | Eastern Time (US & Canada) | en | false |  |
 >| 21001523008 | Tal | Gumi | talg@qmasters.co | true | 2023-01-15T10:06:40Z | 2023-01-15T10:06:40Z | Eastern Time (US & Canada) | en | false | 2023-01-24T09:11:28Z |
-
 
 ### freshservice-role-list
 
@@ -7055,8 +7198,11 @@ Lists all the roles in a Freshservice account. Roles allow you to manage access 
 | Freshservice.Role.role_type | Number | Role type. |
 
 #### Command example
+
 ```!freshservice-role-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7204,8 +7350,10 @@ Lists all the roles in a Freshservice account. Roles allow you to manage access 
 #### Human Readable Output
 
 >### Role
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Description|Role Type|Default|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 21000388918 | Account Admin | Has complete admin control over the service desk including access to account or billing related information | 1 | true | 2022-12-25T08:37:26Z | 2022-12-25T08:37:26Z |
@@ -7223,7 +7371,6 @@ Lists all the roles in a Freshservice account. Roles allow you to manage access 
 >| 21000388930 | Business Agent | Can work on Tickets, Projects, Solutions, and Announcements. Cannot view reports | 2 | true | 2022-12-25T08:37:57Z | 2022-12-25T08:37:57Z |
 >| 21000388931 | Business Team Supervisor | Can work on Tickets, Projects, Solutions, and Announcements. Can view and manage reports | 2 | true | 2022-12-25T08:37:57Z | 2022-12-25T08:37:57Z |
 >| 21000388932 | Workspace Admin | Workspace Admin | 1 | true | 2022-12-25T08:43:45Z | 2022-12-25T08:43:45Z |
-
 
 ### freshservice-vendor-list
 
@@ -7264,8 +7411,11 @@ Lists all the vendors (or specific by ID) in the Freshservice account.
 | Freshservice.Vendor.updated_at | Date | Vendor updated at. |
 
 #### Command example
+
 ```!freshservice-vendor-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7378,8 +7528,10 @@ Lists all the vendors (or specific by ID) in the Freshservice account.
 #### Human Readable Output
 
 >### Vendor
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Contact Name|Description|Email|Created At|Updated At|
 >|---|---|---|---|---|---|---|
 >| 21000275400 | Apple |  |  |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
@@ -7387,7 +7539,6 @@ Lists all the vendors (or specific by ID) in the Freshservice account.
 >| 21000275403 | Freshworks |  |  |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
 >| 21000275402 | Logitech |  |  |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
 >| 21000275404 | Microsoft |  |  |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
-
 
 ### freshservice-software-list
 
@@ -7430,8 +7581,11 @@ Lists all the softwares (or specific by ID) in the Freshservice account.
 | Freshservice.Software.category | Unknown | Software application category. |
 
 #### Command example
+
 ```!freshservice-software-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7488,13 +7642,14 @@ Lists all the softwares (or specific by ID) in the Freshservice account.
 #### Human Readable Output
 
 >### Software
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Description|Application Type|Status|Created At|Updated At|Managed By Id|Publisher Id|Workspace Id|User Count|Category|Installation Count|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 21000992114 | Freshservice |  | saas | managed | 2022-12-25T08:38:12Z | 2022-12-25T08:38:12Z | 21001397563 | 21000275403 | 2 | 1 |  | 0 |
 >| 21000992115 | Microsoft Office 365 |  | desktop | managed | 2022-12-25T08:38:12Z | 2022-12-25T08:38:12Z | 21001397563 | 21000275404 | 2 | 1 |  | 1 |
-
 
 ### freshservice-asset-list
 
@@ -7551,8 +7706,11 @@ Lists all the assets (or specific by ID) in the Freshservice account. You can sp
 | Freshservice.Asset.workspace_id | Number | Asset workspace ID. |
 
 #### Command example
+
 ```!freshservice-asset-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7653,15 +7811,16 @@ Lists all the assets (or specific by ID) in the Freshservice account. You can sp
 #### Human Readable Output
 
 >### Asset
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Display Id|Name|Description|Asset Type Id|Impact|Author Type|Usage Type|Created At|Updated At|End Of Life|
 >|---|---|---|---|---|---|---|---|---|---|
 >| 4 | monitor |  | 21002421495 | low | User | permanent | 2023-01-19T11:08:57Z | 2023-01-19T11:08:57Z |  |
 >| 3 | Logitech Mouse |  | 21002421487 | low | User | permanent | 2022-12-25T08:38:11Z | 2022-12-25T08:38:11Z | 2026-12-25 |
 >| 2 | Dell Monitor |  | 21002421495 | low | User | permanent | 2022-12-25T08:38:11Z | 2022-12-25T08:38:11Z | 2027-12-25 |
 >| 1 | Andrea's Laptop |  | 21002421523 | medium | User | permanent | 2022-12-25T08:38:11Z | 2022-12-25T08:38:11Z | 2025-12-25 |
-
 
 ### freshservice-purchase-order-list
 
@@ -7699,8 +7858,11 @@ Lists all the purchase orders (or specific by ID) in a Freshservice account.
 | Freshservice.PurchaseOrder.workspace_id | Number | Purchase order workspace ID. |
 
 #### Command example
+
 ```!freshservice-purchase-order-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -7741,13 +7903,14 @@ Lists all the purchase orders (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### PurchaseOrder
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Vendor Id|Po Number|Total Cost|Status|Created At|Updated At|Expected Delivery Date|
 >|---|---|---|---|---|---|---|---|---|
 >| 3 | TeetForBen | 21000275404 | PO-2 | 500.0 | Open | 2023-03-02T14:12:39Z | 2023-03-02T14:12:39Z |  |
 >| 1 | Purchase Order for Dell laptops | 21000275401 | PO-1 | 11030.0 | Cancelled | 2022-12-25T08:38:11Z | 2023-03-02T14:34:48Z | 2022-12-27T05:00:00Z |
-
 
 ### freshservice-agent-group-list
 
@@ -7784,8 +7947,11 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 | Freshservice.AgentGroup.unassigned_for | String | Agent group unassigned for. |
 
 #### Command example
+
 ```!freshservice-agent-group-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -8074,8 +8240,10 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### AgentGroup
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Description|Members|Observers|Agent Ids|Created At|Updated At|Auto Ticket Assign|
 >|---|---|---|---|---|---|---|---|---|
 >| 21000478062 | General - Applications Management Team | Applications Management Team |  |  |  | 2022-12-25T08:43:46Z | 2022-12-25T08:43:46Z | false |
@@ -8095,7 +8263,6 @@ Lists all the agent groups (or specific by ID) in a Freshservice account.
 >| 21000478047 | IT - Service Request Fulfillment Team | Service Request Fulfillment Team |  |  |  | 2022-12-25T08:37:30Z | 2022-12-25T08:37:30Z | false |
 >| 21000478056 | IT - Software Team | Software Team |  |  |  | 2022-12-25T08:37:30Z | 2022-12-25T08:37:30Z | false |
 >| 21000478054 | IT - Supplier Management Team | Supplier Management Team |  |  |  | 2022-12-25T08:37:30Z | 2022-12-25T08:37:30Z | false |
-
 
 ### freshservice-department-list
 
@@ -8131,8 +8298,11 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 | Freshservice.Department.head_user_id | Number | Department head user ID. |
 
 #### Command example
+
 ```!freshservice-department-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -8235,8 +8405,10 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 #### Human Readable Output
 
 >### Department
+>
 >Showing page 1.
 > Current page size: 50.
+>
 >|Id|Name|Description|Domains|Created At|Updated At|
 >|---|---|---|---|---|---|
 >| 21000263162 | Customer Support | Support Team |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
@@ -8247,7 +8419,6 @@ Lists all the departments (or specific by ID) in a Freshservice account.
 >| 21000263166 | IT | IT Service Team |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
 >| 21000263165 | Operations | Operations Team |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
 >| 21000263161 | Sales | Sales Team |  | 2022-12-25T08:37:58Z | 2022-12-25T08:37:58Z |
-
 
 ### freshservice-requester-field-list
 
@@ -8278,8 +8449,11 @@ Lists all the Requester fields in a Freshservice account.
 | Freshservice.RequesterField.choices | String | Requester fields choices. |
 
 #### Command example
+
 ```!freshservice-requester-field-list```
+
 #### Context Example
+
 ```json
 {
     "Freshservice": {
@@ -8741,8 +8915,10 @@ Lists all the Requester fields in a Freshservice account.
 #### Human Readable Output
 
 >### RequesterField
+>
 >Showing page 1.
 > Current page size: None.
+>
 >|Id|Name|Label|Position|Type|Label For Requesters|Choices|Created At|Updated At|
 >|---|---|---|---|---|---|---|---|---|
 >| 21000497683 | first_name | First Name | 1 | default_first_name | First Name |  | 2022-12-25T08:37:27Z | 2022-12-25T08:37:27Z |
@@ -8762,7 +8938,6 @@ Lists all the Requester fields in a Freshservice account.
 >| 21000497697 | location_id | Location | 15 | default_location_id | Location |  | 2022-12-25T08:37:28Z | 2022-12-25T08:37:28Z |
 >| 21000497698 | description | Background Information | 16 | default_description | Background Information |  | 2022-12-25T08:37:28Z | 2022-12-25T08:37:28Z |
 
-
 ### get-mapping-fields
 
 ***
@@ -8780,6 +8955,7 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -8799,6 +8975,7 @@ Gets remote data from a remote incident. This method does not update the current
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -8817,10 +8994,12 @@ Gets the list of incidents that were modified since the last update time. Note t
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and Freshworks Freshservice corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 

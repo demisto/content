@@ -1,6 +1,7 @@
 Remove empty items, entries or nodes from the array.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Remove empty items, entries or nodes from the array.
 | Tags | transformer, entirelist, general |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Remove empty items, entries or nodes from the array.
 | empty_values | The list of particular tokens to be considerd as empty. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

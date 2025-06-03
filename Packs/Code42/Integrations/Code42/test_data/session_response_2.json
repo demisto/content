@@ -44,7 +44,6 @@
   "exfiltrationSummary": "document file(s) shared via link from corporate Box",
   "contextSummary": "",
   "contentInspectionResults": {
-    "status": "UNPROCESSED",
-    "eventResults": []
+    "detectedOnAlerts": ["PII"]
   }
 }

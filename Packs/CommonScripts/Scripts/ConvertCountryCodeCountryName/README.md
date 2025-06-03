@@ -8,6 +8,7 @@ Input: { "country_name": "United States" }
 Output: { "US" }
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -17,6 +18,7 @@ Output: { "US" }
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -25,5 +27,6 @@ Output: { "US" }
 | country_name | Country Name |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -2,20 +2,33 @@ import datetime
 import json
 from pathlib import Path
 from packaging.version import Version
-from typing import Optional, List
 from unittest.mock import MagicMock
 import pytest
 from github_workflow_scripts.autobump_release_notes.autobump_rn import (
     PackAutoBumper,
-    BranchAutoBumper, AutoBumperManager,
+    BranchAutoBumper,
+    AutoBumperManager,
 )
-from github_workflow_scripts.autobump_release_notes.skip_conditions import ConditionResult, MetadataCondition, \
-    LastModifiedCondition, LabelCondition, AddedRNFilesCondition, HasConflictOnAllowedFilesCondition, \
-    PackSupportCondition, MajorChangeCondition, MaxVersionCondition, OnlyVersionChangedCondition, \
-    OnlyOneRNPerPackCondition, SameRNMetadataVersionCondition, AllowedBumpCondition, UpdateType
+from github_workflow_scripts.autobump_release_notes.skip_conditions import (
+    ConditionResult,
+    MetadataCondition,
+    LastModifiedCondition,
+    LabelCondition,
+    AddedRNFilesCondition,
+    HasConflictOnAllowedFilesCondition,
+    PackSupportCondition,
+    MajorChangeCondition,
+    MaxVersionCondition,
+    OnlyVersionChangedCondition,
+    OnlyOneRNPerPackCondition,
+    SameRNMetadataVersionCondition,
+    AllowedBumpCondition,
+    UpdateType,
+)
 from git import GitCommandError
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
 from github_workflow_scripts.autobump_release_notes import skip_conditions
+
 MERGE_STDOUT = "stdout: '\n Auto-merging {}\n failed.\n Auto-merging {}\n failed.\n"
 
 
@@ -34,8 +47,8 @@ class PullRequest:
     def __init__(
         self,
         updated_at=None,
-        labels: Optional[List[Label]] = None,
-        files: Optional[List[File]] = None,
+        labels: list[Label] | None = None,
+        files: list[File] | None = None,
         branch_name: str = "branch",
     ):
         self.number = 1
@@ -58,7 +71,7 @@ class PullRequest:
 
 
 class Repository:
-    def __init__(self, pulls: Optional[List[PullRequest]] = None):
+    def __init__(self, pulls: list[PullRequest] | None = None):
         self.pulls = pulls or []
 
     def get_pulls(self, *args, **kwargs):
@@ -73,37 +86,21 @@ class Repo:
 class Git:
     def __init__(self, files=None):
         self.files = files or []
-        self.rn_file = [
-            f.filename
-            for f in self.files
-            if f.status == "added" and "ReleaseNotes" in Path(f.filename).parts
-        ]
-        self.changed_metadata_files = [
-            f.filename
-            for f in self.files
-            if Path(f.filename).name == "pack_metadata.json"
-        ]
-        self.additional_files = [
-            f.filename
-            for f in self.files
-            if "ReleaseNotes" not in Path(f.filename).parts
-        ]
+        self.rn_file = [f.filename for f in self.files if f.status == "added" and "ReleaseNotes" in Path(f.filename).parts]
+        self.changed_metadata_files = [f.filename for f in self.files if Path(f.filename).name == "pack_metadata.json"]
+        self.additional_files = [f.filename for f in self.files if "ReleaseNotes" not in Path(f.filename).parts]
 
     def merge(self, *args):
         if "--no-commit" in args:
             if "not-allowed-conflicts" in args[0]:
                 raise GitCommandError(
                     command="merge",
-                    stdout=MERGE_STDOUT.format(
-                        self.additional_files[0], self.rn_file[0]
-                    ),
+                    stdout=MERGE_STDOUT.format(self.additional_files[0], self.rn_file[0]),
                 )
             elif "allowed-conflicts" in args[0]:
                 raise GitCommandError(
                     command="merge",
-                    stdout=MERGE_STDOUT.format(
-                        self.rn_file[0], self.changed_metadata_files[0]
-                    ),
+                    stdout=MERGE_STDOUT.format(self.rn_file[0], self.changed_metadata_files[0]),
                 )
         else:
             pass
@@ -145,9 +142,7 @@ def test_check_update_type(prev_version, new_version, expected_res):
     Then:
         - Right update type returned.
     """
-    res = AllowedBumpCondition.check_update_type(
-        prev_version=prev_version, new_version=new_version
-    )
+    res = AllowedBumpCondition.check_update_type(prev_version=prev_version, new_version=new_version)
     assert res == expected_res
 
 
@@ -170,9 +165,7 @@ def test_get_metadata_files(mocker):
         side_effect=[origin_metadata, branch_metadata, base_metadata],
     )
 
-    res1, res2, res3 = MetadataCondition.get_metadata_files(
-        pack_id="MyPack", pr=PullRequest(), git_repo=Repo()
-    )
+    res1, res2, res3 = MetadataCondition.get_metadata_files(pack_id="MyPack", pr=PullRequest(), git_repo=Repo())
 
     assert res1 == origin_metadata
     assert res2 == branch_metadata
@@ -228,12 +221,8 @@ CHANGED_FILES = [
             AddedRNFilesCondition,
             {
                 "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml"
-                    ),
+                    File(path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"),
+                    File(path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.yml"),
                     File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="modified"),
                 ]
             },
@@ -248,9 +237,7 @@ CHANGED_FILES = [
             AddedRNFilesCondition,
             {
                 "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
+                    File(path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"),
                     File(path="Packs/MyPack/pack_metadata.json", status="modified"),
                     File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
                 ]
@@ -452,9 +439,7 @@ CHANGED_FILES = [
             OnlyOneRNPerPackCondition,
             {
                 "files": [
-                    File(
-                        path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"
-                    ),
+                    File(path="Packs/MyPack/Integrations/MyIntegration/MyIntegration.py"),
                     File(path="Packs/MyPack/pack_metadata.json", status="modified"),
                     File(path="Packs/MyPack/ReleaseNotes/1_0_1.md", status="added"),
                     File(path="Packs/MyPack/ReleaseNotes/1_0_2.md", status="added"),
@@ -539,9 +524,7 @@ CHANGED_FILES = [
         ),
     ],
 )
-def test_metadata_conditions(
-    cond_obj, pr_args, condition_result_attributes, cond_kwargs, prev_res
-):
+def test_metadata_conditions(cond_obj, pr_args, condition_result_attributes, cond_kwargs, prev_res):
     """
     Given:
         Conditions to check, whether the pr should be skipped.
@@ -551,9 +534,7 @@ def test_metadata_conditions(
         Right ConditionResult returned.
     """
     pr = PullRequest(**pr_args)
-    cond = cond_obj(
-        pack="MyPack", pr=pr, git_repo=Repo(files=pr_args.get("files")), **cond_kwargs
-    )
+    cond = cond_obj(pack="MyPack", pr=pr, git_repo=Repo(files=pr_args.get("files")), **cond_kwargs)
     res = cond.check(previous_result=prev_res)
     for attr, expected_res in condition_result_attributes.items():
         assert res.__getattribute__(attr) == expected_res
@@ -590,9 +571,7 @@ def test_pack_auto_bumper(tmp_path, mocker):
         return_value=("1.1.0", {"name": "MyPack", "currentVersion": "1.1.0"}),
     )
     mocker.patch.object(UpdateRN, "get_release_notes_path", return_value=str(new_rn))
-    pack_auto_bumper = PackAutoBumper(
-        pack_id="MyPack", rn_file_path=rn_file, update_type=UpdateType.MINOR
-    )
+    pack_auto_bumper = PackAutoBumper(pack_id="MyPack", rn_file_path=rn_file, update_type=UpdateType.MINOR)
     pack_auto_bumper.set_pr_changed_rn_related_data()
 
     new_version = pack_auto_bumper.autobump()

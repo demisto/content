@@ -1,10 +1,12 @@
 Enhancement script to enrich PassiveTotal components for Domain and IP type of indicators.
 It can be set by following these steps:
- - Settings > ADVANCED > Indicator Type
- - Edit Domain and IP Indicator one by one 
- - Add this script into Enhancement Scripts
- 
+
+- Settings > ADVANCED > Indicator Type
+- Edit Domain and IP Indicator one by one
+- Add this script into Enhancement Scripts
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,11 +16,13 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* pt-get-components
+- pt-get-components
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,13 +30,16 @@ This script uses the following commands and scripts.
 | indicator_value | Domain or IP indicator value that need to enrich |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Script Example
+
 ```!RiskIQPassiveTotalComponentsScript indicator_value=www.furth.com.ar```
 
 ## Context Example
+
 ```
 {
     "DBotScore": {
@@ -107,7 +114,9 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 7
+>
 >### COMPONENTS
+>
 >|Hostname|First (GMT)|Last (GMT)|Category|Value|Version|
 >|---|---|---|---|---|---|
 >| www.furth.com.ar | 2020-05-29 10:57:44 | 2020-05-29 10:57:44 | Framework | PHP |  |

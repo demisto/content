@@ -2,6 +2,7 @@ Use the AutoFocus v2 integration to contextualize threat intelligence and bring 
 TIM customers that upgraded to version 6.2 or above, can have the API Key pre-configured in their main account so no additional input is needed. To use this feature, upgrade your license so it includes the license key.
 
 ## Use Cases
+
 * Query samples / sessions
 * Get sample analysis
 * Get session details
@@ -9,15 +10,18 @@ TIM customers that upgraded to version 6.2 or above, can have the API Key pre-co
 * Get top tags
 
 ## Get Your API Key
+
 To get your API key, you need to add an authorization code, and then activate the API.
 
 ## Add your authorization code
+
 1. Go to the [Palo Alto Networks support site](https://support.paloaltonetworks.com/).
 2. Select **Assets > Site Licenses** tab.
 3. Select **Add Site License**.
 4. Enter the authorization code.
 
 ## Activate the API
+
 1. in **Site Licenses**, select **Enable**.
 2. Click the API Key link.
 
@@ -25,6 +29,7 @@ Use the API key when configuring the integration.
 For more information on activating the license see [Activating AutoFocus Licenses](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/get-started-with-autofocus/activate-autofocus-licenses.html).
 
 ## Configure AutoFocus V2 on Cortex XSOAR
+
 ---
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -36,23 +41,24 @@ For more information on activating the license see [Activating AutoFocus License
    | Name | A meaningful name for the integration instance. | AutoFocus V2_instance_2 |
    | API Key | Account's private token. | N/A  |
    | Source Reliability | Reliability of the source providing the intelligence data. | B - Usually reliable |
-   | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |   
-   | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |   
+   | Additional Malicious Verdicts  | A comma-separated list of Palo Alto Networks verdicts to consider as malicious when calculating the DBot score.  | malware,phishing,c2 |
+   | Override default credentials | Whether to override the default AutoFocus API key given by the Cortex XSOAR platform. | False |
    | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
-   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A | 
+   | Use System Proxy Settings | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration. |  N/A |
    | handle_error | Suppress errors for non found indicators. | N/A |
-
 
 4. Click **Test** to validate the URLs, token, and connection.
 
-
 ## Commands
+
 ---
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook. After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Search for samples
+
 ---
 Searches for samples. To view the results provide polling=true, or run the `autofocus-samples-search-results` command with the returned Af Cookie. The AF Cookie expires 120 seconds after the search completes. Use the query that was created in AutoFocus within playbooks "as-is". To run the command with the query in Cortex XSOAR, wrap the query in backticks ``. For example:
+
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
@@ -65,34 +71,37 @@ Searches for samples. To view the results provide polling=true, or run the `auto
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description. | Optional | 
-| max_results | The number of results to return. | Optional | 
-| sort | The field by which to sort the results. | Optional | 
-| order | The order of the results. Can be "Ascending" or "Descending". | Optional | 
-| scope | The scope of the search. Can be "Private", "Public", or "Global". | Required | 
-| file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional | 
-| domain | The domain to search. | Optional | 
-| ip | The IP address to search. | Optional | 
-| url | The URL to search. | Optional | 
-| artifact | Whether to return artifacts of samples. | Optional | 
-| wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional | 
-| first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
-| last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
+| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description. | Optional |
+| max_results | The number of results to return. | Optional |
+| sort | The field by which to sort the results. | Optional |
+| order | The order of the results. Can be "Ascending" or "Descending". | Optional |
+| scope | The scope of the search. Can be "Private", "Public", or "Global". | Required |
+| file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional |
+| domain | The domain to search. | Optional |
+| ip | The IP address to search. | Optional |
+| url | The URL to search. | Optional |
+| artifact | Whether to return artifacts of samples. | Optional |
+| wildfire_verdict | The WildFire verdict. Can be "Malware", "Grayware", "Benign", or "Phishing". | Optional |
+| first_seen | The date range of the creation date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional |
+| last_updated | The date range of the last updated date. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional |
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
-| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
+
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
 2. Click the **Advanced...** button on the top right.
 3. Build a query by selecting the fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
 5. To get the query, open the API syntax, and click the **>_API** button.
 Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+
 ```
 {"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
 ```
@@ -101,43 +110,45 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SamplesSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
-| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.SamplesResults.Size | String | The file size in bytes. | 
-| AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. | 
-| AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.SamplesResults.Created | Date | The date that the file was created. | 
-| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. | 
-| AutoFocus.SamplesResults.Region | String | The region of the sample. | 
-| AutoFocus.SamplesResults.FileType | String | The file type. | 
-| AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. | 
-| AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. | 
-| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. | 
-| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. | 
-| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. | 
-| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. | 
-| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. | 
-| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. | 
-| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
-| File.Tags | String | The tags of the file. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
+| AutoFocus.SamplesSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. |
+| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.SamplesResults.Size | String | The file size in bytes. |
+| AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. |
+| AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.SamplesResults.Created | Date | The date that the file was created. |
+| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. |
+| AutoFocus.SamplesResults.Region | String | The region of the sample. |
+| AutoFocus.SamplesResults.FileType | String | The file type. |
+| AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. |
+| AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. |
+| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. |
+| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. |
+| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. |
+| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. |
+| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. |
+| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. |
+| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. |
+| File.Size | Number | The size of the file in bytes. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). |
+| File.Tags | String | The tags of the file. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-search-samples query=`{"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]}` scope=Global sort="First Seen (Create Date)" order=Ascending
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SamplesSearch": {
@@ -148,13 +159,15 @@ Copy the query value from the opening curly bracket `{` until the `,"scope"` par
 ```
 
 ##### Human Readable Output
-##### Search Samples Info:
+
+##### Search Samples Info
+
 |AFCookie|Status|
 |---|---|
 | 2-78049b80-9c18-47e7-835e-d31ca8bd48aa+0 | in progress |
 
-
 ### Search for sessions
+
 ---
 Searches for sessions. To view the results provide polling=true, or run the `autofocus-sessions-search-results` command with the returned AF Cookie. The AF Cookie expires 120 seconds after the search completes.
 
@@ -166,31 +179,34 @@ Searches for sessions. To view the results provide polling=true, or run the `aut
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section. | Optional | 
-| max_results | The maximum number of results to return. The default is 30. | Optional | 
-| sort | The field by which to sort the results. | Optional | 
-| order | The order of the results. Can be "Ascending" or "Descending". | Optional | 
-| file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional | 
-| domain | The domain to search. | Optional | 
-| ip | The IP address to search. | Optional | 
-| url | The URL to search. | Optional | 
-| time_range | The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional | 
-| time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional | 
+| query | The query for which to retrieve samples. For additional information on how to build your query using the AF GUI, see the detailed description section. | Optional |
+| max_results | The maximum number of results to return. The default is 30. | Optional |
+| sort | The field by which to sort the results. | Optional |
+| order | The order of the results. Can be "Ascending" or "Descending". | Optional |
+| file_hash | The MD5, SHA1 or SHA256 hash of the file. | Optional |
+| domain | The domain to search. | Optional |
+| ip | The IP address to search. | Optional |
+| url | The URL to search. | Optional |
+| time_range | The date range in which to search for sessions. Format: YYY Y-MM-DDTHH:MM:SS,YYYY-MM-DDTHH:MM:SS where the first date is the beginning and the second is the end. Example: 2019-09-09T00:00:00,2019-09-09T23:01:59 | Optional |
+| time_after | The date after which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
 | time_before | The date before which to search for sessions. Format: YYYY-MM-DDTHH:MM:SS Example: 2019-09-09T23:01:59 | Optional |
-| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need for `autofocus-sessions-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ### How to Build a Query
+
 1. Go to the [AutoFocus platform](https://autofocus.paloaltonetworks.com/#/samples/global) search screen.
 2. Select the **Advanced...** button on the top right.
 3. Build a query by selecting fields operators and relevant values. To add another condition, click the **+** button. For more information on how to use the search editor, see [Work with the Search Editor](https://docs.paloaltonetworks.com/autofocus/autofocus-admin/autofocus-search/work-with-the-search-editor.html#id791798e0-2277-41b5-a723-383bd0787816_id597cae40-646e-4a2f-acf5-5fe04d9e2cf0).
 4. To get the query you built, open the API syntax, and click the **>_API** button.
 5. Copy the query value from the opening curly bracket `{` until the `,"scope"` parameter, and paste it as the value for the `query` argument for both search commands. For example:
+
 ```
 {"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1},{"field":"sample.create_date","operator":"is after","value":["2019-06-13","2019-06-13"]}]}
 ```
@@ -199,35 +215,36 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SessionsSearch.AFCookie | String | The ID of the search. Use the ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
-| AutoFocus.SessionsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
-| AutoFocus.SessionsResults.FileName | String | The name of the file.. | 
-| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. | 
-| AutoFocus.SessionsResults.Industry | String | The related industry. | 
-| AutoFocus.SessionsResults.Region | String | The regions of the sessions. | 
-| AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.SessionsResults.Seen | Date | The seen date. | 
-| AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. | 
-| AutoFocus.SessionsResults.FileURL | String | The URL of the file. | 
-| AutoFocus.SessionsResults.Tags | String | The relevant tags. | 
-| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| File.Name | String | The full file name (including file extension). | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Tags | String | The tags of the file. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.SessionsSearch.AFCookie | String | The ID of the search. Use the ID to get search results. The AF Cookie expires 120 seconds after the search completes. |
+| AutoFocus.SessionsSearch.Status | String | The status of the search. Can be "in progress" or "complete". |
+| AutoFocus.SessionsResults.FileName | String | The name of the file.. |
+| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. |
+| AutoFocus.SessionsResults.Industry | String | The related industry. |
+| AutoFocus.SessionsResults.Region | String | The regions of the sessions. |
+| AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.SessionsResults.Seen | Date | The seen date. |
+| AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. |
+| AutoFocus.SessionsResults.FileURL | String | The URL of the file. |
+| AutoFocus.SessionsResults.Tags | String | The relevant tags. |
+| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| File.Name | String | The full file name (including file extension). |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Tags | String | The tags of the file. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-search-sessions query={"operator":"all","children":[{"field":"sample.malware","operator":"is","value":1}]} max_results="30" sort="Application" order="Ascending"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SessionsSearch": {
@@ -238,67 +255,70 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 ```
 
 ##### Human Readable Output
-##### Search Sessions Info:
+
+##### Search Sessions Info
+
 |AFCookie|Status|
 |---|---|
 | 2-2d70539d-26af-40d2-b80b-16be60dabbaf+0 | in progress |
 
-
 ### Get results of a samples search
+
 ---
 Returns the results of a previous samples search.
 
 ##### Base Command
 
 `autofocus-samples-search-results`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Required | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Required |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SamplesResults.Size | String | The file size in bytes. | 
-| AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. | 
-| AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.SamplesResults.Created | Date | The date that the file was created. | 
-| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. | 
-| AutoFocus.SamplesResults.Region | String | The region of the sample. | 
-| AutoFocus.SamplesResults.FileType | String | The file type. | 
-| AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. | 
-| AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. | 
-| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. | 
-| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. | 
-| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. | 
-| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. | 
-| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. | 
-| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. | 
-| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. | 
-| File.Size | Number | The size of the file in bytes. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). | 
-| File.Tags | String | The tags of the file. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.SamplesResults.Size | String | The file size in bytes. |
+| AutoFocus.SamplesResults.SHA1 | String | The SHA1 hash of the file. |
+| AutoFocus.SamplesResults.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.SamplesResults.Created | Date | The date that the file was created. |
+| AutoFocus.SamplesResults.Finished | Date | The date the file was finished. |
+| AutoFocus.SamplesResults.Region | String | The region of the sample. |
+| AutoFocus.SamplesResults.FileType | String | The file type. |
+| AutoFocus.SamplesResults.Tags | String | The tags attached to the sample. |
+| AutoFocus.SamplesResults.Verdict | Number | The verdict of the sample. |
+| AutoFocus.SamplesResults.TagGroups | String | The groups of relevant tags. |
+| AutoFocus.SamplesSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.SamplesSearch.Artifact.b | Number | How many set the artifact as benign. |
+| AutoFocus.SamplesSearch.Artifact.g | Number | How many set the artifact as grayware. |
+| AutoFocus.SamplesSearch.Artifact.m | Number | How many set the artifact as malicious. |
+| AutoFocus.SamplesSearch.Artifact.confidence | String | How confident the decision. |
+| AutoFocus.SamplesSearch.Artifact.indicator | String | The indicator that was tested. |
+| AutoFocus.SamplesSearch.Artifact.indicator_type | String | The indicator type, for example: Mutex, User agent, IPv4, Domain. |
+| File.Size | Number | The size of the file in bytes. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Type | String | The file type, as determined by libmagic (same as displayed in file entries). |
+| File.Tags | String | The tags of the file. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-samples-search-results af_cookie=2-c0a49ebb-2fee-4423-9bd3-76004d5878ba+1
 ```
 
 ##### Context Example
+
 ```
 {
     "File": [
@@ -373,20 +393,23 @@ Returns the results of a previous samples search.
 ```
 
 ##### Human Readable Output
+
 ### Search Samples Result is in progress
+
 |Created|FileType|Finished|ID|MD5|Region|SHA1|SHA256|Size|Tags|Verdict|imphash|ssdeep|tag_groups|tasks|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | 2020-04-05T00:03:49 | PE | 2020-04-05T00:11:59 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 77c94c76214c7069b7fc5e7634b7e225 | us | 1460b6a9a0955f0d5c011edba569786c13b6d8a6 | d455abd39edc7a2f03fa43b4d0f9194a11e73fce9c794021b5ca050dd0bc156d | 362331 | Unit42.IPAddressLookup,Unit42.InitialSystemDataEnumeration,Unit42.RunOnce,Unit42.GandCrab | 1 | f456e8b8fd5e0768c2e3120e086c8ebc | 6144 | Ransomware | {'metadata_compilation_ts': '2018-06-11T11:15:25'} |
 
-### Artifacts for Sample: 
+### Artifacts for Sample
+
 |b|g|m|indicator_type|confidence|indicator|
 |---|---|---|---|---|---|
 | 1 | 0 | 145006 | Domain | suspect | carder.bit |
 | 1 | 0 | 208393 | Domain | suspect | ransomware.bit |
 | 373 | 67 | 317773 | IPv4 | suspect | 66.171.248.178 |
 
-
 ### Get results of a sessions search
+
 ---
 Returns the results of a previous session's search.
 
@@ -398,41 +421,41 @@ Returns the results of a previous session's search.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| af_cookie | The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| af_cookie | The AF Cookie for retrieving the results of a previous search. The AF Cookie expires 120 seconds after the search completes. | Required |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SessionsResults.FileName | String | The name of the file.. | 
-| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. | 
-| AutoFocus.SessionsResults.Industry | String | The related industry. | 
-| AutoFocus.SessionsResults.Region | String | The regions of the sessions. | 
-| AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.SessionsResults.Seen | Date | The seen date. | 
-| AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. | 
-| AutoFocus.SessionsResults.FileURL | String | The URL of the file. | 
-| AutoFocus.SessionsResults.Tags | String | The relevant tags. | 
-| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| File.Name | String | The full file name (including file extension). | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Tags | String | The tags of the file. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.SessionsResults.FileName | String | The name of the file.. |
+| AutoFocus.SessionsResults.ID | String | The ID of the session. Used to get session details. |
+| AutoFocus.SessionsResults.Industry | String | The related industry. |
+| AutoFocus.SessionsResults.Region | String | The regions of the sessions. |
+| AutoFocus.SessionsResults.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.SessionsResults.Seen | Date | The seen date. |
+| AutoFocus.SessionsResults.UploadSource | String | The source of the uploaded sample. |
+| AutoFocus.SessionsResults.FileURL | String | The URL of the file. |
+| AutoFocus.SessionsResults.Tags | String | The relevant tags. |
+| AutoFocus.SessionsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| File.Name | String | The full file name (including file extension). |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Tags | String | The tags of the file. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-sessions-search-results af_cookie=2-f2c742b6-a363-4eb9-a313-63a99c376081+0
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SessionsSearch": {
@@ -474,7 +497,9 @@ Returns the results of a previous session's search.
 ```
 
 ##### Human Readable Output
+
 ##### Search Sessions Results is complete
+
 |FileName|ID|Industry|Region|SHA256|Seen|Tags|UploadSource|tag_groups|
 |---|---|---|---|---|---|---|---|---|
 | wildfire-test-pe-file.exe | u_56095401643 | High Tech | us | 2eb355b54855c7531a811d435b2ff4dc74d377bfed98fd1ad03caa591f5555bd | 2019-12-11T08:52:16 | Commodity.WildFireTest | Manual API |  |
@@ -508,49 +533,50 @@ Returns the results of a previous session's search.
 | wildfire-test-pe-file (3).exe | u_45811375593 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:25:36 | Commodity.WildFireTest | Manual API |  |
 | wildfire-test-pe-file (3).exe | u_45811208463 | High Tech | us | 409eb2fa745b4bd804bb3ebdd48f0107bd9c6471a9447a61f68c1a32c480f0f9 | 2019-08-28T21:20:56 | Commodity.WildFireTest | Manual API |  |
 
-
 ### Get session details
+
 ---
 Returns session details by session ID.
 
 ##### Base Command
 
 `autofocus-get-session-details`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| session_id | The ID of the session. | Required | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| session_id | The ID of the session. | Required |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.Sessions.FileName | String | The name of the file. | 
-| AutoFocus.Sessions.ID | String | The ID of the session. | 
-| AutoFocus.Sessions.Industry | String | The related industry. | 
-| AutoFocus.Sessions.Region | String | The session's regions. | 
-| AutoFocus.Sessions.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.Sessions.Seen | Date | The seen date. | 
-| AutoFocus.Sessions.UploadSource | String | The source that uploaded the sample. | 
-| File.Name | String | The full file name (including file extension). | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.Sessions.FileName | String | The name of the file. |
+| AutoFocus.Sessions.ID | String | The ID of the session. |
+| AutoFocus.Sessions.Industry | String | The related industry. |
+| AutoFocus.Sessions.Region | String | The session's regions. |
+| AutoFocus.Sessions.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.Sessions.Seen | Date | The seen date. |
+| AutoFocus.Sessions.UploadSource | String | The source that uploaded the sample. |
+| File.Name | String | The full file name (including file extension). |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-get-session-details session_id="u_39605858263"
 ```
 
 ##### Context Example
+
 ```
 {
     "File": [
@@ -574,13 +600,15 @@ Returns session details by session ID.
 ```
 
 ##### Human Readable Output
-##### Session u_39605858263:
+
+##### Session u_39605858263
+
 |FileName|ID|Industry|Region|SHA256|Seen|UploadSource|
 |---|---|---|---|---|---|---|
 | wildfire-test-apk-file.apk | u_39605858263 | High Tech | us | 8d4241654449c63f70dabd83483f8ca8bd8e8e6a8d0679639eb061b3b6dbcfec | 2019-05-29T15:25:26 | Manual API |
 
-
 ### Get analysis details
+
 ---
 Returns properties, behaviors, and activities observed for a sample. Runs the command a single time to get the fields and operating systems under HTTP, Coverage, Behavior, Registry, Files, Processes, Connections, and DNS.
 
@@ -592,39 +620,39 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| sample_id | The SHA256 hash of the sample to analyze. | Required | 
-| os | The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal". | Optional | 
-| filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. The recommended setting is "True". | Optional | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| sample_id | The SHA256 hash of the sample to analyze. | Required |
+| os | The analysis environment. Can be "win7", "winxp", "android", "static_analyzer", "mac", or "bare_metal". | Optional |
+| filter_data | Whether to smartly filter the data. If "False", the data returned will not be smartly filtered, and will significantly reduce integration performance. The recommended setting is "True". | Optional |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.SampleAnalysis.Analysis.Http | Unknown | The HTTP requests made when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Coverage | Unknown | The WildFire signatures that matched the sample. | 
-| AutoFocus.SampleAnalysis.Analysis.Behavior | Unknown | The sample behavior: created or modified files, started a process, spawned new processes, modified the registry, or installed browser help objects. | 
-| AutoFocus.SampleAnalysis.Analysis.Registry | Unknown | The registry settings and options that showed activity when the sample was executed in the analysis environment. | 
-| AutoFocus.SampleAnalysis.Analysis.Files | Unknown | The files that showed activity as a result of the sample being executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Processes | Unknown | The processes that showed activity when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | The connections to other hosts on the network when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | The DNS activity observed when the sample was executed. | 
-| AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the program's start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.SampleAnalysis.Analysis.Http | Unknown | The HTTP requests made when the sample was executed. |
+| AutoFocus.SampleAnalysis.Analysis.Coverage | Unknown | The WildFire signatures that matched the sample. |
+| AutoFocus.SampleAnalysis.Analysis.Behavior | Unknown | The sample behavior: created or modified files, started a process, spawned new processes, modified the registry, or installed browser help objects. |
+| AutoFocus.SampleAnalysis.Analysis.Registry | Unknown | The registry settings and options that showed activity when the sample was executed in the analysis environment. |
+| AutoFocus.SampleAnalysis.Analysis.Files | Unknown | The files that showed activity as a result of the sample being executed. |
+| AutoFocus.SampleAnalysis.Analysis.Processes | Unknown | The processes that showed activity when the sample was executed. |
+| AutoFocus.SampleAnalysis.Analysis.Connections | Unknown | The connections to other hosts on the network when the sample was executed. |
+| AutoFocus.SampleAnalysis.Analysis.Dns | Unknown | The DNS activity observed when the sample was executed. |
+| AutoFocus.SampleAnalysis.Analysis.Mutex | Unknown | The mutex created when the program's start is listed with the parent process if the sample generates other program threads when executed in the analysis environment. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-sample-analysis sample_id=dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.SampleAnalysis": {
@@ -856,9 +884,13 @@ Returns properties, behaviors, and activities observed for a sample. Runs the co
 ```
 
 ##### Human Readable Output
-##### Sample Analysis results for dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993:### Behavior Static Analyzer:
+
+##### Sample Analysis results for dd0d26ceea034b3ae32a4f6a477466ac598ee17f811f88cf14b2c708240fb993:### Behavior Static Analyzer
+
 No entries
-##### Behavior Win7:
+
+##### Behavior Win7
+
 |Behavior|Risk|
 |---|---|
 |  Connected to a non-standard HTTP port | high  |
@@ -879,12 +911,16 @@ No entries
 |  Attempted to determine public IP address via IP-checking website | high  |
 |  Connected to a malicious IP | high  |
 |  Connected to a malicious URL | high  |
-##### Behavior Winxp:
+
+##### Behavior Winxp
+
 |Behavior|Risk|
 |---|---|
 |  Created or modified a file in the Windows system folder | medium  |
 |  Started a process from a user folder | low  |
-##### Processes Win7:
+
+##### Processes Win7
+
 |Action|Parent Process|
 |---|---|
 |  created  | svchost.exe  |
@@ -895,13 +931,16 @@ No entries
 |  created  | services.exe  |
 |  created  | svchost.exe  |
 |  created  | services.exe  |
-##### Processes Winxp:
+
+##### Processes Winxp
+
 |Action|Parent Process|
 |---|---|
 |  created  | explorer.exe  |
 |  created  | svchost.exe  |
 |  created  | winlogon.exe  |
-##### Files Win7:
+
+##### Files Win7
 
 |Action|Parent Process|
 |---|---|
@@ -913,9 +952,13 @@ No entries
 |  Create  | na.exe  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
 |  Create  | users\administrator\sample.dll:DllInstall  |
-##### Files Winxp:
+
+##### Files Winxp
+
 No entries
+
 ###
+
 33 Registry Win7:
 
 |Action|Parameters|
@@ -930,18 +973,24 @@ No entries
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\Microsoft\Windows\CurrentVersion\Uninstall\{5129CAA8-E24B-2AEE-652F-C652FBF1E9BB}  |
 |  RegSetValueEx  |  HKLM\SOFTWARE\Wow6432Node\$(brand_name)  |
-##### Registry Winxp:
+
+##### Registry Winxp
+
 |Action|Parameters|
 |---|---|
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WBEM\CIMOM\List of event-active namespaces  |
 |  SetValueKey  |  HKCU\SessionInformation\ProgramCount  |
 |  SetValueKey  |  HKLM\SOFTWARE\Microsoft\WZCSVC\Parameters\Interfaces\ActiveSettings  |
-##### Mutex Win7:
+
+##### Mutex Win7
+
 |Action|Parameters|Process|
 |---|---|---|
 |  CreateMutexW  |  Global\_MSIExecute | msiexec.exe  |
-##### Http Win7:
+
+##### Http Win7
+
 |Host|Method|Url|
 |---|---|---|
 | sp1.eventincoandhar.info  |  POST  |  /  |
@@ -950,8 +999,8 @@ No entries
 | www.<span></span>cnn.com  |  HEAD  |  /  |
 | www.<span></span>bbc.com  |  HEAD  |  /  |
 
-
 ### Get tag details
+
 ---
 Returns details about the given tag.
 
@@ -963,39 +1012,39 @@ Returns details about the given tag.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_name | The public tag name. Can be retrieved from the top-tags command. | Required | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| tag_name | The public tag name. Can be retrieved from the top-tags command. | Required |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.Tag.TagName | String | The simple name of the tag. | 
-| AutoFocus.Tag.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.Tag.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.Tag.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.Tag.TagDefinitionScope | String | The scope of the tag. Can be "public", "private", or "Unit42". | 
-| AutoFocus.Tag.CustomerName | String | The organization that created the tag. | 
-| AutoFocus.Tag.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
-| AutoFocus.Tag.TagClass | String | The classification of the tag. | 
-| AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition. Can be "enabled", "disabled", "removing", or "rescoping". | 
-| AutoFocus.Tag.TagGroup | String | The tag group of the tag. | 
-| AutoFocus.Tag.Description | String | The tag description. | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.Tag.TagName | String | The simple name of the tag. |
+| AutoFocus.Tag.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.Tag.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.Tag.Lasthit | Date | The date that the tag was last encountered. |
+| AutoFocus.Tag.TagDefinitionScope | String | The scope of the tag. Can be "public", "private", or "Unit42". |
+| AutoFocus.Tag.CustomerName | String | The organization that created the tag. |
+| AutoFocus.Tag.Source | String | The organization or individual that discovered the threat that is defined in the tag. |
+| AutoFocus.Tag.TagClass | String | The classification of the tag. |
+| AutoFocus.Tag.TagDefinitionStatus | String | The status of the tag definition. Can be "enabled", "disabled", "removing", or "rescoping". |
+| AutoFocus.Tag.TagGroup | String | The tag group of the tag. |
+| AutoFocus.Tag.Description | String | The tag description. |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-tag-details tag_name=490082.Pastebin_Raw
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.Tag": {
@@ -1014,13 +1063,15 @@ Returns details about the given tag.
 ```
 
 ##### Human Readable Output
-##### Tag 490082.Pastebin_Raw details:
+
+##### Tag 490082.Pastebin_Raw details
+
 |Count|Customer Name|Description|Lasthit|Public Tag Name|Source|Tag Class|Tag Definition Scope|Tag Definition Status|Tag Name|
 |---|---|---|---|---|---|---|---|---|---|
 | 84674 | Squadra Solutions | Malicious actors may post raw code to Pastebin which can then be downloaded for further use or as a C2 channel. Some code are also encoded in base64 for further obfuscation | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Squadra Solutions | malicious_behavior | public | enabled | Pastebin_Raw |
 
-
 ### Search for the most popular tags
+
 ---
 Performs a search to identify the most popular tags.
 
@@ -1032,53 +1083,55 @@ Performs a search to identify the most popular tags.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| scope | The scope of the search. Can be "industry", "organization", "all", or "global". | Required | 
-| class | The tag class. Can be "Malware Family", "Campaign", "Actor", "Exploit", or Malicious Behavior". See **Tag Classes** below for more information.  | Required | 
-| private | Whether the tag scope is "private". If "True", the tag scope is private. The default is "False". | Optional | 
-| public | Whether the tag scope is "public". If "True", the tag scope is public. The default is "False". | Optional | 
-| commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. The default is "False". | Optional | 
-| unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional | 
+| scope | The scope of the search. Can be "industry", "organization", "all", or "global". | Required |
+| class | The tag class. Can be "Malware Family", "Campaign", "Actor", "Exploit", or Malicious Behavior". See **Tag Classes** below for more information.  | Required |
+| private | Whether the tag scope is "private". If "True", the tag scope is private. The default is "False". | Optional |
+| public | Whether the tag scope is "public". If "True", the tag scope is public. The default is "False". | Optional |
+| commodity | Whether the tag scope is "commodity". If "True", the tag scope is commodity. The default is "False". | Optional |
+| unit42 | Whether the tag scope is "Unit42". If "True", the tag scope is unit42. The default is "False". | Optional |
 | af_cookie | The AF Cookie for retrieving results of previous searches. The AF Cookie expires 120 seconds after the search completes. | Optional |
-| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
+| polling | Use XSOAR built-in polling to retrieve the result when it's ready. | Optional |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Using polling
+
 The `polling` argument was added in XSOAR 6.2.0. It enables to handle the search in a single command, foregoing the need to run `autofocus-samples-search-results`.
 
 For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/scheduled-commands).
 
 ##### Tag Classes
-- Malware Family: group of malware that have shared properties or common functions. 
-- Campaign:  targeted attack, which might include several incidents or sets of activities. 
-- Actor: individual or group that initiates a campaign using malware families. 
-- Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system. 
-- Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
+* Malware Family: group of malware that have shared properties or common functions.
+* Campaign:  targeted attack, which might include several incidents or sets of activities.
+* Actor: individual or group that initiates a campaign using malware families.
+* Exploit: an attack, which takes advantage of a software or network weakness, bug, or vulnerability to manipulate the behavior of the system.
+* Malicious Behavior: behavior that is not specific to a malware family or campaign, but indicates that your system has been compromised.
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.TopTagsSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. | 
-| AutoFocus.TopTagsSearch.Status | String | The status of the search. Can be "in progress" or "complete". | 
-| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
-| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
-| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.TopTagsSearch.AFCookie | String | The ID of the search. Use this ID to get search results. The AF Cookie expires 120 seconds after the search completes. |
+| AutoFocus.TopTagsSearch.Status | String | The status of the search. Can be "in progress" or "complete". |
+| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. |
+| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. |
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-top-tags-search scope="all" class="Malicious Behavior" private="True" public="True" commodity="False" unit42="False"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.TopTagsSearch": {
@@ -1089,50 +1142,53 @@ For more info see [Scheduled Commands](https://xsoar.pan.dev/docs/integrations/s
 ```
 
 ##### Human Readable Output
-##### Top tags search Info:
+
+##### Top tags search Info
+
 |AFCookie|Status|
 |---|---|
 | 2-1caadf19-2e94-4742-b9cf-da8b2d90988c+0 | in progress |
 
-
 ### Get results of a top tags search
+
 ---
 Returns the results of a previous top tags search.
 
 ##### Base Command
 
 `autofocus-top-tags-results`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| af_cookie | The AF Cookie for retrieving results of the previous search. The AF Cookie expires 120 seconds after the search completes. | Required | 
-| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional | 
-
+| af_cookie | The AF Cookie for retrieving results of the previous search. The AF Cookie expires 120 seconds after the search completes. | Required |
+| retry_on_rate_limit | Whether an auto retry of the command will be executed once the quota is refreshed if the API points have run out.<br/>Possible values are: true, false. Default is false. | Optional |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. | 
-| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. | 
-| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". | 
-| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute | 
-| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day | 
-| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute | 
-| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day | 
-| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started | 
-| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started | 
-
+| AutoFocus.TopTagsResults.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.TopTagsResults.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.TopTagsResults.TagName | String | The simple name of the tag. |
+| AutoFocus.TopTagsResults.Lasthit | Date | The last encounter date of the tag. |
+| AutoFocus.TopTagsSearch.Status | String | The search status. Can be "in progress" or "complete". |
+| AutoFocus.Quota.minute_points | Number | Total number of AutoFocus API points alloted per minute |
+| AutoFocus.Quota.daily_points | Number | Total number of AutoFocus API points alloted per day |
+| AutoFocus.Quota.minute_points_remaining | Number | Remaining number of AutoFocus API points per minute |
+| AutoFocus.Quota.daily_points_remaining | Number | Remaining number of AutoFocus API points per day |
+| AutoFocus.Quota.minute_bucket_start | Date | Timestamp for when the current minute allotment started |
+| AutoFocus.Quota.daily_bucket_start | Date | Timestamp for when the current daily allotment started |
 
 ##### Command Example
+
 ```
 !autofocus-top-tags-results af_cookie=2-2190f844-7c0a-42e7-b4be-5f7d83c9b05c+0
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.TopTagsSearch": {
@@ -1265,7 +1321,9 @@ Returns the results of a previous top tags search.
 ```
 
 ##### Human Readable Output
-##### Search Top Tags Results is in progress:
+
+##### Search Top Tags Results is in progress
+
 |Count|Lasthit|Public Tag Name|Tag Name|
 |---|---|---|---|
 | 84674 | 2020-01-02 05:22:18 | 490082.Pastebin_Raw | Pastebin_Raw |
@@ -1289,59 +1347,60 @@ Returns the results of a previous top tags search.
 | 9793 | 2020-01-02 05:02:33 | 490082.AppCertDLL_Persistence_LoadDLL | AppCertDLL_Persistence_LoadDLL |
 | 2578 | 2020-01-01 21:28:20 | 46640.MSIEXEC_Web_Install | MSIEXEC_Web_Install |
 
-
 ### Get the reputation for an IP address
+
 ---
 Returns the reputation of an IP address.
 
 ##### Base Command
 
 `ip`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ip | The IP address to check. | Required | 
-
+| ip | The IP address to check. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| IP.Address | String | The IP address. | 
-| IP.Tags | String | Tags that are associated with the IP. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| IP.Address | String | The IP address. |
+| IP.Tags | String | Tags that are associated with the IP. |
 | IP.MalwareFamily | String | The malware family associated with the IP. |
 | IP.Relationships.EntityA | String | The source of the relationship. |
 | IP.Relationships.EntityAType | String | The type of the source of the relationship. |
 | IP.Relationships.EntityB | String | The destination of the relationship. |
 | IP.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | IP.Relationships.Relationship | String |  The name of the relationship. |
-| AutoFocus.IP.IndicatorValue | String | The IP address value. | 
-| AutoFocus.IP.IndicatorType | String | The indicator type. | 
-| AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
-| IP.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
-| AutoFocus.IP.Tags.PublicTagName | String | The public name of the tag. This is used as the tag ID. | 
-| AutoFocus.IP.Tags.TagName | String | The simple name of the tag. | 
-| AutoFocus.IP.Tags.CustomerName | String | The organization that created the tag. | 
-| AutoFocus.IP.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
-| AutoFocus.IP.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. | 
-| AutoFocus.IP.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. | 
-| AutoFocus.IP.Tags.TagClassID | Number | The classification ID of the tag. | 
-| AutoFocus.IP.Tags.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.IP.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.IP.Tags.Description | String | The description of the tag. | 
-
+| AutoFocus.IP.IndicatorValue | String | The IP address value. |
+| AutoFocus.IP.IndicatorType | String | The indicator type. |
+| AutoFocus.IP.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). |
+| IP.Malicious.Vendor | String | The vendor that decided the file is malicious. |
+| AutoFocus.IP.Tags.PublicTagName | String | The public name of the tag. This is used as the tag ID. |
+| AutoFocus.IP.Tags.TagName | String | The simple name of the tag. |
+| AutoFocus.IP.Tags.CustomerName | String | The organization that created the tag. |
+| AutoFocus.IP.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. |
+| AutoFocus.IP.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. |
+| AutoFocus.IP.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. |
+| AutoFocus.IP.Tags.TagClassID | Number | The classification ID of the tag. |
+| AutoFocus.IP.Tags.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.IP.Tags.Lasthit | Date | The date that the tag was last encountered. |
+| AutoFocus.IP.Tags.Description | String | The description of the tag. |
 
 ##### Command Example
+
 ```
 !ip ip=127.0.0.1 using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "AutoFocus.IP": [
@@ -1372,64 +1431,67 @@ Returns the reputation of an IP address.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 IP reputation for: 127.0.0.1
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
 | IPV4_ADDRESS | 127.0.0.1 | PAN_DB: BENIGN |  |  |
 
-
 ### Get the reputation of a URL
+
 ---
 Returns the reputation of a URL.
 
 ##### Base Command
 
 `url`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| url | The URL to check. | Required | 
-
+| url | The URL to check. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| URL.Data | String | The URL address. | 
-| URL.Tags | String | Tags that are associated with the URL. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| URL.Data | String | The URL address. |
+| URL.Tags | String | Tags that are associated with the URL. |
 | URL.MalwareFamily | String | The malware family associated with the URL. |
 | URL.Relationships.EntityA | String | The source of the relationship. |
 | URL.Relationships.EntityAType | String | The type of the source of the relationship. |
 | URL.Relationships.EntityB | String | The destination of the relationship. |
 | URL.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | URL.Relationships.Relationship | String |  The name of the relationship. |
-| AutoFocus.URL.IndicatorValue | String | The URL value. | 
-| AutoFocus.URL.IndicatorType | String | The indicator type. | 
-| AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
-| URL.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
-| AutoFocus.URL.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.URL.Tags.TagName | String | The simple name of the tag. | 
-| AutoFocus.URL.Tags.CustomerName | String | The organization that created the tag. | 
-| AutoFocus.URL.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
-| AutoFocus.URL.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. | 
-| AutoFocus.URL.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. | 
-| AutoFocus.URL.Tags.TagClassID | Number | The classification ID of the tag. | 
-| AutoFocus.URL.Tags.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.URL.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.URL.Tags.Description | String | The description of the tag. | 
-
+| AutoFocus.URL.IndicatorValue | String | The URL value. |
+| AutoFocus.URL.IndicatorType | String | The indicator type. |
+| AutoFocus.URL.LatestPanVerdicts | Unknown |The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). |
+| URL.Malicious.Vendor | String | The vendor that decided the file is malicious. |
+| AutoFocus.URL.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.URL.Tags.TagName | String | The simple name of the tag. |
+| AutoFocus.URL.Tags.CustomerName | String | The organization that created the tag. |
+| AutoFocus.URL.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. |
+| AutoFocus.URL.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. |
+| AutoFocus.URL.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. |
+| AutoFocus.URL.Tags.TagClassID | Number | The classification ID of the tag. |
+| AutoFocus.URL.Tags.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.URL.Tags.Lasthit | Date | The date that the tag was last encountered. |
+| AutoFocus.URL.Tags.Description | String | The description of the tag. |
 
 ##### Command Example
+
 ```
 !url url=www.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "URL": [
@@ -1463,64 +1525,67 @@ Returns the reputation of a URL.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 URL reputation for: www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|
 | URL | www<span></span>.andromedaa.ir/ir/andromedaa/likebegir/ap.smali/ | PAN_DB: MALWARE |  |  |
 
-
 ### Get the reputation of a file
+
 ---
 Returns the reputation of a file.
 
 ##### Base Command
 
 `file`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| file | The SHA256 hash of the file. | Required | 
-
+| file | The SHA256 hash of the file. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Tags | String | Tags that are associated with the file. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Tags | String | Tags that are associated with the file. |
 | File.MalwareFamily | String | The malware family associated with the file. |
 | File.Relationships.EntityA | String | The source of the relationship. |
 | File.Relationships.EntityAType | String | The type of the source of the relationship. |
 | File.Relationships.EntityB | String | The destination of the relationship. |
 | File.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | File.Relationships.Relationship | String |  The name of the relationship. |
-| AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. | 
-| AutoFocus.File.IndicatorType | String | The indicator type. | 
-| AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
-| File.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
-| AutoFocus.File.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.File.Tags.TagName | String | The simple name of the tag. | 
-| AutoFocus.File.Tags.CustomerName | String | The organization that created the tag. | 
-| AutoFocus.File.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
-| AutoFocus.File.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. | 
-| AutoFocus.File.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. | 
-| AutoFocus.File.Tags.TagClassID | Number | The classification ID of the tag. | 
-| AutoFocus.File.Tags.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.File.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.File.Tags.Description | String | The description of the tag. | 
-
+| AutoFocus.File.IndicatorValue | String | The SHA256 hash value of the file. |
+| AutoFocus.File.IndicatorType | String | The indicator type. |
+| AutoFocus.File.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). |
+| File.Malicious.Vendor | String | The vendor that decided the file is malicious. |
+| AutoFocus.File.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.File.Tags.TagName | String | The simple name of the tag. |
+| AutoFocus.File.Tags.CustomerName | String | The organization that created the tag. |
+| AutoFocus.File.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. |
+| AutoFocus.File.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. |
+| AutoFocus.File.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. |
+| AutoFocus.File.Tags.TagClassID | Number | The classification ID of the tag. |
+| AutoFocus.File.Tags.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.File.Tags.Lasthit | Date | The date that the tag was last encountered. |
+| AutoFocus.File.Tags.Description | String | The description of the tag. |
 
 ##### Command Example
+
 ```
 !file file=9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "DBotScore": [
@@ -1565,68 +1630,69 @@ Returns the reputation of a file.
 |---|---|---|---|---|---|---|
 | 2019-09-24T06:46:21.000Z | FILEHASH | 9040e9fda52931c9472c90ecad5b74295cdb9cf7b68e2b89219700f6a8bff5ac | 2019-12-29T08:52:27.000Z | WF_SAMPLE: MALWARE | WF_SAMPLE |  |
 
-
 ### Get the reputation of a domain name
+
 ---
 Returns the reputation of a domain.
 
 ##### Base Command
 
 `domain`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain | The domain to check. | Required | 
-
+| domain | The domain to check. | Required |
 
 ##### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| Domain.Name | String | The name of the domain. | 
-| Domain.Tags | String | Tags that are associated with the domain. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| Domain.Name | String | The name of the domain. |
+| Domain.Tags | String | Tags that are associated with the domain. |
 | Domain.MalwareFamily | String | The malware family associated with the domain. |
 | Domain.Relationships.EntityA | String | The source of the relationship. |
 | Domain.Relationships.EntityAType | String | The type of the source of the relationship. |
 | Domain.Relationships.EntityB | String | The destination of the relationship. |
 | Domain.Relationships.EntityBType | String | The type of the destination of the relationship. |
 | Domain.Relationships.Relationship | String |  The name of the relationship. |
-| AutoFocus.Domain.IndicatorValue | String | The value of the domain. | 
-| AutoFocus.Domain.IndicatorType | String | The indicator type. | 
-| AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). | 
-| Domain.Malicious.Vendor | String | The vendor that decided the file is malicious. | 
-| AutoFocus.Domain.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. | 
-| AutoFocus.Domain.Tags.TagName | String | The simple name of the tag. | 
-| AutoFocus.Domain.Tags.CustomerName | String | The organization that created the tag. | 
-| AutoFocus.Domain.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. | 
-| AutoFocus.Domain.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. | 
-| AutoFocus.Domain.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. | 
-| AutoFocus.Domain.Tags.TagClassID | Number | The classification ID of the tag. | 
-| AutoFocus.Domain.Tags.Count | Number | The number of samples that matched this tag. | 
-| AutoFocus.Domain.Tags.Lasthit | Date | The date that the tag was last encountered. | 
-| AutoFocus.Domain.Tags.Description | String | The description of the tag. | 
-| AutoFocus.Domain.WhoisAdminCountry | String | The country of the domain administrator. | 
-| AutoFocus.Domain.WhoisAdminEmail | String | The email address of the domain administrator. | 
-| AutoFocus.Domain.WhoisAdminName | String | The name of the domain administrator. | 
-| AutoFocus.Domain.WhoisDomainCreationDate | Date | The date that the domain was created. | 
-| AutoFocus.Domain.WhoisDomainExpireDate | Date | The date that the domain expires. | 
-| AutoFocus.Domain.WhoisDomainUpdateDate | Date | The date that the domain was last updated. | 
-| AutoFocus.Domain.WhoisRegistrar | String | The name of the registrar. | 
-| AutoFocus.Domain.WhoisRegistrarUrl | String | The email address of the registrar. | 
-| AutoFocus.Domain.WhoisRegistrant | String | The name of the registrant. | 
-
+| AutoFocus.Domain.IndicatorValue | String | The value of the domain. |
+| AutoFocus.Domain.IndicatorType | String | The indicator type. |
+| AutoFocus.Domain.LatestPanVerdicts | Unknown | The latest verdicts from Palo Alto Networks products. Can be either "PAN_DB" or "WF_SAMPLE"(WildFire). |
+| Domain.Malicious.Vendor | String | The vendor that decided the file is malicious. |
+| AutoFocus.Domain.Tags.PublicTagName | String | The public name of the tag. This is used as an ID of the tag. |
+| AutoFocus.Domain.Tags.TagName | String | The simple name of the tag. |
+| AutoFocus.Domain.Tags.CustomerName | String | The organization that created the tag. |
+| AutoFocus.Domain.Tags.Source | String | The organization or individual that discovered the threat that is defined in the tag. |
+| AutoFocus.Domain.Tags.TagDefinitionScopeID | Number | The scope ID of the tag. |
+| AutoFocus.Domain.Tags.TagDefinitionStatusID | Number | The definition status ID of the tag. |
+| AutoFocus.Domain.Tags.TagClassID | Number | The classification ID of the tag. |
+| AutoFocus.Domain.Tags.Count | Number | The number of samples that matched this tag. |
+| AutoFocus.Domain.Tags.Lasthit | Date | The date that the tag was last encountered. |
+| AutoFocus.Domain.Tags.Description | String | The description of the tag. |
+| AutoFocus.Domain.WhoisAdminCountry | String | The country of the domain administrator. |
+| AutoFocus.Domain.WhoisAdminEmail | String | The email address of the domain administrator. |
+| AutoFocus.Domain.WhoisAdminName | String | The name of the domain administrator. |
+| AutoFocus.Domain.WhoisDomainCreationDate | Date | The date that the domain was created. |
+| AutoFocus.Domain.WhoisDomainExpireDate | Date | The date that the domain expires. |
+| AutoFocus.Domain.WhoisDomainUpdateDate | Date | The date that the domain was last updated. |
+| AutoFocus.Domain.WhoisRegistrar | String | The name of the registrar. |
+| AutoFocus.Domain.WhoisRegistrarUrl | String | The email address of the registrar. |
+| AutoFocus.Domain.WhoisRegistrant | String | The name of the registrant. |
 
 ##### Command Example
+
 ```
 !domain domain=google.com using-brand="AutoFocus V2"
 ```
 
 ##### Context Example
+
 ```
 {
     "Domain": [
@@ -1681,34 +1747,35 @@ Returns the reputation of a domain.
 ```
 
 ##### Human Readable Output
+
 ##### AutoFocus V2 Domain reputation for: google.com
+
 |Indicatortype|Indicatorvalue|Latestpanverdicts|Seenby|Whoisadmincountry|Whoisadminemail|Whoisadminname|Whoisdomaincreationdate|Whoisdomainexpiredate|Whoisdomainupdatedate|Whoisregistrant|Whoisregistrar|Whoisregistrarurl|Wildfirerelatedsampleverdictcounts|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 | DOMAIN | google.com | PAN_DB: BENIGN |  |  |  |  | 1997-09-15 | 2020-09-14 | 2018-02-21 |  | markdownguide Inc. | http:/<span></span>/ww<span></span>w.<span></span>markdownguide.org |  |
 
-
 ### autofocus-get-export-list-indicators
+
 ***
 Gets export list indicators from AutoFocus.
-
 
 #### Base Command
 
 `autofocus-get-export-list-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| label | The label of the exported list. | Required | 
-
+| label | The label of the exported list. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AutoFocus.ExportListIndicator.Type | String | The indicator type in the export list.  | 
-| AutoFocus.ExportListIndicator.Value | String | The value of the indicator in the export list. | 
-| IP.Address | String | The IP address. | 
-| URL.Data | String | The URL address. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| Domain.Name | String | The domain name. | 
+| AutoFocus.ExportListIndicator.Type | String | The indicator type in the export list.  |
+| AutoFocus.ExportListIndicator.Value | String | The value of the indicator in the export list. |
+| IP.Address | String | The IP address. |
+| URL.Data | String | The URL address. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| Domain.Name | String | The domain name. |

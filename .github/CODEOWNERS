@@ -1,17 +1,17 @@
 # Marketplace Related - Marketplace PMs only
-/Config/approved_tags.json @yaakovpraisler @bakatzir @demisto/content-leaders
-/Config/approved_usecases.json @yaakovpraisler @bakatzir @demisto/content-leaders
-/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @bakatzir @demisto/content-leaders
-/Config/approved_categories.json @yaakovpraisler @bakatzir @demisto/content-leaders
-/Config/core_packs_list.json @yaakovpraisler @bakatzir @demisto/content-leaders
-/Config/core_packs_mpv2_list.json @yaakovpraisler @bakatzir @demisto/content-leaders
+/Config/approved_tags.json @yaakovpraisler @demisto/content-leaders
+/Config/approved_usecases.json @yaakovpraisler @demisto/content-leaders
+/Tests/Marketplace/landingPage_sections.json @yaakovpraisler @demisto/content-leaders
+/Config/approved_categories.json @yaakovpraisler @demisto/content-leaders
+/Config/core_packs_list.json @yaakovpraisler @demisto/content-leaders
+/Config/core_packs_mpv2_list.json @yaakovpraisler @demisto/content-leaders
 /Config/corepacks_override.json @yaakovpraisler
 
 # Docker native image
 /Tests/docker_native_image_config.json @JudahSchwartz @shmuel44
 
 # Test Collection
-/Tests/conf.json @sapirshuker
+/Tests/conf.json @sapirshuker @merit-maita
 
 # PANW Products
 /Packs/Palo_Alto_Networks_Enterprise_DLP/ @DeanArbel
@@ -29,18 +29,17 @@
 /Packs/rasterize/Integrations/rasterize/* @ilaredo
 
 # Important Scripts
-/Packs/CommonScripts/Scripts/SetGridField/* @altmannyarden
+/Packs/CommonScripts/Scripts/SetGridField/* @melamedbn
 /Packs/CommonScripts/Scripts/ParseEmailFiles/* @moishce
 /Packs/ApiModules/Scripts/MicrosoftApiModule @michal-dagan @inbalapt1
 /Packs/ApiModules/Scripts/MicrosoftGraphMailApiModule @michal-dagan @inbalapt1
 /Packs/ApiModules/Scripts/TAXII2ApiModule/* @Ni-Knight
 /Packs/CommonScripts/Scripts/StixCreator/* @Ni-Knight
-/Packs/Base/Scripts/CommonServerPython/CommonServerPython.py @RosenbergYehuda @demisto/content-leaders
 
 # Common Packs
-/Packs/CommonTypes/ @altmannyarden @idovandijk
-/Packs/CommonPlaybooks/ @altmannyarden @idovandijk
-/Packs/CommonDashboards/ @altmannyarden @idovandijk
+/Packs/CommonTypes/ @melamedbn @idovandijk
+/Packs/CommonPlaybooks/ @melamedbn @idovandijk
+/Packs/CommonDashboards/ @melamedbn @idovandijk
 /Packs/ContentManagement/ @talzich
 /Packs/CommonTypes/IndicatorTypes/* @Ni-Knight
 /Packs/CommonTypes/Layouts/* @Ni-Knight

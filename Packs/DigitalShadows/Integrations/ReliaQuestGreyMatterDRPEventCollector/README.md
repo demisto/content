@@ -22,7 +22,6 @@ This is the default integration for this content pack when configured by the Dat
 
 5. Click **Test** to validate the URLs, token, and connection.
 
-
 ## ReliaQuest GreyMatter DRP EventCollector Authentication
 
 Requests to all operation endpoints require HTTP Basic authentication, using dedicated (high entropy) API credentials. These normally consist of a six character key, and a 32 character 'secret'. Note that you will not be able to use your normal email/password login details with the HTTP Basic authentication mechanism.
@@ -40,7 +39,6 @@ Increasing the Maximum number of events per fetch parameter to high numbers can 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-
 ### relia-quest-get-events
 
 ***
@@ -54,13 +52,13 @@ Manual command to fetch reila-quest events and display them.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| start_time | From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). If not provided, will retrieve the oldest events available in case event_num_after argument is not provided. Default is 3 days ago. | Optional | 
-| end_time | Until which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional | 
-| limit | The maximum number of events to retrieve. Default is 200. | Optional | 
-| event_num_after | Fetch events that were created after a specific event-number. | Optional | 
+| start_time | From which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). If not provided, will retrieve the oldest events available in case event_num_after argument is not provided. Default is 3 days ago. | Optional |
+| end_time | Until which time to get the events in ISO8601 format, for example 2020-09-24T16:30:10.016Z or (&lt;number&gt; &lt;time unit&gt;, e.g., 12 hours, 7 days). | Optional |
+| limit | The maximum number of events to retrieve. Default is 200. | Optional |
+| event_num_after | Fetch events that were created after a specific event-number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ReilaQuest.Events | Unknown | A list of events. | 
+| ReilaQuest.Events | Unknown | A list of events. |

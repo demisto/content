@@ -4531,34 +4531,34 @@ script:
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-    - contextPath: CrowdStrike.IDPEntity.IsHuman
+    - contextPath: CrowdStrike.IDPEntity.Ishuman
       description: Whether the identity entity is human made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+    - contextPath: CrowdStrike.IDPEntity.Isprogrammatic
       description: Whether the identity entity is programmatic made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+    - contextPath: CrowdStrike.IDPEntity.Isadmin
       description: Whether the identity entity is admin made.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Primarydisplayname
       description: The identity entity primary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Type
       description: The identity entity risk factor type.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Severity
       description: The identity entity risk factor severity.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskScore
+    - contextPath: CrowdStrike.IDPEntity.Riskscore
       description: The identity entity risk score.
       type: Number
-    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+    - contextPath: CrowdStrike.IDPEntity.Riskscoreseverity
       description: The identity entity risk score severity.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Secondarydisplayname
       description: The identity entity secondary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+    - contextPath: CrowdStrike.IDPEntity.Emailaddresses
       description: The identity entity email address.
       type: String
   - arguments:

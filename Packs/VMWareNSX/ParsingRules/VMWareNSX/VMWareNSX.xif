@@ -1,0 +1,46 @@
+[RULE: VMWARE_NSX_PARSE_TIMESTAMP]
+//Timestamp parse
+ alter tmp_time = arrayindex(regextract(_raw_log,"(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z)"),0)
+| filter tmp_time ~= "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d{3}Z"
+| alter _time = parse_timestamp("%Y-%m-%dT%H:%M:%E3SZ", tmp_time);
+
+//Log sample 1
+[RULE: Log_sample_1]
+call VMWARE_NSX_PARSE_TIMESTAMP 
+| alter
+    tmp_keys = arrayconcat(arraycreate("timestamp","hostname", "description"),regextract(_raw_log, "(\S+)\=\S+")),
+    tmp_values = arraystring(arrayconcat(regextract(_raw_log, "(\S+\d{2}:\d{2}:\d{2}\S*)\s+\S+\s\S+\s+\S+\s+\S+\s[^\[]\s+"),regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+(\S+)\s\S+\s+\S+\s+\S+\s[^\[]\s+"), regextract(_raw_log, "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s[^\[]\s+(.*)"), regextract(_raw_log, "\S+\=(\S+)")), "|")
+| alter
+    tmp_obj_struct = arraystring(arraymap(tmp_keys, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    tmp_obj_struct = replex(tmp_obj_struct ,"\-","_")
+| alter
+    parsed_fields = regexcapture(tmp_values, tmp_obj_struct)
+| fields -tmp*;
+
+[RULE: Log_sample_2]
+//Log sample 2
+call VMWARE_NSX_PARSE_TIMESTAMP 
+| alter tmp_keys = arrayconcat(arraycreate("timestamp", "hostname","pid","description"),regextract(_raw_log, "((?:\(|\s|\,|\,\s\w+\s)\w+)\=")),
+    tmp_values = arraystring(arrayconcat(regextract(_raw_log, "(\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+Z)"), regextract(_raw_log, "\d{4}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\.\d+Z\s([^\s]+)\s"),regextract(_raw_log,"\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+(\S+)\s+\S+\s+"),regextract(_raw_log ,"\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+(\[.*)"), regextract(_raw_log, "(?:\(|\s|\,|\,\s\w+\s)\w+\=(?:\"|\[|\[\")?([^\"\,\)]+)")), "|")
+| alter
+    tmp_obj_struct = arraystring(arraymap(tmp_keys, concat("(?P<", "@element", ">[^\|]+)")), "\|")
+| alter
+    tmp_obj_struct = replex(tmp_obj_struct ,"\"","")
+| alter
+    tmp_obj_struct = replex(tmp_obj_struct,"\s","")
+| alter
+    tmp_obj_struct = replex(tmp_obj_struct ,"\<\,","<")
+| alter
+    tmp_obj_struct = replex(tmp_obj_struct ,"comp","component")
+| alter
+    parsed_fields = regexcapture(tmp_values, tmp_obj_struct)
+| fields -tmp*;
+
+[INGEST:vendor="vmware", product="nsx", target_dataset="vmware_nsx_raw",no_hit=keep]
+//Schema 1
+filter _raw_log ~= "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s[^\[]\s+.*"
+| call Log_sample_1;
+//Sceham 2
+filter _raw_log ~= "\S+\d{2}:\d{2}:\d{2}\S*\s+\S+\s\S+\s+\S+\s+\S+\s+\[.*"
+| call Log_sample_2;

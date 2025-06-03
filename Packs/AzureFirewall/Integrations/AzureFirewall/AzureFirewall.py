@@ -21,12 +21,11 @@ class AzureFirewallClient:
         certificate_thumbprint: str | None = None,
         private_key: str | None = None,
         managed_identities_client_id: str | None = None,
+        is_credentials: str | None = None,
     ):
         self.resource_group = resource_group
         self.subscription_id = subscription_id
         self.default_params = {"api-version": API_VERSION}
-
-        is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
 
         scope = (
             Scopes.management_azure
@@ -3083,6 +3082,7 @@ def main() -> None:
     certificate_thumbprint = params.get("certificate_thumbprint")
     private_key = params.get("private_key")
     managed_identities_client_id = get_azure_managed_identities_client_id(params)
+    is_credentials = (client_secret and tenant_id) or (certificate_thumbprint and private_key)
 
     if (
         tenant_id
@@ -3108,6 +3108,7 @@ def main() -> None:
             certificate_thumbprint=certificate_thumbprint,
             private_key=private_key,
             managed_identities_client_id=managed_identities_client_id,
+            is_credentials=is_credentials,
         )
 
         commands = {
@@ -3139,7 +3140,7 @@ def main() -> None:
         }
 
         if command == "test-module":
-            if managed_identities_client_id:
+            if managed_identities_client_id or is_credentials:
                 # test-module expected to get 'ok' in case of success
                 test_res = test_connection(client=client)
                 return return_results("ok" if "Success" in test_res else test_res)

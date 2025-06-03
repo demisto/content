@@ -11,8 +11,8 @@ Loads a JSON from a string input, and returns a JSON object result.
 | Script Type | python3 |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +20,7 @@ Loads a JSON from a string input, and returns a JSON object result.
 | input | The input string to transform to a JSON object. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

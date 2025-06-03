@@ -4,6 +4,7 @@ Sends an email to the user with the account information.
 This script is running the `send-mail` command, make sure there is a mail sender integration configured.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -13,6 +14,7 @@ This script is running the `send-mail` command, make sure there is a mail sender
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name**      | **Description**                                                                                                                                           |
@@ -36,6 +38,7 @@ This script is running the `send-mail` command, make sure there is a mail sender
 | max_symbols            | Maximum number of symbols to include in password. Used with the GeneratePassword script \(leave empty if using another script\).                          |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

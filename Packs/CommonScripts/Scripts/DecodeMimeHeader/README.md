@@ -1,6 +1,7 @@
 Decodes MIME base64 headers.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Decodes MIME base64 headers.
 | Script Type | python |
 | Tags |  |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +18,7 @@ Decodes MIME base64 headers.
 | value | The header value to decode. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

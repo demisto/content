@@ -1,4 +1,4 @@
-Enables changing context in two ways. The first is to capitalize the first letter of each key in following level of the context key entered. The second is to change context keys to new values. 
+Enables changing context in two ways. The first is to capitalize the first letter of each key in following level of the context key entered. The second is to change context keys to new values.
 
 ## Script Data
 

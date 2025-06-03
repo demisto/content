@@ -1,4 +1,7 @@
 category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Symantec Email Security Cloud
   version: -1
@@ -51,6 +54,7 @@ configuration:
 - name: incidentType
   display: Incident type
   type: 13
+  section: Collect
 - name: max_fetch
   display: Maximum number of incidents per fetch
   additionalinfo: Maximum number of incidents per fetch. Default is 50. The maximum is 200.
@@ -1149,7 +1153,7 @@ script:
       default: true
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.11.1940698
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   script: ''
 fromversion: 5.0.0

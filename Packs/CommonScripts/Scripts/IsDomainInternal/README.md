@@ -3,6 +3,7 @@ The list can be customized by the user. It should contain the organization's int
 The results of the script are tagged with the "Internal_Domain_Check_Results" tag, so they can be displayed in the War Room entry sections in incident layouts.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ The results of the script are tagged with the "Internal_Domain_Check_Results" ta
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,6 +22,7 @@ The results of the script are tagged with the "Internal_Domain_Check_Results" ta
 | Domains | A domain name or a list of domain names to check for being internal or external, against the specified list of internal domains. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -1,7 +1,7 @@
 Incident action button script to link or unlink Incidents from an Incident
 
-
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +11,7 @@ Incident action button script to link or unlink Incidents from an Incident
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +20,6 @@ Incident action button script to link or unlink Incidents from an Incident
 | action | Action to perform - Link or Unlink Incidents |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

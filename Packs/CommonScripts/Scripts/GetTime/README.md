@@ -1,6 +1,5 @@
 Retrieves the current date and time.
 
-
 ## Script Data
 
 ---

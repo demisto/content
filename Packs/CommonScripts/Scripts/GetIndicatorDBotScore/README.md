@@ -1,6 +1,7 @@
 Add into the incident's context the system internal DBot score for the input indicator.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,11 +11,14 @@ Add into the incident's context the system internal DBot score for the input ind
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Used In
+
 ---
 This script is used in the following playbooks and scripts.
+
 * DBot Indicator Enrichment - Generic
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,6 +26,7 @@ This script is used in the following playbooks and scripts.
 | indicator | The indicator to get the reputation of. Only system indicator types are supported. In order to send multiple indicators, use either a list or a JSON formatted string representation (e.g., `["indicator1", "indicator2"]`). |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -19,6 +19,7 @@ urllib3.disable_warnings()
 warnings.filterwarnings(action="ignore", message=".*using SSL with verify_certs=False is insecure.")
 
 ELASTICSEARCH_V8 = "Elasticsearch_v8"
+ELASTICSEARCH_V9 = "Elasticsearch_v9"
 OPEN_SEARCH = "OpenSearch"
 ELASTIC_SEARCH_CLIENT = demisto.params().get("client_type")
 if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
@@ -26,13 +27,13 @@ if ELASTIC_SEARCH_CLIENT == OPEN_SEARCH:
     from opensearch_dsl.query import QueryString
     from opensearchpy import NotFoundError, RequestsHttpConnection
     from opensearchpy import OpenSearch as Elasticsearch
-elif ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+elif ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
     from elastic_transport import RequestsHttpNode
     from elasticsearch import Elasticsearch, NotFoundError  # type: ignore[assignment]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 else:  # Elasticsearch (<= v7)
-    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment]
+    from elasticsearch7 import Elasticsearch, NotFoundError, RequestsHttpConnection  # type: ignore[assignment,misc]
     from elasticsearch_dsl import Search
     from elasticsearch_dsl.query import QueryString
 
@@ -166,7 +167,7 @@ def elasticsearch_builder(proxies):
         "timeout": TIMEOUT,
     }
     demisto.debug(f"Building Elasticsearch client with args: {connection_args}")
-    if ELASTIC_SEARCH_CLIENT != ELASTICSEARCH_V8:
+    if ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         # Adding the proxy related parameters to the Elasticsearch client v7 and below or OpenSearch (BC)
         connection_args["connection_class"] = RequestsHttpConnection  # type: ignore[assignment]
         connection_args["proxies"] = proxies
@@ -185,7 +186,7 @@ def elasticsearch_builder(proxies):
         connection_args["api_key"] = API_KEY
 
     elif USERNAME:
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
             connection_args["basic_auth"] = (USERNAME, PASSWORD)
         else:  # Elasticsearch version v7 and below or OpenSearch (BC)
             connection_args["http_auth"] = (USERNAME, PASSWORD)
@@ -330,7 +331,11 @@ def search_command(proxies):
     demisto.debug(f"Executing search with index={index}, query={query}, query_dsl={query_dsl}")
 
     if query_dsl:
-        response = execute_raw_query(es, query_dsl, index, size, base_page)
+        query_dsl = query_string_to_dict(query_dsl)
+        if query_dsl.get("size", False) or query_dsl.get("page", False):
+            response = execute_raw_query(es, query_dsl, index)
+        else:
+            response = execute_raw_query(es, query_dsl, index, size, base_page)
 
     else:
         que = QueryString(query=query)
@@ -349,7 +354,7 @@ def search_command(proxies):
         if sort_field is not None:
             search = search.sort({sort_field: {"order": sort_order}})
 
-        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
         else:  # Elasticsearch v7 and below
@@ -402,7 +407,7 @@ def test_query_to_fetch_incident_index(es):
         query = QueryString(query="*")
         search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-        if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
             response = search.execute().to_dict()
 
         else:  # Elasticsearch v7 and below or OpenSearch
@@ -426,7 +431,7 @@ def test_general_query(es):
         query = QueryString(query="*")
         search = Search(using=es, index="*").query(query)[0:1]
 
-        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
         else:  # Elasticsearch v7 and below
@@ -458,7 +463,7 @@ def test_time_field_query(es):
     query = QueryString(query=TIME_FIELD + ":*")
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
         response = search.execute().to_dict()
 
     else:  # Elasticsearch v7 and below
@@ -491,7 +496,7 @@ def test_fetch_query(es):
     query = QueryString(query=str(TIME_FIELD) + ":* AND " + FETCH_QUERY)
     search = Search(using=es, index=FETCH_INDEX).query(query)[0:1]
 
-    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
         response = search.execute().to_dict()
 
     else:  # Elasticsearch v7 and below
@@ -499,16 +504,7 @@ def test_fetch_query(es):
         response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     demisto.debug(f"Test fetch query response: {response}")
-    _, total_results = get_total_results(response)
-
-    if total_results > 0:
-        return response
-
-    else:
-        # failed to get the TIME_FIELD with the FETCH_QUERY
-        # this can happen and not be an error if the FETCH_QUERY doesn't have results yet.
-        # Thus this does not return an error message
-        return None
+    return response
 
 
 def test_timestamp_format(timestamp):
@@ -581,10 +577,10 @@ def verify_es_server_version(res):
     if es_server_version:
         major_version = es_server_version.split(".")[0]
         if major_version:
-            if int(major_version) >= 8 and ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+            if int(major_version) >= 8 and ELASTIC_SEARCH_CLIENT not in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
                 raise ValueError(
                     f"Configuration Error: Your Elasticsearch server is version {es_server_version}. "
-                    f"Please ensure that the client type is set to {ELASTICSEARCH_V8} or {OPEN_SEARCH}. "
+                    f"Please ensure that the client type is set to {ELASTICSEARCH_V9}, {ELASTICSEARCH_V8} or {OPEN_SEARCH}. "
                     f"For more information please see the integration documentation."
                 )
             elif int(major_version) <= 7 and ELASTIC_SEARCH_CLIENT not in [OPEN_SEARCH, "Elasticsearch"]:
@@ -627,21 +623,6 @@ def integration_health_check(proxies):
             # test if TIME_FIELD in index exists
             response = test_time_field_query(es)
 
-            # try to get response from FETCH_QUERY - if exists check the time field from that query
-            if RAW_QUERY:
-                raw_query = RAW_QUERY
-                try:
-                    raw_query = json.loads(raw_query)
-                except Exception as e:
-                    demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
-
-                temp = es.search(index=FETCH_INDEX, body={"query": raw_query})
-            else:
-                temp = test_fetch_query(es)
-
-            if temp:
-                response = temp
-
             # get the value in the time field
             source = response.get("hits", {}).get("hits")[0].get("_source", {})
             hit_date = str(get_value_by_dot_notation(source, str(TIME_FIELD)))
@@ -658,6 +639,28 @@ def integration_health_check(proxies):
 
         except ValueError as e:
             return_error("Inserted time format is incorrect.\n" + str(e) + "\n" + TIME_FIELD + " fetched: " + hit_date)
+
+        # try to get response from FETCH_QUERY or RAW_QUERY
+        try:
+            if RAW_QUERY:
+                fetch_result = execute_raw_query(es, RAW_QUERY)
+            else:
+                fetch_result = test_fetch_query(es)
+
+            # validate that the response actually returned results and did not time out
+            if fetch_result and isinstance(fetch_result.get("timed_out"), bool):
+                if fetch_result.get("timed_out"):
+                    return_error(f"Elasticsearch fetching has timed out. Fetching response was:\n{str(fetch_result)}")
+                _, total_results = get_total_results(fetch_result)
+                if total_results == 0:
+                    demisto.info("Elasticsearch fetching test returned 0 hits, but this might be expected.")
+            else:
+                return_error(
+                    "Elasticsearch fetching was unsuccessful. Fetching returned the following invalid object:\n"
+                    + str(fetch_result)
+                )
+        except Exception as ex:
+            return_error(f"An exception has been thrown trying to test Elasticsearch fetching:\n{str(ex)}", error=str(ex))
 
     else:
         # check that we can reach any indexes in the supplied server URL
@@ -844,9 +847,11 @@ def get_time_range(
     return {"range": {time_field: range_dict}}
 
 
-def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+def query_string_to_dict(raw_query) -> Dict:
+    """Parses a query_dsl string or bytearray into a Dict to make its fields accessible"""
     try:
-        raw_query = json.loads(raw_query)
+        if not isinstance(raw_query, Dict):
+            raw_query = json.loads(raw_query)
         if raw_query.get("query"):
             demisto.debug("Query provided already has a query field. Sending as is.")
             body = raw_query
@@ -855,17 +860,27 @@ def execute_raw_query(es, raw_query, index=None, size=None, page=None):
     except (ValueError, TypeError) as e:
         body = {"query": raw_query}
         demisto.info(f"unable to convert raw query to dictionary, use it as a string\n{e}")
+    return body
+
+
+def execute_raw_query(es, raw_query, index=None, size=None, page=None):
+    body = query_string_to_dict(raw_query)
 
     requested_index = index or FETCH_INDEX
 
-    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8]:
-        search = Search(using=es, index=requested_index).query(body.get("query"))
-        if size and isinstance(page, int):
-            search = search[page : page + size]
-        response = search.execute().to_dict()
+    # update parameters if given
+    if isinstance(size, int):
+        body["size"] = size
+    if isinstance(page, int):
+        body["from"] = page
 
-    else:  # Elasticsearch v7 and below or OpenSearch
-        response = es.search(index=requested_index, body=body, size=size, from_=page)
+    search = Search(using=es, index=requested_index).update_from_dict(body)
+
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
+        response = search.execute().to_dict()
+    else:  # Elasticsearch v7 and below
+        # maintain BC by using the ES client directly (avoid using the elasticsearch_dsl library here)
+        response = es.search(index=search._index, body=search.to_dict(), **search._params)
 
     demisto.debug(f"Raw query response: {response}")
     return response
@@ -886,7 +901,7 @@ def fetch_incidents(proxies):
         search = Search(using=es, index=FETCH_INDEX).filter(time_range_dict)
         search = search.sort({TIME_FIELD: {"order": "asc"}})[0:FETCH_SIZE].query(query)
 
-        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, OPEN_SEARCH]:
+        if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8, OPEN_SEARCH]:
             response = search.execute().to_dict()
 
         else:  # Elasticsearch v7 and below
@@ -1022,6 +1037,54 @@ def search_eql_command(args, proxies):
     return CommandResults(readable_output=total_human_readable, outputs_prefix="Elasticsearch.Search", outputs=search_context)
 
 
+def search_esql_command(args, proxies):
+    query = args.get("query")
+    limit = args.get("limit")
+
+    es = elasticsearch_builder(proxies)
+
+    if limit:
+        query = {"query": query + f"| LIMIT {limit}"}
+    else:
+        query = {"query": query}
+
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V8, ELASTICSEARCH_V9]:
+        compatible_with = 8 if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8 else 9
+        headers = {
+            "Content-Type": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
+            "Accept": f"application/vnd.elasticsearch+json; compatible-with={compatible_with}",
+        }
+    else:
+        return_error("ES|QL Search is only supported in Elasticsearch 8.11 and above.")
+        return None
+
+    demisto.debug(f"ES|QL search body: {query}")
+    res = es.perform_request(method="POST", path="/_query?format=json", headers=headers, body=query)
+
+    human_output_columns = [col["name"] for col in res["columns"]]
+    human_output_rows = res["values"]
+    human_output = []
+
+    for row in human_output_rows:
+        row_dict = {}
+        for i in range(len(human_output_columns)):
+            row_dict[human_output_columns[i]] = row[i]
+        human_output.append(row_dict)
+
+    search_human_readable = tableToMarkdown(
+        "Search query:", [{"Query": query.get("query"), "Total": str(len(human_output_rows))}], removeNull=True
+    )
+    hits_human_readable = tableToMarkdown("Results:", human_output, removeNull=True)
+    total_human_readable = search_human_readable + "\n" + hits_human_readable
+
+    return CommandResults(
+        readable_output=total_human_readable,
+        outputs_prefix="Elasticsearch.ESQLSearch",
+        outputs=human_output,
+        raw_response=res.body,
+    )
+
+
 def index_document(args, proxies):
     """
     Indexes a given document into an Elasticsearch index.
@@ -1033,7 +1096,7 @@ def index_document(args, proxies):
     es = elasticsearch_builder(proxies)
 
     demisto.debug(f"Indexing document in index {index} with ID {doc_id}")
-    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         if doc_id:
             response = es.index(index=index, id=doc_id, document=doc)  # pylint: disable=E1123,E1120
         else:
@@ -1067,7 +1130,7 @@ def index_document_command(args, proxies):
     headers = [str(k) for k in human_readable]
     readable_output = tableToMarkdown(name="Indexed document", t=human_readable, removeNull=True, headers=headers)
 
-    if ELASTIC_SEARCH_CLIENT == ELASTICSEARCH_V8:
+    if ELASTIC_SEARCH_CLIENT in [ELASTICSEARCH_V9, ELASTICSEARCH_V8]:
         resp = resp.body
 
     result = CommandResults(
@@ -1154,6 +1217,8 @@ def main():  # pragma: no cover
             return_results(get_mapping_fields_command())
         elif demisto.command() == "es-eql-search":
             return_results(search_eql_command(args, proxies))
+        elif demisto.command() == "es-esql-search":
+            return_results(search_esql_command(args, proxies))
         elif demisto.command() == "es-index":
             return_results(index_document_command(args, proxies))
         elif demisto.command() == "es-integration-health-check":

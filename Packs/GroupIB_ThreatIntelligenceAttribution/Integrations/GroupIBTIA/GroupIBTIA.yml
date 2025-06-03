@@ -74,20 +74,33 @@ configuration:
   name: first_fetch
   required: false
   type: 0
-- additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
-  defaultvalue: '3'
+- defaultvalue: "false"
   section: Collect
-  display: Number of requests per collection
-  hidden: false
+  display: Exclude All with Combolist type
+  name: exclude_combolist
+  required: false
+  type: 8
+- display: Enable filter "Probable Corporate Access"
+  name: enable_probable_corporate_access
+  section: Collect
+  required: false
+  type: 8
+  defaultvalue: "false"
+  additionalinfo: Enable filter "Probable Corporate Access"
+- display: Number of requests per collection
   name: max_fetch
+  section: Collect
+  defaultvalue: '3'
+  type: 15
+  required: false
+  additionalinfo: A number of requests per collection that integration sends in one fetch iteration (each request picks up to 200 incidents). If you face some runtime errors, lower the value.
+  hidden: false
   options:
   - '1'
   - '2'
   - '3'
   - '4'
   - '5'
-  required: false
-  type: 15
 - display: Incident type
   name: incidentType
   section: Collect

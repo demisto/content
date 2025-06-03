@@ -1,6 +1,5 @@
 from pathlib import Path
 from itertools import pairwise
-from typing import List
 import urllib3
 import argparse
 from blessings import Terminal
@@ -8,10 +7,21 @@ from github import Github
 from github.PullRequest import PullRequest
 from github.Repository import Repository
 import sys
-from skip_conditions import MetadataCondition, \
-    LastModifiedCondition, LabelCondition, AddedRNFilesCondition, HasConflictOnAllowedFilesCondition, \
-    PackSupportCondition, MajorChangeCondition, MaxVersionCondition, OnlyVersionChangedCondition, \
-    OnlyOneRNPerPackCondition, SameRNMetadataVersionCondition, AllowedBumpCondition, UpdateType
+from skip_conditions import (
+    MetadataCondition,
+    LastModifiedCondition,
+    LabelCondition,
+    AddedRNFilesCondition,
+    HasConflictOnAllowedFilesCondition,
+    PackSupportCondition,
+    MajorChangeCondition,
+    MaxVersionCondition,
+    OnlyVersionChangedCondition,
+    OnlyOneRNPerPackCondition,
+    SameRNMetadataVersionCondition,
+    AllowedBumpCondition,
+    UpdateType,
+)
 from utils import timestamped_print, Checkout
 from git import Repo
 from demisto_sdk.commands.update_release_notes.update_rn import UpdateRN
@@ -25,15 +35,15 @@ t = Terminal()
 ORGANIZATION_NAME = "demisto"
 REPO_MANE = "content"
 BASE = "master"
-PR_COMMENT_TITLE = "### This PR was automatically updated by a " \
-                   "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
+PR_COMMENT_TITLE = (
+    "### This PR was automatically updated by a " "[GitHub Action](https://github.com/demisto/content/actions/runs/{})\n"
+)
 PR_COMMENT = "- **{}** pack version was bumped to **{}**.\n"
 COMMIT_MESSAGE = "Bump pack from version {} to {}."
 MERGE_FROM_MASTER_COMMIT_MESSAGE = f"Merged {BASE} into current branch."
 PACKS_DIR = "Packs"
 NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
-PR_COMMENT_STOP_AUTOMATION = f"\nTo stop automatic version bumps, add the `{NOT_UPDATE_RN_LABEL}` " \
-                             f"label to the github PR.\n"
+PR_COMMENT_STOP_AUTOMATION = f"\nTo stop automatic version bumps, add the `{NOT_UPDATE_RN_LABEL}` " f"label to the github PR.\n"
 
 
 class PackAutoBumper:
@@ -109,7 +119,7 @@ class BranchAutoBumper:
         self,
         pr: PullRequest,
         git_repo: Repo,
-        packs_to_autobump: List[PackAutoBumper],
+        packs_to_autobump: list[PackAutoBumper],
         run_id: str,
     ):
         """
@@ -119,9 +129,7 @@ class BranchAutoBumper:
             packs_to_autobump: Pack that was changed in this PR and need to autobump its versions.
             run_id: GitHub action run id.
         """
-        assert (
-            packs_to_autobump
-        ), f"packs_to_autobump in the pr: {pr.number}, cant be empty."
+        assert packs_to_autobump, f"packs_to_autobump in the pr: {pr.number}, cant be empty."
         self.pr = pr
         self.branch = pr.head.ref
         self.git_repo = git_repo
@@ -141,9 +149,7 @@ class BranchAutoBumper:
         with Checkout(self.git_repo, self.branch):
             for pack_auto_bumper in self.packs_to_autobump:
                 pack_auto_bumper.set_pr_changed_rn_related_data()
-            self.git_repo.git.merge(
-                f"origin/{BASE}", "-Xtheirs", "-m", MERGE_FROM_MASTER_COMMIT_MESSAGE
-            )
+            self.git_repo.git.merge(f"origin/{BASE}", "-Xtheirs", "-m", MERGE_FROM_MASTER_COMMIT_MESSAGE)
             for pack_auto_bumper in self.packs_to_autobump:
                 new_version = pack_auto_bumper.autobump()
                 print(f"Pack {pack_auto_bumper.pack_id} new version: {new_version}.")
@@ -189,17 +195,12 @@ class AutoBumperManager:
         If no - skips checks for the pack/branch.
         If the pack meets all conditions to autobump pack version, it bumps the version.
         """
-        for pr in self.github_repo_obj.get_pulls(
-            state="open", sort="created", base=BASE
-        ):
+        for pr in self.github_repo_obj.get_pulls(state="open", sort="created", base=BASE):
             if pr.draft:
                 # The bot does not go through a PR that is in draft
                 continue
 
-            print(
-                f"{t.yellow}Looking on pr number [{pr.number}]: last updated: "
-                f"{str(pr.updated_at)}, branch={pr.head.ref}"
-            )
+            print(f"{t.yellow}Looking on pr number [{pr.number}]: last updated: " f"{str(pr.updated_at)}, branch={pr.head.ref}")
 
             conditions = [
                 LastModifiedCondition(pr=pr, git_repo=self.git_repo_obj),
@@ -223,12 +224,12 @@ class AutoBumperManager:
                     git_repo=self.git_repo_obj,
                 )
                 metadata_condition_kwargs = {
-                    'pack': pack,
-                    'pr': pr,
-                    'git_repo': self.git_repo_obj,
-                    'branch_metadata': branch_md,
-                    'pr_base_metadata': pr_base_md,
-                    'origin_base_metadata': origin_md,
+                    "pack": pack,
+                    "pr": pr,
+                    "git_repo": self.git_repo_obj,
+                    "branch_metadata": branch_md,
+                    "pr_base_metadata": pr_base_md,
+                    "origin_base_metadata": origin_md,
                 }
                 conditions = [
                     PackSupportCondition(**metadata_condition_kwargs),
@@ -250,8 +251,8 @@ class AutoBumperManager:
                 packs_to_autobump.append(
                     PackAutoBumper(
                         pack_id=pack,
-                        rn_file_path=metadata_cond_result.pack_new_rn_file,     # type: ignore[arg-type]
-                        update_type=metadata_cond_result.update_type,       # type: ignore[arg-type]
+                        rn_file_path=metadata_cond_result.pack_new_rn_file,  # type: ignore[arg-type]
+                        update_type=metadata_cond_result.update_type,  # type: ignore[arg-type]
                     )
                 )
 
@@ -273,9 +274,7 @@ def arguments_handler():  # pragma: no cover
        Namespace: Parsed arguments object.
 
     """
-    parser = argparse.ArgumentParser(
-        description="Autobump release notes version for packs where ."
-    )
+    parser = argparse.ArgumentParser(description="Autobump release notes version for packs where .")
     parser.add_argument(
         "-g",
         "--github_token",
@@ -294,9 +293,7 @@ def main():  # pragma: no cover
     git_repo_obj.remote().fetch()
 
     github_client: Github = Github(github_token, verify=False)
-    github_repo_obj: Repository = github_client.get_repo(
-        f"{ORGANIZATION_NAME}/{REPO_MANE}"
-    )
+    github_repo_obj: Repository = github_client.get_repo(f"{ORGANIZATION_NAME}/{REPO_MANE}")
 
     autobump_manager = AutoBumperManager(
         git_repo_obj=git_repo_obj,

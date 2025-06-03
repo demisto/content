@@ -36,15 +36,14 @@ This integration is compatible with Cortex XSOAR versions 6.x and 8.x, and it ha
     | None | Turns off incident mirroring. |
     | Incoming | Any changes in XSOAR Mirroring events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in XSOAR Mirroring events (outgoing mirrored fields). |
-    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and XSOAR Mirroring events will be reflected in both directions. 
+    | Incoming And Outgoing | Changes in Cortex XSOAR incidents and XSOAR Mirroring events will be reflected in both directions.
    Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 
    **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and XSOAR Mirroring.
 
 6. Click **Test** to ensure that you can communicate with the Cortex XSOAR tenant.
 
-
-## Important notes:
+## Important notes
 
 - In order to mirror custom fields, you need to create an incoming mapper for the integration and explicitly specify them in it.
 - In order to mirror custom fields in both directions, the custom fields in both Cortex XSOAR instances must have the same CLI name.
@@ -68,10 +67,10 @@ Search remote Cortex XSOAR for incidents.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | Which incidents to retrieve. Default is -status:closed -category:job. | Optional | 
-| start_time | From when to search. Default is 3 days. | Optional | 
-| max_results | How many incidents to retrieve. Default is 10. | Optional | 
-| columns | Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'. Default is id,name,type,status,severity,owner,occured. | Optional | 
+| query | Which incidents to retrieve. Default is -status:closed -category:job. | Optional |
+| start_time | From when to search. Default is 3 days. | Optional |
+| max_results | How many incidents to retrieve. Default is 10. | Optional |
+| columns | Which columns to display. Default is 'id,name,type,status,severity,owner,occured'. To display all columns, insert 'all'. Default is id,name,type,status,severity,owner,occured. | Optional |
 
 #### Context Output
 
@@ -241,12 +240,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Search Results:
+>### Search Results
 
 >|id|name|type|status|severity|owner|occured|
 >|---|---|---|---|---|---|---|
 >| 4 | testing | Unclassified | 1 | 0 | admin |  |
-
 
 ### xsoar-get-incident
 
@@ -261,11 +259,11 @@ Retrieve incident and entries from the remote Cortex XSOAR server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident ID. | Required | 
-| from_date | Retrieve entries that were created after the last update. Default is 3 days. | Optional | 
-| categories | Retrieve only the entries from these categories. Default is chats,notes. | Optional | 
-| tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | Optional | 
-| max_results | Max number of entries to retrieve. Default is 10. | Optional | 
+| id | The remote incident ID. | Required |
+| from_date | Retrieve entries that were created after the last update. Default is 3 days. | Optional |
+| categories | Retrieve only the entries from these categories. Default is chats,notes. | Optional |
+| tags | Only entries with these tags are retrieved from the Cortex XSOAR server. If no tags are listed, no entries are retrieved. | Optional |
+| max_results | Max number of entries to retrieve. Default is 10. | Optional |
 
 #### Context Output
 
@@ -445,7 +443,6 @@ There is no context output for this command.
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| none | 0 | chat | done | 4 | 2023-03-05T10:38:21.895125832Z | false | admin | 0001-01-01T00:00:00Z | text | 52@4 | 0001-01-01T00:00:00Z | 4 | false | false | 2023-03-05T10:38:21.895153311Z | false | false | false | false | 0 | 0001-01-01T00:00:00Z | false | 0001-01-01T00:00:00Z | 0 | 0 | 1 | admin | 1 |
 
-
 ### get-remote-data
 
 ***
@@ -459,12 +456,13 @@ Get remote data from a remote incident. Note that this method will not update th
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The remote incident ID. | Required | 
-| lastUpdate | Retrieve entries that were created after the last update. | Optional | 
+| id | The remote incident ID. | Required |
+| lastUpdate | Retrieve entries that were created after the last update. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-mapping-fields
 
 ***
@@ -482,10 +480,12 @@ Retrieves the mapping schema from a remote incident.
 #### Context Output
 
 There is no context output for this command.
+
 ## Incident Mirroring
 
 You can enable incident mirroring between Cortex XSOAR incidents and XSOAR Mirroring corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -495,7 +495,6 @@ To set up the mirroring:
     | Incoming | Any changes in XSOAR Mirroring events (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Any changes in Cortex XSOAR incidents will be reflected in XSOAR Mirroring events (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and XSOAR Mirroring events will be reflected in both directions. |
-
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 **Important Note:** To ensure the mirroring works as expected, mappers are required, both for incoming and outgoing, to map the expected fields in Cortex XSOAR and XSOAR Mirroring.

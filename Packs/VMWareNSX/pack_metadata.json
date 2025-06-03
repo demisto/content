@@ -1,0 +1,27 @@
+{
+    "name": "VMWare NSX",
+    "description": "VMware NSX is a comprehensive virtual networking and security platform that transforms how organizations manage and secure their digital infrastructure.",
+    "support": "xsoar",
+    "currentVersion": "1.0.0",
+    "author": "Cortex XSOAR",
+    "url": "https://www.paloaltonetworks.com/cortex",
+    "email": "",
+    "categories": [
+        "Analytics & SIEM"
+    ],
+    "tags": [
+        "Network"
+    ],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "marketplacev2",
+        "platform"
+    ],
+    "supportedModules": [
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
+    ]
+}

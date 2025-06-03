@@ -5,6 +5,7 @@ Secret Server is the only fully featured Privileged Account Management (PAM) sol
 This Thycotic Secret Server content pack contains examples playbooks for usage in own flows, using REST API methods.
 
 What does this pack do?
+
 - obtaining a secret with the required fields for subsequent authentication
 - methods for working with objects Secret: create, update, search, delete, check-in/check-out
 - methods for working with objects Folder: create, update, search, delete

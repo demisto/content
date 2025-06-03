@@ -151,23 +151,23 @@
 <h5>Command Example</h5>
 <p><code>!dnstwist-domain-variations domain=demisto.com</code></p>
 <h5>Context Example</h5>
-<pre>"dnstwist":	
-	{
-		"Domain": {
-				"Name": "demisto.com",
-				"IP" : ["85.13.155.169"]
-				"Domains": [
-							{
-							"Name": "demistok.com",
-						        "IP": ["52.86.122.241","54.165.193.163"]
-						        },
-							{
-							 "Name": "demistol.com",
-						         "IP": ["85.13.155.169"]									     
-						        }
-					]
-			}
-	}
+<pre>"dnstwist": 
+ {
+  "Domain": {
+    "Name": "demisto.com",
+    "IP" : ["85.13.155.169"]
+    "Domains": [
+       {
+       "Name": "demistok.com",
+              "IP": ["52.86.122.241","54.165.193.163"]
+              },
+       {
+        "Name": "demistol.com",
+               "IP": ["85.13.155.169"]              
+              }
+     ]
+   }
+ }
 </pre>
 <h5>Human Readable Output</h5>
 <p><a href="../../doc_files/dnswist_for_domain.png" target="_blank" rel="noopener noreferrer"><img src="../../doc_files/dnswist_for_domain.png" alt="image" width="749" height="412"></a></p>

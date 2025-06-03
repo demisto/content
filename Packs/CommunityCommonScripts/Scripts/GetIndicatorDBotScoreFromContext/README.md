@@ -3,6 +3,7 @@ Provided that it has all of the latest source verdict, this script gives you the
 Note that the result is calculated by the context data and not given from the database.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Note that the result is calculated by the context data and not given from the da
 | Cortex XSOAR Version | 6.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +21,7 @@ Note that the result is calculated by the context data and not given from the da
 | indicator_value | The indicator value |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

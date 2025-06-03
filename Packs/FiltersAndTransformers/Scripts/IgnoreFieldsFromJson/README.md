@@ -1,6 +1,7 @@
 A transformer to remove selected fields from the JSON object.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ A transformer to remove selected fields from the JSON object.
 | Tags | transformer, General |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ A transformer to remove selected fields from the JSON object.
 | fields | Comma-separated fields/keys (without any whitespaces) that needs to be ignored from the JSON object. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

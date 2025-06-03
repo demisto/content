@@ -1,4 +1,5 @@
 # Genians
+
 Use the Genian NAC integration to block IP addresses using the assign tag.
 
 Genian NAC network sensing technology powered by Device Platform Intelligence (DPI) discovers

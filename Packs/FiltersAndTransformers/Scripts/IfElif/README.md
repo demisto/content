@@ -1,10 +1,10 @@
-### A transformer for if-elif-else logic.
+### A transformer for if-elif-else logic
 
 The **If-Elif** transformer simulates a python *"if elif else"* tree using a JSON provided in the *conditions* argument.
 The JSON should be a list of dictionaries where all have the keys "*condition*", which holds a boolean expression, and "*return*", which holds the value to return if "*condition*" is evaluated to be true. To return a default value if all "*condition*"s were false, the last dictionary should have only the key "*default*" holding the valid JSON value. If this is not provided an empty string will be returned as a default.
 In order to prevent injections, context values should be retrieved from the value entered in the *value (Get)* of the transformer with the hash-curly brackets `#{...}` syntax. This syntax has the same behavior as the classic XSOAR `${...}` syntax and uses the [Cortex XSOAR Transform Language (DT)](https://xsoar.pan.dev/docs/integrations/dt). To provide the full context to the transformer, use `${.}` as the *value (Get)* argument. **Note:** when used as a "*return*" value, this syntax should *not* be surrounded by quotes.  
 
-#### Supported operators for conditions:
+#### Supported operators for conditions
 
 **Comparison operators** work like Python operators:
 
@@ -43,14 +43,18 @@ The following flags can be used in the *flags* argument to control the transform
 | regex_multiline | The patterns `^` and `$` will match the beginning and end of each line respectively as opposed to the beginning and end of the *string*. | `regex_match('^\d$', '1\n2\n')` |
 | regex_full_match | Regex patterns will be compared with the whole string to find a match. | `not regex_match('\d+', 'a12345')` |
 
-### Example:
+### Example
+
 ---
-##### value (Get):
+
+##### value (Get)
+
 ```
 ${.}
 ```
 
-##### conditions:
+##### conditions
+
 ```json
 [
   {
@@ -71,11 +75,11 @@ ${.}
 ]
 ```
 
-##### flags:
+##### flags
+
 ```
 case_insensitive,regex_dot_all,regex_multiline
 ```
-
 
 ## Script Data
 

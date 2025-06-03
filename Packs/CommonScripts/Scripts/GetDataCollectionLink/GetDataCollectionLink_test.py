@@ -39,7 +39,7 @@ def test_generate_url(mocker, is_saas, expected):
     Then:
         - it returns the expected url
     """
-    mocker.patch("GetDataCollectionLink.is_xsoar_saas", return_value=is_saas)
+    mocker.patch("GetDataCollectionLink.is_xsiam_or_xsoar_saas", return_value=is_saas)
     mocker.patch("GetDataCollectionLink.execute_command", return_value="123")
 
     url = generate_url("https://server", "abc", "xyz")
@@ -57,7 +57,7 @@ def test_generate_url_generateOTP_unsupported(mocker):
         - it returns the expected url without OTP
     """
 
-    mocker.patch("GetDataCollectionLink.is_xsoar_saas", return_value=True)
+    mocker.patch("GetDataCollectionLink.is_xsiam_or_xsoar_saas", return_value=True)
     mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception("Unsupported Command"))
 
     url = generate_url("https://server", "abc", "xyz")
@@ -75,7 +75,7 @@ def test_generate_url_failure(mocker):
         - Ensure the exception is raised
     """
 
-    mocker.patch("GetDataCollectionLink.is_xsoar_saas", return_value=True)
+    mocker.patch("GetDataCollectionLink.is_xsiam_or_xsoar_saas", return_value=True)
     mocker.patch("GetDataCollectionLink.execute_command", side_effect=Exception("test"))
 
     with pytest.raises(Exception):

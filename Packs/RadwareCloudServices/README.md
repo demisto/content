@@ -1,5 +1,5 @@
 
-# Radware Cloud Services
+# Radware Cloud WAF Services
 
 <~XSIAM>  
 This pack includes Cortex XSIAM content.  

@@ -1,6 +1,7 @@
 Get the Internet Message Id and Recipient's address of Messages in a format of `internet_message_id:recipients_address.`
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Get the Internet Message Id and Recipient's address of Messages in a format of `
 | Cortex XSOAR Version | 6.2.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ Get the Internet Message Id and Recipient's address of Messages in a format of `
 | key | Object Key. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

@@ -14,7 +14,7 @@ Follow these steps for a self-deployed configuration:
 3. Enter your Client/Application ID in the ***Application ID*** parameter. 
 4. Enter your Client Secret in the ***Password*** parameter.
 5. Enter your Tenant ID in the ***Tenant ID*** parameter.
-6. Run the ***!msgraph-apps-auth-test*** command to test the connection and the authorization process.
+6. Run the ***!microsoft-teams-auth-test*** command to test the connection and the authorization process.
 
 
 ### Device Code Flow
@@ -27,9 +27,9 @@ In order to connect to Microsoft Graph Services using either Cortex XSOAR Azure 
 1. Fill in the required parameters.
 2. In the instance configuration, under the ***Authentication Type*** field select the ***Device*** option.
 3. Fill in the required parameters.
-4. Run the ***!msgraph-apps-auth-start*** command.
+4. Run the ***!microsoft-teams-auth-start*** command.
 5. Follow the instructions that appear.
-6. Run the ***!msgraph-apps-auth-complete*** command.
+6. Run the ***!microsoft-teams-auth-complete*** command.
 
 At the end of the process you'll see a message that you've logged in successfully.
 In both options below, the [device authorization grant flow](https://docs.microsoft.com/en-us/azure/active-directory/develop/v2-oauth2-device-code) is used.

@@ -1,6 +1,7 @@
 An automation script to return address in binary format
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ An automation script to return address in binary format
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,6 +19,7 @@ An automation script to return address in binary format
 | ip_address | Address to use |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -24,11 +27,12 @@ An automation script to return address in binary format
 | IPCalc.IP.Binary.binary | Subnet binary | String |
 | IPCalc.IP.Binary.address | IP address | String |
 
-
 ## Script Example
+
 ```!IPCalcReturnAddressBinary ip_address=192.158.2.2```
 
 ## Context Example
+
 ```json
 {
     "IPCalc": {
@@ -45,7 +49,7 @@ An automation script to return address in binary format
 ## Human Readable Output
 
 >### Subnet Binary
+>
 >|address|binary|
 >|---|---|
 >| 192.158.2.2 | 11000000100111100000001000000010 |
-

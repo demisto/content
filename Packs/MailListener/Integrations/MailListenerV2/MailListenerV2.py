@@ -50,7 +50,7 @@ class Email:
         self.html = email_object.text_html[0] if email_object.text_html else ""
         self.text = email_object.text_plain[0] if email_object.text_plain else ""
         self.subject = email_object.subject
-        self.headers = email_object.headers
+        self.headers = self.parse_headers(email_object.headers)
         self.raw_body = email_object.body if include_raw_body else None
         # According to the mailparser documentation the datetime object is in utc
         self.date = email_object.date.replace(tzinfo=timezone.utc) if email_object.date else None  # noqa: UP017
@@ -58,6 +58,89 @@ class Email:
         self.save_eml_file = save_file
         self.labels = self._generate_labels()
         self.message_id = email_object.message_id
+
+    def parse_email_address_header(self, raw_addresses: list[tuple[str]] | list[list[str]]):
+        """
+        Parses a list of email address tuples (e.g., [("Name", "email@example.com")])
+        into a formatted string suitable for email headers.
+        Ensures email addresses are always enclosed in angle brackets.
+
+        Args:
+            raw_addresses (list): A list of lists or tuples, where each inner list/tuple
+                                contains [display_name (str), email_address (str)].
+
+        Returns:
+            str: A semicolon-separated string of formatted email addresses.
+                e.g., "Display Name <email@example.com>; another@example.com"
+        """
+        formatted_addresses = []
+        for address_data in raw_addresses:
+            if not (
+                isinstance(address_data, list | tuple)
+                and len(address_data) == 2
+                and isinstance(address_data[0], str)
+                and isinstance(address_data[1], str)
+            ):
+                demisto.debug(f"Unexpected address data format: {address_data}. Skipping.")
+                continue
+
+            display_name, email_address = address_data
+
+            if display_name.strip():  # Check if display_name is not empty or just whitespace
+                formatted_addresses.append(f"{display_name.strip()} <{email_address.strip()}>")
+            else:
+                formatted_addresses.append(f"{email_address.strip()}")
+        return "; ".join(formatted_addresses)
+
+    def parse_list_header(self, raw_list_values: list[str]):
+        """
+        Parses a list of string values into a comma-separated string.
+
+        Args:
+            raw_list_values (list): A list of strings.
+
+        Returns:
+            str: A comma-separated string of the values.
+                e.g., "value1, value2, value3"
+        """
+        # Ensure all elements are strings before joining to prevent TypeError
+        string_values = [str(item).strip() for item in raw_list_values]
+        return ", ".join(string_values)
+
+    def parse_headers(self, raw_headers: dict):
+        """
+        Parses a dictionary of raw header values into a more standardized format.
+
+        Args:
+            raw_headers (dict): A dictionary where keys are header names (str)
+                                and values can be:
+                                - str (for simple headers like Subject)
+                                - list of [str, str] tuples/lists (for address headers like From, To)
+                                - list of str (for list-based headers like Received)
+
+        Returns:
+            dict: A new dictionary with parsed header values.
+        """
+        parsed_headers = {}
+
+        for header_name, raw_value in raw_headers.items():
+            if isinstance(raw_value, str):
+                parsed_headers[header_name] = raw_value.strip()
+
+            elif isinstance(raw_value, list):
+                if header_name in ["From", "To", "Cc", "Bcc", "Delivered-To", "Reply-To"]:
+                    # These headers contain email addresses that need special formatting
+                    parsed_headers[header_name] = self.parse_email_address_header(raw_value)
+
+                else:
+                    # Other list-based headers (e.g., Received) are joined by commas
+                    parsed_headers[header_name] = self.parse_list_header(raw_value)
+
+            else:
+                demisto.debug(f"Header '{header_name}' has unexpected type {type(raw_value)}. Converting to string.")
+                parsed_headers[header_name] = str(raw_value).strip()
+
+        return parsed_headers
 
     @staticmethod
     def get_eml_attachments(message_bytes: bytes) -> list:
@@ -156,6 +239,8 @@ class Email:
             labels.append(
                 {"type": "Email/attachments", "value": ",".join([attachment["filename"] for attachment in self.attachments])}
             )
+
+        demisto.debug(f"Generated labels: {labels}")
         return labels
 
     def parse_attachments(self, output_to_warroom: bool = False) -> list:

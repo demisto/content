@@ -3,6 +3,7 @@ Tests whether left side version number is less than right side version number.
 Version numbers need to have at least a major and minor version component to be considered valid. E.g. 1.0
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +12,7 @@ Version numbers need to have at least a major and minor version component to be 
 | Tags | Utilities, filter |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,5 +21,6 @@ Version numbers need to have at least a major and minor version component to be 
 | right | Version number to compare against left side |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -261,6 +261,14 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: Extensive Logging
+  name: extensive_logging
+  type: 8
+  additionalinfo: This parameter will write additional data to the logs and should only be used when you are directed to by XSOAR support.
+  section: Connect
+  advanced: true
+  required: false
+  defaultvalue: 'false'
 description: Use the Generic Export Indicators Service integration to provide an endpoint with a list of indicators as a service for the system indicators.
 display: Generic Export Indicators Service
 name: EDL
@@ -431,7 +439,7 @@ script:
       - 'False'
       - 'True'
     description: Updates values stored in the List (only available On-Demand).
-  dockerimage: demisto/flask-nginx:1.0.0.2027021
+  dockerimage: demisto/flask-nginx:1.0.0.3194255
   longRunning: true
   longRunningPort: true
   script: '-'

@@ -40,7 +40,7 @@ filter Category in ("FrontDoorAccessLog", "FrontDoorWebApplicationFirewallLog")
 
 | alter
     xdm.event.id = trackingReference_s,
-    xdm.source.port = coalesce(clientPort_d , clientPort_s),
+    xdm.source.port = coalesce(to_integer(clientPort_d) , to_integer(clientPort_s)),
     xdm.source.ipv4 = source_ipv4 ,
     xdm.source.ipv6 = source_ipv6,
     xdm.source.host.ipv4_addresses = source_socket_ipv4,
@@ -137,7 +137,7 @@ Handles Application Gateway logs
 [RULE: application_gateway_access_and_waf_logs]
 alter 
 	get_properties_action = coalesce(properties -> action, action),
-	get_properties_httpStatus = to_integer(coalesce(properties -> httpStatus,httpstatus)),
+	get_properties_httpStatus = coalesce(to_integer(properties -> httpStatus),to_integer(httpstatus)),
 	get_properties_host = coalesce(properties -> host, host),
 	get_properties_hostname = coalesce(properties -> hostname, hostname),
 	get_properties_originalHost = coalesce(properties -> originalHost, originalhost ),
@@ -216,8 +216,8 @@ alter
 	xdm.source.host.ipv6_addresses = arraydistinct(arraycreate(get_properties_host_ipv6, get_properties_hostname_ipv6, get_properties_originalHost_ipv6)),
 	xdm.source.ipv4 = coalesce(get_properties_clientip_ipv4, get_callerIpAddress_ipv4),
 	xdm.source.ipv6	= coalesce(get_properties_clientip_ipv6, get_callerIpAddress_ipv6),
-    xdm.source.port = to_integer(coalesce(properties -> clientPort, upstreamsourceport)),
-    xdm.source.sent_bytes = to_integer(coalesce(properties -> sentBytes, sentBytes)),
+    xdm.source.port = to_integer(coalesce(to_string(properties -> clientPort), to_string(upstreamsourceport))),
+    xdm.source.sent_bytes = coalesce(to_integer(properties -> sentBytes), to_integer(sentBytes)),
     xdm.source.user_agent = coalesce(properties -> userAgent,useragent),
 	xdm.intermediate.host.hostname = coalesce(properties -> instanceId, instanceid),
     xdm.intermediate.port = get_intermediate_port,
@@ -226,7 +226,7 @@ alter
     xdm.observer.name = coalesce(properties -> WAFMode, wafmode ,arrayindex(regextract(resourceId, "/([^\/]+)$"), -1)),
 	xdm.observer.unique_identifier = properties -> WAFPolicyID,
 	xdm.observer.type = if(properties -> engine = "Azwaf", "MICROSOFT.NETWORK/APPLICATIONGATEWAYS"),
-	xdm.target.sent_bytes = to_integer(coalesce(properties -> receivedBytes, receivedbytes)),
+	xdm.target.sent_bytes = coalesce(to_integer(properties -> receivedBytes), to_integer(receivedbytes)),
     xdm.target.resource.type = if(get_properties_requestQuery = null, null, get_properties_requestQuery ~= "^\s*$", null, "requestQuery"),
 	xdm.target.resource.value = if(get_properties_requestQuery = null, null, get_properties_requestQuery ~= "^\s*$", null, get_properties_requestQuery),
     xdm.target.url = coalesce(get_properties_originalRequestUriWithArgs, get_properties_requestUri);
