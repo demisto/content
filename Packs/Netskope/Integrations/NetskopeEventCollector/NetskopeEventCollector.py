@@ -259,7 +259,6 @@ async def handle_event_type_async(client: Client, event_type: str, start_time: s
         )
     failures_data = hanlde_errors(failures)
     events = list(chain.from_iterable(success_res))
-    demisto.debug(f"The number of fetched events - {len(events)}")
 
     res_dict = {'events': events, 'failures': failures_data}
     demisto.debug(f"Fetched {len(events)} {event_type} events")
@@ -392,7 +391,7 @@ async def handle_fetch_and_send_all_events(client: Client,
     """
     start = time.time()
     # needed as we use concurrent async tasks
-    # support_multithreading()
+    support_multithreading()
 
     remove_unsupported_event_types(last_run, client.event_types_to_fetch)
 
@@ -524,7 +523,7 @@ async def main() -> None:  # pragma: no cover
                     client=client,
                     last_run=last_run,
                     limit=max_fetch,
-                    send_to_xsiam=False
+                    send_to_xsiam=True
                 )
                 next_trigger_time(len(all_event_types), max_fetch, new_last_run)
                 demisto.debug(f"Setting the last_run to: {new_last_run}")
