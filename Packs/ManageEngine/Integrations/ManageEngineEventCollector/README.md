@@ -51,6 +51,7 @@ Click Create to generate `Code`.
 
 ## Commands
 
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -81,9 +82,9 @@ Gets events from ManageEngine.
 | start_date | Date from which to get events. | Optional | 
 | end_date | Date to which to get events. | Optional | 
 
-#### Context Output
+###### Human Readable Output
+**ManageEngine Audit Logs**:
 
-##### Context Output
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| ManageEngine.Event._time | string | _time | 
+_time|
+---|
+2025-05-08T11:42:36Z|
