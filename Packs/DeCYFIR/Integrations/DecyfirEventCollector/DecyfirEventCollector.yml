@@ -17,39 +17,42 @@ configuration:
   required: true
   type: 4
   section: Connect
-- display: First fetch time interval
-  name: from
-  type: 0
-  defaultvalue: 3 days
+- display: Fetch events
+  name: isFetch
+  type: 8
   section: Collect
   required: false
-- defaultvalue: ACTIVE
+- defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
-  display: Events type to fetch
-  name: alert_status
+  display: Event types to fetch
+  name: event_types_to_fetch
   options:
   - Access Logs
   - Assets Logs
   - Digital Risk Keywords Logs
-  required: false
+  required: true
+  advanced: true
   type: 16
 - defaultvalue: 3000
   section: Collect
   display: Maximum number of Access Logs events
   name: max_access_logs_events_per_fetch
   required: false
+  advanced: true
   type: 0
 - defaultvalue: 3000
   section: Collect
   display: Maximum number of Assets Logs events
   name: max_assets_logs_events_per_fetch
   required: false
+  advanced: true
   type: 0
 - defaultvalue: 3000
   section: Collect
   display: Maximum number of Digital Risk Keywords Logs events
   name: max_drkl_events_per_fetch
   required: false
+  advanced: true
   type: 0
 - display: Trust any certificate (not secure)
   name: insecure
@@ -77,6 +80,11 @@ script:
       - 'True'
       - 'False'
       required: true
+    - auto: PREDEFINED
+      defaultValue: '3 months'
+      description: Set this argument in order to receive events created after the value specified in this parameter (<number> <time unit>, e.g., 12 hours, 7 days). If not specified, default value is '3 months'.
+      name: from_date
+      required: false
   dockerimage: demisto/python3:3.12.8.1983910
   isfetchevents: true
   runonce: false
