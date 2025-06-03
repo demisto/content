@@ -8,8 +8,6 @@ import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
-from ..version import __version__
-
 urllib3.disable_warnings()
 
 
@@ -32,7 +30,7 @@ class Client(BaseClient):
             "X-Integration-Instance-Name": demisto.integrationInstance(),
             "X-Integration-Instance-Id": "",
             "X-Integration-Customer-Name": params.get("client_name", ""),
-            "X-Integration-Version": __version__,
+            "X-Integration-Version": "1.1.8",
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
@@ -155,7 +153,7 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     try:
-        client.retrieve_takedown_requests()
+        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.io")
     except DemistoException as exc:
         if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN):
             return "Authorization Error: invalid `API Token`"
@@ -226,7 +224,7 @@ def submit_takedown_request_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint.TakedownRequest",
+        outputs_prefix="Cyberint.Takedowns",
         outputs_key_field="id",
         raw_response=takedown_request,
         outputs=takedown_request,
@@ -288,7 +286,7 @@ def retrieve_takedown_requests_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint.TakedownRequest",
+        outputs_prefix="Cyberint.Takedowns",
         outputs_key_field="id",
         raw_response=takedown_requests,
         outputs=takedown_requests,
