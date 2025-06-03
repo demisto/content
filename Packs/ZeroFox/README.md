@@ -7,7 +7,11 @@ ZeroFOX, a leading cybersecurity firm specializing in digital risk protection, e
 
 ### What does this pack do?
 
+#### ZeroFox Integration
 - Mirror incidents between XSOAR incidents and ZeroFox alerts.
 - Allow to request takedowns over threats.
 - Allow to submit threats.
 - Look up compromised assets in our CTI Feeds
+
+#### ZeroFox Key Incidents Integration
+- Add ZeroFox Key Incidents as XSOAR incidents

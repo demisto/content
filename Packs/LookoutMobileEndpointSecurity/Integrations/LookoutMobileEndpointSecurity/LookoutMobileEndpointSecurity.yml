@@ -63,8 +63,6 @@ script:
   subtype: python3
   type: python
   longRunning: true
-marketplaces:
-- marketplacev2
 fromversion: 8.4.0
 tests:
 - No tests (auto formatted)

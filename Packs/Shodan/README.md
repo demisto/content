@@ -2,17 +2,16 @@
 
  Shodan is a search engine for Internet-connected devices. Unlike traditional search engines that index websites, Shodan indexes information about the devices connected to the internet, such as servers, routers, webcams, and other IoT devices.
 <~XSIAM>
- 
+
 This pack includes Cortex XSIAM content.
 
 ## Configuration on Server Side
 
-To enable the Shodan integration you need to have an API key, 
+To enable the Shodan integration you need to have an API key,
 which you can get for free by creating a Shodan account <https://account.shodan.io/register> 
 Once you have an API key you insert it into the API Key field and click the Test button.
 
-## Configuration on Cortex XSIAM 
-
+## Configuration on Cortex XSIAM
 &rarr;
 
 1. Navigate to **settings** &rarr; **Configurations** &rarr; **Automation & Feeds**.

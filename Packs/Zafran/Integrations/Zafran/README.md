@@ -33,17 +33,17 @@ Update on mitigations performed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| external_ticket_id | External service ticket ID. | Optional | 
-| external_ticket_url | External service ticket link. | Optional | 
-| id | Mitigation ID. | Required | 
-| state | Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully. Possible values are: new, pending_approval, rejected, in_progress, completed. | Required | 
+| external_ticket_id | External service ticket ID. | Optional |
+| external_ticket_url | External service ticket link. | Optional |
+| id | Mitigation ID. | Required |
+| state | Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully. Possible values are: new, pending_approval, rejected, in_progress, completed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zafran.MitigationsPerformedResponse.internal_status_code | Number | Internal status code. | 
-| Zafran.MitigationsPerformedResponse.message | String | Error message. | 
+| Zafran.MitigationsPerformedResponse.internal_status_code | Number | Internal status code. |
+| Zafran.MitigationsPerformedResponse.message | String | Error message. |
 
 ### zafran-mitigations-export
 
@@ -58,22 +58,22 @@ Export recommended mitigations
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| filter | ZQL filter. | Optional | 
+| filter | ZQL filter. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zafran.UpstreamMitigation.assets_count | Number | Assets count. | 
-| Zafran.UpstreamMitigation.control_product | String | Control Product. | 
-| Zafran.UpstreamMitigation.exposure | Number | Exposure in days. | 
-| Zafran.UpstreamMitigation.id | String | Zafran mitigation unique id. | 
-| Zafran.UpstreamMitigation.mitigation_type | String | Mitigation type. | 
-| Zafran.UpstreamMitigation.recommendation | String | Recommendation. | 
-| Zafran.UpstreamMitigation.title | String | Title. | 
-| Zafran.UpstreamMitigation.vulnerabilities_count | Number | Vulnerabilities count. | 
-| Zafran.UpstreamMitigation.internal_status_code | Number | Internal status code. | 
-| Zafran.UpstreamMitigation.message | String | Error message | 
+| Zafran.UpstreamMitigation.assets_count | Number | Assets count. |
+| Zafran.UpstreamMitigation.control_product | String | Control Product. |
+| Zafran.UpstreamMitigation.exposure | Number | Exposure in days. |
+| Zafran.UpstreamMitigation.id | String | Zafran mitigation unique id. |
+| Zafran.UpstreamMitigation.mitigation_type | String | Mitigation type. |
+| Zafran.UpstreamMitigation.recommendation | String | Recommendation. |
+| Zafran.UpstreamMitigation.title | String | Title. |
+| Zafran.UpstreamMitigation.vulnerabilities_count | Number | Vulnerabilities count. |
+| Zafran.UpstreamMitigation.internal_status_code | Number | Internal status code. |
+| Zafran.UpstreamMitigation.message | String | Error message |
 
 ### zafran-mitigations-performed
 
@@ -88,13 +88,13 @@ Update on mitigations performed
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| mitigation_id | Mitigation ID. | Optional | 
-| mitigation_ids | Mitigation IDs. | Optional | 
-| state | Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully. Possible values are: new, pending_approval, rejected, in_progress, completed. | Required | 
+| mitigation_id | Mitigation ID. | Optional |
+| mitigation_ids | Mitigation IDs. | Optional |
+| state | Mitigation status     new - New mitigation     pending_approval - Waiting for mitigation approval     rejected - Mitigative action was rejected.     in_progress - Mitigation approved and in progress.     completed - Mitigation applied successfully. Possible values are: new, pending_approval, rejected, in_progress, completed. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Zafran.MitigationsPerformedResponse.internal_status_code | Number | Internal status code. | 
-| Zafran.MitigationsPerformedResponse.message | String | Error message. | 
+| Zafran.MitigationsPerformedResponse.internal_status_code | Number | Internal status code. |
+| Zafran.MitigationsPerformedResponse.message | String | Error message. |

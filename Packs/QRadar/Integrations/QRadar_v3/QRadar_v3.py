@@ -247,7 +247,7 @@ LOG_SOURCES_RAW_FORMATTED = {
     "target_event_collector_id": "TargetEventCollectorID",
 }
 
-TIME_FIELDS_PLACE_HOLDER = 9223372036854775807 # represents the max val that can be stored in a 64-bit signed integer data type.
+TIME_FIELDS_PLACE_HOLDER = 9223372036854775807  # represents the max val that can be stored in a 64-bit signed integer data type.
 
 USECS_ENTRIES = {
     "last_persisted_time",
@@ -1287,9 +1287,10 @@ def add_iso_entries_to_dict(dicts: List[dict]) -> List[dict]:
         (List[Dict]): New dicts with iso entries for the corresponding items in 'USECS_ENTRIES'
     """
     return [
-        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k,
-         v in dict_.items()} for dict_ in dicts
+        {k: (get_time_parameter(v, iso_format=True) if should_get_time_parameter(k, v) else v) for k, v in dict_.items()}
+        for dict_ in dicts
     ]
+
 
 def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) -> bool:
     """Checks whether the given key should be converted or not.
@@ -1304,6 +1305,7 @@ def should_get_time_parameter(k: str, v: Union[Optional[str], Optional[int]]) ->
     """
     valid_value = isinstance(v, str) or v != TIME_FIELDS_PLACE_HOLDER
     return k in USECS_ENTRIES and valid_value
+
 
 def sanitize_outputs(outputs: Any, key_replace_dict: Optional[dict] = None) -> List[dict]:
     """
@@ -1357,6 +1359,7 @@ def get_time_parameter(arg: Union[Optional[str], Optional[int]], iso_format: boo
     except Exception as e:
         demisto.info(f"Could not convert time for {arg=}, reason {e}")
         return arg
+
 
 def build_final_outputs(outputs: List[dict], old_new_dict: dict) -> List[dict]:
     """

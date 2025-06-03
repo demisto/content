@@ -1,0 +1,47 @@
+{
+	"defaultIncidentType": "",
+	"definitionId": "",
+	"description": "Maps ZeroFox Key Incidents Fields to XSOAR",
+	"feed": false,
+	"id": "ZeroFox Key Incidents (incoming)",
+	"fromVersion": "6.0.0",
+	"mapping": {
+		"ZeroFox Key Incident": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"ZeroFox Key Incident Analysis": {
+					"complex": {
+						"filters": [],
+						"root": "analysis",
+						"transformers": []
+					}
+				},
+				"ZeroFox Key Incident Headline": {
+					"complex": {
+						"filters": [],
+						"root": "headline",
+						"transformers": []
+					}
+				},
+				"Tags": {
+					"complex": {
+						"accessor": "[0]",
+						"filters": [],
+						"root": "tags",
+						"transformers": []
+					}
+				},
+				"occurred": {
+					"simple": "created_at"
+				}
+			}
+		},
+		"dbot_classification_incident_type_all": {
+			"dontMapEventToLabels": true,
+			"internalMapping": {}
+		}
+	},
+	"name": "ZeroFox Key Incidents (incoming)",
+	"type": "mapping-incoming",
+	"version": -1
+}
