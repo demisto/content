@@ -433,7 +433,7 @@ def vulndb_fetch_incidents_command(
     min_disclosure_date: datetime,
     ignore_deprecated: bool,
     client: Client,
-):  # pragma: no cover
+) -> tuple[dict[str, str], Optional[list[dict]]]:
     PAGE_SIZE = 300  # Number of entries per Page. 300 is max supported by API
     demisto.debug("[VulnDB]: Running Fetch Incidents")
     last_run = demisto.getLastRun()
@@ -475,8 +475,8 @@ def vulndb_fetch_incidents_command(
             demisto.updateModuleHealth(
                 f"Encountered '{e}' when trying to fetch page {page} of vulnerability updates", is_error=True
             )
-            demisto.incidents(None)
-            return
+            # Return a Empty incidents list and original last_run data
+            return last_run, None
 
         page = page + 1
         results = res.get("results", [])
@@ -522,8 +522,7 @@ def vulndb_fetch_incidents_command(
     if len(incidents_slice) > 0:
         last_date = incidents_slice[-1]["occured"]
         last_id = json.loads(incidents_slice[-1]["rawJSON"]).get("vulndb_id", last_id)
-    demisto.setLastRun({"start_time": last_date, "last_id": last_id})
-    demisto.incidents(incidents_slice)
+    return {"start_time": last_date, "last_id": str(last_id)}, incidents_slice
 
 
 def main():
@@ -556,7 +555,7 @@ def main():
             if not min_disclosure_date:
                 min_disclosure_date = datetime.min.replace(tzinfo=timezone.utc)
             ignore_deprecated: bool = argToBoolean(params.get("ignore_deprecated", False))
-            vulndb_fetch_incidents_command(
+            last_run, incidents = vulndb_fetch_incidents_command(
                 int(params["max_fetch"]),
                 first_fetch,
                 argToBoolean(params.get("include_all_cvss", False)),
@@ -565,6 +564,8 @@ def main():
                 ignore_deprecated,
                 client,
             )
+            demisto.setLastRun(last_run)
+            demisto.incidents(incidents)
         elif command == "vulndb-get-vuln-by-id":
             vulndb_get_vuln_by_id_command(args, client)
         elif command == "vulndb-get-vuln-by-vendor-and-product-name":
