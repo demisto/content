@@ -326,7 +326,8 @@ def fetch_events(
         )
 
         last_run.update(file_events_last_run)
-        futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
+        futures = send_events_to_xsiam(
+            file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT/2)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
         demisto.updateModuleHealth({f"{EventType.FILE} events sent": len(file_events)})
