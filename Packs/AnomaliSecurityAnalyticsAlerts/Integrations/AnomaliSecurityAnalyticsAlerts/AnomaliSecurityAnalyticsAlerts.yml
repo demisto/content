@@ -35,6 +35,13 @@ configuration:
   section: Collect
   type: 8
   required: false
+- display: Fetch query
+  additionalinfo: Search query for fetching alerts. The default fetch query is "alert".
+  defaultvalue: 'alert'
+  name: fetch_query
+  section: Collect
+  type: 0
+  required: false
 - additionalinfo: Maximum number of incidents per fetch. The default value is 200.
   defaultvalue: '200'
   display: Maximum incidents to fetch.

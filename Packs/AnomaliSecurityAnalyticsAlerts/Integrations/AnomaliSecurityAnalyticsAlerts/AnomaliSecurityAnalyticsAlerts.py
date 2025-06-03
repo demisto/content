@@ -315,7 +315,7 @@ def fetch_incidents(client: Client) -> list:
         raise DemistoException("Failed to parse last_fetch timestamp.")
 
     time_range = {"from": int(from_dt.timestamp() * 1000), "to": int(to_dt.timestamp() * 1000), "timezone": "UTC"}
-    query = "alert"
+    query = params.get("fetch_query", "alert")
     response = client.create_search_job(query=query, source="XSOAR", time_range=time_range)
     job_id = response.get("job_id", "")
 
