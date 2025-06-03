@@ -22,7 +22,7 @@ from CiscoAppDynamicsEventCollector import (
 # Fixture for a Client instance used in multiple tests
 @pytest.fixture
 def client():
-    return Client(base_url="", client_id="id", client_secret="secret", verify=True, proxy=False)
+    return Client(base_url="", client_id="id", client_secret="secret", application_id="52", verify=True, proxy=False)
 
 
 # Dummy client used for test_module_command and get_events
@@ -270,7 +270,7 @@ def test_get_audit_logs_over_24h_adjustment(client, mocker):
 
     result = client.get_audit_logs(start, end)
     assert result == []
-    expected_start = (end - timedelta(hours=24)).strftime(DATE_FORMAT)[:-3] + "Z"
+    expected_start = (end - timedelta(hours=24)).strftime(DATE_FORMAT)[:-3] + end.strftime("%z")
     assert captured["params"]["startTime"] == expected_start
 
 

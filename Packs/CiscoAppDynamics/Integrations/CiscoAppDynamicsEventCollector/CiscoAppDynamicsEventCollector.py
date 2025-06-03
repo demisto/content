@@ -54,7 +54,7 @@ AUDIT = EventType(
 
 HEALTH_EVENT = EventType(
     name="Healthrule Violations Events",
-    url_suffix="",
+    url_suffix="/rest/applications/application_id/problems/healthrule-violations",
     time_field="detectedTimeInMillis",
     source_log_type="Healthrule Violations Event",
     default_params={
@@ -76,6 +76,7 @@ class Client(BaseClient):
         base_url: str,
         client_id: str,
         client_secret: str,
+        application_id: str,
         verify: bool,
         proxy: bool,
     ) -> None:
@@ -85,6 +86,7 @@ class Client(BaseClient):
         super().__init__(base_url=base_url, verify=verify, headers={}, proxy=proxy)
         self.client_id = client_id
         self.client_secret = client_secret
+        self.application_id = application_id
         self.token: str | None = None
         self.token_expiry: datetime | None = None
 
@@ -98,9 +100,9 @@ class Client(BaseClient):
         """
         demisto.debug("Requesting new access token from AppDynamics OAuth API")
 
-        params = {"grant_type": "client_credentials"}
-        payload = {"client_id": self.client_id, "client_secret": self.client_secret}
-        response = self._http_request(method="POST", url_suffix=TOKEN_URL, params=params, json_data=payload)
+        headers = {"Content-Type": "application/x-www-form-urlencoded"}
+        params = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
+        response = self._http_request(method="POST", url_suffix=TOKEN_URL, params=params, headers=headers)
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
         demisto.debug(f"Access token expire in: {expires_in}")  # TODO
@@ -138,6 +140,7 @@ class Client(BaseClient):
             List[Dict]: JSON-decoded list of events.
         """
         token = self._get_valid_token()
+        demisto.debug("Access token exists")
         headers = {"Authorization": f"Bearer {token}"}
         params["output"] = "JSON"
         response = self._http_request(
@@ -147,7 +150,7 @@ class Client(BaseClient):
             headers=headers,
             resp_type="json",
         )
-
+        demisto.debug("Request successful")
         return response
 
     def get_audit_logs(self, start_time: datetime, end_time: datetime) -> list[dict]:
@@ -171,7 +174,10 @@ class Client(BaseClient):
             demisto.debug("Start time is bigger than or equal to end time")
             return []
 
-        params = {"startTime": start_time.strftime(DATE_FORMAT)[:-3] + "Z", "endTime": end_time.strftime(DATE_FORMAT)[:-3] + "Z"}
+        params = {
+            "startTime": start_time.strftime(DATE_FORMAT)[:-3] + start_time.strftime("%z"),
+            "endTime": end_time.strftime(DATE_FORMAT)[:-3] + end_time.strftime("%z"),
+        }
 
         demisto.debug(f"Fetching audit logs from {params['startTime']} to {params['endTime']}")
 
@@ -203,7 +209,12 @@ class Client(BaseClient):
         start_time = str(int(start_time.astimezone(timezone.utc).timestamp() * 1000))  # type: ignore
         end_time = str(int(end_time.astimezone(timezone.utc).timestamp() * 1000))  # type: ignore
         while len(events) <= HEALTH_EVENT.max_fetch:
-            params.update({"start-time": start_time, "end-time": end_time})
+            params.update(
+                {
+                    "start-time": start_time,
+                    "end-time": end_time,
+                }
+            )
             batch = self._authorized_request(url_suffix=HEALTH_EVENT.url_suffix, params=params)
             demisto.debug(f"Fetched {len(batch)} events successfully.")
             if not batch:
@@ -394,7 +405,7 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     Returns:
         list[EventType]: List of event type to fetch from the api call.
     """
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", [AUDIT.name, HEALTH_EVENT.name]))
+    event_types_to_fetch = argToList(params.get("events_type_to_fetch", [AUDIT.name, HEALTH_EVENT.name]))
     event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
     demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
     max_fetch_audit = arg_to_number(params.get("max_audit_fetch")) or AUDIT.max_fetch
@@ -430,6 +441,7 @@ def main() -> None:  # pragma: no cover
     base_url = params.get("url", "")
     client_id = params.get("client_id", "")
     client_secret = params.get("client_secret", {}).get("password")
+    application_id = params.get("application_id", "")
     verify = argToBoolean(not params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
 
@@ -439,6 +451,7 @@ def main() -> None:  # pragma: no cover
             base_url=base_url,
             client_id=client_id,
             client_secret=client_secret,
+            application_id=application_id,
             verify=verify,
             proxy=proxy,
         )
