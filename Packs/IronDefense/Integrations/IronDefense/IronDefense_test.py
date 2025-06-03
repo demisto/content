@@ -1901,9 +1901,7 @@ class IronDefenseTest(TestCase):
                 "cognitive_system_score": mock_resp.get("cognitive_system_score"),
             }
         }
-        expected_cognitive_system_score_readable_output = (
-            f'### Cognitive System Score: {mock_resp.get("cognitive_system_score")}'
-        )
+        expected_cognitive_system_score_readable_output = f'### Cognitive System Score: {mock_resp.get("cognitive_system_score")}'
         expected_cognitive_system_score_raw = mock_resp.get("cognitive_system_score")
 
         expected_dome_notifications_output = {

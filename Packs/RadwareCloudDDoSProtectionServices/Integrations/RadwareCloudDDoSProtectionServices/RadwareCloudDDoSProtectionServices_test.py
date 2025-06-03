@@ -36,16 +36,15 @@ def test_fetch_events_no_last_run(mocker, client):
             {"timestamp": "2023-10-10T10:10:10Z", "endTimestamp": 1602323410000, "_id": "1"},
             {"timestamp": "2023-10-10T10:10:10Z", "endTimestamp": 1602323410000, "_id": "2"},
             {"timestamp": "2023-10-10T10:10:20Z", "endTimestamp": 1602323430000, "_id": "3"},
-
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_data(client, last_run, 'events')
+    events, new_last_run = fetch_data(client, last_run, "events")
 
     assert len(events) == 3
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
-    assert new_last_run.get("last_fetch_events") == {'latest_ids': ['1', '2'], 'latest_timestamp': 1602323410000}
+    assert new_last_run.get("last_fetch_events") == {"latest_ids": ["1", "2"], "latest_timestamp": 1602323410000}
 
 
 def test_fetch_events_with_pagination(mocker, client):
@@ -64,21 +63,19 @@ def test_fetch_events_with_pagination(mocker, client):
      - make sure last_run is updated to indicate that more events need to be fetched.
     """
     last_run = {
-        "last_fetch_events": {'latest_ids': ['1', '2'], 'latest_timestamp': 1602323410000},
+        "last_fetch_events": {"latest_ids": ["1", "2"], "latest_timestamp": 1602323410000},
     }
     documents = [{"timestamp": "2023-10-10T10:10:10Z", "endTimestamp": 1602323420000}] * 700
-    response = {
-        "documents": documents
-    }
+    response = {"documents": documents}
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_data(client, last_run, 'events')
+    events, new_last_run = fetch_data(client, last_run, "events")
 
     assert len(events) == 700
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
-    assert new_last_run.get("iteration_cache_fetch_events").get('end_time')
-    assert new_last_run.get("iteration_cache_fetch_events").get('start_time')
-    assert new_last_run.get("iteration_cache_fetch_events").get('fetched_events')
+    assert new_last_run.get("iteration_cache_fetch_events").get("end_time")
+    assert new_last_run.get("iteration_cache_fetch_events").get("start_time")
+    assert new_last_run.get("iteration_cache_fetch_events").get("fetched_events")
 
 
 def test_fetch_events_with_less_than_max_results(mocker, client):
@@ -98,7 +95,7 @@ def test_fetch_events_with_less_than_max_results(mocker, client):
      - make sure 'continue_fetch_events' is not set in last_run, indicating no more pages to fetch.
     """
     last_run = {
-        "last_fetch_events": {'latest_ids': ['1', '2'], 'latest_timestamp': 1602323410000},
+        "last_fetch_events": {"latest_ids": ["1", "2"], "latest_timestamp": 1602323410000},
     }
     response = {
         "documents": [
@@ -107,12 +104,12 @@ def test_fetch_events_with_less_than_max_results(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    events, new_last_run = fetch_data(client, last_run, 'events')
+    events, new_last_run = fetch_data(client, last_run, "events")
 
     assert len(events) == 1
     assert "_time" in events[0]
     assert "source_log_type" in events[0]
-    assert new_last_run.get("last_fetch_events") == {'latest_ids': ['2'], 'latest_timestamp': 1602323420000}
+    assert new_last_run.get("last_fetch_events") == {"latest_ids": ["2"], "latest_timestamp": 1602323420000}
     assert not new_last_run.get("iteration_cache_fetch_events")
 
 
@@ -138,12 +135,12 @@ def test_fetch_alerts_no_last_run(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+    alerts, new_last_run = fetch_data(client, last_run, "alerts")
 
     assert len(alerts) == 2
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
-    assert new_last_run.get("last_fetch_alerts") == {'latest_ids': ['1', '2'], 'latest_timestamp': 1602323420000}
+    assert new_last_run.get("last_fetch_alerts") == {"latest_ids": ["1", "2"], "latest_timestamp": 1602323420000}
 
 
 def test_fetch_alerts_with_pagination(mocker, client):
@@ -162,21 +159,19 @@ def test_fetch_alerts_with_pagination(mocker, client):
      - make sure last_run is updated to indicate that more alerts need to be fetched.
     """
     last_run = {
-        "last_fetch_alerts": {'latest_ids': ['1', '2'], 'latest_timestamp': 1602323410000},
+        "last_fetch_alerts": {"latest_ids": ["1", "2"], "latest_timestamp": 1602323410000},
     }
     documents = [{"context": {"_timestamp": 1602323410000}}] * 700
-    response = {
-        "documents": documents
-    }
+    response = {"documents": documents}
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+    alerts, new_last_run = fetch_data(client, last_run, "alerts")
 
     assert len(alerts) == 700
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
-    assert new_last_run.get("iteration_cache_fetch_alerts").get('end_time')
-    assert new_last_run.get("iteration_cache_fetch_alerts").get('start_time')
-    assert new_last_run.get("iteration_cache_fetch_alerts").get('fetched_alerts')
+    assert new_last_run.get("iteration_cache_fetch_alerts").get("end_time")
+    assert new_last_run.get("iteration_cache_fetch_alerts").get("start_time")
+    assert new_last_run.get("iteration_cache_fetch_alerts").get("fetched_alerts")
 
 
 def test_fetch_alerts_with_less_than_max_results(mocker, client):
@@ -196,7 +191,7 @@ def test_fetch_alerts_with_less_than_max_results(mocker, client):
      - make sure 'continue_fetch_alerts' is not set in last_run, indicating no more pages to fetch.
     """
     last_run = {
-        "last_fetch_alerts": {'latest_ids': ['1'], 'latest_timestamp': 1602323410000},
+        "last_fetch_alerts": {"latest_ids": ["1"], "latest_timestamp": 1602323410000},
     }
     response = {
         "documents": [
@@ -205,10 +200,10 @@ def test_fetch_alerts_with_less_than_max_results(mocker, client):
         ]
     }
     mocker.patch.object(client, "_http_request", return_value=response)
-    alerts, new_last_run = fetch_data(client, last_run, 'alerts')
+    alerts, new_last_run = fetch_data(client, last_run, "alerts")
 
     assert len(alerts) == 1
     assert "_time" in alerts[0]
     assert "source_log_type" in alerts[0]
-    assert new_last_run.get("last_fetch_alerts") == {'latest_ids': ['2'], 'latest_timestamp': 1602323420000}
-    assert not new_last_run.get('iteration_cache_fetch_alerts')
+    assert new_last_run.get("last_fetch_alerts") == {"latest_ids": ["2"], "latest_timestamp": 1602323420000}
+    assert not new_last_run.get("iteration_cache_fetch_alerts")

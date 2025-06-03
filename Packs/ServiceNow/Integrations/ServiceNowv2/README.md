@@ -61,7 +61,7 @@ These scripts are wrapped around the incident table, so to wrap them around anot
 This integration supports two types of authorization:
 
 1. Basic authorization using username and password.
-2. OAuth 2.0 authorization 
+2. OAuth 2.0 authorization
 3. JWT authentication.
 
 #### OAuth 2.0 Authorization
@@ -80,10 +80,7 @@ To use OAuth 2.0 authorization follow the next steps:
 2. Every time the refresh token expires you will have to run the `servicenow-oauth-login` command again. Hence, we recommend setting the `Refresh Token Lifespan` field in the endpoint created in step 1 to a long period (can be set to several years).
 3. The grant type used to get an access token is `Resource owner password credentials`. See the [Snow documentation](https://docs.servicenow.com/bundle/xanadu-platform-security/page/administer/security/concept/c_OAuthApplications.html#d25788e201) for more information.
 
-
-
 #### JWT Authentication
-
 
 #### Prerequisites in order to support JWT
 
@@ -97,7 +94,6 @@ To use OAuth 2.0 authorization follow the next steps:
 (**All** > **System OAuth** > **JWT providers**)
 4. Connect to an OAuth provider and create an OAuth application registry (aud in JWT provider has to be equal to Client ID from OAuth JWT application - update JWT provider If necessary. The value of kid in JWT Verifier Maps has to be the  same as Key Id in JWT signing key. The value can be updated if necessary.)
 (**All** > **System OAuth** > **Application Registry**)
-
 
 5. Create an API Access Policy or add an Authentication profile to an existing Policy (**All** > **System Web Services** > **API Access Policies** > **Rest API Access Policies** )
 

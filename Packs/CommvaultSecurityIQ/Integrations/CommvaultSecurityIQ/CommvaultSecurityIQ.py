@@ -196,10 +196,10 @@ def format_alert_description(msg: str) -> str:
     """
     default_value = msg
     if msg.find("<html>") != -1 and msg.find("</html>") != -1:
-        resp = msg[msg.find("<html>") + 6: msg.find("</html>")]
+        resp = msg[msg.find("<html>") + 6 : msg.find("</html>")]
         msg = resp.strip()
         if msg.find("Detected ") != -1 and msg.find(" Please click ") != -1:
-            msg = msg[msg.find("Detected "): msg.find(" Please click ")]
+            msg = msg[msg.find("Detected ") : msg.find(" Please click ")]
             return msg
     return default_value
 

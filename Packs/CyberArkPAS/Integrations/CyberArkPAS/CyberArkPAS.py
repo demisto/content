@@ -1250,7 +1250,7 @@ def get_security_events_command(client: Client, start_time: str, limit: str = "5
         return CommandResults(outputs="No events were found")
 
     if limit:
-        events_data = events_data[0: int(limit)]
+        events_data = events_data[0 : int(limit)]
 
     results = CommandResults(
         outputs=events_data,

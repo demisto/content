@@ -855,9 +855,7 @@ def main():
         "--path",
         dest="path",
         action="store",
-        help=(
-            "Install from a given path (file or directory) instead of fetching the latest version of Poetry available online."
-        ),
+        help=("Install from a given path (file or directory) instead of fetching the latest version of Poetry available online."),
     )
     parser.add_argument(
         "--git",

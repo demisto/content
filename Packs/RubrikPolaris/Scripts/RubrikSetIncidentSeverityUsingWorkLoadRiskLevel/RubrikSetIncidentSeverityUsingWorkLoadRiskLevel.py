@@ -26,8 +26,7 @@ def set_incident_severity_using_risk_level_command(args: dict[str, Any]) -> Comm
     threat_hunt_malicious: list = argToList(args.get("threat_hunt_malicious"))
     threat_monitoring_malicious: list = argToList(args.get("threat_monitoring_malicious"))
     risk_levels: list = argToList(args.get("risk_levels"))
-    increase_severity_by: int = arg_to_number(args.get("increase_severity_by", 1),
-                                              arg_name="increase_severity_by")  # type: ignore
+    increase_severity_by: int = arg_to_number(args.get("increase_severity_by", 1), arg_name="increase_severity_by")  # type: ignore
 
     # If increase severity by value is not between 1 and 4, we will only show a message to user.
     if increase_severity_by < 1 or increase_severity_by > 4:

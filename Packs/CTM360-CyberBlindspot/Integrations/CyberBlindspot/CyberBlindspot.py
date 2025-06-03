@@ -49,11 +49,11 @@ DEFAULT_FIELDS = [
     {"name": "id", "description": "Unique ID for the incident record"},
 ]
 CBS_INCIDENT_FIELDS = [
-    {'name': 'subject', 'description': 'Asset or title of incident'},
-    {'name': 'screenshots', 'description': 'The screenshot evidence if available'},
-    {'name': 'class', 'description': 'Subject class'},
-    {'name': 'coa', 'description': 'The possible course of action'},
-    *DEFAULT_FIELDS
+    {"name": "subject", "description": "Asset or title of incident"},
+    {"name": "screenshots", "description": "The screenshot evidence if available"},
+    {"name": "class", "description": "Subject class"},
+    {"name": "coa", "description": "The possible course of action"},
+    *DEFAULT_FIELDS,
 ]
 
 CBS_CARD_FIELDS = [
@@ -155,20 +155,19 @@ class Client(BaseClient):
         :return: List of dictionaries containing file information
         :rtype: list[dict[str, Any]]
         """
-        log(DEBUG, 'at client\'s get_screenshot_files function')
+        log(DEBUG, "at client's get_screenshot_files function")
         log(DEBUG, f"{params=}")
         response = self._http_request(
-            method='POST',
+            method="POST",
             retries=MAX_RETRIES,
             backoff_factor=10,
             status_list_to_retry=[400, 429, 500],
-            url_suffix=CBS_API_ENDPOINT + API.get('GET_SCREENSHOT', ''),
+            url_suffix=CBS_API_ENDPOINT + API.get("GET_SCREENSHOT", ""),
             json_data=params,
-            params={'t': datetime.now().timestamp()}
+            params={"t": datetime.now().timestamp()},
         )
         log(DEBUG, f"{response=}")
-        return response.get('results', []) or []  # Return empty list if results is None
-    
+        return response.get("results", []) or []  # Return empty list if results is None
 
     def fetch_incidents(self, params: dict[str, Any]) -> list[dict[str, Any]]:
         """Send request to fetch list of incidents
@@ -771,25 +770,26 @@ def ctm360_cbs_incident_retrieve_screenshots_command(
         if not RETRIEVE_SCREENSHOTS:
             log(INFO, "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
             return CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
-        
+
         # Get existing filenames from context
         existing_files = demisto.context().get("InfoFile", [])
         log(DEBUG, f"{existing_files=}")
         if not isinstance(existing_files, list):
             existing_files = [existing_files] if existing_files else []
         existing_filenames = [d.get("Name") for d in existing_files if isinstance(d, dict) and d.get("Name")]
-        
+
         # Filter requested files that already exist in context
         if "files" in params and isinstance(params["files"], list):
             original_files = params["files"]
             params["files"] = [
-                file_info for file_info in original_files
+                file_info
+                for file_info in original_files
                 if isinstance(file_info, dict) and file_info.get("filename") not in existing_filenames
             ]
-            
+
             if not params["files"] and original_files:
                 return CommandResults(readable_output="All requested screenshots already exist in context")
-        
+
         # Make API call and handle errors
         try:
             results = client.get_screenshot_files(params) if params.get("files", True) else []
@@ -806,7 +806,7 @@ def ctm360_cbs_incident_retrieve_screenshots_command(
         for file_data in results:
             if not isinstance(file_data, dict):
                 continue
-                
+
             filename = file_data.get("filename")
             filedata = file_data.get("filedata", {})
 
@@ -834,7 +834,7 @@ def ctm360_cbs_incident_retrieve_screenshots_command(
         return CommandResults(readable_output=f"Failed to fetch screenshot(s): {str(e)}")
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:
@@ -860,16 +860,16 @@ def main() -> None:
         )
 
         cbs_commands: dict[str, Any] = {
-            'test-module': test_module,
-            'get-mapping-fields': get_mapping_fields_command,
-            'get-remote-data': get_remote_data_command,
-            'get-modified-remote-data': get_modified_remote_data_command,
-            'update-remote-system': update_remote_system_command,
-            'ctm360-cbs-incident-list': ctm360_cbs_list_command,
-            'ctm360-cbs-incident-details': ctm360_cbs_details_command,
-            'ctm360-cbs-incident-request-takedown': ctm360_cbs_incident_request_takedown_command,
-            'ctm360-cbs-incident-close': ctm360_cbs_incident_close_command,
-            'ctm360-cbs-incident-retrieve-screenshots': ctm360_cbs_incident_retrieve_screenshots_command,
+            "test-module": test_module,
+            "get-mapping-fields": get_mapping_fields_command,
+            "get-remote-data": get_remote_data_command,
+            "get-modified-remote-data": get_modified_remote_data_command,
+            "update-remote-system": update_remote_system_command,
+            "ctm360-cbs-incident-list": ctm360_cbs_list_command,
+            "ctm360-cbs-incident-details": ctm360_cbs_details_command,
+            "ctm360-cbs-incident-request-takedown": ctm360_cbs_incident_request_takedown_command,
+            "ctm360-cbs-incident-close": ctm360_cbs_incident_close_command,
+            "ctm360-cbs-incident-retrieve-screenshots": ctm360_cbs_incident_retrieve_screenshots_command,
         }
 
         if demisto_command == "fetch-incidents":

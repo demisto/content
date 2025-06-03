@@ -648,7 +648,7 @@ def fetch_incidents(
     found_alert_ids = last_run.get("found_alert_ids", [])
     watchlist_names = argToList(params.get("watchlist_names"))
     query = params.get("query")
-    include_related_alerts = argToBoolean(params.get('include_related_alerts', False))
+    include_related_alerts = argToBoolean(params.get("include_related_alerts", False))
     alert_type: str = params.get("alert_type", "All")
 
     watchlist_ids = get_watchlist_ids(client=client, watchlist_names=watchlist_names)
@@ -701,7 +701,7 @@ def fetch_incidents(
             demisto.debug(f"Found existing alert. Alert ID: {alert_id}")
             continue
         occurred_date = timestamp_to_datestring(alert.get("eventTime", 0), DATE_FORMAT, is_utc=True)  # type: ignore
-        alert['include_related_alerts'] = include_related_alerts
+        alert["include_related_alerts"] = include_related_alerts
         incidents.append(
             {
                 "name": alert.get("caption"),

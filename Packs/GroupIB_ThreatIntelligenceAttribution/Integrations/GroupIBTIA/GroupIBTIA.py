@@ -1506,7 +1506,8 @@ class CommonHelpers:
             return [{}]
 
         normalized_dict = {
-            k: v if isinstance(v, list) else [v]  # type: ignore
+            k: v if isinstance(v, list) else [v]
+           # type: ignore
             for k, v in input_dict.items()
         }
 
@@ -1769,16 +1770,13 @@ class IncidentBuilder:
 
         for variant in occured_date_field:
             try:
-                date_value = self.incident.get(variant, "")
-
-                if date_value is None:
+                date_value=self.incident.get(variant, "")if date_value is None:
                     continue
                 if not isinstance(date_value, str):
                     date_value = str(date_value)
                 if not date_value.strip():
                     continue
                 incident_occured_date = dateparser_parse(date_string=date_value)
-
                 assert incident_occured_date is not None, (
                     f"{self.incident} incident_occured_date cannot be None, "
                     f"occured_date_field: {variant}, incident_occured_date: {incident_occured_date}"
@@ -1788,10 +1786,8 @@ class IncidentBuilder:
             except AssertionError as e:
                 last_exception = e
 
-        raise AssertionError(
-            f"None of the date fields {occured_date_field} returned a valid date."
-            f"Last error: {last_exception} {self.collection_name} {incident_id}"
-        )
+        raise AssertionError(f"None of the date fields {occured_date_field} returned a valid date."
+            f"Last error: {last_exception} {self.collection_name} {incident_id}")
 
     def get_incident_name(self) -> str:
         name = ""
@@ -1972,8 +1968,7 @@ class BuilderCommandResponses:
 
         else:
             result = self.client.poller.search_feed_by_id(self.collection_name, id_)
-            mapping = MAPPING.get(self.collection_name, {})
-            # This was done because the response when receiving a single record can
+            mapping=MAPPING.get(self.collection_name, {})# This was done because the response when receiving a single record can
             # differentiate your json from getting the whole list
             if self.collection_name == "compromised/breached":
                 mapping["emailDomains"] = "emails"

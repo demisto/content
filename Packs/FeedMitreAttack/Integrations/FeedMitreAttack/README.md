@@ -5,7 +5,6 @@ For more information click [here](https://www.mitre.org/capabilities/cybersecuri
 
 ## Configure MITRE ATT&CK Feed on XSOAR
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | includeAPT | This option will also create indicators using APT / actor name references if they are part of a MITRE Intrusion Set | False |
@@ -19,15 +18,17 @@ For more information click [here](https://www.mitre.org/capabilities/cybersecuri
 | insecure | Whether to trust any certificate (not secure). | False |
 | proxy | Whether to use the system proxy settings. | False |
 
+#### Feed timeouts
 
-#### Feed timeouts:
 MITRE enforce a rate limit for connecting to their taxii server. Ensure that your fetch interval is reasonable, otherwise you will receive connection errors.
 
 ## Commands
+
 You can execute these commands from the XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
 ### Get Indicators
+
 ***
 Gets the indicators from MITRE ATT&CK.
 
@@ -36,42 +37,44 @@ Note: This command does not create indicators within Cortex XSOAR.
 ##### Base Command
 
 `mitre-get-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of indicators to return. The default value is 10. | Optional | 
-| raw | Enabling raw will also output the raw content of each indicator | Optional | 
-
+| limit | The maximum number of indicators to return. The default value is 10. | Optional |
+| raw | Enabling raw will also output the raw content of each indicator | Optional |
 
 ##### Context Output
 
 The context is output as:
 
 - MITRE *(dict)*
-    - ATT&CK *(list)*
+  - ATT&CK *(list)*
 
 Each item in the "ATT&CK" list contains the following keys:
+
 - fields *(any fields that the indicator will attempt to map into the indicator)*
 - rawJSON *(the raw JSON of the indicator)*
 - score *(the indicator score)*
 - type *(the type of indicator - will always be "MITRE ATT&CK")*
 - value *(the indicator value, for example "T1134")*
-     
 
 ##### Command Example
+
 ```!mitre-get-indicators limit=2```
 
-
 ##### Human Readable Output
-### MITRE ATT&CK Indicators:
+
+### MITRE ATT&CK Indicators
+
 | Value | Score| Type |
 | ----- | ---- | ---- |
 | T1531 | 0 | MITRE ATT&CK |
 | T1506 | 0 | MITRE ATT&CK |
 
-
 ### MITRE reputation
+
 ***
 Lookup the reputation of an indicator from the local indicators within XSOAR.
 
@@ -80,12 +83,12 @@ Note: This does not connect outbound to get the reputation score
 ##### Base Command
 
 `mitre-reputation`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | indicator | Indicator to lookup | Required |  
-
 
 ##### Context Output
 
@@ -93,19 +96,22 @@ The context is output as:
 
 - DBotScore
 - MITRE *(dict)*
-    - ATT&CK *(list)* 
+  - ATT&CK *(list)*
 
 Each item in the "ATT&CK" list contains the customFields that are mapped into the indicator (each beginning with 'mitre')
-     
 
 ##### Command Example
+
 ```!mitre-reputation indicator=T1134```
 
-
 ##### Human Readable Output
-### MITRE ATT&CK Indicators:
-## T1134:
+
+### MITRE ATT&CK Indicators
+
+## T1134
+
 ### attack-pattern
+
 Windows uses access tokens to determine the ownership of a running process. A user can manipulate access tokens to make a running process appear as though it belongs to someone other than the user that started the process. When this occurs, the process also takes on the security context associated with the new token. For example, Microsoft promotes the use of access tokens as a security best practice. Administrators should log in as a standard user but run their tools with administrator privileges using the built-in access token manipulation command <code>runas</code>.(Citation: Microsoft runas)
 Adversaries may use access tokens to operate under a different user or system security context to perform actions and evade detection. An adversary can use built-in Windows API functions to copy access tokens from existing processes; this is known as token stealing. An adversary must already be in a privileged user context (i.e. administrator) to steal a token. However, adversaries commonly use token stealing to elevate their security context from the administrator level to the SYSTEM level. An adversary can use a token to authenticate to a remote system as the account for that token if the account has appropriate permissions on the remote system.(Citation: Pentestlab Token Manipulation)
 Access tokens can be leveraged by adversaries through three methods:(Citation: BlackHat Atkinson Winchester Token Manipulation)
@@ -117,19 +123,20 @@ Metasploit’s Meterpreter payload allows arbitrary token manipulation and uses 
 _____
 
 ### course-of-action
+
 Access tokens are an integral part of the security system within Windows and cannot be turned off. However, an attacker must already have administrator level access on the local system to make full use of this technique; be sure to restrict users and accounts to the least privileges they require to do their job.
 Any user can also spoof access tokens if they have legitimate credentials. Follow mitigation guidelines for preventing adversary use of Valid Accounts. Limit permissions so that users and user groups cannot create tokens. This setting should be defined for the local system account only. GPO: Computer Configuration > [Policies] > Windows Settings > Security Settings > Local Policies > User Rights Assignment: Create a token object. (Citation: Microsoft Create Token) Also define who can create a process level token to only the local and network service through GPO: Computer Configuration > [Policies] > Windows Settings > Security Settings > Local Policies > User Rights Assignment: Replace a process level token. (Citation: Microsoft Replace Process Token)
 Also limit opportunities for adversaries to increase privileges by limiting Privilege Escalation opportunities.
 
-
-
 ### MITRE Show Feeds
+
 ***
 Displays the available feeds from the MITRE taxii service.
 
 ##### Base Command
 
 `mitre-showfeeds`
+
 ##### Input
 
 There are no inputs  
@@ -138,22 +145,22 @@ There are no inputs
 
 There is no context output
 
-
 ##### Command Example
+
 ```!mitre-showfeeds```
 
-
 ##### Human Readable Output
-### MITRE ATT&CK Feeds:
+
+### MITRE ATT&CK Feeds
+
 | Name | ID |
 | ---- | --- |
 | Enterprise ATT&CK | 95ecc380-afe9-11e4-9b6c-751b66dd541e |
 | PRE-ATT&CK | 062767bd-02d2-4b72-84ba-56caef0f8658 |
 | Mobile ATT&CK | 2f669986-b40b-4423-b720-4396ca6a462b |
 
-
-
 ### MITRE Search feeds
+
 ***
 Performs a text search of name and description in the local MITRE ATT&CK indicators.
 
@@ -162,6 +169,7 @@ Note: This does not connect outbound to get the reputation score
 ##### Base Command
 
 `mitre-search-indicators`
+
 ##### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -176,14 +184,15 @@ The context is output as:
 - indicators *(list)*
 
 Each item in the "indicators" list contains the 'id' and 'value' fields of the indicators found.
-     
 
 ##### Command Example
+
 ```!mitre-search-indicators search=APT12```
 
-
 ##### Human Readable Output
-### MITRE Indicator search:
+
+### MITRE Indicator search
+
 | Name |
 | ---- |
 | APT12 |

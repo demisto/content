@@ -350,7 +350,7 @@ def lowercase_protocol_callback(pattern: re.Match) -> str:
     return pattern.group(0).lower()
 
 
-''' COMMANDS '''
+""" COMMANDS """
 
 
 @logger
@@ -543,7 +543,7 @@ def file_command(client: Client, file: str) -> List[CommandResults]:
 
     for hash_ in hashes_list:
         raw_response_analysis = client.query(section="file", argument=hash_, sub_section="analysis")
-        raw_response_general = client.query(section="file",argument=hash_)
+        raw_response_general = client.query(section="file", argument=hash_)
 
         if (
             raw_response_analysis
