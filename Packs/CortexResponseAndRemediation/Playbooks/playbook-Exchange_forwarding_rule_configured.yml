@@ -533,8 +533,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850,
-          "y": 1638
+          "x": 841,
+          "y": 1643
         }
       }
     note: false
@@ -561,8 +561,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1144,
-          "y": 1909
+          "x": 1196,
+          "y": 1918
         }
       }
     note: false
@@ -1513,6 +1513,8 @@ tasks:
       brand: ""
       description: ""
     nexttasks:
+      '#default#':
+      - "18"
       Inbox Rule:
       - "46"
       Transport Rule:
@@ -1677,7 +1679,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1001,
+          "x": 988,
           "y": 1481
         }
       }
@@ -1718,7 +1720,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1416,
+          "x": 1431,
           "y": 1481
         }
       }
@@ -1768,6 +1770,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: ""
     nexttasks:
       '#default#':
       - "6"
@@ -1815,11 +1818,12 @@ view: |-
       "41_48_#default#": 0.33,
       "43_44_yes": 0.47,
       "43_48_#default#": 0.21,
+      "44_18_#default#": 0.31,
       "44_46_Inbox Rule": 0.45,
       "44_47_Transport Rule": 0.45,
       "46_17_yes": 0.66,
       "46_18_#default#": 0.24,
-      "47_18_#default#": 0.47,
+      "47_18_#default#": 0.31,
       "47_45_yes": 0.57,
       "49_2_yes": 0.5,
       "49_6_#default#": 0.12,
@@ -1828,8 +1832,8 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 2218,
-        "width": 2278,
+        "height": 2227,
+        "width": 2293,
         "x": -481,
         "y": -249
       }
