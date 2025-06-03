@@ -184,7 +184,7 @@ def execute_reply_mail(
     is_succeed, email_reply = execute_command("reply-mail", mail_content, extract_contents=False, fail_on_error=False)
     if is_succeed:
         return email_reply
-    return_error(f"Error:\n {email_reply}")
+    return return_error(f"Error:\n {email_reply}")
 
 
 def get_email_threads(incident_id):

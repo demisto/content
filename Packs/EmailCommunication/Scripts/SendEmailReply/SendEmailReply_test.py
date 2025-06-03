@@ -49,12 +49,13 @@ def test_append_email_signature_fails(mocker):
     get_list_error_response = False, util_load_json("test_data/getList_signature_error.json")
     mocker.patch("SendEmailReply.execute_command", return_value=get_list_error_response)
     debug_mocker = mocker.patch.object(demisto, "debug")
-    append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
+    html_body = append_email_signature("<html><body>Simple HTML message.\r\n</body></html>")
     debug_mocker_call_args = debug_mocker.call_args
     assert (
         debug_mocker_call_args.args[0] == "Error occurred while trying to load the `XSOAR - Email Communication "
         "Signature` list. No signature added to email"
     )
+    assert html_body == "<html><body>Simple HTML message.\r\n</body></html>"
 
 @pytest.mark.parametrize(
     "email_cc, email_bcc, expected_result",
@@ -268,6 +269,18 @@ def test_execute_reply_mail(test_args, expected_response, mocker):
     execute_command_call_args = execute_command_mocker.call_args
     assert execute_command_call_args.args[1] == expected_response
 
+
+def test_execute_reply_mail_fail(mocker):
+    """Unit Test
+    Given
+    - function is called to send an email reply
+    When
+    - All input arguments are correctly set, but the execute command is failing
+    Then
+    - Validate that function proceed and no error is raised
+    """
+    from SendEmailReply import execute_reply_mail
+    # TODO: keep from here
 
 GET_EMAIL_RECIPIENTS = [
     # Both service mail and mailbox are configured as different addresses, should remove only mailbox.
@@ -1588,3 +1601,7 @@ def test_format_body(mocker):
         '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>',
     )
     assert result == expected_result
+
+
+def test_debug_logs_on_error_and_proceed_run(mocker):
+    pass
