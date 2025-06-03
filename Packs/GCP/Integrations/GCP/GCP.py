@@ -584,10 +584,10 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
         .execute()
     )
 
-    action = "updated" if service_account else "removed"
+    action = "Updated" if service_account else "Removed"
 
     hr = tableToMarkdown(
-        f"Service account was successfully {action} for VM instance {resource_name} in project {project_id}.",
+        f"Service Account {action} Operation Started Successfully for VM Instance {resource_name} in project {project_id}.",
         t=response,
         headers=OPERATION_TABLE,
         removeNull=True,
@@ -610,11 +610,8 @@ def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> Com
     member_key = args.get("member_key")
 
     directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-    try:
-        directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
-        hr = f"Member {member_key} was removed from group {group_id}."
-    except Exception as e:
-        raise DemistoException(f"Failed to remove member from group: {str(e)}") from e
+    directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
+    hr = f"Member {member_key} was removed from group {group_id}."
 
     return CommandResults(readable_output=hr)
 
@@ -637,12 +634,8 @@ def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> Comm
 
     name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
 
-    try:
-        iam.projects().serviceAccounts().delete(name=name).execute()  # pylint: disable=E1101
-        hr = f"Service account {service_account_email} was successfully deleted from project {project_id}."
-    except Exception as e:
-        raise DemistoException(f"Failed to delete service account: {str(e)}") from e
-
+    iam.projects().serviceAccounts().delete(name=name).execute()  # pylint: disable=E1101
+    hr = f"Service account {service_account_email} was successfully deleted from project {project_id}."
     return CommandResults(readable_output=hr)
 
 

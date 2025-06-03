@@ -521,7 +521,10 @@ script:
         type: string
 
   - name: gcp-compute-instance-service-account-set
-    description: Sets or removes a service account from a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+    description: >
+      Sets or removes a service account from a GCP Compute Engine VM instance.
+      The instance must be stopped before the service account can be changed.
+      If no service account is provided, the existing service account will be removed from the instance.
     arguments:
     - name: project_id
       description: GCP project ID.
