@@ -555,7 +555,7 @@ def iam_project_deny_policy_create(creds, args: dict[str, Any]) -> CommandResult
 
 def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Sets or removes a service account from a GCP Compute Engine VM instance.
+    Sets the service account for a GCP Compute Engine VM instance.
 
     Args:
         creds (Credentials): GCP credentials.
@@ -568,15 +568,12 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
     project_id = args.get("project_id")
     zone = args.get("zone")
     resource_name = args.get("resource_name")
-    service_account = args.get("service_account", "")
+    service_account_email = args.get("service_account_email", "")
     scopes = argToList(args.get("scopes", []))
 
     compute = GCPServices.COMPUTE.build(creds)
 
-    body = {
-        "email": service_account,  # Empty string is treated as "remove"
-        "scopes": scopes if service_account else [],  # Empty list required
-    }
+    body = {"email": service_account_email, "scopes": scopes}
 
     response = (
         compute.instances()  # pylint: disable=E1101
@@ -584,10 +581,41 @@ def compute_instance_service_account_set(creds: Credentials, args: dict[str, Any
         .execute()
     )
 
-    action = "Updated" if service_account else "Removed"
+    hr = tableToMarkdown(
+        f"Service Account Updated Operation Started Successfully for VM Instance {resource_name} in project {project_id}.",
+        t=response,
+        headers=OPERATION_TABLE,
+        removeNull=True,
+    )
+    return CommandResults(readable_output=hr, outputs_prefix="GCP.Compute.Operations", outputs=response)
+
+
+def compute_instance_service_account_remove(creds: Credentials, args: dict[str, Any]) -> CommandResults:
+    """
+    Removes a service account from a GCP Compute Engine VM instance.
+
+    Args:
+        creds (Credentials): GCP credentials.
+        args (dict[str, Any]): Must include 'project_id', 'zone', and 'resource_name'.
+
+    Returns:
+        CommandResults: Result of the service account removal operation.
+    """
+    project_id = args.get("project_id")
+    zone = args.get("zone")
+    resource_name = args.get("resource_name")
+
+    compute = GCPServices.COMPUTE.build(creds)
+
+    body = {"email": "", "scopes": []}
+    response = (
+        compute.instances()  # pylint: disable=E1101
+        .setServiceAccount(project=project_id, zone=zone, instance=resource_name, body=body)
+        .execute()
+    )
 
     hr = tableToMarkdown(
-        f"Service Account {action} Operation Started Successfully for VM Instance {resource_name} in project {project_id}.",
+        f"Service Account Removed Operation Started Successfully for VM Instance {resource_name} in project {project_id}.",
         t=response,
         headers=OPERATION_TABLE,
         removeNull=True,
@@ -885,7 +913,7 @@ def main():
             "gcp-compute-subnet-update": compute_subnet_update,
             "gcp-compute-instance-metadata-add": compute_instance_metadata_add,
             "gcp-compute-instance-service-account-set": compute_instance_service_account_set,
-            # "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
+            "gcp-compute-instance-service-account-remove": compute_instance_service_account_remove,
             "gcp-compute-instance-start": compute_instance_start,
             "gcp-compute-instance-stop": compute_instance_stop,
             # Storage commands

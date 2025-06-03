@@ -1,6 +1,5 @@
 The GCP Integration automates management and security configurations for Compute Engine, Storage, and Container resources on GCP.
-This integration was integrated and tested with version v1 (Compute, Storage, Container) and v3 (Resource Manager) of GCP APIs.
-
+This integration was integrated and tested with version v1 (Compute, Storage, Container, IAM), v2 (IAM), v3 (Resource Manager).
 ## Configure GCP in Cortex
 
 
@@ -279,7 +278,7 @@ There is no context output for this command.
 ### gcp-iam-project-deny-policy-create
 
 ***
-Creates an IAM deny policy to explicitly block access to specific resources, services, or permissions.
+Creates an IAM deny policy that explicitly blocks specified principals from performing specified permissions on a GCP project.
 
 #### Base Command
 
@@ -290,24 +289,26 @@ Creates an IAM deny policy to explicitly block access to specific resources, ser
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | project_id | GCP project ID. | Required | 
-| policy_id | ID of the deny policy. | Required | 
-| denied_principals | List of members to deny access. | Required | 
-| denied_permissions | List of permissions to deny. | Required | 
-| resource | Full resource name (e.g., //cloudresourcemanager.googleapis.com/projects/my-project). | Required | 
+| policy_id | Unique identifier for the deny policy (0-63 chars, starts with lowercase letter). | Required | 
+| display_name | Display name for the deny policy. | Required | 
+| denied_principals | Comma-separated list of principals to deny (e.g., principalSet://goog/public:all). | Required | 
+| denied_permissions | Comma-separated list of permissions to deny (e.g., cloudresourcemanager.googleapis.com/projects.delete). | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | GCP.IAM.DenyPolicy.policyId | string | ID of the deny policy. | 
-| GCP.IAM.DenyPolicy.name | string | Full resource name of the policy. | 
-| GCP.IAM.DenyPolicy.rules | unknown | Deny rules in the policy. | 
-| GCP.IAM.DenyPolicy.etag | string | Etag of the policy for concurrency control. | 
+| GCP.IAM.DenyPolicy.name | string | Full resource name of the created deny policy. | 
+| GCP.IAM.DenyPolicy.displayName | string | Display name of the deny policy. | 
+| GCP.IAM.DenyPolicy.rules | unknown | List of deny rules included in the policy. | 
+| GCP.IAM.DenyPolicy.etag | string | Etag for concurrency control. | 
 
 ### gcp-compute-instance-service-account-set
 
 ***
-Sets or removes a service account from a GCP Compute Engine VM instance.
+Sets the service account for a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+
 
 #### Base Command
 
@@ -320,8 +321,8 @@ Sets or removes a service account from a GCP Compute Engine VM instance.
 | project_id | GCP project ID. | Required | 
 | zone | The name of the zone for this request. | Required | 
 | resource_name | Name of the VM instance. | Required | 
-| service_account | Email of the service account. | Optional | 
-| scopes | OAuth scopes to assign. | Optional | 
+| service_account_email | Email of the service account. | Required | 
+| scopes | OAuth scopes to assign (full URLs), e.g., `https://www.googleapis.com/auth/cloud-platform`. Empty list means no scopes. | Required | 
 
 #### Context Output
 
@@ -353,7 +354,8 @@ Sets or removes a service account from a GCP Compute Engine VM instance.
 ### gcp-compute-instance-service-account-remove
 
 ***
-Removes the service account associated with a GCP Compute Engine VM instance.
+Removes the service account associated with a GCP Compute Engine VM instance. The instance must be stopped before the service account can be changed.
+
 
 #### Base Command
 
@@ -369,7 +371,31 @@ Removes the service account associated with a GCP Compute Engine VM instance.
 
 #### Context Output
 
-There is no context output for this command.
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| GCP.Compute.Operations.id | string | The unique identifier for the resource. This identifier is defined by the server. | 
+| GCP.Compute.Operations.name | string | Name of the resource. | 
+| GCP.Compute.Operations.zone | string | The URL of the zone where the operation resides. Only available when performing per-zone operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
+| GCP.Compute.Operations.clientOperationId | string | The value of requestId if you provided it in the request. Not present otherwise. | 
+| GCP.Compute.Operations.operationType | string | The type of operation, such as insert, update, or delete, and so on. | 
+| GCP.Compute.Operations.targetLink | string | The URL of the resource that the operation modifies. For operations related to creating a snapshot, this points to the persistent disk that the snapshot was created from. | 
+| GCP.Compute.Operations.targetId | string | The unique target ID, which identifies a specific incarnation of the target resource. | 
+| GCP.Compute.Operations.status | string | The status of the operation, which can be one of the following: PENDING RUNNING or DONE. | 
+| GCP.Compute.Operations.statusMessage | string | An optional textual description of the current status of the operation. | 
+| GCP.Compute.Operations.user | string | User who requested the operation for example EMAILADDRESS. | 
+| GCP.Compute.Operations.progress | number | An optional progress indicator that ranges from 0 to 100. There is no requirement that this be linear or support any granularity of operations. This should not be used to guess when the operation will be complete. This number should monotonically increase as the operation progresses. | 
+| GCP.Compute.Operations.insertTime | string | The time that this operation was requested. This value is in RFC3339 text format. | 
+| GCP.Compute.Operations.startTime | string | The time that this operation was started by the server. This value is in RFC3339 text format. | 
+| GCP.Compute.Operations.endTime | string | The time that this operation was completed. This value is in RFC3339 text format. | 
+| GCP.Compute.Operations.error | string | If errors are generated during processing of the operation, this field will be populated. | 
+| GCP.Compute.Operations.warnings | string | If warning messages are generated during processing of the operation, this field will be populated. | 
+| GCP.Compute.Operations.httpErrorStatusCode | number | If the operation fails, this field contains the HTTP error status code that was returned. For example, a 404 means the resource was not found. | 
+| GCP.Compute.Operations.httpErrorMessage | string | If the operation fails, this field contains the HTTP error message that was returned, such as NOT FOUND. | 
+| GCP.Compute.Operations.selfLink | string | Server-defined URL for the resource. | 
+| GCP.Compute.Operations.region | string | The URL of the region where the operation resides. Only available when performing regional operations. You must specify this field as part of the HTTP request URL. It is not settable as a field in the request body. | 
+| GCP.Compute.Operations.description | string | A textual description of the operation, which is set when the operation is created. | 
+| GCP.Compute.Operations.kind | string | Type of the resource. Always compute\#operation for Operation resources. | 
+
 ### gcp-iam-group-membership-delete
 
 ***
@@ -456,7 +482,7 @@ Starts an instance that was stopped using the instances().stop method. For more 
 ### gcp-compute-instance-stop
 
 ***
-Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
+Stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted.
 
 #### Base Command
 
