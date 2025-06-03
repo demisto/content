@@ -50,7 +50,7 @@ script:
       description: Customer ID.
     - name: actions
       type: Object
-      description: "Actions taken, e.g., {\"action\": value}."
+      description: Actions taken.
     - name: alert_id
       type: Number
       description: Alert ID.
@@ -59,7 +59,7 @@ script:
       description: Alert reference ID.
     - name: blocklist_requests
       type: Object
-      description: "Blocklist request data, including blocked and sent dates, e.g. {\"blocked_date\": blocked_date, \"sent_date\": sent_date}".
+      description: Blocklist request data, including blocked and sent dates.
     - name: brand
       type: String
       description: Brand.
@@ -98,7 +98,7 @@ script:
       description: Last submit date.
     - name: metadata
       type: Object
-      description: "Metadata object, e.g., {\"date\": value}".
+      description: Metadata object.
     - name: reason
       type: String
       description: Reason for the takedown request.
