@@ -9,9 +9,10 @@ import urllib3
 import dateparser
 import json
 from dateutil.parser import isoparse
+from collections.abc import Sequence
+
 from dateutil.parser import parse as parse_date
 
-from collections.abc import Sequence
 import concurrent.futures
 
 UTC = pytz.UTC
@@ -625,26 +626,6 @@ def set_request(client, method, token, input_params, url):
     return response
 
 
-def fetch_service_details(client, base_url, token):
-    """
-    Fetches the names of all subscribed services from the Cyble API.
-
-    Args:
-        client: An instance of the client to communicate with the server.
-        base_url: The base URL for the server.
-        token: The server access token.
-
-    Returns:
-        A list of names of the subscribed services.
-    """
-
-    service_name_lists = fetch_subscribed_services(client, "GET", base_url, token)
-    lst = []
-    for service_name_list in service_name_lists:
-        lst.append(service_name_list['name'])
-    return lst
-
-
 def ensure_aware(dt: datetime) -> datetime:
     """Ensure datetime is timezone-aware in UTC."""
     if dt.tzinfo is None:
@@ -692,95 +673,6 @@ def test_response(client, method, base_url, token):
     except Exception as e:
         demisto.error(f"Failed to connect: {e}")
         raise Exception("failed to connect")
-
-
-def validate_input(args, is_iocs=False):
-    """
-    Validate input arguments for API calls
-
-    Args:
-        args (dict): Arguments to validate
-        is_iocs (bool): Whether this is for IOCs endpoint (different limits)
-
-    Raises:
-        ValueError: If validation fails
-    """
-    from datetime import datetime
-    import pytz
-
-    # Validate limit
-    limit = args.get('limit', '50')
-    try:
-        limit_int = int(limit)
-        max_limit = 100 if is_iocs else 1000
-        if limit_int <= 0 or limit_int > max_limit:
-            raise ValueError(f"The limit argument should contain a positive number, up to {max_limit}, limit: {limit}")
-    except ValueError as e:
-        if "positive number" in str(e):
-            raise
-        raise ValueError(f"The limit argument should contain a positive number, up to {100 if is_iocs else 1000}, limit: {limit}")
-
-    # Validate offset/from
-    from_val = args.get('from', '0')
-    try:
-        from_int = int(from_val)
-        if from_int < 0:
-            raise ValueError(f"The parameter from has a negative value, from: {from_val}'")
-    except ValueError as e:
-        if "negative value" in str(e):
-            raise
-        raise ValueError(f"The parameter from has a negative value, from: {from_val}'")
-
-    # Validate dates
-    start_date = args.get('start_date')
-    end_date = args.get('end_date')
-
-    if start_date and end_date:
-        try:
-            # Try different date formats
-            if is_iocs:
-                # For IOCs, expect YYYY-MM-DD format
-                start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-                end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-            else:
-                # For alerts, expect ISO format with timezone
-                if 'T' in start_date:
-                    # Handle different timezone formats
-                    if start_date.endswith('+0000'):
-                        # Convert +0000 to +00:00 format for fromisoformat
-                        start_date_iso = start_date[:-5] + '+00:00'
-                        end_date_iso = end_date[:-5] + '+00:00'
-                        start_dt = datetime.fromisoformat(start_date_iso)
-                        end_dt = datetime.fromisoformat(end_date_iso)
-                    elif start_date.count(':') == 2:  # Has seconds and proper timezone
-                        start_dt = datetime.fromisoformat(start_date.replace('Z', '+00:00'))
-                        end_dt = datetime.fromisoformat(end_date.replace('Z', '+00:00'))
-                    else:
-                        raise ValueError(f"time data '{start_date}' does not match format")
-                else:
-                    start_dt = datetime.strptime(start_date, '%Y-%m-%d')
-                    end_dt = datetime.strptime(end_date, '%Y-%m-%d')
-
-            # Check if start date is after end date
-            if start_dt > end_dt:
-                raise ValueError(f"Start date {start_date} cannot be after end date {end_date}")
-
-            # Check if end date is in the future (for non-IOCs)
-            if not is_iocs:
-                now = datetime.now(pytz.UTC)
-                if end_dt.tzinfo is None:
-                    end_dt = pytz.UTC.localize(end_dt)
-                if end_dt > now:
-                    raise ValueError(f"End date must be a date before or equal to {now.isoformat()}")
-
-        except ValueError as e:
-            if any(phrase in str(e) for phrase in ["cannot be after", "must be a date before", "does not match format"]):
-                raise
-            # Handle parsing errors
-            if is_iocs:
-                raise ValueError(f"time data '{start_date if 'start_date' in str(e) else end_date}' has unconverted data remains")
-            else:
-                raise ValueError("time data does not match format")
 
 
 def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
@@ -1518,3 +1410,4 @@ def main():
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
     main()
+
