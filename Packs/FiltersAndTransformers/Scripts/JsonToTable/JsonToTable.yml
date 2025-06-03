@@ -25,7 +25,7 @@ args:
 - name: json_transform_properties
   description: 'Transformation JSON from value to strings. The syntax is: `{"header_key": {"keys": [<item1>, ...], "is_nested": true/false}}`.'
 - name: url_keys
-  description: A list of keys in the given JSON table that should be turned into a clickable URL.
+  description: Comma-separated list of keys in the given JSON table that should be turned into a clickable URL.
 scripttarget: 0
 subtype: python3
 dockerimage: demisto/python3:3.12.8.3296088
