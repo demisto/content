@@ -44,7 +44,7 @@ class Client:
         self.fetch_limit_audit = fetch_limit_audit
         self.fetch_limit_syslog = fetch_limit_syslog
         self.api_server_url = api_server_url
-    
+
     def search_events(self, from_time: str, log_type: str, limit: Optional[int] = None, offset: int = 0):
         """Make a request to the ServiceNow REST API to retrieve audit and syslog transactions logs"""
 
@@ -62,7 +62,7 @@ class Client:
             url_suffix=None,
             params=remove_empty_elements(params),
         )
-            
+
         return res.get("result")
 
 
@@ -275,7 +275,7 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     return collected_events, last_run
 
 
-def login_command(client: Client, user_name:str, password:str) -> str:
+def login_command(client: Client, user_name: str, password: str) -> str:
     """
     Login the user using OAuth authorization
     Args:
@@ -288,7 +288,7 @@ def login_command(client: Client, user_name:str, password:str) -> str:
     # Verify that the user selected the `Use OAuth Login` checkbox:
     if not client.sn_client.use_oauth:
         return_error(
-            "!service-now-login command can be used only when using OAuth 2.0 authorization.\n "
+            "!service-now-oauth-login command can be used only when using OAuth 2.0 authorization.\n "
             "Please select the `Use OAuth Login` checkbox in the instance configuration before running this "
             "command."
         )
@@ -296,7 +296,7 @@ def login_command(client: Client, user_name:str, password:str) -> str:
     try:
         client.sn_client.login(user_name, password)
         hr = (
-            "### Logged in successfully.\n A refresh token was saved to the integration context and will be "
+            "Logged in successfully.\n A refresh token was saved to the integration context and will be "
             "used to generate a new access token once the current one expires."
         )
     except Exception as e:
@@ -398,11 +398,9 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
-        elif command == "service-now-login":
-            return_results(login_command(client=client,
-                                         user_name=user_name,
-                                         password=password))
-            
+        elif command == "service-now-oauth-login":
+            return_results(login_command(client=client, user_name=user_name, password=password))
+
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
@@ -410,7 +408,6 @@ def main() -> None:  # pragma: no cover
     except Exception as e:
         demisto.info(f"here {e!s}")
         return_error(f"Failed to execute {demisto.command()} command.\nError:\n{e!s}")
-
 
 
 from ServiceNowApiModule import *  # noqa: E402

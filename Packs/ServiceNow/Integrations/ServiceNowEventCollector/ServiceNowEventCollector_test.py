@@ -20,8 +20,8 @@ from ServiceNowEventCollector import (
     initialize_from_date,
     process_and_filter_events,
     update_last_run,
-    reset_auth,
-    module_of_testing
+    login_command,
+    module_of_testing,
 )
 
 
@@ -935,31 +935,51 @@ def test_handle_log_types_empty_list():
     assert handle_log_types(event_types_to_fetch) == []
 
 
-def test_reset_auth_context_cleared(mocker):
+def test_login_command_oauth_not_enabled(mocker):
     """
-    Test reset_auth when integration context contains an expired token.
+    Test login_command when OAuth is not enabled in the client.
 
     Given:
-        - Integration context contains a refresh token.
+        - The client has use_oauth set to False.
     When:
-        - Calling reset_auth to manually clear the authentication state.
+        - login_command is called.
     Then:
-        - set_integration_context is called with an empty dict.
-        - get_integration_context is logged for debugging purposes.
-        - CommandResults is returned with a success message.
+        - return_error is called with the appropriate message.
     """
-    mocker.patch('ServiceNowEventCollector.get_integration_context', return_value={'refresh_token': 'abc123'})
-    set_context_mock = mocker.patch('ServiceNowEventCollector.set_integration_context')
-    debug_mock = mocker.patch('ServiceNowEventCollector.demisto.debug')
+    client = mocker.Mock()
+    client.sn_client.use_oauth = False
 
-    result = reset_auth()
+    return_error_mock = mocker.patch("ServiceNowEventCollector.return_error")
 
-    set_context_mock.assert_called_once_with({})
+    login_command(client, "user", "pass")
 
-    debug_mock.assert_called_once()
-    assert 'Reset integration-context' in debug_mock.call_args[0][0]
+    return_error_mock.assert_called_once()
+    assert "can be used only when using OAuth 2.0" in return_error_mock.call_args[0][0]
 
-    assert "Authorization was reset successfully" in result.readable_output
+
+def test_login_command_success(mocker):
+    """
+    Test login_command when login is successful.
+
+    Given:
+        - OAuth is enabled.
+        - login does not raise an error.
+    When:
+        - login_command is called with correct username and password.
+    Then:
+        - login is called with the correct arguments.
+        - A success message is returned.
+    """
+    mock_login = mocker.Mock()
+    client = mocker.Mock()
+    client.sn_client.use_oauth = True
+    client.sn_client.login = mock_login
+
+    result = login_command(client, "user", "pass")
+
+    mock_login.assert_called_once_with("user", "pass")
+    assert "Logged in successfully" in result
+
 
 def test_module_of_testing_success_and_failure(mocker):
     client = Client(
@@ -975,8 +995,5 @@ def test_module_of_testing_success_and_failure(mocker):
         fetch_limit_syslog=10,
     )
 
-    mocker.patch(
-        "ServiceNowEventCollector.fetch_events_command",
-        return_value=([], {})
-    )
+    mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
     assert module_of_testing(client, [AUDIT]) == "ok"

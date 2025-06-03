@@ -92,7 +92,7 @@ There is no context output for this command.
 ### service-now-oauth-login
 
 ***
-Resets the integration's saved connection information, including the OAuth refresh token. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
+Generate a refresh token using your existing credentials. Use this command if you encounter access_denied or other errors related to your access token when using OAuth 2.0.
 #### Base Command
 
 `service-now-oauth-login`
@@ -101,6 +101,6 @@ Resets the integration's saved connection information, including the OAuth refre
 
 There are no input arguments for this command.
 
-#### Context Output
+#### Context Outputß
 
 There is no context output for this command.
