@@ -42,14 +42,26 @@ class Client:
         proxy (bool): Specifies if to use XSOAR proxy settings.
     """
 
-    def __init__(self, base_url: str, token: str, proxy: bool, session: aiohttp.ClientSession, event_types_to_fetch: list[str]):
+    def __init__(self, base_url: str, token: str, proxy: bool, verify: bool, event_types_to_fetch: list[str]):
         self.fetch_status: dict = {event_type: False for event_type in event_types_to_fetch}
         self.event_types_to_fetch: list[str] = event_types_to_fetch
         self.netskope_semaphore = asyncio.Semaphore(NETSKOP_SEMAPHORE_COUNT)
-        self._async_session = session
         self._headers = {"Netskope-Api-Token": f"{token}", "Accept": "application/json"}
         self._base_url = base_url
+        self._verify = verify
         self._proxy_url = handle_proxy().get('http') if proxy else None
+        self._async_session = None
+
+
+    async def __aenter__(self):
+        demisto.debug("Opening the aiohttp session")
+        self._async_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self._verify))
+        return self
+
+    async def __aexit__(self, exc_type, exc_val, exc_tb):
+        demisto.debug("Closing aiohttp session")
+        await self._async_session.close()
+    
 
     async def get_events_data_async(self, type, params):
         url_suffix = f"events/data/{type}"
@@ -499,8 +511,7 @@ async def main() -> None:  # pragma: no cover
         event_types_to_fetch = handle_event_types_to_fetch(params.get('event_types_to_fetch'))
         demisto.debug(f'Event types that will be fetched in this instance: {event_types_to_fetch}')
 
-        async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=verify_certificate)) as session:
-            client = Client(base_url, token, proxy, session, event_types_to_fetch)
+        async with Client(base_url, token, proxy, verify_certificate, event_types_to_fetch) as client:
 
             last_run = demisto.getLastRun()
             demisto.debug(f'Running with the following last_run - {last_run}')
