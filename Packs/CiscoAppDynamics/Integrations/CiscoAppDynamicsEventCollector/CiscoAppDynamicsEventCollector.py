@@ -328,9 +328,9 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
     event_type_name = EVENT_TYPE[args.get("events_type_to_fetch", AUDIT.name)].name
     limit = int(args.get("limit", 50))
     now = datetime.now()
-    end_date = args.get("end_date") or now.strftime(DATE_FORMAT)
+    end_date = args.get("end_date", "") or now.strftime(DATE_FORMAT)
     end_dt = dateparser.parse(end_date) or now
-    start_date_dt = args.get("start_date") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
+    start_date_dt = args.get("start_date", "") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
 
     event_fetch_function = {
         AUDIT.name: client.get_audit_logs,
