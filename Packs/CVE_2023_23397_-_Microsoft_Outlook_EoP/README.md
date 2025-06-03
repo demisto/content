@@ -1,22 +1,25 @@
 This pack is part of the [Rapid Breach Response](https://cortex.marketplace.pan.dev/marketplace/details/MajorBreachesInvestigationandResponse/) pack.
 
-### CVE-2023-23397 - Critical Elevation of Privilege vulnerability in Microsoft Outlook 
+### CVE-2023-23397 - Critical Elevation of Privilege vulnerability in Microsoft Outlook
 
-#### Summary 
-Microsoft Threat Intelligence discovered limited, targeted abuse of a vulnerability in Microsoft Outlook for Windows that allows for new technology LAN manager (NTLM) credential theft. Microsoft has released CVE-2023-23397 to address the critical elevation of privilege (EoP) vulnerability affecting Microsoft Outlook for Windows. 
+#### Summary
+
+Microsoft Threat Intelligence discovered limited, targeted abuse of a vulnerability in Microsoft Outlook for Windows that allows for new technology LAN manager (NTLM) credential theft. Microsoft has released CVE-2023-23397 to address the critical elevation of privilege (EoP) vulnerability affecting Microsoft Outlook for Windows.
 
 **The playbook includes the following tasks:**
 
 **Hunting:**
+
 - Microsoft PowerShell hunting script
 - Advanced SIEM hunting queries
 - Indicators hunting
 
 **Mitigations:**
+
 - Microsoft official CVE-2023-23397 patch
 - Microsoft workarounds
 - Detection Rules
-    - Yara
+  - Yara
 
 **References:**
 

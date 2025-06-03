@@ -1,5 +1,7 @@
 
 const MIN_HOSTED_XSOAR_VERSION = '8.0.0';
+const PLAYBOOK_METADATA = 'playbook_metadata';
+const INTEGRATION_NAME = 'CoreRESTAPI';
 
 var serverURL = params.url;
 if (serverURL.slice(-1) === '/') {
@@ -152,6 +154,28 @@ sendMultipart = function (uri, entryID, body) {
 
 };
 
+var addPlaybookMetadataToRequest = function(body, command) {
+    try {
+        var requestBodyObject = JSON.parse(body);
+        var playbookTaskInfoJson = JSON.parse(playbookTaskInfo);
+        requestBodyObject.request_data.playbook_metadata = {
+            'playbook_id': playbookTaskInfoJson.playbookID,
+            'playbook_name': playbookTaskInfoJson.playbookName,
+            'task_id': playbookTaskInfoJson.taskID,
+            'task_name': playbookTaskInfoJson.taskName,
+            'integration_name': INTEGRATION_NAME,
+            'command_name': command,
+        }
+        logDebug("Added playbook-metadata to request body " + requestBodyObject.request_data.playbook_metadata);
+    } catch(error) {
+        logError("Error parsing as a JSON object playbookTaskInfo: " + error);
+    } finally {
+        body = JSON.stringify(requestBodyObject);
+    }
+    return body;
+};
+
+
 var sendRequest = function(method, uri, body, raw) {
     var requestUrl = getRequestURL(uri);
     var key = params.apikey? params.apikey : (params.creds_apikey? params.creds_apikey.password : '');
@@ -171,6 +195,10 @@ var sendRequest = function(method, uri, body, raw) {
         }
         headers = getAdvancedAuthMethodHeaders(key, auth_id, 'application/json')
     }
+    if (requestUrl.includes("start_xql_query") && method === 'POST' ) {
+        body = addPlaybookMetadataToRequest(body, command);
+    }
+
     timeout = 3 * 60 * 1000; // timeout in milliseconds
     logDebug('Calling http() from sendRequest, with requestUrl = ' + requestUrl + ', method = ' + method + ', body = ' + JSON.stringify(body) + ', SaveToFile = ' + raw + ', insecure = ' + params.insecure + ', proxy = ' + params.proxy + ', timeout in milliseconds = ' + timeout);
     var res = http(
@@ -614,3 +642,4 @@ switch (command) {
     default:
         throw 'Core REST APIs - unknown command';
 }
+

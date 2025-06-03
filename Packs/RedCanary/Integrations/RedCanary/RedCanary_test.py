@@ -369,3 +369,45 @@ def test_get_detection_command_includes_domain(mocker):
     assert "Domain(val.Username == obj.Username)" in entry_context
     assert isinstance(entry_context["Domain(val.Username == obj.Username)"], list)
     assert any("example.domain" in json.dumps(d) for d in entry_context["Domain(val.Username == obj.Username)"])
+
+
+def test_get_detection_command_includes_process_and_files(mocker):
+    """
+    Given
+    - Raw response of get_full_timeline function
+    - Response from get_detection command.
+    When
+    - Running the get_detection command
+    Then
+    Make sure that the Process and File info exists in the context data under the Domain key.
+    """
+    detection_data = util_load_json("TestData/detection2.json")
+    timeline_data = util_load_json("TestData/detection_timeline2.json")
+    mocker.patch("RedCanary.demisto.args", return_value={"id": "106"})
+
+    def http_get_side_effect(url, params=None):
+        if url == "/detections/106":
+            return {"data": [detection_data]}
+        elif url.startswith(f"/detections/{detection_data['id']}/timeline"):
+            return timeline_data
+        return {}
+
+    mocker.patch("RedCanary.http_get", side_effect=http_get_side_effect)
+
+    # Call the command
+    result = RedCanary.get_detection_command()
+
+    # Validate the Domain context was returned
+    entry_context = result.get("EntryContext", {})
+    # print(entry_context)
+    assert "Process(val.Username == obj.Username)" in entry_context
+    assert "File(val.Name == obj.Name)" in entry_context
+    # Ensure they are lists
+    processes = entry_context["Process(val.Username == obj.Username)"]
+    files = entry_context["File(val.Name == obj.Name)"]
+    assert isinstance(processes, list)
+    assert isinstance(files, list)
+
+    # Ensure they are not empty
+    assert len(processes) > 0, "Expected at least one process in context, got empty list"
+    assert len(files) > 0, "Expected at least one file in context, got empty list"

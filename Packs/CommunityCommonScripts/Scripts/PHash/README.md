@@ -1,6 +1,7 @@
 Script to create a  perceptual hash of an image (or file) stored in the incident.  Wrapps https://pypi.org/project/ImageHash/
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Script to create a  perceptual hash of an image (or file) stored in the incident
 | Tags |  |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Script to create a  perceptual hash of an image (or file) stored in the incident
 | image | EntryID of image |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

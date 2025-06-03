@@ -37,10 +37,10 @@ Returns events extracted from ServiceNow. This command is used for developing/de
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| limit | Maximum audit events to fetch. Default is 1000. | Optional | 
-| from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional | 
-| offset | Starting record index from which to begin retrieving records. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
+| limit | Maximum audit events to fetch. Default is 1000. | Optional |
+| from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional |
+| offset | Starting record index from which to begin retrieving records. | Optional |
 
 #### Context Output
 
@@ -49,6 +49,7 @@ There is no context output for this command.
 ### Human Readable
 
 >### Audit Events
+>
 >|_time|documentkey|fieldname|newvalue|record_checkpoint|sys_created_on|sys_id|tablename|
 >|---|---|---|---|---|---|---|---|
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | audit |
@@ -69,10 +70,10 @@ Returns syslog transactions events extracted from ServiceNow. This command is us
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| max_fetch_syslog_transactions | Maximum syslog transactions events to fetch. Default is 1000. | Optional | 
-| from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional | 
-| offset | Starting record index from which to begin retrieving records. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required |
+| max_fetch_syslog_transactions | Maximum syslog transactions events to fetch. Default is 1000. | Optional |
+| from_date | The date and time of the earliest event. The time format is "{yyyy}-{mm}-{dd} {hh}:{mm}:{ss}". Example: "2021-05-18 13:45:14" indicates May 18, 2021, 1:45PM. | Optional |
+| offset | Starting record index from which to begin retrieving records. | Optional |
 
 #### Context Output
 
@@ -81,6 +82,7 @@ There is no context output for this command.
 ### Human Readable
 
 >### Syslog Transactions Events
+>
 >|_time|acl_time|business_rule_count|client_transaction|cpu_time|sys_created_on|sys_id|source_log_type|
 >|---|---|---|---|---|---|---|---|
 >| 2024-01-28T13:21:43Z | 3 | DELETED | DELETED | -1 | 2024-01-28 13:21:43 | 3 | test_table |
