@@ -1,10 +1,11 @@
 import dataclasses
 import http
 import inspect
+from collections.abc import Callable
 from datetime import datetime, timedelta
 from email.utils import parsedate_to_datetime
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar
+from typing import Any, TypeVar
 
 import demistomock as demisto  # noqa: F401
 import urllib3
@@ -111,7 +112,7 @@ class Classifier:
     threshold_type: str
     threshold_value_from: int
     threshold_calculate_type: str
-    threshold_value_to: Optional[int] = None
+    threshold_value_to: int | None = None
 
     def __post_init__(self) -> None:
         if self.threshold_type == "CHECK_IN_RANGE" and self.threshold_value_to is None:
@@ -382,8 +383,8 @@ class ExceptionRule:
     condition_relation_type: str
     classifiers: list[Classifier]
     severity_action: SeverityActionException
-    description: Optional[str] = None
-    display_description: Optional[str] = None
+    description: str | None = None
+    display_description: str | None = None
 
     def __post_init__(self) -> None:
         if not self.classifiers:
@@ -488,9 +489,9 @@ class SeverityActionRule:
     max_matches: str
     classifier_details: list[SeverityActionClassifier]
     risk_adaptive_protection_enabled: str
-    count_type: Optional[str] = None
-    count_time_period: Optional[str] = None
-    count_time_period_window: Optional[str] = None
+    count_type: str | None = None
+    count_time_period: str | None = None
+    count_time_period_window: str | None = None
 
     def __post_init__(self) -> None:
         if self.type == "CUMULATIVE_CONDITION" and not self.count_type:
@@ -589,7 +590,7 @@ class Resource:
 
     resource_name: str
     type: str
-    include: Optional[str]
+    include: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Resource":
@@ -783,7 +784,7 @@ class PolicyLevel:
     """
 
     level: int
-    data_type: Optional[str] = None
+    data_type: str | None = None
 
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "PolicyLevel":

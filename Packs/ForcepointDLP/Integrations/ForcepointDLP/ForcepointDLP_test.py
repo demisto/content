@@ -67,7 +67,7 @@ def load_mock_response(file_name: str) -> dict:
         dict: Parsed JSON content from the mock file.
     """
     file_path = os.path.join("test_data", file_name)
-    with open(file_path, mode="r", encoding="utf-8") as mock_file:
+    with open(file_path) as mock_file:
         return json.loads(mock_file.read())
 
 
@@ -129,7 +129,7 @@ def test_error_list_policy_command(requests_mock, mock_client):
             },
         )
 
-    assert NO_CONTENT_MESSAGE == str(error_info.value)
+    assert str(error_info.value) == NO_CONTENT_MESSAGE
 
 
 def test_list_policy_rule_command(requests_mock, mock_client: Client):
@@ -187,7 +187,7 @@ def test_error_list_policy_rule_command(requests_mock, mock_client):
             },
         )
 
-    assert NO_CONTENT_MESSAGE == str(error_info.value)
+    assert str(error_info.value) == NO_CONTENT_MESSAGE
 
 
 def test_list_exception_rule_command(requests_mock, mock_client: Client):
@@ -933,7 +933,7 @@ def test_fetch_incidents_initial_run(requests_mock, mock_client: Client, monkeyp
         status_code=HTTPStatus.OK,
     )
 
-    monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
+    monkeypatch.setattr("ForcepointDLP.get_integration_context", dict)
     monkeypatch.setattr("ForcepointDLP.set_integration_context", lambda x: None)
 
     first_fetch = datetime(2025, 5, 28, 11, 0, tzinfo=timezone.utc)
@@ -969,7 +969,7 @@ def test_fetch_incidents_filters_last_ids(requests_mock, mock_client: Client, mo
         status_code=HTTPStatus.OK,
     )
 
-    monkeypatch.setattr("ForcepointDLP.get_integration_context", lambda: {})
+    monkeypatch.setattr("ForcepointDLP.get_integration_context", dict)
     monkeypatch.setattr("ForcepointDLP.set_integration_context", lambda x: None)
 
     last_run_input = {
