@@ -3,6 +3,7 @@ version: -1
 name: silent-Rundll32.exe executes a rare unsigned module
 description: "This playbook is designed to handle the alert \"Rundll32.exe executes a rare unsigned module\".\n\nThe playbook executes the following stages:\n\nData Retrieval\n- Retrieve the alert's extra data.\n- Calculate Host Risk Score,\n- Extract the extension of the loaded DLL.\n- Check the similarity between the CGO process signer and the company attribute of the loaded DLLs.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks DLL reputation.\n- Checks the similarity of the CGO process signer and the loaded DLL's company attribute.\n- Checks for the uncommon DLL extensions.\n- Check for uncommon causality chain executions.\n- Searches for related XDR agent alerts to determine if any suspicious behavior occurred as part of the causality chain and the related case ID.\n\nRemediation actions will be taken if:\n- The loaded DLL is malicious.\n- The DLL is loaded from an uncommon causality chain.\n- The DLL extension is uncommon, or the DLL's SHA256 is suspicious, and the host risk score is Medium.\n- The host risk score is High (and the similarity check is less than 0.6).\n\n\nRemediation actions:\n- Terminates the causality chain. \n- Quarantine suspicious or malicious DLLs, if any.\n\nRequires: \n- Enrichment integrations for checking the DLL's SHA256 reputation.\n"
 starttaskid: "0"
+issilent: true
 tasks:
   "0":
     id: "0"
