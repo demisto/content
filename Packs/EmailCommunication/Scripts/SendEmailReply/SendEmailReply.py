@@ -146,12 +146,11 @@ def execute_reply_mail(
         subject_with_id = f"<{email_code}> {email_subject}"
 
         # setting the email's subject for gmail adjustments
-        demisto.debug(f"Setting incident {incident_id} email subject to {subject_with_id}")
-        is_succeed, _ = execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}}, extract_contents=False,
-            fail_on_error=False
-        )
-        if not is_succeed:
+        try:
+            demisto.debug(f"Setting incident {incident_id} email subject to {subject_with_id}")
+            execute_command("setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}},
+                            extract_contents=False)
+        except Exception:
             return_error(
                 f"SetIncident Failed."
                 f'"emailsubject" field was not updated with {subject_with_id} value '
