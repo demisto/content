@@ -1,0 +1,1495 @@
+id: silent-Rundll32.exe executes a rare unsigned module
+version: -1
+name: silent-Rundll32.exe executes a rare unsigned module
+description: "This playbook is designed to handle the alert \"Rundll32.exe executes a rare unsigned module\".\n\nThe playbook executes the following stages:\n\nData Retrieval\n- Retrieve the alert's extra data.\n- Calculate Host Risk Score,\n- Extract the extension of the loaded DLL.\n- Check the similarity between the CGO process signer and the company attribute of the loaded DLLs.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks DLL reputation.\n- Checks the similarity of the CGO process signer and the loaded DLL's company attribute.\n- Checks for the uncommon DLL extensions.\n- Check for uncommon causality chain executions.\n- Searches for related XDR agent alerts to determine if any suspicious behavior occurred as part of the causality chain and the related case ID.\n\nRemediation actions will be taken if:\n- The loaded DLL is malicious.\n- The DLL is loaded from an uncommon causality chain.\n- The DLL extension is uncommon, or the DLL's SHA256 is suspicious, and the host risk score is Medium.\n- The host risk score is High (and the similarity check is less than 0.6).\n\n\nRemediation actions:\n- Terminates the causality chain. \n- Quarantine suspicious or malicious DLLs, if any.\n\nRequires: \n- Enrichment integrations for checking the DLL's SHA256 reputation.\n"
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: fc9bde0d-02a9-44ea-8a84-732bf1a93c05
+    type: start
+    task:
+      id: fc9bde0d-02a9-44ea-8a84-732bf1a93c05
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": -487
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: e48b7c7b-593a-4a39-bb53-78eba2532569
+    type: regular
+    task:
+      id: e48b7c7b-593a-4a39-bb53-78eba2532569
+      version: -1
+      name: Get Host Risk score
+      description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
+      script: '|||core-list-risky-hosts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      host_id:
+        simple: ${alert.hostname}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -139,
+          "y": -102
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 47d8aefa-6eb7-42f4-9e1d-1eba84dcd5f5
+    type: regular
+    task:
+      id: 47d8aefa-6eb7-42f4-9e1d-1eba84dcd5f5
+      version: -1
+      name: Get reputation on DLL's SHA256
+      description: Check the DLL's SHA256 reputation.
+      script: '|||file'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      file:
+        simple: ${Core.OriginalAlert.event.action_module_sha256}
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 253,
+          "y": -102
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: a0b28c6b-63b1-49bd-9a94-f1db6878163e
+    type: regular
+    task:
+      id: a0b28c6b-63b1-49bd-9a94-f1db6878163e
+      version: -1
+      name: Get the alert's extra data
+      description: Returns extended information about each alert ID.
+      script: '|||core-get-cloud-original-alerts'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+      - "2"
+      - "36"
+      - "5"
+    scriptarguments:
+      alert_ids:
+        simple: ${alert.id}
+      filter_alert_fields:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": -258
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: a787b2a0-2dff-4052-b087-6ed0b75539b4
+    type: condition
+    task:
+      id: a787b2a0-2dff-4052-b087-6ed0b75539b4
+      version: -1
+      name: Malicious DLL
+      description: Check if the loaded DLL is malicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "10"
+      Remediation:
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: Remediation
+      condition:
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.action_module_sha256
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 175
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 1b0528ed-004c-41b7-9f6b-4b0a3b5c7c53
+    type: regular
+    task:
+      id: 1b0528ed-004c-41b7-9f6b-4b0a3b5c7c53
+      version: -1
+      name: Check the CGO Singer and File's Company similarity
+      description: Check the CGO Singer and File's Company attrebuite similarity.
+      scriptName: StringSimilarity
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      string_A:
+        complex:
+          root: Core.OriginalAlert.event.action_module_file_info
+          accessor: company
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: 'Core.OriginalAlert.event.action_module_file_info.company is empty '
+      string_B:
+        complex:
+          root: alert
+          accessor: cgosigner
+          transformers:
+          - operator: SetIfEmpty
+            args:
+              applyIfEmpty: {}
+              defaultValue:
+                value:
+                  simple: alert.cgosigner is empty
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 668,
+          "y": -102
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: f678ec04-f501-4d22-af9d-4ccd40c8a527
+    type: title
+    task:
+      id: f678ec04-f501-4d22-af9d-4ccd40c8a527
+      version: -1
+      name: Analysis
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 40
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: 9b663439-26f1-4d9a-b804-79ebf53fb67f
+    type: title
+    task:
+      id: 9b663439-26f1-4d9a-b804-79ebf53fb67f
+      version: -1
+      name: Data Retrieval
+      description: Data Retrieval
+      type: title
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": -369
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 164b08f5-882c-417f-8c6a-e08f490dfa3b
+    type: condition
+    task:
+      id: 164b08f5-882c-417f-8c6a-e08f490dfa3b
+      version: -1
+      name: Is the Host Risk High?
+      description: Checks if the host risk score is set to High.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "12"
+      Remediation:
+      - "37"
+    separatecontext: false
+    conditions:
+    - label: Remediation
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: High
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 864,
+          "y": 568
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 31f7d2d0-ec08-483d-9d40-9e40d85d4607
+    type: condition
+    task:
+      id: 31f7d2d0-ec08-483d-9d40-9e40d85d4607
+      version: -1
+      name: Is CGO uncommon in this alert?
+      description: "Checks if the Causality chain is uncommon in this alert. \nIf the CGO name is one of the mentioned, the alert will be considered as TP."
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "38"
+      Remediation:
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: Remediation
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: alert.cgoname
+            iscontext: true
+          right:
+            value:
+              simple: cmd.exe
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.cgoname
+            iscontext: true
+          right:
+            value:
+              simple: powershell.exe
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.cgoname
+            iscontext: true
+          right:
+            value:
+              simple: mshta.exe
+          ignorecase: true
+        - operator: containsGeneral
+          left:
+            value:
+              simple: alert.cgoname
+            iscontext: true
+          right:
+            value:
+              simple: sppsvc.exe
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 680,
+          "y": 316
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: 167baa96-8c18-40fc-8abb-c950daa7d3b6
+    type: title
+    task:
+      id: 167baa96-8c18-40fc-8abb-c950daa7d3b6
+      version: -1
+      name: Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "23"
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1323
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: f5cbf417-24e9-4929-9217-1d889150fdfd
+    type: title
+    task:
+      id: f5cbf417-24e9-4929-9217-1d889150fdfd
+      version: -1
+      name: Proceed With The Investigation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "34"
+      - "41"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1368,
+          "y": 701
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: f7cd9825-9398-4880-9476-df1351034557
+    type: condition
+    task:
+      id: f7cd9825-9398-4880-9476-df1351034557
+      version: -1
+      name: Any related alerts?
+      description: Are there any related alerts?
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "17"
+      Alerts:
+      - "39"
+      Insights:
+      - "11"
+    separatecontext: false
+    conditions:
+    - label: Insights
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+          ignorecase: true
+        - operator: in
+          left:
+            value:
+              simple: foundIncidents.severity
+            iscontext: true
+          right:
+            value:
+              simple: informational
+          ignorecase: true
+    - label: Alerts
+      condition:
+      - - operator: in
+          left:
+            value:
+              simple: foundIncidents.severity
+            iscontext: true
+          right:
+            value:
+              simple: low,medium,high,critical
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1368,
+          "y": 1065
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 6f9ff663-dda2-414f-8b85-aa2973506bf1
+    type: title
+    task:
+      id: 6f9ff663-dda2-414f-8b85-aa2973506bf1
+      version: -1
+      name: No malicious activity detected
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "40"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 97730bd4-b108-44cc-a1e7-d7a1c6351263
+    type: regular
+    task:
+      id: 97730bd4-b108-44cc-a1e7-d7a1c6351263
+      version: -1
+      name: Close Alert - True Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      closeNotes:
+        simple: Malicious activity detected - Alert was remediated
+      closeReason:
+        simple: Resolved - True Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2509
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: 7d7f4c0a-2a13-418f-ae91-37dce8de0618
+    type: title
+    task:
+      id: 7d7f4c0a-2a13-418f-ae91-37dce8de0618
+      version: -1
+      name: Finish Remediation
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2383
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 1a666306-e447-47f0-87ec-30b013ac2c61
+    type: condition
+    task:
+      id: 1a666306-e447-47f0-87ec-30b013ac2c61
+      version: -1
+      name: Check if the DLL is suspicious
+      description: Check if the DLL is suspicious
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "22"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.action_module_sha256
+                      iscontext: true
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -75,
+          "y": 1573
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: 833d9702-6b62-4f11-911a-c0746f5f37bd
+    type: regular
+    task:
+      id: 833d9702-6b62-4f11-911a-c0746f5f37bd
+      version: -1
+      name: Check tf the DLL file is quarantined
+      description: Retrieves the quarantine status for a selected file.
+      script: '|||core-get-quarantine-status'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    scriptarguments:
+      endpoint_id:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${Core.OriginalAlert.event.action_module_sha256}
+      file_path:
+        simple: ${Core.OriginalAlert.event.action_module_path}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -327,
+          "y": 1709
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: e712a60e-f009-4311-af14-986b24fb3fd3
+    type: title
+    task:
+      id: e712a60e-f009-4311-af14-986b24fb3fd3
+      version: -1
+      name: Terminate CGO
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "32"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: fda7c0c4-cde6-4cf4-9aee-eed0ca3a7b0f
+    type: title
+    task:
+      id: fda7c0c4-cde6-4cf4-9aee-eed0ca3a7b0f
+      version: -1
+      name: Quarentine DLL
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -75,
+          "y": 1455
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: b9c45396-8722-44cc-9345-c8a6332b390c
+    type: condition
+    task:
+      id: b9c45396-8722-44cc-9345-c8a6332b390c
+      version: -1
+      name: Should quarantine the file?
+      description: Determines whether to quarantine the files based on their quarantine status and the successful calculation of the file hash.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "20"
+      "yes":
+      - "29"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              complex:
+                root: Core.quarantineFiles.status
+                accessor: status
+            iscontext: true
+          right:
+            value:
+              simple: "false"
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.action_module_path
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -327,
+          "y": 1877
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 26dc1ece-ee12-4ef3-b745-6fe9e898a2b6
+    type: regular
+    task:
+      id: 26dc1ece-ee12-4ef3-b745-6fe9e898a2b6
+      version: -1
+      name: File quarantine
+      description: Quarantines a file on selected endpoints.
+      script: '|||core-quarantine-files'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "30"
+      '#none#':
+      - "20"
+    scriptarguments:
+      endpoint_id_list:
+        simple: ${alert.agentid}
+      file_hash:
+        simple: ${Core.OriginalAlert.event.action_module_sha256}
+      file_path:
+        simple: ${Core.OriginalAlert.event.action_module_path}
+      interval_in_seconds:
+        simple: "20"
+      timeout_in_seconds:
+        simple: "120"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": -327,
+          "y": 2062
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 19c11eb0-6ff8-4954-b194-ca1d3f6a22bb
+    type: regular
+    task:
+      id: 19c11eb0-6ff8-4954-b194-ca1d3f6a22bb
+      version: -1
+      name: Manual action needed – DLL file couldn't be quarantined
+      description: |-
+        Dear Analyst,
+
+        The playbook was unable to quarantine the Office file due to the following possible reasons:
+
+        - The DLL file is not located on the local host.
+        - The endpoint is currently disconnected.
+        - The DLL is loaded and can't be quarantined while running.
+
+
+        Please take manual action to terminate the causality process if needed and quarantine the DLL file.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -650,
+          "y": 2200
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: 6efc7580-059b-4210-bf4d-77d72b742139
+    type: title
+    task:
+      id: 6efc7580-059b-4210-bf4d-77d72b742139
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2654
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: bc834d8d-0b2a-494e-8176-c2d063a6775f
+    type: regular
+    task:
+      id: bc834d8d-0b2a-494e-8176-c2d063a6775f
+      version: -1
+      name: Terminate Causality (CGO)
+      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      script: '|||core-terminate-causality'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#error#':
+      - "33"
+      '#none#':
+      - "20"
+    scriptarguments:
+      agent_id:
+        simple: ${alert.agentid}
+      causality_id:
+        simple: ${alert.cid}
+      timeout_in_seconds:
+        simple: "180"
+    separatecontext: false
+    continueonerror: true
+    continueonerrortype: errorPath
+    view: |-
+      {
+        "position": {
+          "x": 449,
+          "y": 1573
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: c46c0891-918b-414a-85a6-cb04b41ee79b
+    type: regular
+    task:
+      id: c46c0891-918b-414a-85a6-cb04b41ee79b
+      version: -1
+      name: Terminate Causality Process Manually
+      description: |
+        Dear Analyst,
+
+        During the remediation process, the playbook failed to terminate the causality process: ${alert.cgoname}
+        Please investigate this before closing this alert.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "20"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 207,
+          "y": 1709
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: cfb25cfb-59c6-471b-b7bf-5cfe5ebebd6e
+    type: regular
+    task:
+      id: cfb25cfb-59c6-471b-b7bf-5cfe5ebebd6e
+      version: -1
+      name: Search related alerts by causality chain
+      description: |-
+        This task searches using the causality process chain for suspicious related alerts that may indicate a compromised endpoint.
+        Focus on identifying the following alerts below:
+
+        - Regsvr32 may have run code from an untrusted source
+        - Process calls ActiveX Object with a shell command
+        - Command-line arguments match Mimikatz execution
+        - Unicode RTL Override Character
+        - Screensaver process executed from Users or temporary folder by a scripting engine process
+        - Unsigned and unpopular process performed a DLL injection
+        - Unsigned and unpopular process performed queue APC injection
+        - Unsigned and unpopular process performed an injection
+        - Unsigned and unpopular process performed process hollowing injection
+        - Unsigned and unpopular process performed a DLL injection to a commonly abused process
+        - Unsigned and unpopular process performed injection into a commonly abused process
+        - Uncommon Service Create/Config
+        - Unsigned and unpopular process injected into a commonly abused process
+        - Unsigned process injects code into a process
+        - New service created via command line
+        - PowerShell is used to execute a CPL file
+        - Task scheduled by commonly abused host process
+        - Unsigned process running from a temporary directory
+        - Suspicious file created in AppData directory
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      includeinformational:
+        simple: "true"
+      query:
+        simple: "(\ncid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.cid.[0]} or \nactionprocessinstanceid:${alert.cid.[0]} or \nactorprocessinstanceid:${alert.actorprocessinstanceid.[0]} or \nactionprocessinstanceid:${alert.actorprocessinstanceid.[0]}\n)  \nAND \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver process executed from Users or temporary folder by a scripting engine process\" OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed queue APC injection\" OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned and unpopular process performed a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and unpopular process performed injection into a commonly abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned process injects code into a process\" OR \nname:\"New service created via command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Suspicious file created in AppData directory\" \n)"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1184,
+          "y": 914
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: 59ad4f2f-5910-42fd-9528-3d89cfccc620
+    type: regular
+    task:
+      id: 59ad4f2f-5910-42fd-9528-3d89cfccc620
+      version: -1
+      name: Extract the DLL's extension.
+      description: Extract the DLL's extension.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      append:
+        simple: "true"
+      key:
+        simple: dll_extension
+      value:
+        complex:
+          root: Core.OriginalAlert.event
+          accessor: action_module_name
+          transformers:
+          - operator: RegexExtractAll
+            args:
+              error_if_no_match: {}
+              ignore_case: {}
+              multi_line: {}
+              period_matches_newline: {}
+              regex:
+                value:
+                  simple: \.(\w+)$
+              unpack_matches: {}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1076,
+          "y": -102
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "37":
+    id: "37"
+    taskid: f2d21693-23e8-4b3c-93f8-6de3abab3a82
+    type: condition
+    task:
+      id: f2d21693-23e8-4b3c-93f8-6de3abab3a82
+      version: -1
+      name: Check if the fuzzyhash is not similar
+      description: Remove False Positives in case the CGO signer is similar to the Company name in the DLL's attribute (excluding Microsoft Corporation).
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "11"
+      False Positive:
+      - "17"
+    separatecontext: false
+    conditions:
+    - label: False Positive
+      condition:
+      - - operator: greaterThan
+          left:
+            value:
+              simple: StringSimilarity.SimilarityScore
+            iscontext: true
+          right:
+            value:
+              simple: "0.6"
+          ignorecase: true
+      - - operator: notContainsGeneral
+          left:
+            value:
+              simple: alert.cgosigner
+            iscontext: true
+          right:
+            value:
+              simple: Microsoft Corporation
+          ignorecase: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: alert.cgosigner
+            iscontext: true
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.action_module_file_info.company
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 864,
+          "y": 797
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "38":
+    id: "38"
+    taskid: 03ef479b-34a4-4e0c-b8f4-8f05873ec41a
+    type: condition
+    task:
+      id: 03ef479b-34a4-4e0c-b8f4-8f05873ec41a
+      version: -1
+      name: 'Additional checks '
+      description: |-
+        The following condition must be met:
+        1. If the Host Risk score is Medium.
+
+        And one of these below:
+        2. The DLL extension is not a common one
+        3. The DLL Reputation is Suspicious.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "9"
+      Remediation:
+      - "39"
+    separatecontext: false
+    conditions:
+    - label: Remediation
+      condition:
+      - - operator: containsGeneral
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          right:
+            value:
+              simple: Medium
+      - - operator: notIn
+          left:
+            value:
+              simple: dll_extension
+            iscontext: true
+          right:
+            value:
+              simple: cpl,exe,pkg,ax,tmp,dll
+        - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Indicator
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.event.action_module_sha256
+                      iscontext: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "2"
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 803,
+          "y": 445
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "39":
+    id: "39"
+    taskid: 677a5241-91a2-4b3c-b423-e3780f35ecd7
+    type: title
+    task:
+      id: 677a5241-91a2-4b3c-b423-e3780f35ecd7
+      version: -1
+      name: Related Alerts
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "11"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1194
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "40":
+    id: "40"
+    taskid: 8cca1714-ab56-4271-9695-36564d4c026c
+    type: regular
+    task:
+      id: 8cca1714-ab56-4271-9695-36564d4c026c
+      version: -1
+      name: Close Alert - False Positive
+      description: commands.local.cmd.close.inv
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "31"
+    scriptarguments:
+      closeNotes:
+        simple: Resolved - Handled by the playbook "Rundll32.exe executes a rare unsigned module"
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1032,
+          "y": 2509
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "41":
+    id: "41"
+    taskid: f3a17e3b-76ab-4687-8ce5-251a15bc03f8
+    type: regular
+    task:
+      id: f3a17e3b-76ab-4687-8ce5-251a15bc03f8
+      version: -1
+      name: Search related alerts by Case ID
+      description: |-
+        This task searches within the same case for additional suspicious related alerts that may indicate a compromised endpoint.
+        Focus on identifying the following alerts below:
+
+        - Regsvr32 may have run code from an untrusted source
+        - Process calls ActiveX Object with a shell command
+        - Command-line arguments match Mimikatz execution
+        - Unicode RTL Override Character
+        - Screensaver process executed from Users or temporary folder by a scripting engine process
+        - Unsigned and unpopular process performed a DLL injection
+        - Unsigned and unpopular process performed queue APC injection
+        - Unsigned and unpopular process performed an injection
+        - Unsigned and unpopular process performed process hollowing injection
+        - Unsigned and unpopular process performed a DLL injection to a commonly abused process
+        - Unsigned and unpopular process performed injection into a commonly abused process
+        - Uncommon Service Create/Config
+        - Unsigned and unpopular process injected into a commonly abused process
+        - Unsigned process injects code into a process
+        - New service created via command line
+        - PowerShell is used to execute a CPL file
+        - Task scheduled by commonly abused host process
+        - Unsigned process running from a temporary directory
+        - Suspicious file created in AppData directory
+      scriptName: SearchAlertsV2
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      fromdate:
+        simple: 5 hours ago
+      includeinformational:
+        simple: "true"
+      query:
+        simple: "(\n${alert.parentXDRIncident=val.split('-')[1]})  \nAND \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver process executed from Users or temporary folder by a scripting engine process\" OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed queue APC injection\" OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned and unpopular process performed a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and unpopular process performed injection into a commonly abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned process injects code into a process\" OR \nname:\"New service created via command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Suspicious file created in AppData directory\" \n)"
+      todate:
+        simple: now
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1586,
+          "y": 914
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {
+      "10_39_Remediation": 0.17,
+      "16_11_Insights": 0.26,
+      "16_39_Alerts": 0.17,
+      "32_33_#error#": 0.5,
+      "37_11_#default#": 0.18,
+      "37_17_False Positive": 0.35,
+      "38_39_Remediation": 0.3,
+      "4_39_Remediation": 0.44,
+      "9_12_#default#": 0.29,
+      "9_37_Remediation": 0.44
+    },
+    "paper": {
+      "dimensions": {
+        "height": 3201,
+        "width": 2617,
+        "x": -650,
+        "y": -487
+      }
+    }
+  }
+inputs: []
+outputs: []
+tests:
+- No tests (auto formatted)
+fromversion: 8.8.0
+marketplaces:
+- marketplacev2
+- platform
