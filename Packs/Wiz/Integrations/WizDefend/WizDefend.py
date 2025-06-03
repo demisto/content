@@ -1055,10 +1055,10 @@ def build_incidents(detection):
 
     return {
         DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {})
-                            .get(WizApiVariables.RULE, {})
-                            .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
-                            + " - "
-                            + detection.get(WizApiVariables.ID),
+        .get(WizApiVariables.RULE, {})
+        .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
+        + " - "
+        + detection.get(WizApiVariables.ID),
         DemistoParams.OCCURRED: detection[WizApiVariables.CREATED_AT],
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),

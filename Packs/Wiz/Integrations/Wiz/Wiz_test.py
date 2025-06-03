@@ -1,9 +1,10 @@
 import copy
 import random
-from unittest.mock import patch
 
-import demistomock as demisto
 import pytest
+from unittest.mock import patch
+import demistomock as demisto
+
 from CommonServerPython import DemistoException
 
 integration_params = {
@@ -114,22 +115,8 @@ def test_get_issue(checkAPIerrors):
 
 test_get_resource_response = {
     "data": {
-        "graphSearch": {
-            "totalCount": 1,
-            "maxCountReached": False,
-            "pageInfo": {"endCursor": "1", "hasNextPage": False, "__typename": "PageInfo"},
-            "nodes": [
-                {
-                    "entities": [
-                        {
-                            "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
-                            "name": "i_am_an_id",
-                            "type": "VIRTUAL_MACHINE",
-                            "properties": {"blah": "lots_of_blah_here"},
-                        }
-                    ]
-                }
-            ],
+        "cloudResources": {
+            "nodes": [{"id": "16da9341-6c72-46ba-948c-f0c057643e60", "name": "test_name_vm", "type": "VIRTUAL_MACHINE"}]
         }
     }
 }
@@ -139,15 +126,63 @@ test_get_resource_response = {
 def test_get_resource_by_id(checkAPIerrors):
     from Wiz import get_resource
 
-    result_response = {
-        "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
-        "name": "i_am_an_id",
-        "type": "VIRTUAL_MACHINE",
-        "properties": {"blah": "lots_of_blah_here"},
-    }
-
     res = get_resource(resource_id="i_am_an_id", resource_name="")
-    assert res == result_response
+    assert res == test_get_resource_response
+
+
+test_get_resources_response = {
+    "data": {
+        "cloudResources": {
+            "nodes": [
+                {
+                    "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                    "name": "view",
+                    "type": "ACCESS_ROLE",
+                    "subscriptionId": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                    "subscriptionExternalId": "123456789",
+                    "graphEntity": {
+                        "id": "12345678-2222-3333-1111-ff5fa2ff7f78",
+                        "providerUniqueId": None,
+                        "name": "view",
+                        "type": "ACCESS_ROLE",
+                        "projects": [
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff1111"},
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff2222"},
+                            {"id": "12345678-2222-3333-1111-ff5fa2ff3333"},
+                        ],
+                        "firstSeen": "2025-02-12T21:03:10.981466Z",
+                        "lastSeen": "2025-03-24T00:01:31Z",
+                    },
+                }
+            ]
+        }
+    }
+}
+
+
+@patch("Wiz.checkAPIerrors", return_value=test_get_resources_response)
+def test_get_resources(checkAPIerrors):
+    from Wiz import get_resources
+
+    res = get_resources(
+        search="search",
+        entity_type="ACCESS_ROLE",
+        subscription_external_ids="123456789",
+        provider_unique_ids="12345678-2222-3333-1111-ff5fa2ff7f78",
+    )
+    assert res == test_get_resources_response
+
+
+def test_get_resources_wrong_input(capfd):
+    from Wiz import get_resources
+
+    with capfd.disabled():
+        res = get_resources(search=None, entity_type=None, subscription_external_ids=None, provider_unique_ids=None)
+        assert "You should pass (at least) one of the following parameters" in res
+        assert "search" in res
+        assert "entity_type" in res
+        assert "provider_unique_ids" in res
+        assert "subscription_external_ids" in res
 
 
 test_get_resource_response_search = {
@@ -406,7 +441,20 @@ VALID_RESPONSE_JSON = {
         },
         "graphSearch": {"nodes": [{"entities": [{"id": "test_id"}]}]},
         "issue": {"note": None, "control": {"query": "blabla"}, "status": "CRITICAL", "resolutionReason": "blabla reason"},
-        "projects": {"nodes": [{"projectOwners": "owner-test", "securityChampions": "champion-test"}]},
+        "projects": {
+            "nodes": [
+                {
+                    "id": "12345678-cfa4-5268-a6a9-987654321",
+                    "name": "test-test-test",
+                    "isFolder": True,
+                    "archived": False,
+                    "businessUnit": "R&D",
+                    "description": "test description",
+                    "projectOwners": [{"id": "project@test.io", "name": "Test Owner", "email": "test.owner@wiz.io"}],
+                    "securityChampions": [{"id": "champion@test.io", "name": "Test Champion", "email": "test.champion@wiz.io"}],
+                }
+            ]
+        },
         "cloudResources": {
             "nodes": [{"id": "test_id", "name": "test_name", "type": "test_type", "properties": {"test": "test"}}]
         },
@@ -489,8 +537,8 @@ def test_get_project_team(mocker, capfd):
     with capfd.disabled():
         mocker.patch("Wiz.checkAPIerrors", return_value=VALID_RESPONSE_JSON)
         project = get_project_team("test_project")
-        assert project["projectOwners"] == "owner-test"
-        assert project["securityChampions"] == "champion-test"
+        assert project[0]["projectOwners"][0]["name"] == "Test Owner"
+        assert project[0]["securityChampions"][0]["name"] == "Test Champion"
 
         mocker.patch("Wiz.checkAPIerrors", side_effect=DemistoException("demisto exception"))
         project = get_project_team("test_project")
@@ -630,7 +678,7 @@ test_clear_issue_note_response = {
 }
 
 test_clear_issue_note_fail_response = (
-    "Error details: Only the user who created the note, can delete it.\nCheck server.log file for additional information"
+    "Error details: Only the user who created the note, can delete it.\n" "Check server.log file for additional information"
 )
 
 
@@ -852,7 +900,7 @@ def test_generate_auth_urls_fed():
 
 
 def test_token_url():
-    from Wiz import AUTH0_PREFIX, COGNITO_PREFIX, generate_auth_urls
+    from Wiz import COGNITO_PREFIX, AUTH0_PREFIX, generate_auth_urls
 
     cognito_allowlist = [
         "auth.app.wiz.io/oauth/token",
@@ -887,7 +935,7 @@ def test_good_token(capfd, mocker):
         good_token = str(random.randint(1, 1000))
         mocker.patch("requests.post", return_value=mocked_requests_get({"access_token": good_token}, 200))
 
-        from Wiz import AUTH_DEFAULT, generate_auth_urls, get_token, set_authentication_endpoint
+        from Wiz import get_token, set_authentication_endpoint, generate_auth_urls, AUTH_DEFAULT
 
         set_authentication_endpoint("https://auth.wiz.io/oauth/token")
         res = get_token()
