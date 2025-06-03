@@ -1,6 +1,8 @@
 import demistomock as demisto
 from CommonServerPython import *
 import urllib3
+from dateutil import parser
+
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -159,6 +161,7 @@ class Client(BaseClient):
         If start_dt is more than 24 hours before end_dt, it will be adjusted to be exactly 24 hours before end_dt.
         If start_dt bigger or equal to end_dt return empty list.
         The API limit is 24 hours time interval.
+        Include both start and end time.
         Args:
             start_dt (datetime): start time.
             end_dt (datetime):   end time.
@@ -188,7 +191,7 @@ class Client(BaseClient):
         demisto.debug(f"Received {len(events)} audit logs from API.")
 
         add_fields_to_events(events, AUDIT)
-        events.sort(key=lambda ev: ev["_time"] or "")
+        events.sort(key=lambda ev: datetime.fromisoformat(ev["_time"].replace("Z", "+00:00")))
 
         return events
 
@@ -263,7 +266,11 @@ def fetch_events(
         )
         demisto.debug(f"Fetched {len(events)} events")
         if events:
-            events = events[: event_type.max_fetch]
+            # Dedup due to the API include start and end
+            if parse_iso_millis_z(events[0]["_time"]) == last_time:
+                events = events[1 : event_type.max_fetch + 1]
+            else:
+                events = events[: event_type.max_fetch]
             all_events.extend(events)
             last_run[event_type.name] = events[-1]["_time"]
         else:
@@ -326,19 +333,20 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     args = demisto.args()
     event_type_name = EVENT_TYPE[args.get("events_type_to_fetch", AUDIT.name)].name
+    if event_type_name == HEALTH_EVENT.name:
+        HEALTH_EVENT.url_suffix = "/rest/applications/1/problems/healthrule-violations"
     limit = int(args.get("limit", 50))
-    now = datetime.now()
-    end_date = args.get("end_date", "") or now.strftime(DATE_FORMAT)
-    end_dt = dateparser.parse(end_date) or now
-    start_date_dt = args.get("start_date", "") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
-
+    now = datetime.now(timezone.utc)
+    end_time = parser.parse(args.get("end_date", "")) if args.get("end_date", "") else now
+    start_time = parser.parse(args.get("start_date", "")) if args.get("start_date", "") else (now - timedelta(days=30))
+    demisto.debug(f"Get events from {start_time} to {end_time}")
     event_fetch_function = {
         AUDIT.name: client.get_audit_logs,
         HEALTH_EVENT.name: client.get_health_events,
     }
 
     fetch_func = event_fetch_function.get(event_type_name)  # type: ignore
-    events = fetch_func(start_date=start_date_dt, end_date=end_dt, limit=limit)  # type: ignore
+    events = fetch_func(start_time=start_time, end_time=end_time)  # type: ignore
     events = events[:limit]
     if argToBoolean(args.get("is_fetch_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
@@ -355,7 +363,6 @@ def parse_iso_millis_z(s: str) -> datetime:
     """
     Turn "2025-05-25T16:07:53.127Z" into a timezone-aware datetime.
     """
-    # replace the 'Z' with '+00:00' so fromisoformat can parse it
     return datetime.fromisoformat(s.replace("Z", "+00:00"))
 
 

@@ -90,12 +90,14 @@ script:
       name: limit
       defaultValue: 1000
       required: false
-    - description: 'Which events to fetch.'
+    - auto: PREDEFINED
+      description: 'Which events to fetch.'
       name: events_type_to_fetch
       predefined:
         - 'Audit'
         - 'Healthrule Violations Events'
-      defaultValue: 'Audit,Healthrule Violations Events'
+      defaultValue: 'Audit'
+      required: false
     - description: 'The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08.'
       name: start_date
       required: false
