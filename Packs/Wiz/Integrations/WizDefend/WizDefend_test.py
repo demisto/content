@@ -1499,7 +1499,7 @@ def test_build_incidents_no_rule_match(sample_detection_no_rule):
     """Test build_incidents with detection that has no rule match"""
     incident = build_incidents(sample_detection_no_rule)
 
-    assert incident["name"] == "No name - 12345678-1234-1234-1234-d25e16359c19"
+    assert incident["name"] == "Unknown Rule - 12345678-1234-1234-1234-d25e16359c19"
     assert incident["occurred"] == "2022-01-02T15:46:34Z"
     assert incident["severity"] == 3  # HIGH
     assert "rawJSON" in incident

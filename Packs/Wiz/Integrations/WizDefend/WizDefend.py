@@ -1053,12 +1053,12 @@ def build_incidents(detection):
     if detection is None:
         return {}
 
+    rule_name = detection.get(WizApiVariables.RULE_MATCH, {}).get(WizApiVariables.RULE, {}).get(WizApiVariables.NAME)
+
+    incident_name = f"{rule_name or 'Unknown Rule'} - {detection.get(WizApiVariables.ID, '')}"
+
     return {
-        DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {})
-        .get(WizApiVariables.RULE, {})
-        .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
-        + " - "
-        + detection.get(WizApiVariables.ID),
+        DemistoParams.NAME: incident_name,
         DemistoParams.OCCURRED: detection[WizApiVariables.CREATED_AT],
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),
