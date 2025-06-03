@@ -16,7 +16,7 @@ DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_LIMIT = 250
 API_MIN_FETCH = 10
 API_MAX_FETCH = 1000
-MAX_DAYS_FIRST_FETCH_DETECTIONS = 5
+MAX_DAYS_FIRST_FETCH_DETECTIONS = 2
 FETCH_INTERVAL_MINIMUM_MIN = 10
 FETCH_INTERVAL_MAXIMUM_MIN = 600
 DEFAULT_FETCH_BACK = "12 hours"
@@ -1055,10 +1055,10 @@ def build_incidents(detection):
 
     return {
         DemistoParams.NAME: detection.get(WizApiVariables.RULE_MATCH, {})
-        .get(WizApiVariables.RULE, {})
-        .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
-        + " - "
-        + detection.get(WizApiVariables.ID),
+                            .get(WizApiVariables.RULE, {})
+                            .get(WizApiVariables.NAME, f"No {WizApiVariables.NAME}")
+                            + " - "
+                            + detection.get(WizApiVariables.ID),
         DemistoParams.OCCURRED: detection[WizApiVariables.CREATED_AT],
         DemistoParams.RAW_JSON: json.dumps(detection),
         DemistoParams.SEVERITY: translate_severity(detection),
@@ -1565,15 +1565,26 @@ def validate_fetch_interval(fetch_interval):
     response = ValidationResponse.create_success()
     response.minutes_value = FETCH_INTERVAL_MINIMUM_MIN
 
-    if fetch_interval and fetch_interval >= FETCH_INTERVAL_MINIMUM_MIN:
-        response.minutes_value = fetch_interval
-        return response
+    if not fetch_interval:
+        error_msg = "Incidents Fetch Interval is required and cannot be empty."
+        return ValidationResponse.create_error(error_msg)
 
     error_msg = (
         f"Invalid Incidents Fetch Interval - It must be a valid integer "
         f"higher or equal than {FETCH_INTERVAL_MINIMUM_MIN}. Received {fetch_interval}."
     )
-    return ValidationResponse.create_error(error_msg)
+
+    try:
+        fetch_interval_int = int(fetch_interval)
+
+        if fetch_interval_int >= FETCH_INTERVAL_MINIMUM_MIN:
+            response.minutes_value = fetch_interval_int
+            return response
+        else:
+            return ValidationResponse.create_error(error_msg)
+
+    except (ValueError, TypeError):
+        return ValidationResponse.create_error(error_msg)
 
 
 def validate_incident_type(incident_type):
@@ -2820,6 +2831,7 @@ def main():
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
+        demisto.debug(f"Extracting parameters from integration settings: {params}")
 
         if command == "test-module":
             test_module()

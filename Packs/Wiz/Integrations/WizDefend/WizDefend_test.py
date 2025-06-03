@@ -2968,7 +2968,7 @@ def test_default_fetch_back_consistency(yaml_content):
     # Also check the additional info - update to match the actual text in additionalinfo
     additional_info = first_fetch_config.get("additionalinfo", "")
     assert (
-        "Maximum allowed is 5 days" in additional_info
+        "Maximum allowed is 2 days" in additional_info
     ), f"first_fetch additionalinfo doesn't mention the maximum days limit: {additional_info}"
 
 
