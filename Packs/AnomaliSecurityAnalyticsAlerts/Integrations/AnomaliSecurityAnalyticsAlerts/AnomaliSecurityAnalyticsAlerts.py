@@ -341,7 +341,7 @@ def fetch_incidents(client: Client) -> list:
 
         incident = {
             "name": f"Anomali Alert - {alert.get('uuid_', 'Unknown')}",
-            "occurred": datetime.fromtimestamp(int(raw_ts) // 1000, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+            "occurred": (int(raw_ts) // 1000).strftime(ISO_8601_FORMAT),
             "rawJSON": json.dumps(alert),
         }
         incidents.append(incident)
