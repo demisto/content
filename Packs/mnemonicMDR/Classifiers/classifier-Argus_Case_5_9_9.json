@@ -1,6 +1,7 @@
 {
     "brandName": "mnemonicMDR",
     "fromVersion": "5.5.0",
+    "type": "classification",
     "toVersion": "5.9.9",
     "version": -1,
     "id": "b8bcb3b6-2c60-4f0d-8e2b-2d90eb700445",
