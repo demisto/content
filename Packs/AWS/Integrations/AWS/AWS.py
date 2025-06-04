@@ -11,6 +11,22 @@ from boto3 import Session
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 
+def arg_to_bool_or_none(value):
+    """
+    Converts a value to a boolean or None.
+    
+    Args:
+        value: The value to convert to boolean or None.
+    
+    Returns:
+        bool or None: Returns None if the input is None, otherwise returns the boolean representation of the value
+        using the argToBoolean function.
+    """
+    if value is None:
+        return None
+    else:
+        return argToBoolean(value)
+  
 
 class AWSServices(StrEnum):
     S3 = 's3'
@@ -186,8 +202,43 @@ class EC2:
         if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
         else:
-            return CommandResults(readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}"
+            )
 
+    @staticmethod
+    def modify_instance_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """ 
+        Modify an EC2 instance attribute.
+        Args:
+            client (BotoClient): The boto3 client for EC2 service
+            args (Dict[str, Any]): Command arguments including instance attribute modifications
+
+        Returns
+            CommandResults: Results of the operation with success/failure message
+        """
+        def parse_security_groups(csv_list):
+            if csv_list is None:
+                return None
+            
+            security_groups_str = csv_list.replace(" ", "")
+            security_groups_list = security_groups_str.split(",")
+            return security_groups_list
+          
+        kwargs = {
+            'InstanceId': args.get('instance_id'),
+            'Attribute': args.get('attribute'),
+            'Value': args.get('value'),
+            'DisableApiStop': arg_to_bool_or_none(args.get('disable_api_stop')),
+            'Groups':  parse_security_groups(args.get('groups')),
+        }
+        remove_nulls_from_dictionary(kwargs)
+        response = client.modify_instance_attribute(**kwargs)
+        
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            return CommandResults(readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem}")    
+        raise DemistoException(f"Unexpected response from AWS - \n{response}")
 class EKS:
     service = AWSServices.EKS
     
@@ -315,6 +366,62 @@ class RDS:
             return CommandResults(readable_output=f"Error modifying DB cluster: {str(e)}")
     
     @staticmethod
+    def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Modifies attributes of an Amazon RDS DB Cluster snapshot.
+        Args:
+            client (BotoClient): The boto3 client for RDS service
+            args (Dict[str, Any]): Command arguments for snapshot attribute modification
+
+        Returns:
+            CommandResults: Results of the snapshot attribute modification operation
+        """
+        try:
+            kwargs = {
+                "DBClusterSnapshotIdentifier": args.get("db_cluster_snapshot_identifier"),
+                "AttributeName": args.get("attribute_name"),
+            }
+
+            # Optional parameters
+            if "values_to_add" in args:
+                kwargs["ValuesToAdd"] = argToList(args.get("values_to_add"))
+
+            if "values-to-remove" in args:
+                kwargs["ValuesToRemove"] = argToList(args.get("values_to_remove"))
+
+            remove_nulls_from_dictionary(kwargs)
+
+            response = client.modify_db_cluster_snapshot_attribute(**kwargs)
+
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                attributes = response.get("DBClusterSnapshotAttributesResult", {})
+
+                if attributes:
+                    readable_output = (
+                        f"Successfully modified DB cluster snapshot attribute for {args.get('db_cluster_snapshot_identifier')}"
+                    )
+                    readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
+                    readable_output += tableToMarkdown("", attributes)
+                    
+                return CommandResults(
+                    readable_output=readable_output,
+                    outputs_prefix="AWS.RDS.DBClusterSnapshotAttributes",
+                    outputs=attributes,
+                    outputs_key_field="DBClusterSnapshotIdentifier",
+                )
+            else:
+                return CommandResults(
+                    entry_type=EntryType.ERROR,
+                    readable_output=f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                )
+
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}"
+                )
+
+    @staticmethod
     def modify_db_instance_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Modifies an Amazon RDS DB Instance configuration.
@@ -328,27 +435,20 @@ class RDS:
         """
         try:
             kwargs = {
-                "DBInstanceIdentifier": args.get("db-instance-identifier"),
+                "DBInstanceIdentifier": args.get("db_instance_identifier"),
+                "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
+                "ApplyImmediately": arg_to_bool_or_none(args.get('apply_immediately')),
+                "AutoMinorVersionUpgrade": arg_to_bool_or_none(args.get('auto_minor_version_upgrade')),
+                "DeletionProtection": arg_to_bool_or_none(args.get('deletion_protection')),
+                "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get('enable_iam_database_authentication')),
+                "PubliclyAccessible": arg_to_bool_or_none(args.get('publicly_accessible')),
+                "CopyTagsToSnapshot": arg_to_bool_or_none(args.get('copy_tags_to_snapshot')),
+                "BackupRetentionPeriod": arg_to_bool_or_none(args.get('backup_retention_period')),
+                
             }
-
-            # Optional parameters
-            optional_params = {
-                "PubliclyAccessible": "publicly-accessible",
-                "CopyTagsToSnapshot": "copy-tags-to-snapshot",
-                "BackupRetentionPeriod": "backup-retention-period",
-                "EnableIAMDatabaseAuthentication": "enable-iam-database-authentication",
-                "DeletionProtection": "deletion-protection",
-                "AutoMinorVersionUpgrade": "auto-minor-version-upgrade",
-                "MultiAZ": "multi-az",
-                "ApplyImmediately": "apply-immediately",
-            }
-
-            for param, arg_name in optional_params.items():
-                if arg_name in args:
-                    kwargs[param] = argToBoolean(args[arg_name]) if param in optional_params else args[arg_name]
-
+            remove_nulls_from_dictionary(kwargs)
             response = client.modify_db_instance(**kwargs)
-
+   
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
                 readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
@@ -365,15 +465,52 @@ class RDS:
                 )
             else:
                 return CommandResults(
+                    entry_type=EntryType.ERROR,
                     readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
                 )
 
         except Exception as e:
-            return CommandResults(readable_output=f"Error modifying DB instance: {str(e)}")
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Error modifying DB instance: {str(e)}"
+                )
     
+    @staticmethod
+    def modify_db_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds or removes permission for the specified AWS account IDs to restore the specified DB snapshot.
         
-        
-        
+        Args:
+            client (BotoClient): The boto3 client for RDS service
+            args (Dict[str, Any]): Command arguments including snapshot identifier and attribute settings
+            
+        Returns:
+            CommandResults: Results of the operation with success/failure message
+        """
+        kwargs = {
+            "DBSnapshotIdentifier": args.get("db_snapshot_identifier"),
+            "AttributeName": args.get("attribute_name"),
+            "ValuesToAdd": argToList(args.get("values_to_add")) if "values_to_add" in args else None,
+            "ValuesToRemove": argToList(args.get("values_to_remove")) if "values_to_remove" in args else None,
+        }
+        remove_nulls_from_dictionary(kwargs)
+
+        response = client.modify_db_snapshot_attribute(**kwargs)
+
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            # Return the changed fields in the command results:
+            return CommandResults(
+                readable_output=f"Successfully modified DB snapshot attribute for {args.get('db_snapshot_identifier')}:\n{tableToMarkdown('Modified', kwargs)}"
+            )
+
+        else:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}"
+            )
+    
+    
+            
         
         
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
@@ -381,9 +518,13 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
+    "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,   
+    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,   
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,   
+    "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,   
 }
 
 def main():  # pragma: no cover
@@ -395,6 +536,7 @@ def main():  # pragma: no cover
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
 
+    # TODO - credentials = get_cloud_credentials(CloudTypes.GCP)
     credentials = {}
     
     aws_session: Session = Session(
@@ -406,11 +548,10 @@ def main():  # pragma: no cover
     
     try:
         if command == "test-module":
-            # Check permissions 
-            return_results("ok")
-            
+            # TODO - Check permissions 
+            return_results("ok")         
         elif command in COMMANDS_MAPPING:
-            service: str = AWSServices(command.split('-')[1])
+            service = AWSServices(command.split('-')[1])
             service_client: BotoClient = aws_session.client(service)
             return_results(
                 COMMANDS_MAPPING[command](service_client, args)
@@ -420,25 +561,6 @@ def main():  # pragma: no cover
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-
-    # try:
-    #     match command:
-    #         case "aws-s3-public-access-block-update":
-    #             return_results(put_public_access_block(aws_client, command_args))
-    #         case 'aws-iam-account-password-policy-get':
-    #             return_results(get_account_password_policy(aws_client, command_args))
-    #         case 'aws-iam-account-password-policy-update':
-    #             return_results(update_account_password_policy(aws_client, command_args))
-    #         case 'aws-ec2-instance-metadata-options-modify':
-    #             return_results(ec2_instance_metadata_options_modify(aws_client, command_args))
-
-    #         case 'test-module':
-    #             return_results(test_module(params, command_args))
-    #         case _:
-    #             raise NotImplementedError(f"Command {command} is not implemented")
-
-    # except Exception as e:
-    # return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover
