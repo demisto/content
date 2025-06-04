@@ -230,6 +230,8 @@ tasks:
                       iscontext: true
                     ignorecase: true
                 accessor: action
+                transformers:
+                - operator: uniq
             iscontext: true
           right:
             value:

@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.7.5a of NetQuest OMX.
 
 ## Configure NetQuest OMX in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | The IP of the 5G device using NetQuest OMX, formatted as https://X.X.X.X | True |
@@ -34,11 +33,12 @@ Uploads a .txt file with the address list to the appliance. The appliance tempor
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | The entry ID of the file to upload. | Required | 
+| entry_id | The entry ID of the file to upload. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-optimize
 
 ***
@@ -56,12 +56,12 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| NetQuest.AddressList.OverlappingAddresses | list | A list of overlapping addresses in the address list. | 
-| NetQuest.AddressList.OverlapsPresent | boolean | A boolean field that indicates whether overlapping IP address ranges are present in the address list. | 
-| NetQuest.AddressList.MergedAddresses | list | A list that contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set. | 
-| NetQuest.AddressList.MergesPresent | boolean | A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries. | 
-| NetQuest.AddressList.CountsBefore | Dictionary | A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied. | 
-| NetQuest.AddressList.CountsAfter | Dictionary | A dictionary that stores the number of occurrences of each IP address or address range after processing or modifications have been applied. | 
+| NetQuest.AddressList.OverlappingAddresses | list | A list of overlapping addresses in the address list. |
+| NetQuest.AddressList.OverlapsPresent | boolean | A boolean field that indicates whether overlapping IP address ranges are present in the address list. |
+| NetQuest.AddressList.MergedAddresses | list | A list that contains consolidated IP address ranges, combining overlapping or contiguous addresses into a unified set. |
+| NetQuest.AddressList.MergesPresent | boolean | A boolean field that indicates whether any address ranges in the list have been merged to eliminate overlaps or contiguous entries. |
+| NetQuest.AddressList.CountsBefore | Dictionary | A dictionary that stores the number of occurrences of each IP address or address range before any processing or modifications were applied. |
+| NetQuest.AddressList.CountsAfter | Dictionary | A dictionary that stores the number of occurrences of each IP address or address range after processing or modifications have been applied. |
 
 ### netquest-address-list-create
 
@@ -76,11 +76,12 @@ Creates a new address list.  This list will replace and override the old list en
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name for the new address list. | Required | 
+| name | The name for the new address list. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-rename
 
 ***
@@ -94,12 +95,13 @@ Renames an address list. This is only meant to change the name of the list. If y
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| new_name | The new name for an existing address list. | Required | 
-| existing_name | The name of the address list that you want to modify. | Required | 
+| new_name | The new name for an existing address list. | Required |
+| existing_name | The name of the address list that you want to modify. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### netquest-address-list-delete
 
 ***
@@ -113,11 +115,12 @@ Deletes the address list of the name provided.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | The name of the address list to delete. | Required | 
+| name | The name of the address list to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-events
 
 ***
@@ -131,8 +134,8 @@ Gets events from NetQuest OMX. Each event is a report for the specified statisti
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed. Possible values are: true, false. Default is false. | Required | 
-| statistic_types_to_fetch | Comma-separated list of statistic types to return. Default is Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats. | Required | 
+| should_push_events | When true, the integration creates Cortex XSIAM events. Otherwise, they will only be displayed. Possible values are: true, false. Default is false. | Required |
+| statistic_types_to_fetch | Comma-separated list of statistic types to return. Default is Metering Stats,Export Stats,Export Peaks FPS,Optimization Stats. | Required |
 
 #### Context Output
 

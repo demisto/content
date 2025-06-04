@@ -992,11 +992,18 @@ script:
     - name: attachCIDs
       description: A comma-separated list of CIDs to embed attachments within the email itself.
       isArray: true
+    - description: Whether to handle inline images in the HTML body. When set to 'True', inline images are extracted from the HTML body and attached to the email as an inline attachment object.
+      auto: PREDEFINED
+      predefined:
+      - 'True'
+      - 'False'
+      defaultValue: 'True'
+      name: handle_inline_image
     description: Replies to an email using EWS.
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: ews-auth-reset
     arguments: []
-  dockerimage: demisto/py3ews:5.5.1.2816493
+  dockerimage: demisto/py3ews:5.5.1.3540100
   isfetch: true
   script: ''
   subtype: python3

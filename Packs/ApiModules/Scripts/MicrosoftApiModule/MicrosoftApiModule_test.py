@@ -164,8 +164,33 @@ def retry_on_rate_limit_client(retry_on_rate_limit: bool):
             b'"error_codes": [700082], "timestamp": "2023-07-02 06:40:26Z", "trace_id": "test", "correlation_id": "test",'
             b' "error_uri": "https://login.microsoftonline.com/error?code=700082"}',
             400,
-            "invalid_grant. \nThe refresh token has expired due to inactivity.\nYou can run the ***command_prefix-auth-reset*** "
+            "invalid_grant. \nThe refresh token has expired due to inactivity.\xa0The token was issued on "
+            "2023-02-06T12:26:14.6448497Z and was inactive for 90.00:00:00.\nYou can run the ***command_prefix-auth-reset*** "
             "command to reset the authentication process.",
+        ),
+        (
+            b'{"error": "invalid_resource", "error_description": "AADSTS500011: The resource principal named '
+            b"https://security.microsoft.us was not found in the tenant named x Inc.. This can happen if the "
+            b"application has not been installed by the administrator of the tenant or consented to by any user "
+            b"in the tenant. You might have sent your authentication request to the wrong tenant. "
+            b"Trace ID: test Correlation ID: test "
+            b'Timestamp: 2025-02-26 14:27:01Z", "error_codes": [500011], "timestamp": "2025-02-26 14:27:01Z", '
+            b'"trace_id": "test", "correlation_id": "test", "error_uri": "https://login.microsoftonline.us/error?code=500011"}',
+            400,
+            "invalid_resource. \nThe resource principal named https://security.microsoft.us was not found in the tenant named x "
+            "Inc.. This can happen if the application has not been installed by the administrator of the tenant or consented "
+            "to by any user in the tenant. You might have sent your authentication request to the wrong tenant.",
+        ),
+        (
+            b'{"error": "invalid_client", "error_description": "AADSTS7000215: Invalid client secret provided. '
+            b"Ensure the secret being sent in the request is the client secret value, not the client secret ID, for a secret "
+            b"added to app 'c23324ec-b4a9-466d-9198-28d3efa07ee8'. Trace ID: 41b4a1eb-4fb9-4336-8e3f-fc1268861a00 "
+            b'Correlation ID: 8e6ff592-76ca-4312-9662-b5088e5fe5fe Timestamp: 2025-03-04 08:35:11Z", "error_codes": [500011], '
+            b'"timestamp": "2025-02-26 14:27:01Z", "trace_id": "test", "correlation_id": "test", "error_uri": '
+            b'"https://login.microsoftonline.us/error?code=500011"}',
+            400,
+            "invalid_client. \nInvalid client secret provided. Ensure the secret being sent in the request is the client secret "
+            "value, not the client secret ID, for a secret added to app 'c23324ec-b4a9-466d-9198-28d3efa07ee8'.",
         ),
     ],
 )

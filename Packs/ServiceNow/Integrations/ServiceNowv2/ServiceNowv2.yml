@@ -22,13 +22,35 @@ configuration:
   type: 8
   required: false
   section: Connect
+- additionalinfo: Select this checkbox to use JWT authentication. See (?) for more information.
+  display: Use JWT Authentication
+  name: use_jwt
+  type: 8
+  required: false
+  section: Connect
+- displaypassword: Private key
+  name: private_key
+  hiddenusername: true
+  type: 9
+  required: false
+  section: Connect
+- display: kid (Key Id)
+  name: kid
+  type: 0
+  required: false
+  section: Connect
+- display: sub
+  name: sub
+  type: 0
+  required: false
+  section: Connect
 - additionalinfo: 'The ticket type can be: incident, problem, change_request, sc_request, sc_task or sc_req_item.'
   defaultvalue: incident
   display: Default ticket type for running ticket commands and fetching incidents
   name: ticket_type
   type: 0
   required: false
-  section: Connect
+  section: Collect
 - display: ServiceNow API Version (e.g. 'v1')
   name: api_version
   type: 0
@@ -175,6 +197,7 @@ configuration:
   display: Timestamp field to query for updates as part of the mirroring flow
   name: update_timestamp_field
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
   defaultvalue: sys_updated_on
@@ -185,6 +208,7 @@ configuration:
   display: How many incidents to mirror incoming each time
   name: mirror_limit
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
   required: false
@@ -193,6 +217,7 @@ configuration:
   display: Custom Fields to Mirror
   name: custom_fields
   type: 12
+  advanced: true
   hidden:
   - marketplacev2
   required: false
@@ -202,6 +227,7 @@ configuration:
   display: Mirrored XSOAR Ticket closure method
   name: close_incident
   type: 15
+  advanced: true
   options:
   - None
   - closed
@@ -215,6 +241,7 @@ configuration:
   display: Mirrored XSOAR Ticket custom close state code
   name: server_close_custom_state
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
   required: false
@@ -223,6 +250,7 @@ configuration:
   display: Mirrored XSOAR Ticket custom close resolution code (overwrites the custom close state)
   name: server_custom_close_code
   type: 0
+  advanced: true
   hidden:
   - marketplacev2
   required: false
@@ -232,6 +260,7 @@ configuration:
   display: Mirrored ServiceNow Ticket closure method
   name: close_ticket_multiple_options
   type: 15
+  advanced: true
   options:
   - None
   - closed
@@ -243,6 +272,7 @@ configuration:
 - display: Mirrored ServiceNow Ticket custom close state code
   name: close_custom_state
   type: 0
+  advanced: true
   additionalinfo: Define how to close the mirrored tickets in ServiceNow with a custom state. Enter here the custom closure state code (should be an integer) to override the default closure method. If the closure code does not exist, the default code will be used instead.
   hidden:
   - marketplacev2
@@ -261,6 +291,7 @@ configuration:
   display: Mirror Existing Notes For New Fetched Incidents
   name: mirror_notes_for_new_incidents
   type: 8
+  advanced: true
   hidden:
   - marketplacev2
   required: false
@@ -288,6 +319,7 @@ configuration:
   additionalinfo: Use this parameter to determine how long backward to look in the search for incidents that were created before the last run time and did not match the query when they were created.
   name: look_back
   type: 0
+  advanced: true
   required: false
   section: Collect
 description: Use The ServiceNow IT Service Management (ITSM) solution to modernize the way you manage and deliver services to your users.
@@ -1886,7 +1918,7 @@ script:
       description: Ticket close code.
       type: string
 
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/auth-utils:1.0.0.3562326
   isfetch: true
   ismappable: true
   isremotesyncin: true
