@@ -1540,7 +1540,7 @@ class TestFetchFewAlerts:
         }
 
         self.services = ['threat_intel', 'compromised_cards', 'stealer_logs']
-        self.url = 'https://api.cyble.com'
+        self.url = 'https://test.com'
         self.token = 'test-api-token'
 
     def test_successful_fetch_basic(self):
@@ -1896,7 +1896,7 @@ class TestFormatIncidents:
                     'content': {
                         'Application': 'Firefox',
                         'Password': 'mypass',
-                        'URL': 'https://site.com',
+                        'URL': 'https://test.com',
                         'Username': 'testuser'
                     }
                 }
@@ -2072,8 +2072,8 @@ class TestClientMethods(unittest.TestCase):
     """Unit tests for Client class methods"""
 
     def setUp(self):
-        self.client = Client("https://api.cyble.com")
-        self.test_url = "https://api.cyble.com"
+        self.client = Client("https://test.com")
+        self.test_url = "https://test.com"
         self.test_headers = {"Authorization": "Bearer test"}
         self.test_api_key = "test_api_key_123"
         self.test_payload = {"key": "value"}
