@@ -3,10 +3,12 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 ## Configure CybelAngel in Cortex
 
 <~XSIAM>
+
 ## Required Modules
 - Account Takeover Protection module is required for Credentials watchlist events.
   
 - Domain Protection module is required for Domain events.
+  
 </~XSIAM>
 
 | **Parameter** | **Required** |
@@ -16,12 +18,15 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 | Client Secret | True |
 | Trust any certificate (not secure) | False |
 | Use system proxy settings | False |
+
 <~XSIAM>
+
 | Fetch events | True |
 | Event Types To Fetch | True |
 | The maximum number of report event per fetch | False |
 | The maximum number of Credential watchlist events per fetch | False |
 | The maximum number of Domain watchlist events  per fetch | False |
+
 </~XSIAM>
 
 
