@@ -687,7 +687,7 @@ tasks:
       - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").[0].Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").Probability
             iscontext: true
           right:
             value:
@@ -736,7 +736,7 @@ tasks:
       - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").[0].Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").Probability
             iscontext: true
           right:
             value:
