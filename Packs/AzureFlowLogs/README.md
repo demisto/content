@@ -10,14 +10,14 @@ This pack contains a beta Modeling Rule, which lets you process Network Traffic 
 Since the Modeling Rule's NTA logs mapping is considered as beta, it might not contain some of the fields that are available from the logs.
 We appreciate your feedback on the quality and usability of the Modeling Rule to help us identify issues, fix them, and continually improve.
  
-## This pack includes:
+## This pack includes
  
 Data normalization capabilities:
   * Modeling Rule XDM mapping for NSG Flow Logs that are ingested via the [Azure Network Watcher](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-network-flow-logs-from-Microsoft-Azure-Network-Watcher) integration on Cortex XSIAM.
   * Modeling Rule XDM mapping for NTA Flow Logs.
   * Parsing Rule timestamp ingestion.
-    * The ingested Azure Flow Logs can be queried in XQL Search using the *msft_azure_flowlogs_raw* dataset.
-  for the **NTAIpDetails** and **NTATopologyDetails** log types
+    * The ingested Azure Flow Logs can be queried in XQL Search using the msft_azure_flowlogs_raw dataset,
+  for the **NTAIpDetails** and **NTATopologyDetails** log types.
 ## Supported log categories
 | Log Type                    | Display Name                 |
 |:----------------------------|:--------------------------------------|
@@ -26,10 +26,12 @@ Data normalization capabilities:
  
 ### Supported Timestamp Formats:
 All of the supported log types support timestamp ingestion for the format **%Y-%m-%dT%H:%M:%E*SZ**. 
-* For NSG flow logs ingestion, timestamp parsing is done in the order of the following fields- startTime, time.
+* For NSG flow logs ingestion, timestamp parsing is done in the order of the following fields: startTime, time.
 * For NTA flow logs ingestion, timestamp parsing is with the following fields:
   * For NTAIpDetails, timestamp parsing is according to the FlowIntervalStartTime.
-  * For NTATopologyDetails, timestamp parsing is done in the order of the following fields- TimeProcessed, TimeGenerated.
+  * For NTATopologyDetails, timestamp parsing is done in the order of the following fields: TimeProcessed, TimeGenerated.
+
+
 
  
 ***
@@ -38,10 +40,17 @@ All of the supported log types support timestamp ingestion for the format **%Y-%
  
 ### NSG Flow Logs
 In order to send NSG Flow log to XSIAM, enable the Azure Network Watcher integration. 
-Please follow the [Ingest network flow logs from Microsoft Azure Network Watcher](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-network-flow-logs-from-Microsoft-Azure-Network-Watcher) for further instructions.
+For more information, see [Ingest network flow logs from Microsoft Azure Network Watcher](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-network-flow-logs-from-Microsoft-Azure-Network-Watcher).
 
 ### NTA Flow Logs
 In order to send NTA Flow Logs to XSIAM, enable the Azure Event Hub integration.
-Please follow the [Ingest Logs from Microsoft Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=kdBiMvtdaJTAWsaoShdYHQ) for further instructions.
+For more information, see [Ingest Logs from Microsoft Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=kdBiMvtdaJTAWsaoShdYHQ).
+
+Make sure the following fields are configured correctly for the integration:
+| Field                    | Value                 |
+|:----------------------------|:--------------------------------------|
+| Log Format  | Raw                            |
+| Vendor  |  MSFT                          |
+| Product  |  Azure                          |
 
 </~XSIAM>
