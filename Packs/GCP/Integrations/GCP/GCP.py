@@ -15,6 +15,7 @@ class GCPServices(Enum):
     STORAGE = ("storage", "v1")
     CONTAINER = ("container", "v1")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3")
+    IAM_V1 = ("iam", "v1")
     IAM_V2 = ("iam", "v2")
     CLOUD_IDENTITY = ("cloudidentity", "v1")
 
@@ -657,7 +658,7 @@ def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> Comm
     project_id = args.get("project_id")
     service_account_email = args.get("service_account_email")
 
-    iam = GCPServices.IAM_V2.build(creds)
+    iam = GCPServices.IAM_V1.build(creds)
 
     name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
 
@@ -820,6 +821,7 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
 
     Returns:
         str: 'ok' if permissions are sufficient, otherwise raises an error.
+        #  TODO ADD DECLAIMER THAT THE cloudidentity. CAN NOT BE CHECKED
     """
     project_id = args.get("project_id")
     if not project_id:
