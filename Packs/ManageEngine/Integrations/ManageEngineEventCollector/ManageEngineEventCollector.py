@@ -105,7 +105,8 @@ class Client(BaseClient):
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
         """
         Paginate through audit logs.
-        Events return in random order.
+        Logs return in random order from the API.
+        API include start_time and end_time.
 
         Args:
             start_time_ms: UNIX‐ms timestamp to start from.
@@ -138,9 +139,9 @@ class Client(BaseClient):
                 resp_type="json",
             )
 
-            events_page = response.get("messageResponse", []) if isinstance(response, dict) else []
+            events_page = response.get("messageResponse", [])
             status = response.get("status")
-            demisto.debug(f"Succesfully fetched {events_page} on page {page}")
+            demisto.debug(f"Successfully fetched {events_page} on page {page}")
             if status != "success":
                 demisto.debug(f"API returned status='{status}', stopping pagination.")
                 break
@@ -179,7 +180,7 @@ def test_module(client: Client) -> str:
 
 def get_events(client: Client, args: dict) -> CommandResults:
     """
-    manage-engine-get-events command
+    manage-engine-get-events command.
     """
     should_push = argToBoolean(args.get("should_push_events", "false"))
     limit = arg_to_number(args.get("limit")) or 10
@@ -224,23 +225,20 @@ def fetch_events(
     """
     now = datetime.now()
     now_ts = str(int(now.timestamp() * 1000))
-    last_time_ts = (last_run.get("last_time")) or str(int((now + timedelta(days=-30)).timestamp() * 1000))
+    last_time_ts = (last_run.get("last_time")) or str(int((now - timedelta(minutes=1)).timestamp() * 1000))
     demisto.debug(f"Last run time {last_time_ts}, {datetime.fromtimestamp(int(last_time_ts) / 1000)}")
     demisto.debug(f"now_ts run time {now_ts}, {datetime.fromtimestamp(int(now_ts) / 1000)}")
 
     events = client.search_events(start_time=last_time_ts, end_time=now_ts, limit=max_events_per_fetch)
     # Remove event who fetched twice
-    if events:
-        events = [ev for ev in events if ev.get("eventTime") != last_time_ts]
+    if events and events[0].get("eventTime") == last_time_ts:
+        events = events[1:]
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
-    max_timestamp = max((int(e["eventTime"]) for e in events), default=now_ts)
+    max_timestamp = events[-1]["eventTime"] if events else now_ts
     demisto.debug(f"Max timestamp {max_timestamp}")
     last_run = {"last_time": f"{max_timestamp}"}
     return last_run, events
-
-
-""" MAIN FUNCTION """
 
 
 def add_time_to_events(events: List[Dict] | None):
@@ -255,6 +253,9 @@ def add_time_to_events(events: List[Dict] | None):
         for event in events:
             dt = datetime.fromtimestamp(int(event.get("eventTime")) / 1000, tz=timezone.utc)  # type: ignore
             event["_time"] = dt.strftime(DATE_FORMAT)
+
+
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover

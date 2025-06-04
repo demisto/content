@@ -155,8 +155,8 @@ def test_fetch_events_dedup_one_event_updates_to_max(client, mocker):
     from ManageEngineEventCollector import fetch_events
 
     events = [
-        {"eventTime": "1002"},
         {"eventTime": "1001"},
+        {"eventTime": "1002"},
         {"eventTime": "1005"},
     ]
     mocker.patch.object(client, "search_events", return_value=events)
