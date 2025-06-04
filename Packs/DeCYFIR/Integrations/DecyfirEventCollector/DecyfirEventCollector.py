@@ -24,7 +24,7 @@ ASSETS_LOGS = "Assets Logs"
 DRK_LOGS = "Digital Risk Keywords Logs"
 EVENT_LOGS_API_SUFFIX = {
     ACCESS_LOGS: "access-logs",
-    ASSETS_LOGS: "asset-logs",
+    ASSETS_LOGS: "assets-logs",
     DRK_LOGS: "dr-keywords-logs"
 }
 
@@ -36,12 +36,11 @@ SOURCE_LOG_TYPES = {
 
 
 def get_timestamp_format(value):
-    timestamp: datetime
     if isinstance(value, int):
         return value
     if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)  # type: ignore
-    return int(time.mktime(timestamp.timetuple()))
+        value = dateparser.parse(value)  # type: ignore
+    return int(time.mktime(value.timetuple())) * 1000
 
 
 """ CLIENT CLASS """
@@ -91,6 +90,8 @@ class Client(BaseClient):
             if not response:
                 break
             events.extend(response)
+            if len(response) < PAGE_SIZE:
+                break
         return events
 
 
@@ -116,7 +117,7 @@ def time_field_mapping(event: dict, event_type: str) -> str | None:
     return arg_to_datetime(raw_time).strftime(DATE_FORMAT)
 
 
-def get_entry_status(event: dict) -> str | None:
+def set_entry_status(event: dict) -> str | None:
     """
     Determines if the entry is 'new' or 'modified' based on timestamps.
 
@@ -130,14 +131,12 @@ def get_entry_status(event: dict) -> str | None:
     modified_date = arg_to_datetime(event.get("modified_date"))
 
     if not created_date or not modified_date:
-        return None
+        return
 
     if modified_date == created_date:
-        return 'new'
+        event["_ENTRY_STATUS"] = 'new'
     if modified_date > created_date:
-        return 'modified'
-
-    return None
+        event["_ENTRY_STATUS"] = 'modified'
 
 
 def add_fields_to_events(events: list[dict], event_type: str) -> None:
@@ -153,10 +152,10 @@ def add_fields_to_events(events: list[dict], event_type: str) -> None:
         event["source_log_type"] = SOURCE_LOG_TYPES.get(event_type)
 
         if event_type in {ASSETS_LOGS, DRK_LOGS}:
-            event["_ENTRY_STATUS"] = get_entry_status(event)
+            set_entry_status(event)
 
 
-def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
+def test_module(client: Client, first_fetch_time, event_types_to_fetch, max_events_per_fetch) -> str:
     """
     Tests API connectivity and authentication
     When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
@@ -172,22 +171,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
         str: 'ok' if test passed, anything else will raise an exception and will fail the test.
     """
 
-    # try:
-    #     alert_status = params.get("alert_status", None)
-    #
-    #     fetch_events(
-    #         client=client,
-    #         last_run={},
-    #         first_fetch_time=first_fetch_time,
-    #         alert_status=alert_status,
-    #         max_events_per_fetch=1,
-    #     )
-    #
-    # except Exception as e:
-    #     if "Forbidden" in str(e):
-    #         return "Authorization Error: make sure API Key is correctly set"
-    #     else:
-    #         raise e
+    fetch_events(client, {}, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
 
     return "ok"
 
@@ -209,7 +193,7 @@ def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_f
 
     all_events = []
     hr = ""
-    after = get_timestamp_format(from_date)  # epoch timestamp in milliseconds
+    after = get_timestamp_format(from_date) if from_date else None  # epoch timestamp in milliseconds
     for event_type in event_types_to_fetch:
         events = client.search_events(
             event_type=event_type,
@@ -220,16 +204,17 @@ def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_f
             hr += tableToMarkdown(name=f"{event_type}", t=events)
             if should_add_fields:
                 add_fields_to_events(events, event_type=event_type)
-
             all_events.extend(events)
         else:
-            hr += f"No events found for {event_type}.\n"
+            hr += f"###  No events found for {event_type}.\n"
 
     return all_events, CommandResults(readable_output=hr)
+
 
 def increase_datetime_for_next_fetch(
     events: List[Dict],
     prev_dt: datetime,
+    next_dt,
     event_type: str
 ) -> Optional[str]:
     """
@@ -244,27 +229,32 @@ def increase_datetime_for_next_fetch(
     Returns:
         ISO 8601 datetime string for next fetch, or None if no dates found.
     """
+
     def extract_event_time(event: Dict) -> Optional[datetime]:
+
         if event_type == ACCESS_LOGS:
             raw_time = event.get("event_date")
         else:
             raw_time = event.get("created_date") or event.get("modified_date")
-        return arg_to_datetime(raw_time)
+        return arg_to_datetime(raw_time).replace(tzinfo=timezone.utc)
 
     # Extract all valid datetimes from events
+
     event_datetimes = [extract_event_time(e) for e in events]
     event_datetimes = [dt for dt in event_datetimes if dt is not None]
 
     # If no event datetimes and no previous datetime, return None
-    if not event_datetimes and prev_dt is None:
+    if not event_datetimes and prev_dt is None and next_dt is None:
         return None
 
+    next_dt = arg_to_datetime(next_dt)
+    next_dt = next_dt.replace(tzinfo=timezone.utc) if next_dt else None
     # Find the max datetime between current events and previous fetch
-    candidates = event_datetimes + ([prev_dt] if prev_dt else [])
+    candidates = event_datetimes + ([prev_dt] if prev_dt else []) + ([next_dt] if next_dt else [])
     latest_date_time = max(candidates)
 
     # Add 1 millisecond
-    next_fetch_time = latest_date_time + timedelta(milliseconds=1)
+    next_fetch_time = latest_date_time.replace(tzinfo=timezone.utc) + timedelta(milliseconds=1)
 
     return next_fetch_time.isoformat()
 
@@ -277,18 +267,20 @@ def fetch_events(client: Client, last_run: dict[str, int],
 
     for event_type in event_types_to_fetch:
         last_time = arg_to_datetime(last_run.get(event_type, None))
+        last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
         start_date = first_fetch_time if not last_time else last_time
         log_events = client.search_events(
             event_type=event_type,
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
             after=get_timestamp_format(start_date)
         )
-        next_run[event_type] = increase_datetime_for_next_fetch(events, start_date, event_type)
+        next_run[event_type] = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
         demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
         add_fields_to_events(log_events, event_type)
         events.extend(log_events)
 
     demisto.debug(f"Returning {len(events)} events in total")
+    demisto.debug(f"Returning next run {next_run}.")
     return next_run, events
 
 
@@ -308,7 +300,8 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().isoformat()
+    first_fetch_time = datetime.now() - timedelta(days=100)
+    first_fetch_time = first_fetch_time.replace(tzinfo=timezone.utc)
     proxy = params.get("proxy", False)
     event_types_to_fetch = [event_type.strip() for event_type in argToList(params.get("event_types_to_fetch", []))]
     max_events_per_fetch = {
@@ -323,7 +316,7 @@ def main() -> None:  # pragma: no cover
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            result = test_module(client, params, first_fetch_time)
+            result = test_module(client, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
             return_results(result)
 
         elif command == "decyfir-event-collector-get-events":
