@@ -683,7 +683,7 @@ class Client(BaseClient):
         self._headers.update({"As-User": validated_as_user})
         return self._http_request(method="DELETE", url_suffix=url_suffix, return_empty_response=True)
 
-    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None):
+    def list_events(self, as_user: str, stream_type: str, created_after: str = None, limit: int = None, event_type: list = None):
         """
         Lists the events which have occurred given the as_user argument/parameter. Same endpoint is
         used to also handle the enterprise logs as well.
@@ -692,6 +692,7 @@ class Client(BaseClient):
         :param stream_type: str - Indicates the type of logs to be retrieved.
         :param created_after: str - Is used the return only events created after the given time.
         :param limit: int - The maximum amount of events to return.
+        :param event_type: list - Event types to return.
         :return: dict - The results for the given logs query.
         """
         url_suffix = "/events/"
@@ -702,6 +703,8 @@ class Client(BaseClient):
             request_params.update({"created_after": created_after})
         if limit:
             request_params.update({"limit": limit})  # type:ignore
+        if event_type:
+            request_params.update({"event_type": event_type})
         return self._http_request(method="GET", url_suffix=url_suffix, params=request_params)
 
     def get_current_user(self, as_user: str):
@@ -1706,7 +1709,7 @@ def test_module(client: Client, params: dict, first_fetch_time: int) -> str:
 
 
 def fetch_incidents(
-    client: Client, max_results: int, last_run: dict, first_fetch_time: int, as_user: str
+    client: Client, max_results: int, last_run: dict, first_fetch_time: int, as_user: str, event_type: list = None
 ) -> tuple[str, list[dict]]:
     """
 
@@ -1715,13 +1718,18 @@ def fetch_incidents(
     :param last_run:
     :param first_fetch_time:
     :param as_user:
+    :param event_type:
     :return:
     """
     created_after = last_run.get("time", None)
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
-    results = client.list_events(stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after)
+    results = client.list_events(stream_type="admin_logs",
+                                 as_user=as_user,
+                                 limit=max_results,
+                                 created_after=created_after,
+                                 event_type=event_type)
     raw_incidents = results.get("entries", [])
     demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
     next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
@@ -1767,6 +1775,7 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "fetch-incidents":
             as_user = demisto.params().get("as_user", None)
+            event_type = argToList(demisto.params().get('event_type'))
             max_results = arg_to_int(arg=demisto.params().get("max_fetch"), arg_name="max_fetch")
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
@@ -1777,6 +1786,7 @@ def main() -> None:  # pragma: no cover
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 as_user=as_user,
+                event_type=event_type
             )
             demisto.setLastRun({"time": next_run})
             demisto.incidents(incidents)

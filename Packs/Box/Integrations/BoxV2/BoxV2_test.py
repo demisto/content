@@ -874,18 +874,20 @@ def test_fetch_incidents(requests_mock, mocker):
     max_results = 10
     last_run = {"time": "2015-10-21T04:29-8:00"}
     first_fetch_time = 1607935741
+    event_type = ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
 
     mock_response = util_load_json("test_data/events.json")
     expected_fetch_results = util_load_json("test_data/fetch_expected_response.json")
 
     requests_mock.get("https://api.box.com/2.0/events/", json=mock_response)
 
-    response = fetch_incidents(client, max_results, last_run, first_fetch_time, as_user)
+    response = fetch_incidents(client, max_results, last_run, first_fetch_time, as_user, event_type)
 
     assert requests_mock.request_history[0].headers.get("As-User") == "sample_current_user"
     assert requests_mock.request_history[0].headers.get("Authorization") == "Bearer JWT_TOKEN"
     assert requests_mock.request_history[0].qs.get("stream_type") == ["admin_logs"]
     assert requests_mock.request_history[0].qs.get("created_after") == ["2015-10-21t04:29-8:00"]
+    assert requests_mock.request_history[0].qs.get("event_type") == ["FILE_MARKED_MALICIOUS", "FILE_MARKED_MALICIOUS2"]
 
     assert response[0] > "2015-10-21T04:29-8:00"
     assert response[1] == expected_fetch_results
