@@ -716,7 +716,7 @@ def test_client_reply_email(mocker, mock_account, msg_type):
     reply_cc = ["cc_recipient@example.com"]
     reply_bcc = []
     message = client.reply_email(
-        in_reply_to=MSG_ID,
+        in_reply_to=msg_type,
         to=reply_to,
         body=reply_body,
         subject="",
