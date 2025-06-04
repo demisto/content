@@ -154,6 +154,9 @@ def test_module(client: Client) -> str:
     try:
         client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
     except DemistoException as exc:
+        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+            return "ok"
+
         if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
             return "Authorization Error: invalid `API Token`"
 
