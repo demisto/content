@@ -3,7 +3,6 @@ This integration was integrated and tested with version 3.1.4 of rapid7_threat_c
 
 ## Configure Rapid7 - Threat Command (IntSights) in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL | URL of the Rapid7 platform. | True |
@@ -25,7 +24,6 @@ This integration was integrated and tested with version 3.1.4 of rapid7_threat_c
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
@@ -44,42 +42,42 @@ List cyber terms by filter.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | Filter by free text, which can be the cyber term name or ID. | Optional | 
-| types | A comma-separated list of cyber term types by which to filter the results. For example: ThreatActor,Campaign. Possible values are: Threat Actor, Malware, Campaign. | Optional | 
-| severities | A comma-separated list of cyber term severities by which to filter the results. For example: High,Low. Possible values are: High, Medium, Low. | Optional | 
-| sectors | A comma-separated list of targeted sectors by which to filter the results. For example: Education,Government. | Optional | 
-| countries | A comma-separated list of targeted countries by which to filter the results. For example: Albania,Algeria. | Optional | 
-| origins | A comma-separated list of nationalities by which to filter the results. For example: Egypt,Iraq. | Optional | 
-| ttps | A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor. | Optional | 
-| last_update_from | Filter for results whose last update date is greater than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. Default value: Last year. | Optional | 
-| last_update_to | Filter for results whose last update date is less than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. | Optional | 
-| page | The page number of the results to retrieve (1-based). Default is 1. | Optional | 
-| page_size | The number of objects per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| search | Filter by free text, which can be the cyber term name or ID. | Optional |
+| types | A comma-separated list of cyber term types by which to filter the results. For example: ThreatActor,Campaign. Possible values are: Threat Actor, Malware, Campaign. | Optional |
+| severities | A comma-separated list of cyber term severities by which to filter the results. For example: High,Low. Possible values are: High, Medium, Low. | Optional |
+| sectors | A comma-separated list of targeted sectors by which to filter the results. For example: Education,Government. | Optional |
+| countries | A comma-separated list of targeted countries by which to filter the results. For example: Albania,Algeria. | Optional |
+| origins | A comma-separated list of nationalities by which to filter the results. For example: Egypt,Iraq. | Optional |
+| ttps | A comma-separated list of TTPs by which to filter the results. For example: Malware,Backdoor. | Optional |
+| last_update_from | Filter for results whose last update date is greater than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. Default value: Last year. | Optional |
+| last_update_to | Filter for results whose last update date is less than the given value (in ISO 8601 format). For example:  2022-12-25T08:38:06Z. | Optional |
+| page | The page number of the results to retrieve (1-based). Default is 1. | Optional |
+| page_size | The number of objects per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.CyberTerm.id | String | The ID of the cyber term. | 
-| ThreatCommand.CyberTerm.type | String | The type of the cyber term. | 
-| ThreatCommand.CyberTerm.name | String | Name of the cyber term. | 
-| ThreatCommand.CyberTerm.severity | String | The severity of the cyber term. | 
-| ThreatCommand.CyberTerm.aliases | String | Aliases of the cyber term. | 
-| ThreatCommand.CyberTerm.target_countries | String | List of targeted countries. | 
-| ThreatCommand.CyberTerm.sectors | String | List of targeted sectors. | 
-| ThreatCommand.CyberTerm.origins | String | List of origin nationalities. | 
-| ThreatCommand.CyberTerm.created_date | Date | The date the cyber term was first reported. | 
-| ThreatCommand.CyberTerm.updated_date | Date | The date the cyber term was last updated. | 
-| ThreatCommand.CyberTerm.ttp | String | List of TTPs. | 
-| ThreatCommand.CyberTerm.overview | String | Overview of the cyber term. | 
-| ThreatCommand.CyberTerm.additional_information | String | Additional information about the cyber term. | 
-| ThreatCommand.CyberTerm.related_malware | String | Related malware names. | 
-| ThreatCommand.CyberTerm.related_threat_actor | String | Related threat actor names. | 
-| ThreatCommand.CyberTerm.related_campaigns | String | Related campaign names. | 
-| ThreatCommand.CyberTerm.MitreAttack.tactic | String | MITRE ATT&amp;CK tactic name related to the cyber term. | 
-| ThreatCommand.CyberTerm.MitreAttack.Techniques.name | String | MITRE ATT&amp;CK technique names. | 
-| ThreatCommand.CyberTerm.MitreAttack.Techniques.url | String | MITRE ATT&amp;CK technique URLs. | 
+| ThreatCommand.CyberTerm.id | String | The ID of the cyber term. |
+| ThreatCommand.CyberTerm.type | String | The type of the cyber term. |
+| ThreatCommand.CyberTerm.name | String | Name of the cyber term. |
+| ThreatCommand.CyberTerm.severity | String | The severity of the cyber term. |
+| ThreatCommand.CyberTerm.aliases | String | Aliases of the cyber term. |
+| ThreatCommand.CyberTerm.target_countries | String | List of targeted countries. |
+| ThreatCommand.CyberTerm.sectors | String | List of targeted sectors. |
+| ThreatCommand.CyberTerm.origins | String | List of origin nationalities. |
+| ThreatCommand.CyberTerm.created_date | Date | The date the cyber term was first reported. |
+| ThreatCommand.CyberTerm.updated_date | Date | The date the cyber term was last updated. |
+| ThreatCommand.CyberTerm.ttp | String | List of TTPs. |
+| ThreatCommand.CyberTerm.overview | String | Overview of the cyber term. |
+| ThreatCommand.CyberTerm.additional_information | String | Additional information about the cyber term. |
+| ThreatCommand.CyberTerm.related_malware | String | Related malware names. |
+| ThreatCommand.CyberTerm.related_threat_actor | String | Related threat actor names. |
+| ThreatCommand.CyberTerm.related_campaigns | String | Related campaign names. |
+| ThreatCommand.CyberTerm.MitreAttack.tactic | String | MITRE ATT&amp;CK tactic name related to the cyber term. |
+| ThreatCommand.CyberTerm.MitreAttack.Techniques.name | String | MITRE ATT&amp;CK technique names. |
+| ThreatCommand.CyberTerm.MitreAttack.Techniques.url | String | MITRE ATT&amp;CK technique URLs. |
 
 #### Command example
 
@@ -134,7 +132,6 @@ List cyber terms by filter.
 >|---|---|---|---|---|---|---|
 >| 6278d77884709631217f2ead | Curious Gorge | Medium | The Curious Gorge threat group was first reported by Google's Threat Analysis Group (TAG) in March 2022, amidst the Russo-Ukrainian War. The APT group, attributed to China’s Liberation Army Strategic Support Force (PLA SSF), targets government, military, logistics, and manufacturing organizations in Ukraine, Russia, and Central Asia. There is little information about Curious Gorge’s TTPs. <br/><br/>In March 2022, Curious Gorge was observed targeting government and military organizations in Ukraine, Russia, Kazakhstan, and Mongolia. <br/><br/>In May 2022, Google reported that Curious Gorge attacked multiple government organizations in Russia, including the Ministry of Foreign Affairs as well as Russian defense contractors, manufacturers, and a logistics company. <br/><br/>The attacks of a Chinese state-sponsored group against Russian entities are interesting, as the two countries are allies. It may reflect a possible shift in China's intelligence collection objectives amidst the Russo-Ukrainian War. | Kazakhstan,<br/>Mongolia,<br/>Russian Federation,<br/>Ukraine | Aerospace/Defense,<br/>Government,<br/>Manufacturing | The 2022 Russia-Ukraine Cyberwarfare |
 
-
 ### threat-command-cyber-term-cve-list
 
 ***
@@ -148,17 +145,17 @@ List cyber term CVEs by cyber term ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cyber_term_id | Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs). | Required | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_results | Show all results if True. Possible values are: true, false. | Optional | 
+| cyber_term_id | Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs). | Required |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_results | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.CVE.id | String | CVE ID. | 
-| ThreatCommand.CVE.publish_date | String | CVE publish date. | 
-| ThreatCommand.CVE.vendor_product | Number | CVE vendor product. | 
+| ThreatCommand.CVE.id | String | CVE ID. |
+| ThreatCommand.CVE.publish_date | String | CVE publish date. |
+| ThreatCommand.CVE.vendor_product | Number | CVE vendor product. |
 
 #### Command example
 
@@ -188,7 +185,6 @@ List cyber term CVEs by cyber term ID.
 >|---|---|---|
 >| CVE-2015-8562 | 2015-12-16T21:59:00.000Z | Joomla Joomla\! |
 
-
 ### threat-command-cyber-term-ioc-list
 
 ***
@@ -202,23 +198,23 @@ List cyber term IOCs by cyber term ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cyber_term_id | Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs). | Required | 
-| ioc_type | IOC types to include. Possible values are: Ip Addresses, Urls, Domains, Hashes, Emails. | Optional | 
-| page | The page number of the results to retrieve (1-based). Default is 1. | Optional | 
-| page_size | The number of objects per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| cyber_term_id | Cyber term unique ID (dependencies - use threat-command-cyber-term-list command to get all the cyber term IDs). | Required |
+| ioc_type | IOC types to include. Possible values are: Ip Addresses, Urls, Domains, Hashes, Emails. | Optional |
+| page | The page number of the results to retrieve (1-based). Default is 1. | Optional |
+| page_size | The number of objects per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.IOC.value | String | The value of the IOC. | 
-| ThreatCommand.IOC.type | String | The type of the IOC. | 
-| ThreatCommand.IOC.updated_date | String | The date the IOC was last updated. | 
-| ThreatCommand.IOC.status | String | The status of the IOC. | 
-| ThreatCommand.IOC.is_whitelisted | String | Whether the IOC is whitelisted. | 
-| ThreatCommand.IOC.severity | String | The severity of the IOC. | 
-| ThreatCommand.IOC.reporting_feeds | String | List of reporting feeds in which the value appears. | 
+| ThreatCommand.IOC.value | String | The value of the IOC. |
+| ThreatCommand.IOC.type | String | The type of the IOC. |
+| ThreatCommand.IOC.updated_date | String | The date the IOC was last updated. |
+| ThreatCommand.IOC.status | String | The status of the IOC. |
+| ThreatCommand.IOC.is_whitelisted | String | Whether the IOC is whitelisted. |
+| ThreatCommand.IOC.severity | String | The severity of the IOC. |
+| ThreatCommand.IOC.reporting_feeds | String | List of reporting feeds in which the value appears. |
 
 #### Command example
 
@@ -253,7 +249,6 @@ List cyber term IOCs by cyber term ID.
 >|---|---|---|---|
 >| 11bd2c9f9e2397c9a16e0990e4ed2cf0679498fe0fd418a3dfdac60b5c160ee5 | Hashes | false | 2022-11-17T11:13:28.000Z |
 
-
 ### threat-command-source-list
 
 ***
@@ -267,18 +262,18 @@ Gets lists of IOC document sources.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_results | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_results | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Source.id | String | Source ID. | 
-| ThreatCommand.Source.name | String | Source name. | 
-| ThreatCommand.Source.confidence_level | Number | Source confidence level. | 
-| ThreatCommand.Source.is_enable | Boolean | Whether the source is enabled. | 
-| ThreatCommand.Source.type | String | Source type. | 
+| ThreatCommand.Source.id | String | Source ID. |
+| ThreatCommand.Source.name | String | Source name. |
+| ThreatCommand.Source.confidence_level | Number | Source confidence level. |
+| ThreatCommand.Source.is_enable | Boolean | Whether the source is enabled. |
+| ThreatCommand.Source.type | String | Source type. |
 
 #### Command example
 
@@ -308,7 +303,6 @@ Gets lists of IOC document sources.
 >|---|---|---|---|
 >| 5b68306cf84f7c8696047fda | AlienVault OTX | 3 | IntelligenceFeed |
 
-
 ### threat-command-source-document-create
 
 ***
@@ -322,24 +316,24 @@ Adds a new IOC source document. At least one IOC is required.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Source name. | Required | 
-| description | Source description. | Required | 
-| confidence_level | Source confidence level. Possible values are: 1, 2, 3. | Required | 
-| share | Whether to share this source with all tenants (available for MSSP users only). Possible values are: true, false. | Optional | 
-| severity | Source severity level. Possible values are: High, Medium, Low. | Optional | 
-| tags | Comma-separated list of user tags for the document. | Optional | 
-| domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to add. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional | 
+| name | Source name. | Required |
+| description | Source description. | Required |
+| confidence_level | Source confidence level. Possible values are: 1, 2, 3. | Required |
+| share | Whether to share this source with all tenants (available for MSSP users only). Possible values are: true, false. | Optional |
+| severity | Source severity level. Possible values are: High, Medium, Low. | Optional |
+| tags | Comma-separated list of user tags for the document. | Optional |
+| domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to add. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Source.Files.id | String | Document source ID. | 
-| ThreatCommand.Source.Files.name | String | Document source name. | 
+| ThreatCommand.Source.Files.id | String | Document source ID. |
+| ThreatCommand.Source.Files.name | String | Document source name. |
 
 #### Command example
 
@@ -362,12 +356,11 @@ Adds a new IOC source document. At least one IOC is required.
 
 #### Human Readable Output
 
->### Source document successfully created.
+>### Source document successfully created
 
 >|Id|Name|
 >|---|---|
 >| 64538007a44a2f2d6740f6be | 2023test |
-
 
 ### threat-command-source-document-delete
 
@@ -382,7 +375,7 @@ Deletes an existing IOC source document.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source_id | The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type="Files" to get all the document source IDs). | Required | 
+| source_id | The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type="Files" to get all the document source IDs). | Required |
 
 #### Context Output
 
@@ -409,12 +402,12 @@ Create new IOCs to existing IOC source documents. At least one IOC is required.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| source_id | The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type="Files" to get all the document source IDs). | Required | 
-| domains | Comma-separated list of domain IOC values to create. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to create. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to create. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to create. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to create. For example: test@test.com. | Optional | 
+| source_id | The ID of the source document (dependencies - use threat-command-source-ioc-get command with  source_type="Files" to get all the document source IDs). | Required |
+| domains | Comma-separated list of domain IOC values to create. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to create. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to create. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to create. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to create. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -441,84 +434,84 @@ Gets IOC details by value or IOC's full enrichment data. While using the enrichm
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ioc_value | IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other filtering arguments are not relevant. . | Optional | 
-| page | The page number of the results to retrieve (1-based). Default is 1. | Optional | 
-| page_size | The number of objects per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| enrichment | Enrichment flag. Use True to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). . Possible values are: true, false. | Optional | 
-| interval_in_seconds | The interval in seconds between each poll. Relevant while enrichment=true. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Relevant while enrichment=true. Default is 600. | Optional | 
-| last_updated_from | Filter by last update date (IOC update date is greater than). For example:  2022-12-25T08:38:06Z. Required when ioc_value is not selected. | Optional | 
-| last_updated_to | Filter by last update date (IOC update date is less than). For example:  2022-12-25T08:38:06Z. | Optional | 
-| last_seen_from | Filter by last seen date (IOC last seen date is greater than). For example:  2022-12-25T08:38:06Z. | Optional | 
-| last_seen_to | Filter by last seen date (IOC last seen date is less than). For example:  2022-12-25T08:38:06Z. | Optional | 
-| first_seen_from | Filter by first seen date (IOC first seen date is greater than). For example:  2022-12-25T08:38:06Z. | Optional | 
-| first_seen_to | Filter by first seen date (IOC first seen date is less than). For example:  2022-12-25T08:38:06Z. | Optional | 
-| status | Filter by IOC status. Possible values are: Active, Retired. | Optional | 
-| type_list | Comma-separated list of IOC types to filter. For example: Urls,Domains. Possible values are: Ip Addresses, Urls, Domains, Hashes, Emails. | Optional | 
-| severity_list | Comma-separated list of IOC severities to filter. For example: Low,Medium. Possible values are: High, Medium, Low. | Optional | 
-| whitelisted | Filter by whitelist status. Possible values are: true, false. | Optional | 
-| source_ids | Comma-separated list of source IDs (dependencies - use threat-command-source-document-ioc-get command to get all the document source IDs). | Optional | 
-| kill_chain_phases | Comma-separated list of the phase of the Lockheed-Martin kills chain. For example: Delivery,Exploitation. Possible values are: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command and Control, Actions on Objective. | Optional | 
+| ioc_value | IOC value. Required when last_updated_from is not selected. Not supported for email addresses. While using this argument, all the other filtering arguments are not relevant. . | Optional |
+| page | The page number of the results to retrieve (1-based). Default is 1. | Optional |
+| page_size | The number of objects per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| enrichment | Enrichment flag. Use True to enrich the data about the IOC. Supported IOC types are: Domains, URLs, IP addresses and file hashes. While using this argument, all the other filtering arguments are not relevant (except ioc_value). . Possible values are: true, false. | Optional |
+| interval_in_seconds | The interval in seconds between each poll. Relevant while enrichment=true. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Relevant while enrichment=true. Default is 600. | Optional |
+| last_updated_from | Filter by last update date (IOC update date is greater than). For example:  2022-12-25T08:38:06Z. Required when ioc_value is not selected. | Optional |
+| last_updated_to | Filter by last update date (IOC update date is less than). For example:  2022-12-25T08:38:06Z. | Optional |
+| last_seen_from | Filter by last seen date (IOC last seen date is greater than). For example:  2022-12-25T08:38:06Z. | Optional |
+| last_seen_to | Filter by last seen date (IOC last seen date is less than). For example:  2022-12-25T08:38:06Z. | Optional |
+| first_seen_from | Filter by first seen date (IOC first seen date is greater than). For example:  2022-12-25T08:38:06Z. | Optional |
+| first_seen_to | Filter by first seen date (IOC first seen date is less than). For example:  2022-12-25T08:38:06Z. | Optional |
+| status | Filter by IOC status. Possible values are: Active, Retired. | Optional |
+| type_list | Comma-separated list of IOC types to filter. For example: Urls,Domains. Possible values are: Ip Addresses, Urls, Domains, Hashes, Emails. | Optional |
+| severity_list | Comma-separated list of IOC severities to filter. For example: Low,Medium. Possible values are: High, Medium, Low. | Optional |
+| whitelisted | Filter by whitelist status. Possible values are: true, false. | Optional |
+| source_ids | Comma-separated list of source IDs (dependencies - use threat-command-source-document-ioc-get command to get all the document source IDs). | Optional |
+| kill_chain_phases | Comma-separated list of the phase of the Lockheed-Martin kills chain. For example: Delivery,Exploitation. Possible values are: Reconnaissance, Weaponization, Delivery, Exploitation, Installation, Command and Control, Actions on Objective. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.IOC.value | String | IOC value. | 
-| ThreatCommand.IOC.type | String | IOC type. | 
-| ThreatCommand.IOC.Source.name | String | IOC source name \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Source.confindece_level | String | IOC source confidence level\(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.system_tags | String | IOC system tags \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.tags | String | IOC tags. | 
-| ThreatCommand.IOC.status | String | IOC status is determined based on how recently the IOC was last seen. \(Active/Retired\).The domain is active for 3 months, the Email address for 2 months, the File hash for 1 year, the IP address for 2 weeks, and the URL for 2 months. | 
-| ThreatCommand.IOC.is_known_ioc | Boolean | Whether the IOC is known \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.related_malware | String | Malware related to the IOC \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedThreatActors.value | String | Threat actors related to the IOC \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.related_campaign | String | Related campaign \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.first_seen | Date | IOC first seen date. | 
-| ThreatCommand.IOC.last_seen | Date | IOC last seen date. | 
-| ThreatCommand.IOC.update_seen | Date | IOC updated seen date \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.is_whitelisted | Boolean | Whether the IOC is whitelisted. | 
-| ThreatCommand.IOC.Severity.value | String | IOC severity value. | 
-| ThreatCommand.IOC.Severity.score | Number | IOC severity score. | 
-| ThreatCommand.IOC.Severity.origin | String | IOC severity origin \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.DnsRecord.value | String | IOC DNS recorded value \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.DnsRecord.type | String | IOC DNS recorded type \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.DnsRecord.first_resolved | Date | IOC DNS recorded first resolved \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.DnsRecord.last_resolved | Date | IOC DNS recorded last resolved \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.DnsRecord.count | String | IOC DNS record count \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.subdomains | String | IOC subdomain \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.History.status | String | History statuses \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.History.name_servers | String | History name servers \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Current.status | String | Current statuses \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Current.name_servers | String | Current name servers \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Resolution.resolved_ip_address | String | Resolved IP address \(Relevant to domain IOC\) \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Resolution.resolved_domain | String | Resolved domain \(Relevant to IP IOC\) \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.Resolution.reporting_sources | String | Reporting sources \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedHash.downloaded | String | Download hashes \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedHash.communicating | String | Communicating hashes \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedHashes.referencing | String | Referencing hashes \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.antivirus_scan_date | Date | Antivirus scan date \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.file_name | String | File name \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.file_type | String | File type \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.file_author | String | File author \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.file_description | String | File description \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.file_size | Number | File size \(the file size is shown in bytes\) \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.antivirus_detection_ratio | String | Antivirus detection ratio \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.antivirus_detected_engines | String | Antivirus-detected engines \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.AntivirusDetection.name | String | Detection name \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.AntivirusDetection.version | String | Detection version \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.AntivirusDetection.detected | Boolean | Whether the IOC is detected \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.AntivirusDetection.result | String | Detection result \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedHash.type | String | Hash type \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.RelatedHash.value | String | Hash value \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.ip_range | String | IOC IP range \(Relevant to enrichment only\). | 
-| ThreatCommand.IOC.last_update_date | Date | IOC last update date \(Relevant to search mode only\). | 
-| ThreatCommand.IOC.geo_location | String | Geo location code \(Relevant to search mode only\). | 
-| ThreatCommand.IOC.reportedFeeds.id | String | IOC reported feed ID \(Relevant to search mode only\). | 
-| ThreatCommand.IOC.reportedFeeds.name | String | IOC reported feed name \(Relevant to search mode only\). | 
-| ThreatCommand.IOC.reportedFeeds.confidence_level | Number | IOC reported feed confidence level \(Relevant to search mode only\). | 
+| ThreatCommand.IOC.value | String | IOC value. |
+| ThreatCommand.IOC.type | String | IOC type. |
+| ThreatCommand.IOC.Source.name | String | IOC source name \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Source.confindece_level | String | IOC source confidence level\(Relevant to enrichment only\). |
+| ThreatCommand.IOC.system_tags | String | IOC system tags \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.tags | String | IOC tags. |
+| ThreatCommand.IOC.status | String | IOC status is determined based on how recently the IOC was last seen. \(Active/Retired\).The domain is active for 3 months, the Email address for 2 months, the File hash for 1 year, the IP address for 2 weeks, and the URL for 2 months. |
+| ThreatCommand.IOC.is_known_ioc | Boolean | Whether the IOC is known \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.related_malware | String | Malware related to the IOC \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedThreatActors.value | String | Threat actors related to the IOC \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.related_campaign | String | Related campaign \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.first_seen | Date | IOC first seen date. |
+| ThreatCommand.IOC.last_seen | Date | IOC last seen date. |
+| ThreatCommand.IOC.update_seen | Date | IOC updated seen date \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.is_whitelisted | Boolean | Whether the IOC is whitelisted. |
+| ThreatCommand.IOC.Severity.value | String | IOC severity value. |
+| ThreatCommand.IOC.Severity.score | Number | IOC severity score. |
+| ThreatCommand.IOC.Severity.origin | String | IOC severity origin \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.DnsRecord.value | String | IOC DNS recorded value \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.DnsRecord.type | String | IOC DNS recorded type \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.DnsRecord.first_resolved | Date | IOC DNS recorded first resolved \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.DnsRecord.last_resolved | Date | IOC DNS recorded last resolved \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.DnsRecord.count | String | IOC DNS record count \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.subdomains | String | IOC subdomain \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.History.status | String | History statuses \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.History.name_servers | String | History name servers \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Current.status | String | Current statuses \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Current.name_servers | String | Current name servers \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Resolution.resolved_ip_address | String | Resolved IP address \(Relevant to domain IOC\) \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Resolution.resolved_domain | String | Resolved domain \(Relevant to IP IOC\) \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.Resolution.reporting_sources | String | Reporting sources \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedHash.downloaded | String | Download hashes \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedHash.communicating | String | Communicating hashes \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedHashes.referencing | String | Referencing hashes \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.antivirus_scan_date | Date | Antivirus scan date \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.file_name | String | File name \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.file_type | String | File type \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.file_author | String | File author \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.file_description | String | File description \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.file_size | Number | File size \(the file size is shown in bytes\) \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.antivirus_detection_ratio | String | Antivirus detection ratio \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.antivirus_detected_engines | String | Antivirus-detected engines \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.AntivirusDetection.name | String | Detection name \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.AntivirusDetection.version | String | Detection version \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.AntivirusDetection.detected | Boolean | Whether the IOC is detected \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.AntivirusDetection.result | String | Detection result \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedHash.type | String | Hash type \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.RelatedHash.value | String | Hash value \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.ip_range | String | IOC IP range \(Relevant to enrichment only\). |
+| ThreatCommand.IOC.last_update_date | Date | IOC last update date \(Relevant to search mode only\). |
+| ThreatCommand.IOC.geo_location | String | Geo location code \(Relevant to search mode only\). |
+| ThreatCommand.IOC.reportedFeeds.id | String | IOC reported feed ID \(Relevant to search mode only\). |
+| ThreatCommand.IOC.reportedFeeds.name | String | IOC reported feed name \(Relevant to search mode only\). |
+| ThreatCommand.IOC.reportedFeeds.confidence_level | Number | IOC reported feed confidence level \(Relevant to search mode only\). |
 
 #### Command example
 
@@ -575,7 +568,6 @@ Gets IOC details by value or IOC's full enrichment data. While using the enrichm
 >|---|---|---|---|---|---|---|
 >| test.com | Domains | Active | true | 85 | High | 2023-05-04T09:58:10.957Z |
 
-
 ### threat-command-ioc-tags-add
 
 ***
@@ -589,8 +581,8 @@ Adds user tags to IOCs. This enables you to classify IOCs and later search for a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| ioc_value | The IOC value. | Required | 
-| tag_values | Comma-separated list of tags to add (Tag can be any word). For example: "Example Tag","Regional Alert". | Required | 
+| ioc_value | The IOC value. | Required |
+| tag_values | Comma-separated list of tags to add (Tag can be any word). For example: "Example Tag","Regional Alert". | Required |
 
 #### Context Output
 
@@ -607,7 +599,7 @@ There is no context output for this command.
 ### threat-command-account-whitelist-update
 
 ***
-You can add an IOC to your user whitelist (even if it is already on the system whitelist). If you change your mind, you can then revert that decision to rely again on the system designation using the threat-command-account-whitelist-remove command. When an IOC is whitelisted, it will not be sent to integrated security to block. When an IOC is not whitelisted, it will be sent to integrated security devices to block. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required. 
+You can add an IOC to your user whitelist (even if it is already on the system whitelist). If you change your mind, you can then revert that decision to rely again on the system designation using the threat-command-account-whitelist-remove command. When an IOC is whitelisted, it will not be sent to integrated security to block. When an IOC is not whitelisted, it will be sent to integrated security devices to block. There is no indication of success or failure for this command. The user has to choose a correct and existing IOC. At least one IOC is required.
 
 #### Base Command
 
@@ -617,12 +609,12 @@ You can add an IOC to your user whitelist (even if it is already on the system w
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| is_whitelisted | The whitelist status for the IOCs. Add to the user whitelist - The IOCs will not be passed to integrated devices. Do not whitelist - The IOCs will be passed to integrated devices, even if the IOCs are on the system whitelist. . Possible values are: Add to the user whitelist, Do not whitelist. | Required | 
-| domains | Comma-separated list of domain IOC values to apply is_whitelisted to. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to apply is_whitelisted to. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to apply is_whitelisted to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to apply is_whitelisted to. For example: test@test.com. | Optional | 
+| is_whitelisted | The whitelist status for the IOCs. Add to the user whitelist - The IOCs will not be passed to integrated devices. Do not whitelist - The IOCs will be passed to integrated devices, even if the IOCs are on the system whitelist. . Possible values are: Add to the user whitelist, Do not whitelist. | Required |
+| domains | Comma-separated list of domain IOC values to apply is_whitelisted to. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to apply is_whitelisted to. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to apply is_whitelisted to. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to apply is_whitelisted to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to apply is_whitelisted to. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -649,11 +641,11 @@ Reverts IOC values to the system-default whitelist status. The ETP Suite automat
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domains | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: test@test.com. | Optional | 
+| domains | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to be reverted back to the system whitelist default. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of domain IOC values to be reverted back to the system whitelist default. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -680,11 +672,11 @@ Adds an IOC to an internal Remediation Blocklist. By sending the blocklist to se
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domains | Comma-separated list of domain IOC values to add to the Remediation blocklist. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC valuesto add to the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to add to the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add to the Remediation blocklist. For example: test@test.com. | Optional | 
+| domains | Comma-separated list of domain IOC values to add to the Remediation blocklist. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to add to the Remediation blocklist. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC valuesto add to the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to add to the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to add to the Remediation blocklist. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -711,11 +703,11 @@ Removes IOC values from the Remediation blocklist. There is no indication of suc
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domains | Comma-separated list of domain IOC values to remove from the Remediation blocklist. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to remove from the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to remove from the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: test@test.com. | Optional | 
+| domains | Comma-separated list of domain IOC values to remove from the Remediation blocklist. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to remove from the Remediation blocklist. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to remove from the Remediation blocklist. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to remove from the Remediation blocklist. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to remove from the Remediation blocklist. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -742,12 +734,12 @@ Changes the severity of existing IOCs for the requester account (overrides the s
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| severity | The severity of the IOCs. Possible values are: High, Medium, Low. | Required | 
-| domains | Comma-separated list of domain IOC values to update the severity. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to update the severity. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to update the severity. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to update the severity. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to update the severity. For example: test@test.com. | Optional | 
+| severity | The severity of the IOCs. Possible values are: High, Medium, Low. | Required |
+| domains | Comma-separated list of domain IOC values to update the severity. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to update the severity. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to update the severity. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to update the severity. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to update the severity. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -774,12 +766,12 @@ Adds comments to IOCs. At least one IOC is required.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| comment | The comment to add. | Required | 
-| domains | Comma-separated list of domain IOC values to add the comment to. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add the comment to. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to add the comment to. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| hashes | Comma-separated list of hash IOC values to add the comment to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional | 
-| emails | Comma-separated list of email IOC values to add the comment to. For example: test@test.com. | Optional | 
+| comment | The comment to add. | Required |
+| domains | Comma-separated list of domain IOC values to add the comment to. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to add the comment to. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to add the comment to. For example: 8.8.8.8,1.2.3.4. | Optional |
+| hashes | Comma-separated list of hash IOC values to add the comment to. For example: 8100f3d2668f0f61e6c7ea0dfda59458111238dfeeb9bf47d9fa7543abfb6fb7. | Optional |
+| emails | Comma-separated list of email IOC values to add the comment to. For example: test@test.com. | Optional |
 
 #### Context Output
 
@@ -830,12 +822,11 @@ There is no context output for this command.
 
 #### Human Readable Output
 
->### Current API enrichment credits (quota).
+>### Current API enrichment credits (quota)
 
 >|Time Period|Total|Remaining|
 >|---|---|---|
 >| 2023-05-04 | 50 | 43 |
-
 
 ### threat-command-alert-list
 
@@ -850,56 +841,56 @@ Get a list of alerts with all details.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Optional | 
-| page | The page number of the results to retrieve (1-based). Default is 1. | Optional | 
-| page_size | The number of objects per page. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| retrieve_ids_only | Retrieve alert IDs only. Set to False in order to get the alerts with complete data details, and set to True in order to get a list of alerts. Possible values are: true, false. | Optional | 
-| last_updated_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. Default is 1970-01-01T00:00:00.000Z. | Optional | 
-| alert_type | Alert's type. Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional | 
-| severity | Comma-separated list of alert severities. For example:High,Medium. Possible values are: High, Medium, Low. | Optional | 
-| source_type | Comma-separated list of alert source types. For example:Others,Markets. Possible values are: Application Stores, Black Markets, Hacking Forums, Social Media, Paste Sites, Others. | Optional | 
-| network_type | Comma-separated list of alert network types. For example:Clear Web,Dark Web. Possible values are: Clear Web, Dark Web. | Optional | 
-| matched_asset_value | Comma-separated list of alert matched assets. | Optional | 
-| last_updated_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional | 
-| source_date_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. | Optional | 
-| source_date_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional | 
-| found_date_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. | Optional | 
-| found_date_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional | 
-| assigned | Show assigned/unassigned alerts. Possible values are: true, false. | Optional | 
-| is_flagged | Show flagged/unflagged alerts. Possible values are: true, false. | Optional | 
-| is_closed | Show closed/open alerts. Possible values are: true, false. | Optional | 
-| has_ioc | Show alerts with IOC results. Possible values are: true, false. | Optional | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Optional |
+| page | The page number of the results to retrieve (1-based). Default is 1. | Optional |
+| page_size | The number of objects per page. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| retrieve_ids_only | Retrieve alert IDs only. Set to False in order to get the alerts with complete data details, and set to True in order to get a list of alerts. Possible values are: true, false. | Optional |
+| last_updated_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. Default is 1970-01-01T00:00:00.000Z. | Optional |
+| alert_type | Alert's type. Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional |
+| severity | Comma-separated list of alert severities. For example:High,Medium. Possible values are: High, Medium, Low. | Optional |
+| source_type | Comma-separated list of alert source types. For example:Others,Markets. Possible values are: Application Stores, Black Markets, Hacking Forums, Social Media, Paste Sites, Others. | Optional |
+| network_type | Comma-separated list of alert network types. For example:Clear Web,Dark Web. Possible values are: Clear Web, Dark Web. | Optional |
+| matched_asset_value | Comma-separated list of alert matched assets. | Optional |
+| last_updated_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional |
+| source_date_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. | Optional |
+| source_date_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional |
+| found_date_from | Start date to fetch from. For example:  2022-12-25T08:38:06Z. | Optional |
+| found_date_to | End date to fetch to. For example:  2022-12-25T08:38:06Z. | Optional |
+| assigned | Show assigned/unassigned alerts. Possible values are: true, false. | Optional |
+| is_flagged | Show flagged/unflagged alerts. Possible values are: true, false. | Optional |
+| is_closed | Show closed/open alerts. Possible values are: true, false. | Optional |
+| has_ioc | Show alerts with IOC results. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.assets.type | Date | Asset type. | 
-| ThreatCommand.Alert.assets.value | String | Asset value. | 
-| ThreatCommand.Alert.assignees | String | Assignees list. | 
-| ThreatCommand.Alert.type | String | Alert type list. | 
-| ThreatCommand.Alert.sub_type | String | Alert sub type. | 
-| ThreatCommand.Alert.title | String | Alert title. | 
-| ThreatCommand.Alert.description | String | Alert description. | 
-| ThreatCommand.Alert.severity | String | Alert severity. | 
-| ThreatCommand.Alert.images | String | Alert images list. | 
-| ThreatCommand.Alert.source_type | String | Alert type. | 
-| ThreatCommand.Alert.source_url | String | Alert URL source. | 
-| ThreatCommand.Alert.source_email | String | Alert email source. | 
-| ThreatCommand.Alert.source_network_type | String | Alert network type. | 
-| ThreatCommand.Alert.source_date | Date | Alert date. | 
-| ThreatCommand.Alert.Tags.created_by | String | Alert tag creator. | 
-| ThreatCommand.Alert.Tags.name | String | Alert tag name. | 
-| ThreatCommand.Alert.Tags.id | String | Alert tag ID. | 
-| ThreatCommand.Alert.related_iocs | String | Alert related IOC list. | 
-| ThreatCommand.Alert.found_date | String | Alert found date. | 
-| ThreatCommand.Alert.update_date | String | Alert update date. | 
-| ThreatCommand.Alert.takedown_status | String | Alert remediation status. | 
-| ThreatCommand.Alert.is_closed | Boolean | Whether the alert is closed. | 
-| ThreatCommand.Alert.is_flagged | Boolean | Whether the alert is flagged. | 
-| ThreatCommand.Alert.related_threat_ids | String | Alert-related threat IDs. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.assets.type | Date | Asset type. |
+| ThreatCommand.Alert.assets.value | String | Asset value. |
+| ThreatCommand.Alert.assignees | String | Assignees list. |
+| ThreatCommand.Alert.type | String | Alert type list. |
+| ThreatCommand.Alert.sub_type | String | Alert sub type. |
+| ThreatCommand.Alert.title | String | Alert title. |
+| ThreatCommand.Alert.description | String | Alert description. |
+| ThreatCommand.Alert.severity | String | Alert severity. |
+| ThreatCommand.Alert.images | String | Alert images list. |
+| ThreatCommand.Alert.source_type | String | Alert type. |
+| ThreatCommand.Alert.source_url | String | Alert URL source. |
+| ThreatCommand.Alert.source_email | String | Alert email source. |
+| ThreatCommand.Alert.source_network_type | String | Alert network type. |
+| ThreatCommand.Alert.source_date | Date | Alert date. |
+| ThreatCommand.Alert.Tags.created_by | String | Alert tag creator. |
+| ThreatCommand.Alert.Tags.name | String | Alert tag name. |
+| ThreatCommand.Alert.Tags.id | String | Alert tag ID. |
+| ThreatCommand.Alert.related_iocs | String | Alert related IOC list. |
+| ThreatCommand.Alert.found_date | String | Alert found date. |
+| ThreatCommand.Alert.update_date | String | Alert update date. |
+| ThreatCommand.Alert.takedown_status | String | Alert remediation status. |
+| ThreatCommand.Alert.is_closed | Boolean | Whether the alert is closed. |
+| ThreatCommand.Alert.is_flagged | Boolean | Whether the alert is flagged. |
+| ThreatCommand.Alert.related_threat_ids | String | Alert-related threat IDs. |
 
 #### Command example
 
@@ -948,7 +939,6 @@ Get a list of alerts with all details.
 >|---|---|---|---|---|---|---|---|
 >| 641b19b45d60c905560fc484 | AttackIndication | VulnerabilityInTechnologyInUse | sdfsdf | Asfsdfiption | Low | 2018-01-01T00:00:00.000Z | false |
 
-
 ### threat-command-alert-takedown-request
 
 ***
@@ -962,9 +952,9 @@ Send a takedown request for the selected alert (Request that Threat Command will
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| target | Takedown target. Available for phishing scenarios only. If you have evidence of malicious activity associated with this domain, select Domain. Possible values are: Domain, Website. Default is Domain. | Optional | 
-| close_alert_after_success | Whether to close the alert after successful remediation. Possible values are: true, false. | Optional | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| target | Takedown target. Available for phishing scenarios only. If you have evidence of malicious activity associated with this domain, select Domain. Possible values are: Domain, Website. Default is Domain. | Optional |
+| close_alert_after_success | Whether to close the alert after successful remediation. Possible values are: true, false. | Optional |
 
 #### Context Output
 
@@ -983,13 +973,13 @@ Get the alert's takedown status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.takedown_status | String | Alert's takedown status. | 
+| ThreatCommand.Alert.takedown_status | String | Alert's takedown status. |
 
 #### Command example
 
@@ -1010,12 +1000,11 @@ Get the alert's takedown status.
 
 #### Human Readable Output
 
->### Takedown status for alert "1234".
+>### Takedown status for alert "1234"
 
 >|Takedown Status|
 >|---|
 >| "NotSent" |
-
 
 ### threat-command-alert-create
 
@@ -1030,24 +1019,24 @@ Create a new alert. You have to insert scenario or type and sub_type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| found_date | Alert's found date. For example:  2022-12-25T08:38:06Z. The defaut value is the current time. | Optional | 
-| title | Alert's title. | Required | 
-| description | Alert's description. | Required | 
-| type | Alert's type (dependencies - use threat-command-alert-type-list command to get all the alert types). Required while scenario not inserted. Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional | 
-| sub_type | Alert subtype (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). Required while scenario not inserted. | Optional | 
-| severity | Alert's severity. Possible values are: High, Medium, Low. | Required | 
-| source_type | Alert source type (dependencies - use threat-command-alert-source-type-list command to get all the alert source types). | Required | 
-| source_network_type | Source network type. Possible values are: Clear Web, Dark Web. | Required | 
-| source_url | The source URL of the alert. . | Optional | 
-| source_date | Alert's source date. For example:  2022-12-25T08:38:06Z. | Optional | 
-| image_entry_ids | Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg. | Optional | 
-| scenario | If provided, the related values will override any type and sub_type parameters (dependencies - use the threat-command-alert-scenario-list command to get all the alert scenarios). | Optional | 
+| found_date | Alert's found date. For example:  2022-12-25T08:38:06Z. The defaut value is the current time. | Optional |
+| title | Alert's title. | Required |
+| description | Alert's description. | Required |
+| type | Alert's type (dependencies - use threat-command-alert-type-list command to get all the alert types). Required while scenario not inserted. Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional |
+| sub_type | Alert subtype (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). Required while scenario not inserted. | Optional |
+| severity | Alert's severity. Possible values are: High, Medium, Low. | Required |
+| source_type | Alert source type (dependencies - use threat-command-alert-source-type-list command to get all the alert source types). | Required |
+| source_network_type | Source network type. Possible values are: Clear Web, Dark Web. | Required |
+| source_url | The source URL of the alert. . | Optional |
+| source_date | Alert's source date. For example:  2022-12-25T08:38:06Z. | Optional |
+| image_entry_ids | Comma-separated list of image entry IDs to attach to the alert. Allowed image types: gif,jpeg. | Optional |
+| scenario | If provided, the related values will override any type and sub_type parameters (dependencies - use the threat-command-alert-scenario-list command to get all the alert scenarios). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
 
 #### Command example
 
@@ -1073,7 +1062,6 @@ Create a new alert. You have to insert scenario or type and sub_type.
 >|---|
 >| 64538b71ba5d3f7a8fb27ddc |
 
-
 ### threat-command-alert-close
 
 ***
@@ -1087,18 +1075,18 @@ Close alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| reason | Alert's closed reason. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Company Owned Domain, Legitimate Application/Profile, Not Related To My Company, False Positive, Other. | Required | 
-| comment | Alert's comments. | Optional | 
-| is_hidden | Alerts' hidden status (Delete alert from the account instance only when reason is FalsePositive). Possible values are: true, false. | Optional | 
-| rate | Alert's rate. Rate range: 0-5 (The range not officaly documented). Possible values are: 0, 1, 2, 3, 4, 5. | Optional | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| reason | Alert's closed reason. Possible values are: Problem Solved, Informational Only, Problem We Are Already Aware Of, Company Owned Domain, Legitimate Application/Profile, Not Related To My Company, False Positive, Other. | Required |
+| comment | Alert's comments. | Optional |
+| is_hidden | Alerts' hidden status (Delete alert from the account instance only when reason is FalsePositive). Possible values are: true, false. | Optional |
+| rate | Alert's rate. Rate range: 0-5 (The range not officaly documented). Possible values are: 0, 1, 2, 3, 4, 5. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.is_closed | String | Whether the alert is closed. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.is_closed | String | Whether the alert is closed. |
 
 #### Command example
 
@@ -1125,7 +1113,6 @@ Close alert.
 >|---|---|
 >| 1234 | true |
 
-
 ### threat-command-alert-severity-update
 
 ***
@@ -1139,15 +1126,15 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| severity | The desired severity. Possible values are: High, Medium, Low. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| severity | The desired severity. Possible values are: High, Medium, Low. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.severity | String | Alert severity. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.severity | String | Alert severity. |
 
 #### Command example
 
@@ -1168,12 +1155,11 @@ Change the alert's severity. Changing the severity level of alerts can help to p
 
 #### Human Readable Output
 
->### Alert "1234" severity successfully updated to "Medium".
+>### Alert "1234" severity successfully updated to "Medium"
 
 >|Id|Severity|
 >|---|---|
 >| 1234 | Medium |
-
 
 ### threat-command-alert-blocklist-get
 
@@ -1188,15 +1174,15 @@ Get alert's blocklist status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.BlockList.value | String | Alert blocklist value. | 
-| ThreatCommand.Alert.BlockList.status | String | Alert blocklist status. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.BlockList.value | String | Alert blocklist value. |
+| ThreatCommand.Alert.BlockList.status | String | Alert blocklist status. |
 
 #### Command example
 
@@ -1217,10 +1203,9 @@ Get alert's blocklist status.
 
 #### Human Readable Output
 
->### Blocklist for alert "1234".
+>### Blocklist for alert "1234"
 
 >**No entries.**
-
 
 ### threat-command-alert-blocklist-update
 
@@ -1235,12 +1220,12 @@ Change selected IOCs blocklist status.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional | 
-| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional | 
-| ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional | 
-| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional | 
-| blocklist_status | Blocklist status. Possible values are: Sent, Not Sent. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| domains | Comma-separated list of domain IOC values to add. For example: securitywap.com,test.com. | Optional |
+| urls | Comma-separated list of URL IOC values to add. For example: "http://securitywap.com/path". | Optional |
+| ips | Comma-separated list of IP IOC values to add. For example: 8.8.8.8,1.2.3.4. | Optional |
+| emails | Comma-separated list of email IOC values to add. For example: test@test.com. | Optional |
+| blocklist_status | Blocklist status. Possible values are: Sent, Not Sent. | Required |
 
 #### Context Output
 
@@ -1259,8 +1244,8 @@ Report IOCs to external sources (Report the URLs and domains that are included i
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| external_sources | Comma-separated list of the desired source names (dependencies - use threat-command-source-ioc-get to get all the source names). For example:GoogleWebRisk,PhishTank.Since there are variety of sources that accept different types of IOCs, select only sources that accept the alert IOCs. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| external_sources | Comma-separated list of the desired source names (dependencies - use threat-command-source-ioc-get to get all the source names). For example:GoogleWebRisk,PhishTank.Since there are variety of sources that accept different types of IOCs, select only sources that accept the alert IOCs. | Required |
 
 #### Context Output
 
@@ -1279,16 +1264,16 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| user_id | Assigned user ID (dependencies - use threat-command-mssp-user-list or threat-command-account-user-list to get user IDs). | Required | 
-| is_mssp | If the assigned user is an MSSP user or not. Possible values are: true, false. | Optional | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| user_id | Assigned user ID (dependencies - use threat-command-mssp-user-list or threat-command-account-user-list to get user IDs). | Required |
+| is_mssp | If the assigned user is an MSSP user or not. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.assignees | String | Assignees list. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.assignees | String | Assignees list. |
 
 #### Command example
 
@@ -1311,12 +1296,11 @@ Assign an alert to other ETP Suite users. When an alert is assigned, the assigne
 
 #### Human Readable Output
 
->### Alert "1234" successfully assign to user "631ef479b675f72ec9309785".
+>### Alert "1234" successfully assign to user "631ef479b675f72ec9309785"
 
 >|Id|Assignees|
 >|---|---|
 >| 1234 | 1234 |
-
 
 ### threat-command-alert-unassign
 
@@ -1331,14 +1315,14 @@ Unassign an alert from all users.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.assignees | String | Assignees list. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.assignees | String | Assignees list. |
 
 #### Command example
 
@@ -1359,12 +1343,11 @@ Unassign an alert from all users.
 
 #### Human Readable Output
 
->### Alert '1234' successfully unassigned from any user.
+>### Alert '1234' successfully unassigned from any user
 
 >|Id|
 >|---|
 >| 1234 |
-
 
 ### threat-command-alert-reopen
 
@@ -1379,7 +1362,7 @@ Reopen alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
@@ -1406,8 +1389,8 @@ Adds a tag to an alert. This enables you to classify alerts and later search for
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| tag_name | The new tag string. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| tag_name | The new tag string. | Required |
 
 #### Context Output
 
@@ -1434,8 +1417,8 @@ Removes a tag from the alert.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| tag_id | Tag's unique ID to remove (dependencies - use threat-command-alert-list command to get all the tag IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| tag_id | Tag's unique ID to remove (dependencies - use threat-command-alert-list command to get all the tag IDs). | Required |
 
 #### Context Output
 
@@ -1462,9 +1445,9 @@ Send mail with the alert details and a question.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| email_addresses | Comma-separated list of destinaions email addresses. | Required | 
-| content | Content added to the alert details. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| email_addresses | Comma-separated list of destinaions email addresses. | Required |
+| content | Content added to the alert details. | Required |
 
 #### Context Output
 
@@ -1491,8 +1474,8 @@ Send a question to an analyst about the requested alert. Questions can revolve a
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| question | Question added to the alert details. | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| question | Question added to the alert details. | Required |
 
 #### Context Output
 
@@ -1519,16 +1502,16 @@ Get alert's analyst response
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.id | String | Alert ID. | 
-| ThreatCommand.Alert.Message.date | String | Response date. | 
-| ThreatCommand.Alert.Message.initiator | String | Response initiator. | 
-| ThreatCommand.Alert.Message.message | String | Response message. | 
+| ThreatCommand.Alert.id | String | Alert ID. |
+| ThreatCommand.Alert.Message.date | String | Response date. |
+| ThreatCommand.Alert.Message.initiator | String | Response initiator. |
+| ThreatCommand.Alert.Message.message | String | Response message. |
 
 #### Command example
 
@@ -1565,14 +1548,13 @@ Get alert's analyst response
 
 #### Human Readable Output
 
->### Alert conversation with analyst:
+>### Alert conversation with analyst
 
 >|Initiator|Message|Date|
 >|---|---|---|
 >| test@test.com | Hello| 2023-04-03T15:02:34.641Z |
 >| Intsights | Hi| 2023-04-03T15:40:56.195Z |
 >| test@test.com | thank you| 2023-04-03T18:29:41.169Z |
-
 
 ### threat-command-alert-activity-log-get
 
@@ -1587,33 +1569,33 @@ Get alert activity log.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Alert.ActivityLog.rate | Number | Alert rate. | 
-| ThreatCommand.Alert.ActivityLog.type | String | Alert type. | 
-| ThreatCommand.Alert.ActivityLog.sub_types | String | Alert subtypes. | 
-| ThreatCommand.Alert.ActivityLog.initiator | String | Alert initiator. | 
-| ThreatCommand.Alert.ActivityLog.created_date | Date | Alert created date. | 
-| ThreatCommand.Alert.ActivityLog.update_date | Date | Alert update date. | 
-| ThreatCommand.Alert.ActivityLog.read_by | String | Alert read by. | 
-| ThreatCommand.Alert.ActivityLog.id | String | Alert created ID. | 
-| ThreatCommand.Alert.ActivityLog.tag_names | String | Alert tag names. | 
-| ThreatCommand.Alert.ActivityLog.tag_ids | String | Alert tag IDs. | 
-| ThreatCommand.Alert.ActivityLog.Mail.note_id | String | Alert note ID. | 
-| ThreatCommand.Alert.ActivityLog.Mail.question | String | Alert mail question. | 
-| ThreatCommand.Alert.ActivityLog.Mail.Replies.email | String | Alert mail reply email. | 
-| ThreatCommand.Alert.ActivityLog.Mail.Replies.token | String | Alert mail reply token. | 
-| ThreatCommand.Alert.ActivityLog.Mail.Replies.date | Date | Alert mail reply date. | 
-| ThreatCommand.Alert.ActivityLog.Mail.Replies.read_by | String | Alert mail read by. | 
-| ThreatCommand.Alert.ActivityLog.Mail.Replies.is_token_valid | Boolean | Alert mail reply is token valid. | 
-| ThreatCommand.Alert.ActivityLog.Messages.initiator_id | String | Alert message ID. | 
-| ThreatCommand.Alert.ActivityLog.Messages.initiator_is_support | Boolean | Whether asking the analyst is supported. | 
-| ThreatCommand.Alert.ActivityLog.Messages.date | Date | Alert message date. | 
-| ThreatCommand.Alert.ActivityLog.Messages.content | String | Alert message content. | 
+| ThreatCommand.Alert.ActivityLog.rate | Number | Alert rate. |
+| ThreatCommand.Alert.ActivityLog.type | String | Alert type. |
+| ThreatCommand.Alert.ActivityLog.sub_types | String | Alert subtypes. |
+| ThreatCommand.Alert.ActivityLog.initiator | String | Alert initiator. |
+| ThreatCommand.Alert.ActivityLog.created_date | Date | Alert created date. |
+| ThreatCommand.Alert.ActivityLog.update_date | Date | Alert update date. |
+| ThreatCommand.Alert.ActivityLog.read_by | String | Alert read by. |
+| ThreatCommand.Alert.ActivityLog.id | String | Alert created ID. |
+| ThreatCommand.Alert.ActivityLog.tag_names | String | Alert tag names. |
+| ThreatCommand.Alert.ActivityLog.tag_ids | String | Alert tag IDs. |
+| ThreatCommand.Alert.ActivityLog.Mail.note_id | String | Alert note ID. |
+| ThreatCommand.Alert.ActivityLog.Mail.question | String | Alert mail question. |
+| ThreatCommand.Alert.ActivityLog.Mail.Replies.email | String | Alert mail reply email. |
+| ThreatCommand.Alert.ActivityLog.Mail.Replies.token | String | Alert mail reply token. |
+| ThreatCommand.Alert.ActivityLog.Mail.Replies.date | Date | Alert mail reply date. |
+| ThreatCommand.Alert.ActivityLog.Mail.Replies.read_by | String | Alert mail read by. |
+| ThreatCommand.Alert.ActivityLog.Mail.Replies.is_token_valid | Boolean | Alert mail reply is token valid. |
+| ThreatCommand.Alert.ActivityLog.Messages.initiator_id | String | Alert message ID. |
+| ThreatCommand.Alert.ActivityLog.Messages.initiator_is_support | Boolean | Whether asking the analyst is supported. |
+| ThreatCommand.Alert.ActivityLog.Messages.date | Date | Alert message date. |
+| ThreatCommand.Alert.ActivityLog.Messages.content | String | Alert message content. |
 
 #### Command example
 
@@ -2011,7 +1993,6 @@ Get alert activity log.
 >| 645384d511ba24a35d0ab861 | AddTag | 2023-05-04T10:11:33.638Z |  | API |
 >| 645384ee6a6f7be836b95c00 | AskTheAnalystQuestion | 2023-05-04T10:11:58.271Z |  | API |
 
-
 ### threat-command-alert-csv-get
 
 ***
@@ -2025,20 +2006,20 @@ Get alert's CSV file in case of credentials leakage or leaked credit cards alert
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.CSV.alert_id | String | Alert ID. | 
-| ThreatCommand.CSV.content | Unknown | Content of CSV file. | 
-| InfoFile.EntryID | string | The EntryID of the CSV file. | 
-| InfoFile.Extension | string | The extension of the CSV file. | 
-| InfoFile.Name | string | The name of the CSV file. | 
-| InfoFile.Info | string | The info of the CSV file. | 
-| InfoFile.Size | number | The size of the CSV file. | 
-| InfoFile.Type | string | The type of the CSV file. | 
+| ThreatCommand.CSV.alert_id | String | Alert ID. |
+| ThreatCommand.CSV.content | Unknown | Content of CSV file. |
+| InfoFile.EntryID | string | The EntryID of the CSV file. |
+| InfoFile.Extension | string | The extension of the CSV file. |
+| InfoFile.Name | string | The name of the CSV file. |
+| InfoFile.Info | string | The info of the CSV file. |
+| InfoFile.Size | number | The size of the CSV file. |
+| InfoFile.Type | string | The type of the CSV file. |
 
 #### Command example
 
@@ -2088,9 +2069,9 @@ Add a note to the alert. You can add notes, as text or uploaded files, to an ale
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
-| note | Desired note. | Required | 
-| entry_ids | Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg. | Optional | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
+| note | Desired note. | Required |
+| entry_ids | Comma-separated list of file entry IDs. Allowed types: pdf,csv,doc,docx,png,txt,jpeg,jpg. | Optional |
 
 #### Context Output
 
@@ -2117,7 +2098,7 @@ List alert images by ID.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required | 
+| alert_id | Alert's unique ID (dependencies - use threat-command-alert-list command to get all the alert IDs). | Required |
 
 #### Context Output
 
@@ -2144,45 +2125,45 @@ Get CVE's list from account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| offset | This field is used for pagination. Each request is limited to 1000 results. To get the next page, send the returned "nextOffset" parameter back to the sever as "offset". | Optional | 
-| publish_date_from | CVE's publish date minimum value. For example:  2022-12-25T08:38:06Z. | Optional | 
-| publish_date_to | CVE's publish date maximum value. For example:  2022-12-25T08:38:06Z. | Optional | 
-| update_date_from | CVE's update date minimum value. For example:  2022-12-25T08:38:06Z. | Optional | 
-| update_date_to | CVE's update date maximum value. For example:  2022-12-25T08:38:06Z. | Optional | 
-| severity_list | Comma-separated list of CVE severities. Possible values are: Critical, High, Medium, Low. | Optional | 
-| cpe_list | Comma-separated list of CPEs. | Optional | 
-| cve_ids | Comma-separated list of specific CVE IDs. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| offset | This field is used for pagination. Each request is limited to 1000 results. To get the next page, send the returned "nextOffset" parameter back to the sever as "offset". | Optional |
+| publish_date_from | CVE's publish date minimum value. For example:  2022-12-25T08:38:06Z. | Optional |
+| publish_date_to | CVE's publish date maximum value. For example:  2022-12-25T08:38:06Z. | Optional |
+| update_date_from | CVE's update date minimum value. For example:  2022-12-25T08:38:06Z. | Optional |
+| update_date_to | CVE's update date maximum value. For example:  2022-12-25T08:38:06Z. | Optional |
+| severity_list | Comma-separated list of CVE severities. Possible values are: Critical, High, Medium, Low. | Optional |
+| cpe_list | Comma-separated list of CPEs. | Optional |
+| cve_ids | Comma-separated list of specific CVE IDs. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.CVE.id | String | CVE ID. | 
-| ThreatCommand.CVE.Cpe.value | String | CVE CPE value. | 
-| ThreatCommand.CVE.Cpe.title | String | CVE CPE title. | 
-| ThreatCommand.CVE.Cpe.vendor_product | String | CVE CPE vendor. | 
-| ThreatCommand.CVE.published_date | Date | CVE CP publish date. | 
-| ThreatCommand.CVE.update_date | Date | CVE update date. | 
-| ThreatCommand.CVE.severity | String | CVE severity. | 
-| ThreatCommand.CVE.intsights_score | Number | CVE insight score. | 
-| ThreatCommand.CVE.cvss_score | Number | CVE CVSS score. | 
-| ThreatCommand.CVE.mentions_amount | Number | CVE mentions amount. | 
-| ThreatCommand.CVE.paste_site_mentions | Number | CVE paste site mentions. | 
-| ThreatCommand.CVE.hacking_forum_mentions | Number | CVE hacking forum mentions. | 
-| ThreatCommand.CVE.instant_message_mentions | Number | CVE instant message mentions. | 
-| ThreatCommand.CVE.dark_web_mentions | Number | CVE dark web mentions. | 
-| ThreatCommand.CVE.clear_web_cyber_blogs_mentions | Number | CVE clear web cyber blogs mentions. | 
-| ThreatCommand.CVE.code_repositories_mentions | Number | CVE code repositories mentions. | 
-| ThreatCommand.CVE.exploit_mentions | Number | CVE exploit mentions. | 
-| ThreatCommand.CVE.social_media_mentions | Number | CVE social media mentions. | 
-| ThreatCommand.CVE.first_mention_date | Date | CVE first mention date. | 
-| ThreatCommand.CVE.last_mention_date | Date | CVE last mention date. | 
-| ThreatCommand.CVE.exploit_availability | Boolean | CVE exploit availability. | 
-| ThreatCommand.CVE.vulnerability_origin | String | CVE last vulnerability origin. | 
-| ThreatCommand.CVE.related_threat_actors | String | Related threat actors. | 
-| ThreatCommand.CVE.related_malware | String | Related malware. | 
-| ThreatCommand.CVE.related_campaigns | String | Related campaigns. | 
+| ThreatCommand.CVE.id | String | CVE ID. |
+| ThreatCommand.CVE.Cpe.value | String | CVE CPE value. |
+| ThreatCommand.CVE.Cpe.title | String | CVE CPE title. |
+| ThreatCommand.CVE.Cpe.vendor_product | String | CVE CPE vendor. |
+| ThreatCommand.CVE.published_date | Date | CVE CP publish date. |
+| ThreatCommand.CVE.update_date | Date | CVE update date. |
+| ThreatCommand.CVE.severity | String | CVE severity. |
+| ThreatCommand.CVE.intsights_score | Number | CVE insight score. |
+| ThreatCommand.CVE.cvss_score | Number | CVE CVSS score. |
+| ThreatCommand.CVE.mentions_amount | Number | CVE mentions amount. |
+| ThreatCommand.CVE.paste_site_mentions | Number | CVE paste site mentions. |
+| ThreatCommand.CVE.hacking_forum_mentions | Number | CVE hacking forum mentions. |
+| ThreatCommand.CVE.instant_message_mentions | Number | CVE instant message mentions. |
+| ThreatCommand.CVE.dark_web_mentions | Number | CVE dark web mentions. |
+| ThreatCommand.CVE.clear_web_cyber_blogs_mentions | Number | CVE clear web cyber blogs mentions. |
+| ThreatCommand.CVE.code_repositories_mentions | Number | CVE code repositories mentions. |
+| ThreatCommand.CVE.exploit_mentions | Number | CVE exploit mentions. |
+| ThreatCommand.CVE.social_media_mentions | Number | CVE social media mentions. |
+| ThreatCommand.CVE.first_mention_date | Date | CVE first mention date. |
+| ThreatCommand.CVE.last_mention_date | Date | CVE last mention date. |
+| ThreatCommand.CVE.exploit_availability | Boolean | CVE exploit availability. |
+| ThreatCommand.CVE.vulnerability_origin | String | CVE last vulnerability origin. |
+| ThreatCommand.CVE.related_threat_actors | String | Related threat actors. |
+| ThreatCommand.CVE.related_malware | String | Related malware. |
+| ThreatCommand.CVE.related_campaigns | String | Related campaigns. |
 
 #### Command example
 
@@ -2232,12 +2213,11 @@ Get CVE's list from account.
 
 #### Human Readable Output
 
->### CVE list.
+>### CVE list
 
 >|Id|Published Date|Update Date|Severity|Intsights Score|Cvss Score|
 >|---|---|---|---|---|---|
 >| CVE-2014-5600 | 2014-09-09T01:55:00.000Z | 2023-04-30T22:00:37.673Z | Low | 17 | 5.4 |
-
 
 ### threat-command-cve-add
 
@@ -2252,7 +2232,7 @@ Add CVEs to account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_ids | Comma-separated list of CVEs unique IDs. | Required | 
+| cve_ids | Comma-separated list of CVEs unique IDs. | Required |
 
 #### Context Output
 
@@ -2279,7 +2259,7 @@ Delete CVEs from account.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| cve_ids | Comma-separated list of CVEs unique IDs (dependencies - use threat-command-cve-listto get all the CVE IDs). | Required | 
+| cve_ids | Comma-separated list of CVEs unique IDs (dependencies - use threat-command-cve-listto get all the CVE IDs). | Required |
 
 #### Context Output
 
@@ -2306,15 +2286,15 @@ Add assets by type and value. Assets include any company resource that could lea
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | The type of asset to add value. For example: asset_type="Domains" asset_value="example.com". (You can get the asset types with threat-command-asset-type-list command). | Required | 
-| asset_value | Asset value. | Required | 
+| asset_type | The type of asset to add value. For example: asset_type="Domains" asset_value="example.com". (You can get the asset types with threat-command-asset-type-list command). | Required |
+| asset_value | Asset value. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Asset.type | String | The type of the asset. | 
-| ThreatCommand.Asset.value | String | The value of the asset type. | 
+| ThreatCommand.Asset.type | String | The type of the asset. |
+| ThreatCommand.Asset.value | String | The value of the asset type. |
 
 #### Command example
 
@@ -2335,12 +2315,11 @@ Add assets by type and value. Assets include any company resource that could lea
 
 #### Human Readable Output
 
->### Asset "test" successfully added to "CompanyNames" asset list.
+>### Asset "test" successfully added to "CompanyNames" asset list
 
 >|Type|Value|
 >|---|---|
 >| CompanyNames | test |
-
 
 ### threat-command-asset-list
 
@@ -2355,16 +2334,16 @@ Get account assets grouped by asset type.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_results | Show all results if True. Possible values are: true, false. | Optional | 
-| asset_types | Comma-separated list of alert source types (dependencies - use threat-command-asset-type-list command to get all the asset types). For example:Domains,CompanyNames. . | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_results | Show all results if True. Possible values are: true, false. | Optional |
+| asset_types | Comma-separated list of alert source types (dependencies - use threat-command-asset-type-list command to get all the asset types). For example:Domains,CompanyNames. . | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Asset.type | String | The type of the asset. | 
-| ThreatCommand.Asset.value | String | The value of the asset type. | 
+| ThreatCommand.Asset.type | String | The type of the asset. |
+| ThreatCommand.Asset.value | String | The value of the asset type. |
 
 #### Command example
 
@@ -2399,7 +2378,7 @@ Get account assets grouped by asset type.
 
 #### Human Readable Output
 
->### Asset list.
+>### Asset list
 
 >|Type|Value|
 >|---|---|
@@ -2407,7 +2386,6 @@ Get account assets grouped by asset type.
 >| Domains | google.com |
 >| Domains | moh.gov.il |
 >| Domains | qmasters.co |
-
 
 ### threat-command-asset-type-list
 
@@ -2422,14 +2400,14 @@ Get all asset types. Mainly used to add or delete assets.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_results | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_results | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.AssetType | String | Asset type. | 
+| ThreatCommand.AssetType | String | Asset type. |
 
 ### threat-command-asset-delete
 
@@ -2444,8 +2422,8 @@ Delete asset by type and value.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| asset_type | The type of asset to add value. For example: asset_type="Domains" asset_value="example.com". (You can get the asset types with threat-command-asset-type-list command). | Required | 
-| asset_value | Asset value. | Required | 
+| asset_type | The type of asset to add value. For example: asset_type="Domains" asset_value="example.com". (You can get the asset types with threat-command-asset-type-list command). | Required |
+| asset_value | Asset value. | Required |
 
 #### Context Output
 
@@ -2476,8 +2454,8 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.SystemModule.module_name | String | Module name. | 
-| ThreatCommand.SystemModule.status | String | Whether the module module is enabled. | 
+| ThreatCommand.SystemModule.module_name | String | Module name. |
+| ThreatCommand.SystemModule.status | String | Whether the module module is enabled. |
 
 #### Command example
 
@@ -2541,7 +2519,6 @@ There are no input arguments for this command.
 >| intellifind | true |
 >| cve | true |
 
-
 ### threat-command-mention-search
 
 ***
@@ -2555,35 +2532,35 @@ Search for strings in the scrapes database.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | Search using simple keywords (you can choose the search keywords by the outputs keywords), basic operators, search operators, and by document type. Basic operators: Use AND, OR, NOT, and (). For example: Searching for "bin_number: 1234 AND email_user_name: john_smith" returns all results that contain this BIN number and that username as the email user name, Searching for "comment_number: 17 AND author: gyber" returns all results with 17 comments and the author is Gyber. . | Required | 
-| report_date | Supply time-frame. For example:  2022-12-25T08:38:06Z. | Optional | 
-| page_number | Zero-based page number. 15 results per page. Default is 0. | Optional | 
-| source_types | A comma-separated list of source types to filter. Possible values are: Social Media, Paste Site, Hacking Forum, Instant Message, Black Market, Cyber Security Blog, Web Page. | Optional | 
-| only_dark_web | Show only mentions from the dark web or not. Possible values are: true, false. | Optional | 
-| highlight_tags | Show highlight tags (&lt;em&gt;) in the content or not. Possible values are: true, false. Default is True. | Optional | 
+| search | Search using simple keywords (you can choose the search keywords by the outputs keywords), basic operators, search operators, and by document type. Basic operators: Use AND, OR, NOT, and (). For example: Searching for "bin_number: 1234 AND email_user_name: john_smith" returns all results that contain this BIN number and that username as the email user name, Searching for "comment_number: 17 AND author: gyber" returns all results with 17 comments and the author is Gyber. . | Required |
+| report_date | Supply time-frame. For example:  2022-12-25T08:38:06Z. | Optional |
+| page_number | Zero-based page number. 15 results per page. Default is 0. | Optional |
+| source_types | A comma-separated list of source types to filter. Possible values are: Social Media, Paste Site, Hacking Forum, Instant Message, Black Market, Cyber Security Blog, Web Page. | Optional |
+| only_dark_web | Show only mentions from the dark web or not. Possible values are: true, false. | Optional |
+| highlight_tags | Show highlight tags (&lt;em&gt;) in the content or not. Possible values are: true, false. Default is True. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Mentions.author | String | Mention author. | 
-| ThreatCommand.Mentions.comment_number | Number | Mentions comments number. | 
-| ThreatCommand.Mentions.original_url | String | Mentions original URL. | 
-| ThreatCommand.Mentions.source_date | Date | Mentions source date. | 
-| ThreatCommand.Mentions.url | String | Mention URL. | 
-| ThreatCommand.Mentions.insertion_date | Date | Mention insertion date. | 
-| ThreatCommand.Mentions.type | String | Mention type. | 
-| ThreatCommand.Mentions.Tags.is_product_for_sale | Boolean | Whether the product for sale. | 
-| ThreatCommand.Mentions.Tags.credit_cards | Boolean | Whether the mention includes credit cards. | 
-| ThreatCommand.Mentions.Tags.domains | Boolean | Whether the mention includes domains. | 
-| ThreatCommand.Mentions.Tags.emails | Boolean | Whether the mention includes emails. | 
-| ThreatCommand.Mentions.Tags.ips | Boolean | Whether the mention includes IPs. | 
-| ThreatCommand.Mentions.Tags.ssns | Boolean | Whether the mention includes SSNs \(Switched Service Networks\). | 
-| ThreatCommand.Mentions.Tags.urls | Boolean | Whether the mention includes URLs. | 
-| ThreatCommand.Mentions.id | String | Mention ID. | 
-| ThreatCommand.Mentions.short_content | String | Mention short content. | 
-| ThreatCommand.Mentions.title | String | Mention title. | 
-| ThreatCommand.Mentions.date | Date | Mention date. | 
+| ThreatCommand.Mentions.author | String | Mention author. |
+| ThreatCommand.Mentions.comment_number | Number | Mentions comments number. |
+| ThreatCommand.Mentions.original_url | String | Mentions original URL. |
+| ThreatCommand.Mentions.source_date | Date | Mentions source date. |
+| ThreatCommand.Mentions.url | String | Mention URL. |
+| ThreatCommand.Mentions.insertion_date | Date | Mention insertion date. |
+| ThreatCommand.Mentions.type | String | Mention type. |
+| ThreatCommand.Mentions.Tags.is_product_for_sale | Boolean | Whether the product for sale. |
+| ThreatCommand.Mentions.Tags.credit_cards | Boolean | Whether the mention includes credit cards. |
+| ThreatCommand.Mentions.Tags.domains | Boolean | Whether the mention includes domains. |
+| ThreatCommand.Mentions.Tags.emails | Boolean | Whether the mention includes emails. |
+| ThreatCommand.Mentions.Tags.ips | Boolean | Whether the mention includes IPs. |
+| ThreatCommand.Mentions.Tags.ssns | Boolean | Whether the mention includes SSNs \(Switched Service Networks\). |
+| ThreatCommand.Mentions.Tags.urls | Boolean | Whether the mention includes URLs. |
+| ThreatCommand.Mentions.id | String | Mention ID. |
+| ThreatCommand.Mentions.short_content | String | Mention short content. |
+| ThreatCommand.Mentions.title | String | Mention title. |
+| ThreatCommand.Mentions.date | Date | Mention date. |
 
 #### Command example
 
@@ -2896,13 +2873,12 @@ Search for strings in the scrapes database.
 
 #### Human Readable Output
 
->### Mentions for "test.com" (page number 0).
+>### Mentions for "test.com" (page number 0)
 
 >|Author|Original Url|Url|Type|Id|Short Content|Title|Date|
 >|---|---|---|---|---|---|---|---|
 >| jamedoefo | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/unread | https:<span>//</span>cybercarders.com/threads/onlyfans-lana-rhoades-3gb-update.222455/page-33 | comment | 1234 | i was here |  | 2023-05-04T10:20:02 |
 >| anon | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/unread | https:<span>//</span>www.wilderssecurity.com/threads/brave-browser-discussion-update-thread.388288/page-36 | comment | f15c68c9c4d8a4ccc7efc21373f228a7f9d7826a | brave v1.51.110 (may 3, 2023) <br/>https:<span>//</span>brave.com/latest/<br/><br/>spoiler: release notes v1.51.110 (may 3, 2023)<br/>release notes v1.51.110 (may 3, 2023)<br/>web3<br/><br/>added the ability to set brave wallet permission duration when connecting to dapps. (#28841)<br/>[security] prevent blind cross chain signing as reported o |  | 2023-05-04T10:17:00 |
-
 
 ### threat-command-mssp-customer-list
 
@@ -2917,17 +2893,17 @@ Get all Managed Security Service Provider's (MSSP) sub-accounts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.MsspCustomer.id | String | Customer ID. | 
-| ThreatCommand.MsspCustomer.company_name | String | Customer company name. | 
-| ThreatCommand.MsspCustomer.status | String | Customer status. | 
-| ThreatCommand.MsspCustomer.note | String | Customer note. | 
+| ThreatCommand.MsspCustomer.id | String | Customer ID. |
+| ThreatCommand.MsspCustomer.company_name | String | Customer company name. |
+| ThreatCommand.MsspCustomer.status | String | Customer status. |
+| ThreatCommand.MsspCustomer.note | String | Customer note. |
 
 #### Command example
 
@@ -2956,7 +2932,6 @@ Get all Managed Security Service Provider's (MSSP) sub-accounts.
 >|---|---|---|---|
 >| 59490ca49b655c027458d115 | Demo - Qmasters | Enabled | test |
 
-
 ### threat-command-mssp-user-list
 
 ***
@@ -2970,17 +2945,17 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.MsspUser.id | String | User ID. | 
-| ThreatCommand.MsspUser.email | String | User email. | 
-| ThreatCommand.MsspUser.role | String | User role. | 
-| ThreatCommand.MsspUser.is_deleted | String | Whether the user was deleted. | 
+| ThreatCommand.MsspUser.id | String | User ID. |
+| ThreatCommand.MsspUser.email | String | User email. |
+| ThreatCommand.MsspUser.role | String | User role. |
+| ThreatCommand.MsspUser.is_deleted | String | Whether the user was deleted. |
 
 #### Command example
 
@@ -3009,7 +2984,6 @@ Get the details of the MSSPs users (In case you are an MSSP account).
 >|---|---|---|---|
 >| 64214bc94c75609d09ebb56a | test@test.com | Admin | false |
 
-
 ### threat-command-account-user-list
 
 ***
@@ -3023,22 +2997,22 @@ List the users in your account. Mainly used to assign alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_type | Type of the user. Possible values are: Admin, Analyst. | Optional | 
-| user_email | Email of the user. | Optional | 
-| user_id | The ID of the user. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
+| user_type | Type of the user. Possible values are: Admin, Analyst. | Optional |
+| user_email | Email of the user. | Optional |
+| user_id | The ID of the user. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.AccountUser.id | String | User ID. | 
-| ThreatCommand.AccountUser.email | String | User email. | 
-| ThreatCommand.AccountUser.first_name | String | User first name. | 
-| ThreatCommand.AccountUser.last_name | String | User last name. | 
-| ThreatCommand.AccountUser.role | String | User role. | 
-| ThreatCommand.AccountUser.is_deleted | String | Whether the user was deleted. | 
+| ThreatCommand.AccountUser.id | String | User ID. |
+| ThreatCommand.AccountUser.email | String | User email. |
+| ThreatCommand.AccountUser.first_name | String | User first name. |
+| ThreatCommand.AccountUser.last_name | String | User last name. |
+| ThreatCommand.AccountUser.role | String | User role. |
+| ThreatCommand.AccountUser.is_deleted | String | Whether the user was deleted. |
 
 #### Command example
 
@@ -3132,7 +3106,6 @@ List the users in your account. Mainly used to assign alerts.
 >|---|---|---|---|---|---|
 >| 59490cd818a3b902664b4ed7 | test@test.com | test | test | Admin | false |
 
-
 ### threat-command-alert-type-list
 
 ***
@@ -3146,15 +3119,15 @@ List alert types and sub-types. They are mainly used to add manual alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.AlertType.type | String | Type. | 
-| ThreatCommand.AlertType.sub_type | String | Sub-type of the type. | 
+| ThreatCommand.AlertType.type | String | Type. |
+| ThreatCommand.AlertType.sub_type | String | Sub-type of the type. |
 
 #### Command example
 
@@ -3181,7 +3154,6 @@ List alert types and sub-types. They are mainly used to add manual alerts.
 >|---|---|
 >| ExploitableData | VulnerabilityInTechnologyInUse |
 
-
 ### threat-command-alert-source-type-list
 
 ***
@@ -3195,14 +3167,14 @@ List alert source types. They are mainly used to add manual alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.AlertSourceType | String | List of source types. | 
+| ThreatCommand.AlertSourceType | String | List of source types. |
 
 #### Command example
 
@@ -3228,7 +3200,6 @@ List alert source types. They are mainly used to add manual alerts.
 >|---|
 >| Application Store |
 
-
 ### threat-command-alert-scenario-list
 
 ***
@@ -3242,19 +3213,19 @@ List alert scenarios. They are mainly used to add manual alerts.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
-| all_result | Show all results if True. Possible values are: true, false. | Optional | 
-| type | Alert type (dependencies - use threat-command-alert-type-list command to get all the alert types). Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional | 
-| sub_type | Alert's sub-type (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). | Optional | 
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
+| all_result | Show all results if True. Possible values are: true, false. | Optional |
+| type | Alert type (dependencies - use threat-command-alert-type-list command to get all the alert types). Possible values are: Attack Indication, Data Leakage, Phishing, Brand Security, Exploitable Data, vip. | Optional |
+| sub_type | Alert's sub-type (dependencies - use threat-command-alert-type-list command to get all the alert subtypes). | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ThreatCommand.Scenario.type | String | Alert type. | 
-| ThreatCommand.Scenario.subtype | String | Alert sub-type. | 
-| ThreatCommand.Scenario.scenario | String | Name of the scenario. | 
-| ThreatCommand.Scenario.description | String | Short description of the scenario. | 
+| ThreatCommand.Scenario.type | String | Alert type. |
+| ThreatCommand.Scenario.subtype | String | Alert sub-type. |
+| ThreatCommand.Scenario.scenario | String | Name of the scenario. |
+| ThreatCommand.Scenario.description | String | Short description of the scenario. |
 
 #### Command example
 
@@ -3283,7 +3254,6 @@ List alert scenarios. They are mainly used to add manual alerts.
 >|---|---|---|---|
 >| ACompanyEmailAddressReportedAsMalicious | A company email address reported as spamming | AttackIndication | AssetReportedAsMalicious |
 
-
 ### file
 
 ***
@@ -3297,32 +3267,32 @@ Runs reputation on files.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required | 
-| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required | 
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required |
+| file | Hash of the file to query. Supports MD5, SHA1, and SHA256. | Required |
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| File.MD5 | String | The MD5 hash of the file. | 
-| File.SHA1 | String | The SHA1 hash of the file. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.sha512 | String | The SHA512 hash of the file. | 
-| File.name | String | The full file name \(including file extension\). | 
-| File.description | String | The description of the file. | 
-| File.size | String | The size of the file. | 
-| File.file_type | String | The type of the file. | 
-| File.tags | String | The tags of the file. | 
-| File.actor | String | Related threat actors to the file. | 
-| File.campaign | String | Related threat campaigns to the file. | 
-| File.associated_file_names | String | Assosiated file names to the file. | 
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
+| File.MD5 | String | The MD5 hash of the file. |
+| File.SHA1 | String | The SHA1 hash of the file. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.sha512 | String | The SHA512 hash of the file. |
+| File.name | String | The full file name \(including file extension\). |
+| File.description | String | The description of the file. |
+| File.size | String | The size of the file. |
+| File.file_type | String | The type of the file. |
+| File.tags | String | The tags of the file. |
+| File.actor | String | Related threat actors to the file. |
+| File.campaign | String | Related threat campaigns to the file. |
+| File.associated_file_names | String | Assosiated file names to the file. |
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
 
 ### ip
 
@@ -3337,28 +3307,28 @@ Checks the reputation of an IP address.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required | 
-| ip | IP address to check. | Required | 
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required |
+| ip | IP address to check. | Required |
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| IP.ASN | String | IP ASN. | 
-| IP.Address | String | IP address. | 
-| IP.Region | String | IP region. | 
-| IP.UpdatedDate | String | IP updated date. | 
-| ThreatCommand.IP.asn | String | IP ASN. | 
-| ThreatCommand.IP.ip | String | IP address. | 
-| ThreatCommand.IP.region | String | IP region. | 
-| ThreatCommand.IP.updated_date | String | IP updated date. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| IP.ASN | String | IP ASN. |
+| IP.Address | String | IP address. |
+| IP.Region | String | IP region. |
+| IP.UpdatedDate | String | IP updated date. |
+| ThreatCommand.IP.asn | String | IP ASN. |
+| ThreatCommand.IP.ip | String | IP address. |
+| ThreatCommand.IP.region | String | IP region. |
+| ThreatCommand.IP.updated_date | String | IP updated date. |
 
 ### url
 
@@ -3373,29 +3343,29 @@ Checks the reputation of a URL.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required | 
-| url | A comma-separated list of URLs to check. This command will not work properly on URLs containing commas. | Required | 
-| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional | 
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required |
+| url | A comma-separated list of URLs to check. This command will not work properly on URLs containing commas. | Required |
+| sampleSize | The number of samples from each type (resolutions, detections, etc.) to display for long format. Default is 10. | Optional |
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| URL.Data | String | The URL value. | 
-| URL.DetectionEngines | String | URL detection engines. | 
-| URL.PositiveDetections | Number | Number of positive engines. | 
-| URL.Tags | Number | URL tags. | 
-| ThreatCommand.URL.detection_engines | String | URL detection engines. | 
-| ThreatCommand.URL.positive_detections | String | URL positive detection engines. | 
-| ThreatCommand.URL.tags | String | URL tags. | 
-| ThreatCommand.URL.url | Number | The URL value. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| URL.Data | String | The URL value. |
+| URL.DetectionEngines | String | URL detection engines. |
+| URL.PositiveDetections | Number | Number of positive engines. |
+| URL.Tags | Number | URL tags. |
+| ThreatCommand.URL.detection_engines | String | URL detection engines. |
+| ThreatCommand.URL.positive_detections | String | URL positive detection engines. |
+| ThreatCommand.URL.tags | String | URL tags. |
+| ThreatCommand.URL.url | Number | The URL value. |
 
 ### domain
 
@@ -3410,24 +3380,24 @@ Checks the reputation of a domain.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required | 
-| domain | Domain name to check. | Required | 
-| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional | 
-| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional | 
+| unfinished_enriches | Unfinished IOCs number. Default is -1. | Required |
+| domain | Domain name to check. | Required |
+| interval_in_seconds | The interval in seconds between each poll. Default is 30. | Optional |
+| timeout_in_seconds | The timeout in seconds until polling ends. Default is 600. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Domain.domain | String | Domain found. | 
+| Domain.domain | String | Domain found. |
 | Domain.Name | String | The name of the domain that was checked. |
-| DBotScore.Indicator | String | The indicator that was tested. | 
-| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. | 
-| DBotScore.Score | Number | The actual score. | 
-| DBotScore.Type | String | The indicator type. | 
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
-| Domain.DNSRecords | String | DNS records of the domain. | 
-| ThreatCommand.Domain.domain | String | The domain value. | 
-| ThreatCommand.Domain.sub_domains | Date | Sub domains of the domain. | 
-| ThreatCommand.Domain.tags | String | Tags of the domain. | 
-| ThreatCommand.Domain.updated_date | String | Domain updated date. | 
+| DBotScore.Indicator | String | The indicator that was tested. |
+| DBotScore.Reliability | String | Reliability of the source providing the intelligence data. |
+| DBotScore.Score | Number | The actual score. |
+| DBotScore.Type | String | The indicator type. |
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
+| Domain.DNSRecords | String | DNS records of the domain. |
+| ThreatCommand.Domain.domain | String | The domain value. |
+| ThreatCommand.Domain.sub_domains | Date | Sub domains of the domain. |
+| ThreatCommand.Domain.tags | String | Tags of the domain. |
+| ThreatCommand.Domain.updated_date | String | Domain updated date. |

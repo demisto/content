@@ -1506,7 +1506,7 @@ def add_member_to_group(default_base_dn):
             demisto.debug(f"Member DNs after formatting are: {member_dn}")
             member_dns.append(member_dn)
     elif args.get("computer-name"):
-        computers = argToList("computer-name")
+        computers = argToList(args.get("computer-name"))
         member_dns = []
         for c in computers:
             member_dn = computer_dn(c, search_base)

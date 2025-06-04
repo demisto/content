@@ -1,5 +1,121 @@
 {
     "msft_azure_waf_raw": {
+        "type": {
+            "type": "string",
+            "is_array": false
+        },
+        "transactionid": {
+            "type": "string",
+            "is_array": false
+        },
+        "clientip": {
+            "type": "string",
+            "is_array": false
+        },
+        "instanceid": {
+            "type": "string",
+            "is_array": false
+        },
+        "requesturi": {
+            "type": "string",
+            "is_array": false
+        },
+        "upstreamsourceport": {
+            "type": "string",
+            "is_array": false
+        },
+        "errorinfo": {
+            "type": "string",
+            "is_array": false
+        },
+        "rulename": {
+            "type": "string",
+            "is_array": false
+        },
+        "serverrouted": {
+            "type": "string",
+            "is_array": false
+        },
+        "originalhost": {
+            "type": "string",
+            "is_array": false
+        },
+        "host": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpmethod": {
+            "type": "string",
+            "is_array": false
+        },
+        "httpstatus": {
+            "type": "string",
+            "is_array": false
+        },
+        "originalrequesturiwithargs": {
+            "type": "string",
+            "is_array": false
+        },
+        "receivedbytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "sentbytes": {
+            "type": "string",
+            "is_array": false
+        },
+        "sslcipher": {
+            "type": "string",
+            "is_array": false
+        },
+        "sslprotocol": {
+            "type": "string",
+            "is_array": false
+        },
+        "wafmode": {
+            "type": "string",
+            "is_array": false
+        },
+        "action": {
+            "type": "string",
+            "is_array": false
+        },
+        "message": {
+            "type": "string",
+            "is_array": false
+        },
+        "detaileddata": {
+            "type": "string",
+            "is_array": false
+        },
+        "detailedmessage": {
+            "type": "string",
+            "is_array": false
+        },
+        "filedetails": {
+            "type": "string",
+            "is_array": false
+        },
+        "hostname": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleid": {
+            "type": "string",
+            "is_array": false
+        },
+        "ruleGroup_s": {
+            "type": "string",
+            "is_array": false
+        },
+        "rulesettype": {
+            "type": "string",
+            "is_array": false
+        },
+        "rulesetversion": {
+            "type": "string",
+            "is_array": false
+        },
         "resourceId": {
             "type": "string",
             "is_array": false
@@ -220,6 +336,5 @@
             "type": "string",
             "is_array": false
         }
-            
     }
 }

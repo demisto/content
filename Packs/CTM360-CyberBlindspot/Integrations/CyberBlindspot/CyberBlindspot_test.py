@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from dateparser import parse
 from unittest.mock import patch
-from CommonServerPython import DemistoException, IncidentStatus
+from CommonServerPython import DemistoException, IncidentStatus, EntryType, CommandResults
 from CyberBlindspot import (
     LOGGING_PREFIX,
     CBS_INCOMING_DATE_FORMAT,
@@ -521,6 +521,7 @@ def test_test_module(mock_params, mock_side_effect, mock_client, mocker):
                     "remarks": "Remarks about the incident",
                     "first_seen": "The creation date of the incident",
                     "last_seen": "The date the incident got last updated",
+                    "screenshots": "The screenshot evidence if available",
                     "brand": "The organization the incident belongs to",
                     "timestamp": "The timestamp of when the record was created",
                 }
@@ -829,8 +830,14 @@ def test_ctm360_cbs_incident_list_command(
                 "remarks": "New leaked_credential with severity High found",
                 "first_seen": "27-12-2023 05:42:18 AM",
                 "last_seen": "27-12-2023 05:42:18 AM",
+                "screenshots": [
+                    {
+                        "filename": "screenshot1.png",
+                        "filepath": "29207a3d7f2ce17cd6309d1fc0f5ad7e"
+                    }
+                ],
                 "brand": "Mock Brand",
-                "timestamp": 1703655740964,
+                "timestamp": "1703655740964",
             },
             MODULES[0],
         ),
@@ -878,7 +885,7 @@ def test_ctm360_cbs_incident_list_command(
                 "brand": "Demo Bank",
                 "id": "LC-A1E4B2F49",
                 "status": "new",
-                "timestamp": 1735107419000,
+                "timestamp": "1735107419000",
                 "severity": "Low",
                 "type": "Compromised Cards",
                 "remarks": "Compromised Card 0123456789012345",
@@ -905,7 +912,7 @@ def test_ctm360_cbs_incident_list_command(
                 "status": "monitoring",
                 "incident_status": "member_feedback",
                 "brand": "RiskAssess Demo",
-                "timestamp": 1730239105000,
+                "timestamp": "1730239105000",
             },
             MODULES[3],
         ),
@@ -928,7 +935,7 @@ def test_ctm360_cbs_incident_list_command(
                 "risks": ["SSL issued on domain", "Has DNS Record", "Has NS Record"],
                 "status": "monitoring",
                 "brand": "RiskAssess Demo",
-                "timestamp": 1729904803311,
+                "timestamp": "1729904803311",
             },
             MODULES[4],
         ),
@@ -1199,3 +1206,216 @@ def test_update_remote_system(mock_response_file, mock_args, mock_log_asserts, m
         result = update_remote_system_command(mock_client, mock_args)
         assert result == mock_args["remoteId"]
         assert mock_log_asserts in caplog.text
+
+
+@pytest.mark.parametrize(
+    "mock_response,mock_params,expected_result",
+    [
+        (
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]},
+            {"ticket_id": "COMX123456"},
+            [{"filename": "screenshot1.png", "filedata": {"data": b"test_data"}}]
+        ),
+        (
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            []
+        ),
+        (
+            {"results": None},
+            {"ticket_id": "COMX123456"},
+            []
+        ),
+    ],
+)
+def test_get_screenshot_files(mock_response, mock_params, expected_result, mock_client, mocker):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Parameters for the screenshot request
+        - Mock API response
+    When:
+        - get_screenshot_files is called
+    Then:
+        - Ensure the correct response is returned
+    """
+    mocker.patch.object(mock_client, "_http_request", return_value=mock_response)
+    result = mock_client.get_screenshot_files(mock_params)
+    assert result == expected_result
+
+
+@pytest.mark.parametrize(
+    "mock_conf,mock_response,mock_args,existing_files,api_error,expected_result",
+    [
+        # Test when screenshot retrieval is disabled
+        (
+            False,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            CommandResults(readable_output="Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+        ),
+        # Test with single screenshot
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+        ),
+        # Test with multiple screenshots
+        (
+            True,
+            {"results": [
+                {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}},
+                {"filename": "screenshot2.png", "filedata": {"data": b"test_data2"}}
+            ]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [
+                {"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE},
+                {"File": "screenshot2.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}
+            ]
+        ),
+        # Test with no results
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch")
+        ),
+        # Test with filtered files (no files to fetch after filtering)
+        (
+            True,
+            {"results": []},
+            {"files": [{"filename": "screenshot1.png", "filepath": "/path/to/file"}]},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch")
+        ),
+        # Test with empty files list
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456", "files": []},
+            [],
+            None,
+            CommandResults(readable_output="No new screenshots to fetch")
+        ),
+        # Test with all files already existing in context
+        (
+            True,
+            {"results": []},
+            {"files": [{"filename": "existing.png", "filepath": "/path/to/file"}]},
+            [{"Name": "existing.png"}],
+            None,
+            CommandResults(readable_output="All requested screenshots already exist in context")
+        ),
+        # Test with invalid type in files list (should be filtered out)
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"files": [{"filename": "screenshot1.png"}, "not_a_dict"]},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+        ),
+        # Test with API error
+        (
+            True,
+            {"results": []},
+            {"ticket_id": "COMX123456"},
+            [],
+            Exception("API connection error"),
+            CommandResults(readable_output="Failed to fetch screenshots from API: API connection error")
+        ),
+        # Test with non-dictionary in results
+        (
+            True,
+            {"results": ["not_a_dict", {"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            [],
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+        ),
+        # Test with non-list InfoFile
+        (
+            True,
+            {"results": [{"filename": "screenshot1.png", "filedata": {"data": b"test_data1"}}]},
+            {"ticket_id": "COMX123456"},
+            {"Name": "other_file.png"},  # Not a list
+            None,
+            [{"File": "screenshot1.png", "FileID": "mock_file_id", "Type": EntryType.IMAGE}]
+        ),
+    ],
+)
+def test_ctm360_cbs_incident_retrieve_screenshots_command(
+    mock_conf, mock_response, mock_args, existing_files, api_error, expected_result, mock_client, mocker, capfd
+):
+    """
+    Given:
+        - CyberBlindspot Client
+        - Command arguments
+        - Mock API response
+        - Existing files in context
+        - Optional API error to simulate
+    When:
+        - ctm360_cbs_incident_retrieve_screenshots_command is called
+    Then:
+        - Ensure the correct file results or command results are returned
+        - Verify error handling works as expected
+        - Verify critical logs are generated
+    """
+    from CyberBlindspot import ctm360_cbs_incident_retrieve_screenshots_command
+
+    # Mock fileResult to avoid writing to disk
+    def mock_file_result(filename, data, file_type=None):
+        return {"File": filename, "FileID": "mock_file_id", "Type": file_type}
+    
+    # Create a mock for demisto context
+    mock_context = mocker.MagicMock(return_value={"InfoFile": existing_files})
+    
+    # Mock log function but keep track of calls
+    mock_log = mocker.patch("CyberBlindspot.log")
+    
+    # Patch everything with mocker
+    mocker.patch("CyberBlindspot.demisto.context", mock_context)
+    mocker.patch("CyberBlindspot.RETRIEVE_SCREENSHOTS", new=mock_conf)
+    mocker.patch("CyberBlindspot.fileResult", side_effect=mock_file_result)
+    mocker.patch("CommonServerPython.fileResult", side_effect=mock_file_result)
+    
+    # Configure get_screenshot_files based on whether we want to simulate an error
+    if api_error:
+        mocker.patch.object(mock_client, "get_screenshot_files", side_effect=api_error)
+    else:
+        mocker.patch.object(mock_client, "get_screenshot_files", return_value=mock_response.get("results", []))
+    
+    # Run the function with capfd disabled to prevent stdout issues
+    with capfd.disabled():
+        result = ctm360_cbs_incident_retrieve_screenshots_command(mock_client, mock_args)
+    
+    # Verify results
+    if isinstance(result, list):
+        assert len(result) == len(expected_result)
+        for r, e in zip(result, expected_result):
+            assert r["File"] == e["File"]
+            assert r["Type"] == e["Type"]
+    elif isinstance(result, CommandResults):
+        assert isinstance(expected_result, CommandResults)
+        assert result.readable_output == expected_result.readable_output
+        
+    # Verify critical logging behavior only
+    if api_error:
+        # For API errors, verify error is logged
+        mock_log.assert_any_call("error", f"Error calling get_screenshot_files: {str(api_error)}")
+    elif not mock_conf:
+        # For disabled screenshots, verify info message
+        mock_log.assert_any_call("info", "Screenshot Evidence Retrieval is Disabled in Instance Configuration.")
+    elif result and isinstance(result, list):
+        # For successful file retrieval, verify success message
+        mock_log.assert_any_call("info", f"Added {len(result)} new screenshot(s) to context")

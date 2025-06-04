@@ -1,7 +1,6 @@
-from ACTIIndicatorFeed import custom_build_iterator
-import requests_mock
 import pytest
-
+import requests_mock
+from ACTIIndicatorFeed import custom_build_iterator
 from JSONFeedApiModule import Client
 
 PARAMS = {

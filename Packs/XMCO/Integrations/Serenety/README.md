@@ -1,10 +1,8 @@
 XMCO Serenety
 
-
 ## Configure XMCO Serenety in Cortex
+
 To configure an instance of XMCO Serenety integration in Cortex XSOAR:
-
-
 
 | **Parameter**                               | **Required** |
 |---------------------------------------------| ------------ |
@@ -13,12 +11,10 @@ To configure an instance of XMCO Serenety integration in Cortex XSOAR:
 | Trust any certificate (not secure)          | False        |
 | Use system proxy settings                   | False        |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 
 ### fetch-incidents
 

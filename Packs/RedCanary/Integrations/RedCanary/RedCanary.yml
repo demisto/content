@@ -4,6 +4,9 @@ commonfields:
 name: RedCanary
 display: Red Canary
 category: Deception & Breach Simulation
+sectionorder:
+- Connect
+- Collect
 description: Red Canary collects endpoint data using Carbon Black Response and CrowdStrike Falcon.  The collected data is standardized into a common schema which allows teams to detect, analyze and respond to security incidents.
 configuration:
 - display: Domain (for example, https://demisto.my.redcanary.co)
@@ -11,38 +14,46 @@ configuration:
   defaultvalue: ""
   type: 0
   required: true
+  section: Connect
 - display: API Key
   name: api_key
   defaultvalue: ""
   type: 4
   hidden: true
   required: false
+  section: Connect
 - name: api_key_creds
   type: 9
   displaypassword: API Key
   hiddenusername: true
   required: false
+  section: Connect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: fetch_time
   type: 0
   defaultvalue: 3 days
   required: false
+  section: Collect
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8
   required: false
+  section: Connect
 - display: Maximum number of incidents to pull per fetch
   name: fetch_limit
   type: 0
@@ -54,7 +65,7 @@ script:
   script: ''
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   commands:
   - name: redcanary-acknowledge-detection
     arguments:

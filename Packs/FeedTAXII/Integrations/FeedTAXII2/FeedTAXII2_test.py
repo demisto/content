@@ -1,6 +1,7 @@
 import json
 
 import pytest
+import demistomock as demisto
 from FeedTAXII2 import *
 
 with open("test_data/results.json") as f:
@@ -517,3 +518,43 @@ def test_feed_main_enrichment_excluded(mocker):
 
     # Assertion - verify that enrichment_excluded is set to True
     assert client_mocker.call_args.kwargs.get("enrichment_excluded") is True
+
+
+def test_fetch_indicators_error_handling(mocker):
+    """
+    Test the error handling of the fetch_indicators_command function.
+
+    Given:
+    - A Taxii2FeedClient instance configured with two collections: one that throws an exception and another that passes.
+    - A mocked version of the Taxii2FeedClient.build_iterator method to simulate an error when accessing the first collection and to return dummy indicators for any other cases.
+
+    When:
+    - The fetch_indicators_command function is called with the mocked client, and an exception is simulated for the first collection.
+
+    Then:
+    - Ensure that the demisto.updateModuleHealth method is called with the correct parameters indicating an error.
+    - Ensure that the demisto.error method is called with the correct error message.
+    - Assert that the number of indicators returned is as expected (2 indicators from the scenario that does not throw an exception).
+    """  # noqa: E501
+    mock_client = Taxii2FeedClient(url="", collection_to_fetch="default", proxies=[], verify=False, objects_to_fetch=[])
+    mock_client.collections = [MockCollection("1", "trow exception"), MockCollection("2", "pass")]
+    
+    mock_update_health = mocker.patch.object(demisto,'updateModuleHealth')
+    mock_error = mocker.patch('FeedTAXII2.demisto.error')
+    
+    # Error simulation on the first collection
+    def side_effect(limit, added_after):
+        if mock_client.collection_to_fetch.id == '1':
+            raise Exception("Simulated Error")
+        return [{'value': 'dummy_indicator_1'}, {'value': 'dummy_indicator_2'}]
+    
+    mock_client.collection_to_fetch = None
+    mocker.patch("FeedTAXII2.Taxii2FeedClient.build_iterator", side_effect=side_effect)
+    try:
+        indicators, last_run = fetch_indicators_command(mock_client, "1 day", -1, {})
+    except Exception:
+        pass
+    
+    mock_update_health.assert_called_once_with({"message": "Error fetching collection 1: Simulated Error"}, is_error=True)
+    mock_error.assert_called_once_with("Failed to fetch IOCs from collection 1: Simulated Error")
+    assert len(indicators) == 2

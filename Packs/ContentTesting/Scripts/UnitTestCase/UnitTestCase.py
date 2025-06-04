@@ -11,7 +11,7 @@ def main():
     addAfter = args.get("addAfter", "")
     try:
         if listName != "":
-            listlines = demisto.executeCommand("getList", {"listName": listName})[0]["Contents"]
+            listlines = execute_command("getList", {"listName": listName})
             buf = io.StringIO(listlines)
         else:
             raise DemistoException("No test case list provided")

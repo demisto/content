@@ -266,8 +266,8 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "70"
       - "69"
+      - "94"
     scriptarguments:
       detected_date_time_after:
         simple: ${TimeNow}
@@ -278,7 +278,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 2030
+          "y": 1978
         }
       }
     note: false
@@ -562,7 +562,7 @@ tasks:
       {
         "position": {
           "x": 1060,
-          "y": 3808
+          "y": 3807
         }
       }
     note: false
@@ -1044,7 +1044,7 @@ tasks:
       {
         "position": {
           "x": 200,
-          "y": 2200
+          "y": 2245
         }
       }
     note: false
@@ -1095,7 +1095,7 @@ tasks:
       {
         "position": {
           "x": -210,
-          "y": 2200
+          "y": 2245
         }
       }
     note: false
@@ -1253,9 +1253,9 @@ tasks:
       - "41"
     scriptarguments:
       new_json:
-        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.targetResources.[0].modifiedProperties.[0].newValue}
+        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.properties.targetResources.[0].modifiedProperties.[0].newValue}
       old_json:
-        simple: ${Core.OriginalAlert.event.raw_log.targetResources.[0].modifiedProperties.[0].oldValue}
+        simple: ${Core.OriginalAlert.raw_abioc.event.raw_log.properties.targetResources.[0].modifiedProperties.[0].oldValue}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -1834,6 +1834,59 @@ tasks:
         "position": {
           "x": 81,
           "y": 1181
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "94":
+    id: "94"
+    taskid: 46d444ea-942b-47ab-86a6-e9389c5cfe20
+    type: condition
+    task:
+      id: 46d444ea-942b-47ab-86a6-e9389c5cfe20
+      version: -1
+      name: Checks if user agent from detections exists
+      type: condition
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#default#':
+      - "69"
+      "yes":
+      - "70"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              complex:
+                root: AzureRiskyUsers.RiskDetection
+                filters:
+                - - operator: in
+                    left:
+                      value:
+                        simple: AzureRiskyUsers.RiskDetection.userPrincipalName
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Core.OriginalAlert.raw_abioc.event.identity_name
+                      iscontext: true
+                accessor: additionalInfo
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -209,
+          "y": 2118
         }
       }
     note: false

@@ -180,7 +180,7 @@
                                 "fieldId": "rubrikpolariscdmclustername",
                                 "height": 53,
                                 "id": "056ff8b0-6fda-11eb-befe-85443460d735",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -189,7 +189,7 @@
                                 "fieldId": "rubrikpolarisobjecttype",
                                 "height": 53,
                                 "id": "181f24e0-6fda-11eb-befe-85443460d735",
-                                "index": 3,
+                                "index": 2,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -199,8 +199,26 @@
                                 "fieldId": "rubrikpolarisstarttime",
                                 "height": 53,
                                 "id": "f8d44410-37bd-11ec-8878-41b30c8936ff",
-                                "index": 4,
+                                "index": 3,
                                 "listId": "caseinfoid-2ec41170-454a-11eb-ba5e-05d9566e6d05",
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rubrikpolarisactivityseriesid",
+                                "height": 53,
+                                "id": "3d547210-f9a1-11ef-98dc-ef869f4670b6",
+                                "index": 4,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "rubrikpolarislastactivitystatus",
+                                "height": 22,
+                                "id": "55d3ced0-f9a1-11ef-98dc-ef869f4670b6",
+                                "index": 5,
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -236,9 +254,18 @@
                             {
                                 "endCol": 4,
                                 "fieldId": "rubrikpolarisclusterlocationpath",
-                                "height": 22,
+                                "height": 53,
                                 "id": "07b02120-37be-11ec-8878-41b30c8936ff",
                                 "index": 3,
+                                "sectionItemType": "field",
+                                "startCol": 2
+                            },
+                            {
+                                "endCol": 4,
+                                "fieldId": "rubrikpolarisactivitytype",
+                                "height": 53,
+                                "id": "412c7c20-f9a1-11ef-98dc-ef869f4670b6",
+                                "index": 4,
                                 "sectionItemType": "field",
                                 "startCol": 2
                             }
@@ -411,7 +438,7 @@
                         "y": 11
                     },
                     {
-                        "h": 4,
+                        "h": 2,
                         "i": "caseinfoid-f1b18520-5930-11ef-84f9-f1d4aee2db17",
                         "items": [],
                         "maxW": 3,
@@ -447,6 +474,49 @@
                         "w": 2,
                         "x": 1,
                         "y": 8
+                    },
+                    {
+                        "displayType": "ROW",
+                        "h": 2,
+                        "hideName": false,
+                        "i": "caseinfoid-88875ed0-fa52-11ef-bb2f-17b30e867719",
+                        "items": [
+                            {
+                                "endCol": 2,
+                                "fieldId": "dbotclosed",
+                                "height": 22,
+                                "id": "b8ff5c20-fa52-11ef-bb2f-17b30e867719",
+                                "index": 0,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closereason",
+                                "height": 22,
+                                "id": "bb136f10-fa52-11ef-bb2f-17b30e867719",
+                                "index": 1,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            },
+                            {
+                                "endCol": 2,
+                                "fieldId": "closenotes",
+                                "height": 22,
+                                "id": "bc4e3900-fa52-11ef-bb2f-17b30e867719",
+                                "index": 2,
+                                "sectionItemType": "field",
+                                "startCol": 0
+                            }
+                        ],
+                        "maxW": 3,
+                        "minH": 1,
+                        "moved": false,
+                        "name": "Closing Information",
+                        "static": false,
+                        "w": 1,
+                        "x": 0,
+                        "y": 9
                     }
                 ],
                 "type": "custom"

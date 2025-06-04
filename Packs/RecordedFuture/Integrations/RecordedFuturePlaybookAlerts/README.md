@@ -2,7 +2,6 @@
 
 Fetch & triage Recorded Future Playbook Alerts.
 
-
 ## Configure Recorded Future - Playbook Alerts on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -44,12 +43,10 @@ The integration pulls in Playbook alerts from Recorded Future base on its update
 
 > The configuration of the preprocessing rule is optional, but highly recommended.
 
-
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 
 ### recordedfuture-playbook-alerts-search
 
@@ -72,6 +69,7 @@ Search playbook alerts based on filters.
 | order_search_by       | The order by which to search for playbook alerts. Possible values are: updated, created.                                                                 | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-search```
 ```!recordedfuture-playbook-alerts-search category=domain_abuse```
 ```!recordedfuture-playbook-alerts-search category=vulnerability```
@@ -79,7 +77,6 @@ Search playbook alerts based on filters.
 ```!recordedfuture-playbook-alerts-search playbook_alert_status=in-progress```
 ```!recordedfuture-playbook-alerts-search priority=high```
 ```!recordedfuture-playbook-alerts-search order_search_by=updated```
-
 
 #### Context Output
 
@@ -99,7 +96,6 @@ Search playbook alerts based on filters.
 | RecordedFuture.PlaybookAlerts.owner_id          | String   | uhash of the enterprise that owns the alert. |
 | RecordedFuture.PlaybookAlerts.owner_name        | String   | Name of the enterprise that owns the alert.  |
 
-
 ### recordedfuture-playbook-alerts-details
 
 ***
@@ -117,6 +113,7 @@ Get Playbook alert details by ID.
 | detail_sections   | What evidence sections to include in the fetch. Fetches all available if not specified. Possible values are: status, action, summary, log, whois, dns. | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-details alert_ids="12312312-1231-1231-1231-123123123123" detail_sections="status,log"```
 
 #### Context Output
@@ -267,12 +264,13 @@ Update the status of one or multiple Playbook alerts
 
 | **Argument Name** | **Description**                                                                                                                                                                     | **Required** |
 |-------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| alert_ids         | IDs of the playbook alerts that will be updated.                                                                                                                                    | Required     | 
+| alert_ids         | IDs of the playbook alerts that will be updated.                                                                                                                                    | Required     |
 | new_status        | New status to set for all alerts in alert_ids. Possible values are: new, in-progress, dismissed, resolved.                                                                          | Required     |
 | comment           | Add a comment to all alerts in alert_ids.                                                                                                                                           | Optional     |
 | reopen            | Set the reopen strategy for the alert. Reopen on significant updates or keep the alert Resolved. Default: reopen on significant updates. Can only be used with new_status=resolved. | Optional     |
 
 ##### Command Example
+
 ```!recordedfuture-playbook-alerts-update alert_ids="12312312-1231-1231-1231-123123123123" new_status="New"```
 
 #### Context Output

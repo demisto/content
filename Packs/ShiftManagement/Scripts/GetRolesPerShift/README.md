@@ -1,6 +1,7 @@
 Retrieves the roles that are available per shift.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ Retrieves the roles that are available per shift.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

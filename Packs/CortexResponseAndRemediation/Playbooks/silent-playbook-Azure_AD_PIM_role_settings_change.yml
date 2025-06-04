@@ -80,7 +80,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "6"
+      - "56"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -157,7 +157,7 @@ tasks:
       {
         "position": {
           "x": 726.25,
-          "y": 441
+          "y": 603
         }
       }
     note: false
@@ -209,8 +209,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 850.25,
-          "y": 690
+          "x": 849.25,
+          "y": 871
         }
       }
     note: false
@@ -234,16 +234,16 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
+      - "57"
       - "45"
       - "8"
-      - "13"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 1250.25,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -295,8 +295,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1662.25,
-          "y": 690
+          "x": 1653,
+          "y": 1017
         }
       }
     note: false
@@ -327,8 +327,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2360,
-          "y": 566
+          "x": 2377,
+          "y": 729
         }
       }
     note: false
@@ -375,8 +375,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2124,
-          "y": 806
+          "x": 2141,
+          "y": 969
         }
       }
     note: false
@@ -420,8 +420,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2124,
-          "y": 926
+          "x": 2141,
+          "y": 1089
         }
       }
     note: false
@@ -457,7 +457,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1180
+          "y": 1342
         }
       }
     note: false
@@ -495,7 +495,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1050
+          "y": 1212
         }
       }
     note: false
@@ -565,7 +565,7 @@ tasks:
       {
         "position": {
           "x": -554.75,
-          "y": 1304
+          "y": 1466
         }
       }
     note: false
@@ -603,7 +603,7 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 806
+          "y": 968
         }
       }
     note: false
@@ -635,7 +635,7 @@ tasks:
       {
         "position": {
           "x": -338,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -666,7 +666,7 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 691
+          "y": 853
         }
       }
     note: false
@@ -696,8 +696,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 736,
-          "y": 1463
+          "x": 726.25,
+          "y": 1606
         }
       }
     note: false
@@ -728,7 +728,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 684
+          "y": 846
         }
       }
     note: false
@@ -768,7 +768,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 806
+          "y": 968
         }
       }
     note: false
@@ -820,7 +820,7 @@ tasks:
       {
         "position": {
           "x": -123.75,
-          "y": 926
+          "y": 1088
         }
       }
     note: false
@@ -851,7 +851,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 566
+          "y": 728
         }
       }
     note: false
@@ -887,7 +887,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 692
+          "y": 854
         }
       }
     note: false
@@ -899,10 +899,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+    taskid: a839fc41-dd25-4c21-b2f0-b2c3b293f5b4
     type: condition
     task:
-      id: 7c459b3f-eb42-4403-9444-36a5fbe9080e
+      id: a839fc41-dd25-4c21-b2f0-b2c3b293f5b4
       version: -1
       name: Analyze evidence
       description: |-
@@ -956,8 +956,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 736,
-          "y": 1578
+          "x": 726.25,
+          "y": 1742
         }
       }
     note: false
@@ -969,10 +969,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: d28d849f-54cd-4765-afc0-a36e99c60e20
+    taskid: 859374b8-7dac-40bf-a569-c5cc15ad90f1
     type: regular
     task:
-      id: d28d849f-54cd-4765-afc0-a36e99c60e20
+      id: 859374b8-7dac-40bf-a569-c5cc15ad90f1
       version: -1
       name: Save IP reputation
       description: Saves a context key indicating 1 if the IP is malicious and 0 if benign.
@@ -1017,7 +1017,7 @@ tasks:
       {
         "position": {
           "x": 385.25,
-          "y": 805
+          "y": 967
         }
       }
     note: false
@@ -1047,8 +1047,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1856
+          "x": 1237,
+          "y": 2011
         }
       }
     note: false
@@ -1125,8 +1125,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2362
+          "x": 1237,
+          "y": 2517
         }
       }
     note: false
@@ -1183,8 +1183,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1975
+          "x": 1237,
+          "y": 2130
         }
       }
     note: false
@@ -1225,8 +1225,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1320,
-          "y": 2528
+          "x": 989,
+          "y": 2660
         }
       }
     note: false
@@ -1268,8 +1268,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2670
+          "x": 1504,
+          "y": 2832
         }
       }
     note: false
@@ -1281,13 +1281,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: c50420c8-40ad-4e17-987d-015ab895ce0d
+    taskid: d09e6b02-2212-4915-abfe-83fe52448419
     type: regular
     task:
-      id: c50420c8-40ad-4e17-987d-015ab895ce0d
+      id: d09e6b02-2212-4915-abfe-83fe52448419
       version: -1
-      name: Save closing reason
-      description: Saves a closing reason of Resolved - True Positive.
+      name: Save close reason - true positive
+      description: Saves a close reason of Resolved - True Positive.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -1305,8 +1305,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 1727
+          "x": 1237,
+          "y": 1882
         }
       }
     note: false
@@ -1361,7 +1361,7 @@ tasks:
       {
         "position": {
           "x": 1250.25,
-          "y": 690
+          "y": 871
         }
       }
     note: false
@@ -1396,8 +1396,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2583.5,
-          "y": 799
+          "x": 2600.5,
+          "y": 962
         }
       }
     note: false
@@ -1447,8 +1447,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2583.5,
-          "y": 926
+          "x": 2600.5,
+          "y": 1099
         }
       }
     note: false
@@ -1478,8 +1478,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2583.5,
-          "y": 684
+          "x": 2600.5,
+          "y": 847
         }
       }
     note: false
@@ -1509,8 +1509,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2124,
-          "y": 690
+          "x": 2141,
+          "y": 853
         }
       }
     note: false
@@ -1555,8 +1555,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 2583.5,
-          "y": 1069
+          "x": 2600.5,
+          "y": 1226
         }
       }
     note: false
@@ -1657,8 +1657,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2106
+          "x": 1237,
+          "y": 2261
         }
       }
     note: false
@@ -1688,8 +1688,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1052,
-          "y": 2249
+          "x": 1237,
+          "y": 2404
         }
       }
     note: false
@@ -1716,8 +1716,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 736,
-          "y": 2800
+          "x": 726.25,
+          "y": 2982
         }
       }
     note: false
@@ -1770,7 +1770,159 @@ tasks:
       {
         "position": {
           "x": -554.5,
-          "y": 926
+          "y": 1088
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "56":
+    id: "56"
+    taskid: b5675ca8-c1a2-4ffb-a725-669c2359b078
+    type: condition
+    task:
+      id: b5675ca8-c1a2-4ffb-a725-669c2359b078
+      version: -1
+      name: Validate modified settings
+      description: Ensures that the modified role settings exist in the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "58"
+      Exist:
+      - "6"
+    separatecontext: false
+    conditions:
+    - label: Exist
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.operation_status_reason_provided
+            iscontext: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 726.25,
+          "y": 431
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "57":
+    id: "57"
+    taskid: 46b953d1-ded6-4833-b625-e7ed16b3d070
+    type: condition
+    task:
+      id: 46b953d1-ded6-4833-b625-e7ed16b3d070
+      version: -1
+      name: Validate modified role
+      description: Ensures that the name of the modified role exists in the context.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "26"
+      Exists:
+      - "13"
+    separatecontext: false
+    conditions:
+    - label: Exists
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.OriginalAlert.event.referenced_resource_name
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 1653,
+          "y": 871
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "58":
+    id: "58"
+    taskid: 6e2e54d5-42f8-47a4-be59-07786822f78c
+    type: title
+    task:
+      id: 6e2e54d5-42f8-47a4-be59-07786822f78c
+      version: -1
+      name: No Settings Changed
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    nexttasks:
+      '#none#':
+      - "59"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3210,
+          "y": 846
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "59":
+    id: "59"
+    taskid: 4f62c24a-426f-4563-af72-5704e0abcb45
+    type: regular
+    task:
+      id: 4f62c24a-426f-4563-af72-5704e0abcb45
+      version: -1
+      name: Save close reason - false positive
+      description: Saves a close reason of Resolved - False Positive.
+      scriptName: SetAndHandleEmpty
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "42"
+    scriptarguments:
+      key:
+        simple: CloseReason
+      value:
+        simple: Resolved - False Positive
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 3210,
+          "y": 973
         }
       }
     note: false
@@ -1784,15 +1936,19 @@ view: |-
   {
     "linkLabelsPosition": {
       "33_43_True Positive": 0.53,
+      "33_54_#default#": 0.9,
       "38_41_Disable user": 0.85,
       "38_42_Do not disable user": 0.12,
       "47_26_#default#": 0.11,
-      "52_42_#default#": 0.41
+      "47_51_yes": 0.6,
+      "52_42_#default#": 0.41,
+      "56_58_#default#": 0.22,
+      "57_26_#default#": 0.11
     },
     "paper": {
       "dimensions": {
-        "height": 2834,
-        "width": 3519.25,
+        "height": 3016,
+        "width": 4145.75,
         "x": -554.75,
         "y": 26
       }

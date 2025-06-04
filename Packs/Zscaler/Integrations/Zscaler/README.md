@@ -390,7 +390,7 @@ Ensure that the URLs are properly formatted according to Zscaler's guidelines. F
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | category-id | The ID of the category to add the specified URLs to. For example, RADIO_STATIONS. You can retrieve the category IDs by running the 'zscaler-get-categories' command. | Required | 
-| url | A comma-separated list of URLs to add to the specified category. For example, pandora.com,spotify.com. | Optional | 
+| url | A comma-separated list of URLs to add to the specified category. For example, `pandora.com,spotify.com`. <br> **Important:** <br> If any URL contains a comma (`,`), you must pass the `url` argument as a JSON list wrapped in backticks (\`). <br> **Example (single URL with comma):** <br> url=\`["https://example.com/foo,bar"]\` <br> **Example (multiple URLs with commas):** <br> url=\`["https://example.com/foo,bar","https://example2.com/foo,bar"]\` | Optional |
 | retaining-parent-category-url | A comma-separated list of URLs to add to the retaining parent category section inside the specified category. For example, pandora.com,spotify.com. | Optional | 
 
 #### Context Output
@@ -405,6 +405,10 @@ Ensure that the URLs are properly formatted according to Zscaler's guidelines. F
 #### Command Example
 
 ```!zscaler-category-add-url category-id=MUSIC url=demisto.com,apple.com```
+
+**Example with a URL containing a comma:**
+
+```!zscaler-category-add-url category-id="CUSTOM_123" url=`["https://example.com/foo,bar"]` ```
 
 #### Context example
 

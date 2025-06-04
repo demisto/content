@@ -1,7 +1,7 @@
-import requests_mock
-from SAPIAM import Client, get_mapping_fields, main
-from IAMApiModule import *
 import demistomock as demisto
+import requests_mock
+from IAMApiModule import *
+from SAPIAM import Client, get_mapping_fields, main
 
 MOCK_ARGS = {
     "user-profile": {

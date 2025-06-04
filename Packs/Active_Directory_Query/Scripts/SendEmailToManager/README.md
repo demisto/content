@@ -1,6 +1,7 @@
 Send an approval email to the manager of the employee, allowing the manager to reply directly into the incident
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,12 +11,15 @@ Send an approval email to the manager of the employee, allowing the manager to r
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * send-mail
 * ad-search
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -29,5 +33,6 @@ This script uses the following commands and scripts.
 | persistent | Indicates whether to use one-time entitlement or a persistent one |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

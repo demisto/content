@@ -1,36 +1,37 @@
-import demistomock as demisto  # noqa: F401
-from CommonServerPython import *  # noqa: F401
 # pylint: disable=no-name-in-module
 # pylint: disable=no-self-argument
-
 from abc import ABC
-from typing import Any, Callable, Optional
-from CommonServerUserPython import *
-
+from collections.abc import Callable
 from enum import Enum
-from pydantic import BaseConfig, BaseModel, AnyUrl, validator, Field
+from typing import Any
+
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
+from pydantic import AnyUrl, BaseConfig, BaseModel, Field, validator
 from requests.auth import HTTPBasicAuth
+
+from CommonServerUserPython import *
 
 
 class Method(str, Enum):
-    GET = 'GET'
-    POST = 'POST'
-    PUT = 'PUT'
-    HEAD = 'HEAD'
-    PATCH = 'PATCH'
-    DELETE = 'DELETE'
+    GET = "GET"
+    POST = "POST"
+    PUT = "PUT"
+    HEAD = "HEAD"
+    PATCH = "PATCH"
+    DELETE = "DELETE"
 
 
 def load_json(v: Any) -> dict:
     if not isinstance(v, (dict, str)):
-        raise ValueError('headers are not dict or a valid json')
+        raise ValueError("headers are not dict or a valid json")
     if isinstance(v, str):
         try:
             v = json.loads(v)
             if not isinstance(v, dict):
-                raise ValueError('headers are not from dict type')
+                raise ValueError("headers are not from dict type")
         except json.decoder.JSONDecodeError as exc:
-            raise ValueError('headers are not valid Json object') from exc
+            raise ValueError("headers are not valid Json object") from exc
     if isinstance(v, dict):
         return v
     return {}
@@ -41,20 +42,20 @@ class IntegrationHTTPRequest(BaseModel):
     url: AnyUrl
     verify: bool = True
     headers: dict = {}  # type: ignore[type-arg]
-    auth: Optional[HTTPBasicAuth] = None
+    auth: HTTPBasicAuth | None = None
     data: Any = None
     params: dict = {}  # type: ignore[type-arg]
 
     class Config(BaseConfig):
         arbitrary_types_allowed = True
 
-    _normalize_headers = validator('headers', pre=True, allow_reuse=True)(  # type: ignore[type-var]
+    _normalize_headers = validator("headers", pre=True, allow_reuse=True)(  # type: ignore[type-var]
         load_json
     )
 
 
 class Credentials(BaseModel):
-    identifier: Optional[str]
+    identifier: str | None
     password: str
 
 
@@ -66,7 +67,7 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
     creds = Credentials.parse_obj(auth_credendtials)
     if creds.password and creds.identifier:
         request.auth = HTTPBasicAuth(creds.identifier, creds.password)
-    auth = {'Authorization': f'Bearer {creds.password}'}
+    auth = {"Authorization": f"Bearer {creds.password}"}
     if request.headers:
         request.headers |= auth  # type: ignore[assignment, operator]
     else:
@@ -76,8 +77,8 @@ def set_authorization(request: IntegrationHTTPRequest, auth_credendtials):
 class IntegrationOptions(BaseModel):
     """Add here any option you need to add to the logic"""
 
-    proxy: Optional[bool] = False
-    limit: Optional[int] = Field(None, ge=1)
+    proxy: bool | None = False
+    limit: int | None = Field(None, ge=1)
 
 
 class IntegrationEventsClient(ABC):
@@ -98,15 +99,13 @@ class IntegrationEventsClient(ABC):
         """TODO: set the next request's filter.
         Example:
         """
-        self.request.headers['after'] = after
+        self.request.headers["after"] = after
 
     def __del__(self):
         try:
             self.session.close()
         except AttributeError as err:
-            demisto.debug(
-                f'ignore exceptions raised due to session not used by the client. {err=}'
-            )
+            demisto.debug(f"ignore exceptions raised due to session not used by the client. {err=}")
 
     def call(self, request: IntegrationHTTPRequest) -> requests.Response:
         try:
@@ -114,13 +113,11 @@ class IntegrationEventsClient(ABC):
             response.raise_for_status()
             return response
         except Exception as exc:
-            msg = f'something went wrong with the http call {exc}'
+            msg = f"something went wrong with the http call {exc}"
             demisto.debug(msg)
             raise DemistoException(msg) from exc
 
-    def _skip_cert_verification(
-        self, skip_cert_verification: Callable = skip_cert_verification
-    ):
+    def _skip_cert_verification(self, skip_cert_verification: Callable = skip_cert_verification):
         if not self.request.verify:
             skip_cert_verification()
 
@@ -132,9 +129,7 @@ class IntegrationEventsClient(ABC):
 
 
 class IntegrationGetEvents(ABC):
-    def __init__(
-        self, client: IntegrationEventsClient, options: IntegrationOptions
-    ) -> None:
+    def __init__(self, client: IntegrationEventsClient, options: IntegrationOptions) -> None:
         self.client = client
         self.options = options
 
@@ -144,9 +139,9 @@ class IntegrationGetEvents(ABC):
             stored.extend(logs)
             if self.options.limit:
                 demisto.debug(
-                    f'{self.options.limit=} reached. \
+                    f"{self.options.limit=} reached. \
                     slicing from {len(logs)=}. \
-                    limit must be presented ONLY in commands and not in fetch-events.'
+                    limit must be presented ONLY in commands and not in fetch-events."
                 )
                 if len(stored) >= self.options.limit:
                     return stored[: self.options.limit]
@@ -161,7 +156,7 @@ class IntegrationGetEvents(ABC):
         """Logic to get the last run from the events
         Example:
         """
-        return {'after': events[-1]['created']}
+        return {"after": events[-1]["created"]}
 
     @abstractmethod  # noqa: B027
     def _iter_events(self):

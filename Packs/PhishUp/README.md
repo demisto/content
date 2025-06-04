@@ -2,7 +2,6 @@ This integration was integrated and tested with version 1.0 of PhishUp
 
 ## AI Based Real-Time URL Security
 
-
 Phishup.co aims to protect you and your employees from counterfeit URL’s using artificial
 intelligence-based protection. Thus, you can easily see whether the URL is a phishing or a clean URL.
 
@@ -28,8 +27,8 @@ provides latest category of URL’s.
 - <b>Image Screenshot APIs:</b> We enable you to detect famous object in screenshot with deep learning
 power.
 
-
 PRODUCT FEATURES
+
 - Logo detection
 - Intelligence Tools
 - Reporting
@@ -44,11 +43,11 @@ PRODUCT FEATURES
 - Examine email sender reputation and analyze email content.
 - Real-time API for URL crawls and DPI filtering services
 
-
 ### FACILITIES and BENEFITS
 
 The opportunities we offer you as Phishup.co, an advanced threat detection technology supported by
 artificial intelligence, that protects your business from known and unknown (zero-day) threats,
+
 - Uses thousands of feature vectors gathered from recent attack trends and starts tracking any
 domain name from the moment it is purchased.
 - Uses advanced real-time machine learning and image processing to detect malicious URLs at the

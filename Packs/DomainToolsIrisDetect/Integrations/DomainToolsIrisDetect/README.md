@@ -1,6 +1,6 @@
 # DomainTools Iris Detect
 
-#### Threat Actors Move Fast. Detect Helps You Move Faster.
+#### Threat Actors Move Fast. Detect Helps You Move Faster
 
 Iris Detect is an Internet infrastructure detection, monitoring, and enforcement tool built on the industry’s fastest and broadest domain discovery engine and the largest databases of domain data. Capturing key data on new domains and risk-scoring them within minutes of discovery, Detect is a game-changer for brand managers, digital risk and fraud prevention teams, and network defenders.
 
@@ -19,7 +19,6 @@ Through ad-hoc War-Room commands or on the incidents directly, domains of intere
 #### Enable Effective Enforcement
 
 Merely knowing about malicious infrastructure is not enough. Iris Detect offers impactful enforcement options: Block flagged domains from incidents directly or using ad-hoc War-Room commands. Additionally, blocked domains can appear on their own feed, enabling you to take scripted enforcement actions in your security controls. Take action by sending domains to Google Phishing Protection, which can block them in Chrome, Firefox, and Safari, among other browsers.
-
 
 ## Configure DomainTools Iris Detect on Cortex XSOAR
 
@@ -41,6 +40,7 @@ Merely knowing about malicious infrastructure is not enough. Iris Detect offers 
    | Use system proxy settings | Use system proxy settings                                                                                                                                                                                                                                                                                                                                                                                                                     | False |
    | Incident type | Optionally specify an incident type for incidents created by this integration to work with specific playbooks                                                                                                                                                                                                                                                                                                                                 | False |
    | Fetch incidents | This is a required field by XSOAR and should be set to 3, one for each possible feed type: new, changed, blocked.                                                                                                                                                                                                                                                                                                                             | False |
+
 4. To ensure that fetch incidents works:
    1. Select the **Fetches incidents** radio button.
    2. Select **DomainTools Iris Detect - Classifier** from classifier drop-down.
@@ -49,7 +49,6 @@ Merely knowing about malicious infrastructure is not enough. Iris Detect offers 
    5. Select **Create Incidents and Import Indicators** from Enabled on Changed Domains drop-down.
    6. Select **Create Incidents and Import Indicators** from Enabled on Blocked Domains drop-down.
 5. Click **Test** to validate the URLs, token, and connection.
-
 
 ## Commands
 
@@ -69,18 +68,18 @@ Reports a domain to Google's Safe Browsing API. After approval, their block list
 
 | **Argument Name**    | **Description**                                                                                                              | **Required** |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DomainToolsIrisDetect.EscalatedDomain.watchlist_domain_id | String | The blocked domain ID. | 
-| DomainToolsIrisDetect.EscalatedDomain.escalation_type | String | The escalation type. | 
-| DomainToolsIrisDetect.EscalatedDomain.id | String | The ID. | 
-| DomainToolsIrisDetect.EscalatedDomain.created_date | String | The date and time when the domain was created. | 
-| DomainToolsIrisDetect.EscalatedDomain.updated_date | String | The date and time when the domain was updated. | 
-| DomainToolsIrisDetect.EscalatedDomain.created_by | String | The email address of the person who created the escalated entry. | 
+| DomainToolsIrisDetect.EscalatedDomain.watchlist_domain_id | String | The blocked domain ID. |
+| DomainToolsIrisDetect.EscalatedDomain.escalation_type | String | The escalation type. |
+| DomainToolsIrisDetect.EscalatedDomain.id | String | The ID. |
+| DomainToolsIrisDetect.EscalatedDomain.created_date | String | The date and time when the domain was created. |
+| DomainToolsIrisDetect.EscalatedDomain.updated_date | String | The date and time when the domain was updated. |
+| DomainToolsIrisDetect.EscalatedDomain.created_by | String | The email address of the person who created the escalated entry. |
 
 #### Command example
 
@@ -126,18 +125,18 @@ Mark a given domain as blocked, which allows a script against the Iris Detect AP
 
 | **Argument Name**    | **Description**      | **Required**                                                                                                                            |
 |----------------------|----------------------|-----------------------------------------------------------------------------------------------------------------------------------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' commands. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' commands. | Required     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DomainToolsIrisDetect.BlockedDomain.watchlist_domain_id | String | The blocked domain ID. | 
-| DomainToolsIrisDetect.BlockedDomain.escalation_type | String | The escalation type. | 
-| DomainToolsIrisDetect.BlockedDomain.id | String | The ID. | 
-| DomainToolsIrisDetect.BlockedDomain.created_date | String | The date and time when the domain was created. | 
-| DomainToolsIrisDetect.BlockedDomain.updated_date | String | The date and time when the domain was updated. | 
-| DomainToolsIrisDetect.BlockedDomain.created_by | String | The email address of the person who created the blocked entry. | 
+| DomainToolsIrisDetect.BlockedDomain.watchlist_domain_id | String | The blocked domain ID. |
+| DomainToolsIrisDetect.BlockedDomain.escalation_type | String | The escalation type. |
+| DomainToolsIrisDetect.BlockedDomain.id | String | The ID. |
+| DomainToolsIrisDetect.BlockedDomain.created_date | String | The date and time when the domain was created. |
+| DomainToolsIrisDetect.BlockedDomain.updated_date | String | The date and time when the domain was updated. |
+| DomainToolsIrisDetect.BlockedDomain.created_by | String | The email address of the person who created the blocked entry. |
 
 #### Command example
 
@@ -183,19 +182,19 @@ Mark a given domain as watched, which will trigger more frequent scanning by Dom
 
 | **Argument Name**    | **Description**                                                                                                               | **Required** |
 |----------------------|-------------------------------------------------------------------------------------------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains' command. | Required     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DomainToolsIrisDetect.WatchedDomain.state | String | Indicates that the domain is watched. | 
-| DomainToolsIrisDetect.WatchedDomain.domain | String | The domain name. | 
-| DomainToolsIrisDetect.WatchedDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
-| DomainToolsIrisDetect.WatchedDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
-| DomainToolsIrisDetect.WatchedDomain.id | String | The domain ID. | 
-| DomainToolsIrisDetect.WatchedDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. | 
-| DomainToolsIrisDetect.WatchedDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). | 
+| DomainToolsIrisDetect.WatchedDomain.state | String | Indicates that the domain is watched. |
+| DomainToolsIrisDetect.WatchedDomain.domain | String | The domain name. |
+| DomainToolsIrisDetect.WatchedDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). |
+| DomainToolsIrisDetect.WatchedDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). |
+| DomainToolsIrisDetect.WatchedDomain.id | String | The domain ID. |
+| DomainToolsIrisDetect.WatchedDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. |
+| DomainToolsIrisDetect.WatchedDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). |
 
 #### Command example
 
@@ -240,19 +239,19 @@ Ignore a given domain, removing it from new and block lists, if applicable.
 
 | **Argument Name**    | **Description**                           | **Required** |
 |----------------------|-------------------------------------------|--------------|
-| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command. | Required     | 
+| watchlist_domain_ids | List of Iris Detect domain IDs to escalate. The domain ID can be found using 'domaintools-iris-detect-get-new-domains, domaintools-iris-detect-get-watched-domains' command. | Required     |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| DomainToolsIrisDetect.IgnoredDomain.state | String | Indicates that the domain is ignored. | 
-| DomainToolsIrisDetect.IgnoredDomain.domain | String | The domain name. | 
-| DomainToolsIrisDetect.IgnoredDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
-| DomainToolsIrisDetect.IgnoredDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). | 
-| DomainToolsIrisDetect.IgnoredDomain.id | String | The domain ID. | 
-| DomainToolsIrisDetect.IgnoredDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. | 
-| DomainToolsIrisDetect.IgnoredDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). | 
+| DomainToolsIrisDetect.IgnoredDomain.state | String | Indicates that the domain is ignored. |
+| DomainToolsIrisDetect.IgnoredDomain.domain | String | The domain name. |
+| DomainToolsIrisDetect.IgnoredDomain.discovered_date | String | The date and time when the domain was discovered \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). |
+| DomainToolsIrisDetect.IgnoredDomain.changed_date | String | The date and time when the domain information was last changed \(e.g., "2023-04-21T01:56:14.652000\+00:00"\). |
+| DomainToolsIrisDetect.IgnoredDomain.id | String | The domain ID. |
+| DomainToolsIrisDetect.IgnoredDomain.assigned_by | String | The email address of the person who assigned the domain to the watchlist. |
+| DomainToolsIrisDetect.IgnoredDomain.assigned_date | String | The date and time when the domain was assigned to the watchlist \(e.g.,"2023-04-20T13:13:23.000000\+00:00"\). |
 
 #### Command example
 
@@ -297,25 +296,25 @@ This command allows users to retrieve the list of monitored terms and respective
 
 | **Argument Name**     | **Description**                                                                                                                                                | **Required** |
 |-----------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| datetime_counts_since | ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496.         | Required     | 
-| include_counts        | Includes counts for each monitor for new, watched, changed, and escalated domains. Possible values are: True, False.                                           | Optional     | 
-| sort                  | Sort order for monitor list. Valid values are an ordered list of the following: ["term", "created_date", "domain_counts_changed", "domain_counts_discovered"]. | Optional     | 
-| order                 | Sort order "asc" or "desc".                                                                                                                                    | Optional     | 
+| datetime_counts_since | ISO 8601 datetime format: default None. Conditionally required if the include_counts parameter is set to True. for example 2022-05-18T12:19:51.685496.         | Required     |
+| include_counts        | Includes counts for each monitor for new, watched, changed, and escalated domains. Possible values are: True, False.                                           | Optional     |
+| sort                  | Sort order for monitor list. Valid values are an ordered list of the following: ["term", "created_date", "domain_counts_changed", "domain_counts_discovered"]. | Optional     |
+| order                 | Sort order "asc" or "desc".                                                                                                                                    | Optional     |
 
 #### Context Output
 
 | **Path**                                                 | **Type** | **Description**                                                                  |
 |----------------------------------------------------------|----------|----------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.Monitor.term                       | String   | The keyword being monitored.                                                     | 
-| DomainToolsIrisDetect.Monitor.match_substring_variations | Boolean  | A boolean indicating whether substring variations of the term should be matched. | 
-| DomainToolsIrisDetect.Monitor.nameserver_exclusions      | Unknown  | An array for nameserver exclusions.                                              | 
-| DomainToolsIrisDetect.Monitor.text_exclusions            | unknown  | An array for text exclusions.                                                    | 
-| DomainToolsIrisDetect.Monitor.id                         | String   | A unique identifier for the monitor entry.                                       | 
-| DomainToolsIrisDetect.Monitor.created_date               | String   | The timestamp when the monitor entry was created.                                | 
-| DomainToolsIrisDetect.Monitor.updated_date               | String   | The timestamp when the monitor entry was last updated.                           | 
-| DomainToolsIrisDetect.Monitor.state                      | String   | The state of the monitor entry.                                                  | 
-| DomainToolsIrisDetect.Monitor.status                     | String   | The status of the monitor entry.                                                 | 
-| DomainToolsIrisDetect.Monitor.created_by                 | String   | The email address of the person who created the monitor entry..                  | 
+| DomainToolsIrisDetect.Monitor.term                       | String   | The keyword being monitored.                                                     |
+| DomainToolsIrisDetect.Monitor.match_substring_variations | Boolean  | A boolean indicating whether substring variations of the term should be matched. |
+| DomainToolsIrisDetect.Monitor.nameserver_exclusions      | Unknown  | An array for nameserver exclusions.                                              |
+| DomainToolsIrisDetect.Monitor.text_exclusions            | unknown  | An array for text exclusions.                                                    |
+| DomainToolsIrisDetect.Monitor.id                         | String   | A unique identifier for the monitor entry.                                       |
+| DomainToolsIrisDetect.Monitor.created_date               | String   | The timestamp when the monitor entry was created.                                |
+| DomainToolsIrisDetect.Monitor.updated_date               | String   | The timestamp when the monitor entry was last updated.                           |
+| DomainToolsIrisDetect.Monitor.state                      | String   | The state of the monitor entry.                                                  |
+| DomainToolsIrisDetect.Monitor.status                     | String   | The status of the monitor entry.                                                 |
+| DomainToolsIrisDetect.Monitor.created_by                 | String   | The email address of the person who created the monitor entry..                  |
 
 #### Command example
 
@@ -391,53 +390,53 @@ Manually retrieve new domains matching all of your monitored terms, or a specifi
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| discovered_since    | Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                         | Optional     | 
-| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
-| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
-| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
-| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
-| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     | 
-| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     | 
-| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     | 
-| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     | 
-| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     | 
+| discovered_since    | Filter domains by when they were discovered. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                         | Optional     |
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     |
+| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     |
+| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     |
+| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     |
+| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     |
+| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     |
+| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     |
+| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     |
+| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     |
 | limit               | Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.                                                                                  | Optional     |
-| page                | The page number. Default is 1.                                                                                                                                                      | Optional     | 
+| page                | The page number. Default is 1.                                                                                                                                                      | Optional     |
 | page_size           | The number of requested results per page. Default is 50.                                                                                                                            | Optional     |
 
 #### Context Output
 
 | **Path**                                                                | **Type** | **Description**                                                                                            |
 |-------------------------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.New.state                                         | String   | Indicates that the domain is newly discovered.                                                             | 
-| DomainToolsIrisDetect.New.domain                                        | String   | The domain name.                                                                                           | 
-| DomainToolsIrisDetect.New.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       | 
-| DomainToolsIrisDetect.New.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               | 
-| DomainToolsIrisDetect.New.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). | 
-| DomainToolsIrisDetect.New.risk_score                                    | String   | The risk score associated with the domain.                                                                 | 
-| DomainToolsIrisDetect.New.risk_score_status                             | Number   | The status of the risk score.                                                                              | 
-| DomainToolsIrisDetect.New.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         | 
-| DomainToolsIrisDetect.New.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        | 
-| DomainToolsIrisDetect.New.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         | 
-| DomainToolsIrisDetect.New.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            | 
-| DomainToolsIrisDetect.New.risk_score_components.threat_profile.evidence | unknown  | The list of evidence supporting the threat scores.                                                         | 
-| DomainToolsIrisDetect.New.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       | 
-| DomainToolsIrisDetect.New.tld                                           | String   | The top-level domain.                                                                                      | 
-| DomainToolsIrisDetect.New.id                                            | String   | The domain ID.                                                                                             | 
-| DomainToolsIrisDetect.New.escalations.escalation_type                   | String   | The type of escalation.                                                                                    | 
-| DomainToolsIrisDetect.New.escalations.id                                | String   | The escalation ID.                                                                                         | 
-| DomainToolsIrisDetect.New.escalations.created                           | String   | The date and time when the escalation was created.                                                         | 
-| DomainToolsIrisDetect.New.escalations.created_by                        | String   | The email address of the person who assigned the domain to the watchlist.                                  | 
-| DomainToolsIrisDetect.New.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   | 
-| DomainToolsIrisDetect.New.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  | 
-| DomainToolsIrisDetect.New.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). | 
-| DomainToolsIrisDetect.New.registrant_contact_email                      | String   | Registrant Email.                                                                                          | 
-| DomainToolsIrisDetect.New.name_server                                   | String   | An array of objects containing name server information.                                                    | 
-| DomainToolsIrisDetect.New.registrar                                     | String   | The domain registrar.                                                                                      | 
-| DomainToolsIrisDetect.New.create_date                                   | String   | The date when the domain was created.                                                                      | 
-| DomainToolsIrisDetect.New.ip.country_code                               | String   | Country code for the ip.                                                                                   | 
-| DomainToolsIrisDetect.New.ip.ip                                         | String   | Associated ip for the Domain.                                                                              | 
-| DomainToolsIrisDetect.New.ip.isp                                        | String   | Associated isp for the Domain.                                                                             | 
+| DomainToolsIrisDetect.New.state                                         | String   | Indicates that the domain is newly discovered.                                                             |
+| DomainToolsIrisDetect.New.domain                                        | String   | The domain name.                                                                                           |
+| DomainToolsIrisDetect.New.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       |
+| DomainToolsIrisDetect.New.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               |
+| DomainToolsIrisDetect.New.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). |
+| DomainToolsIrisDetect.New.risk_score                                    | String   | The risk score associated with the domain.                                                                 |
+| DomainToolsIrisDetect.New.risk_score_status                             | Number   | The status of the risk score.                                                                              |
+| DomainToolsIrisDetect.New.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         |
+| DomainToolsIrisDetect.New.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        |
+| DomainToolsIrisDetect.New.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         |
+| DomainToolsIrisDetect.New.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            |
+| DomainToolsIrisDetect.New.risk_score_components.threat_profile.evidence | unknown  | The list of evidence supporting the threat scores.                                                         |
+| DomainToolsIrisDetect.New.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       |
+| DomainToolsIrisDetect.New.tld                                           | String   | The top-level domain.                                                                                      |
+| DomainToolsIrisDetect.New.id                                            | String   | The domain ID.                                                                                             |
+| DomainToolsIrisDetect.New.escalations.escalation_type                   | String   | The type of escalation.                                                                                    |
+| DomainToolsIrisDetect.New.escalations.id                                | String   | The escalation ID.                                                                                         |
+| DomainToolsIrisDetect.New.escalations.created                           | String   | The date and time when the escalation was created.                                                         |
+| DomainToolsIrisDetect.New.escalations.created_by                        | String   | The email address of the person who assigned the domain to the watchlist.                                  |
+| DomainToolsIrisDetect.New.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   |
+| DomainToolsIrisDetect.New.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  |
+| DomainToolsIrisDetect.New.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). |
+| DomainToolsIrisDetect.New.registrant_contact_email                      | String   | Registrant Email.                                                                                          |
+| DomainToolsIrisDetect.New.name_server                                   | String   | An array of objects containing name server information.                                                    |
+| DomainToolsIrisDetect.New.registrar                                     | String   | The domain registrar.                                                                                      |
+| DomainToolsIrisDetect.New.create_date                                   | String   | The date when the domain was created.                                                                      |
+| DomainToolsIrisDetect.New.ip.country_code                               | String   | Country code for the ip.                                                                                   |
+| DomainToolsIrisDetect.New.ip.ip                                         | String   | Associated ip for the Domain.                                                                              |
+| DomainToolsIrisDetect.New.ip.isp                                        | String   | Associated isp for the Domain.                                                                             |
 
 #### Command example
 
@@ -514,55 +513,55 @@ Manually retrieve changes to domains that have been marked as "watched" by users
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| escalation_types    | escalation_types: List[str]: default None. List of escalation types to filter domains by. Valid values are: ["blocked", "google_safe"].                                             | Optional     | 
-| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
-| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
-| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
-| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
-| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     | 
-| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     | 
-| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     | 
-| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     | 
-| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     | 
-| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     | 
-| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
+| escalation_types    | escalation_types: List[str]: default None. List of escalation types to filter domains by. Valid values are: ["blocked", "google_safe"].                                             | Optional     |
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     |
+| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     |
+| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     |
+| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     |
+| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     |
+| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     |
+| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     |
+| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     |
+| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     |
+| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     |
+| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     |
 | limit               | Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.                                                                                  | Optional     |
-| page                | The page number. Default is 1.                                                                                                                                                      | Optional     | 
+| page                | The page number. Default is 1.                                                                                                                                                      | Optional     |
 | page_size           | The number of requested results per page. Default is 50.                                                                                                                            | Optional     |
 
 #### Context Output
 
 | **Path**                                                                    | **Type** | **Description**                                                                                            |
 |-----------------------------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.Watched.state                                         | String   | Indicates that the domain is being watched.                                                                | 
-| DomainToolsIrisDetect.Watched.domain                                        | String   | The domain name.                                                                                           | 
-| DomainToolsIrisDetect.Watched.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       | 
-| DomainToolsIrisDetect.Watched.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               | 
-| DomainToolsIrisDetect.Watched.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). | 
-| DomainToolsIrisDetect.Watched.risk_score                                    | String   | The risk score associated with the domain.                                                                 | 
-| DomainToolsIrisDetect.Watched.risk_score_status                             | Number   | The status of the risk score.                                                                              | 
-| DomainToolsIrisDetect.Watched.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         | 
-| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        | 
-| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         | 
-| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            | 
-| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                         | 
-| DomainToolsIrisDetect.Watched.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       | 
-| DomainToolsIrisDetect.Watched.tld                                           | String   | The top-level domain.                                                                                      | 
-| DomainToolsIrisDetect.Watched.id                                            | String   | The domain ID.                                                                                             | 
-| DomainToolsIrisDetect.Watched.escalations.escalation_type                   | String   | The type of escalation.                                                                                    | 
-| DomainToolsIrisDetect.Watched.escalations.id                                | String   | The escalation ID.                                                                                         | 
-| DomainToolsIrisDetect.Watched.escalations.created                           | String   | The date and time when the escalation was created.                                                         | 
-| DomainToolsIrisDetect.Watched.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                | 
-| DomainToolsIrisDetect.Watched.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   | 
-| DomainToolsIrisDetect.Watched.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  | 
-| DomainToolsIrisDetect.Watched.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). | 
-| DomainToolsIrisDetect.Watched.registrant_contact_email                      | String   | Registrant Email.                                                                                          | 
-| DomainToolsIrisDetect.Watched.name_server                                   | String   | The domain registrar.                                                                                      | 
-| DomainToolsIrisDetect.Watched.registrar                                     | String   | The domain registrar.                                                                                      | 
-| DomainToolsIrisDetect.Watched.create_date                                   | String   | The date when the domain was created.                                                                      | 
-| DomainToolsIrisDetect.Watched.ip.country_code                               | String   | Country code for the ip.                                                                                   | 
-| DomainToolsIrisDetect.Watched.ip.ip                                         | String   | Associated ip for the Domain.                                                                              | 
-| DomainToolsIrisDetect.Watched.ip.isp                                        | String   | Associated isp for the Domain.                                                                             | 
+| DomainToolsIrisDetect.Watched.state                                         | String   | Indicates that the domain is being watched.                                                                |
+| DomainToolsIrisDetect.Watched.domain                                        | String   | The domain name.                                                                                           |
+| DomainToolsIrisDetect.Watched.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       |
+| DomainToolsIrisDetect.Watched.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               |
+| DomainToolsIrisDetect.Watched.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). |
+| DomainToolsIrisDetect.Watched.risk_score                                    | String   | The risk score associated with the domain.                                                                 |
+| DomainToolsIrisDetect.Watched.risk_score_status                             | Number   | The status of the risk score.                                                                              |
+| DomainToolsIrisDetect.Watched.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         |
+| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        |
+| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         |
+| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            |
+| DomainToolsIrisDetect.Watched.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                         |
+| DomainToolsIrisDetect.Watched.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       |
+| DomainToolsIrisDetect.Watched.tld                                           | String   | The top-level domain.                                                                                      |
+| DomainToolsIrisDetect.Watched.id                                            | String   | The domain ID.                                                                                             |
+| DomainToolsIrisDetect.Watched.escalations.escalation_type                   | String   | The type of escalation.                                                                                    |
+| DomainToolsIrisDetect.Watched.escalations.id                                | String   | The escalation ID.                                                                                         |
+| DomainToolsIrisDetect.Watched.escalations.created                           | String   | The date and time when the escalation was created.                                                         |
+| DomainToolsIrisDetect.Watched.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                |
+| DomainToolsIrisDetect.Watched.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   |
+| DomainToolsIrisDetect.Watched.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  |
+| DomainToolsIrisDetect.Watched.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). |
+| DomainToolsIrisDetect.Watched.registrant_contact_email                      | String   | Registrant Email.                                                                                          |
+| DomainToolsIrisDetect.Watched.name_server                                   | String   | The domain registrar.                                                                                      |
+| DomainToolsIrisDetect.Watched.registrar                                     | String   | The domain registrar.                                                                                      |
+| DomainToolsIrisDetect.Watched.create_date                                   | String   | The date when the domain was created.                                                                      |
+| DomainToolsIrisDetect.Watched.ip.country_code                               | String   | Country code for the ip.                                                                                   |
+| DomainToolsIrisDetect.Watched.ip.ip                                         | String   | Associated ip for the Domain.                                                                              |
+| DomainToolsIrisDetect.Watched.ip.isp                                        | String   | Associated isp for the Domain.                                                                             |
 
 #### Command example
 
@@ -667,54 +666,54 @@ Manually retrieve domains that your organization has marked as ignored, matching
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
-| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
-| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
-| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
-| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
-| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     | 
-| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     | 
-| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     | 
-| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     | 
-| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     | 
-| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     | 
+| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     |
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     |
+| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     |
+| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     |
+| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     |
+| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     |
+| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     |
+| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     |
+| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     |
+| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     |
+| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     |
 | limit               | Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.                                                                                  | Optional     |
-| page                | The page number. Default is 1.                                                                                                                                                      | Optional     | 
+| page                | The page number. Default is 1.                                                                                                                                                      | Optional     |
 | page_size           | The number of requested results per page. Default is 50.                                                                                                                            | Optional     |
 
 #### Context Output
 
 | **Path**                                                                    | **Type** | **Description**                                                                                            |
 |-----------------------------------------------------------------------------|----------|------------------------------------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.Ignored.state                                         | String   | Indicates that the domain is being ignored.                                                                | 
-| DomainToolsIrisDetect.Ignored.domain                                        | String   | The domain name.                                                                                           | 
-| DomainToolsIrisDetect.Ignored.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       | 
-| DomainToolsIrisDetect.Ignored.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               | 
-| DomainToolsIrisDetect.Ignored.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). | 
-| DomainToolsIrisDetect.Ignored.risk_score                                    | String   | The risk score associated with the domain.                                                                 | 
-| DomainToolsIrisDetect.Ignored.risk_score_status                             | Number   | The status of the risk score.                                                                              | 
-| DomainToolsIrisDetect.Ignored.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         | 
-| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        | 
-| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         | 
-| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            | 
-| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.evidence | unknown  | The list of evidence supporting the threat scores.                                                         | 
-| DomainToolsIrisDetect.Ignored.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       | 
-| DomainToolsIrisDetect.Ignored.tld                                           | String   | The top-level domain.                                                                                      | 
-| DomainToolsIrisDetect.Ignored.id                                            | String   | The domain ID.                                                                                             | 
-| DomainToolsIrisDetect.Ignored.escalations.escalation_type                   | String   | The type of escalation.                                                                                    | 
-| DomainToolsIrisDetect.Ignored.escalations.id                                | String   | The escalation ID.                                                                                         | 
-| DomainToolsIrisDetect.Ignored.escalations.created                           | String   | The date and time when the escalation was created.                                                         | 
-| DomainToolsIrisDetect.Ignored.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                | 
-| DomainToolsIrisDetect.Ignored.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   | 
-| DomainToolsIrisDetect.Ignored.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  | 
-| DomainToolsIrisDetect.Ignored.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). | 
-| DomainToolsIrisDetect.Ignored.registrant_contact_email                      | String   | Registrant Email.                                                                                          | 
-| DomainToolsIrisDetect.Ignored.name_server                                   | String   | An array of objects containing name server information.                                                    | 
-| DomainToolsIrisDetect.Ignored.registrar                                     | String   | The domain registrar.                                                                                      | 
-| DomainToolsIrisDetect.Ignored.create_date                                   | String   | The date when the domain was created.                                                                      | 
-| DomainToolsIrisDetect.Ignored.ip.country_code                               | String   | Country code for the ip.                                                                                   | 
-| DomainToolsIrisDetect.Ignored.ip.ip                                         | String   | Associated ip for the Domain.                                                                              | 
-| DomainToolsIrisDetect.Ignored.ip.isp                                        | String   | Associated isp for the Domain.                                                                             | 
+| DomainToolsIrisDetect.Ignored.state                                         | String   | Indicates that the domain is being ignored.                                                                |
+| DomainToolsIrisDetect.Ignored.domain                                        | String   | The domain name.                                                                                           |
+| DomainToolsIrisDetect.Ignored.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                       |
+| DomainToolsIrisDetect.Ignored.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").               |
+| DomainToolsIrisDetect.Ignored.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00"). |
+| DomainToolsIrisDetect.Ignored.risk_score                                    | String   | The risk score associated with the domain.                                                                 |
+| DomainToolsIrisDetect.Ignored.risk_score_status                             | Number   | The status of the risk score.                                                                              |
+| DomainToolsIrisDetect.Ignored.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                         |
+| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                        |
+| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                         |
+| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                            |
+| DomainToolsIrisDetect.Ignored.risk_score_components.threat_profile.evidence | unknown  | The list of evidence supporting the threat scores.                                                         |
+| DomainToolsIrisDetect.Ignored.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                       |
+| DomainToolsIrisDetect.Ignored.tld                                           | String   | The top-level domain.                                                                                      |
+| DomainToolsIrisDetect.Ignored.id                                            | String   | The domain ID.                                                                                             |
+| DomainToolsIrisDetect.Ignored.escalations.escalation_type                   | String   | The type of escalation.                                                                                    |
+| DomainToolsIrisDetect.Ignored.escalations.id                                | String   | The escalation ID.                                                                                         |
+| DomainToolsIrisDetect.Ignored.escalations.created                           | String   | The date and time when the escalation was created.                                                         |
+| DomainToolsIrisDetect.Ignored.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                |
+| DomainToolsIrisDetect.Ignored.monitor_ids                                   | String   | An array containing a single monitor ID.                                                                   |
+| DomainToolsIrisDetect.Ignored.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                  |
+| DomainToolsIrisDetect.Ignored.assigned_date                                 | String   | The date and time when the domain was assigned to the watchlist (e.g.,"2023-04-20T13:13:23.000000+00:00"). |
+| DomainToolsIrisDetect.Ignored.registrant_contact_email                      | String   | Registrant Email.                                                                                          |
+| DomainToolsIrisDetect.Ignored.name_server                                   | String   | An array of objects containing name server information.                                                    |
+| DomainToolsIrisDetect.Ignored.registrar                                     | String   | The domain registrar.                                                                                      |
+| DomainToolsIrisDetect.Ignored.create_date                                   | String   | The date when the domain was created.                                                                      |
+| DomainToolsIrisDetect.Ignored.ip.country_code                               | String   | Country code for the ip.                                                                                   |
+| DomainToolsIrisDetect.Ignored.ip.ip                                         | String   | Associated ip for the Domain.                                                                              |
+| DomainToolsIrisDetect.Ignored.ip.isp                                        | String   | Associated isp for the Domain.                                                                             |
 
 #### Command example
 
@@ -826,54 +825,54 @@ Manually retrieve domains that your organization has escalated to Google Safe Br
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
-| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
-| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
-| mx_exists           | Filter domains by if they have an MX record in DNS.                                                                                                                                 | Optional     | 
-| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
-| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     | 
-| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     | 
-| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     | 
-| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     | 
-| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     | 
-| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     | 
+| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     |
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     |
+| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     |
+| mx_exists           | Filter domains by if they have an MX record in DNS.                                                                                                                                 | Optional     |
+| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     |
+| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     |
+| search              | A "contains" search for any portion of a domain name.                                                                                                                               | Optional     |
+| sort                | Sort order for domain list. Valid values are an ordered list of the following: ["discovered_date", "changed_date", "risk_score"].                                                   | Optional     |
+| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     |
+| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     |
+| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     |
 | limit               | Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.                                                                                  | Optional     |
-| page                | The page number. Default is 1.                                                                                                                                                      | Optional     | 
+| page                | The page number. Default is 1.                                                                                                                                                      | Optional     |
 | page_size           | The number of requested results per page. Default is 50.                                                                                                                            | Optional     |
 
 #### Context Output
 
 | **Path**                                                                      | **Type** | **Description**                                                                                                 |
 |-------------------------------------------------------------------------------|----------|-----------------------------------------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.Escalated.state                                         | String   | Indicates that the domain is being watched.                                                                     | 
-| DomainToolsIrisDetect.Escalated.domain                                        | String   | The domain name.                                                                                                | 
-| DomainToolsIrisDetect.Escalated.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                            | 
-| DomainToolsIrisDetect.Escalated.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").                    | 
-| DomainToolsIrisDetect.Escalated.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").      | 
-| DomainToolsIrisDetect.Escalated.risk_score                                    | String   | The risk score associated with the domain.                                                                      | 
-| DomainToolsIrisDetect.Escalated.risk_score_status                             | Number   | The status of the risk score.                                                                                   | 
-| DomainToolsIrisDetect.Escalated.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                              | 
-| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                             | 
-| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                              | 
-| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                                 | 
-| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                              | 
-| DomainToolsIrisDetect.Escalated.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                            | 
-| DomainToolsIrisDetect.Escalated.tld                                           | String   | The top-level domain.                                                                                           | 
-| DomainToolsIrisDetect.Escalated.id                                            | String   | The domain ID.                                                                                                  | 
-| DomainToolsIrisDetect.Escalated.escalations.escalation_type                   | String   | The type of escalation.                                                                                         | 
-| DomainToolsIrisDetect.Escalated.escalations.id                                | String   | The escalation ID.                                                                                              | 
-| DomainToolsIrisDetect.Escalated.escalations.created                           | String   | The date and time when the escalation was created.                                                              | 
-| DomainToolsIrisDetect.Escalated.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                     | 
-| DomainToolsIrisDetect.Escalated.monitor_ids                                   | String   | An array containing monitor IDs.                                                                                | 
-| DomainToolsIrisDetect.Escalated.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                       | 
-| DomainToolsIrisDetect.Escalated.assigned_date                                 | String   | The date and time when the domain was assigned to the escalated list (e.g.,"2023-04-20T13:13:23.000000+00:00"). | 
-| DomainToolsIrisDetect.Escalated.registrant_contact_email                      | String   | Registrant Email.                                                                                               | 
-| DomainToolsIrisDetect.Escalated.name_server                                   | String   | An array of objects containing name server information.                                                         | 
-| DomainToolsIrisDetect.Escalated.registrar                                     | String   | The domain registrar.                                                                                           | 
-| DomainToolsIrisDetect.Escalated.create_date                                   | String   | The date when the domain was created.                                                                           | 
-| DomainToolsIrisDetect.Escalated.ip.country_code                               | String   | Country code for the ip.                                                                                        | 
-| DomainToolsIrisDetect.Escalated.ip.ip                                         | String   | Associated ip for the Domain.                                                                                   | 
-| DomainToolsIrisDetect.Escalated.ip.isp                                        | String   | Associated isp for the Domain.                                                                                  | 
+| DomainToolsIrisDetect.Escalated.state                                         | String   | Indicates that the domain is being watched.                                                                     |
+| DomainToolsIrisDetect.Escalated.domain                                        | String   | The domain name.                                                                                                |
+| DomainToolsIrisDetect.Escalated.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                            |
+| DomainToolsIrisDetect.Escalated.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").                    |
+| DomainToolsIrisDetect.Escalated.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").      |
+| DomainToolsIrisDetect.Escalated.risk_score                                    | String   | The risk score associated with the domain.                                                                      |
+| DomainToolsIrisDetect.Escalated.risk_score_status                             | Number   | The status of the risk score.                                                                                   |
+| DomainToolsIrisDetect.Escalated.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                              |
+| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                             |
+| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                              |
+| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                                 |
+| DomainToolsIrisDetect.Escalated.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                              |
+| DomainToolsIrisDetect.Escalated.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                            |
+| DomainToolsIrisDetect.Escalated.tld                                           | String   | The top-level domain.                                                                                           |
+| DomainToolsIrisDetect.Escalated.id                                            | String   | The domain ID.                                                                                                  |
+| DomainToolsIrisDetect.Escalated.escalations.escalation_type                   | String   | The type of escalation.                                                                                         |
+| DomainToolsIrisDetect.Escalated.escalations.id                                | String   | The escalation ID.                                                                                              |
+| DomainToolsIrisDetect.Escalated.escalations.created                           | String   | The date and time when the escalation was created.                                                              |
+| DomainToolsIrisDetect.Escalated.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                     |
+| DomainToolsIrisDetect.Escalated.monitor_ids                                   | String   | An array containing monitor IDs.                                                                                |
+| DomainToolsIrisDetect.Escalated.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist.                                       |
+| DomainToolsIrisDetect.Escalated.assigned_date                                 | String   | The date and time when the domain was assigned to the escalated list (e.g.,"2023-04-20T13:13:23.000000+00:00"). |
+| DomainToolsIrisDetect.Escalated.registrant_contact_email                      | String   | Registrant Email.                                                                                               |
+| DomainToolsIrisDetect.Escalated.name_server                                   | String   | An array of objects containing name server information.                                                         |
+| DomainToolsIrisDetect.Escalated.registrar                                     | String   | The domain registrar.                                                                                           |
+| DomainToolsIrisDetect.Escalated.create_date                                   | String   | The date when the domain was created.                                                                           |
+| DomainToolsIrisDetect.Escalated.ip.country_code                               | String   | Country code for the ip.                                                                                        |
+| DomainToolsIrisDetect.Escalated.ip.ip                                         | String   | Associated ip for the Domain.                                                                                   |
+| DomainToolsIrisDetect.Escalated.ip.isp                                        | String   | Associated isp for the Domain.                                                                                  |
 
 #### Command example
 
@@ -977,54 +976,54 @@ Manually retrieve domains that your organization has marked as "blocklisted", ma
 
 | **Argument Name**   | **Description**                                                                                                                                                                     | **Required** |
 |---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------|
-| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     | 
-| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     | 
-| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     | 
-| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     | 
-| search              | Sort order for domain list. Valid values are an ordered list.                                                                                                                       | Optional     | 
-| sort                | Sort order for domain list. Possible values are: discovered_date, changed_date, risk_score.                                                                                         | Optional     | 
-| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     | 
-| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     | 
-| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     | 
-| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     | 
-| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     | 
+| monitor_id          | Monitor ID is used when requesting domains for a specific monitor. The monitor ID can be found using the 'domaintools-iris-detect-get-monitors-list' command.                                                                                        | Optional     |
+| tlds                | List of TLDs to filter domains by. E.g. top.                                                                                                                                        | Optional     |
+| mx_exists           | Filter domains by if they have an MX record in DNS. Possible values are: True, False.                                                                                               | Optional     |
+| changed_since       | Filter domains by when they were last changed. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                       | Optional     |
+| search              | Sort order for domain list. Valid values are an ordered list.                                                                                                                       | Optional     |
+| sort                | Sort order for domain list. Possible values are: discovered_date, changed_date, risk_score.                                                                                         | Optional     |
+| include_domain_data | Includes DNS and whois data in the response. Possible values are: True, False.                                                                                                      | Optional     |
+| preview             | "Preview" mode is helpful for initial setup and configuration. It limits the results to the first 10 results but removes hourly API restrictions. Possible values are: True, False. | Optional     |
+| escalated_since     | Filter domains by when they were last escalated. Provide a datetime in ISO 8601 format, for example 2022-05-18T12:19:51.685496.                                                     | Optional     |
+| order               | Sort order "asc" or "desc".                                                                                                                                                         | Optional     |
+| risk_score_ranges   | List of risk score ranges to filter domains by. Valid values are: ["0-0", "1-39", "40-69", "70-99", "100-100"].                                                                     | Optional     |
 | limit               | Default 100. Limit for pagination. Restricted to maximum 50 if include_domain_data is set to True.                                                                                  | Optional     |
-| page                | The page number. Default is 1.                                                                                                                                                      | Optional     | 
+| page                | The page number. Default is 1.                                                                                                                                                      | Optional     |
 | page_size           | The number of requested results per page. Default is 50.                                                                                                                            | Optional     |
 
 #### Context Output
 
 | **Path**                                                                    | **Type** | **Description**                                                                                               |
 |-----------------------------------------------------------------------------|----------|---------------------------------------------------------------------------------------------------------------|
-| DomainToolsIrisDetect.Blocked.state                                         | String   | Indicates that the domain is being watched.                                                                   | 
-| DomainToolsIrisDetect.Blocked.domain                                        | String   | The domain name.                                                                                              | 
-| DomainToolsIrisDetect.Blocked.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                          | 
-| DomainToolsIrisDetect.Blocked.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").                  | 
-| DomainToolsIrisDetect.Blocked.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").    | 
-| DomainToolsIrisDetect.Blocked.risk_score                                    | String   | The risk score associated with the domain.                                                                    | 
-| DomainToolsIrisDetect.Blocked.risk_score_status                             | Number   | The status of the risk score.                                                                                 | 
-| DomainToolsIrisDetect.Blocked.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                            | 
-| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                           | 
-| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                            | 
-| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                               | 
-| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                            | 
-| DomainToolsIrisDetect.Blocked.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                          | 
-| DomainToolsIrisDetect.Blocked.tld                                           | String   | The top-level domain.                                                                                         | 
-| DomainToolsIrisDetect.Blocked.id                                            | String   | The domain ID.                                                                                                | 
-| DomainToolsIrisDetect.Blocked.escalations.escalation_type                   | String   | The type of escalation.                                                                                       | 
-| DomainToolsIrisDetect.Blocked.escalations.id                                | String   | The escalation ID.                                                                                            | 
-| DomainToolsIrisDetect.Blocked.escalations.created                           | String   | The date and time when the escalation was created.                                                            | 
-| DomainToolsIrisDetect.Blocked.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                   | 
-| DomainToolsIrisDetect.Blocked.monitor_ids                                   | String   | An array containing monitor IDs.                                                                              | 
-| DomainToolsIrisDetect.Blocked.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist..                                    | 
-| DomainToolsIrisDetect.Blocked.assigned_date                                 | String   | The date and time when the domain was assigned to the blocked list (e.g.,"2023-04-20T13:13:23.000000+00:00"). | 
-| DomainToolsIrisDetect.Blocked.registrant_contact_email                      | String   | Registrant Email.                                                                                             | 
-| DomainToolsIrisDetect.Blocked.name_server                                   | String   | An array of objects containing name server information.                                                       | 
-| DomainToolsIrisDetect.Blocked.registrar                                     | String   | The domain registrar.                                                                                         | 
-| DomainToolsIrisDetect.Blocked.create_date                                   | String   | The date when the domain was created.                                                                         | 
-| DomainToolsIrisDetect.Blocked.ip.country_code                               | String   | Country code for the ip.                                                                                      | 
-| DomainToolsIrisDetect.Blocked.ip.ip                                         | String   | Associated ip for the Domain.                                                                                 | 
-| DomainToolsIrisDetect.Blocked.ip.isp                                        | String   | Associated isp for the Domain.                                                                                | 
+| DomainToolsIrisDetect.Blocked.state                                         | String   | Indicates that the domain is being watched.                                                                   |
+| DomainToolsIrisDetect.Blocked.domain                                        | String   | The domain name.                                                                                              |
+| DomainToolsIrisDetect.Blocked.status                                        | String   | Indicates the status of the Domain (e.g., "active").                                                          |
+| DomainToolsIrisDetect.Blocked.discovered_date                               | String   | The date and time when the domain was discovered (e.g., "2023-04-21T01:56:14.652000+00:00").                  |
+| DomainToolsIrisDetect.Blocked.changed_date                                  | String   | The date and time when the domain information was last changed (e.g., "2023-04-21T01:56:14.652000+00:00").    |
+| DomainToolsIrisDetect.Blocked.risk_score                                    | String   | The risk score associated with the domain.                                                                    |
+| DomainToolsIrisDetect.Blocked.risk_score_status                             | Number   | The status of the risk score.                                                                                 |
+| DomainToolsIrisDetect.Blocked.risk_score_components.proximity               | Number   | The domain's proximity risk score.                                                                            |
+| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.phishing | Number   | The domain's phishing threat score.                                                                           |
+| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.malware  | Number   | The domain's malware threat score.                                                                            |
+| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.spam     | Number   | The domain's spam threat score.                                                                               |
+| DomainToolsIrisDetect.Blocked.risk_score_components.threat_profile.evidence | Unknown  | The list of evidence supporting the threat scores.                                                            |
+| DomainToolsIrisDetect.Blocked.mx_exists                                     | Boolean  | Indicates that there is no MX record for the domain.                                                          |
+| DomainToolsIrisDetect.Blocked.tld                                           | String   | The top-level domain.                                                                                         |
+| DomainToolsIrisDetect.Blocked.id                                            | String   | The domain ID.                                                                                                |
+| DomainToolsIrisDetect.Blocked.escalations.escalation_type                   | String   | The type of escalation.                                                                                       |
+| DomainToolsIrisDetect.Blocked.escalations.id                                | String   | The escalation ID.                                                                                            |
+| DomainToolsIrisDetect.Blocked.escalations.created                           | String   | The date and time when the escalation was created.                                                            |
+| DomainToolsIrisDetect.Blocked.escalations.created_by                        | String   | The email address of the person who created the escalation.                                                   |
+| DomainToolsIrisDetect.Blocked.monitor_ids                                   | String   | An array containing monitor IDs.                                                                              |
+| DomainToolsIrisDetect.Blocked.assigned_by                                   | String   | The email address of the person who assigned the domain to the watchlist..                                    |
+| DomainToolsIrisDetect.Blocked.assigned_date                                 | String   | The date and time when the domain was assigned to the blocked list (e.g.,"2023-04-20T13:13:23.000000+00:00"). |
+| DomainToolsIrisDetect.Blocked.registrant_contact_email                      | String   | Registrant Email.                                                                                             |
+| DomainToolsIrisDetect.Blocked.name_server                                   | String   | An array of objects containing name server information.                                                       |
+| DomainToolsIrisDetect.Blocked.registrar                                     | String   | The domain registrar.                                                                                         |
+| DomainToolsIrisDetect.Blocked.create_date                                   | String   | The date when the domain was created.                                                                         |
+| DomainToolsIrisDetect.Blocked.ip.country_code                               | String   | Country code for the ip.                                                                                      |
+| DomainToolsIrisDetect.Blocked.ip.ip                                         | String   | Associated ip for the Domain.                                                                                 |
+| DomainToolsIrisDetect.Blocked.ip.isp                                        | String   | Associated isp for the Domain.                                                                                |
 
 #### Command example
 

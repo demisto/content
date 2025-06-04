@@ -631,13 +631,109 @@ script:
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+  - arguments:
+    - description: The Azure AD user ID.
+      name: user_id
+      required: true
+    description:  |-
+      Lists all TAP policies for a user.
+      This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
+      Permission:UserAuthenticationMethod.Read.All
+    name: msgraph-user-tap-policy-list
+    outputs:
+    - contextPath: MSGraphUser.TAPPolicy.ID
+      description: TAP policy's ID.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.IsUsable
+      description: TAP policy's usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.IsUsableOnce
+      description: TAP policy's once - usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
+      description: TAP policy's creation date and time.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
+      description: TAP policy's method usability reason.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.LifetimeInMinutes
+      description: TAP policy's lifetime in minutes.
+      type: Int
+    - contextPath: MSGraphUser.TAPPolicy.StartDateTime
+      description: TAP policy's start date and time.
+      type: String
+  - arguments:
+    - description: The Azure AD user ID.
+      name: user_id
+      required: true
+    - description: A password for the password-protected zip file that will include the password of the new TAP.
+      name: zip_password
+      required: true
+      secret: true
+    - description: The duration of the TAP. Must be between 10 and 43200 (equivalent to 30 days).
+      name: lifetime_in_minutes
+      required: false
+      defaultValue: 60
+    - description: |-
+        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. 
+        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   
+      name: is_usable_once
+      required: false
+      defaultValue: false
+      auto: PREDEFINED
+      predefined:
+        - 'true'
+        - 'false'
+    - description: |-
+        The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",
+        for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days".
+      name: start_time
+      required: false
+      defaultValue: now
+    description:  |-
+      Create a new TAP policy for a user.
+      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+      A user can only have one Temporary Access Pass that's usable within its specified lifetime.
+      Permission:UserAuthenticationMethod.ReadWrite.All  
+    name: msgraph-user-tap-policy-create
+    outputs:
+    - contextPath: MSGraphUser.TAPPolicy.ID
+      description: TAP policy's ID.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.IsUsable
+      description: TAP policy's usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.IsUsableOnce
+      description: TAP policy's once - usability.
+      type: Bool
+    - contextPath: MSGraphUser.TAPPolicy.CreatedDateTime
+      description: TAP policy's creation date and time.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.MethodUsabilityReason
+      description: TAP policy's method usability reason.
+      type: String
+    - contextPath: MSGraphUser.TAPPolicy.LifetimeInMinutes
+      description: TAP policy's lifetime in minutes.
+      type: Int
+    - contextPath: MSGraphUser.TAPPolicy.StartDateTime
+      description: TAP policy's start date and time.
+      type: String
+  - arguments:
+    - description: The Azure AD user ID.
+      name: user_id
+      required: true
+    - description: Policy ID.
+      name: policy_id
+      required: true
+    description: Deletes a specific TAP policy. Permission:UserAuthenticationMethod.ReadWrite.All
+    name: msgraph-user-tap-policy-delete
   - description: Generate the login url used for Authorization code flow.
     name: msgraph-user-generate-login-url
     arguments: []
   - description: Run this command if for some reason you need to rerun the authentication process.
     name: msgraph-user-auth-reset
     arguments: []
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3174650
   runonce: false
   script: '-'
   subtype: python3

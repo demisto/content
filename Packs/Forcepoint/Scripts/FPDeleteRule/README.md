@@ -1,12 +1,13 @@
-Generates a password and allows various parameters to customize the properties of the password depending on the use case. For example, password complexity requirements.  The default behavior is to generate a password of  random length including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class. 
+Generates a password and allows various parameters to customize the properties of the password depending on the use case. For example, password complexity requirements.  The default behavior is to generate a password of  random length including all four character classes (upper, lower, digits, symbols) with at least five and at most ten characters per class.
 
 The `min_*` values all default to 0. This means that if the command is executed in this way:
 `!GeneratePassword max_lcase=10`.
-It is possible that a password of length zero could be generated. It is therefore recommended to always include a `min_*` parameter that matches. 
+It is possible that a password of length zero could be generated. It is therefore recommended to always include a `min_*` parameter that matches.
 
 The `debug` parameter will print certain properties of the command into the War Room for easy diagnostics.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,8 +15,8 @@ The `debug` parameter will print certain properties of the command into the War 
 | Script Type | javascript |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -31,6 +32,7 @@ The `debug` parameter will print certain properties of the command into the War 
 | debug | Enable this to see various values as they pass through the function. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

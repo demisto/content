@@ -1,6 +1,7 @@
 This automation takes several Incident fields from the Threat Vault incident context and displays them as markdown in the layout.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,18 +10,23 @@ This automation takes several Incident fields from the Threat Vault incident con
 | Tags | dynamic-section |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Examples
+
 ### Example command
+
 ```!SetThreatVaultIncidentMarkdownRepresentation```
+
 ### Context Example
+
 ```json
 {"Spyware": 
     [
@@ -51,6 +57,7 @@ There are no outputs for this script.
 ### Human Readable Output
 
 ### Spyware
+
 |action|attack_name|category|change_data|max_version|min_version|pan_id|severity|
 |---|---|---|---|---|---|---|---|
 | alert | WebCompanion Adware Traffic Detection | spyware | new coverage |  | 8.1.0 | 22144 | medium |
