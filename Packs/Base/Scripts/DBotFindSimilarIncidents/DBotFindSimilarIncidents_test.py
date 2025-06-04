@@ -506,7 +506,10 @@ def test_predict_without_similarity_fields(sample_data):
 def test_extract_fields_from_args(similar_text_field):
     """
     Given:
-        - Fields to extract
+        - Fields to extract with different prefixes.
+        - Case 1: incident prefix.
+        - Case 2: alert prefix.
+        - Case 3: issue prefix.
     When:
         Calling extract_fields_from_args function.
     Then:
