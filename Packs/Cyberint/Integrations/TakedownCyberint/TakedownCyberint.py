@@ -136,7 +136,7 @@ class Client(BaseClient):
             method="POST",
             json_data=body,
             cookies=self._cookies,
-            url_suffix="takedown/api/v1/submit"
+            url_suffix="takedown/api/v1/request"
         )
         return response
 
