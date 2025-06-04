@@ -1,6 +1,7 @@
 Checks if an email address's domain is trying to squat other domain using Levenshtein distance algorithm.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks if an email address's domain is trying to squat other domain using Levens
 | Script Type | javascript |
 | Tags | email, reputation |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -19,6 +20,7 @@ Checks if an email address's domain is trying to squat other domain using Levens
 | threshold | The similarity threshold. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
