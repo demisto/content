@@ -1,6 +1,6 @@
 category: Forensics & Malware Analysis
 commonfields:
-  id: vmray
+  id: VMRay
   version: -1
 configuration:
 - additionalinfo: Reliability of the source providing the intelligence data.
@@ -48,7 +48,7 @@ configuration:
   required: false
 description: Malware analysis sandboxing.
 display: VMRay
-name: vmray
+name: VMRay
 script:
   commands:
   - arguments:
