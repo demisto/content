@@ -26,7 +26,41 @@ GET_CTS_ACCOUNTS_TOKEN = "/cts/accounts/token"
 GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
+class HealthStatus(str, Enum):
+    ERROR = "ERROR"
+    WARNING = "WARNING"
+    OK = "ok"
 
+class ErrorType(str, Enum):
+    CONNECTIVITY_ERROR = "ConnectivityError"
+    PERMISSION_ERROR = "PermissionError"
+    INTERNAL_ERROR = "InternalError"
+
+class HealthCheckResult:
+    @staticmethod
+    def ok() -> str:
+        return HealthStatus.OK
+    
+    @staticmethod
+    def error(
+        account_id: str,
+        connector_id: str,
+        message: str,
+        error: str,
+        error_type: ErrorType,
+    ) -> CommandResults:
+        
+        # Determine classification based on error type
+        classification = HealthStatus.WARNING if error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
+        result = {
+            "account_id": account_id,
+            "connector_id": connector_id,
+            "message": message,
+            "error": error,
+            "classification": classification,
+        }
+        return CommandResults(outputs=result)
+    
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
