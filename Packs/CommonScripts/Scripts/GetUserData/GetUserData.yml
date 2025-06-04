@@ -34,53 +34,33 @@ args:
   predefined:
   - 'true'
   - 'false'
+- description: whether there are additional fields to the main fields or not.
+  auto: PREDEFINED
+  name: additional_fields
+  defaultValue: 'false'
+  predefined:
+    - 'true'
+    - 'false'
 comment: This script gathers user data from multiple integrations and returns an Account entity with consolidated information to the context.
 commonfields:
-  id: get-user-data
+  id: get-user-data-test
   version: -1
-name: get-user-data
+name: get-user-data-test
 outputs:
-- contextPath: Account.ID.Value
+- contextPath: UserData.Source
+  description: The source that the data was retrieved from.
+  type: String
+- contextPath: UserData.ID
   description: The user ID.
   type: String
-- contextPath: Account.ID.Source
-  description: The source of the account ID, for example, the integration name.
-  type: String
-- contextPath: Account.Username
+- contextPath: UserData.Username
   description: The username in the relevant system.
   type: String
-- contextPath: Account.DisplayName
-  description: The display name.
-  type: String
-- contextPath: Account.Email.Address
+- contextPath: UserData.Email
   description: The email address of the account.
   type: String
-- contextPath: Account.Groups
-  description: Groups to which the account belongs (integration specific). For example, for AD these are groups of which the account is memberOf.
-  type: String
-- contextPath: Account.Type
-  description: The account type. The most common value is 'AD', but can be 'LocalOS', 'Google', 'AppleID'.
-  type: String
-- contextPath: Account.JobTitle
-  description: The job title of the account.
-  type: String
-- contextPath: Account.Office
-  description: The office where the person associated with the account works.
-  type: String
-- contextPath: Account.TelephoneNumber
-  description: The phone number associated with the account.
-  type: String
-- contextPath: Account.IsEnabled
-  description: Whether the account is enabled or disabled. 'True' means the account is enabled.
-  type: Bool
-- contextPath: Account.Manager.Email
-  description: The email address of the manager.
-  type: String
-- contextPath: Account.Manager.DisplayName
-  description: The display name of the manager.
-  type: String
-- contextPath: Account.RiskLevel
-  description: The risk level associated with the account. This could be 'LOW', 'MEDIUM', or 'HIGH'.
+- contextPath: UserData.AdditionalFields
+  description: All the other outputs returned.
   type: String
 script: '-'
 timeout: '0'
