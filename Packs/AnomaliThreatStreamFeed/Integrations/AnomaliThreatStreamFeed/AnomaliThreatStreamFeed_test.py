@@ -1,7 +1,11 @@
-from CommonServerPython import tableToMarkdown
+from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import AnomaliThreatStreamFeed
 import pytest
 from AnomaliThreatStreamFeed import Client
+from datetime import datetime, timedelta, timezone
+from unittest.mock import patch
+from typing import Any
+
 
 THREAT_STREAM = "Anomali ThreatStream Feed"
 
@@ -451,5 +455,298 @@ def test_parse_indicators_for_get_command_missing_fields():
     ]
 
     result = parse_indicators_for_get_command(mock_raw_indicators)
-    print(result)
     assert result == expected_parsed_indicators
+
+def test_get_past_time_basic_interval(mocker):
+    from AnomaliThreatStreamFeed import get_past_time
+    """
+    Tests get_past_time with a standard minutes interval.
+    Verifies that the returned time is correctly calculated and formatted.
+
+    Given:
+        - A minutes_interval of 60.
+        - A mocked current UTC datetime (via mocking get_current_utc_time).
+    When:
+        - Calling get_past_time, imported from 'AnomaliThreatStreamFeed'.
+    Then:
+        - Mocks 'AnomaliThreatStreamFeed.get_current_utc_time' to return a fixed datetime.
+        - The function returns the expected past time in ISO 8601 format with milliseconds and 'Z'.
+    """
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
+    minutes_interval = 60 # one hour ago
+    expected_past_time = "2023-08-01T11:00:00.500Z"
+
+    mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now)
+
+    result = get_past_time(minutes_interval)
+    assert result == expected_past_time
+    
+def test_calculate_score_none_no_confidence_field(mocker):
+    from AnomaliThreatStreamFeed import DBotScoreCalculator
+
+    """
+    Tests calculate_score when the 'confidence' field is missing from the indicator.
+    Verifies that DBotScore.NONE is returned and a debug message is logged.
+
+    Given:
+        - An indicator dictionary without a 'confidence' key.
+    When:
+        - Calling calculate_score.
+    Then:
+        - The function returns Common.DBotScore.NONE.
+        - A debug message indicating confidence not found is logged.
+    """
+    calculator = DBotScoreCalculator()
+    indicator = {"description": "test"} # No confidence field
+
+    result = calculator.calculate_score(indicator)
+    assert result == Common.DBotScore.NONE
+
+
+DEFAULT_MALICIOUS_THRESHOLD = 65
+DEFAULT_SUSPICIOUS_THRESHOLD = 25
+DEFAULT_BENIGN_THRESHOLD = 0
+DBOT_SCORE_TEST_CASES = [
+    # Test cases for BAD score (confidence > 65)
+    ({"confidence": 71}, Common.DBotScore.BAD),
+    ({"confidence": 100}, Common.DBotScore.BAD),
+
+    # Test cases for SUSPICIOUS score (confidence > 25 and <= 65)
+    ({"confidence": 51}, Common.DBotScore.SUSPICIOUS),
+    ({"confidence": DEFAULT_MALICIOUS_THRESHOLD}, Common.DBotScore.SUSPICIOUS), # 65 is not > 65
+    ({"confidence": 60}, Common.DBotScore.SUSPICIOUS),
+    ({"confidence": 26}, Common.DBotScore.SUSPICIOUS), # Just above suspicious threshold
+
+    # Test cases for GOOD score (confidence > 0 and <= 25)
+    ({"confidence": 15}, Common.DBotScore.GOOD),
+    ({"confidence": DEFAULT_SUSPICIOUS_THRESHOLD}, Common.DBotScore.GOOD), # 25 is not > 25
+    ({"confidence": 20}, Common.DBotScore.GOOD),
+    ({"confidence": 1}, Common.DBotScore.GOOD), # Just above benign threshold
+
+    # Test cases for NONE score (confidence <= 0)
+    ({"confidence": 0}, Common.DBotScore.NONE),
+    ({"confidence": DEFAULT_BENIGN_THRESHOLD}, Common.DBotScore.NONE), # 0 is not > 0
+    ({"confidence": -5}, Common.DBotScore.NONE), # Negative confidence
+
+    # Test cases for NONE score (missing/invalid confidence)
+    ({"description": "no confidence"}, Common.DBotScore.NONE), # Missing confidence field
+    ({"confidence": None}, Common.DBotScore.NONE), # Explicitly None confidence
+    ({"confidence": ""}, Common.DBotScore.NONE), # Empty string confidence
+]
+
+@pytest.mark.parametrize(
+    "indicator_input, expected_score",
+    DBOT_SCORE_TEST_CASES
+)
+
+def test_calculate_score_various_scenarios(
+    indicator_input: dict[str, Any],
+    expected_score: int,
+):
+    from AnomaliThreatStreamFeed import DBotScoreCalculator
+    """
+    Tests calculate_score across various confidence levels and edge cases,
+    including missing or invalid confidence values.
+
+    Given:
+        - An indicator dictionary with varying 'confidence' values or missing 'confidence'.
+        - Expected DBotScore and whether a debug message should be logged.
+    When:
+        - Calling calculate_score.
+    Then:
+        - The function returns the expected DBotScore.
+        - demisto.debug is called or not called as expected based on the scenario.
+    """
+    calculator = DBotScoreCalculator()
+
+
+    result = calculator.calculate_score(indicator_input)
+    assert result == expected_score
+    
+    
+def test_create_relationships_disabled():
+    from AnomaliThreatStreamFeed import create_relationships
+    """
+    Tests create_relationships when relationship creation is disabled.
+    Verifies that an empty list is returned.
+
+    Given:
+        - create_relationships_param is False.
+        - Any indicator and reliability.
+    When:
+        - Calling create_relationships.
+    Then:
+        - An empty list is returned.
+        - No debug messages are logged.
+    """
+    indicator = {
+                "id": "125",
+                "type": "email",
+                "confidence": 65,
+                "description": "test ip",
+                "source": "NewSource",
+                "value": "test_email@test.com",
+                "tags": [{
+                    "id": "125a",
+                    "name": "tag125a"
+                },
+                {
+                    "id": "125b",
+                    "name": "tag125b"
+                }],
+                "tlp": "RED",
+                "country": "",
+                "modified_ts": "2023-02-01T12:00:00Z",
+                "org": "NewOrg",
+                "created_ts": "2022-02-01T12:00:00Z",
+                "expiration_ts": "2024-02-01T12:00:00Z",
+                "target_industry": [],
+                "asn": "",
+                "locations": "California",
+            }
+    reliability = "C - Fairly reliable"
+
+    result = create_relationships(create_relationships_param=False, reliability=reliability, indicator=indicator)
+    assert result == []
+    
+def test_create_relationships_missing_indicator_type_or_value():
+    from AnomaliThreatStreamFeed import create_relationships
+    """
+    Tests create_relationships when indicator type or value is missing.
+    Verifies that an empty list is returned and a debug message is logged.
+
+    Given:
+        - create_relationships_param is True.
+        - Indicator with missing 'type' or 'value'.
+    When:
+        - Calling create_relationships.
+    Then:
+        - An empty list is returned.
+        - A debug message about skipping relationship creation is logged.
+    """
+    reliability = "B - Usually reliable"
+
+    # Test missing type
+    indicator_no_type = {"value": "1.1.1.1", "rdns": ["example.com"]}
+    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_no_type)
+    assert result == []
+
+    # Test missing value
+    indicator_no_value = {"type": "ip", "rdns": ["example.com"]}
+    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_no_value)
+    assert result == []
+
+    # Test empty string value
+    indicator_empty_value = {"type": "ip", "value": "", "rdns": ["example.com"]}
+    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator_empty_value)
+    assert result == []
+    
+
+def test_create_relationships_single_related_entity():
+    from AnomaliThreatStreamFeed import create_relationships
+    """
+    Tests create_relationships with a single related entity.
+    Verifies that one relationship is created correctly.
+
+    Given:
+        - create_relationships_param is True.
+        - An Domain indicator with a single related ip.
+    When:
+        - Calling create_relationships.
+    Then:
+        - A list containing one correctly formatted relationship is returned.
+    """
+    indicator = {
+                "id": "123",
+                "type": "domain",
+                "confidence": 90,
+                "description": "Test domain",
+                "source": "TestSource",
+                "value": "mydomain1.com",
+                "tags": ["malware", "phishing"],
+                "tlp": "RED",
+                "country": "US",
+                "modified_ts": "2023-01-01T12:00:00Z",
+                "org": "",
+                "created_ts": "2022-01-01T12:00:00Z",
+                "expiration_ts": "2024-01-01T12:00:00Z",
+                "target_industry": ["finance"],
+                "asn": "AS12345",
+                "locations": "New York",
+                "ip": "1.1.1.1"
+            }
+
+    reliability = "A - Completely reliable"
+
+    expected_relationships = [
+        {
+            "entityA": "mydomain1.com",
+            "entityAType": FeedIndicatorType.Domain,
+            "name": EntityRelationship.Relationships.RESOLVED_FROM,
+            'entityAFamily': 'Indicator',
+            "entityB": "1.1.1.1",
+            "entityBType": FeedIndicatorType.IP,
+            "type": "IndicatorToIndicator",
+            "reverseName": EntityRelationship.Relationships.RESOLVES_TO,
+            'entityBFamily': 'Indicator',
+            'fields': {},
+        }
+    ]
+    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator)
+    assert result == expected_relationships
+    
+    
+def test_create_relationships_multiple_related_entities():
+    from AnomaliThreatStreamFeed import create_relationships
+
+    """
+    Tests create_relationships with multiple related entities in a list.
+    Verifies that multiple relationships are created correctly.
+
+    Given:
+        - create_relationships_param is True.
+        - An IP indicator with multiple RDNS entries and a malware type.
+    When:
+        - Calling create_relationships.
+    Then:
+        - A list containing multiple correctly formatted relationships is returned.
+    """
+    indicator = {
+                "id": "123",
+                "type": "domain",
+                "confidence": 90,
+                "description": "Test domain",
+                "source": "TestSource",
+                "value": "mydomain1.com",
+                "tags": ["malware", "phishing"],
+                "tlp": "RED",
+                "country": "US",
+                "modified_ts": "2023-01-01T12:00:00Z",
+                "org": "",
+                "created_ts": "2022-01-01T12:00:00Z",
+                "expiration_ts": "2024-01-01T12:00:00Z",
+                "target_industry": ["finance"],
+                "asn": "AS12345",
+                "locations": "New York",
+                "ip": "1.1.1.1",
+                "meta.maltype": "type"
+            }
+    reliability = "B - Usually reliable"
+
+    expected_relationships = [
+        {
+            "entityA": "mydomain1.com",
+            "entityAType": FeedIndicatorType.Domain,
+            "name": EntityRelationship.Relationships.RESOLVED_FROM,
+            'entityAFamily': 'Indicator',
+            "entityB": "1.1.1.1",
+            "entityBType": FeedIndicatorType.IP,
+            "type": "IndicatorToIndicator",
+            'reverseName': EntityRelationship.Relationships.RESOLVES_TO,
+            'entityBFamily': 'Indicator',
+            'fields': {}
+        }
+    ]
+
+    result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator)
+    assert result == expected_relationships

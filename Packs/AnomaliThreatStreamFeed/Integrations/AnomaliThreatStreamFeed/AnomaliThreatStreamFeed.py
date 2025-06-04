@@ -280,6 +280,31 @@ def parse_indicators_for_get_command(indicators) -> list[dict[str, Any]]:
         )
     return res
 
+# def get_past_time(minutes_interval):
+#     """
+#     Calculates the time that is now minus the given time interval in minutes,
+#     and returns it in ISO 8601 format with milliseconds and 'Z' for UTC.
+    
+#     Args:
+#         minutes_interval (int): The time interval in minutes to go back.
+
+#     Returns:
+#         str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sssZ' format. i.e 2023-08-01T11:57:00.080Z
+#     """
+#     now = datetime.now(timezone.utc)
+#     past_time = now - timedelta(minutes=minutes_interval)
+#     # Format to ISO 8601 with milliseconds and Z (Zulu time) for UTC
+#     return past_time.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
+
+def get_current_utc_time():
+    """
+    Returns the current UTC time as an aware datetime object.
+
+    Returns:
+        datetime: The current time in UTC with timezone information.
+    """
+    return datetime.now(timezone.utc)
+
 def get_past_time(minutes_interval):
     """
     Calculates the time that is now minus the given time interval in minutes,
@@ -291,9 +316,8 @@ def get_past_time(minutes_interval):
     Returns:
         str: The calculated past time in 'YYYY-MM-DDTHH:MM:SS.sssZ' format. i.e 2023-08-01T11:57:00.080Z
     """
-    now = datetime.now(timezone.utc)
+    now = get_current_utc_time()
     past_time = now - timedelta(minutes=minutes_interval)
-    # Format to ISO 8601 with milliseconds and Z (Zulu time) for UTC
     return past_time.replace(tzinfo=None).isoformat(timespec='milliseconds') + 'Z'
 
 
@@ -431,26 +455,26 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
             entity_b_values = demisto.get(indicator, raw_field_name)
             
             if entity_b_values:
-                # Ensure entity_b_values is iterable (convert single value to a list)
-                if not isinstance(entity_b_values, list):
-                    entity_b_values = [entity_b_values]
+                # # Ensure entity_b_values is iterable (convert single value to a list)
+                # if not isinstance(entity_b_values, list):
+                #     entity_b_values = [entity_b_values]
                     
-                for entity_b_item in entity_b_values:
-                    # Skip if the related entity value is empty or None
-                    if not entity_b_item:
-                        continue
+                # for entity_b_item in entity_b_values:
+                #     # Skip if the related entity value is empty or None
+                #     if not entity_b_item:
+                #         continue
 
-                    relationships.append(
-                        EntityRelationship(
-                            entity_a=indicator_value,
-                            entity_a_type=indicatorType.get(indicator_type),
-                            name=relationship_name,
-                            entity_b=entity_b_item,
-                            entity_b_type=entity_b_type,
-                            source_reliability=reliability,
-                            brand=THREAT_STREAM,
-                        ).to_indicator() # Convert the EntityRelationship object to a dictionary
-                    )
+                relationships.append(
+                    EntityRelationship(
+                        entity_a=indicator_value,
+                        entity_a_type=indicatorType.get(indicator_type),
+                        name=relationship_name,
+                        entity_b=entity_b_values,#entity_b_item,
+                        entity_b_type=entity_b_type,
+                        source_reliability=reliability,
+                        brand=THREAT_STREAM,
+                    ).to_indicator() # Convert the EntityRelationship object to a dictionary
+                )
         
     return relationships
 
