@@ -1,5 +1,7 @@
 Takes a date or time input and adds or subtracts a determined amount of time. Returns a string in date or time in ISO Format.
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +11,7 @@ Takes a date or time input and adds or subtracts a determined amount of time. Re
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,17 +20,20 @@ Takes a date or time input and adds or subtracts a determined amount of time. Re
 | variation | Variation of time \(for example: 'in 1 day', or '3 months ago'\). Must be supported by the dateparser.parse\(\) function here \- https://dateparser.readthedocs.io/en/latest/#relative-dates |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
-
 ## Script Example
+
 ```!ModifyDateTime value=2020,02,02 variation="1 day"```
 
 ## Context Example
+
 ```
 {}
 ```
 
 ## Human Readable Output
+
 2020-02-01T00:00:00

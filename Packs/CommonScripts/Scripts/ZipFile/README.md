@@ -3,6 +3,7 @@ Zip a file and upload to war room
 Supported Cortex XSOAR versions: 5.0.0 and later.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,6 +13,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -21,6 +23,7 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | password | Used to create a password protected zip file. Example: password="abcd" |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |
@@ -38,5 +41,5 @@ Supported Cortex XSOAR versions: 5.0.0 and later.
 | File.Type | The file type, as determined by libmagic \(same as displayed in file entries\). | String |
 
 ### Troubleshooting
-Because of security reasons we support only AES encryption which is not supported on the Windows OS without 3rd party unzip applications. For more information about the encryption methods, see https://en.wikipedia.org/wiki/ZIP_(file_format)#Encryption.
 
+Because of security reasons we support only AES encryption which is not supported on the Windows OS without 3rd party unzip applications. For more information about the encryption methods, see https://en.wikipedia.org/wiki/ZIP_(file_format)#Encryption.

@@ -1,8 +1,8 @@
 Gets the maximum value from list
 e.g. ["25", "10", "25"] =>  "25"
- 
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -11,6 +11,7 @@ e.g. ["25", "10", "25"] =>  "25"
 | Tags | transformer, number, entirelist |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +19,6 @@ e.g. ["25", "10", "25"] =>  "25"
 | value | A list for which to sum the list values. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

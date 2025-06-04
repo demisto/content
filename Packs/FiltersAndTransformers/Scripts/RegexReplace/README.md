@@ -13,6 +13,7 @@ Example 2:
  -> output value: xxx=yyy
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -22,6 +23,7 @@ Example 2:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -35,5 +37,6 @@ Example 2:
 | action_dt | The last action for each matched value to transform |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
