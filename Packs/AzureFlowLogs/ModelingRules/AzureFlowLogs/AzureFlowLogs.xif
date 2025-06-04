@@ -117,7 +117,6 @@ filter _raw_log -> Type = "NTATopologyDetails"
     xdm.event.tags = arraycreate(XDM_CONST.EVENT_TAG_CLOUD),
     xdm.source.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
     xdm.target.cloud.provider = XDM_CONST.CLOUD_PROVIDER_AZURE,
-    // xdm.source.cloud.service = XDM_CONST.CLOUD_SERVICE_TYPE_AZURE_NETWORK_WATCHER,
     xdm.event.original_event_type = "NTA Topology Details",
     xdm.event.outcome = if(
     	get_Access = "Allow", XDM_CONST.OUTCOME_SUCCESS,
