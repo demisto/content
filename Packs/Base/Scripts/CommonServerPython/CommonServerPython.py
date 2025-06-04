@@ -12722,7 +12722,7 @@ def execute_polling_command(
         args = metadata.get("pollingArgs", {})
 
         demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
-        time.sleep(polling_interval)
+        time.sleep(polling_interval)  # pylint: disable=E9003
 
     raise DemistoException("Timed out waiting for command: {command_name}.".format(command_name=command_name))
 
