@@ -44,7 +44,7 @@ configuration:
   section: Collect
   type: 16
   advanced: true
-  required: true
+  required: false
   defaultvalue: Reports
   options:
   - Reports
@@ -85,14 +85,6 @@ name: CybelAngel Event Collector
 script:
   commands:
   - arguments:
-    - auto: PREDEFINED
-      description: 'Get events from the required type.'
-      name: event_type
-      required: false
-      predefined:
-      - Reports
-      - Credential watchlist
-      - Domain watchlist
     - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.

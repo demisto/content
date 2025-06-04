@@ -600,8 +600,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Get events from Cybel Angel, used mainly for debugging purposes
     """
-    event_type_name = args.get("event_type", REPORT.name)
-    event_type = EVENT_TYPE[event_type_name]
+    event_type = REPORT
     if not event_type:
         return CommandResults(readable_output="Event Type not exists")
     limit = int(args.get("limit", 50))
@@ -611,16 +610,8 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
     end_dt = dateparser.parse(end_date) or now
 
     start_date = args.get("start_date") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
-
-    event_fetch_function = {
-        DOMAIN.name: client.get_domain_watchlist,
-        CREDENTIALS.name: client.get_credentials_watchlist,
-        REPORT.name: client.get_reports,
-    }
     events = []
-    fetch_func = event_fetch_function.get(event_type_name)
-    if fetch_func:
-        events = fetch_func(start_date=start_date, end_date=end_date, limit=limit)  # type: ignore
+    events = client.get_reports(start_date=start_date, end_date=end_date, limit=limit)
     events = events[:limit]
     if argToBoolean(args.get("is_fetch_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
@@ -629,7 +620,7 @@ def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
         outputs_prefix="CybleAngel.Events",
         outputs=events,
         raw_response=events,
-        readable_output=tableToMarkdown(f"{event_type_name}", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=False),
+        readable_output=tableToMarkdown("Report", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=False),
     )
 
 
@@ -975,7 +966,7 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     Returns:
         list[EventType]: List of event type to fetch from the api call.
     """
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", [REPORT]))
+    event_types_to_fetch = argToList(params.get("event_types_to_fetch", [REPORT.name]))
     event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
     demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
     max_fetch_reports = arg_to_number(params.get("max_fetch")) or REPORT.default_max_fetch
@@ -985,7 +976,7 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     event_types = []
     if REPORT.name in event_types_to_fetch:
         REPORT.max_fetch = max_fetch_reports
-        event_types.append(EVENT_TYPE["Reports"])
+        event_types.append(REPORT)
 
     if DOMAIN.name in event_types_to_fetch:
         DOMAIN.max_fetch = max_fetch_domain

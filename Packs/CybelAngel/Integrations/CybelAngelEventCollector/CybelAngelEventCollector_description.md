@@ -19,7 +19,7 @@ Your API credentials are accessible in the Platform > Settings > API.
 ## Required Modules (For XSIAM)
 - Account Takeover Protection module is required for Credentials watchlist events.
   
-- Domain Protection module is required for Domain events.
+- Domain Protection module is required for Domain watchlist events.
 
 ## CybelAngel Rate Limits
 You are limited to 2000 bearer tokens per month, each token is valid for a period of 1 hour.
