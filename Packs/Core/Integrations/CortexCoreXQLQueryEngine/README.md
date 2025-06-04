@@ -13,6 +13,8 @@ Running commands via the XQL Query Engine integration will consume compute units
 
 ***
 Execute an XQL query and retrieve results of an executed XQL query API. The command will be executed every 10 seconds until results are retrieved or until a timeout error is raised. When more than 1000 results are retrieved, the command will return a compressed gzipped JSON format file, unless the argument 'parse_result_file_to_context' is set to true and then the results will be extracted to the context.
+> **Note:** Any key in the query results that contains the substring `"time"` in its name will have its value automatically converted to a date format.
+
 
 #### Base Command
 
