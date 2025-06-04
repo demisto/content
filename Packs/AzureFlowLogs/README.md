@@ -17,7 +17,8 @@ Data normalization capabilities:
   * Modeling Rule XDM mapping for NTA Flow Logs that are ingested via the [Azure Event Hub](https://docs-cortex.paloaltonetworks.com/r/Cortex-XSIAM/Cortex-XSIAM-Documentation/Ingest-Logs-from-Microsoft-Azure-Event-Hub?tocId=kdBiMvtdaJTAWsaoShdYHQ) integration on Cortex XSIAM.
   * Parsing Rule timestamp ingestion.
     * The ingested Azure Flow Logs can be queried in XQL Search using the msft_azure_flowlogs_raw dataset,
-  for the **NTAIpDetails** and **NTATopologyDetails** log types.
+  for the **NTAIpDetails**, **NTATopologyDetails** and **NetworkSecurityGroupFlowEvent** log types.
+  
 ## Supported log categories
 | Log Type                    | Display Name                 |
 |:----------------------------|:--------------------------------------|
