@@ -98,11 +98,3 @@ Generate a refresh token using your existing credentials. Use this command if yo
 #### Base Command
 
 `service-now-oauth-login`
-
-#### Input
-
-There are no input arguments for this command.
-
-#### Context Outputß
-
-There is no context output for this command.
