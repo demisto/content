@@ -2,7 +2,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 import base64
 import json
-from datetime import datetime
+from datetime import datetime, timedelta
 import dateutil.parser
 
 from typing import Any
@@ -1395,7 +1395,14 @@ def fetch_incidents(
     ]  # type: ignore
 
     incidents_sorted = sorted(incidents, key=lambda k: k["occurred"])
-    next_run["lastRun"] = incidents_sorted[0]["occurred"] if incidents_sorted else last_run_time
+    if incidents_sorted:
+        # Use the latest timestamp and add a 1-second buffer
+        last_occurred = incidents_sorted[-1]["occurred"]
+        last_occurred_dt = dateutil.parser.parse(last_occurred)
+        last_occurred_dt_plus_1 = last_occurred_dt + timedelta(seconds=1)
+        next_run["lastRun"] = last_occurred_dt_plus_1.strftime(DEMISTO_OCCURRED_FORMAT)
+    else:
+        next_run["lastRun"] = last_run_time
     next_run["incident_ids"] = existing_incidents + [incident["dbotMirrorId"] for incident in incidents]
 
     return next_run, incidents
