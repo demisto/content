@@ -318,7 +318,7 @@ def test_fetch_incidents_with_offset(mocker):
         return_value={"fields": ["uuid_", "event_time", "severity"], "records": sample_records},
     )
 
-    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "3 days", "fetch_limit": fetch_limit})
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "3 days", "max_fetch": fetch_limit})
     mocker.patch("CommonServerPython.demisto.getLastRun", return_value={"last_fetch": "2024-01-01T00:00:00Z", "offset": 3})
     set_last_run_mock = mocker.patch("CommonServerPython.demisto.setLastRun")
 
@@ -354,4 +354,79 @@ def test_fetch_incidents_job_failure(mocker):
     mocker.patch("CommonServerPython.demisto.getLastRun", return_value={})
 
     with pytest.raises(DemistoException, match="Failed to create search job."):
+        fetch_incidents(client)
+
+
+def test_fetch_incidents_missing_event_time(mocker):
+    """
+    Given:
+        - A record that does not contain event_time field.
+    When:
+        - fetch_incidents is called.
+    Then:
+        - The incident should be skipped (not raise an error).
+    """
+    client = Client(server_url="https://test.com", username="test", api_key="key", verify=False, proxy=False)
+    mocker.patch.object(client, "create_search_job", return_value={"job_id": "job123"})
+    mocker.patch.object(client, "get_search_job_status", return_value={"status": "DONE"})
+    mocker.patch.object(client, "get_search_job_results", return_value={"fields": ["uuid_"], "records": [["abc-001"]]})
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "1 day"})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={})
+    mocker.patch("CommonServerPython.demisto.setLastRun")
+
+    incidents = fetch_incidents(client)
+    assert len(incidents) == 0
+
+
+@freeze_time("2025-03-01T12:00:00Z")
+def test_fetch_incidents_no_records(mocker):
+    """
+    Given:
+        - A valid job_id
+        - The search job completes but returns no records
+    When:
+        - fetch_incidents is called
+    Then:
+        - No incidents should be returned
+        - Last run should be updated with offset = 0
+    """
+    client = Client(server_url="https://test.com", username="test", api_key="key", verify=False, proxy=False)
+
+    mocker.patch.object(client, "create_search_job", return_value={"job_id": "job-empty"})
+    mocker.patch.object(client, "get_search_job_status", return_value={"status": "DONE"})
+    mocker.patch.object(client, "get_search_job_results", return_value={"fields": ["uuid_", "event_time"], "records": []})
+
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "1 day"})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={"last_fetch": "2025-02-01T00:00:00Z", "offset": 20})
+    set_last_run_mock = mocker.patch("CommonServerPython.demisto.setLastRun")
+
+    incidents = fetch_incidents(client)
+
+    assert isinstance(incidents, list)
+    assert len(incidents) == 0
+
+    args, _ = set_last_run_mock.call_args
+    last_run = args[0]
+    assert last_run["offset"] == 0
+    assert last_run["last_fetch"] == "2025-03-01T12:00:00Z"
+
+
+def test_fetch_incidents_job_timeout(mocker):
+    """
+    Given:
+        - A valid job_id
+        - The search job is still RUNNING.
+    When:
+        - fetch_incidents is called.
+    Then:
+        - DemistoException is raised.
+    """
+    client = Client(server_url="https://test.com", username="test", api_key="key", verify=False, proxy=False)
+    mocker.patch.object(client, "create_search_job", return_value={"job_id": "timeout-job"})
+    mocker.patch.object(client, "get_search_job_status", return_value={"status": "RUNNING"})
+
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "1 day"})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={})
+
+    with pytest.raises(DemistoException, match="did not complete in time"):
         fetch_incidents(client)
