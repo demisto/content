@@ -28,6 +28,22 @@ EVENT_LOGS_API_SUFFIX = {
     DRK_LOGS: "dr-keywords-logs"
 }
 
+SOURCE_LOG_TYPES = {
+    ACCESS_LOGS: "access_logs",
+    ASSETS_LOGS: "asset_logs",
+    DRK_LOGS: "dr_keywords_logs"
+}
+
+
+def get_timestamp_format(value):
+    timestamp: datetime
+    if isinstance(value, int):
+        return value
+    if not isinstance(value, datetime):
+        timestamp = dateparser.parse(value)  # type: ignore
+    return int(time.mktime(timestamp.timetuple()))
+
+
 """ CLIENT CLASS """
 
 
@@ -54,7 +70,7 @@ class Client(BaseClient):
         except Exception as e:
             demisto.error(f"error when fetching events: {e}")
 
-    def search_events(self, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int], from_date: Optional[datetime]
+    def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]
                       ) -> list[dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
@@ -68,16 +84,76 @@ class Client(BaseClient):
             List[Dict]: the next event
         """
         events = []
-        after = int(from_date.timestamp() * 1000) if from_date else None  # epoch timestamp in milliseconds
-        for event_type in event_types_to_fetch:
-            url_suffix = EVENT_LOGS_API_SUFFIX.get(event_type)
-            total_pages = math.ceil(max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH) / PAGE_SIZE)
-            for page in range(total_pages):
-                response = self.get_event_logs(url_suffix=url_suffix, page=page, after=after, size=PAGE_SIZE)
-                if not response:
-                    break
-                events.extend(response)
+        url_suffix = EVENT_LOGS_API_SUFFIX.get(event_type)
+        total_pages = math.ceil(max_events_per_fetch / PAGE_SIZE)
+        for page in range(total_pages):
+            response = self.get_event_logs(url_suffix=url_suffix, page=page, after=after, size=PAGE_SIZE)
+            if not response:
+                break
+            events.extend(response)
         return events
+
+
+def time_field_mapping(event: dict, event_type: str) -> str | None:
+    """
+    Determines the relevant timestamp for the event based on its type.
+
+    Args:
+        event: A dictionary representing the event.
+        event_type: A string indicating the event type.
+
+    Returns:
+        A formatted datetime string or None.
+    """
+    if event_type == ACCESS_LOGS:
+        raw_time = event.get("event_date")
+    else:
+        raw_time = event.get("created_date") or event.get("modified_date")
+
+    if not raw_time:
+        return None
+
+    return arg_to_datetime(raw_time).strftime(DATE_FORMAT)
+
+
+def get_entry_status(event: dict) -> str | None:
+    """
+    Determines if the entry is 'new' or 'modified' based on timestamps.
+
+    Args:
+        event: A dictionary representing the event.
+
+    Returns:
+        'new', 'modified', or None if dates are invalid.
+    """
+    created_date = arg_to_datetime(event.get("created_date"))
+    modified_date = arg_to_datetime(event.get("modified_date"))
+
+    if not created_date or not modified_date:
+        return None
+
+    if modified_date == created_date:
+        return 'new'
+    if modified_date > created_date:
+        return 'modified'
+
+    return None
+
+
+def add_fields_to_events(events: list[dict], event_type: str) -> None:
+    """
+    Enhances each event with '_time', 'source_log_type', and optionally '_ENTRY_STATUS'.
+
+    Args:
+        events: A list of event dictionaries.
+        event_type: The event type.
+    """
+    for event in events:
+        event["_time"] = time_field_mapping(event, event_type)
+        event["source_log_type"] = SOURCE_LOG_TYPES.get(event_type)
+
+        if event_type in {ASSETS_LOGS, DRK_LOGS}:
+            event["_ENTRY_STATUS"] = get_entry_status(event)
 
 
 def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -> str:
@@ -117,7 +193,7 @@ def test_module(client: Client, params: dict[str, Any], first_fetch_time: str) -
 
 
 def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int],
-               from_date: Optional[datetime]) -> tuple[
+               from_date: Optional[datetime], should_add_fields=False) -> tuple[
     List[Dict], CommandResults]:
     """Gets events from API
 
@@ -131,63 +207,92 @@ def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_f
         list: List of events that will be created in XSIAM.
     """
 
-    events = client.search_events(
-        event_types_to_fetch=event_types_to_fetch,
-        max_events_per_fetch=max_events_per_fetch,
-        from_date=from_date,
-    )
-    hr = tableToMarkdown(name="Test Event", t=events)
-    return events, CommandResults(readable_output=hr)
+    all_events = []
+    hr = ""
+    after = get_timestamp_format(from_date)  # epoch timestamp in milliseconds
+    for event_type in event_types_to_fetch:
+        events = client.search_events(
+            event_type=event_type,
+            max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
+            after=after
+        )
+        if events:
+            hr += tableToMarkdown(name=f"{event_type}", t=events)
+            if should_add_fields:
+                add_fields_to_events(events, event_type=event_type)
 
+            all_events.extend(events)
+        else:
+            hr += f"No events found for {event_type}.\n"
 
-def get_timestamp_format(value):
-    timestamp: datetime
-    if isinstance(value, int):
-        return value
-    if not isinstance(value, datetime):
-        timestamp = dateparser.parse(value)  # type: ignore
-    return int(time.mktime(timestamp.timetuple()))
+    return all_events, CommandResults(readable_output=hr)
 
-
-def fetch_events(
-    client: Client, from_date: Optional[datetime], max_events_per_fetch: dict, event_types_to_fetch: list) -> list[dict]:
+def increase_datetime_for_next_fetch(
+    events: List[Dict],
+    prev_dt: datetime,
+    event_type: str
+) -> Optional[str]:
     """
+    Gets the latest datetime from events based on event_type and the previous fetch datetime,
+    adds 1 millisecond, and returns it as ISO 8601 string for the next fetch.
+
     Args:
-        client (Client): HelloWorld client to use.
-        last_run (dict): A dict with a key containing the latest event created time we got from last fetch.
-        first_fetch_time (dict): If last_run is None (first time we are fetching), it contains the timestamp in
-            milliseconds on when to start fetching events.
-        max_events_per_fetch (dict): number of events per fetch
-        event_types_to_fetch (list):
-    Returns:
-        dict: Next run dictionary containing the timestamp that will be used in ``last_run`` on the next fetch.
-        list: List of events that will be created in XSIAM.
-    """
-    events = client.search_events(
-        from_date=from_date,
-    )
-    # demisto.debug(f"Fetched event with id: {prev_id + 1}.")
+        events: List of event dicts.
+        latest_datetime_previous_fetch: ISO 8601 datetime string from the previous fetch.
+        event_type: String specifying event type (affects which date field is used).
 
-    # Save the next_run as a dict with the last_fetch key to be stored
-    # next_run = {"prev_id": prev_id + 1}
-    return events
+    Returns:
+        ISO 8601 datetime string for next fetch, or None if no dates found.
+    """
+    def extract_event_time(event: Dict) -> Optional[datetime]:
+        if event_type == ACCESS_LOGS:
+            raw_time = event.get("event_date")
+        else:
+            raw_time = event.get("created_date") or event.get("modified_date")
+        return arg_to_datetime(raw_time)
+
+    # Extract all valid datetimes from events
+    event_datetimes = [extract_event_time(e) for e in events]
+    event_datetimes = [dt for dt in event_datetimes if dt is not None]
+
+    # If no event datetimes and no previous datetime, return None
+    if not event_datetimes and prev_dt is None:
+        return None
+
+    # Find the max datetime between current events and previous fetch
+    candidates = event_datetimes + ([prev_dt] if prev_dt else [])
+    latest_date_time = max(candidates)
+
+    # Add 1 millisecond
+    next_fetch_time = latest_date_time + timedelta(milliseconds=1)
+
+    return next_fetch_time.isoformat()
+
+
+def fetch_events(client: Client, last_run: dict[str, int],
+                 first_fetch_time, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int]
+                 ) -> tuple[Dict, List[Dict]]:
+    next_run: dict[str, str] = {}
+    events = []
+
+    for event_type in event_types_to_fetch:
+        last_time = arg_to_datetime(last_run.get(event_type, None))
+        start_date = first_fetch_time if not last_time else last_time
+        log_events = client.search_events(
+            event_type=event_type,
+            max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
+            after=get_timestamp_format(start_date)
+        )
+        next_run[event_type] = increase_datetime_for_next_fetch(events, start_date, event_type)
+        demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
+        add_fields_to_events(log_events, event_type)
+        events.extend(log_events)
+
+    demisto.debug(f"Returning {len(events)} events in total")
+    return next_run, events
 
 
 """ MAIN FUNCTION """
-
-
-def add_time_to_events(events: List[Dict] | None):
-    """
-    Adds the _time key to the events.
-    Args:
-        events: List[Dict] - list of events to add the _time key to.
-    Returns:
-        list: The events with the _time key.
-    """
-    if events:
-        for event in events:
-            create_time = arg_to_datetime(arg=event.get("created_time"))
-            event["_time"] = create_time.strftime(DATE_FORMAT) if create_time else None
 
 
 def main() -> None:  # pragma: no cover
@@ -224,10 +329,9 @@ def main() -> None:  # pragma: no cover
         elif command == "decyfir-event-collector-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events"))
             from_date = arg_to_datetime(args.get("from_date"))
-            events, results = get_events(client, event_types_to_fetch, max_events_per_fetch, from_date)
+            events, results = get_events(client, event_types_to_fetch, max_events_per_fetch, from_date, should_push_events)
             return_results(results)
             if should_push_events:
-                add_time_to_events(events)
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
@@ -235,13 +339,11 @@ def main() -> None:  # pragma: no cover
             next_run, events = fetch_events(
                 client=client,
                 last_run=last_run,
-                api_key=api_key,
                 first_fetch_time=first_fetch_time,
                 event_types_to_fetch=event_types_to_fetch,
                 max_events_per_fetch=max_events_per_fetch,
             )
 
-            add_time_to_events(events)
             demisto.debug(f"Sending {len(events)} events to XSIAM.")
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
             demisto.debug("Sent events to XSIAM successfully")
