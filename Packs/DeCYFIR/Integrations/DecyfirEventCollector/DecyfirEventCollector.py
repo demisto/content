@@ -40,7 +40,7 @@ def get_timestamp_format(value):
         return value
     if not isinstance(value, datetime):
         value = dateparser.parse(value)  # type: ignore
-    return int(time.mktime(value.timetuple())) * 1000
+    return int(value.timestamp() * 1000)
 
 
 """ CLIENT CLASS """
@@ -85,6 +85,7 @@ class Client(BaseClient):
         events = []
         url_suffix = EVENT_LOGS_API_SUFFIX.get(event_type)
         total_pages = math.ceil(max_events_per_fetch / PAGE_SIZE)
+        demisto.debug(f"after for suffix: {url_suffix} {after}")
         for page in range(total_pages):
             response = self.get_event_logs(url_suffix=url_suffix, page=page, after=after, size=PAGE_SIZE)
             if not response:
@@ -269,10 +270,12 @@ def fetch_events(client: Client, last_run: dict[str, int],
         last_time = arg_to_datetime(last_run.get(event_type, None))
         last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
         start_date = first_fetch_time if not last_time else last_time
+        after = get_timestamp_format(start_date)
+        demisto.debug(f"start date, after { event_type} {start_date} {after}")
         log_events = client.search_events(
             event_type=event_type,
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
-            after=get_timestamp_format(start_date)
+            after= after
         )
         next_run[event_type] = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
         demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
@@ -300,8 +303,7 @@ def main() -> None:  # pragma: no cover
     verify_certificate = not params.get("insecure", False)
 
     # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now() - timedelta(days=100)
-    first_fetch_time = first_fetch_time.replace(tzinfo=timezone.utc)
+    first_fetch_time = datetime.now().replace(tzinfo=timezone.utc)
     proxy = params.get("proxy", False)
     event_types_to_fetch = [event_type.strip() for event_type in argToList(params.get("event_types_to_fetch", []))]
     max_events_per_fetch = {
@@ -325,6 +327,7 @@ def main() -> None:  # pragma: no cover
             events, results = get_events(client, event_types_to_fetch, max_events_per_fetch, from_date, should_push_events)
             return_results(results)
             if should_push_events:
+                demisto.debug(f'send_events_to_xsiam events: {events}')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
