@@ -329,7 +329,6 @@ def fetch_incidents(client: Client) -> list:
     else:
         raise DemistoException(f"Search job {job_id} did not complete in time.")
 
-    demisto.debug(f"Search job {job_id} completed.")
     results = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_limit)
     fields = results.get("fields", [])
     records = results.get("records", [])
@@ -346,6 +345,7 @@ def fetch_incidents(client: Client) -> list:
             "rawJSON": json.dumps(alert),
         }
         incidents.append(incident)
+    
     if len(records) >= fetch_limit:
         demisto.setLastRun({"last_fetch": from_dt.strftime(ISO_8601_FORMAT), "offset": offset + fetch_limit})
     else:
