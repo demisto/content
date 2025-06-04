@@ -253,7 +253,7 @@ def test_the_test_module(mocker):
                 "password": "1234",
             },
             "max_fetch": 100,
-            "event_types_to_fetch":[REPORT.name, CREDENTIALS.name, DOMAIN.name]
+            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
         },
     )
     mocker.patch.object(demisto, "command", return_value="test-module")

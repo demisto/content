@@ -75,7 +75,7 @@ REPORT = EventType(
 CREDENTIALS = EventType(
     name="Credential watchlist",
     url_suffix="/api/v1/credentials",
-    id_key=["last_detection_date","email"],
+    id_key=["last_detection_date", "email"],
     ascending_order=True,
     time_field="last_detection_date",
     source_log_type="Credential watchlist",
@@ -218,9 +218,7 @@ class Client(BaseClient):
             "start": start_date,
             "end": end_date,
         }
-        response = self.http_request(method="GET",
-                                     url_suffix=CREDENTIALS.url_suffix,
-                                     params=params) or []
+        response = self.http_request(method="GET", url_suffix=CREDENTIALS.url_suffix, params=params) or []
 
         return add_fields_to_events(response, CREDENTIALS)  # type: ignore
 
@@ -258,9 +256,7 @@ class Client(BaseClient):
             "limit": limit,
         }
 
-        response = self.http_request(method="GET",
-                                     url_suffix=DOMAIN.url_suffix,
-                                     params=params) or {}
+        response = self.http_request(method="GET", url_suffix=DOMAIN.url_suffix, params=params) or {}
 
         events = response.get("results", [])  # type: ignore
         total = response.get("total", 0)  # type: ignore
@@ -521,9 +517,7 @@ def test_module(client: Client, events_type_to_fetch: list[EventType]) -> str:
         REPORT.name: client.get_reports,
     }
     for event_type in events_type_to_fetch:
-        event_fetch_function[event_type.name](start_date=start_time,
-                                              end_date=end_time,
-                                              limit=10)
+        event_fetch_function[event_type.name](start_date=start_time, end_date=end_time, limit=10)
 
     return "ok"
 
@@ -1035,7 +1029,7 @@ def main() -> None:  # pragma: no cover
             client_id=client_id, client_secret=client_secret, base_url=base_url, verify=verify_certificate, proxy=proxy
         )
         if command == "test-module":
-            return_results(test_module(client,set_event_type_fetch_limit(params)))
+            return_results(test_module(client, set_event_type_fetch_limit(params)))
         elif command == "fetch-events":
             events, last_run = fetch_events(client, set_event_type_fetch_limit(params))
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
