@@ -348,11 +348,11 @@ def test_horizontal_to_vertical_md_table():
     When: Running the scipt.
     Then: assert that fields that include pipes without spaces will not be split.
         For example, for the markdown:
-        "### Possible Campaign Detected\n|field1|name|field3|\n|--|-|--|\n| value_field1 | Phishing:X|hello@mydomain.co|Subject
+        "### Possible Campaign Detected\n|field1|name|field3|\n|--|-|--|\n| value_field1 | Phishing:X|hello@test.com|Subject
         Details (1) | value_field3 |\n"
         The outcome of the fields and values will be:
         "field1": "value_field1"
-        "name": "Phishing:X|hello@mydomain.co|Subject Details (1)"
+        "name": "Phishing:X|hello@test.com|Subject Details (1)"
         "field3": "value_field1"
     """
     horizontal_md_table = (
