@@ -701,7 +701,7 @@ script:
 
   - name: gcp-iam-group-membership-delete
     deprecated: false
-    description: Removes a user or service account from a GSuite group.
+    description: Deletes a group membership from a GSuite group.
     arguments:
     - name: project_id
       description: GCP project ID.
@@ -711,7 +711,7 @@ script:
       description: ID or email of the group.
       required: true
       isArray: false
-    - name: member_key
+    - name: membership_id
       description: ID or email of the member to remove.
       required: true
       isArray: false
@@ -733,7 +733,7 @@ script:
 
 
   - name: gcp-compute-instance-start
-    description: Starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
+    description: Starts an instance that was stopped using the instances().stop method.
     arguments:
     - name: project_id
       description: GCP project ID.

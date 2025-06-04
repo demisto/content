@@ -627,19 +627,19 @@ def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> Com
 
     Args:
         creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'group_id' and 'member_key'.
+        args (dict[str, Any]): Must include 'group_id' and 'membership_id'.
 
     Returns:
         CommandResults: Result of the group membership removal.
     """
     group_id = args.get("group_id")
-    member_key = args.get("member_key")
+    membership_id = args.get("membership_id")
 
     cloud_identity = GCPServices.CLOUD_IDENTITY.build(creds)
-    membership_name = f"groups/{group_id}/memberships/{member_key}"
+    membership_name = f"groups/{group_id}/memberships/{membership_id}"
     cloud_identity.groups().memberships().delete(name=membership_name).execute()  # pylint: disable=E1101
 
-    hr = f"Member {member_key} was removed from group {group_id}."
+    hr = f"Membership {membership_id} was deleted from group {group_id} successfully."
 
     return CommandResults(readable_output=hr)
 
