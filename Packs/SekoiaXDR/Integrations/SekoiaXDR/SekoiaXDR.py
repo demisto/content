@@ -1096,7 +1096,7 @@ def retrieve_events_command(client: Client, args: dict[str, Any]) -> CommandResu
 def search_events_command(args: dict[str, Any], client: Client) -> PollResult:
     """Parameters"""
     earliest_time = args["earliest_time"]
-    latest_time = args["latest_time"]
+    latest_time = args["lastest_time"]
     term = args["query"]
     max_last_events = args.get("max_last_events")
     exclude_info_arg = args.get("exclude_info")
