@@ -1,7 +1,4 @@
 import http
-import json
-import math
-from json import JSONDecodeError
 from typing import Any
 
 import demistomock as demisto
@@ -107,30 +104,32 @@ class Client(BaseClient):
         """
         body = {
             "customer_id": customer_id,
-            "actions": {"action": action} if action else None,
-            "alert_id": alert_id,
-            "alert_ref_id": alert_ref_id,
-            "blocklist_requests": {
-                "blocked_date": blocked_date,
-                "sent_date": sent_date
-            } if blocked_date or sent_date else None,
-            "brand": brand,
-            "created_date": created_date,
-            "customer": customer,
-            "domain": domain,
-            "email_ticket_id": email_ticket_id,
-            "hostname": hostname,
-            "id": id,
-            "last_action_date": last_action_date,
-            "last_email_date": last_email_date,
-            "last_monitored_date": last_monitored_date,
-            "last_seen_date": last_seen_date,
-            "last_submit_date": last_submit_date,
-            "metadata": {"date": metadata_date} if metadata_date else None,
-            "reason": reason,
-            "requested_by": requested_by,
-            "status": status,
-            "url": url,
+            "filters": {
+                "actions": {"action": action} if action else None,
+                "alert_id": alert_id,
+                "alert_ref_id": alert_ref_id,
+                "blocklist_requests": {
+                    "blocked_date": blocked_date,
+                    "sent_date": sent_date
+                } if blocked_date or sent_date else None,
+                "brand": brand,
+                "created_date": created_date,
+                "customer": customer,
+                "domain": domain,
+                "email_ticket_id": email_ticket_id,
+                "hostname": hostname,
+                "id": id,
+                "last_action_date": last_action_date,
+                "last_email_date": last_email_date,
+                "last_monitored_date": last_monitored_date,
+                "last_seen_date": last_seen_date,
+                "last_submit_date": last_submit_date,
+                "metadata": {"date": metadata_date} if metadata_date else None,
+                "reason": reason,
+                "requested_by": requested_by,
+                "status": status,
+                "url": url,
+            }
         }
         body = remove_empty_elements(body)
         response = self._http_request(
@@ -153,9 +152,9 @@ def test_module(client: Client) -> str:
         Outputs.
     """
     try:
-        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.io")
+        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
     except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED or exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
             return "Authorization Error: invalid `API Token`"
 
         raise exc
@@ -320,7 +319,10 @@ def main():
         if command == "test-module":
             return_results(test_module(client))
 
-        elif command == "cyberint-submit-takedown-request":
+        elif command == "cyberint-takedown-url":
+            return_results(submit_takedown_request_command(client, args))
+
+        elif command == "cyberint-retrieve-takedowns":
             return_results(submit_takedown_request_command(client, args))
 
         else:
