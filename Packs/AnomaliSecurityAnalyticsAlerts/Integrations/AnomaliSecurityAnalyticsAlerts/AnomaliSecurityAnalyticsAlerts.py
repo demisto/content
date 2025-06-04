@@ -301,7 +301,7 @@ def fetch_incidents(client: Client) -> list:
         first_fetch_time = first_fetch_datetime.strftime(ISO_8601_FORMAT)
     else:
         first_fetch_time = datetime.now().strftime(ISO_8601_FORMAT)
-    timestamp_field = params.get("timestamp_field", "event_time")
+    timestamp_field = "event_time"
     fetch_limit = arg_to_number(params.get("fetch_limit", 200)) or 200
 
     last_run = demisto.getLastRun()
