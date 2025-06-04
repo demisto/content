@@ -2460,7 +2460,7 @@ def transform_keys(data: DictOrList, key_map: dict[str, str] | None = None) -> D
                     or (value and isinstance(value, list) and isinstance(value[0], dict))
                     else key
                 ),
-            ): (transform_keys(value, key_map) if isinstance(value, (dict, list)) else value)
+            ): (transform_keys(value, key_map) if isinstance(value, dict | list) else value)
             for key, value in data.items()
         }
 
