@@ -255,10 +255,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 836a1b7b-f9b6-4c88-8c12-3ea85bf3de28
+    taskid: ba8dc3c7-904a-420a-8d24-4bdd1e259958
     type: condition
     task:
-      id: 836a1b7b-f9b6-4c88-8c12-3ea85bf3de28
+      id: ba8dc3c7-904a-420a-8d24-4bdd1e259958
       version: -1
       name: Check Extracted IOC's Reputation
       description: Validate reputation of extracted command line indicators for potential threat analysis
@@ -274,14 +274,14 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: greaterThan
+      - - operator: isEqualNumber
           left:
             value:
               simple: DBotScore.Score
             iscontext: true
           right:
             value:
-              simple: "2"
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
@@ -536,10 +536,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: db404b29-4fa4-43b0-8a04-43f0a3582fce
+    taskid: 00e621e6-25f8-4084-937a-eb6747ab8351
     type: condition
     task:
-      id: db404b29-4fa4-43b0-8a04-43f0a3582fce
+      id: 00e621e6-25f8-4084-937a-eb6747ab8351
       version: -1
       name: Check Investigation findings
       description: This task evaluates investigation findings to determine if the detected activity is malicious
@@ -557,7 +557,7 @@ tasks:
     conditions:
     - label: Malicious
       condition:
-      - - operator: greaterThan
+      - - operator: greaterThanOrEqual
           left:
             value:
               simple: DBotScore.Score
