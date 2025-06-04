@@ -151,6 +151,10 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
+            "playbookID": "CrowdStrike Falcon Basic Test"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
         },
         {
