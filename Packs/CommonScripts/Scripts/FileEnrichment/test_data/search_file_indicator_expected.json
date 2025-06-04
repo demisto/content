@@ -1,43 +1,25 @@
 {
     "Context": {
-        "Extension": {
-            "Value": "ZIP",
-            "Source": "TIM"
-        },
-        "Type": {
-            "Value": "application/zip",
-            "Source": "TIM"
-        },
-        "MD5": {
-            "Value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-            "Source": "TIM"
-        },
-        "SHA1": {
-            "Value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-            "Source": "TIM"
-        },
-        "SHA256": {
-            "Value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-            "Source": "TIM"
-        },
-        "Size": {
-            "Value": 262291,
-            "Source": "TIM"
-        },
-        "SSDeep": {
-            "Value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
-            "Source": "TIM"
-        },
-        "Tags": {
-            "Value": [
-                "jar",
-                "checks-cpu-name",
-                "sets-process-name",
-                "detect-debug-environment",
-                "checks-hostname"
-            ],
-            "Source": "TIM"
-        }
+        "FileEnrichment": [
+            {
+                "Extension": "ZIP",
+                "Type": "application/zip",
+                "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "Size": 262291,
+                "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
+                "Tags": [
+                    "jar",
+                    "checks-cpu-name",
+                    "sets-process-name",
+                    "detect-debug-environment",
+                    "checks-hostname"
+                ],
+                "Source": "TIM",
+                "Score": 3
+            }
+        ]
     },
     "HumanReadable": "#### Result for Search Indicators\n### Found Indicators\n|fileextension|filetype|md5|sha1|sha256|size|ssdeep|tags|\n|---|---|---|---|---|---|---|---|\n| ZIP | application/zip | md5md5md5md5md5md5md5md5md5md5md5md5md5m | sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1 | sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2 | 262291 | 6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm | jar,<br>checks-cpu-name,<br>sets-process-name,<br>detect-debug-environment,<br>checks-hostname |\n"
 }

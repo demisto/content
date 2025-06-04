@@ -1,81 +1,72 @@
 {
     "Context": {
-        "Extension": "zip",
         "DBotScore": [
             {
-                "Indicator": {
-                    "Value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-                    "Source": "VirusTotal (API v3)"
-                },
-                "Reliability": {
-                    "Value": "C - Fairly reliable",
-                    "Source": "VirusTotal (API v3)"
-                },
-                "Score": {
-                    "Value": 3,
-                    "Source": "VirusTotal (API v3)"
-                },
-                "Type": {
-                    "Value": "file",
-                    "Source": "VirusTotal (API v3)"
-                },
-                "Vendor": {
-                    "Value": "VirusTotal (API v3)",
-                    "Source": "VirusTotal (API v3)"
-                }
+                "Indicator": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "Reliability": "C - Fairly reliable",
+                "Score": 3,
+                "Type": "file",
+                "Vendor": "VirusTotal (API v3)"
             }
         ],
-        "Hashes": [
+        "FileEnrichment": [
             {
-                "type": "MD5",
-                "value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m"
-            },
-            {
-                "type": "SHA1",
-                "value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
-            },
-            {
-                "type": "SHA256",
-                "value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
-            },
-            {
-                "type": "SSDeep",
-                "value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm"
+                "Extension": "zip",
+                "Hashes": [
+                    {
+                        "type": "MD5",
+                        "value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m"
+                    },
+                    {
+                        "type": "SHA1",
+                        "value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
+                    },
+                    {
+                        "type": "SHA256",
+                        "value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
+                    },
+                    {
+                        "type": "SSDeep",
+                        "value": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm"
+                    }
+                ],
+                "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                "Relationships": [
+                    {
+                        "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                        "EntityAType": "File",
+                        "EntityB": "jmcoru.alcatelupd.xyz",
+                        "EntityBType": "Domain",
+                        "Relationship": "communicates-with"
+                    }
+                ],
+                "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
+                "Size": 262291,
+                "Tags": [
+                    "jar",
+                    "checks-cpu-name",
+                    "sets-process-name",
+                    "detect-debug-environment",
+                    "checks-hostname"
+                ],
+                "Type": "application/zip",
+                "VTVendors": {
+                    "EngineDetectionNames": [
+                        "Trojan.ZIP.Java.m!c",
+                        "Malicious (score: 99)"
+                    ],
+                    "EngineDetections": 43,
+                    "EngineVendors": [
+                        "CTX",
+                        "AVG"
+                    ]
+                },
+                "Source": "VirusTotal (API v3)",
+                "Score": 3
             }
-        ],
-        "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-        "Relationships": [
-            {
-                "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-                "EntityAType": "File",
-                "EntityB": "jmcoru.alcatelupd.xyz",
-                "EntityBType": "Domain",
-                "Relationship": "communicates-with"
-            }
-        ],
-        "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-        "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-        "SSDeep": "6144:aAaAaAaAaAaA/B/:CCeeffgghhiijj/kkllmm",
-        "Size": 262291,
-        "Tags": [
-            "jar",
-            "checks-cpu-name",
-            "sets-process-name",
-            "detect-debug-environment",
-            "checks-hostname"
-        ],
-        "Type": "application/zip",
-        "VTVendors": {
-            "EngineDetectionNames": [
-                "Trojan.ZIP.Java.m!c",
-                "Malicious (score: 99)"
-            ],
-            "EngineDetections": 43,
-            "EngineVendors": [
-                "CTX",
-                "AVG"
-            ]
-        }
+        ]
     },
     "HumanReadable": "#### Result for !file file=\"sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2\"\n### Results of file hash sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2\n|Sha1|Sha256|Md5|MeaningfulName|TypeExtension|Last Modified|Reputation|Positives|\n|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\u2014|\n| sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1 | sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2 | md5md5md5md5md5md5md5md5md5md5md5md5md5m | \u672a\u78ba\u8a8d 639898.crdownload | jar | 2025-02-02 12:54:47Z | -208 | 43/76 |\n"
 }

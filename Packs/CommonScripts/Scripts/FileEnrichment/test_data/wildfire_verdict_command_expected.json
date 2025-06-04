@@ -1,48 +1,26 @@
 {
     "Context": {
-        "Verdicts": {
-            "Verdict": {
-                "Value": 1,
-                "Source": "WildFire-v2"
-            },
-            "VerdictDescription": {
-                "Value": "malware",
-                "Source": "WildFire-v2"
-            },
-            "Type": {
-                "Value": "JAVA JAR",
-                "Source": "WildFire-v2"
-            },
-            "MD5": {
-                "Value": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-                "Source": "WildFire-v2"
-            },
-            "SHA1": {
-                "Value": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-                "Source": "WildFire-v2"
-            }
-        },
         "DBotScore": [
             {
-                "Indicator": {
-                    "Value": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
-                    "Source": "WildFire-v2"
-                },
-                "Reliability": {
-                    "Value": "B - Usually reliable",
-                    "Source": "WildFire-v2"
-                },
-                "Score": {
-                    "Value": 3,
-                    "Source": "WildFire-v2"
-                },
-                "Type": {
-                    "Value": "file",
-                    "Source": "WildFire-v2"
-                },
-                "Vendor": {
-                    "Value": "WildFire-v2",
-                    "Source": "WildFire-v2"
+                "Indicator": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "Reliability": "B - Usually reliable",
+                "Score": 3,
+                "Type": "file",
+                "Vendor": "WildFire-v2"
+            }
+        ],
+        "FileEnrichment": [
+            {
+                "Source": "WildFire-v2",
+                "Score": 3,
+                "Verdict": 1,
+                "VerdictDescription": "malware",
+                "AdditionalFields": {
+                    "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                    "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                    "Verdict": 1,
+                    "VerdictDescription": "malware",
+                    "Type": "JAVA JAR"
                 }
             }
         ]

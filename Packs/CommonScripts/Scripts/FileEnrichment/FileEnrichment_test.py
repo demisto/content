@@ -76,7 +76,7 @@ def test_command_has_enabled_instance(command: Command, modules: dict, expected_
             "This is a regular message",
             False,
             '#### Result for !wildfire-upload-url upload="http://www.example.com"\nThis is a regular message',
-            id="Note entry",
+            id="Note Entry",
         ),
         pytest.param(
             "This is an error message",
@@ -156,7 +156,7 @@ def test_get_file_from_ioc_custom_fields():
         "associatedfilenames": ["Test Application.zip", "test_installer_x64.zip"],
         "signatureauthentihash": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
     }
-    file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields, include_additional_fields=False)
+    file_indicator_context = get_file_from_ioc_custom_fields(ioc_custom_fields)
 
     assert "stixid" not in file_indicator_context
     assert file_indicator_context == {
@@ -194,39 +194,6 @@ def test_flatten_list():
     assert flatten_list(nested_list) == [1, 2, 3, 4, 5, 4, 6, 7, 8]
 
 
-def test_add_source_brand_to_values():
-    """
-    Given:
-        - A dictionary of string keys and values of different data types.
-
-    When:
-        - Calling `add_source_brand_to_values`.
-
-    Assert:
-        - Ensure the dictionary is transformed with the correct nested dictionaries.
-    """
-    from FileEnrichment import add_source_brand_to_values
-
-    original_context = {
-        "Key0": ["ValA"],
-        "Key1": ["ValB", "ValC"],
-        "Key2": "ValD",
-        "Key3": 4,
-        "Key4": {"KeyE": "InnerValE"},
-    }
-    brand = Brands.CORE_IR
-    updated_context = add_source_brand_to_values(original_context, brand)
-
-    assert "Key5" not in updated_context
-    assert updated_context == {
-        "Key0": {"Value": original_context["Key0"][0], "Source": brand.value},
-        "Key1": {"Value": original_context["Key1"], "Source": brand.value},
-        "Key2": {"Value": original_context["Key2"], "Source": brand.value},
-        "Key3": {"Value": original_context["Key3"], "Source": brand.value},
-        "Key4": {"KeyE": {"Value": original_context["Key4"]["KeyE"], "Source": brand.value}},
-    }
-
-
 def test_merge_context_outputs():
     """
     Given:
@@ -249,7 +216,7 @@ def test_merge_context_outputs():
 
     expected_merged_context = util_load_json("test_data/merged_context_expected.json")
 
-    assert merge_context_outputs(per_command_context) == expected_merged_context
+    assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
 
 
 def test_execute_file_reputation(mocker: MockerFixture):
@@ -348,6 +315,7 @@ def test_enrich_with_command_known_command(mocker: MockerFixture):
     enrich_with_command(
         command=command,
         modules=modules,
+        enrichment_brands=[],
         per_command_context={},
         verbose_command_results=[],
     )
@@ -375,12 +343,13 @@ def test_enrich_with_command_unknown_command():
         enrich_with_command(
             command=command,
             modules=modules,
+            enrichment_brands=[],
             per_command_context={},
             verbose_command_results=[],
         )
 
 
-def test_enrich_with_command_cannot_run(mocker: MockerFixture):
+def test_enrich_with_command_with_no_enabled_instance(mocker: MockerFixture):
     """
     Given:
         - The known '!core-get-hash-analytics-prevalence' command with a SHA256 hash and a disabled instance of the source brand.
@@ -396,11 +365,42 @@ def test_enrich_with_command_cannot_run(mocker: MockerFixture):
     mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
 
     command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"}}
+    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "enabled"}}
+    enrichment_brands = [Brands.WILDFIRE_V2.value]
 
     enrich_with_command(
         command=command,
         modules=modules,
+        enrichment_brands=enrichment_brands,
+        per_command_context={},
+        verbose_command_results=[],
+    )
+
+    assert mock_execution_function.call_count == 0
+
+
+def test_enrich_with_command_not_in_enrichment_brands(mocker: MockerFixture):
+    """
+    Given:
+        - The known '!wildfire-report' command with a SHA256 hash and an enabled instance of the source brand.
+
+    When:
+        - Calling `enrich_with_command`.
+
+    Assert:
+        - Ensure the command is not executed since there is no active instance of the source brand.
+    """
+    from FileEnrichment import enrich_with_command
+
+    mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
+
+    command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
+    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "enabled"}}
+
+    enrich_with_command(
+        command=command,
+        modules=modules,
+        enrichment_brands=["VirusTotal (API v3)"],
         per_command_context={},
         verbose_command_results=[],
     )
@@ -425,8 +425,7 @@ def test_search_file_indicator(mocker: MockerFixture):
     mocker.patch("FileEnrichment.IndicatorsSearcher.__iter__", return_value=iter(indicator_search_results))
 
     per_command_context, verbose_command_results = {}, []
-    include_additional_fields = True
-    search_file_indicator(SHA_256_HASH, include_additional_fields, per_command_context, verbose_command_results)
+    search_file_indicator(SHA_256_HASH, per_command_context, verbose_command_results)
 
     expected_output = util_load_json("test_data/search_file_indicator_expected.json")
     assert per_command_context["findIndicators"] == expected_output["Context"]
@@ -450,7 +449,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
         "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
         "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
     }
-    file_reputation_brands = [Brands.WILDFIRE_V2.value]
+    enrichment_brands = [Brands.WILDFIRE_V2.value]
 
     mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
 
@@ -458,7 +457,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
         file_hash=SHA_256_HASH,
         hash_type="sha256",
         modules=modules,
-        file_reputation_brands=file_reputation_brands,
+        enrichment_brands=enrichment_brands,
         per_command_context={},
         verbose_command_results=[],
     )
@@ -466,19 +465,19 @@ def test_run_external_enrichment(mocker: MockerFixture):
     assert mock_enrich_with_command.call_count == 3
 
     # A. Run file reputation command
-    file_reputation_command = mock_enrich_with_command.call_args_list[0][0][0]
+    file_reputation_command = mock_enrich_with_command.call_args_list[0].kwargs["command"]
 
     assert file_reputation_command.name == "file"
-    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(file_reputation_brands)}
+    assert file_reputation_command.args == {"file": SHA_256_HASH, "using-brand": ",".join(enrichment_brands)}
 
     # B. Run Wildfire Verdict command
-    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1][0][0]
+    wildfire_verdict_command = mock_enrich_with_command.call_args_list[1].kwargs["command"]
 
     assert wildfire_verdict_command.name == "wildfire-get-verdict"
     assert wildfire_verdict_command.args == {"hash": SHA_256_HASH}
 
     # C. Run Core IR Hash Analytics command
-    hash_analytics_command = mock_enrich_with_command.call_args_list[2][0][0]
+    hash_analytics_command = mock_enrich_with_command.call_args_list[2].kwargs["command"]
 
     assert hash_analytics_command.name == "core-get-hash-analytics-prevalence"
     assert hash_analytics_command.args == {"sha256": SHA_256_HASH}
@@ -500,9 +499,12 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
 
+    file_reputation_context = {"SHA256": SHA_256_HASH, "VTVendors": [], "Source": "VirusTotal (API v3)"}
+    wildfire_report_context = {"SHA256": SHA_256_HASH, "WFReport": "Success", "Source": str(Brands.WILDFIRE_V2)}
+
     per_command_context = {
-        "file": {"SHA256": SHA_256_HASH, "VTVerdict": "Benign"},
-        "wildfire-report": {"SHA256": SHA_256_HASH, "WFReport": "Success"},
+        "file": {"FileEnrichment": [file_reputation_context]},
+        "wildfire-report": {"FileEnrichment": [wildfire_report_context]},
     }
 
     summary_command_results = summarize_command_results(
@@ -510,6 +512,7 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
         per_command_context=per_command_context,
         verbose_command_results=[CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)],
         external_enrichment=True,
+        include_additional_fields=True,
     )
 
     table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
@@ -522,7 +525,7 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
     }
 
     assert summary_command_results.outputs == {
-        ContextPaths.FILE.value: {"SHA256": SHA_256_HASH, "VTVerdict": "Benign", "WFReport": "Success"},
+        ContextPaths.FILE_ENRICHMENT.value: [file_reputation_context, wildfire_report_context]
     }
 
 
@@ -547,6 +550,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
         per_command_context={},
         verbose_command_results=[CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)],
         external_enrichment=False,
+        include_additional_fields=False,
     )
 
     table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
@@ -558,7 +562,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
         "Message": "Could not find data on file. Consider setting external_enrichment=true.",
     }
 
-    assert summary_command_results.outputs == {ContextPaths.FILE.value: {}}
+    assert summary_command_results.outputs == {}
 
 
 def test_main_invalid_hash(mocker: MockerFixture):
