@@ -39,13 +39,13 @@ args:
 - name: user
   required: true
   description: The user for the connection.
-  compliantpolicies:
-    - Users Soft Remediation
-    - Users Hard Remediation
 - name: application
   required: true
   description: The application for the connection.
 scripttarget: 0
+compliantpolicies:
+  - Users Soft Remediation
+  - Users Hard Remediation
 timeout: 0s
 dependson:
   must:
