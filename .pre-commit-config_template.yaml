@@ -66,8 +66,8 @@ repos:
   - id: ruff-version-2
     name: ruff-version-2
     description: ruff version
-    entry: bash .hooks/ruff-version.bash
-    language: system
+    entry: python .hooks/ruff-version.py
+    language: python
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs

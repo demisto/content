@@ -1,1 +1,0 @@
-echo "Ruff version: $(ruff --version)"
