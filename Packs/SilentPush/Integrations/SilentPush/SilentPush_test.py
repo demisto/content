@@ -109,7 +109,7 @@ def test_get_nameserver_reputation_command_success(mock_client, mocker):
 
     mock_client.get_nameserver_reputation.assert_called_once_with("example.com", True, 10)
     assert isinstance(result, CommandResults)
-    assert result.outputs_prefix == "SilentPush.NameserverReputation"
+    assert result.outputs_prefix == "SilentPush.SubnetReputation"
     assert result.outputs_key_field == "ns_server"
     assert result.outputs["nameserver"] == "example.com"
     assert result.outputs["reputation_data"][0]["date"] == "2024-01-01"

@@ -992,12 +992,12 @@ This command retrieve historical reputation data for a specified nameserver, inc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.NameserverReputation.nameserver | Number | The nameserver associated with the reputation history entry. | 
-| SilentPush.NameserverReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). | 
-| SilentPush.NameserverReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. | 
-| SilentPush.NameserverReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. | 
-| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. | 
-| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
+| SilentPush.SubnetReputation.nameserver | Number | The nameserver associated with the reputation history entry. | 
+| SilentPush.SubnetReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). | 
+| SilentPush.SubnetReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. | 
+| SilentPush.SubnetReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. | 
+| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. | 
+| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
 
 ### **Command Example**  
 
