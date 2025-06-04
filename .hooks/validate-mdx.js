@@ -2,6 +2,7 @@ const { spawn } = require('child_process');
 const path = require('path');
 
 const files = process.argv.slice(2);
+const MAX_HEAP_MB = 4096;
 
 async function runValidator(file, heapLimit = 2048) {
     return new Promise((resolve, reject) => {
@@ -23,20 +24,19 @@ async function runValidator(file, heapLimit = 2048) {
             const isOOM =
                 oomExitCodes.includes(code) ||
                 oomSignals.includes(signal) ||
-                stderrData.includes('JavaScript heap out of memory') ||
-                stderrData.includes('Allocation failed - JavaScript heap out of memory');
+                stderrData.includes('JavaScript heap out of memory');
 
             if (code === 0) {
                 return resolve(true);
             }
 
-            if (isOOM && heapLimit < 4096) {
+            if (isOOM && heapLimit < MAX_HEAP_MB) {
                 console.warn(`\n[${file}] OOM detected. Retrying with more memory (${heapLimit * 2} MB)...\n`);
                 return resolve(runValidator(file, heapLimit * 2));
             }
 
             if (isOOM) {
-                console.error(`\n❌ [${file}] Failed due to OOM after retrying with 4096 MB heap.\n`);
+                console.error(`\n❌ [${file}] Failed due to OOM after retrying with ${MAX_HEAP_MB} MB heap.\n`);
             } else {
                 console.error(`\n❌ [${file}] Failed with exit code ${code}, signal ${signal}.\n`);
             }
