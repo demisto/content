@@ -1439,7 +1439,9 @@ def create_ediscovery_custodian_command(client: MsGraphClient, args):
 
 
 def list_ediscovery_case_command(client: MsGraphClient, args):
+    demisto.debug("Before list_ediscovery_cases")
     raw_res = client.list_ediscovery_cases(args.get("case_id"))
+    demisto.debug("After list_ediscovery_cases")
     if case_list := raw_res.get("value"):
         demisto.info(f'returned {raw_res.get("@odata.count")} results from the api')
     else:
@@ -1716,9 +1718,13 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
             "Test module is not available for the authorization code flow. Use the msg-auth-test command instead."
         )
 
+    demisto.debug(f"Before http_request to {CMD_URL} in test_function")
     response = client.ms_client.http_request(method="GET", url_suffix=CMD_URL, params={"$top": 1}, resp_type="response")
+    demisto.debug(f"After http_request to {CMD_URL} in test_function")
     try:
+        demisto.debug(f"{response.text=}")
         data = response.json() if response.text else {}
+        demisto.debug(f"{data=}")
         if not response.ok:
             return_error(
                 f'API call to MS Graph Security failed. Please check authentication related parameters.'
@@ -1740,7 +1746,9 @@ def test_function(client: MsGraphClient, args, has_access_to_context=False):  # 
             args = {"time_to": time_to, "time_from": time_from, "filter": filter_query}
             params = create_search_alerts_filters(args, is_fetch=True)
             try:
+                demisto.debug(f"Before search_alerts")
                 client.search_alerts(params)["value"]
+                demisto.debug(f"After search_alerts")
             except Exception as e:
                 if "Invalid ODATA query filter" in e.args[0]:
                     raise DemistoException("Wrong filter format, correct usage: {property} eq '{property-value}'\n\n" + e.args[0])
@@ -1982,11 +1990,17 @@ def list_threat_assessment_requests_command(client: MsGraphClient, args) -> list
     limit = args.get("limit")
 
     if request_id := args.get("request_id"):
-        return get_threat_assessment_request(client, request_id)
+        demisto.debug("Before get_threat_assessment_requests: request_id: {request_id}")
+        res = get_threat_assessment_request(client, request_id)
+        demisto.debug("After get_threat_assessment_requests: request_id: {request_id}")
+        return res
 
+
+    demisto.debug("Before list_threat_assessment_requests")
     result = client.list_threat_assessment_requests(
         args.get("filter"), args.get("order_by"), args.get("sort_order"), args.get("next_token")
     )
+    demisto.debug("After list_threat_assessment_requests")
     outputs = []
     requests_list = result.get("value")
     if limit:
