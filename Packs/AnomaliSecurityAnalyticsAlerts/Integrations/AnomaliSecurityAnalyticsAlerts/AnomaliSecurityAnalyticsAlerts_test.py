@@ -334,4 +334,24 @@ def test_fetch_incidents_with_offset(mocker):
     args, _ = set_last_run_mock.call_args
     new_last_run = args[0]
     assert new_last_run["offset"] == 6
-    assert "last_fetch" in new_last_run
+    assert new_last_run["last_fetch"] == "2024-01-01T00:00:00Z"
+
+
+@freeze_time("2025-03-01T12:00:00Z")
+def test_fetch_incidents_job_failure(mocker):
+    """
+    Given:
+        - create_search_job returns empty job_id
+    When:
+        - fetch_incidents is invoked
+    Then:
+        - DemistoException is raised
+    """
+    client = Client(server_url="https://test.com", username="test_user", api_key="test_api_key", verify=True, proxy=False)
+
+    mocker.patch.object(client, "create_search_job", return_value={})
+    mocker.patch("CommonServerPython.demisto.params", return_value={"first_fetch": "3 days", "fetch_limit": 200})
+    mocker.patch("CommonServerPython.demisto.getLastRun", return_value={})
+
+    with pytest.raises(DemistoException, match="Failed to create search job."):
+        fetch_incidents(client)

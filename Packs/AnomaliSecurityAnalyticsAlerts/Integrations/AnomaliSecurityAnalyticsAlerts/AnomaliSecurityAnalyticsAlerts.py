@@ -306,8 +306,8 @@ def fetch_incidents(client: Client) -> list:
 
     last_run = demisto.getLastRun()
     offset = last_run.get("offset", 0)
-    incidents = []
     fetch_time = last_run.get("last_fetch", first_fetch_time)
+    incidents = []
 
     from_dt = arg_to_datetime(fetch_time, arg_name="last_fetch", required=True)
     to_dt = datetime.now(tz=UTC)
@@ -318,6 +318,8 @@ def fetch_incidents(client: Client) -> list:
     query = params.get("fetch_query", "alert")
     response = client.create_search_job(query=query, source="XSOAR", time_range=time_range)
     job_id = response.get("job_id", "")
+    if not job_id:
+        raise DemistoException("Failed to create search job.")
 
     for _ in range(10):
         time.sleep(3)
@@ -327,44 +329,27 @@ def fetch_incidents(client: Client) -> list:
     else:
         raise DemistoException(f"Search job {job_id} did not complete in time.")
 
+    demisto.debug(f"Search job {job_id} completed.")
     results = client.get_search_job_results(job_id, offset=offset, fetch_size=fetch_limit)
     fields = results.get("fields", [])
     records = results.get("records", [])
     incidents_list = [dict(zip(fields, record)) for record in records]
 
-    latest_ts = int(from_dt.timestamp())
-    has_new = False
     for alert in incidents_list:
         raw_ts = alert.get(timestamp_field)
         if not raw_ts:
             continue
 
-        alert_time = int(raw_ts) // 1000
-        if alert_time > latest_ts:
-            latest_ts = alert_time
-            has_new = True
-
         incident = {
             "name": f"Anomali Alert - {alert.get('uuid_', 'Unknown')}",
-            "occurred": datetime.fromtimestamp(alert_time, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
+            "occurred": datetime.fromtimestamp(int(raw_ts) // 1000, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
             "rawJSON": json.dumps(alert),
         }
         incidents.append(incident)
-
-    if not has_new:
-        latest_ts = int(to_dt.timestamp())
-
     if len(records) >= fetch_limit:
-        demisto.setLastRun(
-            {
-                "last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z"),
-                "offset": offset + fetch_limit,
-            }
-        )
+        demisto.setLastRun({"last_fetch": from_dt.strftime(ISO_8601_FORMAT), "offset": offset + fetch_limit})
     else:
-        demisto.setLastRun(
-            {"last_fetch": datetime.fromtimestamp(latest_ts, tz=timezone.utc).isoformat().replace("+00:00", "Z"), "offset": 0}
-        )
+        demisto.setLastRun({"last_fetch": to_dt.strftime(ISO_8601_FORMAT), "offset": 0})
 
     return incidents
 
