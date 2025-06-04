@@ -91,7 +91,7 @@ def create_creds_events(start_id: int, amount_of_events: int, start_date: str) -
     """Return a plain list of credential-watchlist events in ascending order."""
     return [
         {
-            CREDENTIALS.id_key: str(i),
+            **{k: str(i) for k in CREDENTIALS.id_key},
             "last_detection_date": (dateparser.parse(start_date) + timedelta(seconds=i)).strftime(DATE_FORMAT),
         }
         for i in range(start_id, start_id + amount_of_events)
@@ -101,7 +101,7 @@ def create_creds_events(start_id: int, amount_of_events: int, start_date: str) -
 @pytest.fixture(autouse=True)
 def mock_get_id(monkeypatch):
     def mock_get_id(self, event):
-        # Use the first key in id_key list, or id_key itself if it's a string
+        # Use the last key in id_key list, or id_key itself if it's a string
         if isinstance(self.id_key, list):
             return str(event.get(self.id_key[-1], ""))
         return str(event.get(self.id_key, ""))
@@ -253,6 +253,7 @@ def test_the_test_module(mocker):
                 "password": "1234",
             },
             "max_fetch": 100,
+            "event_types_to_fetch":[REPORT.name, CREDENTIALS.name, DOMAIN.name]
         },
     )
     mocker.patch.object(demisto, "command", return_value="test-module")

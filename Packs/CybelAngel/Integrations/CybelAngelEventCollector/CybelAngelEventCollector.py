@@ -41,7 +41,7 @@ class EventType:
             name (str): Human-friendly name of the event type.
             url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
             id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
-            ascending_order (bool): If the API return in sorted by ascending or descending order after returning from get_event.
+            ascending_order (bool): If events is sorted by ascending or descending order after returning from get_{event_type}.
             time_field (str): Field name in the event used for timestamp mapping (`_time`).
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
             default_max_fetch (int): Default max_fetch limit.
@@ -75,7 +75,7 @@ REPORT = EventType(
 CREDENTIALS = EventType(
     name="Credential watchlist",
     url_suffix="/api/v1/credentials",
-    id_key="stream_id",
+    id_key=["last_detection_date","email"],
     ascending_order=True,
     time_field="last_detection_date",
     source_log_type="Credential watchlist",
@@ -218,7 +218,9 @@ class Client(BaseClient):
             "start": start_date,
             "end": end_date,
         }
-        response = self.http_request(method="GET", url_suffix=CREDENTIALS.url_suffix, params=params) or []
+        response = self.http_request(method="GET",
+                                     url_suffix=CREDENTIALS.url_suffix,
+                                     params=params) or []
 
         return add_fields_to_events(response, CREDENTIALS)  # type: ignore
 
@@ -231,9 +233,10 @@ class Client(BaseClient):
         """
         Fetch domain-watchlist events from CybelAngel, handling pagination when more than `limit` events exist.
 
-        CybelAngel’s API returns events in descending order by detection date. This method:
+        CybelAngel’s API returns events in descending order by detection date.
+        In order the fetch the first 'limit' events we do as follow:
         1. Requests up to `limit` events.
-        2. If the API reports more exist, requests the remaining events using `skip`/`limit`.
+        2. If the API reports more events exists, requests the remaining events using `skip`/`limit`.
         3. Combines both pages.
         4. Annotates each record with `_time` and `SOURCE_LOG_TYPE`.
 
@@ -255,7 +258,9 @@ class Client(BaseClient):
             "limit": limit,
         }
 
-        response = self.http_request(method="GET", url_suffix=DOMAIN.url_suffix, params=params) or {}
+        response = self.http_request(method="GET",
+                                     url_suffix=DOMAIN.url_suffix,
+                                     params=params) or {}
 
         events = response.get("results", [])  # type: ignore
         total = response.get("total", 0)  # type: ignore
@@ -480,7 +485,7 @@ def get_latest_event_time_and_ids(
 ) -> tuple[str, List[str]]:
     """
     Determine the latest event timestamp and assemble the corresponding IDs.
-    This function assumes that `events` is sorted by `_time` in ascending order.
+    This function assumes that `events` is sorted by `_time` in EventType.ascending_order order.
 
     Args:
         reports     (List[Dict]): A list of event dicts, each containing an `_time` key and the relevant ID field.
@@ -504,15 +509,22 @@ def get_latest_event_time_and_ids(
     return latest_time, latest_ids
 
 
-def test_module(client: Client) -> str:
+def test_module(client: Client, events_type_to_fetch: list[EventType]) -> str:
     """
     Tests that the authentication to the api is ok.
     """
-    client.get_reports(
-        start_date=(datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT),
-        end_date=datetime.now().strftime(DATE_FORMAT),
-        limit=100,
-    )
+    start_time = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT)
+    end_time = datetime.now().strftime(DATE_FORMAT)
+    event_fetch_function = {
+        DOMAIN.name: client.get_domain_watchlist,
+        CREDENTIALS.name: client.get_credentials_watchlist,
+        REPORT.name: client.get_reports,
+    }
+    for event_type in events_type_to_fetch:
+        event_fetch_function[event_type.name](start_date=start_time,
+                                              end_date=end_time,
+                                              limit=10)
+
     return "ok"
 
 
@@ -1023,7 +1035,7 @@ def main() -> None:  # pragma: no cover
             client_id=client_id, client_secret=client_secret, base_url=base_url, verify=verify_certificate, proxy=proxy
         )
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client,set_event_type_fetch_limit(params)))
         elif command == "fetch-events":
             events, last_run = fetch_events(client, set_event_type_fetch_limit(params))
             send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
