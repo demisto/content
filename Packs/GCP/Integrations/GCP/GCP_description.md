@@ -34,12 +34,8 @@ This integration enforces GCP security best practices by:
 | **IAM**                                     |                                                                                                                               |
 | gcp-iam-project-policy-binding-remove       | resourcemanager.projects.getIamPolicy, resourcemanager.projects.setIamPolicy                                                  |
 | gcp-iam-project-deny-policy-create          | iam.denypolicies.create                                                                                                       |
-| gcp-iam-group-membership-delete             | admin.directory.group.member.delete                                                                                           |
+| gcp-iam-group-membership-delete             | cloudidentity.groups.memberships.delete                                                                                           |
 | gcp-iam-service-account-delete              | iam.serviceAccounts.delete                                                                                                    |
-| **Admin (Directory API)**                   |                                                                                                                               |
-| gcp-admin-user-update                       | admin.directory.user.update                                                                                                   |
-| gcp-admin-user-password-reset               | admin.directory.user.security                                                                                                 |
-| gcp-admin-user-signout                      | admin.directory.user.security                                                                                                 |
 
 
 3. **OAuth Scope Required**:  

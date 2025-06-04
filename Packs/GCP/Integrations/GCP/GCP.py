@@ -15,9 +15,8 @@ class GCPServices(Enum):
     STORAGE = ("storage", "v1")
     CONTAINER = ("container", "v1")
     RESOURCE_MANAGER = ("cloudresourcemanager", "v3")
-    IAM_V1 = ("iam", "v1")
     IAM_V2 = ("iam", "v2")
-    ADMIN_DIRECTORY = ("admin", "directory_v1")
+    CLOUD_IDENTITY = ("cloudidentity", "v1")
 
     def __init__(self, api_name: str, version: str):
         self._api_name = api_name
@@ -35,7 +34,6 @@ class GCPServices(Enum):
         return build(self.api_name, self.version, credentials=credentials, **kwargs)
 
 
-# SCOPES = ["https://www.googleapis.com/auth/cloud-platform"]
 REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     # Compute Engine commands
     "gcp-compute-firewall-patch": [
@@ -66,14 +64,13 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
     "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
     # Admin Directory commands
-    "gcp-iam-group-membership-delete": ["admin.directory.group.member.delete"],  # TODO
+    "gcp-iam-group-membership-delete": ["cloudidentity.groups.memberships.delete"],
     # "gcp-admin-user-update": ["admin.directory.user.update"],
     # "gcp-admin-user-password-reset": ["admin.directory.user.security"],
     # "gcp-admin-user-signout": ["admin.directory.user.security"],
 }
-UNTESTABLE_PREFIXES = ["iam", "admin"]
-OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 
+OPERATION_TABLE = ["id", "kind", "name", "operationType", "progress", "zone", "status"]
 # taken from GoogleCloudCompute
 FIREWALL_RULE_REGEX = re.compile(r"ipprotocol=([\w\d_:.-]+),ports=([ /\w\d@_,.\*-]+)", flags=re.I)
 METADATA_ITEM_REGEX = re.compile(r"key=([\w\d_:.-]+),value=([ /\w\d@_,.\*-]+)", flags=re.I)
@@ -625,7 +622,7 @@ def compute_instance_service_account_remove(creds: Credentials, args: dict[str, 
 
 def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> CommandResults:
     """
-    Removes a user or service account from a GSuite group.
+    Removes a user or service account from a Google Cloud Identity group.
 
     Args:
         creds (Credentials): GCP credentials.
@@ -637,8 +634,10 @@ def iam_group_membership_delete(creds: Credentials, args: dict[str, Any]) -> Com
     group_id = args.get("group_id")
     member_key = args.get("member_key")
 
-    directory = GCPServices.ADMIN_DIRECTORY.build(creds)
-    directory.members().delete(groupKey=group_id, memberKey=member_key).execute()  # pylint: disable=E1101
+    cloud_identity = GCPServices.CLOUD_IDENTITY.build(creds)
+    membership_name = f"groups/{group_id}/memberships/{member_key}"
+    cloud_identity.groups().memberships().delete(name=membership_name).execute()  # pylint: disable=E1101
+
     hr = f"Member {member_key} was removed from group {group_id}."
 
     return CommandResults(readable_output=hr)
@@ -658,7 +657,7 @@ def iam_service_account_delete(creds: Credentials, args: dict[str, Any]) -> Comm
     project_id = args.get("project_id")
     service_account_email = args.get("service_account_email")
 
-    iam = GCPServices.IAM_V1.build(creds)
+    iam = GCPServices.IAM_V2.build(creds)
 
     name = f"projects/{project_id}/serviceAccounts/{service_account_email}"
 
@@ -827,53 +826,19 @@ def check_required_permissions(creds: Credentials, args: dict[str, Any], command
         raise DemistoException("Missing required argument: 'project_id'.")
 
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
-    testable_perms = [p for p in permissions if not any(p.startswith(prefix) for prefix in UNTESTABLE_PREFIXES)]
     missing = set()
-    if testable_perms:
-        try:
-            resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-            response = (
-                resource_manager.projects()
-                .testIamPermissions(  # pylint: disable=E1101
-                    resource=f"projects/{project_id}", body={"permissions": testable_perms}
-                )
-                .execute()
-            )
-
-            granted = set(response.get("permissions", []))
-            missing |= set(testable_perms) - granted
-        except Exception as e:
-            demisto.debug(f"testIamPermissions failed: {str(e)}")
-
-    # Check untestable permissions with simple API calls
-    api_checks = {
-        "iam.": lambda: GCPServices.IAM_V1.build(creds)
-        .projects()
-        .serviceAccounts()
-        .list(  # pylint: disable=E1101
-            name=f"projects/{project_id}"
+    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+    response = (
+        resource_manager.projects()
+        .testIamPermissions(  # pylint: disable=E1101
+            resource=f"projects/{project_id}", body={"permissions": permissions}
         )
-        .execute(),
-        "admin.": lambda: GCPServices.ADMIN_DIRECTORY.build(creds)
-        .members()
-        .list(  # pylint: disable=E1101
-            domain="example.com", maxResults=1
-        )
-        .execute(),
-    }
-
-    for prefix, check_func in api_checks.items():
-        if any(p.startswith(prefix) for p in permissions):
-            try:
-                check_func()
-            except Exception as e:
-                if "Permission denied" in str(e) or "forbidden" in str(e).lower():
-                    missing |= {p for p in permissions if p.startswith(prefix)}
-                demisto.debug(f"{prefix} API access check failed: {str(e)}")
-
+        .execute()
+    )
+    granted = set(response.get("permissions", []))
+    missing |= set(permissions) - granted
     if missing:
         perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
-        # Format error message
         error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
 
         raise DemistoException("Missing permissions:\n" + "\n".join(error_lines))
