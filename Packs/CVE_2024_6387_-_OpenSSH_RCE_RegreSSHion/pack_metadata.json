@@ -9,14 +9,18 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack"
+    ],
     "useCases": [],
     "keywords": [
         "RCE",
         "OpenSSH",
         "RegreSSHion",
         "CVE-2024-6387",
-        "6387"
+        "6387",
+        "remote code execution",
+        "vulnerability"
     ],
     "dependencies": {
         "MajorBreachesInvestigationandResponse": {

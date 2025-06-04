@@ -9,15 +9,16 @@
     "categories": [
         "Case Management"
     ],
-    "tags": [],
+    "tags": [
+        "Attack"
+    ],
     "useCases": [],
     "keywords": [
         "zero-day",
         "0-day",
-        "Exchange",
-        "Microsoft Exchange",
-        "IIS",
         "Microsoft",
+        "Exchange",
+        "IIS",
         "ProxyNotShell",
         "CVE-2022-41040",
         "CVE-2022-41082",
