@@ -1,4 +1,4 @@
-The Cortex Platform Core integration uses the Cortex API to provide commands for accessing essential services and capabilities of the Cortex Platform.
+This integration uses the Cortex API to access all the core services and capabilities of the Cortex platform.
 
 ## Configure Cortex Platform Core in Cortex
 
@@ -33,15 +33,15 @@ Get asset information.
 | Core.CoreAsset | unknown | Asset additional information. |
 | Core.CoreAsset.xdm__asset__provider | unknown | The cloud provider or source responsible for the asset. |
 | Core.CoreAsset.xdm__asset__realm | unknown | The realm or logical grouping of the asset. |
-| Core.CoreAsset.xdm__asset__last_observed | unknown | The timestamp of when the asset was last observed, in ISO 8601 format. |
+| Core.CoreAsset.xdm__asset__last_observed | unknown | The timestamp when the asset was last observed, in ISO 8601 format. |
 | Core.CoreAsset.xdm__asset__type__id | unknown | The unique identifier for the asset type. |
-| Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp of when the asset was first observed, in ISO 8601 format. |
+| Core.CoreAsset.xdm__asset__first_observed | unknown | The timestamp when the asset was first observed, in ISO 8601 format. |
 | Core.CoreAsset.asset_hierarchy | unknown | The hierarchy or structure representing the asset. |
-| Core.CoreAsset.xdm__asset__type__category | unknown | The category type of the asset. |
+| Core.CoreAsset.xdm__asset__type__category | unknown | The asset category type. |
 | Core.CoreAsset.xdm__cloud__region | unknown | The cloud region where the asset resides. |
 | Core.CoreAsset.xdm__asset__module_unstructured_fields | unknown | The unstructured fields or metadata associated with the asset module. |
 | Core.CoreAsset.xdm__asset__source | unknown | The originating source of the asset's information. |
-| Core.CoreAsset.xdm__asset__id | unknown | A unique identifier for the asset. |
+| Core.CoreAsset.xdm__asset__id | unknown | The source unique identifier for the asset. |
 | Core.CoreAsset.xdm__asset__type__class | unknown | The classification or type class of the asset. |
 | Core.CoreAsset.xdm__asset__type__name | unknown | The specific name of the asset type. |
 | Core.CoreAsset.xdm__asset__strong_id | unknown | The strong or immutable identifier for the asset. |
