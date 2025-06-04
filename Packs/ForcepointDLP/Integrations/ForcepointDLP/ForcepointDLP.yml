@@ -64,7 +64,6 @@ configuration:
 description: Forcepoint Data Loss Prevention (DLP) enables businesses to discover, classify, monitor, and protect data intuitively with zero friction to the user experience. Audit behavior in real-time with Risk-Adaptive Protection to stop data loss before it occurs. Use this integration to fetch security incidents as XSOAR incidents.
 display: Forcepoint DLP
 name: Forcepoint DLP
-beta: true
 script:
   commands:
     - name: fp-dlp-policy-list
