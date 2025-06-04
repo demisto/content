@@ -684,14 +684,14 @@ tasks:
           right:
             value:
               simple: Malicious
-      - - operator: containsGeneral
+      - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_1").[0].Probability
             iscontext: true
           right:
             value:
-              simple: "0.650591254234314"
+              simple: "0.650"
     continueonerrortype: ""
     view: |-
       {
@@ -733,14 +733,14 @@ tasks:
           right:
             value:
               simple: Malicious
-      - - operator: containsGeneral
+      - - operator: startWith
           left:
             value:
-              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").Probability
+              simple: ParseCSV.ParsedCSV(val.name && val.name === "ootb_2").[0].Probability
             iscontext: true
           right:
             value:
-              simple: "0.6354129910469055"
+              simple: "0.635"
     continueonerrortype: ""
     view: |-
       {
