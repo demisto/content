@@ -17,11 +17,6 @@ configuration:
   required: true
   type: 4
   section: Connect
-- display: Fetch events
-  name: isFetch
-  type: 8
-  section: Collect
-  required: false
 - defaultvalue: Access Logs,Assets Logs,Digital Risk Keywords Logs
   section: Collect
   display: Event types to fetch
