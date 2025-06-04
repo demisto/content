@@ -757,7 +757,7 @@ class EWSClient:
             demisto.debug(f"reply_email: Failed to find original message with ID {in_reply_to}")
             raise Exception(item_to_reply_to)
 
-        subject = subject or item_to_reply_to.subject  # type: ignore[assignat]
+        subject = subject or item_to_reply_to.subject or ""  # type: ignore[assignat]
         html_attachments: list = []
         if html_body and handle_inline_image:
             demisto.debug("reply_email: Processing HTML body for inline images")

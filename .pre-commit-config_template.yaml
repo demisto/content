@@ -53,20 +53,6 @@ repos:
     - --config=nightly_ruff.toml
     args:docker_autoupdate:
     - --config=nightly_ruff.toml
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.982
-  hooks:
-  - id: mypy
-    min_py_version: '3.7'
-    args:
-    - --ignore-missing-imports
-    - --check-untyped-defs
-    - --show-error-codes
-    - --follow-imports=silent
-    - --allow-redefinition
-    exclude: test_data|tests_data|.venv|.*_test.py$|infrastructure_tests|.vulture_whitelist.py|demistomock.py|Templates|conftest.py|Utils/download_packs_and_docker_images.py
-    language: system
-    entry: mypy
 
 - repo: local
   hooks:
@@ -78,6 +64,7 @@ repos:
     additional_dependencies:
       - "@mdx-js/mdx@1.6.22"  #The correct version is the one in the `package-lock.json` of content-docs, all instances should match it.
       - "fs-extra@11.3.0"
+
   - id: xsoar-lint
     name: xsoar-lint
     description: Run xsoar-linter on the code in content packs

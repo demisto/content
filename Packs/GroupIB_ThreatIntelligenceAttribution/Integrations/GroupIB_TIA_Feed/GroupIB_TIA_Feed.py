@@ -768,8 +768,7 @@ COMMON_MAPPING = {
         },
         "markdowns": {
             "software_mixed": (
-                "| Software Name | Software Type | Software Version |\n"
-                "| ------------- | ------------- | ---------------- |\n"
+                "| Software Name | Software Type | Software Version |\n| ------------- | ------------- | ---------------- |\n"
             )
         },
         "parser_mapping": {
@@ -857,9 +856,7 @@ class Client(BaseClient):
     """
 
     def __init__(self, base_url, verify=True, proxy=False, headers=None, auth=None):
-        super().__init__(
-            base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth
-        )
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers=headers, auth=auth)
 
         self._auth: tuple[str, str]
         self.poller = TIPoller(
@@ -872,7 +869,7 @@ class Client(BaseClient):
             product_name="CortexSOAR",
             product_version="unknown",
             integration_name="Group-IB Threat Intelligence",
-            integration_version="2.0.0",
+            integration_version="2.1.0",
         )
 
     def create_update_generator_proxy_functions(
@@ -971,10 +968,7 @@ class IndicatorBuilding:
         return inverted_dict.get(target_value)
 
     @staticmethod
-    def get_human_readable_feed(
-        indicators: list, type_: str, collection_name: str
-    ) -> str:
-
+    def get_human_readable_feed(indicators: list, type_: str, collection_name: str) -> str:
         headers = ["value", "type"]
 
         collection_data = COMMON_MAPPING.get(collection_name)
@@ -982,9 +976,7 @@ class IndicatorBuilding:
         additional_headers = collection_data["add_fields_types"].get(initial_type)  # type: ignore
         headers.extend(additional_headers.values())
 
-        return tableToMarkdown(
-            f"{type_} indicators", indicators, removeNull=True, headers=headers
-        )
+        return tableToMarkdown(f"{type_} indicators", indicators, removeNull=True, headers=headers)
 
     @staticmethod
     def transform_list_to_str(data: list[dict]) -> list[dict]:
@@ -1000,9 +992,7 @@ class IndicatorBuilding:
         return [process_item(item) for item in data]
 
     @staticmethod
-    def sorting_indicators(
-        indicators: list[dict[str, Any]]
-    ) -> dict[str, list[dict[str, Any]]]:
+    def sorting_indicators(indicators: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
         sorted_indicators: dict[str, list[dict[str, Any]]] = {}
 
         for indicator in indicators:
@@ -1025,13 +1015,7 @@ class IndicatorBuilding:
 
         if num_rows > 0:
             for i in range(num_rows):
-                row = (
-                    " | "
-                    + " | ".join(
-                        software_mixed_data[key][i] for key in software_mixed_data
-                    )
-                    + " \n"
-                )
+                row = " | " + " | ".join(software_mixed_data[key][i] for key in software_mixed_data) + " \n"
                 rows += row
 
             software_mixed = rows
@@ -1041,9 +1025,7 @@ class IndicatorBuilding:
         indicator_value = software_mixed
         return indicator_value
 
-    def build_indicator_value_for_date_field(
-        self, feed: dict, indicator_type_name: str
-    ):
+    def build_indicator_value_for_date_field(self, feed: dict, indicator_type_name: str):
         indicator_value = dateparser.parse(feed.get(indicator_type_name))  # type: ignore
         if indicator_value is not None:
             indicator_value = indicator_value.strftime(DATE_FORMAT)  # type: ignore
@@ -1073,15 +1055,11 @@ class IndicatorBuilding:
         :param feed: feed from GIB TI&A.
         """
         indicators_types = self.collection_mapping.get("types", {})
-        indicators_add_fields_types = self.collection_mapping.get(
-            "add_fields_types", {}
-        )
+        indicators_add_fields_types = self.collection_mapping.get("add_fields_types", {})
 
         indicators = []
 
-        demisto.debug(
-            f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}"
-        )
+        demisto.debug(f"Starting to process find_iocs_in_feed feed: {feed}, collection: {self.collection_name}")
 
         for indicator_type_name, indicator_type in indicators_types.items():
             add_fields = {}
@@ -1090,57 +1068,38 @@ class IndicatorBuilding:
             )
 
             if indicator_type in self.fields_list_for_parse:
-                indicator_value = self.build_indicator_value_for_date_field(
-                    feed=feed, indicator_type_name=indicator_type_name
-                )
-                demisto.debug(
-                    f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}"
-                )
+                indicator_value = self.build_indicator_value_for_date_field(feed=feed, indicator_type_name=indicator_type_name)
+                demisto.debug(f"Extracted date field find_iocs_in_feed indicator value: {indicator_value}")
             else:
                 if indicator_type_name == "software_mixed":
-                    indicator_value = self.build_indicator_value_for_software_mixed(
-                        feed=feed
-                    )
-                    demisto.debug(
-                        f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}"
-                    )
+                    indicator_value = self.build_indicator_value_for_software_mixed(feed=feed)
+                    demisto.debug(f"Extracted software mixed find_iocs_in_feed indicator value: {indicator_value}")
 
                 elif indicator_type_name in indicators_add_fields_types:
                     # Retrieve the initial indicator value
                     indicator_value = feed.get(indicator_type_name)
-                    demisto.debug(
-                        f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}"
-                    )
+                    demisto.debug(f"Raw find_iocs_in_feed indicator value for {indicator_type_name}: {indicator_value}")
 
                     # If the value is a list, flatten it to get a single non-list value
                     indicator_value = self.extract_single_value(indicator_value)
-                    demisto.debug(
-                        f"Flattened find_iocs_in_feed indicator value: {indicator_value}"
-                    )
+                    demisto.debug(f"Flattened find_iocs_in_feed indicator value: {indicator_value}")
 
                     # Now process additional fields
                     for (
                         additional_field_name,
                         additional_field_type,
-                    ) in indicators_add_fields_types.get(
-                        indicator_type_name
-                    ).items():  # noqa: E501
+                    ) in indicators_add_fields_types.get(indicator_type_name).items():  # noqa: E501
                         additional_field_value = feed.get(additional_field_name)
 
                         # Process additional_field_value similarly
-                        additional_field_value = self.extract_single_value(
-                            additional_field_value
-                        )
+                        additional_field_value = self.extract_single_value(additional_field_value)
 
                         demisto.debug(
                             f"Processed find_iocs_in_feed additional field '{additional_field_name}': {additional_field_value}"
                         )
 
                         # Only add to add_fields if additional_field_value is not None or empty
-                        if (
-                            additional_field_value is not None
-                            and additional_field_value != ""
-                        ):
+                        if additional_field_value is not None and additional_field_value != "":
                             add_fields[additional_field_type] = additional_field_value
                             demisto.debug(
                                 f"Added additional field find_iocs_in_feed '{additional_field_type}': {additional_field_value}"
@@ -1148,15 +1107,11 @@ class IndicatorBuilding:
 
                     add_fields.update(
                         {
-                            "trafficlightprotocol": self.common_fields.get(
-                                "trafficlightprotocol"
-                            ),
+                            "trafficlightprotocol": self.common_fields.get("trafficlightprotocol"),
                             "gibcollection": self.collection_name,
                         }
                     )
-                    demisto.debug(
-                        f"Updated find_iocs_in_feed additional fields: {add_fields}"
-                    )
+                    demisto.debug(f"Updated find_iocs_in_feed additional fields: {add_fields}")
 
             # Create the raw JSON object
             if indicator_value is not None and indicator_value != "":
@@ -1177,9 +1132,7 @@ class IndicatorBuilding:
                         "fields": add_fields,
                     }
                 )
-                demisto.debug(
-                    f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}"
-                )
+                demisto.debug(f"Added indicator find_iocs_in_feed: {indicator_value} of type: {indicator_type}")
 
         demisto.debug(f"Final list of find_iocs_in_feed indicators: {indicators}")
 
@@ -1203,9 +1156,7 @@ class IndicatorBuilding:
             for type_, indicator in sorted_indicators.items():
                 results.append(
                     CommandResults(
-                        readable_output=IndicatorBuilding.get_human_readable_feed(
-                            indicator, type_, self.collection_name
-                        ),
+                        readable_output=IndicatorBuilding.get_human_readable_feed(indicator, type_, self.collection_name),
                         raw_response=self.parsed_json,
                         ignore_auto_extract=True,
                     )
@@ -1215,7 +1166,6 @@ class IndicatorBuilding:
 
 
 class DateHelper:
-
     @staticmethod
     def handle_first_time_fetch(last_run, collection_name, first_fetch_time):
         last_fetch = last_run.get("last_fetch", {}).get(collection_name)
@@ -1246,9 +1196,7 @@ def validate_launch_get_indicators_command(limit, collection_name):
         raise Exception("A limit should be a number, not a string.")
 
     if collection_name not in COMMON_MAPPING:
-        raise Exception(
-            "Incorrect collection name. Please, choose one of the displayed options."
-        )
+        raise Exception("Incorrect collection name. Please, choose one of the displayed options.")
 
 
 """ Commands """
@@ -1372,9 +1320,7 @@ def get_indicators_command(client: Client, args: dict[str, str]):
             if len(indicators) >= limit:
                 break
     else:
-        portions = client.poller.search_feed_by_id(
-            collection_name=collection_name, feed_id=id_
-        )
+        portions = client.poller.search_feed_by_id(collection_name=collection_name, feed_id=id_)
         portions.get_iocs()
         parsed_json = portions.parse_portion(keys=mapping.get("parser_mapping"))
         builded_indicators = IndicatorBuilding(
