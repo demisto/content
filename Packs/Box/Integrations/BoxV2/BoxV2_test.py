@@ -536,9 +536,7 @@ def test_upload_file_command_with_chunks(requests_mock, mocker):
 
     # Validate request to open a session
     assert requests_mock.request_history[0].headers.get("Authorization") == "Bearer JWT_TOKEN"
-    assert (
-        requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
-    )
+    assert requests_mock.request_history[0].text == '{"file_name": "test_user.png", "file_size": 105000000, "folder_id": "100"}'
 
     # Validate first PUT request
     assert requests_mock.request_history[1].headers.get("Authorization") == "Bearer JWT_TOKEN"

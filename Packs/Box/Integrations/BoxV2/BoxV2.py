@@ -1725,11 +1725,9 @@ def fetch_incidents(
     incidents = []
     if not created_after:
         created_after = datetime.fromtimestamp(first_fetch_time, tz=UTC).strftime(DATE_FORMAT)
-    results = client.list_events(stream_type="admin_logs",
-                                 as_user=as_user,
-                                 limit=max_results,
-                                 created_after=created_after,
-                                 event_type=event_type)
+    results = client.list_events(
+        stream_type="admin_logs", as_user=as_user, limit=max_results, created_after=created_after, event_type=event_type
+    )
     raw_incidents = results.get("entries", [])
     demisto.debug(f"Extracted {len(raw_incidents)} raw incidents from the results.")
     next_run = datetime.now(tz=UTC).strftime(DATE_FORMAT)
@@ -1775,7 +1773,7 @@ def main() -> None:  # pragma: no cover
 
         elif demisto.command() == "fetch-incidents":
             as_user = demisto.params().get("as_user", None)
-            event_type = argToList(demisto.params().get('event_type'))
+            event_type = argToList(demisto.params().get("event_type"))
             max_results = arg_to_int(arg=demisto.params().get("max_fetch"), arg_name="max_fetch")
             if not max_results or max_results > MAX_INCIDENTS_TO_FETCH:
                 max_results = MAX_INCIDENTS_TO_FETCH
@@ -1786,7 +1784,7 @@ def main() -> None:  # pragma: no cover
                 last_run=demisto.getLastRun(),
                 first_fetch_time=first_fetch_time,
                 as_user=as_user,
-                event_type=event_type
+                event_type=event_type,
             )
             demisto.setLastRun({"time": next_run})
             demisto.incidents(incidents)
