@@ -264,7 +264,7 @@ def parse_indicators_for_get_command(indicators) -> list[dict[str, Any]]:
                 TargetIndustries=indicator.get("target_industry"),
                 Source=indicator.get("source"),
                 ThreatStreamID=str(indicator.get("id")),
-                CountryCode=indicator.get("country"), # TODO there is no such field
+                CountryCode=indicator.get("country"),
                 **dynamic_field,  # Unpack the dynamic field into the params
                 Description=indicator.get("description"),
                 Modified=indicator.get("modified_ts"),
@@ -511,8 +511,7 @@ def parse_indicator_for_fetch(indicator: dict[str, Any], tlp_color: str, create_
         fields=fields,
         relationships=relationships,
         rawJSON=indicator,
-        score=dbot_score,
-        # "expiration_date" here # TODO is this Indicator Expiration Method?
+        score=dbot_score
     )
 
 def main():
