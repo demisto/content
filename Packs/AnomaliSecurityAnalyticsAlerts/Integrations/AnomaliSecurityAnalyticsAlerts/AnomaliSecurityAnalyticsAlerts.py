@@ -341,11 +341,11 @@ def fetch_incidents(client: Client) -> list:
 
         incident = {
             "name": f"Anomali Alert - {alert.get('uuid_', 'Unknown')}",
-            "occurred": (int(raw_ts) // 1000).strftime(ISO_8601_FORMAT),
+            "occurred": datetime.fromtimestamp(int(raw_ts) // 1000).strftime(ISO_8601_FORMAT),
             "rawJSON": json.dumps(alert),
         }
         incidents.append(incident)
-    
+
     if len(records) >= fetch_limit:
         demisto.setLastRun({"last_fetch": from_dt.strftime(ISO_8601_FORMAT), "offset": offset + fetch_limit})
     else:
