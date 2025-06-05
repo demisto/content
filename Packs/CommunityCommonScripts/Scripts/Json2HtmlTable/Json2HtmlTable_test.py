@@ -57,6 +57,6 @@ def test_json_to_html_command(value, expected):
     ],
 )
 def test_json_to_html_with_attributes(value, attributes, styling, expected):
-    demisto_args: dict = {"value": value, "table-attributes": attributes, "custom-styling": styling}
+    demisto_args: dict = {"value": value, "table_attributes": attributes, "custom_styling": styling}
     result: CommandResults = Json2HtmlTable.json_to_html_command(args=demisto_args)
     assert result.outputs == expected
