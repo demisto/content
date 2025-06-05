@@ -12,16 +12,10 @@ configuration:
   required: true
   defaultvalue: https://endpointcentral.manageengine.com
   section: Connect
-- name: client_id
+- name: credentials
   display: Client ID
-  type: 0
-  required: true
-  section: Connect
-- name: client_secret
-  display: Client Secret
   type: 9
   displaypassword: Client Secret
-  hiddenusername: true
   required: true
   section: Connect
 - name: client_code
@@ -63,7 +57,7 @@ script:
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'false'
-      description: If true, the command will create events, otherwise it will only display them.
+      description: If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.
       isArray: false
       name: should_push_events
       predefined:
@@ -75,11 +69,11 @@ script:
       name: limit
       required: false
     - default: false
-      description: Date from which to get events.
+      description: Date from which to get events, For example 2018-11-06T08:56:41.
       name: start_date
       required: false
     - default: false
-      description: Date to which to get events.
+      description: Date to which to get events , For example 2018-11-06T08:56:41.
       name: end_date
       required: false
     deprecated: false

@@ -1,6 +1,6 @@
 {
     "name": "ManageEngine",
-    "description": "## FILL MANDATORY FIELD ##",
+    "description": "ManageEngine EndpointCentral event collector integration for Cortex XSIAM.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

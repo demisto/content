@@ -1,3 +1,5 @@
+ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console. This integration serves as an Event Collector for Cortex XSIAM, enabling fetching AuditLogs from Endpoint Central.
+
 # Endpoint Central Cloud Domains
 
 Endpoint Central cloud is hosted at multiple data centers, and therefore available on different domains. There are 7 different domains for Endpoint central cloud APIs, so you can use the one that is applicable to you.
@@ -51,7 +53,6 @@ Click Create to generate `Code`.
 
 ## Commands
 
-
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
@@ -77,14 +78,11 @@ Gets events from ManageEngine.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum number of results to return. | Required | 
-| start_date | Date from which to get events. | Optional | 
-| end_date | Date to which to get events. | Optional | 
+| should_push_events | If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.| Required | 
+| limit | Maximum number of results to return. | Optional | 
+| start_date | Date from which to get events, For example 2018-11-06T08:56:41. | Optional | 
+| end_date | Date to which to get events , For example 2018-11-06T08:56:41. | Optional | 
 
-###### Human Readable Output
-**ManageEngine Audit Logs**:
+#### Context Output
 
-_time|
----|
-2025-05-08T11:42:36Z|
+There is no context output for this command.

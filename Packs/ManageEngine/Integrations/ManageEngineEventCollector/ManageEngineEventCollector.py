@@ -10,8 +10,6 @@ urllib3.disable_warnings()
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 VENDOR = "manage"
 PRODUCT = "engine"
-TOKEN_URL = "/oauth/v2/token"
-AUDIT_LOGS_URL = "/emsapi/server/auditLogs"
 PAGE_LIMIT_DEFAULT = 5000
 DEFAULT_MAX_FETCH = 25000
 
@@ -62,29 +60,40 @@ class Client(BaseClient):
             DemistoException: If neither an authorization code nor refresh token is available.
         """
         ctx = get_integration_context() or {}
+
+        access_token = ctx.get("access_token")
+        expire_date_str = ctx.get("expire_date")
         now = datetime.now()
-        if "access_token" in ctx and now < datetime.fromisoformat(ctx.get("expire_date")):  # type: ignore
-            demisto.debug(f"Using cached access token. Expires at {ctx.get('expire_date')}")
-            return ctx.get("access_token")  # type: ignore
+        if access_token and expire_date_str:
+            expire_date = datetime.fromisoformat(expire_date_str)
+            if now < expire_date:
+                demisto.debug(f"Using cached access token. Expires at {expire_date_str}")
+                return access_token
+
         demisto.debug("No valid access token exists.")
+
         data = {
             "client_id": self.client_id,
             "client_secret": self.client_secret,
         }
 
-        if "refresh_token" in ctx:
+        refresh_token = ctx.get("refresh_token")
+
+        if refresh_token:
             demisto.debug("Refresh token found in context")
-            data.update({"grant_type": "refresh_token", "refresh_token": ctx.get("refresh_token")})  # type: ignore
+            data.update({"grant_type": "refresh_token", "refresh_token": refresh_token})
 
         elif self.client_code:
             demisto.debug("Refresh token not found in context.")
             data.update({"grant_type": "authorization_code", "code": self.client_code})
         else:
             raise DemistoException(message="Either grant code or refresh token must be provided.")
+
         demisto.debug("Asking for new tokens")
+
         response = self._http_request(
             method="POST",
-            full_url=ENDPOINT_TO_ZOHO_ACCOUNTS[self._base_url] + TOKEN_URL,
+            full_url=ENDPOINT_TO_ZOHO_ACCOUNTS[self._base_url] + "/oauth/v2/token",
             data=data,
             resp_type="json",
             headers={"Content-Type": "application/x-www-form-urlencoded"},
@@ -93,14 +102,16 @@ class Client(BaseClient):
         if "error" in response:
             demisto.debug("Error creating token")
             raise DemistoException(response.get("error"))
+
         new_ctx = {
             "refresh_token": ctx.get("refresh_token") or response.get("refresh_token"),
             "access_token": response.get("access_token"),
             "expire_date": (now + timedelta(seconds=int(response.get("expires_in")) - 60)).isoformat(),
         }
 
+        demisto.debug(f"New access token acquired and stored. Expires at {new_ctx['expire_date']}")
         set_integration_context(new_ctx)
-        return response.get("access_token")
+        return new_ctx["access_token"]
 
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
         """
@@ -132,7 +143,7 @@ class Client(BaseClient):
 
             response = self._http_request(
                 method="GET",
-                url_suffix=AUDIT_LOGS_URL,
+                url_suffix="/emsapi/server/auditLogs",
                 headers=headers,
                 params=params,
                 ok_codes=(200, 204),
@@ -154,7 +165,7 @@ class Client(BaseClient):
             page += 1
 
             if len(events_page) < PAGE_LIMIT_DEFAULT:
-                demisto.debug("Not enough events")
+                demisto.debug(f"Fetched {len(events_page)} events < PAGE_LIMIT ({PAGE_LIMIT_DEFAULT}) on the last page.")
                 break
 
         events.sort(key=lambda e: int(e["eventTime"]))
@@ -165,7 +176,7 @@ def test_module(client: Client) -> str:
     """
     Verifies credentials + connectivity by attempting to fetch a single audit log.
     """
-    now_ts = int(datetime.now().timestamp() * 1000)
+    now_ts = int(time.time() * 1000)
     one_min_ago_ts = now_ts - (60 * 1000)
 
     try:
@@ -184,21 +195,22 @@ def get_events(client: Client, args: dict) -> CommandResults:
     """
     should_push = argToBoolean(args.get("should_push_events", "false"))
     limit = arg_to_number(args.get("limit")) or 10
-    now = datetime.now()
-    start_date = dateparser.parse(args.get("start_date", "")) or now
-    end_date = dateparser.parse(args.get("end_date", "")) or now - timedelta(days=1)
+    start_date_str = args.get("start_date")
+    end_date_str = args.get("end_date")
 
-    events = client.search_events(str(int(start_date.timestamp() * 1000)), str(int(end_date.timestamp() * 1000)), limit)
+    now_ts = int(time.time() * 1000)
+
+    start_date = date_to_timestamp(start_date_str) if start_date_str else now_ts
+    end_date = date_to_timestamp(end_date_str) if end_date_str else (now_ts - 60 * 1000)
+
+    events = client.search_events(str(start_date), str(end_date), limit)
     add_time_to_events(events)
     human_readable = tableToMarkdown(
         name="ManageEngine Audit Logs",
         t=events,
-        headers="_time",
     )
     results = CommandResults(
         readable_output=human_readable,
-        outputs_prefix="ManageEngine.Event",
-        outputs=events,
     )
 
     if should_push:
@@ -223,15 +235,14 @@ def fetch_events(
         next_run: dict with updated `last_time`;
         events: list of new events.
     """
-    now = datetime.now()
-    now_ts = str(int(now.timestamp() * 1000))
-    last_time_ts = (last_run.get("last_time")) or str(int((now - timedelta(minutes=1)).timestamp() * 1000))
-    demisto.debug(f"Last run time {last_time_ts}, {datetime.fromtimestamp(int(last_time_ts) / 1000)}")
-    demisto.debug(f"now_ts run time {now_ts}, {datetime.fromtimestamp(int(now_ts) / 1000)}")
 
-    events = client.search_events(start_time=last_time_ts, end_time=now_ts, limit=max_events_per_fetch)
+    now_ts = int(time.time() * 1000)
+    last_time_ts = (last_run.get("last_time")) or str(now_ts - (60 * 1000))
+    demisto.debug(f"Fetching from: {timestamp_to_datestring(last_time_ts)} to {timestamp_to_datestring(now_ts)}")
+
+    events = client.search_events(start_time=last_time_ts, end_time=str(now_ts), limit=max_events_per_fetch)
     # Remove event who fetched twice
-    if events and events[0].get("eventTime") == last_time_ts:
+    if events and str(events[0].get("eventTime")) == last_time_ts:
         events = events[1:]
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
@@ -251,8 +262,7 @@ def add_time_to_events(events: List[Dict] | None):
     """
     if events:
         for event in events:
-            dt = datetime.fromtimestamp(int(event.get("eventTime")) / 1000, tz=timezone.utc)  # type: ignore
-            event["_time"] = dt.strftime(DATE_FORMAT)
+            event["_time"] = timestamp_to_datestring(event.get("eventTime"), date_format=DATE_FORMAT)
 
 
 """ MAIN FUNCTION """
@@ -268,9 +278,9 @@ def main() -> None:  # pragma: no cover
 
     server_url = params.get("server_url")
     if server_url not in ENDPOINT_TO_ZOHO_ACCOUNTS:
-        return_error("URL is invalid")
-    client_id = params.get("client_id")
-    client_secret = params.get("client_secret", {}).get("password")
+        return_error("Invalid URL: Make sure it matches one of the options listed in the help section.")
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
     client_code = params.get("client_code", {}).get("password")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
