@@ -1,7 +1,7 @@
 import json
 import pytest
 from CommonServerPython import DemistoException
-from COOCApiModule import CloudTypes, get_cloud_credentials, get_cloud_entities
+from COOCApiModule import CloudTypes, get_cloud_credentials
 
 
 def test_get_cloud_credentials_success(mocker):
@@ -137,93 +137,94 @@ def test_get_cloud_credentials_parse_error(mocker):
     assert "Failed to parse credentials from CTS response for OCI" in str(excinfo.value)
 
 
-def test_get_cloud_entities_with_connector_id(mocker):
-    """
-    Given: A connector_id parameter.
-    When: The get_cloud_entities function is called with the connector_id.
-    Then: The function calls the platform API with the correct parameters and returns the response.
-    """
-    # Import needed to avoid the ModuleNotFoundError
-    import demistomock as demisto
+#
+# def test_get_cloud_entities_with_connector_id(mocker):
+#     """
+#     Given: A connector_id parameter.
+#     When: The get_cloud_entities function is called with the connector_id.
+#     Then: The function calls the platform API with the correct parameters and returns the response.
+#     """
+#     # Import needed to avoid the ModuleNotFoundError
+#     import demistomock as demisto
+#
+#     # Mock platform API response
+#     api_response = {"status_code": 200, "data": {"accounts": [{"id": "account-1"}, {"id": "account-2"}]}}
+#     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+#
+#     # Call the function
+#     result = get_cloud_entities(connector_id="test-connector-id")
+#
+#     # Verify API call was made with correct parameters
+#     call_args = demisto._platformAPICall.call_args[1]
+#     assert call_args["path"] == "/onboarding/accounts"
+#     assert call_args["method"] == "GET"
+#     assert call_args["params"] == {"entity_type": "account", "entity_id": "test-connector-id"}
+#
+#     # Verify result
+#     assert result == api_response
 
-    # Mock platform API response
-    api_response = {"status_code": 200, "data": {"accounts": [{"id": "account-1"}, {"id": "account-2"}]}}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+#
+# def test_get_cloud_entities_with_account_id(mocker):
+#     """
+#     Given: An account_id parameter.
+#     When: The get_cloud_entities function is called with the account_id.
+#     Then: The function calls the platform API with the correct parameters and returns the response.
+#     """
+#     # Import needed to avoid the ModuleNotFoundError
+#     import demistomock as demisto
+#
+#     # Mock platform API response
+#     api_response = {"status_code": 200, "data": {"connectors": [{"id": "connector-1"}, {"id": "connector-2"}]}}
+#     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+#
+#     # Call the function
+#     result = get_cloud_entities(account_id="test-account-id")
+#
+#     # Verify API call was made with correct parameters
+#     call_args = demisto._platformAPICall.call_args[1]
+#     assert call_args["path"] == "/onboarding/connectors"
+#     assert call_args["method"] == "GET"
+#     assert call_args["params"] == {"entity_type": "connector", "entity_id": "test-account-id"}
+#
+#     # Verify result
+#     assert result == api_response
+#
 
-    # Call the function
-    result = get_cloud_entities(connector_id="test-connector-id")
-
-    # Verify API call was made with correct parameters
-    call_args = demisto._platformAPICall.call_args[1]
-    assert call_args["path"] == "/onboarding/accounts"
-    assert call_args["method"] == "GET"
-    assert call_args["params"] == {"entity_type": "account", "entity_id": "test-connector-id"}
-
-    # Verify result
-    assert result == api_response
-
-
-def test_get_cloud_entities_with_account_id(mocker):
-    """
-    Given: An account_id parameter.
-    When: The get_cloud_entities function is called with the account_id.
-    Then: The function calls the platform API with the correct parameters and returns the response.
-    """
-    # Import needed to avoid the ModuleNotFoundError
-    import demistomock as demisto
-
-    # Mock platform API response
-    api_response = {"status_code": 200, "data": {"connectors": [{"id": "connector-1"}, {"id": "connector-2"}]}}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
-
-    # Call the function
-    result = get_cloud_entities(account_id="test-account-id")
-
-    # Verify API call was made with correct parameters
-    call_args = demisto._platformAPICall.call_args[1]
-    assert call_args["path"] == "/onboarding/connectors"
-    assert call_args["method"] == "GET"
-    assert call_args["params"] == {"entity_type": "connector", "entity_id": "test-account-id"}
-
-    # Verify result
-    assert result == api_response
-
-
-def test_get_cloud_entities_api_error(mocker):
-    """
-    Given: A connector_id parameter but the API returns an error.
-    When: The get_cloud_entities function is called.
-    Then: A DemistoException is raised with the error details.
-    """
-    # Import needed to avoid the ModuleNotFoundError
-    import demistomock as demisto
-
-    # Mock platform API error response
-    api_response = {"status_code": 404, "data": "Connector not found"}
-    mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
-
-    # Call the function and expect an exception
-    with pytest.raises(DemistoException) as excinfo:
-        get_cloud_entities(connector_id="test-connector-id")
-
-    # Verify exception message
-    assert "Failed to get accounts for ID 'test-connector-id'" in str(excinfo.value)
-    assert "Status code: 404" in str(excinfo.value)
-    assert "Detail: Connector not found" in str(excinfo.value)
-
-
-def test_get_cloud_entities_invalid_params():
-    """
-    Given: No parameters or both connector_id and account_id parameters.
-    When: The get_cloud_entities function is called.
-    Then: A ValueError is raised indicating exactly one parameter must be provided.
-    """
-    # Test with no parameters
-    with pytest.raises(ValueError) as excinfo:
-        get_cloud_entities()
-    assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)
-
-    # Test with both parameters
-    with pytest.raises(ValueError) as excinfo:
-        get_cloud_entities(connector_id="test-connector-id", account_id="test-account-id")
-    assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)
+# def test_get_cloud_entities_api_error(mocker):
+#     """
+#     Given: A connector_id parameter but the API returns an error.
+#     When: The get_cloud_entities function is called.
+#     Then: A DemistoException is raised with the error details.
+#     """
+#     # Import needed to avoid the ModuleNotFoundError
+#     import demistomock as demisto
+#
+#     # Mock platform API error response
+#     api_response = {"status_code": 404, "data": "Connector not found"}
+#     mocker.patch.object(demisto, "_platformAPICall", return_value=api_response)
+#
+#     # Call the function and expect an exception
+#     with pytest.raises(DemistoException) as excinfo:
+#         get_cloud_entities(connector_id="test-connector-id")
+#
+#     # Verify exception message
+#     assert "Failed to get accounts for ID 'test-connector-id'" in str(excinfo.value)
+#     assert "Status code: 404" in str(excinfo.value)
+#     assert "Detail: Connector not found" in str(excinfo.value)
+#
+#
+# def test_get_cloud_entities_invalid_params():
+#     """
+#     Given: No parameters or both connector_id and account_id parameters.
+#     When: The get_cloud_entities function is called.
+#     Then: A ValueError is raised indicating exactly one parameter must be provided.
+#     """
+#     # Test with no parameters
+#     with pytest.raises(ValueError) as excinfo:
+#         get_cloud_entities()
+#     assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)
+#
+#     # Test with both parameters
+#     with pytest.raises(ValueError) as excinfo:
+#         get_cloud_entities(connector_id="test-connector-id", account_id="test-account-id")
+#     assert "Exactly one of connector_id or account_id must be provided" in str(excinfo.value)

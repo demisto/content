@@ -810,69 +810,188 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
-def check_required_permissions(creds: Credentials, args: dict[str, Any], command: str = "") -> str:
+def check_required_permissions(creds: Credentials, project_id: str, connector_id: str = None, command: str = "") -> str:
     """
-    Verifies the credentials have all required permissions, using testIamPermissions when applicable,
-    and IAM role expansion as fallback for untestable permissions.
+    Verifies the credentials have all required permissions, using testIamPermissions to check access.
+
+    This function takes a set of GCP credentials and verifies they have the necessary permissions
+    to execute either a specific command or all supported commands in the integration.
+
     Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Must include 'project_id'.
-        command (str): Specific command to check, or all if empty.
+        creds (Credentials): GCP credentials to test.
+        project_id (str): The GCP project ID to check permissions against.
+        connector_id (str, optional): The connector ID for Cloud integration health checks.
+        command (str, optional): Specific command to check permissions for. If empty, checks all permissions.
 
     Returns:
-        str: 'ok' if permissions are sufficient, otherwise raises an error.
-        #  TODO ADD DECLAIMER THAT THE cloudidentity. CAN NOT BE CHECKED
-    """
-    project_id = args.get("project_id")
-    if not project_id:
-        raise DemistoException("Missing required argument: 'project_id'.")
+        str: Health check result string ("ok" if permissions are sufficient).
 
+    Raises:
+        DemistoException: If required permissions are missing.
+    """
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
     missing = set()
-    resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
-    response = (
-        resource_manager.projects()
-        .testIamPermissions(  # pylint: disable=E1101
-            resource=f"projects/{project_id}", body={"permissions": permissions}
-        )
-        .execute()
-    )
-    granted = set(response.get("permissions", []))
-    missing |= set(permissions) - granted
+
+    # Filter out permissions that can't be tested with testIamPermissions
+    # Currently, cloudidentity permissions can't be checked this way
+    testable_permissions = [p for p in permissions if not p.startswith("cloudidentity.")]
+    untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
+
+    if untestable_permissions:
+        demisto.info(f"The following permissions cannot be verified and will be assumed granted: {untestable_permissions}")
+
+    if testable_permissions:
+        try:
+            resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
+            response = (
+                resource_manager.projects()
+                .testIamPermissions(  # pylint: disable=E1101
+                    resource=f"projects/{project_id}", body={"permissions": testable_permissions}
+                )
+                .execute()
+            )
+            granted = set(response.get("permissions", []))
+            missing = set(testable_permissions) - granted
+        except Exception as e:
+            error_message = f"Failed to test IAM permissions: {str(e)}"
+            if connector_id:
+                return_results(
+                    HealthCheckResult.error(
+                        account_id=project_id,
+                        connector_id=connector_id,
+                        message="Failed to test permissions for GCP integration",
+                        error=error_message,
+                        error_type=ErrorType.PERMISSION_ERROR,
+                    )
+                )
+            raise DemistoException(error_message)
+
     if missing:
         perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
         error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
+        error_message = "Missing permissions:\n" + "\n".join(error_lines)
 
-        raise DemistoException("Missing permissions:\n" + "\n".join(error_lines))
+        if connector_id:
+            return_results(
+                HealthCheckResult.error(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message="Missing required permissions for GCP integration",
+                    error=error_message,
+                    error_type=ErrorType.PERMISSION_ERROR,
+                )
+            )
+        raise DemistoException(error_message)
 
-    return "ok"
+    return "ok" if not connector_id else HealthCheckResult.ok()
+
+
+def health_check(project_id: str, connector_id: str) -> str:
+    """
+    Tests connectivity to GCP and checks for required permissions.
+
+    This function is specifically used for COOC (Connect on our Cloud) health checks
+    to verify connectivity and permissions.
+
+    Args:
+        project_id (str): The GCP project ID to check against.
+        connector_id (str): The connector ID for the Cloud integration.
+
+    Returns:
+        str: Health check result string ("ok" if successful).
+
+    Raises:
+        DemistoException: If the health check fails for any reason.
+    """
+    if not project_id:
+        error_message = "Missing required parameter 'project_id'"
+        return_results(
+            HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Missing project ID for GCP integration",
+                error=error_message,
+                error_type=ErrorType.INTERNAL_ERROR,
+            )
+        )
+        raise DemistoException(error_message)
+
+    try:
+        credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
+        token = credential_data.get("access_token")
+        if not token:
+            error_message = "Failed to retrieve GCP access token - token is missing from credentials"
+            return_results(
+                HealthCheckResult.error(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message="Failed to authenticate with GCP",
+                    error=error_message,
+                    error_type=ErrorType.CONNECTIVITY_ERROR,
+                )
+            )
+        creds = Credentials(token=token)
+        demisto.debug("Using token-based credentials for health check")
+        return check_required_permissions(creds, project_id, connector_id)
+    except Exception as e:
+        error_message = str(e)
+        return_results(
+            HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Failed to connect to GCP",
+                error=error_message,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+        )
+        raise
 
 
 def test_module(creds: Credentials, args: dict[str, Any]) -> str:
     """
     Tests connectivity to GCP and checks for required permissions.
 
+    This function is used for the integration's test button functionality.
+    It verifies connectivity and basic permissions.
+
     Args:
-        creds (Credentials): GCP credentials.
-        args (dict[str, Any]): Command arguments.
+        creds (Credentials): GCP credentials to test.
+        args (dict[str, Any]): Command arguments with 'project_id'.
 
     Returns:
         str: "ok" if test is successful.
+
+    Raises:
+        DemistoException: If the test fails for any reason.
     """
     project_id = args.get("project_id")
     if not project_id:
         raise DemistoException("Missing required parameter 'project_id'")
 
-    return check_required_permissions(creds, args)
+    try:
+        # Check permissions without using the health check result handler
+        check_required_permissions(creds, project_id)
+        return "ok"
+    except Exception as e:
+        demisto.debug(f"Test module failed: {str(e)}")
+        raise DemistoException(f"Failed to connect to GCP: {str(e)}")
 
 
 def main():
-    """Main function to route commands and execute logic"""
+    """
+    Main function to route commands and execute logic.
+
+    This function processes the incoming command, sets up the appropriate credentials,
+    and routes the execution to the corresponding handler function.
+    """
     try:
         command = demisto.command()
         args = demisto.args()
         params = demisto.params()
+        context = demisto.callingContext.get("context", {})
+        cloud_info = context.get("CloudIntegrationInfo", {})
 
+        connector_id = cloud_info.get("connectorID")
         command_map = {
             "test-module": test_module,
             # Compute Engine commands
@@ -899,24 +1018,36 @@ def main():
             # "gcp-admin-user-signout": admin_user_signout,
         }
 
+        # Handle health check command for COOC
+        if command == "health-check":
+            run_permissions_check_for_accounts(connector_id, health_check)
+            return
+
         if command not in command_map:
             raise NotImplementedError(f"Command not implemented: {command}")
 
+        # Set up credentials - first try service account, then token-based auth
         creds = None
         if (credentials := params.get("credentials")) and (password := credentials.get("password")):
-            service_account_info = json.loads(password)
-            creds = google_service_account.Credentials.from_service_account_info(service_account_info)
-            args["project_id"] = service_account_info.get("project_id")
-            demisto.debug("Using service account credentials")
+            try:
+                service_account_info = json.loads(password)
+                creds = google_service_account.Credentials.from_service_account_info(service_account_info)
+                if not args.get("project_id"):
+                    args["project_id"] = service_account_info.get("project_id")
+                demisto.debug("Using service account credentials")
+            except json.JSONDecodeError:
+                raise DemistoException("Invalid service account JSON format")
         if not creds:
-            token = get_cloud_credentials(CloudTypes.GCP.value, args.get("project_id")).get("access_token")
+            project_id = args.get("project_id")
+            if not project_id:
+                raise DemistoException("Missing required parameter 'project_id'")
+            token = get_cloud_credentials(CloudTypes.GCP.value, project_id).get("access_token")
             if not token:
                 raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
             creds = Credentials(token=token)
             demisto.debug("Using token-based credentials")
 
-        # result: CommandResults | str = check_required_permissions(creds, args, command)
-        result = command_map[command](creds, args)  # if command in command_map else result
+        result = command_map[command](creds, args)
         return_results(result)
 
     except Exception as e:
