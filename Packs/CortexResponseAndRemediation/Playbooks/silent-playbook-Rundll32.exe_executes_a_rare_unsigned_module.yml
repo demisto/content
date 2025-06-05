@@ -7,10 +7,10 @@ issilent: true
 tasks:
   "0":
     id: "0"
-    taskid: fc9bde0d-02a9-44ea-8a84-732bf1a93c05
+    taskid: 9522f102-14f3-4e4e-872f-f7b58ffab604
     type: start
     task:
-      id: fc9bde0d-02a9-44ea-8a84-732bf1a93c05
+      id: 9522f102-14f3-4e4e-872f-f7b58ffab604
       version: -1
       name: ""
       iscommand: false
@@ -18,14 +18,14 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "8"
+      - "3"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 449,
-          "y": -487
+          "y": -526
         }
       }
     note: false
@@ -37,10 +37,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: e48b7c7b-593a-4a39-bb53-78eba2532569
+    taskid: c5af3515-bd01-4eed-865b-67957c81e834
     type: regular
     task:
-      id: e48b7c7b-593a-4a39-bb53-78eba2532569
+      id: c5af3515-bd01-4eed-865b-67957c81e834
       version: -1
       name: Get Host Risk score
       description: Retrieve the risk score of a specific host or list of hosts with the highest risk score in the environment along with the reason affecting each score.
@@ -60,8 +60,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -139,
-          "y": -102
+          "x": 260,
+          "y": -246
         }
       }
     note: false
@@ -71,48 +71,12 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
-  "2":
-    id: "2"
-    taskid: 47d8aefa-6eb7-42f4-9e1d-1eba84dcd5f5
-    type: regular
-    task:
-      id: 47d8aefa-6eb7-42f4-9e1d-1eba84dcd5f5
-      version: -1
-      name: Get reputation on DLL's SHA256
-      description: Check the DLL's SHA256 reputation.
-      script: '|||file'
-      type: regular
-      iscommand: true
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "7"
-    scriptarguments:
-      file:
-        simple: ${Core.OriginalAlert.event.action_module_sha256}
-    separatecontext: false
-    continueonerror: true
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 253,
-          "y": -102
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: true
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: a0b28c6b-63b1-49bd-9a94-f1db6878163e
+    taskid: 431ab0b7-0091-4e78-8d3f-022d72802301
     type: regular
     task:
-      id: a0b28c6b-63b1-49bd-9a94-f1db6878163e
+      id: 431ab0b7-0091-4e78-8d3f-022d72802301
       version: -1
       name: Get the alert's extra data
       description: Returns extended information about each alert ID.
@@ -123,9 +87,9 @@ tasks:
     nexttasks:
       '#none#':
       - "1"
-      - "2"
       - "36"
       - "5"
+      - "42"
     scriptarguments:
       alert_ids:
         simple: ${alert.id}
@@ -137,7 +101,7 @@ tasks:
       {
         "position": {
           "x": 449,
-          "y": -258
+          "y": -411
         }
       }
     note: false
@@ -149,10 +113,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: a787b2a0-2dff-4052-b087-6ed0b75539b4
+    taskid: 10e53811-7223-422f-92f7-5d04b131676e
     type: condition
     task:
-      id: a787b2a0-2dff-4052-b087-6ed0b75539b4
+      id: 10e53811-7223-422f-92f7-5d04b131676e
       version: -1
       name: Is the loaded DLL malicious?
       description: Check if the loaded DLL is malicious
@@ -168,39 +132,22 @@ tasks:
     conditions:
     - label: Remediation
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert.event.action_module_sha256
-                      iscontext: true
-                accessor: Score
-            iscontext: true
-          ignorecase: true
       - - operator: isEqualNumber
           left:
             value:
               complex:
-                root: DBotScore
+                root: Indicators
                 filters:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: DBotScore.Indicator
+                        simple: Indicators.Value
                       iscontext: true
                     right:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -212,7 +159,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 175
+          "y": 178
         }
       }
     note: false
@@ -224,10 +171,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 1b0528ed-004c-41b7-9f6b-4b0a3b5c7c53
+    taskid: 18586617-9004-4196-8b3f-268b95d9e8af
     type: regular
     task:
-      id: 1b0528ed-004c-41b7-9f6b-4b0a3b5c7c53
+      id: 18586617-9004-4196-8b3f-268b95d9e8af
       version: -1
       name: Check the CGO Singer and DLL's company similarity
       description: Check the CGO Singer and loadded DLL's company attrebuite similarity.
@@ -266,8 +213,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 668,
-          "y": -102
+          "x": 651,
+          "y": -246
         }
       }
     note: false
@@ -279,10 +226,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: f678ec04-f501-4d22-af9d-4ccd40c8a527
+    taskid: 7dbc82bf-72e7-403d-8009-068c0f877312
     type: title
     task:
-      id: f678ec04-f501-4d22-af9d-4ccd40c8a527
+      id: 7dbc82bf-72e7-403d-8009-068c0f877312
       version: -1
       name: Analysis
       type: title
@@ -298,38 +245,7 @@ tasks:
       {
         "position": {
           "x": 450,
-          "y": 40
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "8":
-    id: "8"
-    taskid: 9b663439-26f1-4d9a-b804-79ebf53fb67f
-    type: title
-    task:
-      id: 9b663439-26f1-4d9a-b804-79ebf53fb67f
-      version: -1
-      name: Analysis
-      description: Analysis
-      type: title
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "3"
-    separatecontext: false
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 449,
-          "y": -369
+          "y": 51
         }
       }
     note: false
@@ -341,10 +257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 164b08f5-882c-417f-8c6a-e08f490dfa3b
+    taskid: 4e7430bd-2f10-4c43-87a5-c6e1fb4d9202
     type: condition
     task:
-      id: 164b08f5-882c-417f-8c6a-e08f490dfa3b
+      id: 4e7430bd-2f10-4c43-87a5-c6e1fb4d9202
       version: -1
       name: Is the Host Risk High?
       description: Checks if the host risk score is set to High.
@@ -386,10 +302,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 31f7d2d0-ec08-483d-9d40-9e40d85d4607
+    taskid: 7205ed79-a6df-43c5-88db-ac9ea8cb611b
     type: condition
     task:
-      id: 31f7d2d0-ec08-483d-9d40-9e40d85d4607
+      id: 7205ed79-a6df-43c5-88db-ac9ea8cb611b
       version: -1
       name: Is CGO uncommon in this alert?
       description: "Checks if the Causality chain is uncommon in this alert. \nIf the CGO name is one of the mentioned, the alert will be considered as TP."
@@ -458,10 +374,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: 167baa96-8c18-40fc-8abb-c950daa7d3b6
+    taskid: 06252bde-71d9-4910-824b-2a89a84b0400
     type: title
     task:
-      id: 167baa96-8c18-40fc-8abb-c950daa7d3b6
+      id: 06252bde-71d9-4910-824b-2a89a84b0400
       version: -1
       name: Remediation
       type: title
@@ -490,10 +406,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: f5cbf417-24e9-4929-9217-1d889150fdfd
+    taskid: d7594424-336a-4f94-8c5b-50dd7f150a6c
     type: title
     task:
-      id: f5cbf417-24e9-4929-9217-1d889150fdfd
+      id: d7594424-336a-4f94-8c5b-50dd7f150a6c
       version: -1
       name: Investigation
       type: title
@@ -522,13 +438,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: f7cd9825-9398-4880-9476-df1351034557
+    taskid: ed2e515b-c938-4a0b-a720-5fc0477be29f
     type: condition
     task:
-      id: f7cd9825-9398-4880-9476-df1351034557
+      id: ed2e515b-c938-4a0b-a720-5fc0477be29f
       version: -1
       name: Any related alerts?
-      description: Are there any related alerts?
+      description: |-
+        Check if there are any related alerts associated with this alert.
+        The remediation phase will be taken in one of the following scenarios:
+        - If there are any related alerts (with Low, Medium, or High severity)
+        - If the host risk score is set to Medium, and there are any insights.
       type: condition
       iscommand: false
       brand: ""
@@ -552,14 +472,14 @@ tasks:
             value:
               simple: Medium
           ignorecase: true
-        - operator: in
+      - - operator: isEqualString
           left:
             value:
               simple: foundIncidents.severity
             iscontext: true
           right:
             value:
-              simple: informational
+              simple: Informational
           ignorecase: true
     - label: Alerts
       condition:
@@ -589,10 +509,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 6f9ff663-dda2-414f-8b85-aa2973506bf1
+    taskid: 6a2582bd-1171-435a-82e2-aef7a79b62d3
     type: title
     task:
-      id: 6f9ff663-dda2-414f-8b85-aa2973506bf1
+      id: 6a2582bd-1171-435a-82e2-aef7a79b62d3
       version: -1
       name: No malicious activity detected
       type: title
@@ -620,10 +540,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 97730bd4-b108-44cc-a1e7-d7a1c6351263
+    taskid: 4ed5204c-f296-4945-8c46-5ec0e9f0bee4
     type: regular
     task:
-      id: 97730bd4-b108-44cc-a1e7-d7a1c6351263
+      id: 4ed5204c-f296-4945-8c46-5ec0e9f0bee4
       version: -1
       name: Close Alert - True Positive
       description: commands.local.cmd.close.inv
@@ -659,10 +579,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: 7d7f4c0a-2a13-418f-ae91-37dce8de0618
+    taskid: b27f8332-6822-4e68-809c-75b7119aa9c0
     type: title
     task:
-      id: 7d7f4c0a-2a13-418f-ae91-37dce8de0618
+      id: b27f8332-6822-4e68-809c-75b7119aa9c0
       version: -1
       name: Finish Remediation
       type: title
@@ -690,10 +610,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 1a666306-e447-47f0-87ec-30b013ac2c61
+    taskid: 499175d3-d16e-4ec5-bed3-df2a65eebf4a
     type: condition
     task:
-      id: 1a666306-e447-47f0-87ec-30b013ac2c61
+      id: 499175d3-d16e-4ec5-bed3-df2a65eebf4a
       version: -1
       name: Check if the DLL is suspicious
       description: Check if the DLL is suspicious
@@ -709,34 +629,16 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              complex:
-                root: DBotScore
-                filters:
-                - - operator: containsGeneral
-                    left:
-                      value:
-                        simple: DBotScore.Indicator
-                      iscontext: true
-                    right:
-                      value:
-                        simple: Core.OriginalAlert.event.action_module_sha256
-                      iscontext: true
-                accessor: Score
-            iscontext: true
-          ignorecase: true
       - - operator: greaterThanOrEqual
           left:
             value:
               complex:
-                root: DBotScore
+                root: Indicators
                 filters:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: DBotScore.Indicator
+                        simple: Indicators.Value
                       iscontext: true
                     right:
                       value:
@@ -766,10 +668,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: 833d9702-6b62-4f11-911a-c0746f5f37bd
+    taskid: b85e3998-a503-4d08-8faf-ca5aca8d6dce
     type: regular
     task:
-      id: 833d9702-6b62-4f11-911a-c0746f5f37bd
+      id: b85e3998-a503-4d08-8faf-ca5aca8d6dce
       version: -1
       name: Check tf the DLL file is quarantined
       description: Retrieves the quarantine status for a selected file.
@@ -805,10 +707,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: e712a60e-f009-4311-af14-986b24fb3fd3
+    taskid: a7aceccb-077d-4dab-8acf-b625ff53a167
     type: title
     task:
-      id: e712a60e-f009-4311-af14-986b24fb3fd3
+      id: a7aceccb-077d-4dab-8acf-b625ff53a167
       version: -1
       name: Terminate CGO
       type: title
@@ -836,10 +738,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: fda7c0c4-cde6-4cf4-9aee-eed0ca3a7b0f
+    taskid: 3c4a6641-b3ff-4257-8c49-f7c374fb569f
     type: title
     task:
-      id: fda7c0c4-cde6-4cf4-9aee-eed0ca3a7b0f
+      id: 3c4a6641-b3ff-4257-8c49-f7c374fb569f
       version: -1
       name: Quarentine DLL
       type: title
@@ -867,10 +769,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: b9c45396-8722-44cc-9345-c8a6332b390c
+    taskid: a4970083-fa8a-472d-8c45-580366357404
     type: condition
     task:
-      id: b9c45396-8722-44cc-9345-c8a6332b390c
+      id: a4970083-fa8a-472d-8c45-580366357404
       version: -1
       name: Should quarantine the file?
       description: Determines whether to quarantine the files based on their quarantine status.
@@ -919,10 +821,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 26dc1ece-ee12-4ef3-b745-6fe9e898a2b6
+    taskid: 783c3c81-7768-4a41-8628-fc26e1dd3c3a
     type: regular
     task:
-      id: 26dc1ece-ee12-4ef3-b745-6fe9e898a2b6
+      id: 783c3c81-7768-4a41-8628-fc26e1dd3c3a
       version: -1
       name: File quarantine
       description: Quarantines a file on selected endpoints.
@@ -944,17 +846,17 @@ tasks:
         simple: ${Core.OriginalAlert.event.action_module_path}
       incident_id:
         complex:
-          accessor: parentXDRIncident
           root: alert
+          accessor: parentXDRIncident
           transformers:
-          - args:
+          - operator: Cut
+            args:
               delimiter:
                 value:
                   simple: '-'
               fields:
                 value:
-                  simple: '2'
-            operator: Cut
+                  simple: "2"
       interval_in_seconds:
         simple: "20"
       timeout_in_seconds:
@@ -978,10 +880,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 19c11eb0-6ff8-4954-b194-ca1d3f6a22bb
+    taskid: 0f5f87ae-3168-4a28-8ce3-e868f9c0a383
     type: regular
     task:
-      id: 19c11eb0-6ff8-4954-b194-ca1d3f6a22bb
+      id: 0f5f87ae-3168-4a28-8ce3-e868f9c0a383
       version: -1
       name: Manual action needed – DLL file couldn't be quarantined
       description: |-
@@ -1019,10 +921,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 6efc7580-059b-4210-bf4d-77d72b742139
+    taskid: 2f8934a7-1fb0-4bb3-85d5-c62db6de3a89
     type: title
     task:
-      id: 6efc7580-059b-4210-bf4d-77d72b742139
+      id: 2f8934a7-1fb0-4bb3-85d5-c62db6de3a89
       version: -1
       name: Done
       type: title
@@ -1047,10 +949,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: bc834d8d-0b2a-494e-8176-c2d063a6775f
+    taskid: aba5560c-6db6-4b76-bb6a-e321d4b3181e
     type: regular
     task:
-      id: bc834d8d-0b2a-494e-8176-c2d063a6775f
+      id: aba5560c-6db6-4b76-bb6a-e321d4b3181e
       version: -1
       name: Terminate Causality (CGO)
       description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
@@ -1068,6 +970,19 @@ tasks:
         simple: ${alert.agentid}
       causality_id:
         simple: ${alert.cid}
+      incident_id:
+        complex:
+          root: alert
+          accessor: parentXDRIncident
+          transformers:
+          - operator: Cut
+            args:
+              delimiter:
+                value:
+                  simple: '-'
+              fields:
+                value:
+                  simple: "2"
       timeout_in_seconds:
         simple: "180"
     separatecontext: false
@@ -1089,10 +1004,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: c46c0891-918b-414a-85a6-cb04b41ee79b
+    taskid: 7c17ffe9-4887-4524-8a47-a5165c26e51b
     type: regular
     task:
-      id: c46c0891-918b-414a-85a6-cb04b41ee79b
+      id: 7c17ffe9-4887-4524-8a47-a5165c26e51b
       version: -1
       name: Terminate Causality Process Manually
       description: |
@@ -1124,10 +1039,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: cfb25cfb-59c6-471b-b7bf-5cfe5ebebd6e
+    taskid: ff52e374-3c48-41a9-8c72-741480dada2b
     type: regular
     task:
-      id: cfb25cfb-59c6-471b-b7bf-5cfe5ebebd6e
+      id: ff52e374-3c48-41a9-8c72-741480dada2b
       version: -1
       name: Search related alerts by causality chain
       description: |-
@@ -1187,10 +1102,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: 59ad4f2f-5910-42fd-9528-3d89cfccc620
+    taskid: d292b514-4f32-4934-8800-19a3e352c65f
     type: regular
     task:
-      id: 59ad4f2f-5910-42fd-9528-3d89cfccc620
+      id: d292b514-4f32-4934-8800-19a3e352c65f
       version: -1
       name: Extract the DLL's extension
       description: Extract the DLL's extension.
@@ -1226,8 +1141,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1076,
-          "y": -102
+          "x": 1050,
+          "y": -246
         }
       }
     note: false
@@ -1239,10 +1154,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "37":
     id: "37"
-    taskid: f2d21693-23e8-4b3c-93f8-6de3abab3a82
+    taskid: d3e8c9d9-2857-497e-8db9-09cd9ee5d6ee
     type: condition
     task:
-      id: f2d21693-23e8-4b3c-93f8-6de3abab3a82
+      id: d3e8c9d9-2857-497e-8db9-09cd9ee5d6ee
       version: -1
       name: Check if the fuzzyhash is not similar
       description: Remove False Positives in case the CGO signer is similar to the Company name in the DLL's attribute (excluding Microsoft Corporation).
@@ -1303,12 +1218,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 03ef479b-34a4-4e0c-b8f4-8f05873ec41a
+    taskid: 532d58ec-760e-46f9-9244-3e0af6889b77
     type: condition
     task:
-      id: 03ef479b-34a4-4e0c-b8f4-8f05873ec41a
+      id: 532d58ec-760e-46f9-9244-3e0af6889b77
       version: -1
-      name: 'Suspicious DLL extension and medium-risk host?'
+      name: Suspicious DLL extension and medium-risk host?
       description: |-
         The following condition must be met:
         1. If the Host Risk score is Medium.
@@ -1348,24 +1263,18 @@ tasks:
           left:
             value:
               complex:
-                root: DBotScore
+                root: Indicators
                 filters:
                 - - operator: containsGeneral
                     left:
                       value:
-                        simple: DBotScore.Indicator
+                        simple: Indicators.Value
                       iscontext: true
                     right:
                       value:
                         simple: Core.OriginalAlert.event.action_module_sha256
                       iscontext: true
-                transformers:
-                - operator: SetIfEmpty
-                  args:
-                    applyIfEmpty: {}
-                    defaultValue:
-                      value:
-                        simple: "0"
+                    ignorecase: true
                 accessor: Score
             iscontext: true
           right:
@@ -1388,10 +1297,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "39":
     id: "39"
-    taskid: 677a5241-91a2-4b3c-b423-e3780f35ecd7
+    taskid: c904e9d8-1fde-4e70-8259-0484f9c4ae96
     type: title
     task:
-      id: 677a5241-91a2-4b3c-b423-e3780f35ecd7
+      id: c904e9d8-1fde-4e70-8259-0484f9c4ae96
       version: -1
       name: Related Alerts
       type: title
@@ -1419,10 +1328,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: 8cca1714-ab56-4271-9695-36564d4c026c
+    taskid: 2c04ee78-190a-422d-a510-76030ba904c0
     type: regular
     task:
-      id: 8cca1714-ab56-4271-9695-36564d4c026c
+      id: 2c04ee78-190a-422d-a510-76030ba904c0
       version: -1
       name: Close Alert - False Positive
       description: commands.local.cmd.close.inv
@@ -1435,7 +1344,7 @@ tasks:
       - "31"
     scriptarguments:
       closeNotes:
-        simple: Resolved - Handled by the playbook "Rundll32.exe executes a rare unsigned module"
+        simple: Resolved as False positive - Handled by the playbook "Rundll32.exe executes a rare unsigned module"
       closeReason:
         simple: Resolved - False Positive
       id:
@@ -1458,10 +1367,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: f3a17e3b-76ab-4687-8ce5-251a15bc03f8
+    taskid: 505162f8-fb81-4525-8b1a-0a27a53a4c8d
     type: regular
     task:
-      id: f3a17e3b-76ab-4687-8ce5-251a15bc03f8
+      id: 505162f8-fb81-4525-8b1a-0a27a53a4c8d
       version: -1
       name: Search related alerts by Case ID
       description: |-
@@ -1519,6 +1428,78 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "42":
+    id: "42"
+    taskid: d1da5446-b780-4ad3-b493-3d0fce8146c0
+    type: regular
+    task:
+      id: d1da5446-b780-4ad3-b493-3d0fce8146c0
+      version: -1
+      name: Create indicator
+      description: Create indicators to the Threat Intel database only if they are not registered. All submitted indicators will be associated with the parent incident. When using the script with many indicators, or when the Threat Intel Management database is highly populated, this script may have low performance issue.
+      scriptName: CreateNewIndicatorsOnly
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "43"
+    scriptarguments:
+      indicator_values:
+        simple: ${Core.OriginalAlert.event.action_module_sha256}
+      type:
+        simple: File
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -246
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "43":
+    id: "43"
+    taskid: 1d6753a5-8e46-49de-a00d-a108f30f2d8a
+    type: regular
+    task:
+      id: 1d6753a5-8e46-49de-a00d-a108f30f2d8a
+      version: -1
+      name: Enrich indicator
+      description: commands.local.cmd.enrich.indicators
+      script: Builtin|||enrichIndicators
+      type: regular
+      iscommand: true
+      brand: Builtin
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      indicatorsValues:
+        simple: ${Core.OriginalAlert.event.action_module_sha256}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -140,
+          "y": -115
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -1535,10 +1516,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 3201,
+        "height": 3240,
         "width": 2617,
         "x": -650,
-        "y": -487
+        "y": -526
       }
     }
   }
@@ -1546,7 +1527,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 8.8.0
-marketplaces:
-- marketplacev2
-- platform
+fromversion: 6.10.0
