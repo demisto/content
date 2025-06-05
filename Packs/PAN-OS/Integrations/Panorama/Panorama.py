@@ -9574,6 +9574,7 @@ class ShowSystemInfoResultData(ResultData):
     :param wildfire_version: Wildfire content version
     :param wildfire_release_date: Wildfire release date
     :param url_filtering_version: URL Filtering content version
+    :param global_protect_client_package_version: GlobalProtect content version
     """
 
     ip_address: str
@@ -9598,6 +9599,7 @@ class ShowSystemInfoResultData(ResultData):
     wildfire_version: str = "not_installed"
     wildfire_release_date: str = "not_installed"
     url_filtering_version: str = "not_installed"
+    global_protect_client_package_version: str = "0.0.0"
 
 
 @dataclass
