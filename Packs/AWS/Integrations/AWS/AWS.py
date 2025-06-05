@@ -528,6 +528,7 @@ class RDS:
 REQUIRED_PERMISSIONS = set()
 
 async def fetch_permissions_for_account(account_id: str) -> set:
+    # TODO
     return set()
 
 async def check_permissions():
