@@ -8,6 +8,10 @@ from typing import Any
 import ast
 from urllib.parse import urlencode, urlparse
 
+import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
+from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
+
 # Disable insecure warnings
 urllib3.disable_warnings()
 
