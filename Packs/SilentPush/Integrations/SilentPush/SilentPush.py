@@ -37,7 +37,7 @@ DOMAIN_CERTIFICATE = "explore/domain/certificates"
 ENRICHMENT = "explore/enrich"
 LIST_IP = "explore/bulk/ip2asn"
 ASN_REPUTATION = "explore/ipreputation/history/asn"
-ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/history/asn"
+ASN_TAKEDOWN_REPUTATION = "explore/takedownreputation/asn"
 IPV4_REPUTATION = "explore/ipreputation/history/ipv4"
 FORWARD_PADNS = "explore/padns/lookup/query"
 REVERSE_PADNS = "explore/padns/lookup/answer"
@@ -1102,10 +1102,10 @@ ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
     OutputArgument(name="takedown_reputation.asname", output_type=str, description="The name of the Autonomous System (AS)."),
     OutputArgument(name="takedown_reputation.asn", output_type=str, description="The Autonomous System Number (ASN)."),
     OutputArgument(
-        name="takedown_reputation.allocation_age", output_type=int, description="The age of the ASN allocation in days."
+        name="takedown_reputation.asn_allocation_age", output_type=int, description="The age of the ASN allocation in days."
     ),
     OutputArgument(
-        name="takedown_reputation.allocation_date",
+        name="takedown_reputation.asn_allocation_date",
         output_type=int,
         description="The date when the ASN was allocated (YYYYMMDD).",
     ),
@@ -2289,7 +2289,7 @@ class Client(BaseClient):
         raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=query_params)
         return raw_response.get("response", {})
 
-    def get_ipv4_reputation(self, ipv4: str, explain: bool = True, limit: int = None) -> dict:
+    def get_ipv4_reputation(self, ipv4: str, explain: bool = False, limit: int = None) -> dict:
         """
         Retrieve historical reputation data for the specified IPv4 address.
 
@@ -2314,6 +2314,9 @@ class Client(BaseClient):
             headers={"Accept": "application/json", "Content-Type": "application/json"},
         )
 
+        if response.get("error") is not None:
+            raise ValueError(f"API Error: {response['error']}")
+
         if isinstance(response, str):
             try:
                 response = json.loads(response)
@@ -2321,11 +2324,6 @@ class Client(BaseClient):
                 raise ValueError(f"Unable to parse JSON from response: {e}")
 
         data = response.get("response", {}).get("ip_reputation_history", [])
-
-        if isinstance(data, dict) and "error" in data:
-            if explain:
-                return self.get_ipv4_reputation(ipv4, explain=False, limit=limit)
-            raise ValueError(f"API Error: {data['error']}")
 
         return {"ip_reputation_history": data if isinstance(data, list) else []}
 
@@ -3462,32 +3460,35 @@ def get_asn_takedown_reputation_command(client, args):
     except Exception as e:
         raise DemistoException(f"API call failed: {str(e)}")
 
-    takedown_history = response.get("takedown_reputation_history")
+    takedown_history = response.get("takedown_reputation")
 
     if not takedown_history:
         return CommandResults(
             readable_output=f"No takedown reputation history found for ASN: {asn}",
             outputs_prefix="SilentPush.ASNTakedownReputation",
             outputs_key_field="asn",
-            outputs={"asn": asn, "history": []},
-            raw_response=response,
+            outputs=takedown_history,
+            raw_response=response
         )
 
-    for entry in takedown_history:
-        if isinstance(entry.get("date"), int):
-            try:
-                entry["date"] = datetime.strptime(str(entry["date"]), "%Y%m%d").date().isoformat()
-            except ValueError:
-                demisto.debug(f"Failed to format date: {entry.get('date')}")
+    if isinstance(takedown_history.get("asn_allocation_date"), int):
+        try:
+            takedown_history["asn_allocation_date"] = datetime.strptime(str(takedown_history["asn_allocation_date"]), "%Y%m%d").date().isoformat()
+        except ValueError:
+            demisto.debug(f"Failed to format date: {takedown_history.get('asn_allocation_date')}")
 
-    readable_output = tableToMarkdown(f"Takedown Reputation for ASN {asn}", takedown_history, removeNull=True)
+    readable_output = tableToMarkdown(
+        f"Takedown Reputation for ASN {asn}",
+        takedown_history,
+        removeNull=True
+    )
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SilentPush.ASNTakedownReputation",
         outputs_key_field="asn",
-        outputs={"asn": asn, "history": takedown_history},
-        raw_response=response,
+        outputs=takedown_history,
+        raw_response=response
     )
 
 
@@ -3520,11 +3521,8 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
 
     raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
 
-    history = raw_response.get("response", {}).get("ip_reputation_history")
+    history = raw_response.get("ip_reputation_history", {})
     if not history:
-        history = raw_response.get("ip_reputation_history")
-
-    if not isinstance(history, list) or not history:
         return CommandResults(
             readable_output=f"No reputation data found for IPv4: {ipv4}",
             outputs_prefix="SilentPush.IPv4Reputation",
@@ -3532,16 +3530,11 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
             outputs={"ip": ipv4},
             raw_response=raw_response,
         )
-
-    for entry in history:
-        entry["ip"] = entry.get("ipv4", ipv4)
-
-    readable_output = tableToMarkdown(f"IPv4 Reputation History for {ipv4}", history, headers=["date", "ip", "ip_reputation"])
-
+    readable_output = tableToMarkdown(f"IPv4 Reputation Information for {ipv4}", history)
     return CommandResults(
         outputs_prefix="SilentPush.IPv4Reputation",
         outputs_key_field="ip",
-        outputs={"ip": ipv4, "reputation_history": history},
+        outputs=history,
         readable_output=readable_output,
         raw_response=raw_response,
     )

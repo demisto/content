@@ -235,8 +235,8 @@ This command retrieve the takedown reputation information for an Autonomous Syst
 | --- | --- | --- |
 | SilentPush.ASNTakedownReputation.takedown_reputation.asname | String | The name of the Autonomous System \(AS\). | 
 | SilentPush.ASNTakedownReputation.takedown_reputation.asn | String | The Autonomous System Number \(ASN\). | 
-| SilentPush.ASNTakedownReputation.takedown_reputation.allocation_age | Number | The age of the ASN allocation in days. | 
-| SilentPush.ASNTakedownReputation.takedown_reputation.allocation_date | Number | The date when the ASN was allocated \(YYYYMMDD\). | 
+| SilentPush.ASNTakedownReputation.takedown_reputation.asn_allocation_age | Number | The age of the ASN allocation in days. | 
+| SilentPush.ASNTakedownReputation.takedown_reputation.asn_allocation_date | Number | The date when the ASN was allocated \(YYYYMMDD\). | 
 | SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation | Number | The takedown reputation score for the ASN. | 
 | SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.ips_in_asn | Number | The total number of IP addresses associated with the ASN. | 
 | SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.ips_num_listed | Number | The number of IP addresses within the ASN that are flagged or listed in security threat databases. | 

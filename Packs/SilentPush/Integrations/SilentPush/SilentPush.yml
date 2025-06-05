@@ -285,10 +285,10 @@ script:
     - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn
       description: The Autonomous System Number (ASN).
       type: String
-    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.allocation_age
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_allocation_age
       description: The age of the ASN allocation in days.
       type: Number
-    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.allocation_date
+    - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_allocation_date
       description: The date when the ASN was allocated (YYYYMMDD).
       type: Number
     - contextPath: SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation
