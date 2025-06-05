@@ -5746,6 +5746,7 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version. |
 | PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. |
 | PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. |
+| PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. |
 
 #### Command example
 
@@ -5780,7 +5781,8 @@ Gets information from all PAN-OS systems in the topology.
                     "uptime": "22 days, 0:20:49",
                     "url_filtering_version": "20220218.20012",
                     "wildfire_release_date": "",
-                    "wildfire_version": "0"
+                    "wildfire_version": "0",
+                    "global_protect_client_package_version": "0.0.0"
                 },
                 {
                     "app_release_date": "2021/12/06 18:49:44 PST",
