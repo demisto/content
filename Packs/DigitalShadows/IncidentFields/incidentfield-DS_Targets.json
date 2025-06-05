@@ -2,16 +2,16 @@
 	"aliasTo": "",
 	"aliases": null,
 	"associatedToAll": true,
-	"associatedTypes": [],
+	"associatedTypes": null,
 	"autoCompleteTags": null,
 	"breachScript": "",
 	"cacheVersn": 0,
 	"caseInsensitive": true,
-	"cliName": "takedownattachments",
+	"cliName": "dstargets",
 	"closeForm": false,
 	"columns": [
 		{
-			"displayName": "id",
+			"displayName": "Id",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
@@ -24,11 +24,11 @@
 			"width": 150
 		},
 		{
-			"displayName": "name",
+			"displayName": "Url",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
-			"key": "name",
+			"key": "url",
 			"orgType": "shortText",
 			"required": false,
 			"script": "",
@@ -37,24 +37,11 @@
 			"width": 150
 		},
 		{
-			"displayName": "created",
+			"displayName": "PortalId",
 			"fieldCalcScript": "",
 			"isDefault": true,
 			"isReadOnly": false,
-			"key": "created",
-			"orgType": "shortText",
-			"required": false,
-			"script": "",
-			"selectValues": null,
-			"type": "shortText",
-			"width": 150
-		},
-		{
-			"displayName": "length",
-			"fieldCalcScript": "",
-			"isDefault": true,
-			"isReadOnly": false,
-			"key": "length",
+			"key": "portalid",
 			"orgType": "shortText",
 			"required": false,
 			"script": "",
@@ -63,7 +50,7 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
@@ -76,13 +63,13 @@
 	"fromServerVersion": "",
 	"group": 0,
 	"hidden": false,
-	"id": "incident_takedownattachments",
+	"id": "incident_dstargets",
 	"isReadOnly": false,
 	"itemVersion": "",
 	"locked": false,
 	"mergeStrategy": "",
-	"name": "Takedown Attachments",
-	"neverSetAsRequired": false,
+	"name": "DS Targets",
+	"neverSetAsRequired": true,
 	"openEnded": false,
 	"orgType": "grid",
 	"ownerOnly": false,
@@ -92,7 +79,7 @@
 	"required": false,
 	"runScriptAfterUpdate": false,
 	"script": "",
-	"selectValues": [],
+	"selectValues": null,
 	"sla": 0,
 	"system": false,
 	"systemAssociatedTypes": null,
@@ -106,6 +93,5 @@
 	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"x2_fields": "",
-    "fromVersion": "6.10.0"
+	"x2_fields": ""
 }

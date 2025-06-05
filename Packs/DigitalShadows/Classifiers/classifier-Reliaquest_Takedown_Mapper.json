@@ -1,5 +1,4 @@
 {
-	"brands": null,
 	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
@@ -13,7 +12,7 @@
 	"itemVersion": "",
 	"keyTypeMap": {},
 	"locked": false,
-	"logicalVersion": 8,
+	"logicalVersion": 9,
 	"mapping": {
 		"Reliaquest Takedown Type": {
 			"dontMapEventToLabels": false,
@@ -26,8 +25,14 @@
 		"dbot_classification_incident_type_all": {
 			"dontMapEventToLabels": true,
 			"internalMapping": {
-				"Comments": {
+				"DS Takedown Attachments": {
+					"simple": "attachments"
+				},
+				"DS Takedown Comments": {
 					"simple": "comments"
+				},
+				"DS Targets": {
+					"simple": "targets"
 				},
 				"Domain Name": {
 					"simple": "brand.domain-name"
@@ -52,16 +57,6 @@
 				},
 				"Source Updated by": {
 					"simple": "brand.updated"
-				},
-				"Takedown Attachments": {
-					"complex": {
-						"filters": [],
-						"root": "attachments",
-						"transformers": []
-					}
-				},
-				"Targets": {
-					"simple": "targets"
 				},
 				"dbotMirrorDirection": {
 					"simple": "dbotMirrorDirection"
@@ -91,6 +86,5 @@
 	"transformer": {},
 	"type": "mapping-incoming",
 	"unclassifiedCases": null,
-	"version": -1,
-    "fromVersion": "6.10.0"
+	"version": -1
 }

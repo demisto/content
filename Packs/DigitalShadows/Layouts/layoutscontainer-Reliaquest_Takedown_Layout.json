@@ -5,7 +5,6 @@
 	"description": "",
 	"detached": false,
 	"details": null,
-    "fromVersion": "6.10.0",
 	"detailsV2": {
 		"TypeName": "",
 		"tabs": [
@@ -77,6 +76,15 @@
 								"height": 22,
 								"id": "168bcb80-b61a-11ef-8f73-8143e97888eb",
 								"index": 5,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dstargets",
+								"height": 22,
+								"id": "497ebe40-411f-11f0-bf24-4ddc965b8814",
+								"index": 6,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -224,33 +232,6 @@
 						"displayType": "ROW",
 						"h": 2,
 						"hideName": false,
-						"i": "caseinfoid-e9f1a8f0-b219-11ef-9345-09338a45df9d",
-						"items": [
-							{
-								"dropEffect": "move",
-								"endCol": 4,
-								"fieldId": "targets",
-								"height": 106,
-								"id": "f2ab16c0-b219-11ef-9345-09338a45df9d",
-								"index": 0,
-								"listId": "caseinfoid-e9f1a8f0-b219-11ef-9345-09338a45df9d",
-								"sectionItemType": "field",
-								"startCol": 0
-							}
-						],
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Targets",
-						"static": false,
-						"w": 1,
-						"x": 0,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
-						"hideName": false,
 						"i": "caseinfoid-9e606f70-b2f0-11ef-9359-b7b951f5d85b",
 						"items": [
 							{
@@ -298,9 +279,9 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "comments",
+								"fieldId": "dstakedowncomments",
 								"height": 22,
-								"id": "9b9d2730-ded6-11ef-bd6d-1fb361760b7c",
+								"id": "610255e0-411f-11f0-bf24-4ddc965b8814",
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
@@ -324,9 +305,9 @@
 							{
 								"dropEffect": "move",
 								"endCol": 4,
-								"fieldId": "takedownattachments",
+								"fieldId": "dstakedownattachments",
 								"height": 106,
-								"id": "c78db8a0-ee21-11ef-bafb-73929a1750c7",
+								"id": "6ba89f90-411f-11f0-bf24-4ddc965b8814",
 								"index": 0,
 								"listId": "caseinfoid-b10a52f0-ee21-11ef-bafb-73929a1750c7",
 								"sectionItemType": "field",
@@ -341,6 +322,31 @@
 						"w": 2,
 						"x": 0,
 						"y": 4
+					},
+					{
+						"displayType": "ROW",
+						"h": 2,
+						"hideName": false,
+						"i": "caseinfoid-4cf7b860-411f-11f0-bf24-4ddc965b8814",
+						"items": [
+							{
+								"endCol": 2,
+								"fieldId": "dstargets",
+								"height": 22,
+								"id": "4f00ced0-411f-11f0-bf24-4ddc965b8814",
+								"index": 0,
+								"sectionItemType": "field",
+								"startCol": 0
+							}
+						],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Takedown Targets",
+						"static": false,
+						"w": 1,
+						"x": 0,
+						"y": 2
 					}
 				],
 				"type": "custom"
@@ -710,14 +716,6 @@
 					},
 					{
 						"fieldId": "incident_deviceusername",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_digitalshadowstriagerisktype",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_digitalshadowstriagetitle",
 						"isVisible": true
 					},
 					{
@@ -1165,10 +1163,6 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_reliaquestforward",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_renderedhtml",
 						"isVisible": true
 					},
@@ -1190,14 +1184,6 @@
 					},
 					{
 						"fieldId": "incident_selectedindicators",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_sendtoreliaquestgreymatter",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_sendtorq",
 						"isVisible": true
 					},
 					{
