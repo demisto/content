@@ -1,4 +1,3 @@
-
 # Ivanti Connect Secure
 
 <~XSIAM>
@@ -22,6 +21,8 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
          | `Server name/IP`   | Enter the [Cortex XSIAM Broker VM](#broker-vm) server's IP address or FQDN.
          | `Type`             | Select **UDP**.
          | `Filter`           | Select **WELF**.
+
+**Note:** We truly recommend using the WELF log format for this pack. However, we are still supporting both log formats "WELF" and "Deafult RAW".
 
 5. Click **Save Changes** for saving the configuration.
   
