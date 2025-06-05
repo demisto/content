@@ -1,8 +1,9 @@
 import json
 from enum import Enum
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Callable
 
 
 # Cloud provider types
@@ -26,21 +27,24 @@ GET_CTS_ACCOUNTS_TOKEN = "/cts/accounts/token"
 GET_ONBOARDING_ACCOUNTS = "/onboarding/accounts"
 GET_ONBOARDING_CONNECTORS = "/onboarding/connectors"
 
+
 class HealthStatus(str, Enum):
     ERROR = "ERROR"
     WARNING = "WARNING"
     OK = "ok"
+
 
 class ErrorType(str, Enum):
     CONNECTIVITY_ERROR = "ConnectivityError"
     PERMISSION_ERROR = "PermissionError"
     INTERNAL_ERROR = "InternalError"
 
+
 class HealthCheckResult:
     @staticmethod
     def ok() -> str:
         return HealthStatus.OK
-    
+
     @staticmethod
     def error(
         account_id: str,
@@ -49,7 +53,6 @@ class HealthCheckResult:
         error: str,
         error_type: ErrorType,
     ) -> CommandResults:
-        
         # Determine classification based on error type
         classification = HealthStatus.WARNING if error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
         result = {
@@ -60,7 +63,8 @@ class HealthCheckResult:
             "classification": classification,
         }
         return CommandResults(outputs=result)
-    
+
+
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
@@ -137,39 +141,104 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise DemistoException(f"Failed to parse credentials from CTS response for {cloud_type}.") from e
 
 
-def get_cloud_entities(connector_id: str = None, account_id: str = None) -> dict:
+def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
     """
-    Retrieves cloud entities based on the provided ID.
-    If connector_id is provided, returns accounts associated with that connector.
-    If account_id is provided, returns connectors associated with that account.
+    Retrieves the accounts associated with a specific connector with pagination support.
 
     Args:
-        connector_id (str, optional): The ID of the connector to fetch accounts for.
-        account_id (str, optional): The ID of the account to fetch connectors for.
+        connector_id (str): The ID of the connector to fetch accounts for.
+        max_results (int, optional): Maximum number of results to return. Defaults to None (all results).
 
     Returns:
-        dict: Response containing the requested entities.
-
-    Raises:
-        DemistoException: If the API call fails.
-        ValueError: If neither connector_id nor account_id is provided, or if both are provided.
+        list: List of accounts associated with the specified connector.
     """
-    if bool(connector_id) == bool(account_id):  # ensures one and only one is provided
-        raise ValueError("Exactly one of connector_id or account_id must be provided.")
+    all_accounts = []
+    next_token = ""
+    while True:
+        params = {"entity_type": "connector", "entity_id": {connector_id}}
+        if next_token:
+            params["next_token"] = next_token
 
-    entity_type, entity_id, path = (
-        ("account", connector_id, GET_ONBOARDING_ACCOUNTS)
-        if connector_id
-        else ("connector", account_id, GET_ONBOARDING_CONNECTORS)
-    )
+        result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
+        res_json = json.loads(result["data"])
 
-    response = demisto._platformAPICall(path=path, method="GET", params={"entity_type": entity_type, "entity_id": entity_id})
+        accounts = res_json.get("values", [])
+        all_accounts.extend(accounts)
 
-    status_code = response.get("status_code")
-    if status_code != 200:
-        error_detail = response.get("data") or "No error message provided"
-        raise DemistoException(
-            f"Failed to get {entity_type}s for ID '{entity_id}'. Status code: {status_code}. Detail: {error_detail}"
+        next_token = res_json.get("next_token", "")
+        if not next_token or (max_results and len(all_accounts) >= max_results):
+            break
+
+    if max_results:
+        return all_accounts[:max_results]
+    return all_accounts
+
+
+def _check_account_permissions(account: dict, connector_id: str, permission_check_func: Callable[[str, str], Any]) -> Any:
+    """
+    Helper function to check permissions for a single account.
+
+    Args:
+        account (dict): Account information.
+        connector_id (str): The connector ID.
+        permission_check_func (callable): Function that implements the permission check.
+
+    Returns:
+        Any: Result of the permission check.
+    """
+    account_id = account.get("account_id")
+    if not account_id:
+        demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
+        return None
+
+    try:
+        return permission_check_func(account_id, connector_id)
+    except Exception as e:
+        demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
+        return HealthCheckResult.error(
+            account_id=account_id,
+            connector_id=connector_id,
+            message=f"Failed to check permissions: {str(e)}",
+            error=str(e),
+            error_type=ErrorType.INTERNAL_ERROR,
         )
 
-    return response
+
+def run_permissions_check_for_accounts(
+    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
+) -> List[Any]:
+    """
+    Runs a permission check function for each account associated with a connector concurrently.
+
+    Args:
+        connector_id (str): The ID of the connector to fetch accounts for.
+        permission_check_func (callable): Function that implements the permission check.
+                                         Should accept account_id and connector_id parameters
+                                         and return a HealthCheckResult.
+        max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
+
+    Returns:
+        list: List of permission check results for each account.
+
+    Raises:
+        DemistoException: If the account retrieval fails.
+    """
+    accounts = get_accounts_by_connector_id(connector_id)
+
+    if not accounts:
+        demisto.debug(f"No accounts found for connector ID: {connector_id}")
+        return []
+
+    results = []
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_account = {
+            executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
+            for account in accounts
+        }
+
+        for future in as_completed(future_to_account):
+            result = future.result()
+            if result is not None:
+                results.append(result)
+
+    return results
