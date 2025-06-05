@@ -40,7 +40,6 @@
 		"simple": "type"
 	},
 	"type": "classification",
-	"unclassifiedCases": null,
 	"version": -1,
     "fromVersion": "6.10.0"
 }

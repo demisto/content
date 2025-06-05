@@ -3,7 +3,6 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Mapper",
 	"incidentSamples": null,
 	"indicatorSamples": null,
@@ -85,6 +84,5 @@
 	"toServerVersion": "",
 	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
 	"version": -1
 }
