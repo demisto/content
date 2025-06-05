@@ -2,6 +2,7 @@ Filter values with complex conditions.<br/>
 You can make filters with comlex and combination conditions for the context data at any level of the tree.
 
 ---
+
 ## Script Data
 
 | **Name** | **Description** |
@@ -9,8 +10,8 @@ You can make filters with comlex and combination conditions for the context data
 | Script Type | python |
 | Tags | transformer, entirelist, general |
 
-
 ---
+
 ## Inputs
 
 | **Argument Name** | **Description** |
@@ -24,8 +25,8 @@ You can make filters with comlex and combination conditions for the context data
 | ctx_lists | Enable to access the `list` data and use `${list.}` |
 | ctx_incident | Enable to access the incident context and use `${incident.}` |
 
-
 ---
+
 ## Filter Syntax for `expressions`, `conditions` and `transformers`
 
     primitive-expression ::= <operator> : <value>
@@ -54,7 +55,7 @@ You can make filters with comlex and combination conditions for the context data
   e.g.
   
   `(<value> ends with ".exe") && (<value> starts with "x")`
-    
+
     {
       "ends with" : ".exe",
       "starts with": "x"
@@ -67,9 +68,8 @@ You can make filters with comlex and combination conditions for the context data
   
   e.g.
   
-  
   `(<value> ends with ".exe") && (<value> starts with "x")`
-    
+
     [
       {"ends with" : ".exe"},
       "and",
@@ -83,9 +83,8 @@ You can make filters with comlex and combination conditions for the context data
       {"starts with": "x"}
     ]
   
-  
   `(<value> ends with ".exe") || (<value> starts with "x")`
-    
+
     [
       {"ends with" : ".exe"},
       "or",
@@ -94,15 +93,14 @@ You can make filters with comlex and combination conditions for the context data
     
     
   `not (<value> ends with ".exe")`
-    
+
     [
       "not",
       {"ends with" : ".exe"}
     ]
 
-
   `((<value> ends with ".exe") || (<value> ends with ".pdf")) and (<value> starts with "x")`
-    
+
     [
       [
         {"ends with" : ".exe"},
@@ -121,14 +119,13 @@ You can make filters with comlex and combination conditions for the context data
   e.g.
   
   `<value>.Domain ends with ".com"`
-    
+
     {
       "Domain": {
         "ends with" : ".com"
       }
     }
   
-
   `(<value>.Domain ends with ".com") && (<value>.IP starts with "192.168.")`
   
     {
@@ -162,7 +159,6 @@ You can make filters with comlex and combination conditions for the context data
       }
     ]
 
-
   `not ((<value>.Domain ends with ".com") || (<value>.IP starts with "192.168."))`
   
     [
@@ -182,7 +178,6 @@ You can make filters with comlex and combination conditions for the context data
       ]
     ]
 
-
 #### transformers
   
   Run each transformer in order.
@@ -196,7 +191,6 @@ You can make filters with comlex and combination conditions for the context data
       {"digest": {"algorithm": "sha1"}}
     ]
   
-
   `base64: encode -> digest` (Python 3.7 or above)
   
     {
@@ -207,8 +201,8 @@ You can make filters with comlex and combination conditions for the context data
   **Note:**
   The order depends on python runtime in a `dict-expression`. Python 3.6 or less doesn't guarantee dictionary keys order.
 
-
 ---
+
 ## DT (Demisto Transform Language)
 
   In filters written in JSON like `expressions`, `conditions`, `transformers` or `<value>`, you can set values with DT expressions for keys and values.
@@ -221,20 +215,21 @@ You can make filters with comlex and combination conditions for the context data
 | ctx_lists | From Previous Tasks | list | Enable to access the `list` data and use `${list.}` |
 | ctx_incident | From Previous Tasks | incident | Enable to access the incident context and use `${incident.}` |
 
-   *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer. 
+   *NOTE:* `${list.}` doesn't work in XSOAR 6.0 in transformer.
   
   `local` prefix (`${local.}`) and `.` prefix  (`${..}`) can be available for additional DT references.<br>
   `${local}` refers the root value of the target, and `${local.<name>}` refers the value property located at the relateve path to the root.<br>
   `${..}` refers the current value of the target, and `${.<name>}` refers the value property located at the relateve path to the current value.<br>
   No parameters set is required for using `${local.}` and `${..}`.
 
-
 #### Example 1
+
     {
       "ends with": "${Extension}"
     }
 
 #### Example 2
+
     {
       "${KeyName}": {
         "ends with": "${Extension}"
@@ -242,26 +237,31 @@ You can make filters with comlex and combination conditions for the context data
     }
 
 #### Example 3
+
     {
       "ends with": "${Name}.exe"
     }
 
 #### Example 4
+
     {
       "ends with": "${.=val.Extension}"
     }
 
 #### Example 5
+
     {
       "ends with": "${incident.name}"
     }
 
 #### Example 6
+
     {
       "ends with": "${local.Extension}"
     }
 
 ---
+
 ## Operators
 
 Available operators
@@ -392,9 +392,10 @@ Available operators
 * `is individually transformed with`
 * `is collectively transformed with`
 
-
 ----
+
 ### Operator: `is transformed with`
+
 <details><summary>
 Transforms elements with `transformers` given in a filter.
 See `Filter Syntax` for the details of `transformers`.
@@ -403,7 +404,9 @@ See `Filter Syntax` for the details of `transformers`.
 > **Filter Format**: `transformers`
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -420,9 +423,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -432,15 +436,17 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       "eyJOYW1lIjogImEuZGF0IiwgIlNpemUiOiAxMDB9",
       "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9",
       "eyJOYW1lIjogImMudHh0IiwgIlNpemUiOiAzMDB9"
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "File": [
         {
@@ -459,6 +465,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Filter
+>
 > **Operator**: is transformed with
 
 > **Path**: File
@@ -476,6 +483,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     {
       "File": [
         "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9"
@@ -486,9 +494,10 @@ See `Filter Syntax` for the details of `transformers`.
       ]
     }
 
-
 #### Example 3
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -501,9 +510,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -514,18 +524,19 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       {
         "User": "JDOE"
       }
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `is filtered with`
+
 <details><summary>
 Evaluates each element of an array with given conditions and returns a set of the elements matched.
 The value is handled as an array which has only one element when its data type is `dictionary`.
@@ -535,7 +546,9 @@ See `Filter Syntax` for the details of `conditions`.
 > **Filter Format**: `conditions`
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -552,6 +565,7 @@ See `Filter Syntax` for the details of `conditions`.
     ]
 
 ##### Filter
+>
 > **Operator**: is filtered with
 
 > **Path**:
@@ -565,6 +579,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     [
       {
         "Name": "b.exe",
@@ -575,7 +590,9 @@ See `Filter Syntax` for the details of `conditions`.
 </details>
 
 ----
+
 ### Operator: `value is filtered with`
+
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
 See `Filter Syntax` for the details of `expressions`.
@@ -584,7 +601,9 @@ See `Filter Syntax` for the details of `expressions`.
 > **Filter Format**: `expressions`
 
 #### Example 1
+
 ##### Input
+
     [
       "192.168.1.1",
       "1.1.1.1",
@@ -592,9 +611,10 @@ See `Filter Syntax` for the details of `expressions`.
     ]
 
 ##### Filter
+>
 > **Operator**: value is filtered with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -603,13 +623,14 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Output
+
     [
       "192.168.1.1",
       "192.168.1.2"
     ]
 
-
 #### Example 2
+
 ##### Input
 
     {
@@ -631,6 +652,7 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Filter
+>
 > **Operator**: value is filtered with
 
 > **Path**: Score
@@ -642,6 +664,7 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Output
+
     {
       "Host1": {
         "User": "JDOE",
@@ -655,11 +678,12 @@ See `Filter Syntax` for the details of `expressions`.
       }
     }
 
-
 </details>
 
 ----
+
 ### Operator: `keeps`
+
 <details><summary>
 Evaluates each element of an array with keys given and returns a set of the elements which only retains the keys given and corresponding values.
 The value is handled as an array which has only one element when its data type is `dictionary`.
@@ -668,7 +692,9 @@ The value is handled as an array which has only one element when its data type i
 > **Filter Format**: `expressions`
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "Host": "JDOE",
@@ -686,18 +712,20 @@ The value is handled as an array which has only one element when its data type i
     ]
 
 ##### Filter
+>
 > **Operator**: keeps
 
 > **Path**:
 
 > **Filter**:
-    
+
     [
       "Host",
       "User"
     ]
 
 ##### Output
+
     [
       {
         "Host": "JDOE"
@@ -714,7 +742,9 @@ The value is handled as an array which has only one element when its data type i
 </details>
 
 ----
+
 ### Operator: `doesn't keeps`
+
 <details><summary>
 Evaluates each element of an array with keys given and returns a set of the elements which are excluded the keys given.
 The value is handled as an array which has only one element when its data type is `dictionary`.
@@ -722,9 +752,10 @@ The value is handled as an array which has only one element when its data type i
 
 > **Filter Format**: `expressions`
 
-
 #### Example 1
+
 ##### Input
+
     [
       {
         "Host": "JDOE",
@@ -742,18 +773,20 @@ The value is handled as an array which has only one element when its data type i
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't keeps
 
 > **Path**:
 
 > **Filter**:
-    
+
     [
       "Host",
       "User"
     ]
 
 ##### Output
+
     [
       {
         "IP": "1.1.1.1"
@@ -770,36 +803,45 @@ The value is handled as an array which has only one element when its data type i
 </details>
 
 ----
+
 ### Operator: `is`
+
 <details><summary>
 This operator works with a sub operator specified as filter.
 </summary><p/>
 
 ----
+
 #### Sub Operator: empty
+
 <details><summary>
 Returns a set of elements which is empty.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     empty
 
 ##### Output
+
     null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -809,15 +851,17 @@ Returns a set of elements which is empty.
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     empty
 
 ##### Output
+
     [
       {
       },
@@ -827,30 +871,37 @@ Returns a set of elements which is empty.
 </details>
 
 ----
+
 #### Sub Operator: null
+
 <details><summary>
 Returns a set of elements which is `null`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     null
 
 ##### Output
+
     null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -860,15 +911,17 @@ Returns a set of elements which is `null`.
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     null
 
 ##### Output
+
     [
       null
     ]
@@ -876,30 +929,37 @@ Returns a set of elements which is `null`.
 </details>
 
 ----
+
 #### Sub Operator: string
+
 <details><summary>
 Returns a set of elements whose data type is `string`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     string
 
 ##### Output
+
     null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -909,62 +969,72 @@ Returns a set of elements whose data type is `string`.
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     string
 
 ##### Output
+
     [
       "xxx"
     ]
 
-
 </details>
 
 ----
+
 #### Sub Operator: integer
+
 <details><summary>
 Returns a set of elements whose data type is `integer`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer
 
 ##### Output
+
     10
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       "123"
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer
 
 ##### Output
+
     [
       10
     ]
@@ -972,30 +1042,35 @@ Returns a set of elements whose data type is `integer`.
 </details>
 
 ----
+
 #### Sub Operator: integer string
+
 <details><summary>
 Returns a set of elements whose data type is `string` and whose value is integer.
 The value that includes decimal point is evaluated as not integer.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       10,
       "123"
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer string
 
 ##### Output
+
     [
       "123"
     ]
@@ -1003,14 +1078,17 @@ The value that includes decimal point is evaluated as not integer.
 </details>
 
 ----
+
 #### Sub Operator: any integer
+
 <details><summary>
 Returns a set of elements matched with `string` or `integer string` operator.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       10,
       "123",
@@ -1018,6 +1096,7 @@ Returns a set of elements matched with `string` or `integer string` operator.
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**:
@@ -1027,23 +1106,26 @@ Returns a set of elements matched with `string` or `integer string` operator.
     any integer
 
 ##### Output
+
     [
       10,
       "123"
     ]
 
-
 </details>
 
 ----
+
 #### Sub Operator: existing key
+
 <details><summary>
 Evaluates each dictionary element of an array, then returns a set of the elements which has a key given in `path`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       {
         "Host": "JDOE",
@@ -1056,15 +1138,17 @@ Evaluates each dictionary element of an array, then returns a set of the element
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**: Host
 
 > **Filter**:
-    
+
     existing key
 
 ##### Output
+
     [
       {
         "Host": "JDOE",
@@ -1072,9 +1156,10 @@ Evaluates each dictionary element of an array, then returns a set of the element
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       {
         "Host": {
@@ -1096,15 +1181,17 @@ Evaluates each dictionary element of an array, then returns a set of the element
     ]
 
 ##### Filter
+>
 > **Operator**: is
 
 > **Path**: Host.User
 
 > **Filter**:
-    
+
     existing key
 
 ##### Output
+
     [
       {
         "Host": {
@@ -1123,36 +1210,45 @@ Evaluates each dictionary element of an array, then returns a set of the element
 </details>
 
 ----
+
 ### Operator: `isn't`
+
 <details><summary>
 This operator works with a sub operator specified as filter.
 </summary><p/>
 
 ----
+
 #### Sub Operator: empty
+
 <details><summary>
 Returns a set of elements which is not empty.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     empty
 
 ##### Output
+
     10
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -1162,16 +1258,17 @@ Returns a set of elements which is not empty.
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     empty
 
-
 ##### Output
+
     [
       10,
       "xxx"
@@ -1180,30 +1277,37 @@ Returns a set of elements which is not empty.
 </details>
 
 ----
+
 #### Sub Operator: null
+
 <details><summary>
 Returns a set of elements which is not `null`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     10
 
 ##### Output
+
     null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -1213,15 +1317,17 @@ Returns a set of elements which is not `null`.
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     null
 
 ##### Output
+
     [
       10,
       {
@@ -1232,30 +1338,37 @@ Returns a set of elements which is not `null`.
 </details>
 
 ----
+
 #### Sub Operator: string
+
 <details><summary>
 Returns a set of elements whose data type is not `string`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     string
 
 ##### Output
+
     10
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       {
@@ -1265,15 +1378,17 @@ Returns a set of elements whose data type is not `string`.
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     string
 
 ##### Output
+
     [
       10,
       {
@@ -1281,49 +1396,57 @@ Returns a set of elements whose data type is not `string`.
       null
     ]
 
-
 </details>
 
 ----
+
 #### Sub Operator: integer
+
 <details><summary>
 Returns a set of elements whose date type is not `integer`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     10
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer
 
 ##### Output
+
     null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       "123"
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer
 
 ##### Output
+
     [
       "123"
     ]
@@ -1331,15 +1454,18 @@ Returns a set of elements whose date type is not `integer`.
 </details>
 
 ----
+
 #### Sub Operator: integer string
+
 <details><summary>
 Returns a set of elements whose data type is not `string` or whose value is not integer.
 The value that includes decimal point is evaluated as not integer.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       10,
       "123",
@@ -1347,15 +1473,17 @@ The value that includes decimal point is evaluated as not integer.
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
 
 > **Filter**:
-    
+
     integer string
 
 ##### Output
+
     [
       10,
       "123.0"
@@ -1364,14 +1492,17 @@ The value that includes decimal point is evaluated as not integer.
 </details>
 
 ----
+
 #### Sub Operator: any integer
+
 <details><summary>
 Returns a set of elements which are neither `string` or `integer string`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       10,
       "123",
@@ -1379,6 +1510,7 @@ Returns a set of elements which are neither `string` or `integer string`.
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**:
@@ -1388,22 +1520,25 @@ Returns a set of elements which are neither `string` or `integer string`.
     any integer
 
 ##### Output
+
     [
       "xxx"
     ]
 
-
 </details>
 
 ----
+
 #### Sub Operator: existing key
+
 <details><summary>
 Evaluates each dictionary element of an array, then returns a set of the elements which doesn't have a key given in `path`.
 </summary><p/>
 
-
 #### Example 1
+
 ##### Input
+
     [
       {
         "Host": "JDOE",
@@ -1416,15 +1551,17 @@ Evaluates each dictionary element of an array, then returns a set of the element
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**: Host
 
 > **Filter**:
-    
+
     existing key
 
 ##### Output
+
     [
       {
         "User": "John Doe",
@@ -1432,9 +1569,10 @@ Evaluates each dictionary element of an array, then returns a set of the element
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       {
         "Host": {
@@ -1456,15 +1594,17 @@ Evaluates each dictionary element of an array, then returns a set of the element
     ]
 
 ##### Filter
+>
 > **Operator**: isn't
 
 > **Path**: Host.User
 
 > **Filter**:
-    
+
     existing key
 
 ##### Output
+
     [
       {
         "Host": {
@@ -1478,7 +1618,9 @@ Evaluates each dictionary element of an array, then returns a set of the element
 </details>
 
 ----
+
 ### Operator: `===`
+
 <details><summary>
 Returns a set of elements which exactly matches to a value given in a filter. It doesn't match when the data types are different.
 </summary><p/>
@@ -1486,7 +1628,9 @@ Returns a set of elements which exactly matches to a value given in a filter. It
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "10",
@@ -1494,22 +1638,25 @@ Returns a set of elements which exactly matches to a value given in a filter. It
     ]
 
 ##### Filter
+>
 > **Operator**: ===
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       10
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       10,
       "10",
@@ -1517,25 +1664,27 @@ Returns a set of elements which exactly matches to a value given in a filter. It
     ]
 
 ##### Filter
+>
 > **Operator**: ===
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "10"
 
 ##### Output
+
     [
       "10"
     ]
- 
 
 </details>
 
-
 ----
+
 ### Operator: `!==`
+
 <details><summary>
 Returns a set of elements which doesn't match the data type or the value of a value given in a filter.
 </summary><p/>
@@ -1543,7 +1692,9 @@ Returns a set of elements which doesn't match the data type or the value of a va
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "10",
@@ -1551,15 +1702,17 @@ Returns a set of elements which doesn't match the data type or the value of a va
     ]
 
 ##### Filter
+>
 > **Operator**: !==
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       "10",
       123
@@ -1567,9 +1720,10 @@ Returns a set of elements which doesn't match the data type or the value of a va
 
 </details>
 
-
 ----
+
 ### Operator: `equals`, `==`
+
 <details><summary>
 Returns a set of elements which is equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
@@ -1579,7 +1733,9 @@ The value is implicitly converted from its data type to another in a comparison 
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "10",
@@ -1587,25 +1743,28 @@ The value is implicitly converted from its data type to another in a comparison 
     ]
 
 ##### Filter
+>
 > **Operator**: equals
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       10,
       "10"
     ]
- 
+
 </details>
 
-
 ----
+
 ### Operator: `doesn't equal`, `!=`
+
 <details><summary>
 Returns a set of elements which is not equal to a value given in a filter.
 The value is implicitly converted from its data type to another in a comparison between different data types.
@@ -1615,7 +1774,9 @@ The value is implicitly converted from its data type to another in a comparison 
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "10",
@@ -1623,24 +1784,27 @@ The value is implicitly converted from its data type to another in a comparison 
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't equal
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       123
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `greater or equal`, `>=`
+
 <details><summary>
 Returns a set of elements which is greater or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
@@ -1651,7 +1815,9 @@ This operator evaluates to false for either or both of the data which cannot con
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       1,
       10,
@@ -1660,15 +1826,17 @@ This operator evaluates to false for either or both of the data which cannot con
     ]
 
 ##### Filter
+>
 > **Operator**: greater or equal
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       10,
       "10",
@@ -1678,7 +1846,9 @@ This operator evaluates to false for either or both of the data which cannot con
 </details>
 
 ----
+
 ### Operator: `greater than`, `>`
+
 <details><summary>
 Returns a set of elements which is greater than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
@@ -1689,7 +1859,9 @@ This operator evaluates to false for either or both of the data which cannot con
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       1,
       10,
@@ -1698,24 +1870,27 @@ This operator evaluates to false for either or both of the data which cannot con
     ]
 
 ##### Filter
+>
 > **Operator**: greater than
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       123
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `less or equal`, `&lt;=`
+
 <details><summary>
 Returns a set of elements which is less or equal to a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
@@ -1726,7 +1901,9 @@ This operator evaluates to false for either or both of the data which cannot con
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       1,
       10,
@@ -1735,15 +1912,17 @@ This operator evaluates to false for either or both of the data which cannot con
     ]
 
 ##### Filter
+>
 > **Operator**: less or equal
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       1,
       10,
@@ -1752,9 +1931,10 @@ This operator evaluates to false for either or both of the data which cannot con
 
 </details>
 
-
 ----
+
 ### Operator: `less than`, `<`
+
 <details><summary>
 Returns a set of elements which is less than a value given in a filter.
 The value is implicitly converted from its data type to number in a comparison.
@@ -1765,7 +1945,9 @@ This operator evaluates to false for either or both of the data which cannot con
 > **Filter Format**: `<value>`
 
 #### Example 1
+
 ##### Input
+
     [
       1,
       10,
@@ -1774,24 +1956,27 @@ This operator evaluates to false for either or both of the data which cannot con
     ]
 
 ##### Filter
+>
 > **Operator**: less than
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10
 
 ##### Output
+
     [
       1
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `in range`
+
 <details><summary>
 Returns a set of elements which is greater or equal to `min` and less or equal to `max` given in a range.
 The value is implicitly converted from its data type to number in a comparison.
@@ -1801,7 +1986,9 @@ This operator evaluates to false for either or both of the data which cannot con
 > **Filter Format**: `min`,`max`
 
 #### Example 1
+
 ##### Input
+
     [
       1,
       10,
@@ -1811,15 +1998,17 @@ This operator evaluates to false for either or both of the data which cannot con
     ]
 
 ##### Filter
+>
 > **Operator**: in range
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     10,100
 
 ##### Output
+
     [
       10,
       "10",
@@ -1828,9 +2017,10 @@ This operator evaluates to false for either or both of the data which cannot con
 
 </details>
 
-
 ----
+
 ### Operator: `starts with`
+
 <details><summary>
 Returns a set of elements which starts with a string given in a filter.
 </summary><p/>
@@ -1838,7 +2028,9 @@ Returns a set of elements which starts with a string given in a filter.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -1849,24 +2041,27 @@ Returns a set of elements which starts with a string given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: starts with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx
 
 ##### Output
+
     [
       "xxx.exe"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `starts with caseless`
+
 <details><summary>
 Returns a set of elements which starts with a string given in a filter. It performs case-insensitive matching.
 </summary><p/>
@@ -1874,7 +2069,9 @@ Returns a set of elements which starts with a string given in a filter. It perfo
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -1886,15 +2083,17 @@ Returns a set of elements which starts with a string given in a filter. It perfo
     ]
 
 ##### Filter
+>
 > **Operator**: starts with caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx
 
 ##### Output
+
     [
       "xxx.exe",
       "XXX.EXE"
@@ -1902,9 +2101,10 @@ Returns a set of elements which starts with a string given in a filter. It perfo
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't start with`
+
 <details><summary>
 Returns a set of elements which doesn't start with a string given in a filter.
 </summary><p/>
@@ -1912,7 +2112,9 @@ Returns a set of elements which doesn't start with a string given in a filter.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -1923,15 +2125,17 @@ Returns a set of elements which doesn't start with a string given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't start with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx
 
 ##### Output
+
     [
       10,
       "yyy.pdf",
@@ -1942,9 +2146,10 @@ Returns a set of elements which doesn't start with a string given in a filter.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't start with caseless`
+
 <details><summary>
 Returns a set of elements which doesn't start with a string given in a filter. It performs case-insensitive matching.
 </summary><p/>
@@ -1952,7 +2157,9 @@ Returns a set of elements which doesn't start with a string given in a filter. I
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -1964,15 +2171,17 @@ Returns a set of elements which doesn't start with a string given in a filter. I
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't start with caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx
 
 ##### Output
+
     [
       10,
       "yyy.pdf",
@@ -1983,9 +2192,10 @@ Returns a set of elements which doesn't start with a string given in a filter. I
 
 </details>
 
-
 ----
+
 ### Operator: `ends with caseless`
+
 <details><summary>
 Returns a set of elements which ends with a string given in a filter. It performs case-insensitive matching.
 </summary><p/>
@@ -1993,7 +2203,9 @@ Returns a set of elements which ends with a string given in a filter. It perform
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -2005,15 +2217,17 @@ Returns a set of elements which ends with a string given in a filter. It perform
     ]
 
 ##### Filter
+>
 > **Operator**: ends with caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .exe
 
 ##### Output
+
     [
       "xxx.exe",
       "XXX.EXE"
@@ -2021,9 +2235,10 @@ Returns a set of elements which ends with a string given in a filter. It perform
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't end with`
+
 <details><summary>
 Returns a set of elements which doesn't end with a string given in a filter.
 </summary><p/>
@@ -2031,7 +2246,9 @@ Returns a set of elements which doesn't end with a string given in a filter.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -2042,15 +2259,17 @@ Returns a set of elements which doesn't end with a string given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't end with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .exe
 
 ##### Output
+
     [
       10,
       "yyy.pdf",
@@ -2061,9 +2280,10 @@ Returns a set of elements which doesn't end with a string given in a filter.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't end with caseless`
+
 <details><summary>
 Returns a set of elements which doesn't end with a string given in a filter. It performs case-insensitive matching.
 </summary><p/>
@@ -2071,7 +2291,9 @@ Returns a set of elements which doesn't end with a string given in a filter. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "xxx.exe",
@@ -2083,15 +2305,17 @@ Returns a set of elements which doesn't end with a string given in a filter. It 
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't end with caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .exe
 
 ##### Output
+
     [
       10,
       "yyy.pdf",
@@ -2102,9 +2326,10 @@ Returns a set of elements which doesn't end with a string given in a filter. It 
 
 </details>
 
-
 ----
+
 ### Operator: `includes`
+
 <details><summary>
 Returns a set of elements of which a string given in a filter is a substring.
 The searching only works for `string` data types.
@@ -2114,24 +2339,29 @@ It evaluates to unmatched for a element that either or both of the data types is
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: includes
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     www.paloaltonetworks.com
 
-
 #### Example 2
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2142,15 +2372,17 @@ It evaluates to unmatched for a element that either or both of the data types is
     ]
 
 ##### Filter
+>
 > **Operator**: includes
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       "www.paloaltonetworks.com",
       "www.paloaltonetworks.co.jp"
@@ -2158,9 +2390,10 @@ It evaluates to unmatched for a element that either or both of the data types is
 
 </details>
 
-
 ----
+
 ### Operator: `includes caseless`
+
 <details><summary>
 Returns a set of elements of which a string given in a filter is a substring.
 It performs case-insensitive seaching, and only works for `string` data types.
@@ -2170,7 +2403,9 @@ It evaluates to unmatched for a element that either or both of the data types is
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2181,15 +2416,17 @@ It evaluates to unmatched for a element that either or both of the data types is
     ]
 
 ##### Filter
+>
 > **Operator**: includes caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       "www.paloaltonetworks.com",
       "WWW.PaloAltoNetworks.COM"
@@ -2197,9 +2434,10 @@ It evaluates to unmatched for a element that either or both of the data types is
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't include`
+
 <details><summary>
 Returns a set of elements of which a string given in a filter is not a substring.
 The searching only works for `string` data types.
@@ -2209,7 +2447,9 @@ It evaluates to unmatched for a element that either or both of the data types is
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2220,15 +2460,17 @@ It evaluates to unmatched for a element that either or both of the data types is
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't include
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       10,
       {
@@ -2238,9 +2480,10 @@ It evaluates to unmatched for a element that either or both of the data types is
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't include caseless`
+
 <details><summary>
 Returns a set of elements of which a string given in a filter is not a substring.
 It performs case-insensitive seaching, and only works for `string` data types.
@@ -2250,7 +2493,9 @@ It evaluates to unmatched for a element that either or both of the data types is
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2261,15 +2506,17 @@ It evaluates to unmatched for a element that either or both of the data types is
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't include caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       10,
       {
@@ -2279,9 +2526,10 @@ It evaluates to unmatched for a element that either or both of the data types is
 
 </details>
 
-
 ----
+
 ### Operator: `finds`
+
 <details><summary>
 Returns the entire target value if a string given in a filter is a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array.
@@ -2290,23 +2538,29 @@ The searching is performed for a single `string` element or each `string` elemen
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: finds
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     www.paloaltonetworks.com
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2317,15 +2571,17 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: finds
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2336,7 +2592,9 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2347,22 +2605,25 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: finds
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx.paloaltonetworks.com
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `finds caseless`
+
 <details><summary>
 Returns the entire target value if a string given in a filter is a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array with case-insensitive matching.
@@ -2371,23 +2632,29 @@ The searching is performed for a single `string` element or each `string` elemen
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: finds caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     WWW.PaloAltoNetworks.COM
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       "WWW.PaloAltoNetworks.COM",
@@ -2397,15 +2664,17 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: finds caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     [
       10,
       "WWW.PaloAltoNetworks.COM",
@@ -2416,9 +2685,10 @@ The searching is performed for a single `string` element or each `string` elemen
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't find`
+
 <details><summary>
 Returns an entire target value if a string given in a filter is not a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array.
@@ -2427,24 +2697,29 @@ The searching is performed for a single `string` element or each `string` elemen
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: doesn't find
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
-    null
 
+    null
 
 #### Example 2
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2455,20 +2730,23 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't find
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2479,15 +2757,17 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't find
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx.paloaltonetworks
 
 ##### Output
+
     [
       10,
       "www.paloaltonetworks.com",
@@ -2499,9 +2779,10 @@ The searching is performed for a single `string` element or each `string` elemen
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't find caseless`
+
 <details><summary>
 Returns an entire target value if a string given in a filter is not a substring of any of the elements, `null` otherwise.
 The searching is performed for a single `string` element or each `string` element of an array with case-insensitive matching.
@@ -2510,24 +2791,29 @@ The searching is performed for a single `string` element or each `string` elemen
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: doesn't find caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     PaloAltoNetworks
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       10,
       "WWW.PaloAltoNetworks.COM",
@@ -2537,20 +2823,23 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't find caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       10,
       "WWW.PaloAltoNetworks.COM",
@@ -2560,15 +2849,17 @@ The searching is performed for a single `string` element or each `string` elemen
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't find caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     xxx.paloaltonetworks
 
 ##### Output
+
     [
       10,
       "WWW.PaloAltoNetworks.COM",
@@ -2579,9 +2870,10 @@ The searching is performed for a single `string` element or each `string` elemen
 
 </details>
 
-
 ----
+
 ### Operator: `matches`
+
 <details><summary>
 Returns a set of elements which is equal to a string given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2590,41 +2882,49 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     www.paloaltonetworks.com
 
-
 #### Example 2
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -2634,24 +2934,27 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     [
       "www.paloaltonetworks.com"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `matches caseless`
+
 <details><summary>
 Returns a set of elements which matches a string given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2660,41 +2963,49 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     WWW.PaloAltoNetworks.COM
 
-
 #### Example 2
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -2704,24 +3015,27 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     [
       "WWW.PaloAltoNetworks.COM"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match`
+
 <details><summary>
 Returns a set of elements which is not equal to a string given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2730,41 +3044,49 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
+
     www.paloaltonetworks.com
 
-
 #### Example 3
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -2774,15 +3096,17 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -2792,9 +3116,10 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match caseless`
+
 <details><summary>
 Returns a set of elements which doesn't match a string given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2803,41 +3128,49 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     paloaltonetworks
 
 ##### Output
-    WWW.PaloAltoNetworks.COM
 
+    WWW.PaloAltoNetworks.COM
 
 #### Example 3
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -2847,15 +3180,17 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     www.paloaltonetworks.com
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -2865,9 +3200,10 @@ The matching is peformed case-insensitively and between `string` data types. It 
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: matches`
+
 <details><summary>
 Returns a set of elements which matches a wildcard pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2876,24 +3212,29 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: wildcard: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     www.paloaltonetworks.com
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -2903,24 +3244,27 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     [
       "www.paloaltonetworks.com"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: matches caseless`
+
 <details><summary>
 Returns a set of elements which matches a wildcard pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2929,24 +3273,29 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: wildcard: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     WWW.PaloAltoNetworks.COM
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -2956,24 +3305,27 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     [
       "WWW.PaloAltoNetworks.COM"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't match`
+
 <details><summary>
 Returns a set of elements which doesn't match a wildcard pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -2982,24 +3334,29 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -3009,15 +3366,17 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -3027,9 +3386,10 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't match caseless`
+
 <details><summary>
 Returns a set of elements which doesn't match a wildcard pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -3038,24 +3398,29 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -3065,15 +3430,17 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     ???.paloaltonetworks.*
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -3083,9 +3450,10 @@ The matching is peformed case-insensitively and between `string` data types. It 
 
 </details>
 
-
 ----
+
 ### Operator: `regex: matches`
+
 <details><summary>
 Returns a set of elements which matches a regular expression pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -3094,24 +3462,29 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: regex: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     www.paloaltonetworks.com
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -3121,24 +3494,27 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: regex: matches
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     [
       "www.paloaltonetworks.com"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `regex: matches caseless`
+
 <details><summary>
 Returns a set of elements which matches a regular expression pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -3147,24 +3523,29 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: regex: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     WWW.PaloAltoNetworks.COM
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -3174,24 +3555,27 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: regex: matches caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     [
       "WWW.PaloAltoNetworks.COM"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't match`
+
 <details><summary>
 Returns a set of elements which doesn't match a regular expression pattern given in a filter.
 The matching is peformed between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -3200,24 +3584,29 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     www.paloaltonetworks.com
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "www.paloaltonetworks.com",
@@ -3227,15 +3616,17 @@ The matching is peformed between `string` data types. It doesn't match for a ele
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -3245,9 +3636,10 @@ The matching is peformed between `string` data types. It doesn't match for a ele
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't match caseless`
+
 <details><summary>
 Returns a set of elements which doesn't match a regular expression pattern given in a filter.
 The matching is peformed case-insensitively and between `string` data types. It doesn't match for a element whose data type is not `string`.
@@ -3256,24 +3648,29 @@ The matching is peformed case-insensitively and between `string` data types. It 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     WWW.PaloAltoNetworks.COM
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "www.demisto.com",
       "WWW.PaloAltoNetworks.COM",
@@ -3283,15 +3680,17 @@ The matching is peformed case-insensitively and between `string` data types. It 
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*paloaltonetworks.*
 
 ##### Output
+
     [
       "www.demisto.com",
       {
@@ -3301,9 +3700,10 @@ The matching is peformed case-insensitively and between `string` data types. It 
 
 </details>
 
-
 ----
+
 ### Operator: `in`
+
 <details><summary>
 Returns a set of a element which matches a element of the values given.
 </summary><p/>
@@ -3311,13 +3711,16 @@ Returns a set of a element which matches a element of the values given.
 > **Filter Format**: `list`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: in
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3328,11 +3731,13 @@ Returns a set of a element which matches a element of the values given.
     ]
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "orange",
@@ -3340,9 +3745,10 @@ Returns a set of a element which matches a element of the values given.
     ]
 
 ##### Filter
+>
 > **Operator**: in
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3353,6 +3759,7 @@ Returns a set of a element which matches a element of the values given.
     ]
 
 ##### Output
+
     [
       "apple",
       "banana"
@@ -3360,9 +3767,10 @@ Returns a set of a element which matches a element of the values given.
 
 </details>
 
-
 ----
+
 ### Operator: `in caseless`
+
 <details><summary>
 Returns a set of a element which matches a element of the values given.
 The matching is peformed case-insensitively for `string` elements.
@@ -3371,13 +3779,16 @@ The matching is peformed case-insensitively for `string` elements.
 > **Filter Format**: `list`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: in caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3388,11 +3799,13 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Orange",
@@ -3400,9 +3813,10 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Filter
+>
 > **Operator**: in caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3413,6 +3827,7 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana"
@@ -3420,9 +3835,10 @@ The matching is peformed case-insensitively for `string` elements.
 
 </details>
 
-
 ----
+
 ### Operator: `not in`
+
 <details><summary>
 Returns a set of a element which doesn't match any element of the values given.
 </summary><p/>
@@ -3430,13 +3846,16 @@ Returns a set of a element which doesn't match any element of the values given.
 > **Filter Format**: `list`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: not in
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3447,11 +3866,13 @@ Returns a set of a element which doesn't match any element of the values given.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "orange",
@@ -3459,9 +3880,10 @@ Returns a set of a element which doesn't match any element of the values given.
     ]
 
 ##### Filter
+>
 > **Operator**: not in
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3472,13 +3894,15 @@ Returns a set of a element which doesn't match any element of the values given.
     ]
 
 ##### Output
+
     orange
 
 </details>
 
-
 ----
+
 ### Operator: `not in caseless`
+
 <details><summary>
 Returns a set of a element which doesn't match any element of the values given.
 The matching is peformed case-insensitively for `string` elements.
@@ -3487,13 +3911,16 @@ The matching is peformed case-insensitively for `string` elements.
 > **Filter Format**: `list`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: not in caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3504,11 +3931,13 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Orange",
@@ -3516,9 +3945,10 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Filter
+>
 > **Operator**: not in caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -3529,13 +3959,15 @@ The matching is peformed case-insensitively for `string` elements.
     ]
 
 ##### Output
+
     Orange
 
 </details>
 
-
 ----
+
 ### Operator: `in list`
+
 <details><summary>
 Returns a set of elements which matches any of strings of a comma separated list.
 The matching always evaluates to false for a element whose data type is not `string`.
@@ -3544,24 +3976,29 @@ The matching always evaluates to false for a element whose data type is not `str
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: in list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "melon",
@@ -3572,15 +4009,17 @@ The matching always evaluates to false for a element whose data type is not `str
     ]
 
 ##### Filter
+>
 > **Operator**: in list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     [
       "apple",
       "banana"
@@ -3588,9 +4027,10 @@ The matching always evaluates to false for a element whose data type is not `str
 
 </details>
 
-
 ----
+
 ### Operator: `in caseless list`
+
 <details><summary>
 Returns a set of elements which matches any of strings of a comma separated list.
 The matching is peformed case-insensitively, and always evaluates to false for a element whose data type is not `string`.
@@ -3599,24 +4039,29 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: in caseless list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Melon",
@@ -3627,15 +4072,17 @@ The matching is peformed case-insensitively, and always evaluates to false for a
     ]
 
 ##### Filter
+>
 > **Operator**: in caseless list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     [
       "Apple",
       "Banana"
@@ -3643,9 +4090,10 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 
 </details>
 
-
 ----
+
 ### Operator: `not in list`
+
 <details><summary>
 Returns a set of elements which doesn't match any of strings of a comma separated list.
 The matching always evaluates to false for a element whose data type is not `string`.
@@ -3654,41 +4102,49 @@ The matching always evaluates to false for a element whose data type is not `str
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     melon
 
 ##### Filter
+>
 > **Operator**: not in list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     melon
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: not in list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "melon",
@@ -3699,15 +4155,17 @@ The matching always evaluates to false for a element whose data type is not `str
     ]
 
 ##### Filter
+>
 > **Operator**: not in list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     [
       "melon",
       {
@@ -3717,9 +4175,10 @@ The matching always evaluates to false for a element whose data type is not `str
 
 </details>
 
-
 ----
+
 ### Operator: `not in caseless list`
+
 <details><summary>
 Returns a set of elements which doesn't match any of strings of a comma separated list.
 The matching is peformed case-insensitively, and always evaluates to false for a element whose data type is not `string`.
@@ -3728,41 +4187,49 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Melon
 
 ##### Filter
+>
 > **Operator**: not in caseless list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     Melon
 
-
 #### Example 2
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: not in caseless list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Melon",
@@ -3773,15 +4240,17 @@ The matching is peformed case-insensitively, and always evaluates to false for a
     ]
 
 ##### Filter
+>
 > **Operator**: not in caseless list
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple,banana,cherry
 
 ##### Output
+
     [
       "Melon",
       {
@@ -3791,9 +4260,10 @@ The matching is peformed case-insensitively, and always evaluates to false for a
 
 </details>
 
-
 ----
+
 ### Operator: `contains`
+
 <details><summary>
 Returns an entire value if any of the elements matches a string given in a filter, `null` otherwise.
 </summary><p/>
@@ -3801,41 +4271,49 @@ Returns an entire value if any of the elements matches a string given in a filte
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     apple
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     null
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -3843,15 +4321,17 @@ Returns an entire value if any of the elements matches a string given in a filte
     ]
 
 ##### Filter
+>
 > **Operator**: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -3860,9 +4340,10 @@ Returns an entire value if any of the elements matches a string given in a filte
 
 </details>
 
-
 ----
+
 ### Operator: `contains caseless`
+
 <details><summary>
 Returns an entire value if any of the elements matches a string given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -3871,24 +4352,29 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     Apple
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -3896,15 +4382,17 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -3913,9 +4401,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a string given in a filter, `null` otherwise.
 </summary><p/>
@@ -3923,41 +4412,49 @@ Returns an entire value if all of the elements doesn't match a string given in a
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -3965,22 +4462,25 @@ Returns an entire value if all of the elements doesn't match a string given in a
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain caseless`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a string given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -3989,41 +4489,49 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4031,22 +4539,25 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     apple
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: contains`
+
 <details><summary>
 Returns an entire value if any of the elements matches a wildcard pattern given in a filter, `null` otherwise.
 </summary><p/>
@@ -4054,24 +4565,29 @@ Returns an entire value if any of the elements matches a wildcard pattern given 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: wildcard: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     apple
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4079,15 +4595,17 @@ Returns an entire value if any of the elements matches a wildcard pattern given 
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -4096,9 +4614,10 @@ Returns an entire value if any of the elements matches a wildcard pattern given 
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: contains caseless`
+
 <details><summary>
 Returns an entire value if any of the elements matches a wildcard pattern given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -4107,24 +4626,29 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: wildcard: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     Apple
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4132,15 +4656,17 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -4149,9 +4675,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't contain`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a wildcard pattern given in a filter, `null` otherwise.
 </summary><p/>
@@ -4159,56 +4686,66 @@ Returns an entire value if all of the elements doesn't match a wildcard pattern 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     cherry
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     cherry
 
-
 #### Example 3
+
 ##### Input
+
     [
       "cherry",
       "melon"
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     [
       "cherry",
       "melon"
@@ -4216,9 +4753,10 @@ Returns an entire value if all of the elements doesn't match a wildcard pattern 
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't contain caseless`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a wildcard pattern given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -4227,56 +4765,66 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     cherry
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     cherry
 
-
 #### Example 3
+
 ##### Input
+
     [
       "Cherry",
       "Melon"
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     *a*
 
 ##### Output
+
     [
       "Cherry",
       "Melon"
@@ -4284,9 +4832,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `regex: contains`
+
 <details><summary>
 Returns an entire value if any of the elements matches a regular expression given in a filter, `null` otherwise.
 </summary><p/>
@@ -4294,24 +4843,29 @@ Returns an entire value if any of the elements matches a regular expression give
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: regex: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     apple
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4319,15 +4873,17 @@ Returns an entire value if any of the elements matches a regular expression give
     ]
 
 ##### Filter
+>
 > **Operator**: regex: contains
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -4336,9 +4892,10 @@ Returns an entire value if any of the elements matches a regular expression give
 
 </details>
 
-
 ----
+
 ### Operator: `regex: contains caseless`
+
 <details><summary>
 Returns an entire value if any of the elements matches a regular expression given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -4347,24 +4904,29 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: regex: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     Apple
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4372,15 +4934,17 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: regex: contains caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -4389,9 +4953,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't contain`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a regular expression given in a filter, `null` otherwise.
 </summary><p/>
@@ -4399,56 +4964,66 @@ Returns an entire value if all of the elements doesn't match a regular expressio
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     apple
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     cherry
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     cherry
 
-
 #### Example 3
+
 ##### Input
+
     [
       "cherry",
       "melon"
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     [
       "cherry",
       "melon"
@@ -4456,9 +5031,10 @@ Returns an entire value if all of the elements doesn't match a regular expressio
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't contain caseless`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match a regular expression given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -4467,56 +5043,66 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Apple
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     cherry
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     cherry
 
-
 #### Example 3
+
 ##### Input
+
     [
       "Cherry",
       "Melon"
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain caseless
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     .*a.*
 
 ##### Output
+
     [
       "Cherry",
       "Melon"
@@ -4524,9 +5110,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `matches any line of`
+
 <details><summary>
 Returns a set of elements which matches any line of a text given in a filter.
 </summary><p/>
@@ -4534,13 +5121,16 @@ Returns a set of elements which matches any line of a text given in a filter.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: matches any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4549,11 +5139,13 @@ Returns a set of elements which matches any line of a text given in a filter.
     cherry
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4561,9 +5153,10 @@ Returns a set of elements which matches any line of a text given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: matches any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4572,13 +5165,16 @@ Returns a set of elements which matches any line of a text given in a filter.
     apple
 
 ##### Output
+
     [
       "apple",
       "banana"
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4586,9 +5182,10 @@ Returns a set of elements which matches any line of a text given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: matches any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4597,14 +5194,16 @@ Returns a set of elements which matches any line of a text given in a filter.
     orange
 
 ##### Output
+
     [
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `matches any caseless line of`
+
 <details><summary>
 Returns a set of elements which matches any line of a text given in a filter.
 The matching is peformed case-insensitively.
@@ -4613,13 +5212,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: matches any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4628,11 +5230,13 @@ The matching is peformed case-insensitively.
     cherry
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4640,9 +5244,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: matches any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4651,6 +5256,7 @@ The matching is peformed case-insensitively.
     apple
 
 ##### Output
+
     [
       "Apple",
       "Banana"
@@ -4658,9 +5264,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match any line of`
+
 <details><summary>
 Returns a set of elements which doesn't match any line of a text given in a filter.
 </summary><p/>
@@ -4668,13 +5275,16 @@ Returns a set of elements which doesn't match any line of a text given in a filt
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't match any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4683,11 +5293,13 @@ Returns a set of elements which doesn't match any line of a text given in a filt
     cherry
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4695,9 +5307,10 @@ Returns a set of elements which doesn't match any line of a text given in a filt
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4706,6 +5319,7 @@ Returns a set of elements which doesn't match any line of a text given in a filt
     banana
 
 ##### Output
+
     [
       "apple",
       "cherry"
@@ -4713,9 +5327,10 @@ Returns a set of elements which doesn't match any line of a text given in a filt
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match any caseless line of`
+
 <details><summary>
 Returns a set of elements which doesn't match any line of a text given in a filter.
 The matching is peformed case-insensitively.
@@ -4724,13 +5339,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: doesn't match any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4739,11 +5357,13 @@ The matching is peformed case-insensitively.
     cherry
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4751,9 +5371,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4762,15 +5383,17 @@ The matching is peformed case-insensitively.
     orange
 
 ##### Output
+
     [
       "Apple",
       "Banana",
       "Cherry"
     ]
 
-
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4778,9 +5401,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4789,6 +5413,7 @@ The matching is peformed case-insensitively.
     banana
 
 ##### Output
+
     [
       "Apple",
       "Cherry"
@@ -4796,9 +5421,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `matches any string of`
+
 <details><summary>
 Returns a set of elements which matches any strings given in a filter.
 </summary><p/>
@@ -4806,30 +5432,36 @@ Returns a set of elements which matches any strings given in a filter.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "banana"
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4840,11 +5472,13 @@ Returns a set of elements which matches any strings given in a filter.
     ]
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4852,9 +5486,10 @@ Returns a set of elements which matches any strings given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4865,13 +5500,16 @@ Returns a set of elements which matches any strings given in a filter.
     ]
 
 ##### Output
+
     [
       "apple",
       "banana"
     ]
 
 #### Example 4
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4879,9 +5517,10 @@ Returns a set of elements which matches any strings given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4892,14 +5531,16 @@ Returns a set of elements which matches any strings given in a filter.
     ]
 
 ##### Output
+
     [
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `matches any caseless string of`
+
 <details><summary>
 Returns a set of elements which matches any strings given in a filter. The matching is peformed case-insensitively.
 </summary><p/>
@@ -4907,13 +5548,16 @@ Returns a set of elements which matches any strings given in a filter. The match
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4924,11 +5568,13 @@ Returns a set of elements which matches any strings given in a filter. The match
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -4936,9 +5582,10 @@ Returns a set of elements which matches any strings given in a filter. The match
     ]
 
 ##### Filter
+>
 > **Operator**: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4949,6 +5596,7 @@ Returns a set of elements which matches any strings given in a filter. The match
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana"
@@ -4956,9 +5604,10 @@ Returns a set of elements which matches any strings given in a filter. The match
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match any string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any strings given in a filter.
 </summary><p/>
@@ -4966,13 +5615,16 @@ Returns a set of elements which doesn't match any strings given in a filter.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -4983,11 +5635,13 @@ Returns a set of elements which doesn't match any strings given in a filter.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -4995,9 +5649,10 @@ Returns a set of elements which doesn't match any strings given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5008,6 +5663,7 @@ Returns a set of elements which doesn't match any strings given in a filter.
     ]
 
 ##### Output
+
     [
       "apple",
       "cherry"
@@ -5015,9 +5671,10 @@ Returns a set of elements which doesn't match any strings given in a filter.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't match any caseless string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any strings given in a filter.
 The matching is peformed case-insensitively.
@@ -5026,13 +5683,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5043,11 +5703,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5055,9 +5717,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5068,6 +5731,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Cherry"
@@ -5075,9 +5739,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: matches any string of`
+
 <details><summary>
 Returns a set of elements which matches any wildcard patterns given in a filter.
 </summary><p/>
@@ -5085,30 +5750,36 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "b?????"
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5119,11 +5790,13 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5131,9 +5804,10 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5144,13 +5818,16 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Output
+
     [
       "banana",
       "cherry"
     ]
 
 #### Example 4
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -5158,9 +5835,10 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5171,14 +5849,16 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Output
+
     [
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: matches any caseless string of`
+
 <details><summary>
 Returns a set of elements which matches any wildcard patterns given in a filter. The matching is peformed case-insensitively.
 </summary><p/>
@@ -5186,13 +5866,16 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5203,11 +5886,13 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5215,9 +5900,10 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5228,6 +5914,7 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
     ]
 
 ##### Output
+
     [
       "Banana",
       "Cherry"
@@ -5235,9 +5922,10 @@ Returns a set of elements which matches any wildcard patterns given in a filter.
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't match any string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any wildcard patterns given in a filter.
 </summary><p/>
@@ -5245,13 +5933,16 @@ Returns a set of elements which doesn't match any wildcard patterns given in a f
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5262,11 +5953,13 @@ Returns a set of elements which doesn't match any wildcard patterns given in a f
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5274,9 +5967,10 @@ Returns a set of elements which doesn't match any wildcard patterns given in a f
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5287,15 +5981,17 @@ Returns a set of elements which doesn't match any wildcard patterns given in a f
     ]
 
 ##### Output
+
     [
       "apple"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't match any caseless string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any wildcard patterns given in a filter.
 The matching is peformed case-insensitively.
@@ -5304,13 +6000,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5321,11 +6020,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5333,9 +6034,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5346,15 +6048,17 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `regex: matches any string of`
+
 <details><summary>
 Returns a set of elements which matches any regular expression patterns given in a filter.
 </summary><p/>
@@ -5362,30 +6066,36 @@ Returns a set of elements which matches any regular expression patterns given in
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "b....."
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5396,11 +6106,13 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5408,9 +6120,10 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Filter
+>
 > **Operator**: regex: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5421,13 +6134,16 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Output
+
     [
       "banana",
       "cherry"
     ]
 
 #### Example 4
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -5435,9 +6151,10 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Filter
+>
 > **Operator**: regex: matches any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5448,14 +6165,16 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Output
+
     [
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `regex: matches any caseless string of`
+
 <details><summary>
 Returns a set of elements which matches any regular expression patterns given in a filter. The matching is peformed case-insensitively.
 </summary><p/>
@@ -5463,13 +6182,16 @@ Returns a set of elements which matches any regular expression patterns given in
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: regex: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5480,11 +6202,13 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5492,9 +6216,10 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Filter
+>
 > **Operator**: regex: matches any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5505,6 +6230,7 @@ Returns a set of elements which matches any regular expression patterns given in
     ]
 
 ##### Output
+
     [
       "Banana",
       "Cherry"
@@ -5512,9 +6238,10 @@ Returns a set of elements which matches any regular expression patterns given in
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't match any string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any regular expression patterns given in a filter.
 </summary><p/>
@@ -5522,13 +6249,16 @@ Returns a set of elements which doesn't match any regular expression patterns gi
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5539,11 +6269,13 @@ Returns a set of elements which doesn't match any regular expression patterns gi
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5551,9 +6283,10 @@ Returns a set of elements which doesn't match any regular expression patterns gi
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5564,15 +6297,17 @@ Returns a set of elements which doesn't match any regular expression patterns gi
     ]
 
 ##### Output
+
     [
       "apple"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't match any caseless string of`
+
 <details><summary>
 Returns a set of elements which doesn't match any regular expression patterns given in a filter.
 The matching is peformed case-insensitively.
@@ -5581,13 +6316,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5598,11 +6336,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5610,9 +6350,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't match any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5623,15 +6364,17 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `contains any line of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any line of a text given in a filter, `null` otherwise.
 </summary><p/>
@@ -5639,13 +6382,16 @@ Returns an entire value if any of the elements matches any line of a text given 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: contains any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5654,11 +6400,13 @@ Returns an entire value if any of the elements matches any line of a text given 
     cherry
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5666,9 +6414,10 @@ Returns an entire value if any of the elements matches any line of a text given 
     ]
 
 ##### Filter
+>
 > **Operator**: contains any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5678,6 +6427,7 @@ Returns an entire value if any of the elements matches any line of a text given 
     
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -5685,7 +6435,9 @@ Returns an entire value if any of the elements matches any line of a text given 
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5693,9 +6445,10 @@ Returns an entire value if any of the elements matches any line of a text given 
     ]
 
 ##### Filter
+>
 > **Operator**: contains any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5705,13 +6458,15 @@ Returns an entire value if any of the elements matches any line of a text given 
     
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `contains any caseless line of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any line of a text given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -5720,13 +6475,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: contains any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5735,11 +6493,13 @@ The matching is peformed case-insensitively.
     cherry
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5747,9 +6507,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: contains any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5759,6 +6520,7 @@ The matching is peformed case-insensitively.
     
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -5767,9 +6529,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain any line of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any line of a text given in a filter, `null` otherwise.
 </summary><p/>
@@ -5777,13 +6540,16 @@ Returns an entire value if all of the elements doesn't match any line of a text 
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5792,11 +6558,13 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     cherry
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5804,9 +6572,10 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5816,6 +6585,7 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -5823,7 +6593,9 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5831,9 +6603,10 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5843,13 +6616,15 @@ Returns an entire value if all of the elements doesn't match any line of a text 
     
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain any caseless line of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any line of a text given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -5858,13 +6633,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `string`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5873,11 +6651,13 @@ The matching is peformed case-insensitively.
     cherry
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5885,9 +6665,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5897,6 +6678,7 @@ The matching is peformed case-insensitively.
     
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -5904,7 +6686,9 @@ The matching is peformed case-insensitively.
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -5912,9 +6696,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5924,13 +6709,15 @@ The matching is peformed case-insensitively.
     
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `contains any string of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any strings given in a filter, `null` otherwise.
 </summary><p/>
@@ -5938,30 +6725,36 @@ Returns an entire value if any of the elements matches any strings given in a fi
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "banana"
 
 ##### Output
+
     banana
 
-
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5972,11 +6765,13 @@ Returns an entire value if any of the elements matches any strings given in a fi
     ]
 
 ##### Output
+
     banana
 
-
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -5984,9 +6779,10 @@ Returns an entire value if any of the elements matches any strings given in a fi
     ]
 
 ##### Filter
+>
 > **Operator**: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -5997,15 +6793,17 @@ Returns an entire value if any of the elements matches any strings given in a fi
     ]
 
 ##### Output
+
     [
       "apple",
       "banana",
       "cherry"
     ]
 
-
 #### Example 4
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6013,9 +6811,10 @@ Returns an entire value if any of the elements matches any strings given in a fi
     ]
 
 ##### Filter
+>
 > **Operator**: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6026,13 +6825,15 @@ Returns an entire value if any of the elements matches any strings given in a fi
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `contains any caseless line of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any strings given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6041,13 +6842,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: contains any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6058,11 +6862,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6070,9 +6876,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: contains any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6083,6 +6890,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -6091,9 +6899,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain any string of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any strings given in a filter, `null` otherwise.
 </summary><p/>
@@ -6101,13 +6910,16 @@ Returns an entire value if all of the elements doesn't match any strings given i
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6118,11 +6930,13 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6130,9 +6944,10 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6143,6 +6958,7 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -6150,7 +6966,9 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6158,9 +6976,10 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6171,13 +6990,15 @@ Returns an entire value if all of the elements doesn't match any strings given i
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `doesn't contain any caseless line of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any strings given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6186,13 +7007,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6203,11 +7027,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6215,9 +7041,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6228,6 +7055,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -6235,7 +7063,9 @@ The matching is peformed case-insensitively.
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6243,9 +7073,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6256,13 +7087,15 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: contains any string of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any wildcard patterns given in a filter, `null` otherwise.
 </summary><p/>
@@ -6270,30 +7103,36 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "b?????"
 
 ##### Output
-    banana
 
+    banana
 
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6304,11 +7143,13 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
     ]
 
 ##### Output
-    banana
 
+    banana
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6316,9 +7157,10 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6329,15 +7171,17 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
     ]
 
 ##### Output
+
     [
       "apple",
       "banana",
       "cherry"
     ]
 
-
 #### Example 4
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -6345,9 +7189,10 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6358,13 +7203,15 @@ Returns an entire value if any of the elements matches any wildcard patterns giv
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: contains any caseless string of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any wildcard patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6373,13 +7220,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6390,11 +7240,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6402,9 +7254,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: contains any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6415,6 +7268,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -6423,9 +7277,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't contain any string of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any wildcard patterns given in a filter, `null` otherwise.
 </summary><p/>
@@ -6433,13 +7288,16 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6450,11 +7308,13 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6462,9 +7322,10 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6475,10 +7336,13 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
     ]
 
 ##### Output
+
     null
 
 #### Example 3
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -6486,9 +7350,10 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6499,6 +7364,7 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
     ]
 
 ##### Output
+
     [
       "melon",
       "lemon",
@@ -6507,9 +7373,10 @@ Returns an entire value if all of the elements doesn't match any wildcard patter
 
 </details>
 
-
 ----
+
 ### Operator: `wildcard: doesn't contain any caseless line of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any wildcard patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6518,13 +7385,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6535,11 +7405,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Melon",
       "Lemon",
@@ -6547,9 +7419,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6560,6 +7433,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Melon",
       "Lemon",
@@ -6567,7 +7441,9 @@ The matching is peformed case-insensitively.
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6575,9 +7451,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: wildcard: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6588,13 +7465,15 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `regex: contains any string of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any regular expression patterns given in a filter, `null` otherwise.
 </summary><p/>
@@ -6602,30 +7481,36 @@ Returns an entire value if any of the elements matches any regular expression pa
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
     "b....."
 
 ##### Output
-    banana
 
+    banana
 
 #### Example 2
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6636,11 +7521,13 @@ Returns an entire value if any of the elements matches any regular expression pa
     ]
 
 ##### Output
-    banana
 
+    banana
 
 #### Example 3
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6648,9 +7535,10 @@ Returns an entire value if any of the elements matches any regular expression pa
     ]
 
 ##### Filter
+>
 > **Operator**: regex: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6661,15 +7549,17 @@ Returns an entire value if any of the elements matches any regular expression pa
     ]
 
 ##### Output
+
     [
       "apple",
       "banana",
       "cherry"
     ]
 
-
 #### Example 4
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -6677,9 +7567,10 @@ Returns an entire value if any of the elements matches any regular expression pa
     ]
 
 ##### Filter
+>
 > **Operator**: regex: contains any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6690,13 +7581,15 @@ Returns an entire value if any of the elements matches any regular expression pa
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `regex: contains any caseless string of`
+
 <details><summary>
 Returns an entire value if any of the elements matches any regex patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6705,13 +7598,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: regex: contains any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6722,11 +7618,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     Banana
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6734,9 +7632,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: regex: contains any caseless string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6747,6 +7646,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Apple",
       "Banana",
@@ -6755,9 +7655,10 @@ The matching is peformed case-insensitively.
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't contain any string of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any regex patterns given in a filter, `null` otherwise.
 </summary><p/>
@@ -6765,13 +7666,16 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     banana
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6782,11 +7686,13 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "apple",
       "banana",
@@ -6794,9 +7700,10 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6807,10 +7714,13 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
     ]
 
 ##### Output
+
     null
 
 #### Example 3
+
 ##### Input
+
     [
       "melon",
       "lemon",
@@ -6818,9 +7728,10 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any string of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6831,6 +7742,7 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
     ]
 
 ##### Output
+
     [
       "melon",
       "lemon",
@@ -6839,9 +7751,10 @@ Returns an entire value if all of the elements doesn't match any regex patterns 
 
 </details>
 
-
 ----
+
 ### Operator: `regex: doesn't contain any caseless line of`
+
 <details><summary>
 Returns an entire value if all of the elements doesn't match any regex patterns given in a filter, `null` otherwise.
 The matching is peformed case-insensitively.
@@ -6850,13 +7763,16 @@ The matching is peformed case-insensitively.
 > **Filter Format**: `<JSON string> or <JSON array of string>`
 
 #### Example 1
+
 ##### Input
+
     Banana
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6867,11 +7783,13 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
-
 #### Example 2
+
 ##### Input
+
     [
       "Melon",
       "Lemon",
@@ -6879,9 +7797,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6892,6 +7811,7 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     [
       "Melon",
       "Lemon",
@@ -6899,7 +7819,9 @@ The matching is peformed case-insensitively.
     ]
 
 #### Example 3
+
 ##### Input
+
     [
       "Apple",
       "Banana",
@@ -6907,9 +7829,10 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Filter
+>
 > **Operator**: regex: doesn't contain any caseless line of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6920,13 +7843,15 @@ The matching is peformed case-insensitively.
     ]
 
 ##### Output
+
     null
 
 </details>
 
-
 ----
+
 ### Operator: `matches expressions of`
+
 <details><summary>
 Returns the result of a value filtered by `expressions` given.
 See `Filter Syntax` for the details of `expressions`.
@@ -6935,7 +7860,9 @@ See `Filter Syntax` for the details of `expressions`.
 > **Filter Format**: `expressions`
 
 #### Example 1
+
 ##### Input
+
     [
       "aaa.dat",
       "bbb.exe",
@@ -6943,9 +7870,10 @@ See `Filter Syntax` for the details of `expressions`.
     ]
 
 ##### Filter
+>
 > **Operator**: matches expressions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -6955,14 +7883,15 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Output
+
     [
       "ccc.exe"
     ]
 
-
 #### Example 2
+
 ##### Input
-    
+
     {
       "Domain": [
         "www.paloaltonetworks.com",
@@ -6977,6 +7906,7 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Filter
+>
 > **Operator**: matches expressions of
 
 > **Path**: Domain
@@ -6990,6 +7920,7 @@ See `Filter Syntax` for the details of `expressions`.
     ]
 
 ##### Output
+
     {
       "Domain": [
         "www.paloaltonetworks.co.jp",
@@ -7004,9 +7935,10 @@ See `Filter Syntax` for the details of `expressions`.
 
 </details>
 
-
 ----
+
 ### Operator: `matches conditions of`
+
 <details><summary>
 Returns the result of a value filtered by `conditions` given.
 See `Filter Syntax` for the details of `conditions`.
@@ -7015,7 +7947,9 @@ See `Filter Syntax` for the details of `conditions`.
 > **Filter Format**: `conditions`
 
 #### Example 1
+
 ##### Input
+
     {
       "TrustedDevices": [
         "D000002",
@@ -7042,6 +7976,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: matches conditions of
 
 > **Path**: Events
@@ -7072,6 +8007,7 @@ See `Filter Syntax` for the details of `conditions`.
     ]
 
 ##### Output
+
     {
       "Events": [
          {
@@ -7089,9 +8025,10 @@ See `Filter Syntax` for the details of `conditions`.
       ]
     }
 
-
 #### Example 2
+
 ##### Input
+
     {
       "Result": {
         "File": [
@@ -7122,9 +8059,10 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: matches conditions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7146,6 +8084,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     {
       "Result": {
         "File": [
@@ -7163,9 +8102,10 @@ See `Filter Syntax` for the details of `conditions`.
       }
     }
 
-
 #### Example 3
+
 ##### Input
+
     {
       "Result": {
         "File": [
@@ -7196,9 +8136,10 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: matches conditions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7224,6 +8165,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     {
       "Result": {
         "File": [
@@ -7241,9 +8183,10 @@ See `Filter Syntax` for the details of `conditions`.
       }
     }
 
-
 #### Example 4
+
 ##### Input
+
     {
       "Result" : {
         "Domain" : [
@@ -7260,9 +8203,10 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: matches conditions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7277,6 +8221,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     {
       "Result" : {
         "Domain" : [
@@ -7293,9 +8238,10 @@ See `Filter Syntax` for the details of `conditions`.
 
 </details>
 
-
 ----
+
 ### Operator: `value matches expressions of`
+
 <details><summary>
 Evaluates each value of dictionary elements or each element for values whose data type is not `dictionary`, and returns a set of the elements matched to expressions given in a filter.
 See `Filter Syntax` for the details of `expressions`.
@@ -7304,7 +8250,9 @@ See `Filter Syntax` for the details of `expressions`.
 > **Filter Format**: `expressions`
 
 #### Example 1
+
 ##### Input
+
     [
       "1.1.1.1",
       "2.2.2.2",
@@ -7312,9 +8260,10 @@ See `Filter Syntax` for the details of `expressions`.
     ]
 
 ##### Filter
+>
 > **Operator**: value matches expressions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7323,13 +8272,15 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Output
+
     [
       "1.1.1.1"
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "Communication": {
         "Host1": [
@@ -7345,6 +8296,7 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Filter
+>
 > **Operator**: value matches expressions of
 
 > **Path**: Communication
@@ -7356,6 +8308,7 @@ See `Filter Syntax` for the details of `expressions`.
     }
 
 ##### Output
+
     {
       "Communication": {
         "Host1": [
@@ -7366,12 +8319,12 @@ See `Filter Syntax` for the details of `expressions`.
       }
     }
 
-
 </details>
 
-
 ----
+
 ### Operator: `value matches conditions of`
+
 <details><summary>
 Evaluates each value of dictionary elements, and returns a set of the elements matched to conditions given in a filter.
 See `Filter Syntax` for the details of `conditions`.
@@ -7380,7 +8333,9 @@ See `Filter Syntax` for the details of `conditions`.
 > **Filter Format**: `conditions`
 
 #### Example 1
+
 ##### Input
+
     {
       "Host1": {
         "User": "JDOE",
@@ -7400,9 +8355,10 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: value matches conditions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7413,6 +8369,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     {
       "Host1": {
         "User": "JDOE",
@@ -7426,9 +8383,10 @@ See `Filter Syntax` for the details of `conditions`.
       }
     }
 
-
 #### Example 2
+
 ##### Input
+
     {
       "Host1": {
         "User": "JDOE",
@@ -7460,9 +8418,10 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Filter
+>
 > **Operator**: value matches conditions of
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7480,6 +8439,7 @@ See `Filter Syntax` for the details of `conditions`.
     }
 
 ##### Output
+
     {
       "Host1": {
         "User": "JDOE",
@@ -7503,12 +8463,12 @@ See `Filter Syntax` for the details of `conditions`.
       }
     }
 
-
 </details>
 
-
 ----
+
 ### Operator: `json: encode array`
+
 <details><summary>
 Returns an string in JSON which is encoded the entire value.
 </summary><p/>
@@ -7520,16 +8480,19 @@ Returns an string in JSON which is encoded the entire value.
 | indent | int | The number of spaces per indent (Default: None) |
 
 #### Example 1
+
 ##### Input
+
     [
       10,
       20
     ]
 
 ##### Filter
+>
 > **Operator**: json: encode array
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7537,20 +8500,23 @@ Returns an string in JSON which is encoded the entire value.
     }
 
 ##### Output
+
     "[10,20]"
 
-
 #### Example 2
+
 ##### Input
+
     [
       10,
       20
     ]
 
 ##### Filter
+>
 > **Operator**: json: encode array
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7559,17 +8525,18 @@ Returns an string in JSON which is encoded the entire value.
     }
 
 ##### Output
+
     [
         "1.1.1.1",
         "2.2.2.2"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `json: encode`
+
 <details><summary>
 Encodes each element and returns a set of JSON-encoded string.
 </summary><p/>
@@ -7581,7 +8548,9 @@ Encodes each element and returns a set of JSON-encoded string.
 | indent | int | The number of spaces per indent (Default: None) |
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "xxx": 10
@@ -7590,9 +8559,10 @@ Encodes each element and returns a set of JSON-encoded string.
     ]
 
 ##### Filter
+>
 > **Operator**: json: encode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7600,14 +8570,16 @@ Encodes each element and returns a set of JSON-encoded string.
     }
 
 ##### Output
+
     [
       {"xxx":10},
       20
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       {
         "xxx": 10
@@ -7616,9 +8588,10 @@ Encodes each element and returns a set of JSON-encoded string.
     ]
 
 ##### Filter
+>
 > **Operator**: json: encode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7627,6 +8600,7 @@ Encodes each element and returns a set of JSON-encoded string.
     }
 
 ##### Output
+
     [
       {
           "xxx": 10
@@ -7634,12 +8608,12 @@ Encodes each element and returns a set of JSON-encoded string.
       20
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `json: decode`
+
 <details><summary>
 Returns a set of JSON decoded-values from the each element.
 </summary><p/>
@@ -7651,16 +8625,19 @@ Returns a set of JSON decoded-values from the each element.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     [
       {"xxx":10},
       {"yyy":20}
     ]
 
 ##### Filter
+>
 > **Operator**: json: decode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7668,6 +8645,7 @@ Returns a set of JSON decoded-values from the each element.
     }
 
 ##### Output
+
     [
       {
         "xxx": 10
@@ -7677,12 +8655,12 @@ Returns a set of JSON decoded-values from the each element.
       }
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `base64: encode`
+
 <details><summary>
 Encodes each element and returns a set of BASE64-encoded string.
 </summary><p/>
@@ -7694,16 +8672,19 @@ Encodes each element and returns a set of BASE64-encoded string.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     [
       "xxx",
       "yyy"
     ]
 
 ##### Filter
+>
 > **Operator**: base64: encode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7711,17 +8692,18 @@ Encodes each element and returns a set of BASE64-encoded string.
     }
 
 ##### Output
+
     [
       "eHh4",
       "eXl5"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `base64: decode`
+
 <details><summary>
 Returns a set of BASE64 decoded-values from the each element.
 </summary><p/>
@@ -7733,16 +8715,19 @@ Returns a set of BASE64 decoded-values from the each element.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     [
       "eHh4",
       "eXl5"
     ]
 
 ##### Filter
+>
 > **Operator**: base64: decode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7750,17 +8735,18 @@ Returns a set of BASE64 decoded-values from the each element.
     }
 
 ##### Output
+
     [
       "xxx",
       "yyy"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `digest`
+
 <details><summary>
 Create a set of secure hash value for each element.
 </summary><p/>
@@ -7772,16 +8758,19 @@ Create a set of secure hash value for each element.
 | algorithm | string | Secure hash algorithm (Default: sha256). See python hashlib for algorithm names. |
 
 #### Example 1
+
 ##### Input
+
     [
       "xxx",
       "yyy"
     ]
 
 ##### Filter
+>
 > **Operator**: digest
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7789,23 +8778,26 @@ Create a set of secure hash value for each element.
     }
 
 ##### Output
+
     [
       "cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf6860",
       "f2afd1cacb5441a5e65a7a460a5f9898b7b98b08aa6323a2e53c8b9a9686cd86"
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       "xxx",
       "yyy"
     ]
 
 ##### Filter
+>
 > **Operator**: digest
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7814,17 +8806,18 @@ Create a set of secure hash value for each element.
     }
 
 ##### Output
+
     [
       "cd2eb0837c9b4c962c22d2ff8b5441b7b45805887f051d39bf133b583baf6860",
       "f2afd1cacb5441a5e65a7a460a5f9898b7b98b08aa6323a2e53c8b9a9686cd86"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `is replaced with`
+
 <details><summary>
 Replaces an entire value with a value given in a filter.
 </summary><p/>
@@ -7832,16 +8825,19 @@ Replaces an entire value with a value given in a filter.
 > **Filter Format**: `<JSON value>`
 
 #### Example 1
+
 ##### Input
+
     [
       "apple",
       "banana"
     ]
 
 ##### Filter
+>
 > **Operator**: is replaced with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7852,6 +8848,7 @@ Replaces an entire value with a value given in a filter.
     ]
 
 ##### Output
+
     [
       {
         "fruit" : [
@@ -7861,17 +8858,19 @@ Replaces an entire value with a value given in a filter.
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "fruit": "apple"
     }
 
 ##### Filter
+>
 > **Operator**: is replaced with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7881,17 +8880,18 @@ Replaces an entire value with a value given in a filter.
     }
 
 ##### Output
+
     {
       "fruit": "banana",
       "vegitable": "tomato"
     }
 
-
 </details>
 
-
 ----
+
 ### Operator: `is updated with`
+
 <details><summary>
 If both of the data types are `dicrionary`, all the elements given in a filter are added to the value.
 All the values are replaced with the value given the existing key.
@@ -7901,16 +8901,19 @@ Otherwise, it is simply replaced with a value given in a filter.
 > **Filter Format**: `<JSON value>`
 
 #### Example 1
+
 ##### Input
+
     [
       "apple",
       "banana"
     ]
 
 ##### Filter
+>
 > **Operator**: is updated with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7921,6 +8924,7 @@ Otherwise, it is simply replaced with a value given in a filter.
     ]
 
 ##### Output
+
     [
       {
         "fruit" : [
@@ -7930,17 +8934,19 @@ Otherwise, it is simply replaced with a value given in a filter.
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "fruit": "apple"
     }
 
 ##### Filter
+>
 > **Operator**: is updated with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7949,17 +8955,18 @@ Otherwise, it is simply replaced with a value given in a filter.
     }
 
 ##### Output
+
     {
       "fruit": "banana",
       "vegitable": "tomato"
     }
 
-
 </details>
 
-
 ----
+
 ### Operator: `appends`
+
 <details><summary>
 Appends all the elements given in a filter to the value.
 </summary><p/>
@@ -7967,16 +8974,19 @@ Appends all the elements given in a filter to the value.
 > **Filter Format**: `<JSON value>`
 
 #### Example 1
+
 ##### Input
+
     [
       "apple",
       "banana"
     ]
 
 ##### Filter
+>
 > **Operator**: appends
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -7986,6 +8996,7 @@ Appends all the elements given in a filter to the value.
     ]
 
 ##### Output
+
     [
       "apple",
       "banana",
@@ -7993,9 +9004,10 @@ Appends all the elements given in a filter to the value.
       "lemon"
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "File": [
         "a.exe",
@@ -8004,9 +9016,10 @@ Appends all the elements given in a filter to the value.
     }
 
 ##### Filter
+>
 > **Operator**: appends
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8018,6 +9031,7 @@ Appends all the elements given in a filter to the value.
     }
 
 ##### Output
+
     [
       {
         "File": [
@@ -8035,9 +9049,10 @@ Appends all the elements given in a filter to the value.
 
 </details>
 
-
 ----
+
 ### Operator: `if-then-else`
+
 <details><summary>
 Evaluates each element with `if` condition, and returns a set of the results of `then` or `else` operations.
 If `if` condition is not given or returns any value, `then` operation is executed, otherwise `else` operation is executed.
@@ -8052,9 +9067,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
 | else | expressions | (Optional) Conditions to execute if `if` returns `null`. |
 | lhs | expressions | (Optional) The value used for the `if` condition instead of the current element. |
 
-
 #### Example 1
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -8071,9 +9087,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
     ]
 
 ##### Filter
+>
 > **Operator**: if-then-else
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8098,6 +9115,7 @@ If `if` condition is not given or returns any value, `then` operation is execute
     }
 
 ##### Output
+
     [
       {
         "Name": "a.dat",
@@ -8116,9 +9134,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       "a.dat",
       "b.exe",
@@ -8126,9 +9145,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
     ]
 
 ##### Filter
+>
 > **Operator**: if-then-else
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8142,15 +9162,17 @@ If `if` condition is not given or returns any value, `then` operation is execute
     }
 
 ##### Output
+
     [
       "a.dat",
       10,
       "c.txt"
     ]
 
-
 #### Example 3
+
 ##### Input
+
     [
       "a.dat",
       "b.exe",
@@ -8158,9 +9180,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
     ]
 
 ##### Filter
+>
 > **Operator**: if-then-else
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8171,6 +9194,7 @@ If `if` condition is not given or returns any value, `then` operation is execute
     }
 
 ##### Output
+
     [
       10,
       10,
@@ -8178,7 +9202,9 @@ If `if` condition is not given or returns any value, `then` operation is execute
     ]
 
 #### Example 4
+
 ##### Input
+
     [
       "a.dat",
       "b.exe",
@@ -8186,9 +9212,10 @@ If `if` condition is not given or returns any value, `then` operation is execute
     ]
 
 ##### Filter
+>
 > **Operator**: if-then-else
 
-> **Path**: 
+> **Path**:
 
 > **ctx_demisto**: (in dictionaly, not string)
 
@@ -8209,15 +9236,17 @@ If `if` condition is not given or returns any value, `then` operation is execute
     }
 
 ##### Output
+
     [
       "b.exe"
     ]
 
 </details>
 
-
 ----
+
 ### Operator: `switch-case`
+
 <details><summary>
 Performs expressions for the label whose `expressions` matches the value.
 If any of `expressions` doesn't match the value, `default` operation is executed.
@@ -8231,9 +9260,10 @@ If any of `expressions` doesn't match the value, `default` operation is executed
 | default | expressions | (Optional) Conditions to execute if it doesn't match all the `switch` conditions. |
 | &lt;label&gt;| expressions | (Optional) Conditions to execute if it matches the conditions given in the label. |
 
-
 #### Example 1
+
 ##### Input
+
     [
       {
         "IP": "1.1.1.1",
@@ -8250,9 +9280,10 @@ If any of `expressions` doesn't match the value, `default` operation is executed
     ]
 
 ##### Filter
+>
 > **Operator**: switch-case
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8291,6 +9322,7 @@ If any of `expressions` doesn't match the value, `default` operation is executed
     }
 
 ##### Output
+
     [
       {
         "IP": "1.1.1.1",
@@ -8309,9 +9341,10 @@ If any of `expressions` doesn't match the value, `default` operation is executed
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       {
         "IP": "1.1.1.1",
@@ -8328,9 +9361,10 @@ If any of `expressions` doesn't match the value, `default` operation is executed
     ]
 
 ##### Filter
+>
 > **Operator**: switch-case
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8364,6 +9398,7 @@ If any of `expressions` doesn't match the value, `default` operation is executed
     }
 
 ##### Output
+
     [
       {
         "IP": "1.1.1.1",
@@ -8381,12 +9416,12 @@ If any of `expressions` doesn't match the value, `default` operation is executed
       }
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `collects values`
+
 <details><summary>
 Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `dict`, otherwise element itself.
 </summary><p/>
@@ -8398,7 +9433,9 @@ Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `di
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     {
       "JDOE": {
         "IP": [
@@ -8418,13 +9455,15 @@ Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `di
     }
 
 ##### Filter
+>
 > **Operator**: collects values
 
-> **Path**: 
+> **Path**:
 
 > **Filter**: {}
 
 ##### Output
+
     [
       {
         "IP": [
@@ -8443,9 +9482,10 @@ Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `di
       }
     ]
 
-
 #### Example 2
+
 ##### Input
+
     [
       "1.1.1.1",
       "2.2.2.2",
@@ -8453,25 +9493,27 @@ Returns a set of &lt;value&gt; of each element. A value is &lt;value&gt; for `di
     ]
 
 ##### Filter
+>
 > **Operator**: collects values
 
-> **Path**: 
+> **Path**:
 
 > **Filter**: {}
 
 ##### Output
+
     [
       "1.1.1.1",
       "2.2.2.2",
       "3.3.3.3"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `collects keys`
+
 <details><summary>
 Returns a set of &lt;key&gt; of each `dict` element.
 </summary><p/>
@@ -8483,7 +9525,9 @@ Returns a set of &lt;key&gt; of each `dict` element.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     {
       "JDOE": {
         "IP": [
@@ -8503,25 +9547,27 @@ Returns a set of &lt;key&gt; of each `dict` element.
     }
 
 ##### Filter
+>
 > **Operator**: collects keys
 
-> **Path**: 
+> **Path**:
 
 > **Filter**: {}
 
 ##### Output
+
     [
       "JDOE",
       "TYAMADA",
       "MBLACK"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `flattens with values`
+
 <details><summary>
 Returns a set of &lt;value&gt; of all the elements in the tree.
 </summary><p/>
@@ -8533,7 +9579,9 @@ Returns a set of &lt;value&gt; of all the elements in the tree.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     {
       "JDOE": {
         "IP": [
@@ -8553,13 +9601,15 @@ Returns a set of &lt;value&gt; of all the elements in the tree.
     }
 
 ##### Filter
+>
 > **Operator**: flattens with values
 
-> **Path**: 
+> **Path**:
 
 > **Filter**: {}
 
 ##### Output
+
     [
       "1.1.1.1",
       "1.1.1.2",
@@ -8570,12 +9620,12 @@ Returns a set of &lt;value&gt; of all the elements in the tree.
       40
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `flattens with keys`
+
 <details><summary>
 Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
 </summary><p/>
@@ -8587,7 +9637,9 @@ Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     {
       "JDOE": {
         "IP": [
@@ -8607,13 +9659,15 @@ Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
     }
 
 ##### Filter
+>
 > **Operator**: flattens with keys
 
-> **Path**: 
+> **Path**:
 
 > **Filter**: {}
 
 ##### Output
+
     [
       "JDOE",
       "IP",
@@ -8626,12 +9680,12 @@ Returns a set of &lt;key&gt; of all the `dict` elements in the tree.
       "Score"
     ]
 
-
 </details>
 
-
 ----
+
 ### Operator: `abort`
+
 <details><summary>
 Raises an exception and exit with the value filtered at the operator. This operator is available for troubleshooting and debugging.
 </summary><p/>
@@ -8645,9 +9699,10 @@ Raises an exception and exit with the value filtered at the operator. This opera
 #### Example 1
 
 ##### Filter
+>
 > **Operator**: abort
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8656,9 +9711,10 @@ Raises an exception and exit with the value filtered at the operator. This opera
 
 </details>
 
-
 ----
+
 ### Operator: `email-header: decode`
+
 <details><summary>
 Returns an string which is decoded with the email header encoding manner.
 </summary><p/>
@@ -8670,13 +9726,16 @@ Returns an string which is decoded with the email header encoding manner.
 (parameter is currently not required)
 
 #### Example 1
+
 ##### Input
+
     =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?=
 
 ##### Filter
+>
 > **Operator**: email-header: decode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8684,17 +9743,20 @@ Returns an string which is decoded with the email header encoding manner.
     }
 
 ##### Output
+
     あいうえお
 
-
 #### Example 2
+
 ##### Input
+
     ABC =?ISO-2022-JP?B?GyRCJCIkJCQmJCgkKhsoQg==?= XYZ
 
 ##### Filter
+>
 > **Operator**: email-header: decode
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8702,14 +9764,15 @@ Returns an string which is decoded with the email header encoding manner.
     }
 
 ##### Output
-    ABC あいうえお XYZ
 
+    ABC あいうえお XYZ
 
 </details>
 
-
 ----
+
 ### Operator: `regex: replace`
+
 <details><summary>
 Evaluates the pattern matching, and returns the data given in "matched" or "unmatched" according to the result.
 Returns the data given in "matched" if matched, "unmatch" otherwise.
@@ -8727,13 +9790,16 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
 | multiline | bool | (Optional) true if the matching performs in multi-line mode, false otherwise. The default value is false. See re.MULTILINE |
 
 #### Example 1
+
 ##### Input
+
     Re: Re: Fw: Hello!
 
 ##### Filter
+>
 > **Operator**: regex: replace
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8743,16 +9809,20 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
     }
 
 ##### Output
+
     Hello!
 
 #### Example 2
+
 ##### Input
+
     XYZ
 
 ##### Filter
+>
 > **Operator**: regex: replace
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8763,16 +9833,20 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
     }
 
 ##### Output
+
     unmatched
 
 #### Example 3
+
 ##### Input
+
     XYZ
 
 ##### Filter
+>
 > **Operator**: regex: replace
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8782,14 +9856,15 @@ Returns the data given in "matched" if matched, "unmatch" otherwise.
     }
 
 ##### Output
-    XYZ
 
+    XYZ
 
 </details>
 
-
 ----
+
 ### Operator: `is individually transformed with`
+
 <details><summary>
 Transform each element with `transformers` given in a filter.
 See `Filter Syntax` for the details of `transformers`.
@@ -8798,7 +9873,9 @@ See `Filter Syntax` for the details of `transformers`.
 > **Filter Format**: `transformers`
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -8815,9 +9892,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is individually transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8827,15 +9905,17 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       "eyJOYW1lIjogImEuZGF0IiwgIlNpemUiOiAxMDB9",
       "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9",
       "eyJOYW1lIjogImMudHh0IiwgIlNpemUiOiAzMDB9"
     ]
 
-
 #### Example 2
+
 ##### Input
+
     {
       "File": [
         {
@@ -8854,6 +9934,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Filter
+>
 > **Operator**: is individually transformed with
 
 > **Path**: File
@@ -8871,6 +9952,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     {
       "File": [
         "eyJOYW1lIjogImIuZXhlIiwgIlNpemUiOiAyMDB9"
@@ -8882,7 +9964,9 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 #### Example 3
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -8895,9 +9979,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is individually transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8908,6 +9993,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       {
         "User": "JDOE"
@@ -8917,9 +10003,10 @@ See `Filter Syntax` for the details of `transformers`.
       }
     ]
 
-
 #### Example 4
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -8932,9 +10019,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is individually transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -8945,6 +10033,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       {
         "Name": "a.dat",
@@ -8958,9 +10047,10 @@ See `Filter Syntax` for the details of `transformers`.
 
 </details>
 
-
 ----
+
 ### Operator: `is collectively transformed with`
+
 <details><summary>
 Transform elements with `transformers` given in a filter. The elements are handled and transformed as one value at the first level if the type of it is array.
 See `Filter Syntax` for the details of `transformers`.
@@ -8969,7 +10059,9 @@ See `Filter Syntax` for the details of `transformers`.
 > **Filter Format**: `transformers`
 
 #### Example 1
+
 ##### Input
+
     [
       {
         "Name": "a.dat",
@@ -8986,9 +10078,10 @@ See `Filter Syntax` for the details of `transformers`.
     ]
 
 ##### Filter
+>
 > **Operator**: is collectively transformed with
 
-> **Path**: 
+> **Path**:
 
 > **Filter**:
 
@@ -9017,6 +10110,7 @@ See `Filter Syntax` for the details of `transformers`.
     }
 
 ##### Output
+
     [
       "Untrusted"
     ]

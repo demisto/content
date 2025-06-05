@@ -13,7 +13,7 @@
         "playbookID": "ID of the playbook that is being tested.",
         "runnable_on_docker_only": "Determines whether the test is runnable on docker only. A boolean.",
         "scripts": "Scripts that the test uses. Can hold a list.",
-        "timeout": "Test specific timeout, in order to use a different timeout then default testTimeout. A number.",
+        "timeout": "Test specific timeout in seconds, in order to use a different timeout then default testTimeout. A number.",
         "toversion": "Server version to test up to it. Set it only when a real limit exists, otherwise use the 'marketplaces' field.",
         "marketplaces": "Marketplaces that the test should run on. Available options are: xsoar (which runs on xsoar_on_prem and xsoar_saas), xsoar_on_prem, xsoar_saas, marketplacev2 and xpanse. Can hold a list. Default value is xsoar and marketplacev2."
     },
@@ -163,7 +163,8 @@
         },
         {
             "integrations": "Cortex XDR - IR",
-            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation"
+            "playbookID": "Test Playbook - Cortex XDR - Endpoint Investigation",
+            "memory_threshold": 150
         },
         {
             "playbookID": "Test Playbook - Cortex XDR Malware - Incident Enrichment",
@@ -957,7 +958,7 @@
             "playbookID": "Test XDR Playbook quarantine file command",
             "fromversion": "4.1.0",
             "timeout": 2500,
-            "memory_threshold": 200
+            "memory_threshold": 250
         },
         {
             "integrations": "Cortex XDR - IR",
@@ -2376,7 +2377,8 @@
         },
         {
             "integrations": "PrismaCloud v2",
-            "playbookID": "Prisma Cloud V2 Test"
+            "playbookID": "Prisma Cloud V2 Test",
+            "memory_threshold": 250
         },
         {
             "integrations": "Symantec Messaging Gateway",
@@ -4839,7 +4841,7 @@
         {
             "playbookID": "CrowdStrike_FalconX_Test",
             "fromversion": "6.1.0",
-            "memory_threshold": 250,
+            "memory_threshold": 300,
             "integrations": [
                 "CrowdStrike Falcon X"
             ]
@@ -5118,7 +5120,7 @@
         {
             "playbookID": "playbook-SearchIncidentsV2InsideGenericPollng-Test",
             "fromversion": "5.0.0",
-            "timeout": 300
+            "timeout": 350
         },
         {
             "playbookID": "IsRFC1918-Test",
@@ -5801,7 +5803,7 @@
         {
             "integrations": "Palo Alto Networks AIOps",
             "playbookID": "PaloAltoNetworksAIOps-Test",
-            "memory_threshold": 100
+            "memory_threshold": 250
         },
         {
             "integrations": "MattermostV2",

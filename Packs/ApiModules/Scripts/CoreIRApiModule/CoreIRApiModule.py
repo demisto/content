@@ -1767,7 +1767,7 @@ def action_status_get_command(client: CoreClient, args) -> CommandResults:
 
 
 def get_missing_files_description(missing_files):
-    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):   # noqa: RET503
+    if isinstance(missing_files, list) and len(missing_files) > 0 and isinstance(missing_files[0], dict):  # noqa: RET503
         return missing_files[0].get("description")
 
 
@@ -1833,7 +1833,7 @@ def arg_to_timestamp(arg, arg_name: str, required: bool = False):
             raise ValueError(f"Invalid date: {arg_name}")
 
         return int(date.timestamp() * 1000)
-    if isinstance(arg, (int, float)):
+    if isinstance(arg, int | float):
         return arg
     return None
 
@@ -2885,9 +2885,7 @@ def endpoint_scan_abort_command(client, args):
 
     return CommandResults(
         readable_output=tableToMarkdown("Endpoint abort scan", {"Action Id": action_id}, ["Action Id"]),
-        outputs={
-            f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context
-        },
+        outputs={f'{args.get("integration_context_brand", "CoreApiModule")}.endpointScan(val.actionId == obj.actionId)': context},
         raw_response=reply,
     )
 
@@ -3168,9 +3166,7 @@ def retrieve_file_details_command(client: CoreClient, args, add_to_context):
         f'### Action id : {args.get("action_id", "")} \n Retrieved {retrived_files_count} files from '
         f'{endpoints_count} endpoints. \n To get the exact action status run the core-action-status-get command'
     )
-    context = {
-        f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)': result
-    }
+    context = {f'{args.get("integration_context_brand", "CoreApiModule")}.RetrievedFiles(val.action_id == obj.action_id)': result}
     return_entry = {
         "Type": entryTypes["note"],
         "ContentsFormat": formats["json"],
@@ -3202,7 +3198,7 @@ def get_scripts_command(client: CoreClient, args: Dict[str, str]) -> tuple[str, 
         macos_supported=[macos_supported],
         is_high_risk=[is_high_risk],
     )
-    scripts = copy.deepcopy(result.get("scripts")[offset: (offset + limit)])  # type: ignore
+    scripts = copy.deepcopy(result.get("scripts")[offset : (offset + limit)])  # type: ignore
     for script in scripts:
         timestamp = script.get("modification_date")
         script["modification_date_timestamp"] = timestamp
@@ -3263,9 +3259,9 @@ def get_script_code_command(client: CoreClient, args: Dict[str, str]) -> tuple[s
     timeout=arg_to_number(demisto.args().get("polling_timeout_in_seconds", demisto.args().get("polling_timeout", 600))),
     requires_polling_arg=False,  # means it will always be default to poll, poll=true
 )
-def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple = ('PENDING', 'IN_PROGRESS')) -> PollResult:
+def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple = ("PENDING", "IN_PROGRESS")) -> PollResult:
     # is_core=True when this script is called from a Core pack, otherwise, it is called from XDR pack
-    if action_id := args.get('action_id'):
+    if action_id := args.get("action_id"):
         response = client.get_script_execution_status(action_id)
         general_status = response.get("reply", {}).get("general_status") or ""
 
@@ -3277,7 +3273,7 @@ def script_run_polling_command(args: dict, client: CoreClient, statuses: tuple =
                     "integration_context_brand": "Core" if argToBoolean(args.get("is_core", False)) else "PaloAltoNetworksXDR",
                 },
             ),
-            continue_to_poll=general_status.upper() in statuses
+            continue_to_poll=general_status.upper() in statuses,
         )
 
     else:
@@ -3946,9 +3942,7 @@ def enrich_error_message_id_group_role(
         if match := re.search(pattern, str(e)):
             error_message = f"Error: {match[1]} {match[2]} was not found. "
 
-        return (
-            f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}Full error message: {e}'
-        )
+        return f'{error_message}{custom_message if custom_message and type_ in ("Group", "Role") else ""}Full error message: {e}'
     return None
 
 
