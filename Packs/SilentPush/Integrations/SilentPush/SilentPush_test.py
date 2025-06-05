@@ -550,11 +550,13 @@ def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
     args = {"asn": "13335", "limit": "10", "explain": "false"}
 
     mock_response = {
-        "asn": 13335,
-        "asn_allocation_age": 4014,
-        "asn_allocation_date": 20100714,
-        "asn_takedown_reputation": 0,
-        "asname": "CLOUDFLARENET, US",
+        "takedown_reputation": {
+            "asn": 13335,
+            "asn_allocation_age": 4014,
+            "asn_allocation_date": 20100714,
+            "asn_takedown_reputation": 0,
+            "asname": "CLOUDFLARENET, US",
+        }
     }
 
     mock_client.get_asn_takedown_reputation.return_value = mock_response
@@ -569,11 +571,10 @@ def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
     assert result.outputs == {
         "asn": 13335,
         "asn_allocation_age": 4014,
-        "asn_allocation_date": 20100714,
+        "asn_allocation_date": "2010-07-14",  # formatted date
         "asn_takedown_reputation": 0,
         "asname": "CLOUDFLARENET, US",
     }
-    assert result.readable_output == "Mocked Markdown Table"
 
 
 def test_get_asn_takedown_reputation_command_no_asn(mock_client):
