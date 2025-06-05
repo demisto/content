@@ -9,15 +9,12 @@
     "categories": [
         "Network Security"
     ],
-    "tags": [],
+    "tags": [
+        "Network"
+    ],
     "useCases": [],
     "keywords": [
-        "Ivanti",
-        "Pulse",
-        "Pulse Connect Secure",
-        "Ivanti Connect Secure",
-        "Connect Secure",
-        "VPN"
+        "Pulse"
     ],
     "marketplaces": [
         "marketplacev2",
