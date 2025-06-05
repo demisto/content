@@ -495,7 +495,7 @@ def get_latest_event_time_and_ids(
             - latest_ids: list of event IDs for all events whose `_time` matches that latest timestamp.
     """
 
-    latest_time = events[event_type.max_index]["_time"]  # type: ignore
+    latest_time = events[event_type.max_index]["_time"]
 
     latest_ids = [event_type.get_id(event) for event in events if event["_time"] == latest_time]
 
@@ -569,7 +569,7 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
         last_ids = last_run.get(event_type.name, {}).get(LATEST_FETCHED_IDS, [])
         demisto.debug(f"Last run for {event_type.name}: time={last_time}, ids={len(last_ids)}")
 
-        events = event_fetch_function[event_type.name](  # type: ignore
+        events = event_fetch_function[event_type.name](
             start_date=last_time,
             end_date=now.strftime(DATE_FORMAT),
             limit=event_type.max_fetch + len(last_ids),
@@ -577,12 +577,12 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
 
         demisto.debug(f"Fetched {len(events)} raw events for {event_type.name}")
 
-        events = dedup_fetched_events(events=events, last_run_fetched_event_ids=set(last_ids), event_type=event_type)  # type: ignore
+        events = dedup_fetched_events(events=events, last_run_fetched_event_ids=set(last_ids), event_type=event_type)
         demisto.debug(f"{len(events)} events remain after dedup for {event_type.name}")
 
         if events:
-            events = events[: event_type.max_fetch] if event_type.ascending_order else events[-event_type.max_fetch :]  # type: ignore
-            latest_time, latest_ids = get_latest_event_time_and_ids(events, event_type, last_time, last_ids)  # type: ignore
+            events = events[: event_type.max_fetch] if event_type.ascending_order else events[-event_type.max_fetch :]
+            latest_time, latest_ids = get_latest_event_time_and_ids(events, event_type, last_time, last_ids)
             demisto.debug(f"{event_type.name} latest time: {latest_time}, latest IDs: {latest_ids}")
 
             last_run[event_type.name] = {LATEST_TIME: latest_time, LATEST_FETCHED_IDS: latest_ids}
@@ -943,12 +943,12 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
-        last_time = now - timedelta(days=180)  # TODO
+        last_time = now - timedelta(minutes=1)
         demisto.debug("First run")
     for event_type in [REPORT, DOMAIN, CREDENTIALS]:
         if event_type.name not in last_run or (event_type.name in last_run and event_type not in events_type_to_fetch):
             last_run[event_type.name] = {
-                LATEST_TIME: last_time.strftime(DATE_FORMAT),  # type: ignore
+                LATEST_TIME: last_time.strftime(DATE_FORMAT),
                 LATEST_FETCHED_IDS: [],
             }
 
