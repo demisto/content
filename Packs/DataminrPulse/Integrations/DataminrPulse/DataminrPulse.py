@@ -327,7 +327,7 @@ class DataminrPulseClient(BaseClient):
             "query": query,
             "application": "palo_alto_cortex_xsoar",
             "application_version": get_demisto_version_as_str(),
-            "integration_version": get_pack_version(""),
+            "integration_version": get_pack_version(),
         }
         remove_nulls_from_dictionary(params)
         if watchlist_ids:

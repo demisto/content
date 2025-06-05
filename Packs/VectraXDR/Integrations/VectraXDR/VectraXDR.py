@@ -37,7 +37,7 @@ DEFAULT_URGENCY_SCORE_MEDIUM_THRESHOLD = 50
 DEFAULT_URGENCY_SCORE_HIGH_THRESHOLD = 80
 MAX_MIRRORING_LIMIT = 5000
 MAX_OUTGOING_NOTE_LIMIT = 8000
-PACK_VERSION = "1.0.11"  # temp replacement for the get_pack_version()
+PACK_VERSION = get_pack_version() or "1.0.0"
 UTM_PIVOT = f"?pivot=Vectra-XSOAR-{PACK_VERSION}"
 EMPTY_ASSIGNMENT = [
     {
@@ -2022,7 +2022,7 @@ def fetch_incidents(client: VectraClient, params: dict[str, Any]) -> List:
         # Fetch the entities list from the server using the provided parameters
         response = client.list_entities_request(
             page=page,
-            page_size=max_fetch,    # type: ignore
+            page_size=max_fetch,  # type: ignore
             entity_type=entity_type,  # type: ignore
             is_prioritized=is_prioritized,
             last_modified_timestamp=from_timestamp,  # type: ignore
@@ -2481,8 +2481,7 @@ def vectra_entity_note_update_command(client: VectraClient, args: dict[str, Any]
     note_id = arg_to_number(args.get("note_id"), arg_name="note_id", required=True)
 
     # Call Vectra API to update entity note
-    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type,
-                                              note=note, note_id=note_id)  # type: ignore
+    notes = client.update_entity_note_request(entity_id=entity_id, entity_type=entity_type, note=note, note_id=note_id)  # type: ignore
     if notes:
         notes["note_id"] = notes["id"]
         notes.update({"entity_id": entity_id, "entity_type": entity_type})
@@ -2819,7 +2818,7 @@ def vectra_assignment_list_command(client: VectraClient, args: dict[str, Any]):
         resolved=resolved,
         assignees=assignees,
         resolution=resolution,
-        created_after=created_after,    # type: ignore
+        created_after=created_after,  # type: ignore
         page=page,  # type: ignore
         page_size=page_size,
     )  # type: ignore
@@ -3308,8 +3307,7 @@ def get_modified_remote_data_command(client: VectraClient, args: dict) -> GetMod
         GetModifiedRemoteDataResponse: List of incidents IDs which are modified since the last update.
     """
     command_args = GetModifiedRemoteDataArgs(args)
-    command_last_run_date = dateparser.parse(command_args.last_update, settings={
-                                             "TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
+    command_last_run_date = dateparser.parse(command_args.last_update, settings={"TIMEZONE": "UTC"}).strftime(DATE_FORMAT)  # type: ignore
     modified_entities_ids = []
 
     demisto.debug(f"Last update date of get-modified-remote-data command is {command_last_run_date}.")
