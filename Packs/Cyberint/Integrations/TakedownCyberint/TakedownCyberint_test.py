@@ -34,7 +34,7 @@ def test_test_module_forbidden_error(mock_client):
     result = TakedownCyberint.test_module(mock_client)
 
     assert result == "Authorization Error: invalid `API Token`"
-    mock_client.retrieve_takedown_requests.assert_called_once_with(limit=10, test=True)
+    mock_client.retrieve_takedown_requests.assert_called_once_with(customer_id="Cyberint", url="https://cyberint.com")
 
 
 def test_test_module_unexpected_error(mock_client):
@@ -46,4 +46,4 @@ def test_test_module_unexpected_error(mock_client):
     with pytest.raises(DemistoException, match="Unexpected error"):
         TakedownCyberint.test_module(mock_client)
 
-    TakedownCyberint.Client.retrieve_takedown_requests.assert_called_once_with(limit=10, test=True)
+    TakedownCyberint.Client.retrieve_takedown_requests.assert_called_once_with(customer_id="Cyberint", url="https://cyberint.com")
