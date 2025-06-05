@@ -68,7 +68,7 @@ Tests connectivity of the server.
 ### manage-engine-get-events
 
 ***
-Gets events from ManageEngine.
+Manual command to fetch events and display them.
 
 #### Base Command
 
