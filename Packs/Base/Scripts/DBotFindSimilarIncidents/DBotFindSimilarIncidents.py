@@ -69,7 +69,7 @@ TAG_INCIDENT = "incidents"
 TAG_SCRIPT_INDICATORS = "similarIncidents"
 KEEP_COLUMNS_INDICATORS = ["Identical indicators", "similarity indicators"]
 
-PREFIXES_TO_REMOVE = ["incident."]
+PREFIXES_TO_REMOVE = ["incident.", "alert.", "issue."]
 CONST_PARAMETERS_INDICATORS_SCRIPT = {
     "threshold": "0",
     "showActualIncident": "False",

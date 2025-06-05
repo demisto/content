@@ -942,7 +942,7 @@ tasks:
         simple: AppID
       value:
         complex:
-          root: Core.OriginalAlert.event.raw_log.additionalDetails
+          root: Core.OriginalAlert.event.raw_log.additionalDetails.value
           filters:
           - - operator: isEqualString
               left:

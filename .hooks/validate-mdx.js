@@ -1,70 +1,64 @@
-const { readFile } = require('fs-extra');
-const mdx = require('@mdx-js/mdx');
-
-
-const NO_HTML = "<!-- NOT_HTML_DOC -->";
-const YES_HTML = "<!-- HTML_DOC -->";
-
-function isHtmlDoc(content) {
-    return content.startsWith(YES_HTML) ||
-        (!content.startsWith(NO_HTML) && (
-            content.startsWith("<p>") ||
-            content.startsWith("<!DOCTYPE html>") ||
-            (content.includes("<thead>") && content.includes("<tbody>"))
-        ));
-}
-
-
-function fixMdx(readmeContent) {
-    // copied from: https://github.com/demisto/content-docs/blob/2402bd1ab1a71f5bf1a23e1028df6ce3b2729cbb/content-repo/mdx_utils.py#L11
-    // to use the same logic as we have in the content-docs build
-    let txt = readmeContent;
-
-    const replaceTuples = [
-        [/<br>(?!<\/br>)/gi, "<br/>"],
-        [/<hr>(?!<\/hr>)/gi, "<hr/>"],
-        [/<pre>/gi, "<pre>{`"],
-        [/<\/pre>/gi, "`}</pre>"]
-    ];
-
-    replaceTuples.forEach(([oldPattern, newValue]) => {
-        txt = txt.replace(oldPattern, newValue);
-    });
-
-    txt = txt.replace(/<!--.*?-->/gs, "");
-
-    return txt;
-}
-
-async function parseMDX(file) {
-    try {
-
-        let contents = await readFile(file, 'utf8');
-
-        if (isHtmlDoc(contents)) {
-            return true;
-        }
-        contents = fixMdx(contents);
-        await mdx(contents);
-        return true;
-    } catch (error) {
-        console.error(`Validation failed in ${file}:`, error.message);
-        return false;
-    }
-}
+const { spawn } = require('child_process');
+const path = require('path');
 
 const files = process.argv.slice(2);
-(async () => {
-    const promises = [];
+const MAX_HEAP_MB = 4096;
 
-    for (let i = 0; i < files.length; i++) {
-        const promise = parseMDX(files[i]);
-        promises.push(promise);
+async function runValidator(file, heapLimit = 2048) {
+    return new Promise((resolve, reject) => {
+        let stderrData = '';
+
+        const child = spawn(
+            'node',
+            [`--max-old-space-size=${heapLimit}`, path.join(__dirname, 'parse-mdx-single.js'), file],
+            { stdio: ['ignore', 'inherit', 'pipe'] }
+        );
+
+        child.stderr.on('data', (data) => {
+            stderrData += data.toString();
+        });
+
+        child.on('exit', (code, signal) => {
+            const oomExitCodes = [134, 137];
+            const oomSignals = ['SIGKILL', 'SIGABRT'];
+            const isOOM =
+                oomExitCodes.includes(code) ||
+                oomSignals.includes(signal) ||
+                stderrData.includes('JavaScript heap out of memory');
+
+            if (code === 0) {
+                return resolve(true);
+            }
+
+            if (isOOM && heapLimit < MAX_HEAP_MB) {
+                console.warn(`\n[${file}] OOM detected. Retrying with more memory (${heapLimit * 2} MB)...\n`);
+                return resolve(runValidator(file, heapLimit * 2));
+            }
+
+            if (isOOM) {
+                console.error(`\n❌ [${file}] Failed due to OOM after retrying with ${MAX_HEAP_MB} MB heap.\n`);
+            } else {
+                console.error(`\n❌ [${file}] Failed with exit code ${code}, signal ${signal}.\n`);
+            }
+
+            return resolve(false);
+        });
+    });
+}
+
+(async () => {
+    let allPassed = true;
+
+    for (const file of files) {
+        console.log(`\n🔍 Validating: ${file}`);
+        const result = await runValidator(file);
+        if (!result) allPassed = false;
     }
 
-    const results = await Promise.all(promises);
-
-    if (results.includes(false)) {
+    if (!allPassed) {
+        console.error("\n🚫 Some README files failed MDX validation.");
         process.exit(1);
+    } else {
+        console.log("\n✅ All README files passed MDX validation.");
     }
 })();
