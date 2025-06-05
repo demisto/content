@@ -6769,63 +6769,9 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
-    - description: The job ID to check.
+    - description: Job ID for a running download process. Used for status polling
       name: job_id
-      required: true
-    description: Checks the download status of an antivirus dynamic update.
-    polling: true
-    name: pan-os-antivirus-update-download-status
-    outputs:
-    - contextPath: Panorama.AntiVirus.Download.JobID
-      description: The job ID to monitor.
-      type: String
-    - contextPath: Panorama.AntiVirus.Download.Status
-      description: The download status.
-      type: String
-    - contextPath: Panorama.AntiVirus.Download.Details
-      description: The job ID details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
-    - description: The job ID to check.
-      name: job_id
-      required: true
-    description: Checks the download status of a WildFire dynamic update.
-    polling: true
-    name: pan-os-wildfire-update-download-status
-    outputs:
-    - contextPath: Panorama.WildFire.Download.JobID
-      description: The job ID to monitor.
-      type: String
-    - contextPath: Panorama.WildFire.Download.Status
-      description: The download status.
-      type: String
-    - contextPath: Panorama.WildFire.Download.Details
-      description: The job ID details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
-    - description: The job ID to check.
-      name: job_id
-      required: true
-    description: Checks the download status of a GlobalProtect Clientless VPN dynamic update.
-    polling: true
-    name: pan-os-gp-update-download-status
-    outputs:
-    - contextPath: Panorama.GP.Download.JobID
-      description: The job ID to monitor.
-      type: String
-    - contextPath: Panorama.GP.Download.Status
-      description: The download status.
-      type: String
-    - contextPath: Panorama.GP.Download.Details
-      description: The job ID details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
+      hidden: true
     description: Installs the latest app/threat dynamic update.
     polling: true
     name: pan-os-install-latest-content-update
@@ -6839,6 +6785,9 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Installs the latest Antivirus update.
     polling: true
     name: pan-os-install-latest-antivirus-update
@@ -6852,6 +6801,9 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Installs the latest WildFire dynamic update.
     polling: true
     name: pan-os-install-latest-wildfire-update
@@ -6865,6 +6817,9 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Installs the latest GlobalProtect Clientless VPN dynamic update.
     polling: true
     name: pan-os-install-latest-gp-update
@@ -6893,63 +6848,6 @@ script:
       type: String
     - contextPath: Panorama.Content.Install.Details
       description: The content installation status details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
-    - description: The job ID of the installation.
-      name: job_id
-      required: true
-    description: Gets the installation status of the antivirus dynamic update.
-    polling: true
-    name: pan-os-antivirus-update-install-status
-    outputs:
-    - contextPath: Panorama.AntiVirus.Install.JobID
-      description: The job ID of the installation.
-      type: String
-    - contextPath: Panorama.AntiVirus.Install.Status
-      description: The installation status.
-      type: String
-    - contextPath: Panorama.AntiVirus.Install.Details
-      description: The installation status details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
-    - description: The job ID of the installation.
-      name: job_id
-      required: true
-    description: Gets the installation status of the WildFire dynamic update.
-    polling: true
-    name: pan-os-wildfire-update-install-status
-    outputs:
-    - contextPath: Panorama.WildFire.Install.JobID
-      description: The job ID of the installation.
-      type: String
-    - contextPath: Panorama.WildFire.Install.Status
-      description: The installation status.
-      type: String
-    - contextPath: Panorama.WildFire.Install.Details
-      description: The installation status details.
-      type: String
-  - arguments:
-    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
-      name: target
-    - description: The job ID of the installation.
-      name: job_id
-      required: true
-    description: Gets the installation status of the GlobalProtect Clientless VPN dynamic update.
-    polling: true
-    name: pan-os-gp-update-install-status
-    outputs:
-    - contextPath: Panorama.GP.Install.JobID
-      description: The job ID of the installation.
-      type: String
-    - contextPath: Panorama.GP.Install.Status
-      description: The installation status.
-      type: String
-    - contextPath: Panorama.GP.Install.Details
-      description: The installation status details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
