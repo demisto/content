@@ -4,7 +4,7 @@
   "suggestion_reason": "Recommended for 'Rundll32.exe executes a rare unsigned module' alert",
   "description": "This trigger runs the silent-Rundll32.exe executes a rare unsigned module playbok",
   "trigger_name": "silent-Rundll32.exe executes a rare unsigned module",
-  "fromVersion": "8.8.0",
+  "fromVersion": "8.9.0",
   "issilent": true,
   "alerts_filter": {
     "filter": {

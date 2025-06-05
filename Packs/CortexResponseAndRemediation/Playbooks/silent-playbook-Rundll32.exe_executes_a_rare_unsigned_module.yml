@@ -438,10 +438,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: ed2e515b-c938-4a0b-a720-5fc0477be29f
+    taskid: 0eb5466d-838c-40c1-ad14-31bda92b45ff
     type: condition
     task:
-      id: ed2e515b-c938-4a0b-a720-5fc0477be29f
+      id: 0eb5466d-838c-40c1-ad14-31bda92b45ff
       version: -1
       name: Any related alerts?
       description: |-
@@ -470,7 +470,7 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Medium
+              simple: med
           ignorecase: true
       - - operator: isEqualString
           left:
@@ -1218,12 +1218,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 532d58ec-760e-46f9-9244-3e0af6889b77
+    taskid: 499d0c66-1fe1-4252-9132-ea2c86540fd8
     type: condition
     task:
-      id: 532d58ec-760e-46f9-9244-3e0af6889b77
+      id: 499d0c66-1fe1-4252-9132-ea2c86540fd8
       version: -1
-      name: Suspicious DLL extension and medium-risk host?
+      name: Suspicious DLL and medium-risk host?
       description: |-
         The following condition must be met:
         1. If the Host Risk score is Medium.
@@ -1250,7 +1250,8 @@ tasks:
             iscontext: true
           right:
             value:
-              simple: Medium
+              simple: med
+          ignorecase: true
       - - operator: notIn
           left:
             value:
@@ -1527,4 +1528,4 @@ inputs: []
 outputs: []
 tests:
 - No tests (auto formatted)
-fromversion: 6.10.0
+fromversion: 8.9.0
