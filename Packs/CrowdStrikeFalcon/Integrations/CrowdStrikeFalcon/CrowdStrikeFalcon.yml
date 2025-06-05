@@ -61,6 +61,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: Max incidents per fetch
   name: incidents_per_fetch
   type: 0
@@ -71,6 +72,7 @@ configuration:
   additionalinfo: Input a value between 1-500.
   hidden:
   - marketplacev2
+  - platform
 - display: Endpoint Detections filter query
   name: fetch_query
   type: 0
@@ -108,6 +110,7 @@ configuration:
   additionalinfo: 'Use the Falcon Query Language to refine the data collected. For more information, refer to the FQL syntax documentation: https://www.falconpy.io/Usage/Falcon-Query-Language.html'
   hidden:
   - marketplacev2
+  - platform
 - display: IOA filter query
   name: ioa_fetch_query
   type: 0
@@ -117,6 +120,7 @@ configuration:
   additionalinfo: "In the query parameter format: 'cloud_provider=aws&amp;aws_account_id=1234'. The query must specify a 'cloud_provider'. Multiple values for the same parameter is not supported. For more information, refer to documentation on CSPM Registration Keyword Arguments: https://www.falconpy.io/Service-Collections/CSPM-Registration.html#keyword-arguments-13"
   hidden:
   - marketplacev2
+  - platform
 - display: Detections from On-Demand Scans filter query
   name: on_demand_fetch_query
   type: 0
@@ -139,6 +143,7 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - marketplacev2
+  - platform
 - display: Fetch events
   name: isFetchEvents
   type: 8
@@ -147,8 +152,6 @@ configuration:
   defaultvalue: 'true'
   hidden:
   - xsoar
-  - xpanse
-  - platform
 - display: Incident type
   name: incidentType
   type: 13
@@ -156,6 +159,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: 'Mirroring Direction'
   name: mirror_direction
   type: 15
@@ -170,6 +174,7 @@ configuration:
   - Incoming And Outgoing
   hidden:
   - marketplacev2
+  - platform
 - display: 'Trust any certificate (not secure)'
   name: insecure
   type: 8
@@ -192,6 +197,7 @@ configuration:
   additionalinfo: When selected, closing the CrowdStrike Falcon incident is mirrored in Cortex XSOAR.
   hidden:
   - marketplacev2
+  - platform
 - display: 'Close Mirrored CrowdStrike Falcon Incident or Detection'
   defaultvalue: 'false'
   name: close_in_cs_falcon
@@ -202,6 +208,7 @@ configuration:
   additionalinfo: When selected, closing the Cortex XSOAR incident is mirrored in CrowdStrike Falcon, according to the types that were chosen to be fetched and mirrored.
   hidden:
   - marketplacev2
+  - platform
 - display: 'Fetch types'
   defaultvalue: 'Endpoint Detection'
   name: fetch_incidents_or_detections
@@ -223,6 +230,7 @@ configuration:
   - OFP Detection
   hidden:
   - marketplacev2
+  - platform
 - display: 'Fetch types'
   defaultvalue: 'IDP Detection,Endpoint Detection,Mobile Detection,On-Demand Scans Detection,OFP Detection'
   name: fetch_events_or_detections
@@ -242,7 +250,6 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-  - platform
 - display: 'Reopen Statuses'
   additionalinfo: CrowdStrike Falcon statuses that will reopen an incident in Cortex XSOAR if closed. You can choose any combination.
   defaultvalue: 'New,In progress,True positive,False positive,Reopened,Ignored'
@@ -260,6 +267,7 @@ configuration:
   - Ignored
   hidden:
   - marketplacev2
+  - platform
 - display: 'Incidents Fetch Interval'
   defaultvalue: '1'
   name: incidentFetchInterval
@@ -269,6 +277,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: 'Events Fetch Interval'
   defaultvalue: '1'
   name: eventFetchInterval
@@ -279,7 +288,6 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-  - platform
 - display: 'Advanced: Time in minutes to look back when fetching incidents and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for incidents that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -290,6 +298,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: 'Advanced: Time in minutes to look back when fetching events and detections'
   additionalinfo: Use this parameter to determine the look-back period for searching for events that were created before the last run time and did not match the query when they were created.
   defaultvalue: 2
@@ -301,7 +310,6 @@ configuration:
   hidden:
   - xsoar
   - xpanse
-  - platform
 description: The CrowdStrike Falcon OAuth 2 API (formerly the Falcon Firehose API), enables fetching and resolving detections, searching devices, getting behaviors by ID, containing hosts, and lifting host containment.
 display: CrowdStrike Falcon
 name: CrowdstrikeFalcon
@@ -4531,34 +4539,34 @@ script:
     description: List identity entities.
     name: cs-falcon-list-identity-entities
     outputs:
-    - contextPath: CrowdStrike.IDPEntity.IsHuman
+    - contextPath: CrowdStrike.IDPEntity.Ishuman
       description: Whether the identity entity is human made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsProgrammatic
+    - contextPath: CrowdStrike.IDPEntity.Isprogrammatic
       description: Whether the identity entity is programmatic made.
       type: Boolean
-    - contextPath: CrowdStrike.IDPEntity.IsAdmin
+    - contextPath: CrowdStrike.IDPEntity.Isadmin
       description: Whether the identity entity is admin made.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.PrimaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Primarydisplayname
       description: The identity entity primary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Type
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Type
       description: The identity entity risk factor type.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskFactors.Severity
+    - contextPath: CrowdStrike.IDPEntity.Riskfactors.Severity
       description: The identity entity risk factor severity.
       type: Unknown
-    - contextPath: CrowdStrike.IDPEntity.RiskScore
+    - contextPath: CrowdStrike.IDPEntity.Riskscore
       description: The identity entity risk score.
       type: Number
-    - contextPath: CrowdStrike.IDPEntity.RiskScoreSeverity
+    - contextPath: CrowdStrike.IDPEntity.Riskscoreseverity
       description: The identity entity risk score severity.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.SecondaryDisplayName
+    - contextPath: CrowdStrike.IDPEntity.Secondarydisplayname
       description: The identity entity secondary display name.
       type: String
-    - contextPath: CrowdStrike.IDPEntity.EmailAddresses
+    - contextPath: CrowdStrike.IDPEntity.Emailaddresses
       description: The identity entity email address.
       type: String
   - arguments:
@@ -5144,9 +5152,9 @@ script:
       type: String
   dockerimage: demisto/py3-tools:1.0.0.3205634
   isfetch: true
+  isfetch:platform: false
   isfetch:marketplacev2: false
   isfetchevents: true
-  isfetchevents:xsoar: false
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true

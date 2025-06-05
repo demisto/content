@@ -1,6 +1,7 @@
 Adds or removes an analyst from the out-of-office list in XSOAR. When used with the AssignAnalystToIncidentOOO automation, prevents incidents from being assigned to an analyst who is out of office.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Adds or removes an analyst from the out-of-office list in XSOAR. When used with 
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -20,5 +22,6 @@ Adds or removes an analyst from the out-of-office list in XSOAR. When used with 
 | username | The name of the analyst to add to the list. The default is the current analyst. Must be provided when running as part of a playbook. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

@@ -1,6 +1,7 @@
 This script prints the assets fetched from the offense in a table format.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,9 +11,11 @@ This script prints the assets fetched from the offense in a table format.
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Inputs
+
 ---
 There are no inputs for this script.
 
 ## Outputs
+
 ---
 There are no outputs for this script.

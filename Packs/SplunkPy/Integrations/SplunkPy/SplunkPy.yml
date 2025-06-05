@@ -238,6 +238,22 @@ configuration:
   section: Collect
   advanced: true
   required: false
+- display: 'Advanced: Time type to use when fetching events'
+  name: notable_time_source
+  type: 15
+  defaultvalue: "creation time"
+  options:
+  - "creation time"
+  - "index time (Beta)"
+  additionalinfo: |
+    Defines which timestamp will be used to filter the events:
+    - creation time: Filters based on when the event actually occurred.
+    - index time (Beta): *Beta feature* – Filters based on when the event was ingested into Splunk.  
+      This option is still in testing and may not behave as expected in all scenarios.  
+      When using this mode, the parameter "Fetch backwards window for the events occurrence time (minutes)" should be set to `0``, as indexing time ensures there are no delay-based gaps.
+      The default is "creation time".
+  section: Collect
+  advanced: true
 - defaultvalue: '15'
   display: 'Advanced: Fetch backwards window for the events occurrence time (minutes)'
   name: occurrence_look_behind
@@ -681,7 +697,7 @@ script:
     - contextPath: Splunk.UserMapping.SplunkUser
       description: Splunk user mapping.
       type: String
-  dockerimage: demisto/splunksdk-py3:1.0.0.2074112
+  dockerimage: demisto/splunksdk-py3:1.0.0.3534043
   isfetch: true
   ismappable: true
   isremotesyncin: true
