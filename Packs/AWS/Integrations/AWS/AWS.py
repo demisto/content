@@ -8,6 +8,7 @@ from typing import Callable
 from enum import StrEnum
 from botocore.client import BaseClient as BotoClient
 from boto3 import Session
+import asyncio
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
@@ -524,7 +525,40 @@ class RDS:
                 readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}"
             )
         
-        
+REQUIRED_PERMISSIONS = set()
+
+async def fetch_permissions_for_account(account_id: str) -> set:
+    return set()
+
+async def check_permissions():
+    errors: list[CommandResults] = []
+    
+    accounts: list[str] = get_accounts_by_connector_id(connector_id='1')
+    tasks = [asyncio.create_task(fetch_permissions_for_account(account)) for account in accounts]
+    
+    for task in asyncio.as_completed(tasks):
+        try:
+            account_permissions = await task
+    
+            for missing in REQUIRED_PERMISSIONS - account_permissions:
+                errors.append(HealthCheckResult.error(
+                    account_id=account,
+                    connector_id=connector_id,
+                    message=f"Missing permission {missing}",
+                    error="ErrPermissionMissing", # TODO - enum it
+                    error_type=ErrorType.PERMISSION_ERROR,
+                ))
+        except Exception as exc:
+            # Prefer logging to stdout/stderr or struct-logging here
+            print(f"[WARN] Account task failed: {exc!r}")
+    return []
+
+def health_check() -> list[CommandResults] | str:
+    """
+    """    
+    errors: list[CommandResults] = asyncio.run(check_permissions())
+    return errors or HealthCheckResult.ok()
+
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
@@ -539,6 +573,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-instance-modify": RDS.modify_db_instance_command,   
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,   
 }
+
 
 def main():  # pragma: no cover
     params = demisto.params()
@@ -561,8 +596,7 @@ def main():  # pragma: no cover
     
     try:
         if command == "test-module":
-            # TODO - Check permissions 
-            return_results(HealthCheckResult.ok())         
+            return_results(health_check())         
         elif command in COMMANDS_MAPPING:
             service = AWSServices(command.split('-')[1])
             service_client: BotoClient = aws_session.client(service)
