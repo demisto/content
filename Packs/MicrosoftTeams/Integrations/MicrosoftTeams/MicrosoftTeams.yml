@@ -96,6 +96,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 - display: Disable Automatic Notifications
   name: auto_notifications
   type: 8

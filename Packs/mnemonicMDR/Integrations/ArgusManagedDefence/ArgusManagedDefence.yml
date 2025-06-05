@@ -65,6 +65,7 @@ configuration:
   additionalinfo: "Which direction should the integration mirror incidents."
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Mirroring tag
   name: mirror_tag
@@ -73,6 +74,7 @@ configuration:
   additionalinfo: "Names of tags used to mark incident entries to be mirrored. Comma separated."
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Close Argus Case
   name: close_argus_case
@@ -81,6 +83,7 @@ configuration:
   additionalinfo: 'If true, when an incident is closed in XSOAR: close the mirrored Argus Case'
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Close XSOAR Incident
   name: close_incident
@@ -89,6 +92,7 @@ configuration:
   additionalinfo: 'If true, when mirrored Argus Case is closed: also close the XSOAR Incident'
   hidden:
   - marketplacev2
+  - platform
   required: false
 - display: Trust any certificate (not secure)
   name: insecure

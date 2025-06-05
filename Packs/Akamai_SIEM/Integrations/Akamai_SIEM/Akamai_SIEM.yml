@@ -105,6 +105,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
 - display: Events Fetch Interval
   name: eventFetchInterval
   type: 19
