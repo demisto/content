@@ -394,7 +394,6 @@ script:
       description: A comma-separated list of entries to add to the list (e.g. "Item1,Item2").
       isArray: true
       prettyname: Email ID
-      # defaultValue: ${issue.xdmemailemail_sender_address}
       prettypredefined:
         Issue email sender: ${issue.xdmemailemail_sender_address}
     - name: list_type

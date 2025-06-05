@@ -548,37 +548,10 @@ function ReturnOutputs([string]$ReadableOutput, [object]$Outputs, [object]$RawRe
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
         $entry.Contents = $Outputs
     }
+    $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
     $demisto.Results($entry) | Out-Null
     return $entry
 }
-<#
-.DESCRIPTION
-This function wraps the $demisto.results() for polling commands.
-It formats the polling result entry to support XSOAR's polling mechanism,
-including timeout, interval, and tracking of remaining items.
-
-.PARAMETER ReadableOutput
-Markdown string that will be presented in the warroom. Should be human-readable.
-
-.PARAMETER Outputs
-The outputs that will be returned to the playbook/investigation context (optional).
-
-.PARAMETER RawResponse
-If not provided, this will be set to the value of Outputs. 
-Usually represents the original raw response from the 3rd party service (optional).
-
-.PARAMETER CommandName
-The name of the polling command that should be called again for the next polling iteration.
-
-.PARAMETER PollingArgs
-Arguments that should be passed to the polling command on the next polling iteration.
-
-.PARAMETER RemoveSelfRefs
-If true, removes circular/self references from RawResponse and Outputs before JSON conversion.
-
-.OUTPUTS
-The polling entry object returned to the server
-#>
 function ReturnPollingOutputs(
     [string]$ReadableOutput,
     [object]$Outputs,
@@ -588,6 +561,7 @@ function ReturnPollingOutputs(
     [Parameter(Mandatory=$false)]
     [bool]$RemoveSelfRefs = $true
 ) {
+    $Demisto.results("start ReturnPollingOutputs")
     if ($RemoveSelfRefs) {
         # Remove circular references before converting to json.
         $RawResponse = Remove-SelfReferences $RawResponse
@@ -615,9 +589,11 @@ function ReturnPollingOutputs(
         # if RawResponse was not provided but outputs were provided then set Contents as outputs
         $entry.Contents = $Outputs
     }
-
+    $Demisto.results("entry: $(($entry | ConvertTo-Json -Depth 3))")
+    $demisto.Results($entry) | Out-Null
     return $entry
 }
+
 <#
 .DESCRIPTION
 This function Gets a string and escape all special characters in it so that it can be in correct markdown format
