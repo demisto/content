@@ -1,5 +1,4 @@
 {
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
@@ -10,6 +9,7 @@
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",
+	"fromVersion": "6.10.0",
 	"keyTypeMap": {},
 	"locked": false,
 	"logicalVersion": 9,

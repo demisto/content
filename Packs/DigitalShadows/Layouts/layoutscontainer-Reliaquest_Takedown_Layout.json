@@ -5,6 +5,7 @@
 	"description": "",
 	"detached": false,
 	"details": null,
+    "fromVersion": "6.10.0",
 	"detailsV2": {
 		"TypeName": "",
 		"tabs": [

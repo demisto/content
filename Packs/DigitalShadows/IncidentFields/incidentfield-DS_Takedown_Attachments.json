@@ -1,6 +1,5 @@
 {
 	"aliasTo": "",
-	"aliases": null,
 	"associatedToAll": true,
 	"associatedTypes": null,
 	"autoCompleteTags": null,
@@ -58,6 +57,7 @@
 	],
 	"definitionId": "",
 	"description": "",
+	"fromVersion": "6.10.0",
 	"editForm": true,
 	"fieldCalcScript": "",
 	"fromServerVersion": "",

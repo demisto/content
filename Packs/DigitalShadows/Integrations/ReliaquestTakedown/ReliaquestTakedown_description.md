@@ -1,4 +1,3 @@
-### Partner Contributed Integration
 #### Integration Author: ReliaQuest
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
 - **Email**: [drpsupport@reliaquest.com](mailto:drpsupport@reliaquest.com)
