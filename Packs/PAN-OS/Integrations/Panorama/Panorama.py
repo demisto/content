@@ -6563,41 +6563,6 @@ def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateTy
     return result
 
 
-def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
-    """
-    Download dynamic update content and show message in war room
-    """
-    target = args.get("target", None)
-    if DEVICE_GROUP and not target:
-        raise Exception("Download latest content is only supported on Firewall (not Panorama).")
-
-    result = panorama_download_latest_dynamic_update_content(update_type, target)
-
-    if "result" in result["response"]:
-        # download has been given a jobid
-        entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-
-        download_status_output = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}
-        entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": download_status_output}
-        human_readable = tableToMarkdown(
-            f"{entry_context_prefix} update download:", download_status_output, ["JobID", "Status"], removeNull=True
-        )
-
-        return_results(
-            {
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
-            }
-        )
-    else:
-        # no download took place
-        return_results(result["response"]["msg"])
-
-
 @logger
 def panorama_content_update_download_status(target: str, job_id: str):
     params = {"type": "op", "cmd": f"<show><jobs><id>{job_id}</id></jobs></show>", "key": API_KEY}
@@ -6609,11 +6574,120 @@ def panorama_content_update_download_status(target: str, job_id: str):
     return result
 
 
+def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
+    """
+    Download dynamic update content and show message in war room
+    """
+    target = args.get("target")
+    job_id = args.get("job_id")
+    entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+    
+    # Map update type to command name
+    command_map = {
+        "APP_THREAT": "pan-os-download-latest-content-update",
+        "ANTIVIRUS": "pan-os-download-latest-antivirus-update",
+        "WILDFIRE": "pan-os-download-latest-wildfire-update",
+        "GP": "pan-os-download-latest-gp-update"
+    }
+    command_to_run = command_map.get(update_type.name, "")
+    
+    if not job_id:
+        # Initiate new download job
+        if DEVICE_GROUP and not target:
+            raise Exception("Download latest content is only supported on Firewall (not Panorama).")
+        
+        result = panorama_download_latest_dynamic_update_content(update_type, target)
+        
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            # Download has been given a job ID
+            job_id = result["response"]["result"]["job"]
+            
+            # Schedule command to check status
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+            
+            outputs = {
+                "JobID": job_id,
+                "Status": "Pending"
+            }
+            
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
+                outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": outputs}
+            )
+            
+            return_results(command_results)
+        else:
+            # No download took place
+            return_results(result["response"]["msg"])
+    else:
+        # Check status of existing job
+        result = panorama_content_update_download_status(target, job_id)
+        job_result = result["response"]["result"]["job"]
+        
+        content_download_status = {"JobID": job_result["id"]}
+        
+        # Determine job status
+        if job_result["status"] in ["FIN", "ACT", "FAIL"]:
+            status_res = job_result["result"]
+            if status_res == "OK":
+                content_download_status["Status"] = "Completed"
+            elif status_res == "FAIL":
+                content_download_status["Status"] = "Failed"
+            elif status_res == "PEND":
+                content_download_status["Status"] = "Pending"
+            content_download_status["Details"] = job_result
+        
+        if job_result["status"] == "PEND":
+            content_download_status["Status"] = "Pending"
+        
+        if content_download_status.get("Status") == "Pending":
+            # Schedule another status check
+            args["job_id"] = job_id
+            scheduled_command = ScheduledCommand(
+                command=command_to_run,
+                next_run_in_seconds=10,
+                args=args,
+                timeout_in_seconds=300,
+            )
+            
+            command_results = CommandResults(
+                scheduled_command=scheduled_command,
+                readable_output=f"Dynamic Update download JobID {job_id} still running on device {target}. Status will be checked shortly.",
+            )
+            
+            return_results(command_results)
+        else:
+            # Job is complete, return final status
+            entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
+            human_readable = tableToMarkdown(
+                f"{entry_context_prefix} update download status:",
+                content_download_status,
+                ["JobID", "Status", "Details"],
+                removeNull=True,
+            )
+            
+            return_results({
+                "Type": entryTypes["note"],
+                "ContentsFormat": formats["json"],
+                "Contents": result,
+                "ReadableContentsFormat": formats["markdown"],
+                "HumanReadable": human_readable,
+                "EntryContext": entry_context,
+            })
+
+
 def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateType, args: dict):
     """
     Check jobID of dynamic update download status
     """
-    target = str(args["target"]) if "target" in args else None
+    target = str(args["target"]) if "target" in args else ""
     if DEVICE_GROUP and not target:
         raise Exception("Content download status is only supported on Firewall (not Panorama).")
     job_id = args["job_id"]
@@ -6634,7 +6708,6 @@ def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateTy
         content_download_status["Status"] = "Pending"
 
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-
     entry_context = {f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": content_download_status}
     human_readable = tableToMarkdown(
         f"{entry_context_prefix} update download status:",
@@ -6669,14 +6742,16 @@ def panorama_install_latest_dynamic_update(update_type: DynamicUpdateType, targe
     return result
 
 
-def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateType, target: Optional[str] = None):
+def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateType, args: dict):
     """
     Check jobID of content content install status
     """
+    target = args.get("target", None)
     result = panorama_install_latest_dynamic_update(update_type, target)
 
     if "result" in result["response"]:
         # installation has been given a jobid
+        job_id = result["response"]["result"]["job"]
         entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
         content_install_info = {"JobID": result["response"]["result"]["job"], "Status": "Pending"}

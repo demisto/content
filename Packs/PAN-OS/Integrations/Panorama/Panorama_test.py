@@ -8450,3 +8450,25 @@ def test_show_jobs_id_not_found(patched_run_op_command):
 
     with pytest.raises(DemistoException, match="The given ID 23 is not found in all devices of the topology."):
         UniversalCommand.show_jobs(topology=MockTopology(), id=23)
+
+
+@pytest.mark.parametrize(
+    "update_type_str, expected_api_call",
+    [
+        ("APP_THREAT", "<request><content><upgrade><download><latest/></download></upgrade></content></request>"),
+        ("ANTIVIRUS", "<request><anti-virus><upgrade><download><latest/></download></upgrade></anti-virus></request>"),
+        ("WILDFIRE", "<request><wildfire><upgrade><download><latest/></download></upgrade></wildfire></request>"),
+        ("GP", "<request><global-protect-clientless-vpn><upgrade><download><latest/></download></upgrade></global-protect-clientless-vpn></request>"),
+    ]
+)
+def test_download_latest_dynamic_update_content(update_type_str, expected_api_call, mocker):
+    from Panorama import panorama_download_latest_dynamic_update_content
+    from Panorama import DynamicUpdateType
+    update_type = getattr(DynamicUpdateType, update_type_str)
+    mock_request = mocker.patch("Panorama.http_request", return_value={})
+    panorama_download_latest_dynamic_update_content(
+        update_type=update_type,
+        target="1337"
+    )
+    request_call_args = mock_request.call_args[1]
+    assert request_call_args["body"]["cmd"] == expected_api_call

@@ -3,7 +3,7 @@ sectionorder:
 - Connect
 - Collect
 commonfields:
-  id: Panorama
+  id: Panorama_mrizzo_copy
   version: -1
 configuration:
 - display: Server URL (e.g., https://192.168.0.1)
@@ -228,8 +228,8 @@ configuration:
   section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS mrizzo copy
+name: Panorama_mrizzo_copy
 script:
   commands:
   - arguments:
@@ -6686,7 +6686,11 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Downloads the latest app/threat dynamic update.
+    polling: true
     name: pan-os-download-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Download.JobID
@@ -6698,7 +6702,11 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Downloads the latest antivirus dynamic update.
+    polling: true
     name: pan-os-download-latest-antivirus-update
     outputs:
     - contextPath: Panorama.AntiVirus.Download.JobID
@@ -6710,7 +6718,11 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Downloads the latest WildFire dynamic update.
+    polling: true
     name: pan-os-download-latest-wildfire-update
     outputs:
     - contextPath: Panorama.WildFire.Download.JobID
@@ -6722,7 +6734,11 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    - description: Job ID for a running download process. Used for status polling
+      name: job_id
+      hidden: true
     description: Downloads the latest GlobalProtect Clientless VPN dynamic update.
+    polling: true
     name: pan-os-download-latest-gp-update
     outputs:
     - contextPath: Panorama.GP.Download.JobID
@@ -6737,6 +6753,7 @@ script:
     - description: The job ID to check.
       name: job_id
       required: true
+    polling: true
     description: Checks the download status of an app/threat dynamic update.
     name: pan-os-content-update-download-status
     outputs:
@@ -6756,6 +6773,7 @@ script:
       name: job_id
       required: true
     description: Checks the download status of an antivirus dynamic update.
+    polling: true
     name: pan-os-antivirus-update-download-status
     outputs:
     - contextPath: Panorama.AntiVirus.Download.JobID
@@ -6774,6 +6792,7 @@ script:
       name: job_id
       required: true
     description: Checks the download status of a WildFire dynamic update.
+    polling: true
     name: pan-os-wildfire-update-download-status
     outputs:
     - contextPath: Panorama.WildFire.Download.JobID
@@ -6792,6 +6811,7 @@ script:
       name: job_id
       required: true
     description: Checks the download status of a GlobalProtect Clientless VPN dynamic update.
+    polling: true
     name: pan-os-gp-update-download-status
     outputs:
     - contextPath: Panorama.GP.Download.JobID
@@ -6807,6 +6827,7 @@ script:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Installs the latest app/threat dynamic update.
+    polling: true
     name: pan-os-install-latest-content-update
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -6819,6 +6840,7 @@ script:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Installs the latest Antivirus update.
+    polling: true
     name: pan-os-install-latest-antivirus-update
     outputs:
     - contextPath: Panorama.AntiVirus.Install.JobID
@@ -6831,6 +6853,7 @@ script:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Installs the latest WildFire dynamic update.
+    polling: true
     name: pan-os-install-latest-wildfire-update
     outputs:
     - contextPath: Panorama.WildFire.Install.JobID
@@ -6843,6 +6866,7 @@ script:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
     description: Installs the latest GlobalProtect Clientless VPN dynamic update.
+    polling: true
     name: pan-os-install-latest-gp-update
     outputs:
     - contextPath: Panorama.GP.Install.JobID
@@ -6858,6 +6882,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the app/threat dynamic update.
+    polling: true
     name: pan-os-content-update-install-status
     outputs:
     - contextPath: Panorama.Content.Install.JobID
@@ -6876,6 +6901,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the antivirus dynamic update.
+    polling: true
     name: pan-os-antivirus-update-install-status
     outputs:
     - contextPath: Panorama.AntiVirus.Install.JobID
@@ -6894,6 +6920,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the WildFire dynamic update.
+    polling: true
     name: pan-os-wildfire-update-install-status
     outputs:
     - contextPath: Panorama.WildFire.Install.JobID
@@ -6912,6 +6939,7 @@ script:
       name: job_id
       required: true
     description: Gets the installation status of the GlobalProtect Clientless VPN dynamic update.
+    polling: true
     name: pan-os-gp-update-install-status
     outputs:
     - contextPath: Panorama.GP.Install.JobID
