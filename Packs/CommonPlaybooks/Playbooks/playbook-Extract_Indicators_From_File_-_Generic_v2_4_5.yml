@@ -2480,6 +2480,7 @@ tasks:
       id: 54c92f03-3cc6-4742-b121-8694a35255b2
       version: -1
       name: Assert there are pdf files to extract from
+      description: Checks whether there are any PDF files to process
       type: condition
       iscommand: false
       brand: ""
