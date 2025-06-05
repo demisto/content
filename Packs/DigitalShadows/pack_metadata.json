@@ -73,7 +73,7 @@
         "Digital Shadows",
         "SearchLight"
     ],
-    "defaultDataSource": "Reliaquest Takedown",
+    "defaultDataSource": "ReliaquestTakedown",
     "supportedModules": [
         "X1",
         "X3",

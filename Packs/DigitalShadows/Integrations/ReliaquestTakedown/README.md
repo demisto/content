@@ -116,7 +116,7 @@ There is no context output for this command.
 There is no context output for this command.
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown (Partner Contribution) corresponding events (available from Cortex XSOAR version 6.10.0).
+You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown (Partner Contribution) corresponding events (available from Cortex XSOAR).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 
