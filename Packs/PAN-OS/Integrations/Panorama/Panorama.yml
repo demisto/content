@@ -7706,6 +7706,9 @@ script:
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: The URL filtering content version.
       type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
+      description: The GlobalProtect client package version.
+      type: String
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
