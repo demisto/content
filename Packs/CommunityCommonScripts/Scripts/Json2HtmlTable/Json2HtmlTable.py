@@ -65,8 +65,8 @@ def json_to_html(value: str, attributes: str | None, styling: str | None) -> str
 
 def json_to_html_command(args: dict[str, Any]) -> CommandResults:
     json_value = args.get("value", None)
-    table_attributes = args.get("table-attributes", None)
-    custom_styling = args.get("custom-styling", None)
+    table_attributes = args.get("table_attributes", None)
+    custom_styling = args.get("custom_styling", None)
     if not json_value:
         raise ValueError("JSON object was not specified!")
 
