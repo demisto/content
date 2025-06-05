@@ -525,11 +525,23 @@ script:
       description: The status indicating whether or not the search for a given search_name was successful.
       type: String
   - arguments:
-    - description: The name of the compliance search.
-      name: search_name
+    - name: search_name
+      description: The name of the compliance search.
       required: true
+    - name: continue_polling
+      description: test.
+      defaultValue: false
+      hidden: true
+    - name: polling
+      description: TODO.
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+      defaultValue: false
     description: Starts stopped, completed, or not started compliance search in the Security & Compliance Center.
     name: o365-sc-start-search
+    polling: true
   - description: Stop running compliance search in the Security & Compliance Center.
     name: o365-sc-stop-search
     arguments:
@@ -1214,11 +1226,132 @@ script:
       - 'false'
     description: Update inputs for case hold policies.
     name: o365-sc-case-hold-policy-set
+  - name: o365-sc-delete-email
+    # hidden: true
+    # quickaction: true
+    description: Deletes an email for all recipients.
+    arguments:
+    - name: internet_message_id
+      description: The unique identifier of the email message, e.g., <abc123@mail.example.com>
+      required: true
+      prettyname: Internet message ID
+      prettypredefined:
+        Issue Internet message ID: ${issue.xdmemailinternet_message_id}
+    - description: 'Purge type. Possible values are: "Soft Delete" and "HardDelete". Default is "SoftDelete".'
+      name: purge_type
+      auto: PREDEFINED
+      defaultValue: "SoftDelete"
+      predefined:
+      - 'SoftDelete'
+      - 'HardDelete'
+
+# new-search
+    # - description: |
+    #     The name of the compliance search.
+    #     If not specified, will have the prefix "XSOAR-" followed by the GUID e.g., XSOAR-d6228fd0-756b-4e4b-8721-76776df91526.
+    #   name: search_name
+    - description: The name of a Core eDiscovery case to associate with the new compliance search.
+      name: case
+    - description: Text search string or a query that is formatted using the Keyword Query Language (KQL).
+      name: kql
+    - description: Description of the compliance search.
+      name: description
+    - description: Whether to include mailboxes other than regular user mailboxes in the compliance search. Default is "false".
+      name: allow_not_found_exchange_locations
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Comma-separated list of mailboxes/distribution groups to include, or you can use the value "All" to include all.
+      isArray: true
+      name: exchange_location
+      defaultValue: 'All'
+    - description: Comma-separated list of mailboxes/distribution groups to exclude when you use the value "All" for the exchange_location parameter. Deprecated since Microsoft is supporting it only on-premise.
+      isArray: true
+      deprecated: true
+      name: exchange_location_exclusion
+    - description: Comma-separated list of public folders to include, or you can use the value "All" to include all.
+      isArray: true
+      name: public_folder_location
+    - description: Comma-separated list of SharePoint online sites to include. You can identify the sites by their URL value, or you can use the value "All" to include all sites.
+      isArray: true
+      name: share_point_location
+    - description: Comma-separated list of SharePoint online sites to exclude when you use the value "All" for the share_point_location argument. You can identify the sites by their URL value.
+      isArray: true
+      name: share_point_location_exclusion
+ 
+# start-search
+    # - description: The name of the compliance search.
+    #   name: search_name
+    #   required: true
+
+
+
+# new-search-action
+    # - description: The name of the compliance search.
+    #   name: search_name
+    #   required: true
+    - description: 'Search action to perform. Possible values are: "Preview" and "Purge". Default is "Preview".'
+      name: action
+      defaultValue: Purge
+      auto: PREDEFINED
+      predefined:
+      - "Preview"
+      - "Purge"
+      - "Export"
+
+    - description: 'Specifies how to export SharePoint and OneDrive search results. IndividualMessage: Export the files uncompressed. This is the default value. PerUserZip: One ZIP file for each user. Each ZIP file contains the exported files for the user. SingleZip: One ZIP file for all users. The ZIP file contains all exported files from all users. This output setting is available only in PowerShell. To specify the format for Exchange search results, use the exchange_archive_format parameter.'
+      name: share_point_archive_format
+      auto: PREDEFINED
+      predefined:
+      - 'IndividualMessage'
+      - 'PerUserZip'
+      - 'SingleZip'
+    - description: "Specifies the format of the search results when you use the Export action. Valid values are: FxStream: Export to PST files. This is the only option that's available when you export search results from the Microsoft Purview compliance portal. Mime: Export to .eml message files. This is the default value when you use cmdlets to export the search results. Msg: Export to .msg message files."
+      name: format
+      auto: PREDEFINED
+      predefined:
+      - 'FxStream'
+      - 'Mime'
+      - 'Msg'
+    - description: Specifies whether to export previous versions of the document when you use the Export action.
+      name: include_sharepoint_document_versions
+      auto: PREDEFINED
+      predefined:
+      - 'true'
+      - 'false'
+    - description: Specifies the email address target for the search results when you use the Export action.
+      name: notify_email
+    - description: Specifies the cc email address target for the search results when you use the Export action.
+      name: notify_email_cc
+    - description: Specifies the scenario type when you use the Export action.
+      name: scenario
+      auto: PREDEFINED
+      predefined:
+      - 'AnalyzeWithZoom'
+      - 'General'
+      - 'GenerateReportsOnly'
+      - 'Inventory'
+      - 'RetentionReports'
+      - 'TriagePreview'
+    - description: Specifies the items to include when the action is Export.
+      name: scope
+      auto: PREDEFINED
+      predefined:
+      - 'IndexedItemsOnly'
+      - 'UnindexedItemsOnly'
+      - 'BothIndexedAndUnindexedItems'
+
+    outputs:
+
+    
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826
   runonce: true
   script: ''
   type: powershell
 fromversion: 5.5.0
+supportsquickactions: true
 tests:
 - O365-SecurityAndComplianceV2-Test
 autoUpdateDockerImage: false

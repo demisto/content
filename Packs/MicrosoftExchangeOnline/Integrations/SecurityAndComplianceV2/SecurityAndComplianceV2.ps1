@@ -1649,16 +1649,27 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
 }
 
 function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    # Start operation doesn't return any output
-    $client.StartSearch($kwargs.search_name)
-    # Raw response
-    $raw_response = @{}
-    # Human readable
-    $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
-    # Entry context
     $entry_context = @{}
+    $raw_response = @{}
+    $human_readable = ""
+    $continue_polling = ConvertTo-Boolean $kwargs.continue_polling
+    if ($continue_polling) {
+        $raw_response = $client.GetSearch($kwargs.search_name)
+        $Status = $raw_response.Status
+        if ($Status -eq "Completed") {
+            $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** completed !"
+            $kwargs.polling = "false"
+            return $human_readable, $entry_context, $raw_response
+        }
+        $kwargs.polling = "true"
+        $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** in progress !"
+        return $human_readable, $entry_context, $raw_response
+    } 
 
-    return $human_readable, $entry_context, $raw_response
+    $client.StartSearch($kwargs.search_name)
+    $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
+
+    return $human_readable, $entry_context, $raw_response 
 }
 
 function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1889,6 +1900,61 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
+function DeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    # Command arguemnts parsing
+    $internet_message_id = $kwargs.internet_message_id
+    $kql = "InternetMessageId:$internet_message_id"
+
+    $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
+    $exchange_location = ArgToList $kwargs.exchange_location
+    $public_folder_location = ArgToList $kwargs.public_folder_location
+    $share_point_location = ArgToList $kwargs.share_point_location
+    $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
+
+    $temp_search_name = "XSOAR-$(New-Guid)"
+
+    # NewSearch
+    $raw_response = $client.NewSearch($temp_search_name, $kwargs.case, $kql, $kwargs.description, $allow_not_found_exchange_locations,
+                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+
+    # start-search
+    $client.StartSearch($temp_search_name)
+
+    Start-Sleep 5
+
+    $searchStatus = ""
+    $i = 0
+    while($i -lt $timeout)
+    {
+        $searchStatus = Get-ComplianceSearch $searchName
+        "Search status: " + $searchStatus.Status
+        if ($searchStatus.Status -eq "Completed")
+        {
+            break
+        }
+        "Waiting for search to complete..."
+        Start-Sleep 1
+        $i++
+    }
+
+    # new-search-action 
+    # $raw_response = $client.NewSearchAction($temp_search_name, $kwargs.action, $kwargs.purge_type,
+    # $kwargs.share_point_archive_format, $kwargs.format,
+    # $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
+    # $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+
+    # Human readable
+    $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
+    $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($temp_search_name)' created"
+    # Entry context
+    $entry_context = @{
+        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
+    }
+
+    return $human_readable, $entry_context, $raw_response
+}
+
+
 #### INTEGRATION COMMANDS MANAGER ####
 
 function Main {
@@ -2005,13 +2071,38 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
+            "$script:COMMAND_PREFIX-delete-email" {
+                ($human_readable, $entry_context, $raw_response) = DeleteEmailCommand $cs_client $command_arguments
+            }
+            "$script:COMMAND_PREFIX-recovery-email" {
+                ($human_readable, $entry_context, $raw_response) = DeleteEmailCommand $cs_client $command_arguments
+            }
         }
 
         # Updating integration context if access token changed
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        $polling = ConvertTo-Boolean $command_arguments.polling
+        if ($polling) {
+            $command_name = "o365-sc-start-search"
+    
+            $polling_args = @{
+                search_name         = $command_arguments.search_name;
+                continue_polling    = "true";
+                hide_polling_output = $true;
+            };
+
+            ReturnPollingOutputs `
+            -ReadableOutput $human_readable `
+            -Outputs $entry_context `
+            -RawResponse $raw_response `
+            -CommandName $command_name `
+            -PollingArgs $polling_args
+        }
+        else {
+            ReturnOutputs $human_readable $entry_context $raw_response | Out-Null
+        }
         if ($file_entry) {
             $Demisto.results($file_entry)
         }
