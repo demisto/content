@@ -4,7 +4,7 @@ import TakedownCyberint
 import pytest
 from CommonServerPython import DemistoException
 
-BASE_URL = "https://feed-example.com"
+BASE_URL = "https://td-example.com"
 TOKEN = "example_token"
 
 
