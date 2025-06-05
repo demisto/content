@@ -228,7 +228,7 @@ configuration:
   section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS mrizzo copy
+display: Palo Alto Networks PAN-OS
 name: Panorama
 script:
   commands:
