@@ -53,7 +53,6 @@
 		{},
 		{}
 	],
-	"definitionId": "",
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
@@ -71,7 +70,6 @@
 	"orgType": "grid",
 	"ownerOnly": false,
 	"packID": "",
-	"packName": "",
 	"placeholder": "",
 	"required": false,
 	"runScriptAfterUpdate": false,

@@ -1,10 +1,8 @@
 {
 	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"id": "Reliaquest Takedown Mapper",
-	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",
 	"fromVersion": "6.10.0",
@@ -77,7 +75,6 @@
 	"name": "Reliaquest Takedown Mapper",
 	"nameRaw": "Reliaquest Takedown Mapper",
 	"packID": "",
-	"packName": "",
 	"sourceClassifierId": "",
 	"system": false,
 	"toServerVersion": "",
