@@ -838,6 +838,7 @@ Gets a list activity data for an account name.
 | query | Free-text query. For example, query="resourcegroupname=WindowsSnare and policyname=Possible Privilege Escalation - Self Escalation".<br/>Note: Use the XSOAR automation browser to run the command if the "query" argument contains the special characters. | Optional |
 | query_id | Paginate next set of results. | Optional |
 | policy_type | Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: "Land Speed", "TIER2", "DIRECTIVE", "BEACONING". | Optional |
+| max | Maximum number of violations to retrieve. Default is 50. | Optional |
 
 ##### Context Output
 
