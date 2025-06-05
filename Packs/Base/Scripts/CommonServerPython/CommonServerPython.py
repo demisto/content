@@ -12664,17 +12664,24 @@ def execute_polling_command(
     polling_timeout_arg_name="timeout_in_seconds",
     default_polling_timeout=600,
 ):
-    """
-    Executes a polling command in scripts.
-
+    r"""
+    Continuously executes a specified command until the command indicates polling is done or a
+    timeout is reached.
     :param command_name: The name of the initial Demisto command to execute.
+    :type command_name: ``str``
     :param args: A dictionary of arguments to pass to the command.
+    :type args: ``dict``
     :param polling_interval_arg_name: The name of the argument in 'args' that specifies the polling interval in seconds.
+    :type polling_interval_arg_name: ``str``
     :param default_polling_interval: The default polling interval in seconds if not specified in 'args'.
+    :type default_polling_interval: ``int``
     :param polling_timeout_arg_name: The name of the argument in 'args' that specifies the polling timeout in seconds.
+    :type polling_timeout_arg_name: ``str``
     :param default_polling_timeout: The default polling timeout in seconds if not specified in 'args'.
+    :type default_polling_timeout: ``int``
     :return: A list of CommandResults objects containing the human-readable output and context outputs from each
              successful command execution. If an error occurs, a single CommandResults object with an error entry type is returned.
+    :rtype: ``list[CommandResults]`` or ``CommandResults``
     :raises DemistoException: If no command result entry is received, or if the polling times out.
     """
     polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
@@ -12690,7 +12697,7 @@ def execute_polling_command(
     while time.time() - start_time < polling_timeout:
         execution_results = demisto.executeCommand(command_name, args)
         times_ran += 1
-        demisto.debug("Command {command_name} with args: {args} executed {times_ran} times. Got results: {execution_results}.".format(
+        demisto.debug("Executed {times_ran} command {command_name} with args: {args}. Got results: {execution_results}.".format(
             command_name=command_name, args=args, times_ran=times_ran, execution_results=execution_results))
 
         if not execution_results:
@@ -12700,7 +12707,7 @@ def execute_polling_command(
         execution_result = execution_results[0]
         if is_error(execution_result):
             error_message = get_error(execution_result)
-            demisto.debug("Command: {command_name} with args: {args} failed with error: {error_message}.".format(
+            demisto.debug("Failed to run command: {command_name} with args: {args}. Error: {error_message}.".format(
                 command_name=command_name, args=args, error_message=error_message))
             return CommandResults(readable_output=error_message, entry_type=EntryType.ERROR)
 
@@ -12714,7 +12721,7 @@ def execute_polling_command(
         metadata = execution_result.get("Metadata", {})
         demisto.debug("Command: {command_name} has entry metadata: {metadata}.".format(command_name=command_name, metadata=metadata))
         if not metadata.get("polling"):
-            demisto.debug("Command: {command_name} with args: {args} finished running. Returning results to war room.".format(
+            demisto.debug("Finished running command: {command_name} with args: {args}. Returning results to war room.".format(
                 command_name=command_name, args=args))
             return command_results
 
