@@ -237,6 +237,8 @@ def increase_datetime_for_next_fetch(
             raw_time = event.get("event_date")
         else:
             raw_time = event.get("created_date") or event.get("modified_date")
+
+
         return arg_to_datetime(raw_time).replace(tzinfo=timezone.utc)
 
     # Extract all valid datetimes from events
@@ -271,11 +273,11 @@ def fetch_events(client: Client, last_run: dict[str, int],
         last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
         start_date = first_fetch_time if not last_time else last_time
         after = get_timestamp_format(start_date)
-        demisto.debug(f"start date, after { event_type} {start_date} {after}")
+        demisto.debug(f"start date, after {event_type} {start_date} {after}")
         log_events = client.search_events(
             event_type=event_type,
             max_events_per_fetch=max_events_per_fetch.get(event_type, MAX_EVENTS_PER_FETCH),
-            after= after
+            after=after
         )
         next_run[event_type] = increase_datetime_for_next_fetch(log_events, start_date, next_run.get(event_type), event_type)
         demisto.debug(f"Received {len(log_events)} events for event type {event_type}")
@@ -324,7 +326,8 @@ def main() -> None:  # pragma: no cover
         elif command == "decyfir-event-collector-get-events":
             should_push_events = argToBoolean(args.pop("should_push_events"))
             from_date = arg_to_datetime(args.get("from_date"))
-            events, results = get_events(client, event_types_to_fetch, max_events_per_fetch, from_date, should_push_events)
+            event_types = argToList(args.get("event_types")) or event_types_to_fetch
+            events, results = get_events(client, event_types, max_events_per_fetch, from_date, should_push_events)
             return_results(results)
             if should_push_events:
                 demisto.debug(f'send_events_to_xsiam events: {events}')

@@ -68,12 +68,21 @@ script:
     name: decyfir-event-collector-get-events
     arguments:
     - auto: PREDEFINED
+      defaultValue: 'Access Logs,Assets Logs,Digital Risk Keywords Logs'
+      description: Event types to fetch
+      name: event_types
+      predefined:
+        - "Access Logs"
+        - "Assets Logs"
+        - "Digital Risk Keywords Logs"
+      required: true
+    - auto: PREDEFINED
       defaultValue: 'False'
       description: Set this argument to True in order to create events, otherwise the command will only display them.
       name: should_push_events
       predefined:
-      - 'True'
-      - 'False'
+        - 'True'
+        - 'False'
       required: true
     - auto: PREDEFINED
       defaultValue: '3 months'
