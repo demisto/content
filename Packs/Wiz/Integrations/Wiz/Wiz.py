@@ -1,8 +1,8 @@
 import uuid
-from urllib import parse
 
-import demistomock as demisto
 from CommonServerPython import *
+import demistomock as demisto
+from urllib import parse
 
 DEMISTO_OCCURRED_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 WIZ_API_TIMEOUT = 300  # Increase timeout for Wiz API
@@ -10,8 +10,9 @@ WIZ_HTTP_QUERIES_LIMIT = 500  # Request limit during run
 WIZ_API_LIMIT = 500  # limit number of returned records from the Wiz API
 WIZ = "wiz"
 
-WIZ_VERSION = "1.3.2"
+WIZ_VERSION = "1.4.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
+NOT_DEFINED = "Not Defined"
 
 
 def get_integration_user_agent():
@@ -33,7 +34,7 @@ AUTH0_PREFIX = ["auth", "auth0.gov", "auth0.test"]
 URL_SUFFIX = "wiz.io/oauth/token"
 URL_SUFFIX_FED = "wiz.us/oauth/token"
 
-# Pull Issues
+# Issues Queries
 PULL_ISSUES_QUERY = """
 query IssuesTable(
   $filterBy: IssueFilters
@@ -52,7 +53,7 @@ query IssuesTable(
         ... on Control {
           id
           name
-          controlDescription: description
+          description
           resolutionRecommendation
           securitySubCategories {
             title
@@ -67,14 +68,14 @@ query IssuesTable(
         ... on CloudEventRule{
           id
           name
-          cloudEventRuleDescription: description
+          description
           sourceType
           type
         }
         ... on CloudConfigurationRule{
           id
           name
-          cloudConfigurationRuleDescription: description
+          description
           remediationInstructions
           serviceType
         }
@@ -87,6 +88,12 @@ query IssuesTable(
         id
         name
         slug
+        projectOwners{
+          name
+        }
+        securityChampions{
+          name
+        }
         businessUnit
         riskProfile {
           businessImpact
@@ -1210,8 +1217,6 @@ PULL_ISSUES_TEST_VARIABLES = test_variables = {
     "filterBy": {"status": ["OPEN", "IN_PROGRESS"]},
     "orderBy": {"field": "SEVERITY", "direction": "DESC"},
 }
-
-# Pull Issue Evidence
 PULL_ISSUE_EVIDENCE_QUERY = """
   query GraphSearch(
     $query: GraphEntityQueryInput
@@ -1389,95 +1394,7 @@ DELETE_NOTE_QUERY = """
   }
     """
 
-# Pull Resources
-PULL_RESOURCES_QUERY = """
-        query GraphSearch(
-            $query: GraphEntityQueryInput
-            $controlId: ID
-            $projectId: String!
-            $first: Int
-            $after: String
-            $fetchTotalCount: Boolean!
-            $quick: Boolean
-            $fetchPublicExposurePaths: Boolean = false
-            $fetchInternalExposurePaths: Boolean = false
-            $fetchIssueAnalytics: Boolean = false
-          ) {
-            graphSearch(
-                query: $query
-                controlId: $controlId
-                projectId: $projectId
-                first: $first
-                after: $after
-                quick: $quick
-            ) {
-                totalCount @include(if: $fetchTotalCount)
-                maxCountReached @include(if: $fetchTotalCount)
-                pageInfo {
-                    endCursor
-                    hasNextPage
-                }
-                nodes {
-                    entities {
-                        id
-                        name
-                        type
-                        properties
-                        userMetadata {
-                            isInWatchlist
-                            isIgnored
-                            note
-                        }
-                        issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
-                            @include(if: $fetchIssueAnalytics) {
-                            lowSeverityCount
-                            mediumSeverityCount
-                            highSeverityCount
-                            criticalSeverityCount
-                        }
-                        publicExposures(first: 10) @include(if: $fetchPublicExposurePaths) {
-                            nodes {
-                                ...NetworkExposureFragment
-                            }
-                        }
-                        otherSubscriptionExposures(first: 10)
-                            @include(if: $fetchInternalExposurePaths) {
-                            nodes {
-                                ...NetworkExposureFragment
-                            }
-                        }
-                        otherVnetExposures(first: 10)
-                            @include(if: $fetchInternalExposurePaths) {
-                                nodes {
-                                    ...NetworkExposureFragment
-                                }
-                            }
-                        }
-                        aggregateCount
-                    }
-                }
-            }
-
-            fragment NetworkExposureFragment on NetworkExposure {
-                id
-                portRange
-                sourceIpRange
-                destinationIpRange
-                path {
-                    id
-                    name
-                    type
-                    properties
-                    issueAnalytics: issues(filterBy: { status: [IN_PROGRESS, OPEN] })
-                        @include(if: $fetchIssueAnalytics) {
-                            lowSeverityCount
-                            mediumSeverityCount
-                            highSeverityCount
-                            criticalSeverityCount
-                        }
-                }
-            }
-    """
+# Resources Queries
 PULL_RESOURCES_ID_NATIVE_QUERY = """
 query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: String) {
   cloudResources(filterBy: $filterBy, first: $first, after: $after) {
@@ -1520,18 +1437,8 @@ query CloudResourceSearch($filterBy: CloudResourceFilters, $first: Int, $after: 
   }
 }
 """
-PULL_RESOURCES_VARIABLES = {
-    "fetchPublicExposurePaths": True,
-    "fetchInternalExposurePaths": False,
-    "fetchIssueAnalytics": False,
-    "first": 50,
-    "query": {"type": ["CLOUD_RESOURCE"], "select": True, "where": {"providerUniqueId": {"EQUALS": []}}},
-    "projectId": "*",
-    "fetchTotalCount": True,
-    "quick": True,
-}
 
-# Copy to forensics account
+# Forensics Queries
 COPY_TO_FORENSICS_ACCOUNT_MUTATION = """
         mutation CopyResourceForensicsToExternalAccount($input: CopyResourceForensicsToExternalAccountInput!) {
           copyResourceForensicsToExternalAccount(input: $input) {
@@ -1539,6 +1446,31 @@ COPY_TO_FORENSICS_ACCOUNT_MUTATION = """
           }
         }
     """
+
+# Project Queries
+PULL_PROJECTS_QUERY = """
+query ProjectsTable($filterBy: ProjectFilters, $first: Int, $after: String, $orderBy: ProjectOrder) {
+  projects(filterBy: $filterBy, first: $first, after: $after, orderBy: $orderBy) {
+    nodes {
+      id
+      name
+      isFolder
+      archived
+      businessUnit
+      description
+      projectOwners {
+        id
+        name
+        email
+      }
+      securityChampions {
+        id
+        name
+        email
+      }
+    }
+  }
+}"""
 
 
 class WizInputParam:
@@ -1557,6 +1489,9 @@ class WizInputParam:
     DUE_AT = "due_at"
     VM_ID = "vm_id"
     PROJECT_NAME = "project_name"
+    SEARCH = "search"
+    SUBSCRIPTION_EXTERNAL_IDS = "subscription_external_ids"
+    PROVIDER_UNIQUE_IDS = "provider_unique_ids"
 
 
 class WizStatus:
@@ -1645,7 +1580,7 @@ def checkAPIerrors(query, variables):
     result = requests.post(url=URL, json=data, headers=HEADERS)
 
     demisto.info(f"Result is {result}")
-    demisto.info(f"Result Json is {result.json()}")
+    demisto.info(f"Result Json is \n{result.json()}")
 
     error_message = ""
     if "errors" in result.json():
@@ -1655,7 +1590,7 @@ def checkAPIerrors(query, variables):
         demisto.info("No Issue(/s) available to fetch.")
 
     if error_message:
-        demisto.error(f"An error has occurred using:\n\tQuery: {query}\n\tVariables: {variables}\n\t{error_message}")
+        demisto.error("An error has occurred using:\n" f"\tQuery: {query}\n" f"\tVariables: {variables}\n" f"\t{error_message}")
         demisto.error(error_message)
         raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
     return result.json()
@@ -1708,7 +1643,7 @@ def fetch_issues(max_fetch):
     query = PULL_ISSUES_QUERY
     variables = {
         "first": max_fetch,
-        "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "createdAt": {"after": last_run}, "relatedEntity": {}},
+        "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "statusChangedAt": {"after": last_run}, "relatedEntity": {}},
         "orderBy": {"field": "SEVERITY", "direction": "DESC"},
     }
 
@@ -1875,6 +1810,58 @@ def get_filtered_issues(entity_type, resource_id, severity, issue_type, limit):
     return issues
 
 
+def get_resources(search, entity_type, subscription_external_ids, provider_unique_ids):
+    """
+    Retrieves Resources
+    """
+    demisto.info(
+        f"Entity type is {entity_type}\n"
+        f"Search is {search}\n"
+        f"Subscription External IDs is {subscription_external_ids}\n"
+        f"Provider Unique IDs is {provider_unique_ids}"
+    )
+    error_msg = ""
+
+    if not search and not entity_type and not subscription_external_ids and not provider_unique_ids:
+        error_msg = (
+            f"You should pass (at least) one of the following parameters:\n\t{WizInputParam.SEARCH}\n\t"
+            f"{WizInputParam.ENTITY_TYPE}\n\t{WizInputParam.SUBSCRIPTION_EXTERNAL_IDS}\n\t"
+            f"{WizInputParam.PROVIDER_UNIQUE_IDS}\n"
+        )
+
+    if error_msg:
+        demisto.error(error_msg)
+        return error_msg
+
+    variables: Dict[str, Any] = {"first": WIZ_API_LIMIT, "filterBy": {}}
+
+    if search:
+        variables["filterBy"]["search"] = search
+    if entity_type:
+        variables["filterBy"]["type"] = [entity_type]
+    if subscription_external_ids:
+        subscription_external_ids_formatted = [str(x) for x in re.split(r"[,\s]+", subscription_external_ids.strip())]
+        variables["filterBy"]["subscriptionExternalId"] = subscription_external_ids_formatted
+    if provider_unique_ids:
+        provider_unique_ids_formatted = [str(x) for x in re.split(r"[,\s]+", provider_unique_ids.strip())]
+        variables["filterBy"]["providerUniqueId"] = provider_unique_ids_formatted
+
+    try:
+        response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
+    except DemistoException:
+        demisto.debug(
+            f"could not find resources with this entity_type {entity_type}, search {search}, "
+            f"subscription_external_ids {subscription_external_ids}, provider_unique_ids {provider_unique_ids}"
+        )
+        return {}
+
+    if response_json["data"]["cloudResources"]["nodes"] is None or not response_json["data"]["cloudResources"]["nodes"]:
+        demisto.info("Resources Not Found")
+        return "Resources Not Found"
+    else:
+        return response_json
+
+
 def get_resource(resource_id, resource_name):
     """
     Retrieves Resource Details
@@ -1890,42 +1877,19 @@ def get_resource(resource_id, resource_name):
         demisto.error("You must pass either resource_name or resource_id")
         return "You should pass exactly one of resource_name or resource_id"
 
-    if resource_name:
-        variables = {"first": WIZ_API_LIMIT, "filterBy": {"search": resource_name}}
-        try:
-            response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
-        except DemistoException:
-            demisto.debug(f"could not find resource with this resource_name {resource_name}")
-            return {}
-
-        if response_json["data"]["cloudResources"]["nodes"] is None or not response_json["data"]["cloudResources"]["nodes"]:
-            demisto.info("Resource Not Found")
-            return "Resource Not Found"
-        else:
-            return response_json
-    # to get resource by resource_id
-    variables = {
-        "fetchPublicExposurePaths": True,
-        "fetchInternalExposurePaths": False,
-        "fetchIssueAnalytics": False,
-        "first": 50,
-        "query": {"type": ["CLOUD_RESOURCE"], "select": True, "where": {"providerUniqueId": {"EQUALS": [resource_id]}}},
-        "projectId": "*",
-        "fetchTotalCount": True,
-        "quick": True,
-    }
-
+    resource_search = resource_name if resource_name else resource_id
+    variables = {"first": WIZ_API_LIMIT, "filterBy": {"search": resource_search}}
     try:
-        response_json = checkAPIerrors(PULL_RESOURCES_QUERY, variables)
+        response_json = checkAPIerrors(PULL_CLOUD_RESOURCES_NATIVE_QUERY, variables)
     except DemistoException:
-        demisto.debug(f"could not find resource with ID {resource_id}")
+        demisto.debug(f"could not find resource with this resource_name {resource_name}")
         return {}
 
-    if response_json["data"]["graphSearch"]["nodes"] is None or not response_json["data"]["graphSearch"]["nodes"]:
+    if response_json["data"]["cloudResources"]["nodes"] is None or not response_json["data"]["cloudResources"]["nodes"]:
         demisto.info("Resource Not Found")
-        return {}
+        return "Resource Not Found"
     else:
-        return response_json["data"]["graphSearch"]["nodes"][0]["entities"][0]
+        return response_json
 
 
 def reject_issue(issue_id, reject_reason, reject_comment):
@@ -2200,7 +2164,7 @@ def get_issue_evidence(issue_id):
     try:
         response = checkAPIerrors(query, variables)
     except Exception as e:
-        error_message = f"Failed getting Issue evidence on ID {issue_id}.\nError details: {e!s}"
+        error_message = f"Failed getting Issue evidence on ID {issue_id}.\nError details: {str(e)}"
         demisto.error(error_message)
         raise Exception(error_message)
 
@@ -2226,87 +2190,23 @@ def get_project_team(project_name):
     # find VM on the graph
     project_variables = {
         "first": 20,
-        "filterBy": {"search": project_name},
+        "filterBy": {"search": project_name, "includeArchived": False},
         "orderBy": {"field": "SECURITY_SCORE", "direction": "ASC"},
-        "analyticsSelection": {},
     }
-    project_query = (  # pragma: no cover
-        """
-    query ProjectsTable(
-        $filterBy: ProjectFilters
-        $first: Int
-        $after: String
-        $orderBy: ProjectOrder
-        $analyticsSelection: ProjectIssueAnalyticsSelection
-    ) {
-        projects(
-        filterBy: $filterBy
-        first: $first
-        after: $after
-        orderBy: $orderBy
-        ) {
-        nodes {
-            id
-            name
-            description
-            businessUnit
-            archived
-            slug
-            projectOwners {
-            id
-            name
-            email
-            }
-            securityChampions {
-            id
-            name
-            email
-            }
-            cloudAccountCount
-            repositoryCount
-            securityScore
-            riskProfile {
-            businessImpact
-            }
-            teamMemberCount
-            issueAnalytics(selection: $analyticsSelection) {
-            issueCount
-            scopeSize
-            informationalSeverityCount
-            lowSeverityCount
-            mediumSeverityCount
-            highSeverityCount
-            criticalSeverityCount
-            }
-        }
-        pageInfo {
-            hasNextPage
-            endCursor
-        }
-        }
-    }
-    """
-    )
 
     try:
-        response_json = checkAPIerrors(project_query, project_variables)
+        response_json = checkAPIerrors(PULL_PROJECTS_QUERY, project_variables)
     except DemistoException:
         demisto.debug(f"Error with finding Project with name {project_name}")
         return {}
 
-    project_response = response_json.get("data", {}).get("projects", {}).get("nodes")
+    nodes = response_json.get("data", {}).get("projects", {}).get("nodes", [])
 
-    demisto.info(f'Validating if Project with name "{project_name}" exists.')
-    if not project_response:
-        demisto.debug(f"Project with name {project_name} does not exist")
+    if not nodes:
+        demisto.error(f"Project with name {project_name} does not exist")
         return {}
 
-    else:
-        project_team = {
-            "projectOwners": project_response[0]["projectOwners"],
-            "securityChampions": project_response[0]["securityChampions"],
-        }
-        return project_team
+    return nodes
 
 
 def copy_to_forensics_account(resource_id):
@@ -2411,10 +2311,22 @@ def main():
             resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
             resource_name = demisto_args.get(WizInputParam.RESOURCE_NAME)
             resource = get_resource(resource_id=resource_id, resource_name=resource_name)
-            if resource_id:
-                command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource, raw_response=resource)
-            else:
-                command_result = CommandResults(readable_output=resource, raw_response=resource)
+            command_result = CommandResults(outputs_prefix="Wiz.Manager.Resource", outputs=resource, raw_response=resource)
+            return_results(command_result)
+
+        elif command == "wiz-get-resources":
+            demisto_args = demisto.args()
+            resources_search = demisto_args.get(WizInputParam.SEARCH)
+            resources_entity_type = demisto_args.get(WizInputParam.ENTITY_TYPE)
+            resources_subscription_external_ids = demisto_args.get(WizInputParam.SUBSCRIPTION_EXTERNAL_IDS)
+            resources_provider_unique_ids = demisto_args.get(WizInputParam.PROVIDER_UNIQUE_IDS)
+            resources = get_resources(
+                search=resources_search,
+                entity_type=resources_entity_type,
+                subscription_external_ids=resources_subscription_external_ids,
+                provider_unique_ids=resources_provider_unique_ids,
+            )
+            command_result = CommandResults(readable_output=resources, raw_response=resources)
             return_results(command_result)
 
         elif command == "wiz-reject-issue":
@@ -2516,12 +2428,11 @@ def main():
             copy_mutation_response = copy_to_forensics_account(resource_id=resource_id)
             command_result = CommandResults(readable_output=copy_mutation_response, raw_response=copy_mutation_response)
             return_results(command_result)
-
         else:
             raise Exception("Unrecognized command: " + command)
     except Exception as err:
         demisto.error(traceback.format_exc())
-        return_error(f"An error occurred: {err!s}")
+        return_error(f"An error occurred: {str(err)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):
