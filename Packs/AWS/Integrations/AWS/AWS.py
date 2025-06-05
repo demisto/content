@@ -1,5 +1,6 @@
 import demistomock as demisto  # noqa: F401
 from AWSApiModule import *  # noqa: E402
+from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from datetime import date
@@ -239,6 +240,20 @@ class EC2:
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem}")    
         raise DemistoException(f"Unexpected response from AWS - \n{response}")
+    
+    @staticmethod
+    def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        
+        Args:
+            client (BotoClient): _description_
+            args (Dict[str, Any]): _description_
+
+        Returns:
+            CommandResults: _description_
+        """
+        
+        
 class EKS:
     service = AWSServices.EKS
     
@@ -508,9 +523,6 @@ class RDS:
                 entry_type=EntryType.ERROR,
                 readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}"
             )
-    
-    
-            
         
         
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
@@ -519,6 +531,7 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
+    "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
     
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
     "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,   
@@ -549,7 +562,7 @@ def main():  # pragma: no cover
     try:
         if command == "test-module":
             # TODO - Check permissions 
-            return_results("ok")         
+            return_results(HealthCheckResult.ok())         
         elif command in COMMANDS_MAPPING:
             service = AWSServices(command.split('-')[1])
             service_client: BotoClient = aws_session.client(service)
