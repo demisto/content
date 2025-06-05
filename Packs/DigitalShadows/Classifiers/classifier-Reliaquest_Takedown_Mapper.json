@@ -3,7 +3,6 @@
 	"description": "",
 	"feed": false,
 	"id": "Reliaquest Takedown Mapper",
-	"instanceIds": null,
 	"itemVersion": "",
 	"fromVersion": "6.10.0",
 	"keyTypeMap": {},
@@ -77,7 +76,6 @@
 	"packID": "",
 	"sourceClassifierId": "",
 	"system": false,
-	"toServerVersion": "",
 	"transformer": {},
 	"type": "mapping-incoming",
 	"version": -1

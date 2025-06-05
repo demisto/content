@@ -2,9 +2,7 @@
 	"defaultIncidentType": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Classifier",
-	"instanceIds": null,
 	"itemVersion": "",
 	"keyTypeMap": {
 		"brand-abuse": "Reliaquest Takedown Type",
@@ -31,7 +29,6 @@
 	"packID": "",
 	"sourceClassifierId": "",
 	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"simple": "type"
 	},

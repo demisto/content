@@ -1519,7 +1519,6 @@
 			}
 		]
 	},
-	"fromServerVersion": "",
 	"group": "incident",
 	"id": "Reliaquest Takedown Layout",
 	"indicatorsQuickView": null,
@@ -1531,6 +1530,5 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }
