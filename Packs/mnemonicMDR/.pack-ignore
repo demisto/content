@@ -1,11 +1,11 @@
 [file:Pull_Case_Metadata_-_Argus_Managed_Defence.yml]
-ignore=PB106,PB115
+ignore=PB106,PB115,RM116
 
 [file:pack_metadata.json]
 ignore=PA125
 
 [file:ArgusManagedDefence.yml]
-ignore=BA109
+ignore=BA109,IN145
 
 [file:classifier-Argus_Case_Mapper.json]
 ignore=BA101
@@ -43,3 +43,17 @@ ignore=IM111
 [file:classifier-Argus_Case_Classifier.json]
 ignore=BA101
 
+[file:incidentfield-Argus_Case_Status_V2.json]
+ignore=IF115
+
+[file:incidentfield-Argus_Customer_Name.json]
+ignore=IF115
+
+[file:incidentfield-Argus_Case_Initial_Priority.json]
+ignore=IF115
+
+[file:incidentfield-Argus_Case_Priority.json.json]
+ignore=IF115
+
+[file:incidentfield-Argus_Case_Last_Updated.json]
+ignore=IF115
