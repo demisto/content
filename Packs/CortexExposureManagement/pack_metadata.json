@@ -37,6 +37,10 @@
         "FiltersAndTransformers": {
             "mandatory": true,
             "display_name": "Filters And Transformers"
+        },
+        "AWS-Enrichment-Remediation": {
+            "mandatory": false,
+            "display_name": "AWS Enrichment and Remediation"
         }
     },
     "marketplaces": [
