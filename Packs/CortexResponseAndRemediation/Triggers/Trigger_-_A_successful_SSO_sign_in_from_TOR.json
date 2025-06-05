@@ -4,6 +4,8 @@
   "suggestion_reason": "Recommended for 'A successful SSO sign-in from TOR' and 'A successful SSO sign-in from TOR via a mobile device' alerts",
   "description": "This trigger is responsible for handling the 'A successful SSO sign-in from TOR' and the 'A successful SSO sign-in from TOR via a mobile device' alerts\nglobal_rule_id: f5382b13-4edd-4ecd-9246-a08db5a45fe6\nvariation_rule_id: [07f369ba-710e-435e-a431-ad2cab86cb4d]",
   "trigger_name": "A successful SSO sign-in from TOR",
+  "global_rule_id": "f5382b13-4edd-4ecd-9246-a08db5a45fe6",
+  "variation_rule_id": ["07f369ba-710e-435e-a431-ad2cab86cb4d"],
   "alerts_filter": {
     "filter": {
         "AND": [
