@@ -499,7 +499,7 @@ script:
         required: true
         type: string
       - name: denied_principals
-        description: Comma-separated list of principals to deny (e.g., principalSet://goog/public:all).
+        description: Comma-separated list of principals to deny (e.g., principalSet://goog/public:all, principal://goog/subject/test@example.com).
         required: true
         type: string
       - name: denied_permissions
