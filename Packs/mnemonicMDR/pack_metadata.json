@@ -12,6 +12,9 @@
         "Forensics & Malware Analysis"
     ],
     "tags": [],
+    "itemPrefix": [
+        "Argus"
+    ],
     "useCases": [],
     "keywords": [
         "mnemonic",
