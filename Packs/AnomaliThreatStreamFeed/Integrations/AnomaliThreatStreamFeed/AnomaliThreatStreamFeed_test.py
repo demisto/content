@@ -750,3 +750,134 @@ def test_create_relationships_multiple_related_entities():
 
     result = create_relationships(create_relationships_param=True, reliability=reliability, indicator=indicator)
     assert result == expected_relationships
+    
+    
+@pytest.mark.parametrize(
+    "indicator, tlp_color, create_relationship_param, reliability, "
+    "mock_relationships_return, mock_dbot_score_return, expected_output, expect_error",
+    [
+        # Basic valid indicator with relationships enabled
+        (
+            {
+                "id": "123",
+                "type": "ip",
+                "confidence": 80,
+                "description": "Test IP",
+                "source": "TestSource",
+                "value": "1.1.1.1",
+                "tags": ["tag1", "tag2"],
+                "tlp": "RED",
+                "country": "US",
+                "modified_ts": "2023-01-01T12:00:00Z",
+                "org": "",
+                "created_ts": "2022-01-01T12:00:00Z",
+                "expiration_ts": "2024-01-01T12:00:00Z",
+                "target_industry": ["finance"],
+                "asn": "AS12345",
+                "locations": "New York",
+                "rdns": "example.com",
+                "meta.maltype": "type"
+            },
+            "AMBER", True, "A - Completely reliable",
+            [{"entityA": "1.1.1.1", "name": "resolves-to", "entityB": "example.com", "type": "Relationship"}],
+            Common.DBotScore.BAD,
+            {
+                "value": "1.1.1.1",
+                "type": "IP",
+                "fields": {
+                    "ThreatStreamID": "123",
+                    "Source": "TestSource",
+                    "IP": "1.1.1.1",
+                    "Description": "Test IP",
+                    "Confidence": "80",
+                    "TrafficLightProtocol": "AMBER",
+                    'TargetIndustries': ['finance'],
+                    'CountryCode': 'US',
+                    'Modified': '2023-01-01T12:00:00Z',
+                    'Creation': '2022-01-01T12:00:00Z',
+                    'Tags': ['tag1', 'tag2'],
+                    'Location': 'New York',
+                    'ASN': 'AS12345'
+                },
+                "relationships": [{"entityA": "1.1.1.1", "name": "resolves-to", "entityB": "example.com", "type": "Relationship"}],
+                "rawJSON": {
+                    "id": "123",
+                    "type": "ip",
+                    "value": "1.1.1.1",
+                    "confidence": 80,
+                    "source": "TestSource",
+                    "description": "Test IP",
+                    "rdns": "example.com",
+                    "meta.maltype": "type",
+                    'target_industry': ['finance'],
+                    'asn': 'AS12345',
+                    'locations': 'New York',
+                    'tags': ['tag1', 'tag2'],
+                    'tlp': 'RED',
+                    'country': 'US',
+                    'modified_ts': '2023-01-01T12:00:00Z',
+                    'org': '',
+                    'created_ts': '2022-01-01T12:00:00Z',
+                    'expiration_ts': '2024-01-01T12:00:00Z'
+                },
+                "score": Common.DBotScore.BAD
+            },
+            False
+        ),
+        # Missing indicator 'type'
+        (
+            {"id": "125", "value": "missing_type_value", "confidence": 50},
+            "RED", True, "C - Fairly reliable",
+            [], Common.DBotScore.NONE,
+            None,
+            True # Expect ValueError
+        ),
+        # Missing indicator 'value'
+        (
+            {"id": "126", "type": "url", "confidence": 50},
+            "RED", True, "C - Fairly reliable",
+            [], Common.DBotScore.NONE,
+            None,
+            True # Expect ValueError
+        ),
+    ]
+)
+def test_parse_indicator_for_fetch_various_scenarios(
+    indicator: dict[str, Any],
+    tlp_color: str,
+    create_relationship_param: bool,
+    reliability: str,
+    mock_relationships_return: list[dict[str, Any]],
+    mock_dbot_score_return: int,
+    expected_output: dict[str, Any],
+    expect_error: bool,
+    mocker
+):
+    from AnomaliThreatStreamFeed import parse_indicator_for_fetch
+    """
+    Tests parse_indicator_for_fetch across various scenarios, including valid inputs,
+    missing/invalid indicator data, and different relationship/DBotScore outcomes.
+
+    Given:
+        - A raw indicator dictionary.
+        - TLP color, relationship creation flag, and reliability.
+        - Mock return values for create_relationships and DBotScoreCalculator.calculate_score.
+        - Expected output dictionary or a flag indicating an expected error.
+    When:
+        - Calling parse_indicator_for_fetch.
+    Then:
+        - If an error is expected, verifies that ValueError is raised.
+        - Otherwise, verifies that the returned parsed indicator matches the expected output.
+        - Verifies that create_relationships and calculate_score are called with correct arguments.
+    """
+    # Mock the external functions/methods
+    mocker.patch('AnomaliThreatStreamFeed.create_relationships', return_value=mock_relationships_return)
+    mocker.patch('AnomaliThreatStreamFeed.DBotScoreCalculator.calculate_score', return_value=mock_dbot_score_return)
+
+    if expect_error:
+        with pytest.raises(ValueError) as excinfo:
+            parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
+        assert f"Indicator missing 'type' or 'value': {indicator}" in str(excinfo.value)
+    else:
+        result = parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
+        assert result == expected_output
