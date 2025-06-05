@@ -527,8 +527,14 @@ class RDS:
         
 REQUIRED_PERMISSIONS = set()
 
+CONCURRENCY_LIMIT = 25           # Rate limit by AWS
+SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
+
 async def fetch_permissions_for_account(account_id: str) -> set:
-    # TODO
+    async with SEMAPHORE:
+        # TODO
+        await asyncio.sleep(0) # placeholder for the real awaitable
+        
     return set()
 
 async def check_permissions():
