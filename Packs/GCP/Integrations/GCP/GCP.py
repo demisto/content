@@ -810,7 +810,9 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 #     return CommandResults(readable_output=hr)
 
 
-def check_required_permissions(creds: Credentials, project_id: str, connector_id: str = None, command: str = "") -> str:
+def check_required_permissions(
+    creds: Credentials, project_id: str, connector_id: str = None, command: str = ""
+) -> str | CommandResults:
     """
     Verifies the credentials have all required permissions, using testIamPermissions to check access.
 
@@ -855,15 +857,14 @@ def check_required_permissions(creds: Credentials, project_id: str, connector_id
         except Exception as e:
             error_message = f"Failed to test IAM permissions: {str(e)}"
             if connector_id:
-                return_results(
-                    HealthCheckResult.error(
-                        account_id=project_id,
-                        connector_id=connector_id,
-                        message="Failed to test permissions for GCP integration",
-                        error=error_message,
-                        error_type=ErrorType.PERMISSION_ERROR,
-                    )
+                return HealthCheckResult.error(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message="Failed to test permissions for GCP integration",
+                    error=error_message,
+                    error_type=ErrorType.PERMISSION_ERROR,
                 )
+
             raise DemistoException(error_message)
 
     if missing:
@@ -872,21 +873,20 @@ def check_required_permissions(creds: Credentials, project_id: str, connector_id
         error_message = "Missing permissions:\n" + "\n".join(error_lines)
 
         if connector_id:
-            return_results(
-                HealthCheckResult.error(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message="Missing required permissions for GCP integration",
-                    error=error_message,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
+            return HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Missing required permissions for GCP integration",
+                error=error_message,
+                error_type=ErrorType.PERMISSION_ERROR,
             )
+
         raise DemistoException(error_message)
 
     return "ok" if not connector_id else HealthCheckResult.ok()
 
 
-def health_check(project_id: str, connector_id: str) -> str:
+def health_check(project_id: str, connector_id: str) -> str | CommandResults:
     """
     Tests connectivity to GCP and checks for required permissions.
 
@@ -905,45 +905,39 @@ def health_check(project_id: str, connector_id: str) -> str:
     """
     if not project_id:
         error_message = "Missing required parameter 'project_id'"
-        return_results(
-            HealthCheckResult.error(
-                account_id=project_id,
-                connector_id=connector_id,
-                message="Missing project ID for GCP integration",
-                error=error_message,
-                error_type=ErrorType.INTERNAL_ERROR,
-            )
+        return HealthCheckResult.error(
+            account_id=project_id,
+            connector_id=connector_id,
+            message="Missing project ID for GCP integration",
+            error=error_message,
+            error_type=ErrorType.INTERNAL_ERROR,
         )
-        raise DemistoException(error_message)
-
     try:
         credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
         token = credential_data.get("access_token")
         if not token:
             error_message = "Failed to retrieve GCP access token - token is missing from credentials"
-            return_results(
-                HealthCheckResult.error(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message="Failed to authenticate with GCP",
-                    error=error_message,
-                    error_type=ErrorType.CONNECTIVITY_ERROR,
-                )
+            return HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Failed to authenticate with GCP",
+                error=error_message,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
             )
+
         creds = Credentials(token=token)
         demisto.debug("Using token-based credentials for health check")
         return check_required_permissions(creds, project_id, connector_id)
     except Exception as e:
         error_message = str(e)
-        return_results(
-            HealthCheckResult.error(
-                account_id=project_id,
-                connector_id=connector_id,
-                message="Failed to connect to GCP",
-                error=error_message,
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
+        return HealthCheckResult.error(
+            account_id=project_id,
+            connector_id=connector_id,
+            message="Failed to connect to GCP",
+            error=error_message,
+            error_type=ErrorType.CONNECTIVITY_ERROR,
         )
+
         raise
 
 
@@ -1018,10 +1012,8 @@ def main():
             # "gcp-admin-user-signout": admin_user_signout,
         }
 
-        # Handle health check command for COOC
-        if command == "health-check":
-            run_permissions_check_for_accounts(connector_id, health_check)
-            return
+        if command == "test-module" and connector_id:
+            return_results(run_permissions_check_for_accounts(connector_id, health_check))
 
         if command not in command_map:
             raise NotImplementedError(f"Command not implemented: {command}")

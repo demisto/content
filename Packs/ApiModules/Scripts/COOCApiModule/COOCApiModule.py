@@ -154,19 +154,18 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     """
     all_accounts = []
     next_token = ""
-    query = f"entity_type=connector&entity_id={connector_id}"
-
     while True:
-        params = {"query": query}
+        params = {"entity_type": "connector", "entity_id": {connector_id}}
         if next_token:
             params["next_token"] = next_token
 
         result = demisto._platformAPICall(GET_ONBOARDING_ACCOUNTS, "GET", params)
+        res_json = json.loads(result["data"])
 
-        accounts = result.get("values", [])
+        accounts = res_json.get("values", [])
         all_accounts.extend(accounts)
 
-        next_token = result.get("next_token", "")
+        next_token = res_json.get("next_token", "")
         if not next_token or (max_results and len(all_accounts) >= max_results):
             break
 
