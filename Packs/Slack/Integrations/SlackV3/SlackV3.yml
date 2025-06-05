@@ -52,6 +52,7 @@ configuration:
   section: Collect
   hidden:
   - marketplacev2
+  - platform
   required: false
   options:
   - incidentAssigned
@@ -171,6 +172,7 @@ configuration:
   hidden:
   - marketplacev2
   - xsoar
+  - platform
 - display: Enable DMs to the bot
   name: enable_dm
   type: 8
@@ -519,9 +521,9 @@ script:
     hidden: true
     quickaction: true
     outputs:
-      - contextPath: Slack.Thread.ID
-        description: The Slack thread ID.
-        type: String
+    - contextPath: Slack.Thread.ID
+      description: The Slack thread ID.
+      type: String
   dockerimage: demisto/slackv3:1.0.0.3561750
   longRunning: true
   runonce: false

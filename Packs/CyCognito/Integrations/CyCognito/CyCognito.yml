@@ -18,6 +18,7 @@ configuration:
   defaultvalue: Incoming and Outgoing
   hidden:
   - marketplacev2
+  - platform
   name: mirror_direction
   options:
   - None

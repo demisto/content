@@ -96,6 +96,7 @@ configuration:
   required: false
   hidden:
   - marketplacev2
+  - platform
 description: Use the Syslog Sender integration to send messages and mirror incident War Room entries to Syslog.
 display: Syslog Sender
 name: Syslog Sender

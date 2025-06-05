@@ -57,6 +57,7 @@ configuration:
   additionalinfo: Select whether you would like cases to mirror in, out, in both directions or disabled.
   hidden:
   - marketplacev2
+  - platform
 - display: Trust any certificate (not secure)
   name: insecure
   type: 8

@@ -91,6 +91,7 @@ configuration:
   display: Incident Mirroring Direction
   hidden:
   - marketplacev2
+  - platform
   name: mirror_direction
   options:
   - None
@@ -104,6 +105,7 @@ configuration:
   display: Close Mirrored XSOAR Incident
   hidden:
   - marketplacev2
+  - platform
   name: close_incident
   type: 8
   required: false
@@ -112,6 +114,7 @@ configuration:
   display: Close Mirrored Splunk Notable Event
   hidden:
   - marketplacev2
+  - platform
   name: close_notable
   type: 8
   required: false
