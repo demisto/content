@@ -186,7 +186,7 @@ def _check_account_permissions(account: dict, connector_id: str, permission_chec
     Returns:
         Any: Result of the permission check.
     """
-    account_id = account.get("id")
+    account_id = account.get("account_id")
     if not account_id:
         demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
         return None
