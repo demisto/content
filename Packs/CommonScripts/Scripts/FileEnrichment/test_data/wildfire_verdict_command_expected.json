@@ -1,0 +1,29 @@
+{
+    "Context": {
+        "DBotScore": [
+            {
+                "Indicator": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                "Reliability": "B - Usually reliable",
+                "Score": 3,
+                "Type": "file",
+                "Vendor": "WildFire-v2"
+            }
+        ],
+        "FileEnrichment": [
+            {
+                "Source": "WildFire-v2",
+                "Score": 3,
+                "Verdict": 1,
+                "VerdictDescription": "malware",
+                "AdditionalFields": {
+                    "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                    "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                    "Verdict": 1,
+                    "VerdictDescription": "malware",
+                    "Type": "JAVA JAR"
+                }
+            }
+        ]
+    },
+    "HumanReadable": "#### Result for !wildfire-get-verdict hash=\"sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2\"\n### WildFire Verdict\n|MD5|SHA256|Verdict|VerdictDescription|\n|---|---|---|---|---|\n| md5md5md5md5md5md5md5md5md5md5md5md5md5m | sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2 | 1 | Malware |\n"
+}
