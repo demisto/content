@@ -1,5 +1,5 @@
 This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns. 
-This integration was integrated and tested with version xx of ReliaquestTakedown.
+This integration was integrated and tested with version 6.10 of ReliaquestTakedown.
 
 ## Configure ReliaquestTakedown (Partner Contribution) in Cortex
 
