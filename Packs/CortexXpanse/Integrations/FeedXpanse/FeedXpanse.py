@@ -231,7 +231,7 @@ def test_module(client: Client):  # pragma: no cover
     return_results("ok")
 
 
-def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: list) -> tuple | list:
+def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: list = []) -> tuple | list:
     """
     Fetch indicators from Xpanse API and create indicators in XSOAR.
 
@@ -245,9 +245,6 @@ def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: li
         List: raw response from API.
     """
     asset_list, asset_response = [], []
-    #JWTODO Remove
-    # if asset_type == "all":
-    #     asset_list = ["CERTIFICATE", "DOMAIN", "UNASSOCIATED_RESPONSIVE_IP"]
     for entry in asset_type:
         if "Domain" in asset_type:
             asset_list.append("DOMAIN")
