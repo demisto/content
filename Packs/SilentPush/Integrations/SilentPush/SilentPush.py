@@ -1102,10 +1102,10 @@ ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
     OutputArgument(name="takedown_reputation.asname", output_type=str, description="The name of the Autonomous System (AS)."),
     OutputArgument(name="takedown_reputation.asn", output_type=str, description="The Autonomous System Number (ASN)."),
     OutputArgument(
-        name="takedown_reputation.asn_allocation_age", output_type=int, description="The age of the ASN allocation in days."
+        name="takedown_reputation.allocation_age", output_type=int, description="The age of the ASN allocation in days."
     ),
     OutputArgument(
-        name="takedown_reputation.asn_allocation_date",
+        name="takedown_reputation.allocation_date",
         output_type=int,
         description="The date when the ASN was allocated (YYYYMMDD).",
     ),
@@ -2987,7 +2987,7 @@ def format_domain_information(response: dict[str, Any], fetch_risk_score: bool, 
             whois_info = domain_data.get("whois_info", {})
             if whois_info and isinstance(whois_info, dict):
                 if "error" in whois_info:
-                    markdown.append(f'WHOIS Error: {whois_info["error"]}')
+                    markdown.append(f"WHOIS Error: {whois_info['error']}")
                 else:
                     markdown.append(tableToMarkdown("WHOIS Information", [whois_info]))
 
@@ -3468,27 +3468,25 @@ def get_asn_takedown_reputation_command(client, args):
             outputs_prefix="SilentPush.ASNTakedownReputation",
             outputs_key_field="asn",
             outputs=takedown_history,
-            raw_response=response
+            raw_response=response,
         )
 
     if isinstance(takedown_history.get("asn_allocation_date"), int):
         try:
-            takedown_history["asn_allocation_date"] = datetime.strptime(str(takedown_history["asn_allocation_date"]), "%Y%m%d").date().isoformat()
+            takedown_history["asn_allocation_date"] = (
+                datetime.strptime(str(takedown_history["asn_allocation_date"]), "%Y%m%d").date().isoformat()
+            )
         except ValueError:
             demisto.debug(f"Failed to format date: {takedown_history.get('asn_allocation_date')}")
 
-    readable_output = tableToMarkdown(
-        f"Takedown Reputation for ASN {asn}",
-        takedown_history,
-        removeNull=True
-    )
+    readable_output = tableToMarkdown(f"Takedown Reputation for ASN {asn}", takedown_history, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SilentPush.ASNTakedownReputation",
         outputs_key_field="asn",
         outputs=takedown_history,
-        raw_response=response
+        raw_response=response,
     )
 
 

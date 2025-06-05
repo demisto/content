@@ -547,12 +547,16 @@ def test_list_ip_information_command_no_data(mock_client, mocker):
 
 
 def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
-    args = {"asn": "12345", "limit": "10", "explain": "true"}
+    args = {"asn": "13335", "limit": "10", "explain": "false"}
 
     mock_response = {
-        "asn": "12345",
-        "takedown_reputation_history": [{"date": 20240101, "score": 80}, {"date": 20240201, "score": 85}],
+        "asn": 13335,
+        "asn_allocation_age": 4014,
+        "asn_allocation_date": 20100714,
+        "asn_takedown_reputation": 0,
+        "asname": "CLOUDFLARENET, US",
     }
+
     mock_client.get_asn_takedown_reputation.return_value = mock_response
 
     mocker.patch("SilentPush.tableToMarkdown", return_value="Mocked Markdown Table")
@@ -563,11 +567,11 @@ def test_get_asn_takedown_reputation_command_success(mock_client, mocker):
     assert result.outputs_prefix == "SilentPush.ASNTakedownReputation"
     assert result.outputs_key_field == "asn"
     assert result.outputs == {
-        "asn": "12345",
-        "history": [
-            {"date": "2024-01-01", "score": 80},
-            {"date": "2024-02-01", "score": 85},
-        ],
+        "asn": 13335,
+        "asn_allocation_age": 4014,
+        "asn_allocation_date": 20100714,
+        "asn_takedown_reputation": 0,
+        "asname": "CLOUDFLARENET, US",
     }
     assert result.readable_output == "Mocked Markdown Table"
 
@@ -595,7 +599,7 @@ def test_get_asn_takedown_reputation_command_no_data(mock_client):
     assert isinstance(result, CommandResults)
     assert result.outputs_prefix == "SilentPush.ASNTakedownReputation"
     assert result.outputs_key_field == "asn"
-    assert result.outputs == {"asn": "12345", "history": []}
+    assert result.outputs is None
     assert "No takedown reputation history found for ASN: 12345" in result.readable_output
 
 
