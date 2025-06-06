@@ -1161,12 +1161,23 @@ def list_external_websites_command(client: Client, args: Dict[str, Any]) -> Comm
         else "No Results"
     )
     command_results = CommandResults(
-        outputs_prefix="ASM.ExternalWebsite", outputs_key_field="", raw_response=response, readable_output=human_readable
+        outputs_prefix="ASM", outputs_key_field="", raw_response=response, readable_output=human_readable
     )
 
-    if outputs := response.get("reply", {}).get("websites", None):
+    outputs = {}
+    if response.get("reply", {}).get("websites", None):
+        outputs["ExternalWebsite"] = response.get("reply", {}).get("websites", None)
+        outputs["ExternalWebsiteReply"] = {}
+        if response.get("reply", {}).get("next_page_token", None):
+            outputs["ExternalWebsiteReply"]["NextPageToken"] = response.get("reply", {}).get("next_page_token")
+        if response.get("reply", {}).get("total_count", None):
+            outputs["ExternalWebsiteReply"]["TotalCount"] = response.get("reply", {}).get("total_count")
+        if response.get("reply", {}).get("result_count", None):
+            outputs["ExternalWebsiteReply"]["ResultCount"] = response.get("reply", {}).get("result_count")
         command_results.outputs = outputs
-
+    else:
+        outputs = None
+        command_results.outputs = outputs
     return command_results
 
 

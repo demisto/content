@@ -978,6 +978,9 @@ script:
     outputs:
     - contextPath: ASM.ExternalWebsite
       description: A list of the websites results assets.
+    - contextPath: ASM.ExternalWebsiteReply
+      description: Contextual information about the request including total count,
+        result count and next page token.
     description: Get external websites assets.
   - name: asm-reset-last-run
     arguments: []
