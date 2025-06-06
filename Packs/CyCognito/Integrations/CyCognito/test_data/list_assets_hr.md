@@ -1,4 +1,4 @@
-### Asset List:
+### Asset List: 
  Assets Type: IP
 |Asset ID|Security Grade|Status|Organizations|Investigation Status|Severe Issues|Domain Names|First Seen|Last Seen|Hosting Type|Locations|
 |---|---|---|---|---|---|---|---|---|---|---|
