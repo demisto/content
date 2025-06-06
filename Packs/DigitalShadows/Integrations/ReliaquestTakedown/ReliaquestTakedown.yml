@@ -2,6 +2,9 @@ category: Vulnerability Management
 commonfields:
   id: ReliaquestTakedown
   version: -1
+sectionOrder:
+- Connect
+- Collect
 configuration:
 - additionalinfo: Enter the Digital Shadows SearchLight API URL.
   defaultvalue: https://api.searchlight.app
