@@ -12,7 +12,7 @@ import html
 import panos.errors
 
 from panos.base import PanDevice, VersionedPanObject, Root, ENTRY, VersionedParamPath  # type: ignore
-from panos.panorama import Panorama, DeviceGroup, Template, PanoramaCommitAll
+from panos.panorama import Panorama, DeviceGroup, Template, TemplateStack, PanoramaCommitAll
 from panos.policies import Rulebase, PreRulebase, PostRulebase, SecurityRule, NatRule
 from panos.objects import (
     LogForwardingProfile,
@@ -582,7 +582,7 @@ def do_pagination(
     if isinstance(entries, list) and page is not None:
         if page <= 0:
             raise DemistoException(f"page {page} must be a positive number")
-        entries = entries[(page - 1) * page_size : page_size * page]  # do pagination
+        entries = entries[(page - 1) * page_size: page_size * page]  # do pagination
     elif isinstance(entries, list):
         entries = entries[:limit]
 
@@ -8787,7 +8787,21 @@ class BestPractices:
     SPYWARE_BLOCK_SEVERITIES = ["critical", "high"]
     VULNERABILITY_ALERT_THRESHOLD = ["medium", "low"]
     VULNERABILITY_BLOCK_SEVERITIES = ["critical", "high"]
-    URL_BLOCK_CATEGORIES = ["command-and-control", "hacking", "malware", "phishing"]
+    URL_BLOCK_CATEGORIES = [
+        "abused-drugs",
+        "adult",
+        "command-and-control",
+        "compromised-website",
+        "gambling",
+        "grayware",
+        "hacking",
+        "malware",
+        "phishing",
+        "questionable",
+        "ransomware",
+        "scanning-activity",
+        "weapons",
+    ]
 
 
 # pan-os-python new classes
@@ -9335,7 +9349,7 @@ class Topology:
         device_filter_string: Optional[str] = None,
         container_name: Optional[str] = None,
         top_level_devices_only: Optional[bool] = False,
-    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, Vsys]]]:
+    ) -> List[Tuple[PanDevice, Union[Panorama, Firewall, DeviceGroup, Template, TemplateStack, Vsys]]]:
         """
         Given a device, returns all the possible configuration containers that can contain objects -
         vsys, device-groups, templates and template-stacks.
@@ -9358,6 +9372,10 @@ class Topology:
             templates = Template.refreshall(device)
             for template in templates:
                 containers.append((device, template))
+
+            template_stacks = TemplateStack.refreshall(device)
+            for template_stack in template_stacks:
+                containers.append((device, template_stack))
 
             virtual_systems = Vsys.refreshall(device)
             for virtual_system in virtual_systems:
@@ -9556,6 +9574,7 @@ class ShowSystemInfoResultData(ResultData):
     :param wildfire_version: Wildfire content version
     :param wildfire_release_date: Wildfire release date
     :param url_filtering_version: URL Filtering content version
+    :param global_protect_client_package_version: GlobalProtect content version
     """
 
     ip_address: str
@@ -9580,6 +9599,7 @@ class ShowSystemInfoResultData(ResultData):
     wildfire_version: str = "not_installed"
     wildfire_release_date: str = "not_installed"
     url_filtering_version: str = "not_installed"
+    global_protect_client_package_version: str = "0.0.0"
 
 
 @dataclass
@@ -10671,6 +10691,7 @@ class HygieneLookups:
         device_filter_str: Optional[str] = None,
         minimum_block_severities: Optional[List[str]] = None,
         minimum_alert_severities: Optional[List[str]] = None,
+        return_nonconforming_profiles: Optional[bool] = False,
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one vulnerability profile is configured according to visibility best practices.
@@ -10680,6 +10701,7 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
         :param minimum_block_severities: A string list of severities that MUST be in block mode
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
         """
 
         if not minimum_block_severities:
@@ -10688,6 +10710,7 @@ class HygieneLookups:
             minimum_alert_severities = BestPractices.VULNERABILITY_ALERT_THRESHOLD
 
         conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        non_conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
 
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-4"])
@@ -10700,6 +10723,24 @@ class HygieneLookups:
                 minimum_block_severities=minimum_block_severities,
                 minimum_alert_severities=minimum_alert_severities,
             )
+
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [
+                    profile for profile in vulnerability_profiles if profile not in conforming_profiles
+                ]
+
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="Vulnerability profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-4",
+                        )
+                    )
+
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -10723,6 +10764,7 @@ class HygieneLookups:
         device_filter_str: Optional[str] = None,
         minimum_block_severities: Optional[List[str]] = None,
         minimum_alert_severities: Optional[List[str]] = None,
+        return_nonconforming_profiles: Optional[bool] = False,
     ) -> ConfigurationHygieneCheckResult:
         """
         Checks the environment to ensure at least one Spyware profile is configured according to visibility best practices.
@@ -10732,6 +10774,7 @@ class HygieneLookups:
         :param device_filter_str: Filter checks to a specific device or devices
         :param minimum_alert_severities: A string list of severities that MUST be in a alert mode
         :param minimum_block_severities: A string list of severities that MUST be in block mode
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
         """
         if not minimum_block_severities:
             minimum_block_severities = BestPractices.SPYWARE_BLOCK_SEVERITIES
@@ -10739,6 +10782,7 @@ class HygieneLookups:
             minimum_alert_severities = BestPractices.SPYWARE_ALERT_THRESHOLD
 
         conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
+        non_conforming_profiles: Union[List[VulnerabilityProfile], List[AntiSpywareProfile]] = []
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-5"])
         # BP-V-5 - Check at least one AS profile exists with the correct settings.
@@ -10749,6 +10793,22 @@ class HygieneLookups:
                 minimum_block_severities=minimum_block_severities,
                 minimum_alert_severities=minimum_alert_severities,
             )
+
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [profile for profile in spyware_profiles if profile not in conforming_profiles]
+
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="Spyware profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-5",
+                        )
+                    )
+
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -10882,16 +10942,21 @@ class HygieneLookups:
         return result
 
     @staticmethod
-    def check_url_filtering_profiles(topology: Topology, device_filter_str: Optional[str] = None):
+    def check_url_filtering_profiles(
+        topology: Topology, device_filter_str: Optional[str] = None, return_nonconforming_profiles: Optional[bool] = False
+    ):
         """
         Checks the configured URL filtering profiles to make sure at least one is configured according to PAN best practices
         for visibility.
 
         :param topology: `Topology` Instance
         :param device_filter_str: Filter checks to a specific device or devices
+        :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
         """
         issues: List[ConfigurationHygieneIssue] = []
         conforming_profiles: List[URLFilteringProfile] = []
+        non_conforming_profiles: List[URLFilteringProfile] = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-6"])
         # BP-V-6 - Check at least one URL Filtering profile exists with the correct settings.
         for device, container in topology.get_all_object_containers(device_filter_str):
@@ -10899,6 +10964,24 @@ class HygieneLookups:
             conforming_profiles = conforming_profiles + HygieneLookups.get_conforming_url_filtering_profiles(
                 url_filtering_profiles
             )
+
+            if return_nonconforming_profiles:
+                current_non_conforming_profiles = [
+                    profile for profile in url_filtering_profiles if profile not in conforming_profiles
+                ]
+
+                for profile in current_non_conforming_profiles:
+                    issues.append(
+                        ConfigurationHygieneIssue(
+                            hostid=resolve_host_id(device),
+                            container_name=resolve_container_name(container),
+                            description="URL Filtering profile is not configured to block/alert on the required severity values.",
+                            name=profile.name,
+                            issue_code="BP-V-6",
+                        )
+                    )
+
+                non_conforming_profiles.extend(current_non_conforming_profiles)
 
         if len(conforming_profiles) == 0:
             issues.append(
@@ -10924,24 +11007,39 @@ class HygieneLookups:
         """
         issues = []
         check_register = HygieneCheckRegister.get_hygiene_check_register(["BP-V-7"])
-        # This is temporary only look at panorama because PAN-OS-PYTHON doesn't let us tell if a config
-        # is template pushed yet
-        for device, container in topology.get_all_object_containers(device_filter_str, top_level_devices_only=True):
+        # pan-os-python will include Panorama template-pushed zones when checking a Firewall device without indication
+        # where they are actually configured, so we have to check after.
+        for device, container in topology.get_all_object_containers(device_filter_str):
             security_zones: List[Zone] = Zone.refreshall(container)
+
+            if isinstance(device, Firewall):
+                # If this is a Firewall device, get a list of all Template-pushed Zones (if any).
+                pushed_zones = set()
+                pushed_template = run_op_command(device, "show config pushed-template")
+                vsys_entries = pushed_template.findall(".//vsys/entry")
+                for vsys_entry in vsys_entries:
+                    zone_entries = vsys_entry.findall("./zone/entry")
+                    for zone_entry in zone_entries:
+                        pushed_zones.add(zone_entry.get("name"))
+
             for security_zone in security_zones:
-                if not security_zone.log_setting:
-                    issues.append(
-                        ConfigurationHygieneIssue(
-                            hostid=resolve_host_id(device),
-                            container_name=resolve_container_name(container),
-                            description="Security zone has no log forwarding setting.",
-                            name=security_zone.name,
-                            issue_code="BP-V-7",
+                # Skip zone if it's pushed from Panorama template so we accurately represent where it is configured.
+                if isinstance(device, Firewall) and security_zone.name in pushed_zones:
+                    continue
+                else:
+                    if not security_zone.log_setting:
+                        issues.append(
+                            ConfigurationHygieneIssue(
+                                hostid=resolve_host_id(device),
+                                container_name=resolve_container_name(container),
+                                description="Security zone has no log forwarding setting.",
+                                name=security_zone.name,
+                                issue_code="BP-V-7",
+                            )
                         )
-                    )
-                    check = check_register.get("BP-V-7")
-                    check.result = UNICODE_FAIL
-                    check.issue_count += 1
+                        check = check_register.get("BP-V-7")
+                        check.result = UNICODE_FAIL
+                        check.issue_count += 1
 
         return ConfigurationHygieneCheckResult(summary_data=[item for item in check_register.values()], result_data=issues)
 
@@ -11746,6 +11844,7 @@ def check_vulnerability_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no",
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Vulnerability profiles to ensure at least one meets best practices. This will validate profiles
@@ -11755,12 +11854,14 @@ def check_vulnerability_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
     """
     return HygieneLookups.check_vulnerability_profiles(
         topology,
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
@@ -11769,6 +11870,7 @@ def check_spyware_profiles(
     device_filter_string: Optional[str] = None,
     minimum_block_severities: str = "critical,high",
     minimum_alert_severities: str = "medium,low",
+    return_nonconforming_profiles: str = "no",
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured Anti-spyware profiles to ensure at least one meets best practices.
@@ -11777,27 +11879,33 @@ def check_spyware_profiles(
     :param device_filter_string: String to filter to only check given device
     :param minimum_block_severities: csv list of severities that must be in drop/reset/block-ip mode.
     :param minimum_alert_severities: csv list of severities that must be in alert/default or higher mode.
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
     return HygieneLookups.check_spyware_profiles(
         topology,
         device_filter_str=device_filter_string,
         minimum_block_severities=argToList(minimum_block_severities),
         minimum_alert_severities=argToList(minimum_alert_severities),
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
 def check_url_filtering_profiles(
-    topology: Topology, device_filter_string: Optional[str] = None
+    topology: Topology, device_filter_string: Optional[str] = None, return_nonconforming_profiles: str = "no"
 ) -> ConfigurationHygieneCheckResult:
     """
     Checks the configured URL Filtering profiles to ensure at least one meets best practices.
 
     :param topology: `Topology` instance !no-auto-argument
     :param device_filter_string: String to filter to only check given device
+    :param return_nonconforming_profiles: Whether to return details of non-conforming profiles
+
     """
     return HygieneLookups.check_url_filtering_profiles(
         topology,
         device_filter_str=device_filter_string,
+        return_nonconforming_profiles=argToBoolean(return_nonconforming_profiles),
     )
 
 
@@ -12592,7 +12700,8 @@ def pan_os_edit_nat_rule_command(args):
         "audit-comment": ("audit-comment", "", False),
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_nat_rule(
         rule_name=rule_name,
@@ -12932,7 +13041,8 @@ def pan_os_edit_redistribution_profile_command(args):
         "filter_bgp_extended_community": ("filter/bgp/community", "extended-community", True),
     }
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_redistribution_profile(
         virtual_router_name=virtual_router_name,
@@ -13266,7 +13376,8 @@ def pan_os_edit_pbf_rule_command(args):
     if element_to_change == "action_forward_discard":
         element_value = "discard"
 
-    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(element_to_change)  # type: ignore[misc]
+    element_to_change, object_name, is_listable = elements_to_change_mapping_pan_os_paths.get(
+        element_to_change)  # type: ignore[misc]
 
     raw_response = pan_os_edit_pbf_rule(
         rule_name=rule_name,
@@ -14994,7 +15105,8 @@ def fetch_incidents(
     demisto.debug(f"last id dictionary from previous fetch is: {last_id_dict=}.")
     demisto.debug(f"last offset dictionary from previous fetch is: {offset_dict=}.")
 
-    fetch_start_datetime_dict = get_fetch_start_datetime_dict(last_fetch_dict, first_fetch, queries_dict)  # type: ignore[arg-type]
+    fetch_start_datetime_dict = get_fetch_start_datetime_dict(
+        last_fetch_dict, first_fetch, queries_dict)  # type: ignore[arg-type]
     demisto.debug(f"updated last fetch per log type: {fetch_start_datetime_dict=}.")
 
     incident_entries_dict = fetch_incidents_request(
@@ -15006,9 +15118,11 @@ def fetch_incidents(
     update_offset_dict(incident_entries_dict, last_fetch_dict, offset_dict)
 
     # remove duplicated incidents from incident_entries_dict
-    unique_incident_entries_dict = filter_fetched_entries(entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
+    unique_incident_entries_dict = filter_fetched_entries(
+        entries_dict=incident_entries_dict, id_dict=last_id_dict)  # type: ignore[arg-type]
 
-    parsed_incident_entries_list = get_parsed_incident_entries(unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
+    parsed_incident_entries_list = get_parsed_incident_entries(
+        unique_incident_entries_dict, last_fetch_dict, last_id_dict)  # type: ignore[arg-type]
 
     new_last_run = LastRun(
         last_fetch_dict=last_fetch_dict,
@@ -15073,7 +15187,8 @@ def main():  # pragma: no cover
             fetch_max_attempts = arg_to_number(params["fetch_job_polling_max_num_attempts"])
             max_fetch = cast(MaxFetch, dict.fromkeys(queries, configured_max_fetch))
 
-            new_last_run, incident_entries = fetch_incidents(last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
+            new_last_run, incident_entries = fetch_incidents(
+                last_run, first_fetch, queries, max_fetch, fetch_max_attempts)  # type: ignore[arg-type]
 
             demisto.setLastRun(new_last_run)
             demisto.incidents(incident_entries)
