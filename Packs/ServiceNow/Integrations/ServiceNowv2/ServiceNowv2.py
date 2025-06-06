@@ -1538,7 +1538,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
 
-    ticket_url = f"{instance_url}/nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
+    ticket_url = f"{instance_url}nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
     mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id)
 
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)

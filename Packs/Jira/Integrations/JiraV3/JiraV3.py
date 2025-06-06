@@ -2338,7 +2338,7 @@ def create_issue_command(
         ui_base_url = server_url
     ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
 
-    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=formatted_ticket_id)
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_key)
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
