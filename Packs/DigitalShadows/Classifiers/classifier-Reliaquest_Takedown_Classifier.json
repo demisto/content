@@ -3,7 +3,6 @@
 	"description": "",
 	"feed": false,
 	"id": "Reliaquest Takedown Classifier",
-	"itemVersion": "",
 	"keyTypeMap": {
 		"brand-abuse": "Reliaquest Takedown Type",
 		"copyright": "Reliaquest Takedown Type",
