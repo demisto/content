@@ -1314,6 +1314,7 @@
     "locked": false,
     "name": "Asimily Anomaly",
     "onChangeRepAlg": 0,
+    "playbookId": "Asimily Asset Info Enrich",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

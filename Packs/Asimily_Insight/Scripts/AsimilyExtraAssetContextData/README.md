@@ -1,4 +1,4 @@
-Asimily Preprocessing Rule for Deduplication of incoming incident. The script will be used for creating Pre-Process Rules for Incidents to avoid creating duplicate incidents. Comparison is based on incident `type` and `dbotMirrorId`.
+The script will be used for extracting asset information from context data from incidents. If playbook is applied to call `asimily-get-assetdetails` for incidents to retrieve asset details, fetched information will be saved in incident's context data under `Asimily`->`Asset`.
 
 ## Permissions
 
@@ -14,7 +14,7 @@ For more information, see the section about permissions here: For Cortex XSOAR 6
 | **Name** | **Description** |
 | --- | --- |
 | Script Type | python |
-| Tags | preProcessing |
+| Tags | dynamic-section |
 
 ## Inputs
 
@@ -24,4 +24,5 @@ There are no inputs for this script.
 ## Outputs
 
 ---
-Returns `False` if incident already exists to Drop incoming incident. Otherwise return `True`.
+Returns formatted markdown table as CommandResults listing attributes fetched from context data under `Asimily`->`Asset`. of incident.
+

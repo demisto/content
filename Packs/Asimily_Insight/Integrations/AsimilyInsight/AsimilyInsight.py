@@ -30,16 +30,25 @@ LOW_RISK_CVE_LIMIT = 0.0
 MAX_FETCH_PAGE_LIMIT = 500
 MAX_FETCH_TOTAL_LIMIT = 1000
 
+# CLI command fetch limit
 MAX_FETCH_TOTAL_LIMIT_ASSETS = 1200
 MAX_FETCH_PAGE_LIMIT_ASSETS = 400
-MAX_FETCH_TOTAL_LIMIT_ASSETS_WITH_APP = 50
-MAX_FETCH_PAGE_LIMIT_ASSETS_WITH_APP = 50
+MAX_FETCH_TOTAL_LIMIT_ASSETS_WITH_APP = 100
+MAX_FETCH_PAGE_LIMIT_ASSETS_WITH_APP = 100
 
-MAX_FETCH_TOTAL_LIMIT_ANOMALIES = 100  # 800
-MAX_FETCH_PAGE_LIMIT_ANOMALIES = 100  # 100
+# CLI command fetch limit
+MAX_FETCH_TOTAL_LIMIT_ANOMALIES_CLI = 10000
+MAX_FETCH_PAGE_LIMIT_ANOMALIES_CLI = 100
 
-MAX_FETCH_TOTAL_LIMIT_CVES = 100  # 800
-MAX_FETCH_PAGE_LIMIT_CVES = 25  # 50
+MAX_FETCH_TOTAL_LIMIT_CVES_CLI = 10000
+MAX_FETCH_PAGE_LIMIT_CVES_CLI = 50
+
+# Internal limit of Anomalies/CVEs incident fetch limit per fetch
+MAX_FETCH_TOTAL_LIMIT_ANOMALIES = 200
+MAX_FETCH_PAGE_LIMIT_ANOMALIES = 100
+
+MAX_FETCH_TOTAL_LIMIT_CVES = 200
+MAX_FETCH_PAGE_LIMIT_CVES = 25
 
 ASIMILY_INSIGHT_FETCH_DEVICE_CVES_API = "/api/extapi/assets/device-cves"
 ASIMILY_INSIGHT_FETCH_DEVICE_ANOMALIES_API = "/api/extapi/assets/anomalies"
@@ -47,6 +56,102 @@ ASIMILY_INSIGHT_FETCH_ASSETS_API = "/api/extapi/assets"
 
 ANOMALIES_API_SORT_DEVICE_ID = "deviceRangeId"
 CVES_API_SORT_DEVICE_ID = "deviceInfoId"
+
+ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER = [
+    "asimilydeviceid",
+    "asimilydevicemacaddress",
+    "asimilydeviceipv4address",
+    "asimilydevicemanufacturer",
+    "asimilydevicemodel",
+    "asimilydevicehostname",
+    "asimilydeviceos",
+    "asimilydeviceosversion",
+    "asimilydevicetype",
+    "asimilydeviceserialnumber",
+    "asimilydevicefamilies",
+    "asimilydevicetag",
+    "asimilydevicedepartment",
+    "asimilydevicefacility",
+    "asimilydevicehardwarearchitecture",
+    "asimilydevicelocation",
+    "asimilydeviceregion",
+    "asimilydevicesoftwareverison",
+    "asimilydeviceifstoreephi",
+    "asimilydeviceiftransmitephi",
+    "asimilydeviceifusingendpointsecurity",
+    "asimilydeviceriskscore",
+    "asimilydevicelikelihood",
+    "asimilydeviceimpact",
+    "asimilydeviceaverageutilizationpercent",
+    "asimilydeviceuptime",
+    "asimilydeviceisconnected",
+    "asimilydeviceiscurrentlyinuse",
+    "asimilydeviceisnetworkingdevice",
+    "asimilydeviceiswireless",
+    "asimilydeviceclass",
+    "asimilydevicemanagedby",
+    "asimilydeviceanomalypresent",
+    "asimilydevicemds2",
+    "asimilydevicecmmsid",
+    "asimilydevicelastdiscoveredtime",
+    "asimilydevicemasterfamily",
+    "asimilydevicediscoverysource",
+    "asimilydeviceapplications",
+    "asimilydeviceurl",
+    "asimilydeviceipv6address",
+]
+
+ASIMILY_ANOMALY_CONTEXT_OUTPUT_KEY_ORDER = [
+    "asimilyanomalyname",
+    "asimilyanomalycriticality",
+    "asimilyanomalyearliesttriggertime",
+    "asimilyanomalylasttriggertime",
+    "asimilyanomalyalertid",
+    "asimilyanomalyurls",
+    "asimilyanomalyisfixed",
+    "asimilyanomalyfixby",
+    "asimilyanomalycriticalityscore",
+    "asimilyanomalymitretactic",
+    "asimilyanomalymitrecategory",
+    "asimilyanomalycategory",
+    "asimilyanomalydescription",
+    "asimilydeviceid",
+    "asimilydevicemacaddress",
+    "asimilydeviceipv4address",
+    "asimilydevicehostname",
+    "asimilydevicetype",
+    "asimilydevicemodel",
+    "asimilydeviceos",
+    "asimilydevicemanufacturer",
+    "asimilydevicefamilies",
+]
+
+ASIMILY_CVE_CONTEXT_OUTPUT_KEY_ORDER = [
+    "asimilycvename",
+    "asimilycvecwetype",
+    "asimilycveentitytype",
+    "asimilycveentityname",
+    "asimilycvescore",
+    "asimilycvecvss3basescore",
+    "asimilycvedescripttion",
+    "asimilycveisfixed",
+    "asimilycvefixedby",
+    "asimilycveoempatched",
+    "asimilycveismuted",
+    "asimilycveexploitableinwild",
+    "asimilycvepublisheddate",
+    "asimilycveopendate",
+    "asimilycvefixeddate",
+    "asimilydeviceid",
+    "asimilydevicemacaddress",
+    "asimilydeviceipv4address",
+    "asimilydevicehostname",
+    "asimilydevicetype",
+    "asimilydevicemodel",
+    "asimilydeviceos",
+    "asimilydevicemanufacturer",
+    "asimilydevicefamilies",
+]
 
 QueryFilterType: TypeAlias = dict[str, Any]
 
@@ -122,7 +227,7 @@ class Client(BaseClient):
                     break
 
         if total_incident_count >= limit:
-            print_debug_msg(f"Stop fetching incidents as limit exceeded, fetched {total_incident_count} events.")
+            print_debug_msg(f"Stop fetching events as limit exceeded, fetched {total_incident_count} events.")
             return total_elements, records
 
         if page_end is not None and total_pages > 1:
@@ -130,7 +235,7 @@ class Client(BaseClient):
 
         for page_num in range(1, total_pages):
             print_debug_msg(
-                f"Fetching incidents for page {page_num} with page size {size} with {total_incident_count} incidents fetched."
+                f"Fetching events for page {page_num} with page size {size} with {total_incident_count} events fetched."
             )
             page_data = paginated_getter_func(filters=filters, page=page_num, size=size, args=args)
             if len(records) > 0 and "v4IpAddrs" in records[0]:
@@ -145,9 +250,10 @@ class Client(BaseClient):
                         break
 
             if total_incident_count >= limit:
-                print_debug_msg(f"Stop fetching incidents as limit exceeded, fetched {total_incident_count} events.")
+                print_debug_msg(f"Stop fetching events as limit exceeded, fetched {total_incident_count} events.")
                 break
 
+        records = records[:limit]
         return total_elements, records
 
     def get_asset_applications_by_mac_addr(self, mac_addr) -> list[dict]:
@@ -316,7 +422,9 @@ def populate_asimily_asset_anomaly_incident_system_field(incident, raw_data, dev
         return
     incident["type"] = "Asimily Anomaly"
     incident["severity"] = ASIMILY_ANOMALY_CRITICALITY_INCIDENT_CRITICALITY_MAPPING.get(raw_data.get("criticality"), 0)
-    incident["dbotMirrorId"] = str(raw_data.get("alertId"))
+    incident["dbotMirrorId"] = str(raw_data.get("alertId")) + (
+        ("|" + str(device_data.get("deviceId"))) if device_data.get("deviceId") else ""
+    )
 
     # anomalyname|hostname|ip|mac TODO: hostname not provided yet
     incident["name"] = raw_data.get("anomaly") if raw_data.get("anomaly") else ""
@@ -343,22 +451,6 @@ def populate_asimily_asset_cve_incident_system_field(incident, raw_data, device_
         incident["name"] = incident["name"] + "|" + device_data.get("ipAddr")
     if device_data.get("macAddr"):
         incident["name"] = incident["name"] + "|" + device_data.get("macAddr")
-    incident["name"] = incident["name"].lstrip("|")
-
-
-def populate_asimily_asset_incident_system_field(incident, raw_data):
-    if raw_data is None:
-        return
-    incident["type"] = "Asimily Asset"
-    incident["severity"] = INCIDENT_CRITICALITY_INFORMATIONAL
-    incident["dbotMirrorId"] = str(raw_data.get("deviceID"))
-
-    # hostname|ip|mac
-    incident["name"] = raw_data.get("hostName") if raw_data.get("hostName") else ""
-    if raw_data.get("v4IpAddrs"):
-        incident["name"] = incident["name"] + "|" + raw_data["v4IpAddrs"][0]
-    if raw_data.get("macAddr"):
-        incident["name"] = incident["name"] + "|" + raw_data.get("macAddr")
     incident["name"] = incident["name"].lstrip("|")
 
 
@@ -390,6 +482,10 @@ def create_filter_json(
     for key, value in input_filters.items():
         # Skip if value is "All" or a list containing "All"
         if value == "All" or (isinstance(value, list) and "All" in value):
+            continue
+
+        # Skip adding limit as filter
+        if key == "limit":
             continue
 
         # Handle criticality
@@ -554,7 +650,7 @@ def construct_asimily_asset_portal_url(portal_base_url, asimilydeviceid):
     return None
 
 
-def map_asimily_asset_entity_from_asimily_assests_json(client: Client, incident, raw_data, base_url):
+def map_asimily_asset_entity_from_asimily_assets_json(client: Client, incident, raw_data, base_url):
     incident["customFields"] = {}
     if raw_data is None:
         return
@@ -607,29 +703,6 @@ def map_asimily_asset_entity_from_asimily_assests_json(client: Client, incident,
         incident["customFields"]["asimilydeviceapplications"] = client.get_asset_applications_by_mac_addr(raw_data.get("macAddr"))
 
 
-def populate_asimily_asset_incident_system_custom_field(incident, raw_data):
-    custom_fields = {}
-    custom_fields["deviceid"] = str(raw_data.get("deviceID")) if raw_data.get("deviceID") else None
-    if raw_data and raw_data.get("v4IpAddrs"):
-        custom_fields["devicelocalip"] = raw_data["v4IpAddrs"][0]
-    custom_fields["devicemacaddress"] = raw_data.get("macAddr")
-    custom_fields["vendorid"] = raw_data.get("manufacturer")
-    custom_fields["devicemodel"] = raw_data.get("deviceModel")
-    custom_fields["deviceosname"] = raw_data.get("os")
-    custom_fields["deviceosversion"] = raw_data.get("osVersion")
-    custom_fields["devicename"] = raw_data.get("deviceType")
-    custom_fields["department"] = raw_data.get("department")
-    custom_fields["hostnames"] = raw_data.get("hostName")
-    custom_fields["location"] = raw_data.get("location")
-    custom_fields["riskscore"] = str(raw_data.get("riskScore")) if raw_data.get("riskScore") else None
-    custom_fields["managername"] = raw_data.get("managedBy")
-    custom_fields["assetid"] = raw_data.get("cmmsId")
-    if incident.get("customFields") is None:
-        incident["customFields"] = custom_fields
-    else:
-        incident.get("customFields").update(custom_fields)
-
-
 def get_asset_anomalies_cves_asimily_device_fields(device_obj):
     device_fields = {}
     device_fields["asimilydeviceid"] = device_obj.get("deviceId")
@@ -643,6 +716,13 @@ def get_asset_anomalies_cves_asimily_device_fields(device_obj):
     if device_obj.get("deviceFamily"):
         device_family_str = device_obj.get("deviceFamily")
         device_fields["asimilydevicefamilies"] = [s.strip() for s in device_family_str.split(",")]
+
+    # populate built-in incident fields for search
+    device_fields["devicelocalip"] = device_obj.get("ipAddr")  # searchable
+    device_fields["macaddress"] = device_obj.get("macAddr")  # searchable
+    device_fields["devicemodel"] = device_obj.get("deviceModel")  # searchable
+    device_fields["hostnames"] = device_obj.get("hostName")  # searchable
+
     return device_fields
 
 
@@ -658,7 +738,9 @@ def populate_asset_anomalies_asimily_anomaly_fields(incident, anomaly_obj):
         format_date(dateparser.parse(anomaly_obj.get("latestTriggerTime"))) if anomaly_obj.get("latestTriggerTime") else None
     )
     anomaly_fields["asimilyanomalyalertid"] = anomaly_obj.get("alertId")
-    anomaly_fields["asimilyanomalyurls"] = anomaly_obj.get("destinationIpAddress")
+
+    value = anomaly_obj.get("domainDeviceOrIpDevice")
+    anomaly_fields["asimilyanomalyurls"] = [x.strip() for x in value.split(",")] if value else []
     anomaly_fields["asimilyanomalyisfixed"] = anomaly_obj.get("isFixed") == 55
     anomaly_fields["asimilyanomalyfixby"] = anomaly_obj.get("fixBy")
     anomaly_fields["asimilyanomalycriticalityscore"] = anomaly_obj.get("anomalyScore")
@@ -692,6 +774,7 @@ def populate_asset_cves_asimily_cve_fields(incident, cve_obj):
     cve_fields["asimilycvefixeddate"] = (
         format_date(dateparser.parse(cve_obj.get("fixedDate"))) if cve_obj.get("fixedDate") else None
     )
+
     if incident.get("customFields") is None:
         incident["customFields"] = cve_fields
     else:
@@ -705,7 +788,20 @@ def get_asset_anomalies_command(client: Client, args, if_from_fetch_incident):
         incidents, last_device_id, total_elements: when triggered from fetch-incident
 
     """
-    total_elements, init_data = client.force_get_asset_anomalies(args=args)
+    try:
+        limit = int(args.get("limit", 0))
+    except (ValueError, TypeError):
+        limit = 0
+
+    page_size_limit = MAX_FETCH_PAGE_LIMIT_ANOMALIES if if_from_fetch_incident else MAX_FETCH_PAGE_LIMIT_ANOMALIES_CLI
+    total_limit = MAX_FETCH_TOTAL_LIMIT_ANOMALIES if if_from_fetch_incident else MAX_FETCH_TOTAL_LIMIT_ANOMALIES_CLI
+    if limit > 0:
+        page_size_limit = min(page_size_limit, limit)
+        total_limit = min(limit, total_limit)
+
+    total_elements, init_data = client.force_get_asset_anomalies(
+        args=args, page_size_limit=page_size_limit, total_limit=total_limit
+    )
     anomaly_incidents = []
     last_device_id = None
     for device_obj in init_data:
@@ -714,24 +810,40 @@ def get_asset_anomalies_command(client: Client, args, if_from_fetch_incident):
         last_device_id = device_obj.get("deviceId")
         for anomaly_obj in device_anomaly_list:
             incident = {}
-            incident["customFields"] = device_fields_dict
+            incident["customFields"] = device_fields_dict.copy()
             populate_asimily_asset_anomaly_incident_system_field(incident, anomaly_obj, device_obj)
             populate_asset_anomalies_asimily_anomaly_fields(incident, anomaly_obj)
             anomaly_incidents.append(incident)
-    print_debug_msg(
-        f"Fetched {len(anomaly_incidents)} anomalies incidents for {len(init_data)} devices "
-        f"matching search for creation, total matching device count is {total_elements}"
+    msg = (
+        f"Fetched {len(anomaly_incidents)} anomalies for {len(init_data)} devices "
+        f"matching search, total matching device count is {total_elements}"
     )
+    print_debug_msg(msg)
+
+    # return CommandResults when calling from CLI command
     if not if_from_fetch_incident:
-        demisto.createIncidents(anomaly_incidents)
-        msg = f"Fetched {len(anomaly_incidents)} anomalies incidents for {len(init_data)} devices matching search for creation"
-        msg += ", duplicate anomalies will be skipped."
+        msg = f"Fetched {len(anomaly_incidents)} anomalies for {len(init_data)} devices matching search."
         if total_elements and total_elements > len(init_data):
             msg = (
                 msg + f"\n{total_elements - len(init_data)} devices matching search is not fetched. "
-                f"Incident fetch count is limited to avoid server overload."
+                f"Fetch count is limited to avoid server overload."
             )
-        return_results(msg)
+
+        asimily_anomaly_list = [item["customFields"] for item in anomaly_incidents if "customFields" in item]
+
+        human_readable_output = tableToMarkdown(
+            "Asimily Insight Anomalies List", asimily_anomaly_list, headers=ASIMILY_ANOMALY_CONTEXT_OUTPUT_KEY_ORDER
+        )
+        results = CommandResults(
+            readable_output=f"{msg}\n\n{human_readable_output}",
+            outputs_prefix="AsimilyInsight.Anomaly",
+            outputs_key_field=["asimilydeviceid", "asimilyanomalyname"],
+            outputs=asimily_anomaly_list,
+            ignore_auto_extract=True,
+        )
+        return_results(results)
+
+    # return incident list for incident creation
     return anomaly_incidents, last_device_id, total_elements
 
 
@@ -742,7 +854,18 @@ def get_asset_cves_command(client: Client, args, if_from_fetch_incident):
         incidents, last_device_id, total_elements: when triggered from fetch-incident
 
     """
-    total_elements, init_data = client.force_get_asset_cves(args=args)
+    try:
+        limit = int(args.get("limit", 0))
+    except (ValueError, TypeError):
+        limit = 0
+
+    page_size_limit = MAX_FETCH_PAGE_LIMIT_CVES if if_from_fetch_incident else MAX_FETCH_PAGE_LIMIT_CVES_CLI
+    total_limit = MAX_FETCH_TOTAL_LIMIT_CVES if if_from_fetch_incident else MAX_FETCH_TOTAL_LIMIT_CVES_CLI
+    if limit > 0:
+        page_size_limit = min(page_size_limit, limit)
+        total_limit = min(limit, total_limit)
+
+    total_elements, init_data = client.force_get_asset_cves(args=args, page_size_limit=page_size_limit, total_limit=total_limit)
     cves_incidents = []
     last_device_id = None
     for device_obj in init_data:
@@ -751,37 +874,63 @@ def get_asset_cves_command(client: Client, args, if_from_fetch_incident):
         last_device_id = device_obj.get("deviceId")
         for cve_obj in device_cve_list:
             incident = {}
-            incident["customFields"] = device_fields_dict
+            incident["customFields"] = device_fields_dict.copy()
             populate_asimily_asset_cve_incident_system_field(incident, cve_obj, device_obj)
             populate_asset_cves_asimily_cve_fields(incident, cve_obj)
             cves_incidents.append(incident)
-    print_debug_msg(
-        f"Fetched {len(cves_incidents)} CVEs incidents for {len(init_data)} devices "
-        f"matching search for creation, total matching device count is {total_elements}"
+
+    msg = (
+        f"Fetched {len(cves_incidents)} CVEs for {len(init_data)} devices "
+        f"matching search, total matching device count is {total_elements}"
     )
+    print_debug_msg(msg)
+
+    # return CommandResults when calling from CLI command
     if not if_from_fetch_incident:
-        demisto.createIncidents(cves_incidents)
-        msg = f"Fetched {len(cves_incidents)} CVEs incidents for {len(init_data)} devices matching search for creation"
-        msg += ", duplicate CVEs will be skipped."
+        msg = f"Fetched {len(cves_incidents)} CVEs for {len(init_data)} devices matching search."
         if total_elements and total_elements > len(init_data):
             msg = (
                 msg + f"\n{total_elements - len(init_data)} devices matching search is not fetched. "
-                f"Incident fetch count is limited to avoid server overload."
+                f"Fetch count is limited to avoid server overload."
             )
-        return_results(msg)
+
+        asimily_cve_list = [item["customFields"] for item in cves_incidents if "customFields" in item]
+
+        human_readable_output = tableToMarkdown(
+            "Asimily Insight CVEs List", asimily_cve_list, headers=ASIMILY_CVE_CONTEXT_OUTPUT_KEY_ORDER
+        )
+        results = CommandResults(
+            readable_output=f"{msg}\n\n{human_readable_output}",
+            outputs_prefix="AsimilyInsight.CVE",
+            outputs_key_field=["asimilydeviceid", "asimilycvename"],
+            outputs=asimily_cve_list,
+            ignore_auto_extract=True,
+        )
+        return_results(results)
+
+    # return incident list for incident creation
     return cves_incidents, last_device_id, total_elements
 
 
-def get_asset_details_command(client: Client, args):
+def get_asset_details_command(client: Client, args) -> CommandResults:
     if_fetch_applications = True  # For now we need to fetch assets with applications and query apps in separate call always
     init_data: List[Any] = []
 
-    if if_fetch_applications:
-        total_elements, init_data = client.force_get_asset_details(
-            args=args, page_size_limit=MAX_FETCH_PAGE_LIMIT_ASSETS_WITH_APP, total_limit=MAX_FETCH_TOTAL_LIMIT_ASSETS_WITH_APP
-        )
-    else:
-        total_elements, init_data = client.force_get_asset_details(args=args)
+    try:
+        limit = int(args.get("limit", 0))
+    except (ValueError, TypeError):
+        limit = 0
+
+    page_size_limit = MAX_FETCH_PAGE_LIMIT_ASSETS_WITH_APP if if_fetch_applications else MAX_FETCH_PAGE_LIMIT_ASSETS
+    total_limit = MAX_FETCH_TOTAL_LIMIT_ASSETS_WITH_APP if if_fetch_applications else MAX_FETCH_TOTAL_LIMIT_ASSETS
+    if limit > 0:
+        page_size_limit = min(page_size_limit, limit)
+        total_limit = min(limit, total_limit)
+
+    total_elements, init_data = client.force_get_asset_details(
+        args=args, page_size_limit=page_size_limit, total_limit=total_limit
+    )
+
     incidents = []
     if init_data:
         counter = 0
@@ -790,39 +939,56 @@ def get_asset_details_command(client: Client, args):
                 counter += 1
                 print_debug_msg(f"Processing {counter} device details for incident creation.")
                 entity: Dict[str, Any] = {}
-                populate_asimily_asset_incident_system_field(entity, raw_data)
-                map_asimily_asset_entity_from_asimily_assests_json(client, entity, raw_data, client.get_base_url())
-                populate_asimily_asset_incident_system_custom_field(entity, raw_data)
-                incidents.append(entity)
+                map_asimily_asset_entity_from_asimily_assets_json(client, entity, raw_data, client.get_base_url())
+                incidents.append(entity["customFields"])
             except Exception as e:
                 print_debug_msg(f"Failure during converting asset incident: {str(e)}")
-    demisto.createIncidents(incidents)
-    print_debug_msg(
-        f"Fecthed {len(incidents)} out of {total_elements} incidents matching search for creation, "
-        f"duplicate assets will be skipped. "
-        f"Incident fetch count is limited to avoid server overload."
+
+    msg = (
+        f"Fecthed {len(incidents)} out of {total_elements} assets matching search. "
+        f"Asset fetch count is limited to avoid server overload."
     )
-    return_results(
-        f"Fecthed {len(incidents)} out of {total_elements} incidents matching search for creation, "
-        f"duplicate assets will be skipped. "
-        f"Incident fetch count is limited to avoid server overload."
+
+    print_debug_msg(msg)
+
+    asimily_asset_list = incidents
+    human_readable_output = tableToMarkdown(
+        "Asimily Insight Asset Details List", asimily_asset_list, headers=ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER
     )
+    results = CommandResults(
+        readable_output=f"{msg}\n\n{human_readable_output}",
+        outputs_prefix="AsimilyInsight.Asset",
+        outputs_key_field="asimilydeviceid",
+        outputs=incidents,
+        ignore_auto_extract=True,
+    )
+    return_results(results)
 
 
 def update_next_run(last_run: dict, updated: dict, flags: dict) -> dict:
-    next_run = {"last_fetched_incident_type": "anomaly" if flags.get("trigger_anomalies_fetch") else "cve"}
-    if flags.get("last_fetched_anomaly_device_id") is not None:
-        next_run["last_fetched_anomaly_device_id"] = str(flags["last_fetched_anomaly_device_id"])
-    if flags.get("last_fetched_cve_device_id") is not None:
-        next_run["last_fetched_cve_device_id"] = str(flags["last_fetched_cve_device_id"])
-    if flags.get("last_full_anomaly_sync_start_time"):
-        next_run["last_full_anomaly_sync_start_time"] = format_date(flags["last_full_anomaly_sync_start_time"])
-    if flags.get("current_full_anomaly_sync_start_time"):
-        next_run["current_full_anomaly_sync_start_time"] = format_date(flags["current_full_anomaly_sync_start_time"])
-    if flags.get("last_full_cve_sync_start_time"):
-        next_run["last_full_cve_sync_start_time"] = format_date(flags["last_full_cve_sync_start_time"])
-    if flags.get("current_full_cve_sync_start_time"):
-        next_run["current_full_cve_sync_start_time"] = format_date(flags["current_full_cve_sync_start_time"])
+    """
+    LastRun Object key:
+        last_type: "anomaly" or "cve". The last fetch-incident run's fetch entity type. Anomalies/CVEs are fetched in turns
+        last_anomaly_deviceid: last asimily device id that we fetched the anomalies for.
+        last_cve_deviceid: last asimily device id that we fetched the cves for.
+        last_anom_syncstart: the last full sync of anomaly start time. Used as anomaliesLastUpdatedSince filter for fetch.
+        last_cve_syncstart: the last full sync of cve start time. Used as the cvesLastUpdatedSince filter for fetch.
+        cur_anom_syncstart: the current full sync of anomaly start time.
+        cur_cve_syncstart: the current full sync of cve start time.
+    """
+    next_run = {"last_type": "anomaly" if flags.get("trigger_anomalies_fetch") else "cve"}
+    if flags.get("last_anomaly_deviceid") is not None:
+        next_run["last_anomaly_deviceid"] = str(flags["last_anomaly_deviceid"])
+    if flags.get("last_cve_deviceid") is not None:
+        next_run["last_cve_deviceid"] = str(flags["last_cve_deviceid"])
+    if flags.get("last_anom_syncstart"):
+        next_run["last_anom_syncstart"] = format_date(flags["last_anom_syncstart"])
+    if flags.get("cur_anom_syncstart"):
+        next_run["cur_anom_syncstart"] = format_date(flags["cur_anom_syncstart"])
+    if flags.get("last_cve_syncstart"):
+        next_run["last_cve_syncstart"] = format_date(flags["last_cve_syncstart"])
+    if flags.get("cur_cve_syncstart"):
+        next_run["cur_cve_syncstart"] = format_date(flags["cur_cve_syncstart"])
 
     return {**last_run, **next_run, **updated}
 
@@ -837,16 +1003,16 @@ def should_trigger_cve(params: dict, last_type: str) -> bool:
 
 def fetch_asimily_incidents(client: Client, args, params):
     last_run = demisto.getLastRun() or {}
-    last_type = last_run.get("last_fetched_incident_type", "anomaly")
+    last_type = last_run.get("last_type", "anomaly")
     print_debug_msg(f"Last run type: {last_type}")
 
     flags = {
-        "last_fetched_anomaly_device_id": int(last_run.get("last_fetched_anomaly_device_id", 0)),
-        "last_fetched_cve_device_id": int(last_run.get("last_fetched_cve_device_id", 0)),
-        "last_full_anomaly_sync_start_time": last_run.get("last_full_anomaly_sync_start_time"),
-        "last_full_cve_sync_start_time": last_run.get("last_full_cve_sync_start_time"),
-        "current_full_anomaly_sync_start_time": last_run.get("current_full_anomaly_sync_start_time"),
-        "current_full_cve_sync_start_time": last_run.get("current_full_cve_sync_start_time"),
+        "last_anomaly_deviceid": int(last_run.get("last_anomaly_deviceid", 0)),
+        "last_cve_deviceid": int(last_run.get("last_cve_deviceid", 0)),
+        "last_anom_syncstart": last_run.get("last_anom_syncstart"),
+        "last_cve_syncstart": last_run.get("last_cve_syncstart"),
+        "cur_anom_syncstart": last_run.get("cur_anom_syncstart"),
+        "cur_cve_syncstart": last_run.get("cur_cve_syncstart"),
     }
     print_debug_msg(f"Initial flags: {flags}")
 
@@ -861,38 +1027,36 @@ def fetch_asimily_incidents(client: Client, args, params):
     incidents = []
 
     if flags["trigger_anomalies_fetch"]:
-        updated_args["deviceRangeId"] = flags["last_fetched_anomaly_device_id"]
-        if flags["last_full_anomaly_sync_start_time"]:
-            updated_args["anomaliesLastUpdatedSince"] = flags["last_full_anomaly_sync_start_time"]
+        updated_args["deviceRangeId"] = flags["last_anomaly_deviceid"]
+        if flags["last_anom_syncstart"]:
+            updated_args["anomaliesLastUpdatedSince"] = flags["last_anom_syncstart"]
 
-        if flags["current_full_anomaly_sync_start_time"] is None:  # first full sync
-            flags["current_full_anomaly_sync_start_time"] = datetime.utcnow()
+        if flags["cur_anom_syncstart"] is None:  # first full sync
+            flags["cur_anom_syncstart"] = datetime.utcnow()
 
         print_debug_msg(f"Fetching anomalies with args: {updated_args}")
-        incidents, flags["last_fetched_anomaly_device_id"], total_elements = get_asset_anomalies_command(
-            client, updated_args, True
-        )
+        incidents, flags["last_anomaly_deviceid"], total_elements = get_asset_anomalies_command(client, updated_args, True)
         print_debug_msg(f"Fetched {len(incidents)} anomaly incidents for {total_elements} devices")
         if total_elements == 0:
-            flags["last_fetched_anomaly_device_id"] = 0
-            flags["last_full_anomaly_sync_start_time"] = flags["current_full_anomaly_sync_start_time"]
-            flags["current_full_anomaly_sync_start_time"] = datetime.utcnow()
+            flags["last_anomaly_deviceid"] = 0
+            flags["last_anom_syncstart"] = flags["cur_anom_syncstart"]
+            flags["cur_anom_syncstart"] = datetime.utcnow()
 
     if flags["trigger_cves_fetch"]:
-        updated_args["deviceRangeId"] = flags["last_fetched_cve_device_id"]
-        if flags["last_full_cve_sync_start_time"]:
-            updated_args["cvesLastUpdatedSince"] = flags["last_full_cve_sync_start_time"]
+        updated_args["deviceRangeId"] = flags["last_cve_deviceid"]
+        if flags["last_cve_syncstart"]:
+            updated_args["cvesLastUpdatedSince"] = flags["last_cve_syncstart"]
 
-        if flags["current_full_cve_sync_start_time"] is None:  # first full sync
-            flags["current_full_cve_sync_start_time"] = datetime.utcnow()
+        if flags["cur_cve_syncstart"] is None:  # first full sync
+            flags["cur_cve_syncstart"] = datetime.utcnow()
 
         print_debug_msg(f"Fetching CVEs with args: {updated_args}")
-        incidents, flags["last_fetched_cve_device_id"], total_elements = get_asset_cves_command(client, updated_args, True)
+        incidents, flags["last_cve_deviceid"], total_elements = get_asset_cves_command(client, updated_args, True)
         print_debug_msg(f"Fetched {len(incidents)} CVE incidents for {total_elements} devices")
         if total_elements == 0:
-            flags["last_fetched_cve_device_id"] = 0
-            flags["last_full_cve_sync_start_time"] = flags["current_full_cve_sync_start_time"]
-            flags["current_full_cve_sync_start_time"] = datetime.utcnow()
+            flags["last_cve_deviceid"] = 0
+            flags["last_cve_syncstart"] = flags["cur_cve_syncstart"]
+            flags["cur_cve_syncstart"] = datetime.utcnow()
 
     print_debug_msg(f"Pushing {len(incidents)} incidents to XSOAR")
     demisto.incidents(incidents)

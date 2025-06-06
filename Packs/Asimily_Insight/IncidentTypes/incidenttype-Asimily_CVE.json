@@ -1305,6 +1305,7 @@
     "locked": false,
     "name": "Asimily CVE",
     "onChangeRepAlg": 0,
+    "playbookId": "Asimily Asset Info Enrich",
     "readonly": false,
     "reputationCalc": 0,
     "system": false,

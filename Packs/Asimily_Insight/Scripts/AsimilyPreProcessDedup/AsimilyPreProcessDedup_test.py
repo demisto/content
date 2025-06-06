@@ -1,6 +1,6 @@
 import demistomock as demisto  # noqa: F401
 import pytest
-from PreProcessAsimilyDedup import main
+from AsimilyPreProcessDedup import main
 
 
 @pytest.mark.parametrize(

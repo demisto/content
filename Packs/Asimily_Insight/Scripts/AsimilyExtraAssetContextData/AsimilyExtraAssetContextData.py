@@ -1,0 +1,57 @@
+from CommonServerPython import *  # noqa: F401
+
+ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER = [
+    "asimilydeviceid",
+    "asimilydevicemacaddress",
+    "asimilydeviceipv4address",
+    "asimilydevicemanufacturer",
+    "asimilydevicemodel",
+    "asimilydevicehostname",
+    "asimilydeviceos",
+    "asimilydeviceosversion",
+    "asimilydevicetype",
+    "asimilydeviceserialnumber",
+    "asimilydevicefamilies",
+    "asimilydevicetag",
+    "asimilydevicedepartment",
+    "asimilydevicefacility",
+    "asimilydevicehardwarearchitecture",
+    "asimilydevicelocation",
+    "asimilydeviceregion",
+    "asimilydevicesoftwareverison",
+    "asimilydeviceifstoreephi",
+    "asimilydeviceiftransmitephi",
+    "asimilydeviceifusingendpointsecurity",
+    "asimilydeviceriskscore",
+    "asimilydevicelikelihood",
+    "asimilydeviceimpact",
+    "asimilydeviceaverageutilizationpercent",
+    "asimilydeviceuptime",
+    "asimilydeviceisconnected",
+    "asimilydeviceiscurrentlyinuse",
+    "asimilydeviceisnetworkingdevice",
+    "asimilydeviceiswireless",
+    "asimilydeviceclass",
+    "asimilydevicemanagedby",
+    "asimilydeviceanomalypresent",
+    "asimilydevicemds2",
+    "asimilydevicecmmsid",
+    "asimilydevicelastdiscoveredtime",
+    "asimilydevicemasterfamily",
+    "asimilydevicediscoverysource",
+    "asimilydeviceapplications",
+    "asimilydeviceurl",
+    "asimilydeviceipv6address",
+]
+
+
+def main():
+    context_data = demisto.context().get("AsimilyInsight", {}).get("Asset", {})
+    table = tableToMarkdown("Asset Details", context_data, headers=ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER)
+    return_results(
+        CommandResults(readable_output=table, outputs_prefix="AsimilyInsight.Asset", outputs_key_field="asimilydeviceid")
+    )
+
+
+if __name__ in ("__main__", "__builtin__", "builtins"):
+    main()

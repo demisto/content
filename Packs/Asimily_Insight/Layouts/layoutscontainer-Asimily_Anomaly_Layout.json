@@ -1,4 +1,5 @@
 {
+	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -33,7 +34,10 @@
 	},
 	"definitionId": "",
 	"description": "",
+	"detached": false,
+	"details": null,
 	"detailsV2": {
+		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -46,7 +50,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [
@@ -108,10 +112,46 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "macaddress",
+								"height": 26,
+								"id": "346d0970-3da9-4a86-8084-8af0ec0e59ea",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "devicelocalip",
+								"height": 26,
+								"id": "306dcda7-730b-48e5-ba21-15ebcef3d646",
+								"index": 7,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "devicemodel",
+								"height": 26,
+								"id": "dd9c8577-7180-4873-9724-9d84c6cfd60d",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostnames",
+								"height": 26,
+								"id": "26dd203a-bfa8-4d83-96d5-787ca58a2ed9",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "sourceinstance",
 								"height": 26,
 								"id": "incident-sourceInstance-field",
-								"index": 6,
+								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -120,11 +160,12 @@
 								"fieldId": "playbookid",
 								"height": 26,
 								"id": "incident-playbookId-field",
-								"index": 7,
+								"index": 11,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -137,6 +178,7 @@
 					{
 						"h": 2,
 						"i": "caseinfoid-61263cc0-98b1-11e9-97d7-ed26ef9e46c8",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -152,6 +194,7 @@
 						"h": 2,
 						"i": "caseinfoid-770ec200-98b1-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -165,22 +208,9 @@
 					{
 						"displayType": "ROW",
 						"h": 2,
-						"i": "caseinfoid-842632c0-98b1-11e9-97d7-ed26ef9e46c8",
-						"maxW": 3,
-						"minH": 1,
-						"moved": false,
-						"name": "Child Incidents",
-						"static": false,
-						"type": "childInv",
-						"w": 1,
-						"x": 2,
-						"y": 2
-					},
-					{
-						"displayType": "ROW",
-						"h": 2,
 						"hideName": false,
 						"i": "caseinfoid-7717e580-9bed-11e9-9a3f-8b4b2158e260",
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -188,7 +218,7 @@
 						"static": false,
 						"type": "team",
 						"w": 1,
-						"x": 2,
+						"x": 1,
 						"y": 4
 					},
 					{
@@ -210,7 +240,7 @@
 								"fieldId": "dbotmodified",
 								"height": 53,
 								"id": "incident-modified-field",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -219,7 +249,7 @@
 								"fieldId": "dbotduedate",
 								"height": 53,
 								"id": "incident-dueDate-field",
-								"index": 3,
+								"index": 2,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -237,11 +267,12 @@
 								"fieldId": "dbotclosed",
 								"height": 53,
 								"id": "incident-closed-field",
-								"index": 2,
+								"index": 1,
 								"sectionItemType": "field",
 								"startCol": 1
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -249,7 +280,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 4
 					},
 					{
 						"displayType": "ROW",
@@ -285,13 +316,14 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
 						"name": "Closing Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
+						"x": 2,
 						"y": 4
 					},
 					{
@@ -310,6 +342,7 @@
 								"startCol": 0
 							}
 						],
+						"maxH": null,
 						"maxW": 3,
 						"minH": 1,
 						"moved": false,
@@ -318,6 +351,22 @@
 						"w": 1,
 						"x": 1,
 						"y": 0
+					},
+					{
+						"h": 2,
+						"i": "caseinfoid-c087a84a-8387-4e95-8bce-9fa17d93f978",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Malicious or Suspicious Indicators",
+						"query": "reputation:Bad or reputation:Suspicious",
+						"queryType": "input",
+						"static": false,
+						"type": "indicators",
+						"w": 1,
+						"x": 2,
+						"y": 2
 					}
 				],
 				"type": "custom"
@@ -330,7 +379,7 @@
 					{
 						"description": "",
 						"displayType": "ROW",
-						"h": 6,
+						"h": 1,
 						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-8eeec6a0-8cd1-11ed-9266-b9dd58d778f0",
 						"items": [
 							{
@@ -344,23 +393,27 @@
 								"startCol": 0
 							}
 						],
-						"maxW": 3,
+						"maxH": null,
+						"maxW": 1,
 						"minH": 1,
+						"minW": 1,
 						"moved": false,
 						"name": "Unmapped Data",
 						"static": false,
 						"type": "labels",
 						"w": 1,
-						"x": 1,
-						"y": 0
+						"x": 0,
+						"y": 6
 					},
 					{
 						"description": "Displays incident fields that are mapped.",
 						"h": 6,
 						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-a9dc1a50-8f3b-11ed-872a-572a967f8d9f",
 						"items": [],
-						"maxW": 3,
+						"maxH": null,
+						"maxW": 1,
 						"minH": 1,
+						"minW": 1,
 						"moved": false,
 						"name": "Incident Data",
 						"query": "displayMappedFields",
@@ -580,11 +633,31 @@
 								"startCol": 0
 							}
 						],
-						"maxW": 3,
+						"maxH": null,
+						"maxW": 1,
 						"minH": 1,
+						"minW": 1,
 						"moved": false,
 						"name": "Incident Fields",
 						"static": false,
+						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 6,
+						"i": "vpwdxffssz-e2b8397b-e090-49f1-9f6a-87a3673bdadb",
+						"items": [],
+						"maxH": null,
+						"maxW": 1,
+						"minH": 1,
+						"minW": 1,
+						"moved": false,
+						"name": "Incident Asset Context Data",
+						"query": "e4c42bb3-c26d-48c2-8d8c-862fade191dd",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
 						"w": 1,
 						"x": 2,
 						"y": 0
@@ -684,7 +757,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "incident_deviceid",
+						"fieldId": "incident_macaddress",
 						"isVisible": true
 					},
 					{
@@ -692,23 +765,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicemacaddress",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_devicemodel",
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicename",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_deviceosname",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_vendorid",
+						"fieldId": "incident_hostnames",
 						"isVisible": true
 					}
 				],
@@ -739,11 +800,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_asimilydevicetype",
+						"fieldId": "incident_asimilydevicemodel",
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_asimilydevicemodel",
+						"fieldId": "incident_asimilydevicetype",
 						"isVisible": true
 					},
 					{
@@ -827,9 +888,18 @@
 			}
 		]
 	},
+	"fromServerVersion": "",
 	"group": "incident",
 	"id": "Asimily Anomaly Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"isOverridable": false,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
 	"name": "Asimily Anomaly Layout",
+	"packID": "",
+	"packName": "",
 	"quickView": {
 		"sections": [
 			{
@@ -899,7 +969,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "incident_deviceid",
+						"fieldId": "incident_macaddress",
 						"isVisible": true
 					},
 					{
@@ -907,23 +977,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicemacaddress",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_devicemodel",
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicename",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_deviceosname",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_vendorid",
+						"fieldId": "incident_hostnames",
 						"isVisible": true
 					}
 				],
@@ -1076,7 +1134,8 @@
 			}
 		]
 	},
+	"quickViewV2": null,
 	"system": false,
-	"fromVersion": "6.10.0",
+	"toServerVersion": "",
 	"version": -1
 }

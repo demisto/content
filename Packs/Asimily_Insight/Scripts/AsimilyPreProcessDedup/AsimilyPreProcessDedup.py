@@ -10,7 +10,7 @@ def main():  # pragma: no cover
         demisto.results(True)  # Keep it if missing either value
         return
 
-    if incident_type not in ["Asimily Anomaly", "Asimily CVE", "Asimily Asset"]:
+    if incident_type not in ["Asimily Anomaly", "Asimily CVE"]:
         demisto.results(True)
         return
 

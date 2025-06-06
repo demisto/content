@@ -1,7 +1,6 @@
 {
     "associatedToAll": false,
     "associatedTypes": [
-        "Asimily Asset",
         "Asimily CVE",
         "Asimily Anomaly"
     ],

@@ -1,4 +1,5 @@
 {
+	"cacheVersn": 0,
 	"close": {
 		"sections": [
 			{
@@ -33,7 +34,10 @@
 	},
 	"definitionId": "",
 	"description": "",
+	"detached": false,
+	"details": null,
 	"detailsV2": {
+		"TypeName": "",
 		"tabs": [
 			{
 				"id": "summary",
@@ -46,7 +50,7 @@
 				"sections": [
 					{
 						"displayType": "ROW",
-						"h": 2,
+						"h": 4,
 						"i": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
 						"isVisible": true,
 						"items": [
@@ -108,10 +112,48 @@
 							},
 							{
 								"endCol": 2,
+								"fieldId": "macaddress",
+								"height": 26,
+								"id": "d06d7619-de9e-46ad-90ab-a2c2577c9585",
+								"index": 6,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
+								"endCol": 2,
+								"fieldId": "devicelocalip",
+								"height": 26,
+								"id": "580815cb-8fdf-4d74-b9f5-42f11172a487",
+								"index": 7,
+								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "devicemodel",
+								"height": 26,
+								"id": "1b149891-8fd5-4234-bd41-63228ddf29e8",
+								"index": 8,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "hostnames",
+								"height": 26,
+								"id": "3fde9e13-2da4-43c8-84ca-a6266dbbf3fa",
+								"index": 9,
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"endCol": 2,
 								"fieldId": "sourceinstance",
 								"height": 26,
 								"id": "incident-sourceInstance-field",
-								"index": 6,
+								"index": 10,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -120,7 +162,7 @@
 								"fieldId": "playbookid",
 								"height": 26,
 								"id": "incident-playbookId-field",
-								"index": 7,
+								"index": 11,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -188,7 +230,7 @@
 						"static": false,
 						"type": "team",
 						"w": 1,
-						"x": 2,
+						"x": 1,
 						"y": 4
 					},
 					{
@@ -249,7 +291,7 @@
 						"static": false,
 						"w": 1,
 						"x": 0,
-						"y": 2
+						"y": 4
 					},
 					{
 						"displayType": "ROW",
@@ -291,7 +333,7 @@
 						"name": "Closing Information",
 						"static": false,
 						"w": 1,
-						"x": 0,
+						"x": 2,
 						"y": 4
 					},
 					{
@@ -330,7 +372,7 @@
 					{
 						"description": "",
 						"displayType": "ROW",
-						"h": 6,
+						"h": 1,
 						"i": "vpwdxffssz-rnfrrsnxfe-jeukiwqvpr-p9nvotrecm-caseinfoid-p9nvotrecm-caseinfoid-wnnwvzoxmk-caseinfoid-8eeec6a0-8cd1-11ed-9266-b9dd58d778f0",
 						"items": [
 							{
@@ -351,8 +393,8 @@
 						"static": false,
 						"type": "labels",
 						"w": 1,
-						"x": 1,
-						"y": 0
+						"x": 0,
+						"y": 6
 					},
 					{
 						"description": "Displays incident fields that are mapped.",
@@ -613,6 +655,22 @@
 						"name": "Incident Fields",
 						"static": false,
 						"w": 1,
+						"x": 1,
+						"y": 0
+					},
+					{
+						"h": 6,
+						"i": "vpwdxffssz-7812e332-7483-4250-b5db-9639426c67ae",
+						"items": [],
+						"maxW": 3,
+						"minH": 1,
+						"moved": false,
+						"name": "Incident Asset Context Data",
+						"query": "e4c42bb3-c26d-48c2-8d8c-862fade191dd",
+						"queryType": "script",
+						"static": false,
+						"type": "dynamic",
+						"w": 1,
 						"x": 2,
 						"y": 0
 					}
@@ -719,7 +777,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "incident_deviceid",
+						"fieldId": "incident_macaddress",
 						"isVisible": true
 					},
 					{
@@ -727,23 +785,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicemacaddress",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_devicemodel",
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicename",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_deviceosname",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_vendorid",
+						"fieldId": "incident_hostnames",
 						"isVisible": true
 					}
 				],
@@ -862,9 +908,18 @@
 			}
 		]
 	},
+	"fromServerVersion": "",
 	"group": "incident",
 	"id": "Asimily CVE Layout",
+	"indicatorsDetails": null,
+	"indicatorsQuickView": null,
+	"isOverridable": false,
+	"itemVersion": "",
+	"locked": false,
+	"mobile": null,
 	"name": "Asimily CVE Layout",
+	"packID": "",
+	"packName": "",
 	"quickView": {
 		"sections": [
 			{
@@ -942,7 +997,7 @@
 				"description": "",
 				"fields": [
 					{
-						"fieldId": "incident_deviceid",
+						"fieldId": "incident_macaddress",
 						"isVisible": true
 					},
 					{
@@ -950,23 +1005,11 @@
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicemacaddress",
-						"isVisible": true
-					},
-					{
 						"fieldId": "incident_devicemodel",
 						"isVisible": true
 					},
 					{
-						"fieldId": "incident_devicename",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_deviceosname",
-						"isVisible": true
-					},
-					{
-						"fieldId": "incident_vendorid",
+						"fieldId": "incident_hostnames",
 						"isVisible": true
 					}
 				],
@@ -1119,7 +1162,8 @@
 			}
 		]
 	},
+	"quickViewV2": null,
 	"system": false,
-	"version": -1,
-        "fromVersion": "6.10.0"
+	"toServerVersion": "",
+	"version": -1
 }
