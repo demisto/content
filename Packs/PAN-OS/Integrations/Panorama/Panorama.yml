@@ -7706,6 +7706,12 @@ script:
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: The URL filtering content version.
       type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
+      description: Advanced Routing Feature.
+      type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.multi_vsys
+      description: Virtual System Feature.
+      type: String
   - arguments:
     - description: The string by which to filter the results to only show specific hostnames or serial numbers.
       name: device_filter_string
