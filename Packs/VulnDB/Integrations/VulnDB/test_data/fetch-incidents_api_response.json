@@ -1,0 +1,76 @@
+{
+    "total_entries": 10,
+    "current_page": 1,
+    "results": [
+        {
+            "vulndb_id": 1,
+            "title": "After last_time, after min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-31T00:00:00Z",
+            "disclosure_date": "2025-05-30T00:00:00Z"
+        },
+        {
+            "vulndb_id": 2,
+            "title": "After last_time, before min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-31T00:00:00Z",
+            "disclosure_date": "2025-05-22T00:00:00Z"
+        },
+        {
+            "vulndb_id": 3,
+            "title": "At last_time, before last_id, after min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T18:00:00Z",
+            "disclosure_date": "2025-05-30T00:00:00Z"
+        },
+        {
+            "vulndb_id": 4,
+            "title": "At last_time, before last_id, before min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T18:00:00Z",
+            "disclosure_date": "2025-05-22T00:00:00Z"
+        },
+        {
+            "vulndb_id": 5,
+            "title": "At last_time, after last_id, after min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T18:00:00Z",
+            "disclosure_date": "2025-05-30T00:00:00Z"
+        },
+        {
+            "vulndb_id": 6,
+            "title": "At last_time, after last_id, before min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T18:00:00Z",
+            "disclosure_date": "2025-05-22T00:00:00Z"
+        },
+        {
+            "vulndb_id": 7,
+            "title": "Before last_time, after min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T00:00:00Z",
+            "disclosure_date": "2025-05-30T00:00:00Z"
+        },
+        {
+            "vulndb_id": 8,
+            "title": "Before last_time, before min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-30T00:00:00Z",
+            "disclosure_date": "2025-05-22T00:00:00Z"
+        },
+        {
+            "vulndb_id": 9,
+            "title": "DEPRECATED: See ID #8, after min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-31T00:00:00Z",
+            "disclosure_date": "2025-05-30T00:00:00Z"
+        },
+        {
+            "vulndb_id": 10,
+            "title": "DEPRECATED: See ID #8, before min_disclosure",
+            "vulndb_published_date": "2025-05-30T00:00:00Z",
+            "vulndb_last_modified": "2025-05-31T00:00:00Z",
+            "disclosure_date": "2025-05-22T00:00:00Z"
+        }
+    ]
+}
