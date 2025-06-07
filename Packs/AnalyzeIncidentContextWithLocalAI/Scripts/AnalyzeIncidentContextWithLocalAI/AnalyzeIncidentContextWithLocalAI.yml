@@ -1,0 +1,66 @@
+args:
+- auto: PREDEFINED
+  defaultValue: model
+  name: model
+  predefined:
+  - deepseek-r1:latest
+  - llama3.2:latest
+- auto: PREDEFINED
+  defaultValue: text
+  isArray: true
+  name: text
+  predefined:
+  - What is the incident type?
+  - When was the incident first detected?
+  - Who reported or discovered the incident?
+  - What is the current status of the investigation?
+  - What triggered the initial alert?
+  - Are there any known Indicators of Compromise (IoCs)?
+  - Which security tools or systems detected the incident?
+  - What log sources provide relevant evidence?
+  - Are there any signs of lateral movement?
+  - Is there evidence linking this to a known threat actor or APT group?
+  - Is this a targeted attack or an opportunistic intrusion?
+  - Which systems users or networks are affected?
+  - How widespread is the impact?
+  - Has any sensitive data been accessed or exfiltrated?
+  - What vulnerabilities were exploited?
+  - Were there any privilege escalation attempts?
+  - What Tactics
+  - Techniques and Procedures (TTPs) were observed?
+  - Is this part of a known attack campaign?
+  - What containment actions have been taken?
+  - Has the affected system been isolated?
+  - What remediation steps are in progress?
+  - Have any incident response playbooks been followed?
+  - What lessons can be learned from this incident?
+  - How can detection and response processes be improved?
+  - Are additional security controls required to prevent recurrence?
+  - Have all relevant stakeholders been informed?
+  required: true
+  type: textArea
+commonfields:
+  id: AnalyzeIncidentContextWithLocalAI
+  version: -1
+contentitemexportablefields:
+  contentitemfields:
+    fromServerVersion: ''
+dockerimage: aidockerimage
+enabled: true
+engineinfo: {}
+name: AnalyzeIncidentContextWithLocalAI
+outputs:
+- contextPath: result
+  type: string
+- contextPath: readable_output
+runas: DBotWeakRole
+runonce: true
+script: ''
+scripttarget: 0
+subtype: python3
+tags: []
+timeout: 360ns
+type: python
+fromversion: 6.0.0
+tests:
+- No tests (auto formatted)
