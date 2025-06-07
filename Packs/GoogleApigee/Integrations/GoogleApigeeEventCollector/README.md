@@ -3,7 +3,6 @@ This integration was integrated and tested with version v1 of Google Apigee.
 
 ## Configure Google Apigee in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -33,9 +32,9 @@ Gets logs from Google Apigee.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | The number of events to return. | Optional | 
-| from_date | Date from which to get events. | Optional | 
+| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | The number of events to return. | Optional |
+| from_date | Date from which to get events. | Optional |
 
 #### Context Output
 
