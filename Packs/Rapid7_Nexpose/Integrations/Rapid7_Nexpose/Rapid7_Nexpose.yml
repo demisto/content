@@ -2356,6 +2356,8 @@ script:
       isArray: true
       description: List of asset group identifiers.
     description: Remove included assets from a site.
+    compliantpolicies:
+    - Endpoint Isolation
   - name: nexpose-list-site-included-asset
     arguments:
     - name: site_id

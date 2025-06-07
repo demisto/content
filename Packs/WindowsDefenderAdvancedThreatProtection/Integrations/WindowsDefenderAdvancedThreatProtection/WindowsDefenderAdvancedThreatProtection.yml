@@ -82,6 +82,8 @@ script:
     - contextPath: MicrosoftATP.Machine.Isolation.Isolated
       description: True if machine is isolated, else false
       type: boolean
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: Machine ID to be used to stop the isolation. e.g. 0a3250e0693a109f1affc9217be9459028aa8426
       name: machine_id
@@ -102,6 +104,8 @@ script:
     - contextPath: MicrosoftATP.Machine.ID
       description: Machine ID
       type: Unknown
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: Computer DNS name
       name: hostname

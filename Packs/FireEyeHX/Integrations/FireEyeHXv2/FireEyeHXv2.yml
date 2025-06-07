@@ -290,6 +290,8 @@ script:
       name: agentId
     description: Releases a specific host from containment.
     name: fireeye-hx-cancel-containment
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: The acquisition script in JSON format.
       name: script
@@ -1150,6 +1152,8 @@ script:
       required: true
     description: Approves pending containment requests made by other components or users. The required permission is api_admin role.
     name: fireeye-hx-approve-containment
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: The Host Set ID - this argument is required.
       name: hostSetId

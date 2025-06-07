@@ -333,6 +333,8 @@ script:
       - 'false'
     description: Update an IP set.
     name: aws-waf-ip-set-update
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - name: scope
       description: The IP set scope.

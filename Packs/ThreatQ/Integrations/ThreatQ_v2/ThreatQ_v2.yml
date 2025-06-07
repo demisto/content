@@ -554,6 +554,9 @@ script:
     - contextPath: ThreatQ.Indicator.Type
       description: The indicator type.
       type: String
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - description: The name of the attribute to add.
       name: name

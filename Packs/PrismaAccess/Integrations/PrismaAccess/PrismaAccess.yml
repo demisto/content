@@ -72,6 +72,8 @@ script:
     - contextPath: PrismaAccess.LogoutUser
       description: LogoutUser command results.
     description: Force logout a specific user from Prisma Access.
+    compliantpolicies:
+    - Users Soft Remediation
   - name: prisma-access-query
     arguments:
     - name: query

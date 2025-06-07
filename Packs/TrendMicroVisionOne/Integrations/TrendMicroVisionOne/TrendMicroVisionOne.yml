@@ -198,6 +198,8 @@ script:
     - contextPath: VisionOne.Endpoint_Connection.taskStatus
       description: 'The task status of isolate endpoint.'
       type: string
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: '"hostname", "macaddr" or "ip" of the endpoint to restore.'
       name: endpoint

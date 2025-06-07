@@ -460,12 +460,16 @@ script:
     - name: user_ids
       description: The ids of the users to compromise seperated be commas.
       required: true
+    compliantpolicies:
+    - Users Hard Remediation
   - description: Delete an ip named location by id.
     name: msgraph-identity-protection-risky-user-dismiss
     arguments:
     - name: user_ids
       description: The ids of the users to dismiss seperated be commas.
       required: true
+    compliantpolicies:
+    - Users Soft Remediation
   - description: Retrieve one or all Conditional Access policies from Microsoft Graph API.
     name: msgraph-identity-ca-policies-list
     arguments:

@@ -764,6 +764,8 @@ script:
       description: The endpoint ID.
       type: String
     polling: true
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id
