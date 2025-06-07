@@ -1,10 +1,10 @@
 import json
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 
 import demistomock as demisto
 import pytest
 from CommonServerPython import *
-from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient
+from JiraV3 import JiraBaseClient, JiraCloudClient, JiraOnPremClient, get_remote_data_preview_command
 from pytest_mock import MockerFixture
 
 
@@ -879,9 +879,16 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {"ticket_id": "dummy_key-1234", "ticket_url": "https://example.com/browse/dummy_key-1234"}
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"summary": "test"})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        command_results = create_issue_command(
+            client=client, args={"summary": "test"}, is_quick_action=True, server_url="https://example.com"
+        )
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {
+            "MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)": expected_mo_outputs
+        }
 
     def test_create_issue_command_with_issue_json(self, mocker):
         """
@@ -898,9 +905,20 @@ class TestJiraCreateIssueCommand:
         client = jira_base_client_mock()
         raw_response = {"id": "1234", "key": "dummy_key", "self": "dummy_link"}
         expected_outputs = {"Id": "1234", "Key": "dummy_key"}
+        expected_mo_outputs = {"ticket_id": "dummy_key-1234", "ticket_url": "http://example.com/browse/dummy_key-1234"}
+
         mocker.patch.object(client, "create_issue", return_value=raw_response)
-        command_result = create_issue_command(client=client, args={"issue_json": '{"fields": {"summary": "test"}}'})
-        assert command_result.to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+
+        command_results = create_issue_command(
+            client=client,
+            args={"issue_json": '{"fields": {"summary": "test"}}'},
+            is_quick_action=True,
+            server_url="http://example.com",
+        )
+        assert command_results[0].to_context().get("EntryContext") == {"Ticket(val.Id && val.Id == obj.Id)": expected_outputs}
+        assert command_results[1].to_context().get("EntryContext") == {
+            "MirrorObject(val.ticket_id && val.ticket_id == obj.ticket_id)": expected_mo_outputs
+        }
 
     def test_create_issue_command_with_issue_json_and_another_arg(self):
         """
@@ -2750,7 +2768,7 @@ class TestJiraFetchIncidents:
         """
         from JiraV3 import parse_issue_times_for_next_run
 
-        parsed_created_time, parsed_updated_time  = parse_issue_times_for_next_run(
+        parsed_created_time, parsed_updated_time = parse_issue_times_for_next_run(
             issue_id=1234,
             issue_created_time="2025-03-14T06:54:33.000-0700",
             issue_updated_time="2025-03-14T07:59:09.000-0700",
@@ -2819,14 +2837,15 @@ class TestJiraFetchIncidents:
         from JiraV3 import DEFAULT_FETCH_LIMIT, fetch_incidents
 
         client = jira_base_client_mock()
-        mocker.patch("JiraV3.demisto.getLastRun",
+        mocker.patch(
+            "JiraV3.demisto.getLastRun",
             return_value={
                 "issue_ids": [1],
                 "id": 1,
                 "created_date": "2023-12-11 21:04",
                 "updated_date": "2023-12-12 22:08",
                 "convert_timezone": True,
-            }
+            },
         )
         get_user_timezone_mocker = mocker.patch("JiraV3.get_cached_user_timezone", return_value="UTC-4")
         mocker.patch("JiraV3.create_incident_from_issue", return_value={})
@@ -3423,3 +3442,36 @@ class TestJiraCreateMetadataField:
         else:
             with pytest.raises(ValueError):
                 get_create_metadata_field_command(client=client, args=args)
+
+
+def test_get_remote_data_preview_command():
+    # Given: Prepare the mock objects and inputs
+    mock_client = Mock()
+    args = {"issue_id": "JIRA-123"}
+
+    # Mock Jira issue object returned by client
+    mock_issue = util_load_json("test_data/get_remote_data_preview/raw_response.json")
+
+    mock_client.get_issue.return_value = mock_issue
+
+    # When: Execute the command under test
+    result = get_remote_data_preview_command(mock_client, args)
+
+    # Then: Validate the outputs
+    assert result.outputs_prefix == "QuickActionPreview"
+    assert result.outputs_key_field == "id"
+
+    expected_preview = QuickActionPreview(
+        id="21487",
+        title="XSOAR description test",
+        description="Testing summary XSOAR mirroring",
+        status="Backlog",
+        assignee="Example User(admin@test.com)",
+        creation_date="2023-03-01T11:34:49.730+0200",
+        severity="Low",
+    ).to_context()
+
+    assert result.outputs == expected_preview
+
+    # Validate interactions
+    mock_client.get_issue.assert_called_once_with(issue_id_or_key="JIRA-123")
