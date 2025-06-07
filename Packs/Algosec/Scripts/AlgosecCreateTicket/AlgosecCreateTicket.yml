@@ -43,9 +43,6 @@ args:
   required: true
   description: The application for the connection.
 scripttarget: 0
-compliantpolicies:
-  - Users Soft Remediation
-  - Users Hard Remediation
 timeout: 0s
 dependson:
   must:
