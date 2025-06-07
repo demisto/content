@@ -5164,6 +5164,7 @@ script:
 fromversion: 5.0.0
 tests:
 - Test - CrowdStrike Falcon
+- CrowdStrike Falcon Basic Test
 defaultclassifier: CrowdStrike Falcon
 defaultmapperin: CrowdStrike Falcon-Mapper
 defaultmapperout: CrowdStrike Falcon - Outgoing Mapper
