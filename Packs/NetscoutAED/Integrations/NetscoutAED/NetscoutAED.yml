@@ -531,6 +531,8 @@ script:
     - contextPath: NetscoutAED.InboundBlacklistHostupdate_time
       description: The time that the host address was added to the list.
       type: Date
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - description: A single IPv4 or IPv6 host address or CIDR or a comma-separated list of host addresses or CIDRs.
       isArray: true

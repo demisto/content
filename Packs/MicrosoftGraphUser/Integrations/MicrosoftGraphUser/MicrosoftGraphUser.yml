@@ -165,12 +165,16 @@ script:
       but does not terminate an existing session. Supported only in a self deployed app flow with the
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
+    compliantpolicies:
+    - Users Hard Remediation
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
       required: true
     description: Unblock a user.
     name: msgraph-user-unblock
+    compliantpolicies:
+    - Users Soft Remediation
   - arguments:
     - description: User ID or userPrincipalName to update properties for.
       name: user
@@ -228,6 +232,8 @@ script:
       Permissions: - Directory.AccessAsUser.All (Delegated) - User.ReadWrite.All (Application).
     execution: true
     name: msgraph-user-delete
+    compliantpolicies:
+    - Users Hard Remediation
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -620,6 +626,8 @@ script:
       Supported only in a self deployed app flow with the Permission: Directory.AccessAsUser.All(Delegated).
     execution: true
     name: msgraph-user-change-password
+    compliantpolicies:
+    - Users Soft Remediation
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -631,11 +639,13 @@ script:
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
+    compliantpolicies:
+    - Users Soft Remediation
   - arguments:
     - description: The Azure AD user ID.
       name: user_id
       required: true
-    description:  |-
+    description: |-
       Lists all TAP policies for a user.
       This command will only return a single object in the collection as a user can have only one Temporary Access Pass (TAP) method.
       Permission:UserAuthenticationMethod.Read.All
@@ -682,15 +692,15 @@ script:
       defaultValue: false
       auto: PREDEFINED
       predefined:
-        - 'true'
-        - 'false'
+      - 'true'
+      - 'false'
     - description: |-
         The start time for the TAP (has to be a time in the future). Can be specified in ISO 8601 format - "YYYY-MM-DDThh:mm:ssZ",
         for example: "2025-03-26T00:00:00.000Z" or in a future relative time format, for example: "now", "in 2 days".
       name: start_time
       required: false
       defaultValue: now
-    description:  |-
+    description: |-
       Create a new TAP policy for a user.
       During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
       A user can only have one Temporary Access Pass that's usable within its specified lifetime.

@@ -112,6 +112,8 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - Users Hard Remediation
   - arguments:
     - description: >
         A User Profile indicator.

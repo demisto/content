@@ -473,6 +473,8 @@ script:
     - contextPath: Delinea.User.Create
       description: User object.
       type: String
+    compliantpolicies:
+    - Users Hard Remediation
   - arguments:
     - description: Filter users by Active Directory domain (integer).
       name: filter_domainid
@@ -600,6 +602,8 @@ script:
     - contextPath: Delinea.User.Delete
       description: User object.
       type: String
+    compliantpolicies:
+    - Users Hard Remediation
   - arguments:
     - description: Secret ID.
       name: secret_id

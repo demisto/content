@@ -2239,6 +2239,8 @@ script:
     - name: expiry
       description: Time until the ban expires in seconds. `0` for indefinite ban.
       defaultValue: '0'
+    compliantpolicies:
+    - IP Blockage
   - name: fortigate-unban-ip
     description: Unban IPs. Banned IPs are IP addresses that have been quarantined for a variety of reasons, such as administrative decisions or due to security alerts from services like intrusion prevention systems (IPS), antivirus (AV), and denial-of-service (DoS) mitigations.
     arguments:

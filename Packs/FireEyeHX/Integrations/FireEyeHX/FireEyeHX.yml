@@ -199,6 +199,8 @@ script:
       description: The host MAC address.
       type: Unknown
     deprecated: true
+    compliantpolicies:
+    - Endpoint Isolation
   - arguments:
     - auto: PREDEFINED
       description: Identifies which alerts result from indicators with the specified share mode.

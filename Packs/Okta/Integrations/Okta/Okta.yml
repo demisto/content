@@ -49,6 +49,8 @@ script:
     description: Deactivate user
     execution: true
     deprecated: true
+    compliantpolicies:
+    - Users Hard Remediation
   - name: okta-activate-user
     arguments:
     - name: username
@@ -58,6 +60,8 @@ script:
     description: Activates a specific user.
     execution: true
     deprecated: true
+    compliantpolicies:
+    - Users Soft Remediation
   - name: okta-suspend-user
     arguments:
     - name: username
@@ -67,6 +71,8 @@ script:
     description: Suspends a user.  This operation can only be performed on users with an ACTIVE status. The user has a status of SUSPENDED when the process is complete.
     execution: true
     deprecated: true
+    compliantpolicies:
+    - Users Hard Remediation
   - name: okta-unsuspend-user
     arguments:
     - name: username
@@ -121,6 +127,8 @@ script:
     description: Enrolls and verifies a push factor for a specified user.
     execution: true
     deprecated: true
+    compliantpolicies:
+    - Users Soft Remediation
   - name: okta-reset-factor
     arguments:
     - name: userId
