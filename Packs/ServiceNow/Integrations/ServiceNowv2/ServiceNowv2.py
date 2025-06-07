@@ -1,7 +1,7 @@
 import mimetypes
 import re
 from collections.abc import Callable, Iterable
-
+from urllib.parse import quote
 
 import demistomock as demisto  # noqa: F401
 
@@ -1534,11 +1534,16 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     else:
         additional_fields_keys = list(args.keys())
 
-    instance_url = client.base_url
+    instance_url = client.base_url.split('/api/')[0] + '/'
+
     ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
 
-    ticket_url = f"{instance_url}nav_to.do?uri={ticket_type}.do?sys_id={ticket_sys_id}"
+    target_uri_path = f"{ticket_type}.do?sys_id={ticket_sys_id}"
+
+    encoded_uri = quote(target_uri_path)
+
+    ticket_url = f"{instance_url}nav_to.do?uri={encoded_uri}"
     mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id)
 
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
