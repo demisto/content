@@ -4,21 +4,20 @@ name: silent-Windows LOLBIN scripting engine connected to a rare external host
 description: |-
   This playbook handles "Windows LOLBIN scripting engine connected to a rare external host" alerts.
 
-  Playbook Stages:
+  ### **Analysis**
+  * Analyzes the suspicious command line to score its risk level.
+  * Gathers related alerts to provide broader context for the investigation.
 
-  Analysis:
-  - Retrieve all alert-related alerts to consolidate context for further analysis.
-  - Analyze the command line used.
+  ### **Investigation**
+  * Extracts and enriches any URLs or domains found in the command to check their reputation.
+  * Determines if the activity is malicious based on a high-risk command score, other related threat alerts, or a malicious verdict for the URL/domain.
+  * If no threat indicators are found, the playbook closes the alert as a False Positive.
 
-
-  Investigation:
-  - Check the maliciousness of any URLs found in the command line.
-  - Check related alerts for known threats.
-
-  Remediation:
-  - Isolate the affected endpoint if necessary (with analyst approval).
-  - Block the malicious external host (with analyst approval).
-  - Terminate the suspicious causality chain.
+  ### **Remediation**
+  * If the activity is deemed malicious, the playbook automatically terminates the offending process.
+  * It seeks analyst approval to block any identified malicious URLs via a PAN-OS firewall.
+  * It recommends isolating the endpoint if it is a workstation, pending analyst approval. For servers or disconnected endpoints, it notifies the analyst that manual action is required.
+  * After taking action, it closes the alert as a True Positive.
 
 tags:
 - T1071 - Application Layer Protocol
@@ -72,6 +71,7 @@ tasks:
     nexttasks:
       '#none#':
       - "121"
+      - "142"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -102,8 +102,8 @@ tasks:
       description: ''
     nexttasks:
       '#none#':
-      - "116"
       - "120"
+      - "116"
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -140,8 +140,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 576,
-          "y": 1636
+          "x": 586,
+          "y": 1515
         }
       }
     note: false
@@ -153,16 +153,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "47":
     id: "47"
-    taskid: 73701a47-784b-4530-86e5-ba5d9abd9ba4
+    taskid: f6bf0601-23f1-4160-b076-378c29c2a5dc
     type: condition
     task:
-      id: 73701a47-784b-4530-86e5-ba5d9abd9ba4
+      id: f6bf0601-23f1-4160-b076-378c29c2a5dc
       version: -1
       name: Check for URLs to block
+      description: Check if there are any URLs found in the investigation that needs to be blocked.
       type: condition
       iscommand: false
       brand: ""
-      description: Check if there are any URLs found in the investigation that need to be blocked.
     nexttasks:
       '#default#':
       - "125"
@@ -172,17 +172,49 @@ tasks:
     conditions:
     - label: "yes"
       condition:
-      - - operator: isNotEmpty
+      - - operator: isExists
           left:
             value:
-              simple: badUrls
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: Score
             iscontext: true
+      - - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: isEqualString
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: url
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 576,
-          "y": 1828
+          "x": 586,
+          "y": 1633
         }
       }
     note: false
@@ -265,7 +297,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 11,
+          "x": -2.5,
           "y": 380
         }
       }
@@ -322,8 +354,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 33,
-          "y": 1828
+          "x": -14,
+          "y": 1633
         }
       }
     note: false
@@ -335,13 +367,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "118":
     id: "118"
-    taskid: d9e5b3d2-766d-40e2-bd64-a6217537a8c4
+    taskid: 2da21b06-122c-435f-9612-116647dea67d
     type: condition
     task:
-      id: d9e5b3d2-766d-40e2-bd64-a6217537a8c4
+      id: 2da21b06-122c-435f-9612-116647dea67d
       version: -1
       name: Check known related BTP alerts, bad URLs, or suspicious commands found
-      description: This task checks for known related Behavioral Threat Protection alerts, bad URLs, or suspicious commands found in incidents. It evaluates multiple conditions including WildFire Malware, Powershell Activity, Script Activity, Suspicious .NET Behavior, command line analysis scores, and malicious URL detections.
+      description: This task checks for known related Behavioral Threat Protection alerts, bad URLs, or suspicious commands found in alerts. It evaluates multiple conditions including WildFire Malware, Powershell Activity, Script Activity, Suspicious .NET Behavior, command line analysis scores, and malicious URL or domain detections.
       type: condition
       iscommand: false
       brand: ""
@@ -426,11 +458,6 @@ tasks:
           right:
             value:
               simple: "40"
-        - operator: isNotEmpty
-          left:
-            value:
-              simple: badUrls
-            iscontext: true
         - operator: isEqualNumber
           left:
             value:
@@ -451,12 +478,32 @@ tasks:
           right:
             value:
               simple: "3"
+        - operator: isEqualNumber
+          left:
+            value:
+              complex:
+                root: DBotScore
+                filters:
+                - - operator: containsGeneral
+                    left:
+                      value:
+                        simple: DBotScore.Type
+                      iscontext: true
+                    right:
+                      value:
+                        simple: Domain
+                    ignorecase: true
+                accessor: Score
+            iscontext: true
+          right:
+            value:
+              simple: "3"
     continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 290.5,
-          "y": 955
+          "y": 980
         }
       }
     note: false
@@ -468,10 +515,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "120":
     id: "120"
-    taskid: 3f67a023-0cc2-420b-8cf0-9d9c5c4d4ff0
+    taskid: 775db1d9-2821-4db2-8a61-70addc77302a
     type: regular
     task:
-      id: 3f67a023-0cc2-420b-8cf0-9d9c5c4d4ff0
+      id: 775db1d9-2821-4db2-8a61-70addc77302a
       version: -1
       name: Analyze command line
       description: |-
@@ -498,7 +545,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 576,
+          "x": 586,
           "y": 380
         }
       }
@@ -539,7 +586,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290.5,
+          "x": -2.5,
           "y": 669
         }
       }
@@ -552,13 +599,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "122":
     id: "122"
-    taskid: 54a65a72-5860-45f3-8938-49926b5f656f
+    taskid: 7ac28463-3b43-4796-8fee-edb440b8af60
     type: regular
     task:
-      id: 54a65a72-5860-45f3-8938-49926b5f656f
+      id: 7ac28463-3b43-4796-8fee-edb440b8af60
       version: -1
       name: Enrich URLs
-      description: Gets a URL category from URL filtering.
+      description: Enrich the URL to get its verdict.
       script: '|||url'
       type: regular
       iscommand: true
@@ -574,33 +621,31 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 576,
+          "x": -383.5,
           "y": 812
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "123":
     id: "123"
-    taskid: b45f00bc-31d4-4390-8360-b7b4fb3651f6
+    taskid: ffa10648-c5ab-4cd4-aad3-54a853291410
     type: regular
     task:
-      id: b45f00bc-31d4-4390-8360-b7b4fb3651f6
+      id: ffa10648-c5ab-4cd4-aad3-54a853291410
       version: -1
       name: Terminate Causality
-      description: Terminate a process tree by its causality ID. Available only for Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID. Available only from Cortex XSIAM 2.4
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
       brand: ""
     nexttasks:
-      '#error#':
-      - "124"
       '#none#':
       - "128"
     scriptarguments:
@@ -612,48 +657,12 @@ tasks:
         simple: "180"
     separatecontext: false
     continueonerror: true
-    continueonerrortype: errorPath
-    view: |-
-      {
-        "position": {
-          "x": -239,
-          "y": 2028
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "124":
-    id: "124"
-    taskid: 59dc9219-bafc-4b81-8d72-e9fc6adb026c
-    type: regular
-    task:
-      id: 59dc9219-bafc-4b81-8d72-e9fc6adb026c
-      version: -1
-      name: Terminate Process Manually
-      description: |-
-        Dear Analyst,
-
-        During the containment phase, the playbook couldn’t terminate the process: ${Core.OriginalAlert.event.action_process_image_name}
-
-        Please terminate the process manually if possible.
-      type: regular
-      iscommand: false
-      brand: ""
-    nexttasks:
-      '#none#':
-      - "128"
-    separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -239,
-          "y": 2334
+          "x": -321,
+          "y": 1756
         }
       }
     note: false
@@ -665,13 +674,13 @@ tasks:
     isautoswitchedtoquietmode: false
   "125":
     id: "125"
-    taskid: 3d7774e6-93fd-4eb9-b6df-b9ab62d61356
+    taskid: 7efe6ce3-2281-4a81-9ad3-f7c553e8b243
     type: title
     task:
-      id: 3d7774e6-93fd-4eb9-b6df-b9ab62d61356
+      id: 7efe6ce3-2281-4a81-9ad3-f7c553e8b243
       version: -1
       name: Close the Alert as True Positive
-      description: commands.local.cmd.close.inv
+      description: Closing the alert as true positive.
       type: title
       iscommand: false
       brand: Builtin
@@ -683,8 +692,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290.5,
-          "y": 3234
+          "x": 275.5,
+          "y": 2606
         }
       }
     note: false
@@ -696,10 +705,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "126":
     id: "126"
-    taskid: 8661eb05-e496-4b77-87db-97f55ae3784c
-    type: condition
+    taskid: 4b70a390-14f7-4b7e-a9f6-97c8d6be6b3d
+    type: collection
     task:
-      id: 8661eb05-e496-4b77-87db-97f55ae3784c
+      id: 4b70a390-14f7-4b7e-a9f6-97c8d6be6b3d
       version: -1
       name: Approval Required – Malicious Activity Detected
       description: |-
@@ -708,31 +717,21 @@ tasks:
         The detection meets high-confidence criteria for malicious activity based on the following conditions:
 
         **Matched Verdicts:**
-        * Matches for high-risk command line analysis profiles: mixed_case_powershell, double_encoding, amsi_techniques, malicious_commands, or powershell_suspicious_network_patterns.
-
-        * Malicious IP address detected.
-        Score >= 30, indicating high confidence probability for malicious behavior.
-
-        * Score >= 10 with a prevention rule detected in the same alert, correlating to malicious activity.
-
-        **Action Required:**
-
-        * Isolate the remote host: ${Endpoint.Hostname}
-      type: condition
+        * Matches for a command line analysis with a score higher than 40.
+        * Malicious URL \ Domain address detected.
+      type: collection
       iscommand: false
       brand: ""
     nexttasks:
-      '#default#':
-      - "125"
-      Isolate:
-      - "127"
+      '#none#':
+      - "145"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 33,
-          "y": 2820
+          "x": -321,
+          "y": 2057
         }
       }
     note: false
@@ -742,6 +741,10 @@ tasks:
       to:
       subject:
       body:
+        simple: |-
+          Its is recommended to isolate this station as the detection meets high-confidence criteria for malicious activity based on one or more of the following conditions:
+          1. Matches for a command line analysis with a score higher than 40.
+          2. Malicious URL \ Domain address detected.
       methods: []
       format: ""
       bcc:
@@ -754,16 +757,52 @@ tasks:
         completeaftersla: false
       replyOptions:
       - Isolate
+    form:
+      questions:
+      - id: 1ecf5595-42d7-4164-bfac-60ce42da6680
+        label: ""
+        labelarg:
+          simple: |-
+            **Recommendation: Isolation Required – Malicious Activity Detected**
+
+            The detection meets high-confidence criteria for malicious activity based on the following conditions:
+
+            **Matched Verdicts:**
+            * Matches for a command line analysis with a score higher than 40.
+            * Malicious URL \ Domain address detected.
+
+            **Action Required:**
+
+            * Isolate the remote host: ${Endpoint.Hostname}
+
+            Isolate endpoint?
+        required: false
+        gridcolumns: []
+        defaultrows: []
+        type: singleSelect
+        options: []
+        optionsarg:
+        - simple: "Yes"
+        - simple: "No"
+        fieldassociated: ""
+        placeholder: ""
+        tooltip: ""
+        readonly: false
+      title: IsolateEndpoint
+      description: ""
+      sender: Your SOC team
+      expired: false
+      totalanswers: 0
     skipunavailable: false
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
   "127":
     id: "127"
-    taskid: 242f5b3c-7fc9-48f7-8023-3c206c8b38e6
+    taskid: 53994829-480d-4643-bd73-6c530eb36e21
     type: regular
     task:
-      id: 242f5b3c-7fc9-48f7-8023-3c206c8b38e6
+      id: 53994829-480d-4643-bd73-6c530eb36e21
       version: -1
       name: Isolate endpoint
       description: Isolates the specified endpoint.
@@ -790,13 +829,15 @@ tasks:
               fields:
                 value:
                   simple: "2"
+      timeout_in_seconds:
+        simple: "120"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -348,
-          "y": 3030
+          "x": -321,
+          "y": 2478
         }
       }
     note: false
@@ -849,8 +890,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 33,
-          "y": 2482
+          "x": -14,
+          "y": 1877
         }
       }
     note: false
@@ -880,8 +921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 290.5,
-          "y": 2627
+          "x": 275.5,
+          "y": 2057
         }
       }
     note: false
@@ -893,10 +934,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "132":
     id: "132"
-    taskid: 839ce8f3-8e75-4036-831c-a78c2bfb45c6
+    taskid: f2eafb4a-12da-4da0-b59d-9973f1e31f8c
     type: playbook
     task:
-      id: 839ce8f3-8e75-4036-831c-a78c2bfb45c6
+      id: f2eafb4a-12da-4da0-b59d-9973f1e31f8c
       version: -1
       name: PAN-OS - Block URL - Custom URL Category
       description: |-
@@ -952,8 +993,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1013,
-          "y": 2820
+          "x": 967,
+          "y": 2478
         }
       }
     note: false
@@ -965,29 +1006,29 @@ tasks:
     isautoswitchedtoquietmode: false
   "135":
     id: "135"
-    taskid: 126dd84f-b188-454d-8ae3-7e2673057d3e
+    taskid: 62977917-f33f-4bf0-b516-34a7d5f98988
     type: regular
     task:
-      id: 126dd84f-b188-454d-8ae3-7e2673057d3e
+      id: 62977917-f33f-4bf0-b516-34a7d5f98988
       version: -1
       name: Close the Alert as False Positive
-      description: commands.local.cmd.close.inv
+      description: Close the Alert as False Positive
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a False Positive
+        simple: Resolved as False Positive - handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host"
       closeReason:
-        simple: Resolved - Handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host" as False Positive
+        simple: Resolved - False Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 11,
-          "y": 1246
+          "x": -14,
+          "y": 1245
         }
       }
     note: false
@@ -1017,8 +1058,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 33,
-          "y": 1636
+          "x": -14,
+          "y": 1515
         }
       }
     note: false
@@ -1030,12 +1071,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "137":
     id: "137"
-    taskid: 7a2ffd31-32b3-40bf-8206-3239f72103b8
+    taskid: 67e93266-9fac-4547-bf7d-f8a79a7b49c3
     type: title
     task:
-      id: 7a2ffd31-32b3-40bf-8206-3239f72103b8
+      id: 67e93266-9fac-4547-bf7d-f8a79a7b49c3
       version: -1
-      name: Closed Alert As False Positive
+      name: Close the Alert As False Positive
       type: title
       iscommand: false
       brand: ""
@@ -1048,8 +1089,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 11,
-          "y": 1116
+          "x": -14,
+          "y": 1126
         }
       }
     note: false
@@ -1079,8 +1120,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1013,
-          "y": 2028
+          "x": 967,
+          "y": 1756
         }
       }
     note: false
@@ -1132,12 +1173,12 @@ tasks:
     isautoswitchedtoquietmode: false
   "140":
     id: "140"
-    taskid: 24fa14dd-0124-4263-ad28-ac335f8734a2
+    taskid: a81d665e-c927-4d8b-b9f1-c0ffdf483a3c
     type: condition
     task:
-      id: 24fa14dd-0124-4263-ad28-ac335f8734a2
+      id: a81d665e-c927-4d8b-b9f1-c0ffdf483a3c
       version: -1
-      name: Check analyst answers
+      name: Check analyst answers for URL block
       description: Check the analyst's answers and execute the appropriate actions based on the responses.
       type: condition
       iscommand: false
@@ -1164,8 +1205,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 1013,
-          "y": 2482
+          "x": 967,
+          "y": 2057
         }
       }
     note: false
@@ -1177,29 +1218,183 @@ tasks:
     isautoswitchedtoquietmode: false
   "141":
     id: "141"
-    taskid: a597a3da-bff7-44f0-830b-4f518839e231
+    taskid: 2efec428-4939-4160-9a15-4a8dac23fd72
     type: regular
     task:
-      id: a597a3da-bff7-44f0-830b-4f518839e231
+      id: 2efec428-4939-4160-9a15-4a8dac23fd72
       version: -1
       name: Close the Alert as True Positive
-      description: commands.local.cmd.close.inv
+      description: Close the Alert as True Positive
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
       brand: Builtin
+    nexttasks:
+      '#none#':
+      - "144"
     scriptarguments:
       closeNotes:
-        simple: The alert has been resolved, confirmed as a True Positive
+        simple: Resolved as True Positive - Handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host"
       closeReason:
-        simple: Resolved - Handled by the playbook "Windows LOLBIN scripting engine connected to a rare external host" as True Positive
+        simple: Resolved - True Positive
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 290.5,
-          "y": 3365
+          "x": 275.5,
+          "y": 2725
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "142":
+    id: "142"
+    taskid: b0bad8f4-b418-46c8-8833-0c95094b80fe
+    type: condition
+    task:
+      id: b0bad8f4-b418-46c8-8833-0c95094b80fe
+      version: -1
+      name: Check if any domains were found in the command line
+      description: Checks if any domains were identified in the analyzed command line and routes the playbook flow accordingly.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "118"
+      "yes":
+      - "143"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: ${CommandLineAnalysis.analysis.original.indicators.Domain}
+            iscontext: true
+          right:
+            value: {}
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 586,
+          "y": 669
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "143":
+    id: "143"
+    taskid: 036fed72-9d41-427c-9861-7c733235311b
+    type: regular
+    task:
+      id: 036fed72-9d41-427c-9861-7c733235311b
+      version: -1
+      name: Enrich Domains
+      description: Returns domain information and reputation.
+      script: '|||domain'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "118"
+    scriptarguments:
+      domain:
+        simple: ${CommandLineAnalysis.analysis.original.indicators.Domain}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 967,
+          "y": 812
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: true
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "144":
+    id: "144"
+    taskid: d1313a48-cb27-4c77-890a-0164f83a180c
+    type: title
+    task:
+      id: d1313a48-cb27-4c77-890a-0164f83a180c
+      version: -1
+      name: Done
+      type: title
+      iscommand: false
+      brand: ""
+      description: ''
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 275.5,
+          "y": 2865
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "145":
+    id: "145"
+    taskid: 1b193163-49e8-4cc8-8d97-09099cd35809
+    type: condition
+    task:
+      id: 1b193163-49e8-4cc8-8d97-09099cd35809
+      version: -1
+      name: Check analyst answer for endpoint isolation
+      description: Check analyst answer.
+      type: condition
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#default#':
+      - "125"
+      "yes":
+      - "127"
+    separatecontext: false
+    conditions:
+    - label: "yes"
+      condition:
+      - - operator: isEqualString
+          left:
+            value:
+              simple: IsolateEndpoint.Answers.0
+            iscontext: true
+          right:
+            value:
+              simple: "yes"
+          ignorecase: true
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -321,
+          "y": 2222
         }
       }
     note: false
@@ -1212,32 +1407,31 @@ tasks:
 view: |-
   {
     "linkLabelsPosition": {
-      "117_128_Blocked": 0.44,
+      "117_128_Blocked": 0.49,
       "118_110_yes": 0.45,
-      "121_118_#default#": 0.59,
-      "121_122_yes": 0.48,
-      "123_124_#error#": 0.62,
-      "126_125_#default#": 0.25,
-      "126_127_Isolate": 0.5,
+      "121_118_#default#": 0.29,
+      "128_126_WORKSTATION": 0.55,
       "128_129_#default#": 0.61,
-      "140_125_#default#": 0.41,
+      "140_125_#default#": 0.65,
       "140_132_Block URL": 0.44,
+      "142_118_#default#": 0.28,
+      "145_127_yes": 0.51,
       "47_125_#default#": 0.36
     },
     "paper": {
       "dimensions": {
-        "height": 3385,
-        "width": 1742,
-        "x": -348,
+        "height": 2875,
+        "width": 1731.5,
+        "x": -383.5,
         "y": 50
       }
     }
   }
 inputs: []
 outputs: []
-tests:
-- No tests (auto formatted)
 fromversion: 8.9.0
 issilent: true
 marketplaces: ["marketplacev2", "platform"]
+tests:
+- No tests (auto formatted)
 
