@@ -31,46 +31,6 @@ def load_mock_empty_response() -> str:
         return file.read()
 
 
-def load_mock_url_response() -> str:
-    """Load mock file that simulates an API response.
-
-    Returns:
-        str: Mock file content.
-    """
-    with open("test_data/url.json") as file:
-        return file.read()
-
-
-def load_mock_ipv4_response() -> str:
-    """Load mock file that simulates an API response.
-
-    Returns:
-        str: Mock file content.
-    """
-    with open("test_data/ipv4.json") as file:
-        return file.read()
-
-
-def load_mock_file_sha256_response() -> str:
-    """Load mock file that simulates an API response.
-
-    Returns:
-        str: Mock file content.
-    """
-    with open("test_data/file_sha256.json") as file:
-        return file.read()
-
-
-def load_mock_domain_response() -> str:
-    """Load mock file that simulates an API response.
-
-    Returns:
-        str: Mock file content.
-    """
-    with open("test_data/domain.json") as file:
-        return file.read()
-
-
 @pytest.fixture()
 def mock_client() -> TakedownCyberint.Client:
     """
@@ -335,3 +295,62 @@ def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicM
     assert result.outputs_key_field == "id"
     assert result.raw_response == []
     assert result.outputs == []
+
+
+def test_submit_takedown_request_command_error(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+    """
+    Scenario: Submit a takedown request but the API returns an error.
+    Given:
+     - User provides valid arguments for submitting a takedown request.
+    When:
+     - submit_takedown_request_command is called, but the API returns an error.
+    Then:
+     - Ensure the command raises a DemistoException.
+    """
+    from TakedownCyberint import submit_takedown_request_command
+
+    # Mock the API response
+    mock_response: dict[str, Any] = {"error": "Unauthorized"}
+    requests_mock.post(f"{BASE_URL}/takedown/api/v1/submit", json=mock_response, status_code=401)
+
+    # Prepare the command arguments
+    args = {
+        "customer": "Cyberint",
+        "reason": "Phishing",
+        "url": "https://example.com/phishing",
+        "brand": "Example",
+        "original_url": "https://example.com",
+        "alert_id": 123,
+        "note": "Test note",
+    }
+
+    # Execute the command
+    with pytest.raises(DemistoException, match="Error in API call"):
+        submit_takedown_request_command(mock_client, args)
+
+
+def test_retrieve_takedown_requests_command_error(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+    """
+    Scenario: Retrieve takedown requests but the API returns an error.
+    Given:
+     - User provides valid arguments for retrieving takedown requests.
+    When:
+     - retrieve_takedown_requests_command is called, but the API returns an error.
+    Then:
+     - Ensure the command raises a DemistoException.
+    """
+    from TakedownCyberint import retrieve_takedown_requests_command
+
+    # Mock the API response
+    mock_response: dict[str, Any] = {"error": "Unauthorized"}
+    requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", json=mock_response, status_code=401)
+
+    # Prepare the command arguments
+    args = {
+        "customer_id": "Cyberint",
+        "url": "https://example.com/phishing",
+    }
+
+    # Execute the command
+    with pytest.raises(DemistoException, match="Error in API call"):
+        retrieve_takedown_requests_command(mock_client, args)
