@@ -7,10 +7,9 @@ commonfields:
   version: -1
 configuration:
 - display: Fetch indicators
-  defaultvalue: true
+  defaultvalue: 'true'
   name: feed
   type: 8
-  required: false
   section: Collect
 - display: Fetch by
   name: fetchBy
@@ -57,13 +56,13 @@ configuration:
   - D - Not usually reliable
   - E - Unreliable
   - F - Reliability cannot be judged
-  required: false
+  required: true
   advanced: true
+  additionalinfo: Reliability of the source providing the intelligence data
   type: 15
   section: Collect
-- display: Traffic Light Protocol Color 
-  defaultvalue: WHITE
-  additionalinfo: Indicator's TLP will override default value.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+  display: Traffic Light Protocol Color
   name: tlp_color
   options:
   - RED
@@ -71,9 +70,10 @@ configuration:
   - GREEN
   - WHITE
   type: 15
-  advanced: true
+  defaultvalue: WHITE
   required: false
   section: Collect
+  advanced: true
 - display: Indicator Reputation
   name: feedReputation
   additionalinfo: Indicators from this integration instance will be marked with this reputation
@@ -99,14 +99,14 @@ configuration:
   required: false
   section: Collect
 - display: Create relationships 
-  defaultvalue: true
+  defaultvalue: 'true'
   name: createRelationships
   type: 8
   section: Collect
   advanced: true
   required: false
 - display: Trust any certificate (not secure)
-  defaultvalue: false
+  defaultvalue: 'false'
   name: insecure
   type: 8
   section: Connect
@@ -131,18 +131,18 @@ script:
       - 'email'
     - name: limit
       default: false
-      description: Maximum number of objects to return (default is 10)
+      description: Maximum number of objects to return (default is 10).
       isArray: false
       required: false
       type: Number
-    description: Gets indicators from the feed. (Test function)
+    description: Gets indicators from the feed.
     name: threatstream-feed-get-indicators
-  dockerimage: demisto/py3-tools:1.0.0.114656
+  dockerimage: demisto/py3-tools:1.0.0.3205634
   runonce: false
   feed: true
   script: '-'
   subtype: python3
   type: python
 tests:
-- ThreatStream-Test # TODO fix
+- No tests (auto formatted)
 fromversion: 5.5.0

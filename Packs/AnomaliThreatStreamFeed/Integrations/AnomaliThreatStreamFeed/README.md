@@ -1,5 +1,4 @@
-Anomali ThreatStream Feed Integration.
-This integration was integrated and tested with version xx of Anomali ThreatStream Feed.
+Use the Anomali ThreatStream Feed integration to fetch indicators from the feed.
 
 ## Configure Anomali ThreatStream Feed in Cortex
 

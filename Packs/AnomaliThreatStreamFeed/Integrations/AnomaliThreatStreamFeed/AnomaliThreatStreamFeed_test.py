@@ -914,6 +914,40 @@ TEST_CASES = [
             }
         ],
     },
+    {
+        "name": "No new indicators",
+        "params": {},  # Use defaults
+        "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
+        "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
+        "mock_get_past_time_return": None,
+        "mock_parse_indicator_for_fetch_side_effect": [],
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
+        "expected_parsed_indicators": [],
+        "expected_info_calls": [
+            f"{THREAT_STREAM} - Fetching indicators modified since 2023-08-01T09:00:00Z.",
+            f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.",
+        ],
+        "expected_debug_calls": [
+            f"""{THREAT_STREAM} - Initial API call for fetch-indicators with params: {{'limit': 50, 'status': 'active',
+            'order_by': 'modified_ts', 'confidence__gt': 65, 'modified_ts__gte': '2023-08-01T09:00:00Z'}}"""
+        ],
+        "expected_error_calls": [],
+        "expected_exception": None,
+        "expected_http_calls": [
+            {
+                "method": "GET",
+                "url_suffix": "v2/intelligence",
+                "params": {
+                    "limit": 50,
+                    "status": "active",
+                    "order_by": "modified_ts",
+                    "confidence__gt": 65,
+                    "modified_ts__gte": "2023-08-01T09:00:00Z",
+                },
+            }
+        ],
+    },
 ]
 
 
