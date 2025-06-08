@@ -1,9 +1,9 @@
 RiskIQ PassiveTotal provides access to the most comprehensive internet data sets available to protect organizations from modern cybersecurity threats. The platform maps and exposes threat infrastructure and provides unparalleled context and intelligence to events and incidents.
 
-
 **What does this pack do?**
 
 The content pack PassiveTotal provides the following capabilities:
+
 - Returns the DomainWhois record for the registered domain name portion of the hostname.
 - Search all tracker addresses and host information.
 - Active account sources can be used to retrieve passive DNS results.

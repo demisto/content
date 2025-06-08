@@ -149,7 +149,10 @@ class GSuiteClient:
             raise DemistoException(COMMON_MESSAGES["TRANSPORT_ERROR"].format(error))
         except exceptions.RefreshError as error:
             if error.args:
-                raise DemistoException(COMMON_MESSAGES["REFRESH_ERROR"].format(error.args[0]))
+                # masking the token present in the error message
+                error_msg = error.args[0]
+                find_and_remove_sensitive_text(text=error_msg, pattern=r"(token:\s*)(\S+)")
+                raise DemistoException(COMMON_MESSAGES["REFRESH_ERROR"].format(error_msg))
             raise DemistoException(error)
         except TimeoutError as error:
             raise DemistoException(COMMON_MESSAGES["TIMEOUT_ERROR"].format(error))
@@ -266,7 +269,7 @@ class GSuiteClient:
         def empty(x):
             return x is None or x == {} or x == [] or x == ""
 
-        if not isinstance(d, (dict, list)):
+        if not isinstance(d, dict | list):
             return d
         elif isinstance(d, list):
             return [value for value in (GSuiteClient.remove_empty_entities(value) for value in d) if not empty(value)]

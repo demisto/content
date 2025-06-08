@@ -191,10 +191,10 @@
 <pre>{
     "SymantecMC.Device": [
         {
-            "Host": "192.168.1.207", 
-            "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540", 
-            "Type": "sgos6x", 
-            "Name": "192.168.1.207 - Blue Coat SG-VA Series", 
+            "Host": "192.168.1.207",
+            "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540",
+            "Type": "sgos6x",
+            "Name": "192.168.1.207 - Blue Coat SG-VA Series",
             "LastChanged": "2019-04-08T11:27:32"
         }
     ]
@@ -370,18 +370,18 @@
 <div class="cl-preview-section">
 <pre>{
     "SymantecMC.Device": {
-        "SerialNumber": "0806315479", 
-        "Name": "192.168.1.207 - Blue Coat SG-VA Series", 
-        "LastChangedBy": "admin", 
-        "LastChanged": "2019-04-08T11:27:32", 
-        "DeploymentStatus": "DEPLOYED", 
-        "ManagementStatus": "FULLY_MANAGED", 
-        "Platform": "Blue Coat SG-VA Series", 
-        "Host": "192.168.1.207", 
-        "Build": "226712", 
-        "Model": "VSWG-SE", 
-        "OSVersion": "SGOS 6.7.4.1 SWG Edition", 
-        "Type": "sgos6x", 
+        "SerialNumber": "0806315479",
+        "Name": "192.168.1.207 - Blue Coat SG-VA Series",
+        "LastChangedBy": "admin",
+        "LastChanged": "2019-04-08T11:27:32",
+        "DeploymentStatus": "DEPLOYED",
+        "ManagementStatus": "FULLY_MANAGED",
+        "Platform": "Blue Coat SG-VA Series",
+        "Host": "192.168.1.207",
+        "Build": "226712",
+        "Model": "VSWG-SE",
+        "OSVersion": "SGOS 6.7.4.1 SWG Edition",
+        "Type": "sgos6x",
         "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540"
     }
 }
@@ -539,21 +539,21 @@
     "SymantecMC.Device": {
         "Health": [
             {
-                "Category": "DNS Server", 
-                "Status": "UP", 
-                "Message": "Successes: 23374", 
-                "Name": "dns.8.8.8.8", 
+                "Category": "DNS Server",
+                "Status": "UP",
+                "Message": "Successes: 23374",
+                "Name": "dns.8.8.8.8",
                 "State": "OK"
-            }, 
+            },
             {
-                "Category": "External Services", 
-                "Status": "UP", 
-                "Message": "Successes: 796", 
-                "Name": "drtr.rating_service", 
+                "Category": "External Services",
+                "Status": "UP",
+                "Message": "Successes: 796",
+                "Name": "drtr.rating_service",
                 "State": "OK"
             }
-        ], 
-        "Name": "192.168.1.207 - Blue Coat SG-VA Series", 
+        ],
+        "Name": "192.168.1.207 - Blue Coat SG-VA Series",
         "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540"
     }
 }
@@ -728,128 +728,128 @@
     "SymantecMC.Device": {
         "LicenseComponent": [
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "SGOS 6 SWG Edition"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Windows Media Streaming"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Real Media Streaming"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "QuickTime Streaming"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "SSL"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Bandwidth Management"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "ProxyClient - Acceleration"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "ProxyClient - Web Filtering"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "3rd Party Onbox Content Filtering"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "ICAP Services"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "AOL Instant Messaging"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "MSN Instant Messaging"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Yahoo Instant Messaging"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Netegrity SiteMinder"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Oracle COREid"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Peer-To-Peer"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Compression"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Flash Streaming"
-            }, 
+            },
             {
-                "ActivationDate": "2019-03-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-03-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Encrypted Tap"
-            }, 
+            },
             {
-                "ActivationDate": "2019-04-25T00:00:00", 
-                "ExpirationDate": "2019-09-24T00:00:00", 
-                "Validity": "VALID", 
+                "ActivationDate": "2019-04-25T00:00:00",
+                "ExpirationDate": "2019-09-24T00:00:00",
+                "Validity": "VALID",
                 "Name": "Authentication"
             }
-        ], 
-        "Type": "sgos6x", 
-        "Name": "192.168.1.207 - Blue Coat SG-VA Series", 
+        ],
+        "Type": "sgos6x",
+        "Name": "192.168.1.207 - Blue Coat SG-VA Series",
         "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540"
     }
 }
@@ -1124,12 +1124,12 @@
 <div class="cl-preview-section">
 <pre>{
     "SymantecMC.Device": {
-        "StartDate": "2019-03-25T12:37:42", 
-        "Errors": 0, 
-        "Name": "192.168.1.207 - Blue Coat SG-VA Series", 
-        "Warnings": 0, 
-        "MonitorState": "MONITORED", 
-        "CheckDate": "2019-04-28T13:05:40", 
+        "StartDate": "2019-03-25T12:37:42",
+        "Errors": 0,
+        "Name": "192.168.1.207 - Blue Coat SG-VA Series",
+        "Warnings": 0,
+        "MonitorState": "MONITORED",
+        "CheckDate": "2019-04-28T13:05:40",
         "UUID": "C131C3D1-171B-4DA7-ADE2-AA736EA91540"
     }
 }
@@ -1309,22 +1309,22 @@
 <pre>{
     "SymantecMC.Policy": [
         {
-            "ReferenceID": "test_ip_list", 
-            "ContentType": "IP_LIST", 
-            "Name": "test_ip_list", 
-            "Author": "admin", 
-            "ReplaceVariables": true, 
-            "Shared": true, 
+            "ReferenceID": "test_ip_list",
+            "ContentType": "IP_LIST",
+            "Name": "test_ip_list",
+            "Author": "admin",
+            "ReplaceVariables": true,
+            "Shared": true,
             "UUID": "0D264052-9628-4872-8C07-E04A8B95F602"
-        }, 
+        },
         {
-            "ReferenceID": "test_policy_ip", 
-            "ContentType": "IP_LIST", 
-            "Name": "test_policy_ip", 
-            "Author": "admin", 
-            "ReplaceVariables": false, 
-            "Shared": true, 
-            "Tenant": "1234", 
+            "ReferenceID": "test_policy_ip",
+            "ContentType": "IP_LIST",
+            "Name": "test_policy_ip",
+            "Author": "admin",
+            "ReplaceVariables": false,
+            "Shared": true,
+            "Tenant": "1234",
             "UUID": "AF193330-49D0-413B-8365-6C4A5FD7A780"
         }
     ]
@@ -1531,39 +1531,39 @@
 <div class="cl-preview-section">
 <pre>{
     "SymantecMC.Policy": {
-        "ReferenceID": "test_ip_list", 
-        "ContentType": "IP_LIST", 
-        "Description": "New description", 
+        "ReferenceID": "test_ip_list",
+        "ContentType": "IP_LIST",
+        "Description": "New description",
         "IP": [
             {
-                "Enabled": false, 
-                "Description": "what?", 
+                "Enabled": false,
+                "Description": "what?",
                 "Address": "1.2.3.4"
-            }, 
+            },
             {
-                "Enabled": false, 
-                "Description": "Test IPs", 
+                "Enabled": false,
+                "Description": "Test IPs",
                 "Address": "8.8.8.8"
-            }, 
+            },
             {
-                "Enabled": false, 
-                "Description": "Test IPs", 
+                "Enabled": false,
+                "Description": "Test IPs",
                 "Address": "8.8.8.8"
-            }, 
+            },
             {
-                "Enabled": false, 
-                "Description": "Test IPs", 
+                "Enabled": false,
+                "Description": "Test IPs",
                 "Address": "8.8.8.8"
             }
-        ], 
+        ],
         "RevisionInfo": {
-            "Date": "2019-04-28T13:03:46", 
-            "Number": "1.13", 
-            "Description": "test", 
+            "Date": "2019-04-28T13:03:46",
+            "Number": "1.13",
+            "Description": "test",
             "Author": "admin"
-        }, 
-        "UUID": "0D264052-9628-4872-8C07-E04A8B95F602", 
-        "SchemaVersion": "1.0", 
+        },
+        "UUID": "0D264052-9628-4872-8C07-E04A8B95F602",
+        "SchemaVersion": "1.0",
         "Name": "test_ip_list"
     }
 }
@@ -1783,9 +1783,9 @@
 <div class="cl-preview-section">
 <pre>{
     "SymantecMC.Policy": {
-        "UUID": "AFD91FAE-27C7-461A-86BB-317805ED8DCC", 
-        "ContentType": "IP_LIST", 
-        "Name": "test_ip_policy", 
+        "UUID": "AFD91FAE-27C7-461A-86BB-317805ED8DCC",
+        "ContentType": "IP_LIST",
+        "Name": "test_ip_policy",
         "Author": "admin"
     }
 }
@@ -1918,9 +1918,9 @@
 <div class="cl-preview-section">
 <pre>{
     "SymantecMC.Policy": {
-        "UUID": "0D264052-9628-4872-8C07-E04A8B95F602", 
-        "ContentType": "IP_LIST", 
-        "Name": "test_ip_list", 
+        "UUID": "0D264052-9628-4872-8C07-E04A8B95F602",
+        "ContentType": "IP_LIST",
+        "Name": "test_ip_list",
         "Author": "admin"
     }
 }
@@ -2115,16 +2115,16 @@
 <pre>{
     "SymantecMC.Tenant": [
         {
-            "System": true, 
-            "UUID": "54D4CDA9-293E-4861-B56F-0E50E5799F7A", 
-            "ExternalID": "default", 
-            "Description": "The tenant whose policy is used when no tenant-specific policy object is available.", 
+            "System": true,
+            "UUID": "54D4CDA9-293E-4861-B56F-0E50E5799F7A",
+            "ExternalID": "default",
+            "Description": "The tenant whose policy is used when no tenant-specific policy object is available.",
             "Name": "Default"
-        }, 
+        },
         {
-            "UUID": "EDAD4D73-95E7-4C11-84EB-D0C73D28D50A", 
-            "ExternalID": "1234", 
-            "Name": "Tenant", 
+            "UUID": "EDAD4D73-95E7-4C11-84EB-D0C73D28D50A",
+            "ExternalID": "1234",
+            "Name": "Tenant",
             "System": false
         }
     ]
