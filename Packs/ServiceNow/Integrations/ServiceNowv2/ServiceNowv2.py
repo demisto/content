@@ -1534,7 +1534,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     else:
         additional_fields_keys = list(args.keys())
 
-    instance_url = client.base_url.split('/api/')[0] + '/'
+    instance_url = client.base_url.replace('/api/now/', '/')
 
     ticket_type = ticket.get("sys_class_name")
     ticket_sys_id = ticket.get("sys_id")
