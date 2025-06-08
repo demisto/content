@@ -35,11 +35,17 @@ SOURCE_LOG_TYPES = {
 }
 
 
-def get_timestamp_format(value):
-    if isinstance(value, int):
-        return value
-    if not isinstance(value, datetime):
-        value = dateparser.parse(value)  # type: ignore
+def get_timestamp_from_datetime(value: datetime):
+    """
+    Converts a `datetime` object to a Unix timestamp in milliseconds.
+
+    Args:
+        value (datetime): The datetime object to convert.
+
+    Returns:
+        int: The corresponding Unix timestamp in milliseconds.
+
+    """
     return int(value.timestamp() * 1000)
 
 
@@ -53,24 +59,21 @@ class Client(BaseClient):
     Should only do requests and return data.
     It inherits from BaseClient defined in CommonServer Python.
     Most calls use _http_request() that handles proxy, SSL verification, etc.
-    For this HelloWorld implementation, no special attributes defined
     """
 
     def __init__(self, base_url, verify, proxy, api_key):
         super().__init__(base_url=base_url, verify=verify, proxy=proxy)
         self._api_key = api_key
 
-    def get_event_logs(self, url_suffix: str, page: int, after: Optional[int],
+    def get_event_logs(self, url_suffix: str, page: int, after: Optional[int] = None,
                        size: int = PAGE_SIZE) -> dict | str | bytes | Element | Response:
-        try:
-            params = assign_params(key=self._api_key, after=after, page=page, size=size)
-            raw_response = self._http_request(url_suffix=url_suffix, method="GET", params=params)
-            return raw_response
-        except Exception as e:
-            demisto.error(f"error when fetching events: {e}")
 
-    def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]
-                      ) -> list[dict]:
+        params = assign_params(key=self._api_key, after=after, page=page, size=size)
+        raw_response = self._http_request(url_suffix=url_suffix, method="GET", params=params)
+        return raw_response
+
+
+    def search_events(self, event_type: str, max_events_per_fetch: int, after: Optional[int]) -> list[dict]:
         """
         Searches for HelloWorld alerts using the '/get_alerts' API endpoint.
         All the parameters are passed directly to the API as HTTP POST parameters in the request
@@ -155,20 +158,29 @@ def add_fields_to_events(events: list[dict], event_type: str) -> None:
             set_entry_status(event)
 
 
-def test_module(client: Client, first_fetch_time, event_types_to_fetch, max_events_per_fetch) -> str:
+def test_module(client: Client, first_fetch_time: datetime, event_types_to_fetch: list[str],
+                max_events_per_fetch: dict[str, int]) -> str:
     """
-    Tests API connectivity and authentication
-    When 'ok' is returned it indicates the integration works like it is supposed to and connection to the service is
-    successful.
-    Raises exceptions if something goes wrong.
+    Tests API connectivity and authentication.
+
+    This function performs a sample fetch of events to verify that the integration is correctly configured
+    and that the connection to the external service is functioning properly.
+
+    If the fetch is successful, the integration is considered operational.
 
     Args:
-        client (Client): HelloWorld client to use.
-        params (Dict): Integration parameters.
-        first_fetch_time(str): The first fetch time as configured in the integration params.
+        client (Client): An instance of the  API client used for making requests.
+        first_fetch_time (datetime): The starting point in time from which to begin fetching events.
+        event_types_to_fetch (list[str]): A list of event types to fetch during the test.
+        max_events_per_fetch (dict[str, int]): A dictionary specifying the maximum number of events to fetch
+                                               per event type.
 
     Returns:
-        str: 'ok' if test passed, anything else will raise an exception and will fail the test.
+        str: 'ok' if the test passed successfully.
+
+    Raises:
+        Exception: If any error occurs during the event fetching process, the function will raise an exception,
+                   indicating the test failed.
     """
 
     fetch_events(client, {}, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
@@ -177,7 +189,7 @@ def test_module(client: Client, first_fetch_time, event_types_to_fetch, max_even
 
 
 def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_fetch: Dict[str, int],
-               from_date: Optional[datetime], should_add_fields=False) -> tuple[
+               from_date: Optional[datetime] = None, should_add_fields=False) -> tuple[
     List[Dict], CommandResults]:
     """Gets events from API
 
@@ -193,7 +205,7 @@ def get_events(client: Client, event_types_to_fetch: list[str], max_events_per_f
 
     all_events = []
     hr = ""
-    after = get_timestamp_format(from_date) if from_date else None  # epoch timestamp in milliseconds
+    after = get_timestamp_from_datetime(from_date) if from_date else None  # epoch timestamp in milliseconds
     for event_type in event_types_to_fetch:
         events = client.search_events(
             event_type=event_type,
@@ -271,7 +283,7 @@ def fetch_events(client: Client, last_run: dict[str, int],
         last_time = arg_to_datetime(last_run.get(event_type, None))
         last_time = last_time.replace(tzinfo=timezone.utc) if last_time else None
         start_date = first_fetch_time if not last_time else last_time
-        after = get_timestamp_format(start_date)
+        after = get_timestamp_from_datetime(start_date)
         demisto.debug(f"start date, after {event_type} {start_date} {after}")
         log_events = client.search_events(
             event_type=event_type,
@@ -302,10 +314,9 @@ def main() -> None:  # pragma: no cover
     api_key = params.get("api_key", "")
     base_url = urljoin(params.get("url"), "/org/api-ua/v1/event-logs/")
     verify_certificate = not params.get("insecure", False)
-
-    # How much time before the first fetch to retrieve events
-    first_fetch_time = datetime.now().replace(tzinfo=timezone.utc)
     proxy = params.get("proxy", False)
+
+    first_fetch_time = datetime.now(tz=timezone.utc)
     event_types_to_fetch = [event_type.strip() for event_type in argToList(params.get("event_types_to_fetch", []))]
     max_events_per_fetch = {
         ACCESS_LOGS: int(params.get("max_access_logs_events_per_fetch", MAX_EVENTS_PER_FETCH)),
@@ -318,18 +329,16 @@ def main() -> None:  # pragma: no cover
         client = Client(base_url=base_url, verify=verify_certificate, proxy=proxy, api_key=api_key)
 
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
             result = test_module(client, first_fetch_time, event_types_to_fetch, max_events_per_fetch)
             return_results(result)
 
         elif command == "decyfir-event-collector-get-events":
-            should_push_events = argToBoolean(args.pop("should_push_events"))
+            should_push_events = argToBoolean(args.get("should_push_events", False))
             from_date = arg_to_datetime(args.get("from_date"))
             event_types = argToList(args.get("event_types")) or event_types_to_fetch
             events, results = get_events(client, event_types, max_events_per_fetch, from_date, should_push_events)
             return_results(results)
             if should_push_events:
-                demisto.debug(f'send_events_to_xsiam events: {events}')
                 send_events_to_xsiam(events, vendor=VENDOR, product=PRODUCT)
 
         elif command == "fetch-events":
