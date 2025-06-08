@@ -4,12 +4,11 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Callable
-import asyncio
 
 
 class CloudTypes(Enum):
     AWS = "AWS"
-    AZURE = "AZURE"
+    AZURE = "Azure"
     GCP = "GCP"
     OCI = "OCI"
 
@@ -68,13 +67,11 @@ class HealthCheckResult:
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
-
     Args:
         cloud_type (str): Cloud provider type ("GCP", "AWS", "AZURE", "OCI").
         account_id (str): Cloud account identifier - GCP: Project ID, AWS: Account ID,
                           AZURE: Subscription ID
         scopes (list, optional): Authorization scopes. Defaults to None.
-
     Returns:
         dict: Credentials dictionary for the specified cloud provider. The structure varies by cloud type:
             - For all providers:
@@ -87,7 +84,6 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
                 - 'key' (str): AccessKeyId
             - For AZURE:
                 - 'access_token' (str): JWT
-
     Raises:
         DemistoException: If token retrieval fails or response parsing fails.
         ValueError: If account_id is not provided.
@@ -97,7 +93,7 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         raise ValueError(f"Missing {name} for {cloud_type}")
 
     context = demisto.callingContext.get("context", {})
-    cloud_info = context.get("CloudIntegrationProviderInfo", {})
+    cloud_info = context.get("CloudIntegrationInfo", {})
 
     demisto.info(f"Cloud credentials request context: {context}")
 
@@ -144,11 +140,9 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
 def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> list:
     """
     Retrieves the accounts associated with a specific connector with pagination support.
-
     Args:
         connector_id (str): The ID of the connector to fetch accounts for.
         max_results (int, optional): Maximum number of results to return. Defaults to None (all results).
-
     Returns:
         list: List of accounts associated with the specified connector.
     """
@@ -174,21 +168,49 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     return all_accounts
 
 
-DEFAULT_CONCURRENCY_LIMIT = 25 # Rate limit by AWS
+def _check_account_permissions(account: dict, connector_id: str, permission_check_func: Callable[[str, str], Any]) -> Any:
+    """
+    Helper function to check permissions for a single account.
+    Args:
+        account (dict): Account information.
+        connector_id (str): The connector ID.
+        permission_check_func (callable): Function that implements the permission check.
+    Returns:
+        Any: Result of the permission check.
+    """
+    account_id = account.get("account_id")
+    if not account_id:
+        demisto.debug(f"Account without ID found for connector {connector_id}: {account}")
+        return None
 
-async def async_check_account_permissions(account: dict, account_permissions_check_func: Callable[[str], Any]) -> Any:
-    """
-    
-    """
-    async with asyncio.Semaphore(DEFAULT_CONCURRENCY_LIMIT):
-        account_permissions_check_func(account)
-        
-    return set()
+    try:
+        return permission_check_func(account_id, connector_id)
+    except Exception as e:
+        demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
+        return HealthCheckResult.error(
+            account_id=account_id,
+            connector_id=connector_id,
+            message=f"Failed to check permissions: {str(e)}",
+            error=str(e),
+            error_type=ErrorType.INTERNAL_ERROR,
+        )
 
-async def check_cloud_permissions(
-    connector_id: str, account_permissions_check_func: Callable[[str], Any]
-    ) -> List[CommandResults]:
+
+def run_permissions_check_for_accounts(
+    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
+) -> List[Any]:
     """
+    Runs a permission check function for each account associated with a connector concurrently.
+    Args:
+        connector_id (str): The ID of the connector to fetch accounts for.
+        permission_check_func (callable): Function that implements the permission check.
+                                         Should accept account_id and connector_id parameters
+                                         and return a HealthCheckResult.
+        max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
+    Returns:
+        list: List of permission check results for each account.
+    Raises:
+        DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
 
@@ -197,21 +219,15 @@ async def check_cloud_permissions(
         return []
 
     results = []
-    tasks = [asyncio.create_task(account_permissions_check_func(account)) for account in accounts]
-    for task in asyncio.as_completed(tasks):
-        account_errors = await task
-        if account_errors:
-            results.extend(account_errors)
-            
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_account = {
+            executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
+            for account in accounts
+        }
+
+        for future in as_completed(future_to_account):
+            result = future.result()
+            if result is not None:
+                results.append(result)
+
     return results
-
-
-def health_check(connector_id: str, account_permissions_check_func: Callable[[str], Any]) -> list[CommandResults] | str:
-    """
-    Performs a health check for cloud accounts associated with a given connector.
-    """    
-    errors: list[CommandResults] = asyncio.run(check_cloud_permissions(account_permissions_check_func))
-    if not error:
-        return HealthCheckResult.ok()
-    calculated_severity = EntryType.ERROR if '
-    return CommandResults(entry_type=)
