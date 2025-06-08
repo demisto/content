@@ -340,6 +340,7 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+    continueonerror: true
   "14":
     id: "14"
     taskid: ee22533d-2819-4162-88a0-15379051d139
