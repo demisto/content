@@ -151,7 +151,6 @@ def add_fields_to_events(events: list[dict], event_type: str) -> None:
     for event in events:
         event["_time"] = time_field_mapping(event, event_type)
         event["source_log_type"] = SOURCE_LOG_TYPES.get(event_type)
-
         if event_type in {ASSETS_LOGS, DRK_LOGS}:
             set_entry_status(event)
 
@@ -237,9 +236,9 @@ def increase_datetime_for_next_fetch(
             raw_time = event.get("event_date")
         else:
             raw_time = event.get("created_date") or event.get("modified_date")
-
-
-        return arg_to_datetime(raw_time).replace(tzinfo=timezone.utc)
+        extracted_time = arg_to_datetime(raw_time).replace(tzinfo=timezone.utc)
+        demisto.debug(f"extracted_time {extracted_time}")
+        return extracted_time
 
     # Extract all valid datetimes from events
 
