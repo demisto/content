@@ -57,6 +57,7 @@ def test_append_email_signature_fails(mocker):
     )
     assert html_body == "<html><body>Simple HTML message.\r\n</body></html>"
 
+
 @pytest.mark.parametrize(
     "email_cc, email_bcc, expected_result",
     [
@@ -114,8 +115,7 @@ def test_validate_email_sent_fails(mocker):
 
     False, get_error(util_load_json("test_data/reply_mail_error.json"))
     mocker.patch("SendEmailReply.execute_command", side_effect=Exception())
-    debug_mocker = mocker.patch.object(demisto, "debug")
-    debug_mocker.call_args
+    mocker.patch.object(demisto, "debug")
     return_error_mock = mocker.patch("SendEmailReply.return_error")
     with pytest.raises(Exception):
         validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")

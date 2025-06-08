@@ -46,9 +46,9 @@ def append_email_signature(html_body):
     Returns: (string) Original HTML body with HTML formatted email signature appended
     """
     demisto.debug("append_email_signature")
-    is_succeed, email_signature = execute_command("getList", {"listName": "XSOAR - Email Communication Signature"},
-                                                  extract_contents=False,
-                                                  fail_on_error=False)
+    is_succeed, email_signature = execute_command(
+        "getList", {"listName": "XSOAR - Email Communication Signature"}, extract_contents=False, fail_on_error=False
+    )
     if is_succeed:
         # Find the position of the closing </html> tag and insert the signature there
         if re.search("(?i)</body>", html_body):
@@ -148,8 +148,9 @@ def execute_reply_mail(
         # setting the email's subject for gmail adjustments
         try:
             demisto.debug(f"Setting incident {incident_id} email subject to {subject_with_id}")
-            execute_command("setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}},
-                            extract_contents=False)
+            execute_command(
+                "setIncident", {"id": incident_id, "customFields": {"emailsubject": f"{subject_with_id}"}}, extract_contents=False
+            )
         except Exception:
             return_error(
                 f"SetIncident Failed."
@@ -492,8 +493,10 @@ def get_entry_id_list(incident_id, attachments, new_email_attachments, files):
             file_data = create_file_data_json(attachment, field_name)
             demisto.debug(f"Removing attachment {attachment} from incident {incident_id}")
             is_succeed, _ = execute_command(
-                "core-api-post", {"uri": f"/incident/remove/{incident_id}", "body": file_data}, extract_contents=False,
-                fail_on_error=False
+                "core-api-post",
+                {"uri": f"/incident/remove/{incident_id}", "body": file_data},
+                extract_contents=False,
+                fail_on_error=False,
             )
             if not is_succeed:
                 demisto.debug("Failed to remove attachment")
@@ -559,7 +562,9 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
         for note in notes:
             note_user = note["Metadata"]["user"]
             demisto.debug(f"Getting user data for user {note_user} in incident {incident_id}")
-            is_succeed, note_userdata = execute_command("getUserByUsername", {"username": note_user}, extract_contents=False, fail_on_error=False)
+            is_succeed, note_userdata = execute_command(
+                "getUserByUsername", {"username": note_user}, extract_contents=False, fail_on_error=False
+            )
             if not is_succeed:
                 demisto.debug("Failed to get user data")
             user_fullname = dict_safe_get(note_userdata[0], ["Contents", "name"]) or "DBot"
@@ -581,7 +586,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
                 "body": json.dumps({"id": note.get("ID"), "version": -1, "investigationId": incident_id, "data": "false"}),
             },
             extract_contents=False,
-            fail_on_error=False
+            fail_on_error=False,
         )
         if not is_succeed:
             return_error(entry_note_res)
@@ -590,7 +595,7 @@ def get_reply_body(notes, incident_id, attachments, reputation_calc_async=False)
             "addEntries",
             {"entries": entry_note, "id": incident_id, "reputationCalcAsync": reputation_calc_async},
             extract_contents=False,
-            fail_on_error=False
+            fail_on_error=False,
         )
         if not is_succeed:
             return_error(entry_tags_res)
@@ -659,8 +664,9 @@ def get_query_window():
     to query back for related incidents. If yes, use this value, else use the default value of 60 days.
     """
     demisto.debug("Getting the number of days to query back for related incidents")
-    is_succeed, user_defined_time = execute_command("getList", {"listName": "XSOAR - Email Communication Days To Query"},
-                                                    extract_contents=False, fail_on_error=False)
+    is_succeed, user_defined_time = execute_command(
+        "getList", {"listName": "XSOAR - Email Communication Days To Query"}, extract_contents=False, fail_on_error=False
+    )
     if not is_succeed:
         demisto.debug(
             "Error occurred while trying to load the `XSOAR - Email Communication Days To Query` list. Using"
@@ -698,9 +704,8 @@ def get_incident_by_query(query):
     query += f' modified:>="{query_from_date}"'
     demisto.debug(f"Querying for incidents with the following query: {query}")
     is_succeed, res = execute_command(
-        "getIncidents", {"query": query, "populateFields": "id,status"},
-        extract_contents=False,
-        fail_on_error=False)
+        "getIncidents", {"query": query, "populateFields": "id,status"}, extract_contents=False, fail_on_error=False
+    )
     extracted_results = res[0]
     if is_succeed:
         incidents_details = extracted_results["Contents"]["data"]
@@ -708,7 +713,6 @@ def get_incident_by_query(query):
 
     return_results(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
     raise DemistoException(ERROR_TEMPLATE.format("getIncidents", extracted_results["Contents"]))
-
 
 
 def get_unique_code(incident_id, max_tries=1000):
@@ -751,7 +755,7 @@ def reset_fields():
         "setIncident",
         {"emailnewrecipients": "", "emailnewsubject": "", "emailnewbody": "", "addcctoemail": "", "addbcctoemail": ""},
         extract_contents=False,
-        fail_on_error=False
+        fail_on_error=False,
     )
     if not is_succeed:
         demisto.debug("Failed to reset fields used to send the email message")
@@ -946,9 +950,10 @@ def single_thread_reply(
         email_code = get_unique_code(incident_id)
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcode to {email_code}")
         is_succeed, _ = execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}},
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcode": email_code}},
             extract_contents=False,
-            fail_on_error=False
+            fail_on_error=False,
         )
         if not is_succeed:
             demisto.debug(f"Failed to set incident {incident_id} emailgeneratedcode")
@@ -1037,16 +1042,17 @@ def multi_thread_new(
             "setIncident",
             {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{email_codes},{thread_code}"}},
             extract_contents=False,
-            fail_on_error=False
+            fail_on_error=False,
         )
         if not is_succeed:
             demisto.debug(f"failed to set incident {incident_id} emailgeneratedcode to {email_codes},{thread_code}")
     else:
         demisto.debug(f"Setting incident {incident_id} emailgeneratedcodes to {thread_code}")
         is_succeed, _ = execute_command(
-            "setIncident", {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}},
+            "setIncident",
+            {"id": incident_id, "customFields": {"emailgeneratedcodes": f"{thread_code}"}},
             extract_contents=False,
-            fail_on_error=False
+            fail_on_error=False,
         )
         if not is_succeed:
             demisto.debug(f"failed to set incident {incident_id} emailgeneratedcodes to {thread_code}")
@@ -1406,8 +1412,9 @@ def main():
         body_type = args.get("bodyType") or args.get("body_type") or "html"
         reputation_calc_async = argToBoolean(args.get("reputation_calc_async", False))
         demisto.debug("Getting notes")
-        is_succeed, notes = execute_command("getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False,
-                                   fail_on_error=False)
+        is_succeed, notes = execute_command(
+            "getEntries", {"filter": {"categories": ["notes"]}}, extract_contents=False, fail_on_error=False
+        )
         if not is_succeed:
             demisto.debug("Failed to get notes")
 
