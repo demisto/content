@@ -67,7 +67,15 @@ INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING = {
 
 
 class ContextPaths(Enum):
-    FILE_ENRICHMENT = "FileEnrichment"
+    FILE_ENRICHMENT = (
+        "FileEnrichment("
+        "val.Source && val.Source == obj.Source && ("
+        "val.MD5 && val.MD5 == obj.MD5 || "
+        "val.SHA1 && val.SHA1 == obj.SHA1 || "
+        "val.SHA256 && val.SHA256 == obj.SHA256 || "
+        "val.SHA512 && val.SHA512 == obj.SHA512"
+        "))"
+    )
     DBOT_SCORE = Common.DBotScore.CONTEXT_PATH
     FILE = Common.File.CONTEXT_PATH
     WILDFIRE_V2_VERDICT = "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)"
