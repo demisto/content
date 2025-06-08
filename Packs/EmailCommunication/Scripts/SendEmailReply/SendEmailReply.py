@@ -1378,7 +1378,7 @@ def multi_thread_reply(
     return True
 
 
-def main():
+def main():  # pragma: no cover
     try:
         demisto.debug("Starting SendEmailReply script")
         args = demisto.args()
