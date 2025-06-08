@@ -12659,6 +12659,7 @@ def find_and_remove_sensitive_text(text, pattern):
 def execute_polling_command(
     command_name,
     args,
+    using_brand=None,
     polling_interval_arg_name="interval_in_seconds",
     default_polling_interval=30,
     polling_timeout_arg_name="timeout_in_seconds",
@@ -12671,6 +12672,8 @@ def execute_polling_command(
     :type command_name: ``str``
     :param args: A dictionary of arguments to pass to the command.
     :type args: ``dict``
+    :param using_brand: The optional ID of the integration to use.
+    :type using_brand: ``str``
     :param polling_interval_arg_name: The name of the argument in 'args' that specifies the polling interval in seconds.
     :type polling_interval_arg_name: ``str``
     :param default_polling_interval: The default polling interval in seconds if not specified in 'args'.
@@ -12686,6 +12689,9 @@ def execute_polling_command(
     """
     polling_interval = arg_to_number(args.get(polling_interval_arg_name)) or default_polling_interval
     polling_timeout =  arg_to_number(args.get(polling_timeout_arg_name)) or default_polling_timeout
+
+    if using_brand:
+        args["using-brand"] = using_brand
 
     command_results = []
     times_ran = 0
@@ -12727,6 +12733,8 @@ def execute_polling_command(
 
         command_name = metadata.get("pollingCommand", command_name)
         args = metadata.get("pollingArgs", {})
+        if using_brand:
+            args["using-brand"] = using_brand
 
         demisto.debug("Sleeping {polling_interval} seconds before next command execution.".format(polling_interval=polling_interval))
         time.sleep(polling_interval)  # pylint: disable=E9003
