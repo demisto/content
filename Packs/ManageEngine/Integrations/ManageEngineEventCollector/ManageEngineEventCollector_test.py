@@ -191,7 +191,7 @@ def test_get_events_no_push(client: Client, mocker):
         name="ManageEngine Audit Logs",
         t={"id": "1", "eventTime": 1609459200000, "_time": "2021-01-01T00:00:00Z"},
     )
-    args = {"should_push_events": "false", "limit": "1", "start_date": "2021-01-01T00:00:00", "end_date": "2021-01-01T00:00:00"}
+    args = {"should_push_events": "false", "limit": "1", "start_date": "2021-01-01T00:00:00Z", "end_date": "2021-01-01T00:00:00Z"}
     results = get_events(client, args)
 
     assert isinstance(results, CommandResults)
@@ -213,9 +213,9 @@ def test_fetch_events_all_new_events_updates_to_max(client, mocker):
     from ManageEngineEventCollector import fetch_events
 
     events = [
-        {"eventTime": "1001"},
-        {"eventTime": "1002"},
-        {"eventTime": "1005"},
+        {"eventTime": 1001},
+        {"eventTime": 1002},
+        {"eventTime": 1005},
     ]
     mocker.patch.object(client, "search_events", return_value=events)
 
@@ -224,35 +224,7 @@ def test_fetch_events_all_new_events_updates_to_max(client, mocker):
     # No dedup, so order preserved
     assert events_returned == events
     # last_run is the max timestamp seen: 1005
-    assert next_run["last_time"] == "1005"
-
-
-def test_fetch_events_dedup_one_event_updates_to_max(client, mocker):
-    """
-    Given:
-        - A list of events where one event's `eventTime` matches the previous `last_time`.
-    When:
-        - Calling `fetch_events()` with that `last_time` to deduplicate already ingested events.
-    Then:
-        - The matching event is excluded from the results.
-        - The remaining events are returned.
-        - The `last_run` is updated to the maximum `eventTime` value among the fetched events.
-    """
-
-    from ManageEngineEventCollector import fetch_events
-
-    events = [
-        {"eventTime": "1001"},
-        {"eventTime": "1002"},
-        {"eventTime": "1005"},
-    ]
-    mocker.patch.object(client, "search_events", return_value=events)
-
-    next_run, events_returned = fetch_events(client, {"last_time": "1001"}, max_events_per_fetch=10)
-
-    assert len(events_returned) == 2
-    # last_run is the max timestamp seen: 1005
-    assert next_run["last_time"] == "1005"
+    assert next_run["last_time"] == "1006"
 
 
 # ─────── Tests fetching logics ─────────────────────────────────────────────────
@@ -509,28 +481,24 @@ class TestRealResponse:
     def test_fetch_events_dedup_logic(self, client_with_real_payload, mocker):
         """
         Given:
-        - `last_run['last_time']` equals the timestamp of the earliest event.
         - The `_http_request` stub returns 17 events.
 
         When:
         - `fetch_events` is executed.
 
         Then:
-        - The event whose `eventTime` equals `last_time` is *deduplicated*.
         - `next_run['last_time']` equals the newest `eventTime` in the fixture.
-        - Exactly 16 events are returned.
+        - Exactly 17 events are returned.
         """
-        first_ts = min(int(ev["eventTime"]) for ev in self.raw_data["messageResponse"])
         newest_ts = max(int(ev["eventTime"]) for ev in self.raw_data["messageResponse"])
 
         mocker.patch.object(manage, "send_events_to_xsiam")  # avoid side-effect
 
         next_run, events = manage.fetch_events(
             client=client_with_real_payload,
-            last_run={"last_time": str(first_ts)},
+            last_run={"last_time": 0},
             max_events_per_fetch=50,
         )
 
-        assert len(events) == 16
-        assert all(int(ev["eventTime"]) != first_ts for ev in events)
-        assert next_run["last_time"] == str(newest_ts)
+        assert len(events) == 17
+        assert int(next_run["last_time"]) == newest_ts + 1

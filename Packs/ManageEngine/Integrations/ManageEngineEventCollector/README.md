@@ -80,8 +80,8 @@ Manual command to fetch events and display them.
 | --- | --- | --- |
 | should_push_events | If true, the command will create events. Otherwise, it will only display them. Used for debugging purposes.| Required | 
 | limit | Maximum number of results to return. | Optional | 
-| start_date | Date from which to get events, For example 2018-11-06T08:56:41. | Optional | 
-| end_date | Date to which to get events , For example 2018-11-06T08:56:41. | Optional | 
+| start_date | Date from which to get events, For example '2018-11-06T08:56:41Z'. | Optional | 
+| end_date | Date to which to get events , For example '2018-11-06T08:56:41Z'. | Optional | 
 
 #### Context Output
 

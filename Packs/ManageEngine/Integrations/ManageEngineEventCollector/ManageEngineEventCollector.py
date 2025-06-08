@@ -200,8 +200,8 @@ def get_events(client: Client, args: dict) -> CommandResults:
 
     now_ts = int(time.time() * 1000)
 
-    start_date = date_to_timestamp(start_date_str) if start_date_str else now_ts
-    end_date = date_to_timestamp(end_date_str) if end_date_str else (now_ts - 60 * 1000)
+    start_date = date_to_timestamp(start_date_str, DATE_FORMAT) if start_date_str else now_ts
+    end_date = date_to_timestamp(end_date_str, DATE_FORMAT) if end_date_str else (now_ts - 60 * 1000)
 
     events = client.search_events(str(start_date), str(end_date), limit)
     add_time_to_events(events)
@@ -211,6 +211,8 @@ def get_events(client: Client, args: dict) -> CommandResults:
     )
     results = CommandResults(
         readable_output=human_readable,
+        outputs_prefix="ManageEngine.Event",
+        outputs=events,
     )
 
     if should_push:
@@ -241,12 +243,10 @@ def fetch_events(
     demisto.debug(f"Fetching from: {timestamp_to_datestring(last_time_ts)} to {timestamp_to_datestring(now_ts)}")
 
     events = client.search_events(start_time=last_time_ts, end_time=str(now_ts), limit=max_events_per_fetch)
-    # Remove event who fetched twice
-    if events and str(events[0].get("eventTime")) == last_time_ts:
-        events = events[1:]
+
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
-    max_timestamp = events[-1]["eventTime"] if events else now_ts
+    max_timestamp = int(events[-1]["eventTime"] if events else now_ts) + 1
     demisto.debug(f"Max timestamp {max_timestamp}")
     last_run = {"last_time": f"{max_timestamp}"}
     return last_run, events
@@ -279,7 +279,7 @@ def main() -> None:  # pragma: no cover
     server_url = params.get("server_url")
     if server_url not in ENDPOINT_TO_ZOHO_ACCOUNTS:
         return_error("Invalid URL: Make sure it matches one of the options listed in the help section.")
-    client_id = params.get("credentials", {}).get("identifier")
+    client_id = params.get("credentials", {}).get("username")
     client_secret = params.get("credentials", {}).get("password")
     client_code = params.get("client_code", {}).get("password")
     verify = not params.get("insecure", False)
