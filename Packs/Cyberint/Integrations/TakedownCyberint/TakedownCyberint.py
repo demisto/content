@@ -1,4 +1,3 @@
-import http
 from typing import Any
 
 import demistomock as demisto
@@ -31,7 +30,6 @@ class Client(BaseClient):
         }
         super().__init__(base_url, verify=verify, proxy=proxy)
 
-
     @logger
     def submit_takedown_request(
         self,
@@ -53,18 +51,17 @@ class Client(BaseClient):
             response (Response): API response from Cyberint.
         """
         body = {
-          "customer": customer,
-          "reason": reason,
-          "url": url,
-          "brand": brand,
-          "original_url": original_url,
-          "alert_id": alert_id,
-          "note": note
+            "customer": customer,
+            "reason": reason,
+            "url": url,
+            "brand": brand,
+            "original_url": original_url,
+            "alert_id": alert_id,
+            "note": note,
         }
         body = remove_empty_elements(body)
         response = self._http_request(method="POST", json_data=body, cookies=self._cookies, url_suffix="takedown/api/v1/submit")
         return response
-
 
     @logger
     def retrieve_takedown_requests(
@@ -108,10 +105,9 @@ class Client(BaseClient):
                 "actions": {"action": action} if action else None,
                 "alert_id": alert_id,
                 "alert_ref_id": alert_ref_id,
-                "blocklist_requests": {
-                    "blocked_date": blocked_date,
-                    "sent_date": sent_date
-                } if blocked_date or sent_date else None,
+                "blocklist_requests": {"blocked_date": blocked_date, "sent_date": sent_date}
+                if blocked_date or sent_date
+                else None,
                 "brand": brand,
                 "created_date": created_date,
                 "customer": customer,
@@ -129,40 +125,11 @@ class Client(BaseClient):
                 "requested_by": requested_by,
                 "status": status,
                 "url": url,
-            }
+            },
         }
         body = remove_empty_elements(body)
-        response = self._http_request(
-            method="POST",
-            json_data=body,
-            cookies=self._cookies,
-            url_suffix="takedown/api/v1/request"
-        )
+        response = self._http_request(method="POST", json_data=body, cookies=self._cookies, url_suffix="takedown/api/v1/request")
         return response
-
-
-def test_module(client: Client) -> str:
-    """
-    Builds the iterator to check that the feed is accessible.
-
-    Args:
-        client: Client object.
-
-    Returns:
-        Outputs.
-    """
-    try:
-        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
-    except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
-            return "ok"
-
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
-            return "Authorization Error: invalid `API Token`"
-
-        raise exc
-
-    return "ok"
 
 
 def submit_takedown_request_command(
@@ -192,33 +159,49 @@ def submit_takedown_request_command(
     data = response.get("data", {})
     takedown_request = data.get("takedown_request", {})
 
-    formatted_request = [{
-        "reason": takedown_request.get("reason"),
-        "url": takedown_request.get("url"),
-        "original_url": takedown_request.get("original_url"),
-        "customer": takedown_request.get("customer"),
-        "status": takedown_request.get("status"),
-        "brand": takedown_request.get("brand"),
-        "alert_ref_id": takedown_request.get("alert_ref_id"),
-        "alert_id": takedown_request.get("alert_id"),
-        "hosting_providers": takedown_request.get("hosting_providers"),
-        "name_servers": takedown_request.get("name_servers"),
-        "escalation_actions": takedown_request.get("escalation_actions"),
-        "last_escalation_date": takedown_request.get("last_escalation_date"),
-        "last_status_change_date": takedown_request.get("last_status_change_date"),
-        "last_seen_date": takedown_request.get("last_seen_date"),
-        "created_date": takedown_request.get("created_date"),
-        "status_reason": takedown_request.get("status_reason"),
-        "id": takedown_request.get("id"),
-    }]
+    formatted_request = [
+        {
+            "reason": takedown_request.get("reason"),
+            "url": takedown_request.get("url"),
+            "original_url": takedown_request.get("original_url"),
+            "customer": takedown_request.get("customer"),
+            "status": takedown_request.get("status"),
+            "brand": takedown_request.get("brand"),
+            "alert_ref_id": takedown_request.get("alert_ref_id"),
+            "alert_id": takedown_request.get("alert_id"),
+            "hosting_providers": takedown_request.get("hosting_providers"),
+            "name_servers": takedown_request.get("name_servers"),
+            "escalation_actions": takedown_request.get("escalation_actions"),
+            "last_escalation_date": takedown_request.get("last_escalation_date"),
+            "last_status_change_date": takedown_request.get("last_status_change_date"),
+            "last_seen_date": takedown_request.get("last_seen_date"),
+            "created_date": takedown_request.get("created_date"),
+            "status_reason": takedown_request.get("status_reason"),
+            "id": takedown_request.get("id"),
+        }
+    ]
 
     human_readable = tableToMarkdown(
         "Takedown Request",
         formatted_request,
         headers=[
-            "reason", "url", "original_url", "customer", "status", "brand", "alert_ref_id", "alert_id",
-            "hosting_providers", "name_servers", "escalation_actions", "last_escalation_date",
-            "last_status_change_date", "last_seen_date", "created_date", "status_reason", "id"
+            "reason",
+            "url",
+            "original_url",
+            "customer",
+            "status",
+            "brand",
+            "alert_ref_id",
+            "alert_id",
+            "hosting_providers",
+            "name_servers",
+            "escalation_actions",
+            "last_escalation_date",
+            "last_status_change_date",
+            "last_seen_date",
+            "created_date",
+            "status_reason",
+            "id",
         ],
         headerTransform=takedown_response_header_transformer,
         removeNull=True,
@@ -278,9 +261,23 @@ def retrieve_takedown_requests_command(
         "Takedown Requests",
         formatted_requests,
         headers=[
-            "reason", "url", "original_url", "customer", "status", "brand", "alert_ref_id", "alert_id",
-            "hosting_providers", "name_servers", "escalation_actions", "last_escalation_date",
-            "last_status_change_date", "last_seen_date", "created_date", "status_reason", "id"
+            "reason",
+            "url",
+            "original_url",
+            "customer",
+            "status",
+            "brand",
+            "alert_ref_id",
+            "alert_id",
+            "hosting_providers",
+            "name_servers",
+            "escalation_actions",
+            "last_escalation_date",
+            "last_status_change_date",
+            "last_seen_date",
+            "created_date",
+            "status_reason",
+            "id",
         ],
         headerTransform=takedown_response_header_transformer,
         removeNull=False,
