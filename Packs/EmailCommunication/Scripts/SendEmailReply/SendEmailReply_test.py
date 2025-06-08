@@ -112,10 +112,10 @@ def test_validate_email_sent_fails(mocker):
     """
     from SendEmailReply import validate_email_sent
 
-    reply_mail_error = False, get_error(util_load_json("test_data/reply_mail_error.json"))
+    False, get_error(util_load_json("test_data/reply_mail_error.json"))
     mocker.patch("SendEmailReply.execute_command", side_effect=Exception())
     debug_mocker = mocker.patch.object(demisto, "debug")
-    debug_mocker_call_args = debug_mocker.call_args
+    debug_mocker.call_args
     return_error_mock = mocker.patch("SendEmailReply.return_error")
     with pytest.raises(Exception):
         validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
