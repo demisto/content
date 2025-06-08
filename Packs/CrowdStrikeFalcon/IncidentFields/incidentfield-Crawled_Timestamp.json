@@ -21,7 +21,8 @@
     "associatedTypes": [
         "CrowdStrike Falcon IDP Detection",
         "CrowdStrike Falcon Mobile Detection",
-        "CrowdStrike Falcon OFP Detection"
+        "CrowdStrike Falcon OFP Detection",
+        "CrowdStrike Falcon Third Party Detection"
     ],
     "associatedToAll": false,
     "unmapped": false,
