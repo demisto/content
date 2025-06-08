@@ -37,13 +37,13 @@ class EventType:
     ):
         """
         Args:
-            name (str): Human-friendly name of the event type.
-            url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
+            name                     (str): Human-friendly name of the event type, as in the params names..
+            url_suffix               (str): URL suffix of the CybelAngel API endpoint.
             id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
-            ascending_order (bool): If events is sorted by ascending or descending order after returning from get_{event_type}.
-            time_field (str): Field name in the event used for timestamp mapping (`_time`).
-            source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
-            default_max_fetch (int): Default max_fetch limit.
+            ascending_order         (bool): Events sorted by ascending/descending order after returning from get function.
+            time_field               (str): Field name in the event used for timestamp mapping (`_time`).
+            source_log_type          (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            default_max_fetch        (int): Default max_fetch limit.
         """
         self.name = name
         self.url_suffix = url_suffix
@@ -492,7 +492,7 @@ def get_latest_event_time_and_ids(
 ) -> tuple[str, List[str]]:
     """
     Determine the latest event timestamp and assemble the corresponding IDs.
-    This function assumes that `events` is sorted by `_time` in EventType.ascending_order order.
+    This function assumes that `events` is sorted by `_time` in ascending/descending order depend on the type.
 
     Args:
         reports     (List[Dict]): A list of event dicts, each containing an `_time` key and the relevant ID field.
@@ -596,7 +596,7 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
             latest_time, latest_ids = get_latest_event_time_and_ids(events, event_type, last_time, last_ids)
             demisto.debug(f"{event_type.name} latest time: {latest_time}, latest IDs: {latest_ids}")
 
-            last_run[event_type.name] = {LATEST_TIME: latest_time, LATEST_FETCHED_IDS: latest_ids}
+            last_run[event_type.name] = {LATEST_TIME: normalize_date_format(latest_time), LATEST_FETCHED_IDS: latest_ids}
             all_events.extend(events)
 
         else:
@@ -947,7 +947,7 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
         Dict[str, Dict[str, Any]]: A mapping of each event type to its last-run info:
             {
                 "<EVENT_TYPE>": {
-                    LATEST_TIME: "<ISO-formatted timestamp string>",
+                    LATEST_TIME: String date formatted as DATE_FORMAT,
                     LATEST_FETCHED_IDS: List[str]
                 },
             }
@@ -956,7 +956,6 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
     last_time = now - timedelta(minutes=1)
     if not last_run:
         last_run = {}
-        last_time = now - timedelta(minutes=1)
         demisto.debug("First run")
     for event_type in [REPORT, DOMAIN, CREDENTIALS]:
         if event_type.name not in last_run or (event_type.name in last_run and event_type not in events_type_to_fetch):
@@ -966,6 +965,30 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
             }
 
     return last_run
+
+
+def normalize_date_format(date_string: str) -> str:
+    """
+    Normalizes a date string to a consistent UTC format ending with 'Z'.
+
+    This function handles three specific input formats:
+    1. 2025-05-18T06:10:37Z (already in a valid format)
+    2. 2024-08-14T08:48:51.380211 (missing timezone)
+    3. 2020-05-15T12:30:25+00:00 (UTC offset format)
+
+    Args:
+        date_string: The input date string.
+
+    Returns:
+        The normalized date string ending with 'Z'.
+    """
+    if date_string.endswith("+00:00"):
+        return date_string[:-6] + "Z"
+
+    if date_string.endswith("Z"):
+        return date_string
+
+    return date_string + "Z"
 
 
 def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:

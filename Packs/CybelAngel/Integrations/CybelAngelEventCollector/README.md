@@ -2,32 +2,25 @@ CybelAngel receives reports from the CybelAngel platform, which specializes in e
 
 ## Configure CybelAngel in Cortex
 
-<~XSIAM>
-
 ## Required Modules
 - Account Takeover Protection module is required for Credentials watchlist events.
   
 - Domain Protection module is required for Domain events.
   
-</~XSIAM>
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Client ID | True |
-| Client Secret | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+| **Parameter**                                               | **Required** |
+| ----------------------------------------------------------- | ------------ |
+| Server URL                                                  | True         |
+| Client ID                                                   | True         |
+| Client Secret                                               | True         |
+| Trust any certificate (not secure)                          | False        |
+| Use system proxy settings                                   | False        |
+| Fetch events                                                | True         |
+| Event Types To Fetch                                        | True         |
+| The maximum number of report event per fetch                | False        |
+| The maximum number of Credential watchlist events per fetch | False        |
+| The maximum number of Domain watchlist events  per fetch    | False        |
 
-<~XSIAM>
-
-| Fetch events | True |
-| Event Types To Fetch | True |
-| The maximum number of report event per fetch | False |
-| The maximum number of Credential watchlist events per fetch | False |
-| The maximum number of Domain watchlist events  per fetch | False |
-
-</~XSIAM>
 
 
 ## Commands
@@ -48,11 +41,11 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
-| events_type_to_fetch | Which events to fetch. Possible values are: Reports, Domain wathclish, Credentials watchlist. Default is Reports. | Optional | 
-| start_date | Get events from a specific start date formatted with ISO 8601. | Optional | 
-| end_date | Get events until a specific end date formatted with ISO 8601. | Optional | 
-| limit | The maximum number of events to return. Default is 50. | Optional | 
+| should_push_events   | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| events_type_to_fetch | Which events to fetch. Possible values are: Reports, Domain wathclish, Credentials watchlist. Default is Reports.                                      | Optional | 
+| start_date           | Get events from a specific start date formatted with ISO 8601.                                                                                         | Optional | 
+| end_date             | Get events until a specific end date formatted with ISO 8601.                                                                                          | Optional | 
+| limit                | The maximum number of events to return. Default is 50.                                                                                                 | Optional | 
 
 #### Context Output
 

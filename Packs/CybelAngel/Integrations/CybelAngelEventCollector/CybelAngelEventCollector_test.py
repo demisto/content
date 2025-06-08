@@ -21,16 +21,14 @@ def client() -> Client:
 
 
 def load_test_data(file_name):
-    here = os.path.dirname(__file__)
-    data_path = os.path.join(here, "test_data", f"{file_name}.json")
-    with open(data_path) as f:
-        return json.load(f)
+    with open(f"test_data/{file_name}.json") as file:
+        return json.load(file)
 
 
 class HttpRequestsMocker:
     """
     Mocker for the HttpRequests.
-    Uses examples of real response with mocked data per event type.
+    Uses examples of real response structures with mocked data.
     """
 
     def __init__(self, num_of_events: int):
@@ -705,6 +703,7 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
      - make sure last run is updated.
     """
     import CybelAngelEventCollector
+    from CybelAngelEventCollector import normalize_date_format
 
     send_events_mocker = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", return_value={})
@@ -740,7 +739,7 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
     last_run = set_last_run_mocker.call_args[0][0]
 
     max_event_index = EVENT_TYPE[event_type].max_index
-    assert last_run[event_type][LATEST_TIME] == fetched_events[max_event_index]["_time"]
+    assert last_run[event_type][LATEST_TIME] == normalize_date_format(fetched_events[max_event_index]["_time"])
     last_id = EVENT_TYPE[event_type].get_id(fetched_events[max_event_index])
     assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
 
@@ -828,6 +827,7 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
      - make sure last run is updated.
     """
     import CybelAngelEventCollector
+    from CybelAngelEventCollector import normalize_date_format
 
     send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
@@ -870,7 +870,7 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
 
     last_run = set_last_run_mocker.call_args[0][0]
     max_event_index = EVENT_TYPE[event_type].max_index
-    assert last_run[event_type][LATEST_TIME] == fetched_events[max_event_index]["_time"]
+    assert last_run[event_type][LATEST_TIME] == normalize_date_format(fetched_events[max_event_index]["_time"])
 
     last_id = EVENT_TYPE[event_type].get_id(fetched_events[max_event_index])
     assert last_run[event_type][LATEST_FETCHED_IDS][0] == last_id
@@ -1229,5 +1229,5 @@ def test_fetch_events_same_timestamp(mocker):
 
     # 3) last_run should still have that same timestamp, but now include all six IDs
     assert DOMAIN.name in new_last_run
-    assert new_last_run[DOMAIN.name][LATEST_TIME] == last_run_time
+    assert new_last_run[DOMAIN.name][LATEST_TIME] == last_run_time + "Z"
     assert set(new_last_run[DOMAIN.name][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
