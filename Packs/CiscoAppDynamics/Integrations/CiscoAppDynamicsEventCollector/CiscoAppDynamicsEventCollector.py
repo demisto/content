@@ -13,7 +13,6 @@ PRODUCT = "appdynamics"
 
 TOKEN_URL = "/api/oauth/access_token"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-DAY_IN_MS = 24 * 60 * 60 * 1000
 
 DEFAULT_MAX_AUDIT = 100
 DEFAULT_MAX_HEALTH = 3000
@@ -32,10 +31,10 @@ class EventType:
         Args:
             name (str): Human-friendly name of the event type.
             url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
-            id_key (Union[str, List[str]]): Key or list of keys used to uniquely identify an event.
-            ascending_order (bool): If the API return in sorted by ascending or descending order after returning from get_event.
+            max_fetch (int): Maximum events to fetch to XSIAM each fetch.
             time_field (str): Field name in the event used for timestamp mapping (`_time`).
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            default_params (dict): Dict to contain default parameters for the API calls.
         """
         self.name = name
         self.url_suffix = url_suffix
@@ -107,7 +106,7 @@ class Client(BaseClient):
         response = self._http_request(method="POST", url_suffix=TOKEN_URL, params=params, headers=headers)
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
-        demisto.debug(f"Access token expire in: {expires_in}")  # TODO
+        demisto.debug(f"Access token expire in: {expires_in}")
         self.token = access_token
         self.token_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(expires_in) - 10)
         demisto.debug(f"Access token obtained, expires at {self.token_expiry.isoformat()}")
@@ -155,32 +154,20 @@ class Client(BaseClient):
         demisto.debug("Request successful")
         return response
 
-    def get_audit_logs(self, start_time: datetime, end_time: datetime) -> list[dict]:
+    def get_audit_logs(self, start_time: str, end_time: str) -> list[dict]:
         """
         Fetches audit-history events.
-        If start_dt is more than 24 hours before end_dt, it will be adjusted to be exactly 24 hours before end_dt.
-        If start_dt bigger or equal to end_dt return empty list.
-        The API limit is 24 hours time interval.
-        Include both start and end time.
+        API return all events from start_dt to end_dt include start and end.
         Args:
-            start_dt (datetime): start time.
-            end_dt (datetime):   end time.
+            start_dt (datetime): start time in the right format: '2015-12-19T10:50:03.607-0000'.
+            end_dt (datetime):   end time in the right format: '2015-12-19T10:50:03.607-0000'.
         Returns:
             List[Dict]: JSON-decoded list of audit events.
         """
-        max_delta = timedelta(hours=24)
-        if end_time - start_time > max_delta:
-            demisto.debug("Start time is more than 24 hours before end time. Adjusting start time to end time minus 24 hours.")
-            start_time = end_time - max_delta
-
-        if start_time >= end_time:
-            demisto.debug("Start time is bigger than or equal to end time")
-            return []
         params = {
-            "startTime": start_time.strftime(DATE_FORMAT)[:-3] + start_time.strftime("%z"),
-            "endTime": end_time.strftime(DATE_FORMAT)[:-3] + end_time.strftime("%z"),
+            "startTime": start_time,
+            "endTime": end_time,
         }
-
         demisto.debug(f"Fetching audit logs from {params['startTime']} to {params['endTime']}")
 
         events = self._authorized_request(
@@ -190,26 +177,32 @@ class Client(BaseClient):
         demisto.debug(f"Received {len(events)} audit logs from API.")
 
         add_fields_to_events(events, AUDIT)
+        
+        timestamps = [ev[AUDIT.time_field] for ev in events]
+
+        if timestamps != sorted(timestamps):
+            demisto.debug("Audit events are NOT sorted by timestamp.")
+        else:
+            demisto.debug("Audit events are already sorted by timestamp.")
+            
         events.sort(key=lambda ev: datetime.fromisoformat(ev["_time"].replace("Z", "+00:00")))
 
         return events
 
-    def get_health_events(self, start_time: datetime, end_time: datetime) -> list[dict]:
+    def get_health_events(self, start_time: int, end_time: int) -> list[dict]:
         """
         Fetches all Healthrule Violations Events in a loop,
-        using the API's BETWEEN_TIMES.
+        using the API's BETWEEN_TIMES. 
         start-time and end-time are in milliseconds.
         Args:
-            from_date: datetime.
-            to_date:   datetime.
+            from_date(int): timestamp.
+            to_date  (int): timestamp.
         Returns:
             list[Dict]: list of all events.
         """
         events: list[dict] = []
         params = HEALTH_EVENT.default_params.copy()
         demisto.debug("Fetching Healthrule Violations Events")
-        start_time = str(int(start_time.astimezone(timezone.utc).timestamp() * 1000))  # type: ignore
-        end_time = str(int(end_time.astimezone(timezone.utc).timestamp() * 1000))  # type: ignore
         while len(events) <= HEALTH_EVENT.max_fetch:
             params.update(
                 {
@@ -225,7 +218,12 @@ class Client(BaseClient):
             if len(batch) < HEALTH_RULE_API_LIMIT:
                 break
             start_time = events[-1][HEALTH_EVENT.time_field]
-
+        timestamps = [ev[HEALTH_EVENT.time_field] for ev in events]
+        if timestamps != sorted(timestamps):
+            demisto.debug("Health events are NOT sorted by timestamp.")
+        else:
+            demisto.debug("Health events are already sorted by timestamp.")
+            
         demisto.debug(f"Fetched {len(events)} Healthrule Violations Events from API.")
         return add_fields_to_events(events, HEALTH_EVENT)
 
@@ -246,7 +244,7 @@ def fetch_events(
     """
 
     all_events = []
-    current_time = datetime.now(timezone.utc)
+    current_time = int(time.time() * 1000)
     last_run = get_last_run(current_time, events_type_to_fetch)
     demisto.debug(f"fetch_events::Current time: {current_time}")
 
@@ -257,23 +255,19 @@ def fetch_events(
 
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
-        last_time = last_run[event_type.name]
+        last_time = last_run[event_type.name] # in the right API format
         demisto.debug(f"Last run {last_time}")
         events = event_fetch_function[event_type.name](
-            start_time=last_time,
-            end_time=current_time,
+            start_time=timestamp_to_api_format(last_time,event_type),
+            end_time=timestamp_to_api_format(current_time,event_type),
         )
         demisto.debug(f"Fetched {len(events)} events")
         if events:
-            # Dedup due to the API include start and end
-            if parse_iso_millis_z(events[0]["_time"]) == last_time:
-                events = events[1 : event_type.max_fetch + 1]
-            else:
-                events = events[: event_type.max_fetch]
             all_events.extend(events)
-            last_run[event_type.name] = events[-1]["_time"]
+        if events:
+            last_run[event_type.name] = events[-1][event_type.time_field] + 1
         else:
-            last_run[event_type.name] = current_time.strftime(DATE_FORMAT)[:-3] + "Z"  # type: ignore
+            last_run[event_type.name] = current_time + 1
 
     demisto.debug(f"Total events fetched: {len(all_events)}")
     return all_events, last_run
@@ -293,11 +287,10 @@ def add_fields_to_events(events: list[dict], event_type: EventType) -> list[dict
     if not events:
         return []
     for event in events:
-        event["_time"] = timestamp_ms_to_iso(event.get(event_type.time_field))  # type: ignore
+        event["_time"] = timestamp_to_datestring(event[event_type.time_field],DATE_FORMAT,is_utc=True)[:-3] + "Z"
         event["SOURCE_LOG_TYPE"] = event_type.source_log_type
 
     return events
-
 
 def test_module_command(client: Client):  # pragma: no cover
     """
@@ -316,7 +309,7 @@ def test_module_command(client: Client):  # pragma: no cover
     return "ok"
 
 
-def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_events(client: Client, args: dict[str, Any], params: dict[str,Any]) -> CommandResults:
     """
     A test‐driven version of fetch_events.
 
@@ -331,49 +324,50 @@ def get_events(client: Client, args: dict[str, Any]) -> CommandResults:
       - CommandResults: include human readable from the events.
     """
     args = demisto.args()
-    event_type_name = EVENT_TYPE[args.get("events_type_to_fetch", AUDIT.name)].name
+    event_type_name = args.get("events_type_to_fetch", AUDIT.name)
     if event_type_name == HEALTH_EVENT.name:
-        HEALTH_EVENT.url_suffix = "/rest/applications/1/problems/healthrule-violations"
+        HEALTH_EVENT.url_suffix = f"/rest/applications/{params['application_id']}/problems/healthrule-violations"
     limit = int(args.get("limit", 50))
     now = datetime.now(timezone.utc)
     end_time = parser.parse(args.get("end_date", "")) if args.get("end_date", "") else now
-    start_time = parser.parse(args.get("start_date", "")) if args.get("start_date", "") else (now - timedelta(days=30))
+    start_time = parser.parse(args.get("start_date", "")) if args.get("start_date", "") else (now - timedelta(days=1))
     demisto.debug(f"Get events from {start_time} to {end_time}")
     event_fetch_function = {
         AUDIT.name: client.get_audit_logs,
         HEALTH_EVENT.name: client.get_health_events,
     }
 
-    fetch_func = event_fetch_function.get(event_type_name)  # type: ignore
-    events = fetch_func(start_time=start_time, end_time=end_time)  # type: ignore
+    fetch_func = event_fetch_function[event_type_name]
+    events = fetch_func(start_time=datetime_to_api_format(start_time,EVENT_TYPE[event_type_name]),
+                        end_time=datetime_to_api_format(end_time,EVENT_TYPE[event_type_name]))
+    
     events = events[:limit]
     if argToBoolean(args.get("is_fetch_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
         demisto.debug(f"Successfully send {len(events)} to XSIAM.")
     return CommandResults(
-        outputs_prefix="CybleAngel.Events",
-        outputs=events,
-        raw_response=events,
-        readable_output=tableToMarkdown(f"{event_type_name}", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=False),
+        readable_output=tableToMarkdown(f"{event_type_name}", events),
     )
 
 
-def parse_iso_millis_z(s: str) -> datetime:
-    """
-    Turn "2025-05-25T16:07:53.127Z" into a timezone-aware datetime.
-    """
-    return datetime.fromisoformat(s.replace("Z", "+00:00"))
+def timestamp_to_api_format(time: int, eventType: EventType) -> str | int:
+    if eventType.name == AUDIT.name:
+        ts_sec = time / 1000.0
+        dt = datetime.fromtimestamp(ts_sec, tz=timezone.utc)
+        return dt.strftime('%Y-%m-%dT%H:%M:%S.') + f"{dt.microsecond // 1000:03d}" + "-0000"
+    
+    elif eventType.name == HEALTH_EVENT.name:
+        return time
+    return ""
 
+def datetime_to_api_format(time: datetime, eventType: EventType) -> str | int:
+    if eventType.name == AUDIT.name:
+        return time.strftime('%Y-%m-%dT%H:%M:%S.') + f"{time.microsecond // 1000:03d}-0000"
+    elif eventType.name == HEALTH_EVENT.name:
+        return date_to_timestamp(time)
+    return ""
 
-def timestamp_ms_to_iso(ts_ms: str) -> str:
-    """
-    Turn a millisecond‐since‐epoch int into "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
-    """
-    dt = datetime.fromtimestamp(int(ts_ms) / 1000, tz=timezone.utc)
-    return dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-
-
-def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[str, datetime]:
+def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, int]:
     """
     Retrieve and initialize the “last run” timestamps for a set of event types.
     This function loads the existing last‐run state via `demisto.getLastRun()`.
@@ -385,7 +379,8 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
     Returns:
         Dict[str, Dict[str, Any]]: A mapping of each event type to its last-run info:
             {
-                "EVENT_TYPE.name": LATEST_TIME: "<ISO-formatted timestamp string>"
+                "AUDIT.name": timestamp int..
+                "HEALTH.name" timestamp int.
             }
     """
     raw_last_run = demisto.getLastRun() or {}
@@ -394,10 +389,9 @@ def get_last_run(now: datetime, events_type_to_fetch: list[EventType]) -> dict[s
     for event_type in EVENT_TYPE.values():
         last_time_iso = raw_last_run.get(event_type.name)
         if last_time_iso and event_type in events_type_to_fetch:
-            dt = parse_iso_millis_z(last_time_iso)
+            last_run[event_type.name] = last_time_iso
         else:
-            dt = now - timedelta(minutes=1)
-        last_run[event_type.name] = dt
+            last_run[event_type.name] = now - (60 * 1000)
 
     return last_run
 
@@ -480,7 +474,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f"Setting next run to {next_run}.")
 
         elif command == "cisco-appdynamics-get-events":
-            return_results(get_events(client, args))
+            return_results(get_events(client, args, params))
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")

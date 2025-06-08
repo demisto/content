@@ -1,12 +1,11 @@
 import pytest
 import demistomock as demisto
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone
 import CiscoAppDynamicsEventCollector as appdynamics
+from CommonServerPython import timestamp_to_datestring, date_to_timestamp
 from CiscoAppDynamicsEventCollector import (
     add_fields_to_events,
     get_events,
-    parse_iso_millis_z,
-    timestamp_ms_to_iso,
     get_last_run,
     set_event_type_fetch_limit,
     fetch_events,
@@ -28,8 +27,10 @@ def client():
 # Dummy client used for test_module_command and get_events
 class DummyClient:
     def __init__(self, num_of_audit: int = 1, num_of_health: int = 1) -> None:
-        self.audit = [{"_time": f"{i + 1620000000000}"} for i in range(num_of_audit)]
-        self.health = [{"_time": f"{i + num_of_audit + 1620000000000}"} for i in range(num_of_health)]
+        self.audit = [{AUDIT.time_field: i + 1620000000000,
+                       "_time": timestamp_to_datestring(i+1620000000000)} for i in range(num_of_audit)]
+        self.health = [{HEALTH_EVENT.time_field: i + num_of_audit + 1620000000000,
+                        "_time": timestamp_to_datestring(i+1620000000000)} for i in range(num_of_health)]
 
     def get_audit_logs(self, *args, **kwargs):
         return self.audit
@@ -50,12 +51,12 @@ def test_add_fields_to_events_basic(event_type_name):
         - Each event has a '_time' ISO string and 'SOURCE_LOG_TYPE', and order is chronological.
     """
     event_type = EVENT_TYPE[event_type_name]
-    events = [{event_type.time_field: "1620000000123"}]
+    events = [{event_type.time_field: 1620000000000}]
     result = add_fields_to_events(events.copy(), event_type)
     assert "_time" in result[0]
     assert "SOURCE_LOG_TYPE" in result[0]
     assert result[0]["SOURCE_LOG_TYPE"] == event_type.source_log_type
-    assert result[0]["_time"] == timestamp_ms_to_iso("1620000000123")
+    assert result[0]["_time"] ==  "2021-05-03T00:00:00.000Z"
 
 
 def test_get_events_command_results(mocker):
@@ -81,54 +82,7 @@ def test_get_events_command_results(mocker):
     client = DummyClient()
     res = get_events(client, {})  # type: ignore
     assert hasattr(res, "readable_output")
-    assert isinstance(res.raw_response, list)
     assert "_time" in res.readable_output
-
-
-def test_timestamp_ms_to_iso_exact():
-    """
-    When:
-        - Calling timestamp_ms_to_iso.
-    Then:
-        - Formatting as wanted.
-    """
-    # pick a known epoch
-    epoch_ms = 1600000000123
-    iso = timestamp_ms_to_iso(str(epoch_ms))
-    assert iso.startswith("2020-09-13T12:26:40.")  # rough check
-    assert iso.endswith("Z")
-
-
-def test_parse_iso_millis_z_roundtrip():
-    """
-    Given:
-        - An ISO-8601 string with Z suffix.
-    When:
-        - Parsing to datetime and converting back via timestamp_ms_to_iso.
-    Then:
-        - The output equals the original string.
-    """
-    s = "2025-05-25T16:07:53.127Z"
-    dt = parse_iso_millis_z(s)
-    assert dt.tzinfo == timezone.utc  # noqa: UP017
-    s2 = timestamp_ms_to_iso(str(int(dt.timestamp() * 1000)))
-    assert s2 == s
-
-
-def test_timestamp_ms_to_iso_format():
-    """
-    Given:
-        - A known epoch milliseconds string.
-    When:
-        - Converting to ISO format.
-    Then:
-        - The result matches the expected ISO-8601 string with millisecond precision.
-    """
-    epoch_ms = 1600000000123
-    iso = timestamp_ms_to_iso(str(epoch_ms))
-    dt = datetime.fromtimestamp(epoch_ms / 1000, tz=timezone.utc)  # noqa: UP017
-    expected = dt.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
-    assert iso == expected
 
 
 @pytest.mark.parametrize(
@@ -136,11 +90,11 @@ def test_timestamp_ms_to_iso_format():
     [
         # full last_run, both requested
         (
-            {AUDIT.name: "2025-05-25T11:00:00.000Z", HEALTH_EVENT.name: "2025-05-25T10:00:00.000Z"},
+            {AUDIT.name: 1748100800000, HEALTH_EVENT.name: 1748167200000},
             [AUDIT, HEALTH_EVENT],
             {
-                AUDIT.name: datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc),  # noqa: UP017
-                HEALTH_EVENT.name: datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc),  # noqa: UP017
+                AUDIT.name: 1748100800000,
+                HEALTH_EVENT.name: 1748167200000,
             },
         ),
         # empty last_run, both requested
@@ -148,26 +102,26 @@ def test_timestamp_ms_to_iso_format():
             {},
             [AUDIT, HEALTH_EVENT],
             {
-                AUDIT.name: datetime(2025, 5, 25, 10, 59, 0, tzinfo=timezone.utc),  # noqa: UP017
-                HEALTH_EVENT.name: datetime(2025, 5, 25, 10, 59, 0, tzinfo=timezone.utc),  # noqa: UP017
+                AUDIT.name: 1748170800000 - (60 * 1000),
+                HEALTH_EVENT.name: 1748170800000 - (60 * 1000),
             },
         ),
         # only AUDIT present, both requested
         (
-            {AUDIT.name: "2025-05-25T11:00:00.000Z"},
+            {AUDIT.name: 1748160800000},
             [AUDIT, HEALTH_EVENT],
             {
-                AUDIT.name: datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc),  # noqa: UP017
-                HEALTH_EVENT.name: datetime(2025, 5, 25, 10, 59, 0, tzinfo=timezone.utc),  # noqa: UP017
+                AUDIT.name: 1748160800000,
+                HEALTH_EVENT.name: 1748170800000 - (60 * 1000),
             },
         ),
         # both present, only AUDIT requested
         (
-            {AUDIT.name: "2025-05-25T11:00:00.000Z", HEALTH_EVENT.name: "2025-05-25T11:00:00.000Z"},
+            {AUDIT.name: 1748170800000, HEALTH_EVENT.name: 1748170800000},
             [AUDIT],
             {
-                AUDIT.name: datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc),  # noqa: UP017
-                HEALTH_EVENT.name: datetime(2025, 5, 25, 10, 59, 0, tzinfo=timezone.utc),  # noqa: UP017
+                AUDIT.name: 1748170800000,
+                HEALTH_EVENT.name: 1748170800000 - (60 * 1000),
             },
         ),
     ],
@@ -181,7 +135,7 @@ def test_get_last_run_various(mocker, last_run, requested, expected_output):
     Then:
         - Parsed datetimes for present types and backoff for missing types.
     """
-    now = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+    now = 1748170800000
     mocker.patch.object(demisto, "getLastRun", return_value=last_run)
     out = get_last_run(now, requested)
     for event_type in [AUDIT, HEALTH_EVENT]:
@@ -233,62 +187,20 @@ def test_get_audit_logs_adds_fields_and_sorts(client, mocker):
         - Each event has '_time' and 'SOURCE_LOG_TYPE', and events are sorted by '_time' ascending.
     """
     import random
-
+    from CiscoAppDynamicsEventCollector import timestamp_to_api_format
     timestamps = list(range(100))
     random.shuffle(timestamps)
     events = [{"timeStamp": str(ts)} for ts in timestamps]
     mocker.patch.object(client, "_authorized_request", return_value=events)
 
-    now = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    start = now - timedelta(minutes=10)
-    result = client.get_audit_logs(start, now)
+    end = 1748170800000
+    start = 1748170800000 - (60 * 10 * 1000)
+    result = client.get_audit_logs(timestamp_to_api_format(start,AUDIT), timestamp_to_api_format(end,AUDIT))
 
     assert len(result) == 100
     times = [ev["_time"] for ev in result]
     assert times == sorted(times)
     assert all(event["SOURCE_LOG_TYPE"] == AUDIT.source_log_type for event in result)
-
-
-def test_get_audit_logs_over_24h_adjustment(client, mocker):
-    """
-    Given:
-        - A Client and a start_time more than 24 hours before end_time.
-    When:
-        - Calling get_audit_logs.
-    Then:
-        - _authorized_request is called with startTime adjusted to endTime minus 24 hours and returns empty list.
-    """
-    end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    start = end - timedelta(days=2)
-    captured = {}
-
-    def fake_request(url_suffix, params, **kwargs):
-        captured["params"] = params.copy()
-        return []
-
-    mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
-
-    result = client.get_audit_logs(start, end)
-    assert result == []
-    expected_start = (end - timedelta(hours=24)).strftime(DATE_FORMAT)[:-3] + end.strftime("%z")
-    assert captured["params"]["startTime"] == expected_start
-
-
-def test_get_audit_logs_start_after_end_returns_empty(client, mocker):
-    """
-    Given:
-        - A Client and a start_time equal to end_time.
-    When:
-        - Calling get_audit_logs.
-    Then:
-        - Returns empty list and does not call _authorized_request.
-    """
-    now = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    mocker.patch.object(client, "_authorized_request", return_value=[])
-
-    result = client.get_audit_logs(now, now)
-    assert result == []
-    client._authorized_request.assert_not_called()
 
 
 # --- Edge cases for get_health_events ------------------------------------------------
@@ -427,11 +339,12 @@ def test_fetch_events_audit(mocker):
         - Returns empty events list and empty last_run dict.
     """
     client = DummyClient(num_of_audit=10, num_of_health=10)
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: "", HEALTH_EVENT.name: ""})
+    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 11748170800000,
+                                                                   HEALTH_EVENT.name: 1748170800000})
     events, next_run = appdynamics.fetch_events(client, [AUDIT])
-    assert len(events) == 1
-    assert events == [{"_time": "1620000000000"}]
-    assert next_run[AUDIT.name] == "1620000000000"
+    assert len(events) == 10
+    assert events[9]["_time"] == timestamp_to_datestring(1620000000000)
+    assert next_run[AUDIT.name] == (1620000000000 + 10)
 
 
 def test_fetch_events_no_events_update_last_run(mocker):
@@ -441,20 +354,19 @@ def test_fetch_events_no_events_update_last_run(mocker):
     When:
         - Calling fetch_events.
     Then:
-        - Returns empty events, last_run for that type is now formatted.
+        - Returns empty events, last_run.
     """
     client = DummyClient()
-    last_dt = datetime(2025, 5, 26, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: last_dt})
-    fixed_now = datetime(2025, 5, 26, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    DummyDateTime = type("DummyDateTime", (), {"now": classmethod(lambda cls, tz=None: fixed_now)})
-    mocker.patch.object(appdynamics, "datetime", DummyDateTime)
+    last_ts = 1748246400000
+    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: last_ts})
+    fixed_now = 1748250000
+    DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: fixed_now)})
+    mocker.patch.object(appdynamics, "time", DummyDateTime)
     mocker.patch.object(client, "get_audit_logs", return_value=[])
 
     events, next_run = fetch_events(client, [AUDIT])
     assert events == []
-    expected_ts = fixed_now.strftime(DATE_FORMAT)[:-3] + "Z"
-    assert next_run[AUDIT.name] == expected_ts
+    assert next_run[AUDIT.name] == fixed_now * 1000 + 1
 
 
 def test_fetch_events_respects_max_fetch(mocker):
@@ -467,13 +379,15 @@ def test_fetch_events_respects_max_fetch(mocker):
         - Returns only up to max_fetch events and last_run is last returned.
     """
     client = DummyClient()
-    start_dt = datetime(2025, 5, 26, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+    start_dt = 1748246400000
     mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: start_dt})
-    fixed_now = datetime(2025, 5, 26, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    DummyDateTime = type("DummyDateTime", (), {"now": classmethod(lambda cls, tz=None: fixed_now)})
-    mocker.patch.object(appdynamics, "datetime", DummyDateTime)
+    fixed_now = 1748250000
+    DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: fixed_now)})
+    mocker.patch.object(appdynamics, "time", DummyDateTime)
     # prepare events larger than max_fetch
-    full_events = [{"_time": f"2025-05-26T11:0{i}:00.000Z"} for i in range(5)]
+    full_events = [{"_time": timestamp_to_datestring(1748246400000 + i * (60 * 1000),DATE_FORMAT),
+                    AUDIT.time_field: 1748246400000 + i * (60 * 1000),
+                    } for i in range(5)]
     default_limit = AUDIT.max_fetch
     AUDIT.max_fetch = 2
     mocker.patch.object(client, "get_audit_logs", return_value=full_events)
@@ -481,7 +395,7 @@ def test_fetch_events_respects_max_fetch(mocker):
     events, next_run = fetch_events(client, [AUDIT])
     assert len(events) == 2
     assert events == full_events[:2]
-    assert next_run[AUDIT.name] == full_events[1]["_time"]
+    assert next_run[AUDIT.name] == full_events[1]["_time"] + 1
     AUDIT.max_fetch = default_limit
 
 
