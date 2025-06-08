@@ -22,7 +22,7 @@ This section describes the mandatory steps you should perform on Ivanti Connect 
          | `Type`             | Select **UDP**.
          | `Filter`           | Select **WELF**.
 
-**Note:** We recommend using the WELF log format for this pack, although we still support both log formats, "WELF" and "Default RAW".
+**Note:** While the pack supports both "WELF" and "Default RAW" log formats, it is recommended to use WELF format.
 
 5. Click **Save Changes** for saving the configuration.
   
