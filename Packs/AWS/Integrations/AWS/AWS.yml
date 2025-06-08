@@ -10,7 +10,7 @@ configuration:
   name: role_name
   type: 0
   section: Connect
-  required: true
+  required: false
   additionalinfo: Main Role to be used for authentication e.g. 'PowerUserAccess'
 - display: Test AWS Account ID
   name: test_account_id

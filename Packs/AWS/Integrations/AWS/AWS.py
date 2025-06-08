@@ -590,36 +590,17 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-
-    # TODO - Test this
-    # context = demisto.callingContext.get("context", {})
-    # cloud_info = context.get("CloudIntegrationInfo", {})
-    # print(cloud_info)
-    # # x="/cts/accounts/token"
-    
-    # #     request_data = {
-    # #     "connector_id": cloud_info.get("connectorID"),
-    # #     "account_id": account_id,
-    # #     "outpost_id": cloud_info.get("outpostID"),
-    # #     "cloud_type": cloud_type,
-    # # }
-
-    # # demisto._platformAPICall(path=x, method="POST", data={
-    # #     "request_data": request_data
-    # # })
-    
-
-    # TODO - credentials = get_cloud_credentials(CloudTypes.GCP)
-    credentials = {}
-    
-    aws_session: Session = Session(
-        aws_access_key_id=credentials.get('key') or params.get('access_key_id'),
-        aws_secret_access_key=credentials.get('access_token') or params.get('secret_access_key').get('password'),
-        aws_session_token=credentials.get('session_token'),
-        region_name=args.get('region') or params.get('region', '')
-    )
+    account_id = args.get('account_id')
     
     try:
+        credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+        aws_session: Session = Session(
+            aws_access_key_id=credentials.get('key') or params.get('access_key_id'),
+            aws_secret_access_key=credentials.get('access_token') or params.get('secret_access_key').get('password'),
+            aws_session_token=credentials.get('session_token'),
+            region_name=args.get('region') or params.get('region', '')
+        )
+    
         if command == "test-module":
             return_results(health_check())         
         elif command in COMMANDS_MAPPING:
