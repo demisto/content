@@ -1649,16 +1649,13 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
 }
 
 function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    # $Demisto.results("start StartSearchCommand")
     $entry_context = @{}
     $raw_response = @{}
     $human_readable = ""
     $continue_polling = ConvertTo-Boolean $kwargs.continue_polling
     if ($continue_polling) {
-        # $Demisto.results("call GetSearch")
         $raw_response = $client.GetSearch($kwargs.search_name)
         $Status = $raw_response.Status
-        # $Demisto.results("Status: $Status")
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** completed !"
             $kwargs.polling = $false
@@ -1669,7 +1666,6 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
         $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** in progress !"
         return $human_readable, $entry_context, $raw_response
     } 
-    # $Demisto.results("call StartSearch")
     $client.StartSearch($kwargs.search_name)
     $kwargs.continue_polling = $true
     $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
@@ -2089,13 +2085,11 @@ function Main {
 
         # Return results to Demisto Server
         $polling = ConvertTo-Boolean $command_arguments.polling
-        # $Demisto.results("polling: $polling")
         if ($polling) {
             $command_name = $command
             # command_arguments.polling = $false
             $polling_args = $command_arguments
 
-            # $Demisto.results("after polling_args: $(($polling_args | ConvertTo-Json -Depth 3))")
 
             ReturnPollingOutputs `
             -ReadableOutput $human_readable `
