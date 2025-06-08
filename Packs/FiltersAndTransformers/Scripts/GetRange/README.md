@@ -1,6 +1,7 @@
 Get a range of indexes from a list.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,6 +11,7 @@ Get a range of indexes from a list.
 | Cortex XSOAR Version | 5.5.0 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,5 +20,6 @@ Get a range of indexes from a list.
 | value | The list to transform. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

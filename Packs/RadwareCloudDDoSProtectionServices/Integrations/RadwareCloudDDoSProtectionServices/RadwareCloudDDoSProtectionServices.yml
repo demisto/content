@@ -1,0 +1,64 @@
+category: Data Enrichment & Threat Intelligence
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: Radware Cloud DDoS Protection Services
+  version: -1
+configuration:
+- defaultvalue: https://api.radwarecloud.app
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Account ID
+  displaypassword: API Key
+  name: credentials
+  type: 9
+  required: true
+  section: Connect
+- display: Event Types to Fetch
+  name: event_types
+  options:
+  - Events
+  - Alerts
+  defaultvalue: Events,Alerts
+  required: true
+  type: 16
+  section: Collect
+  hidden:
+  - xsoar
+- display: Trust any certificate (not secure)
+  name: insecure
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  type: 8
+  required: false
+  section: Connect
+  advanced: true
+description: 'Radware Cloud Service provides customers and partners with the ability to programmatically perform service-related actions.
+The integration can be used to automate application and assets creation and day-to-day management to retrieve up-to-date data about Security Events and Operational Alerts.'
+display: Radware Cloud DDoS Protection Services
+name: Radware Cloud DDoS Protection Services
+script:
+  commands:
+    - description: 'Send events from Radware Cloud DDoS Protection Services to Cortex XSIAM. Used mainly for debugging.'
+      name: radware-cloud-ddos-protection-services-get-events
+      arguments: []
+      outputs: []
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.3296088
+  isfetchevents: true
+fromversion: 8.0.0
+marketplaces:
+  - marketplacev2
+tests:
+- No tests

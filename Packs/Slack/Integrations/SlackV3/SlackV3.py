@@ -3,7 +3,6 @@ import concurrent
 import logging.handlers
 import ssl
 import threading
-from distutils.util import strtobool
 from typing import Literal, TypedDict, get_args
 from urllib.parse import urlparse
 
@@ -736,7 +735,7 @@ def mirror_investigation():
     mirror_to = demisto.args().get("mirrorTo", "group")
     channel_name = demisto.args().get("channelName", "")
     channel_topic = demisto.args().get("channelTopic", "")
-    kick_admin = bool(strtobool(demisto.args().get("kickAdmin", "false")))
+    kick_admin = argToBoolean(demisto.args().get("kickAdmin", "false"))
     private = argToBoolean(demisto.args().get("private", "false"))
 
     investigation = demisto.investigation()
@@ -800,7 +799,7 @@ def mirror_investigation():
             "mirror_type": mirror_type,
             "mirror_direction": mirror_direction,
             "mirror_to": mirror_to,
-            "auto_close": bool(strtobool(auto_close)),
+            "auto_close": argToBoolean(auto_close),
             "mirrored": False,
         }
 
@@ -810,7 +809,7 @@ def mirror_investigation():
         if mirror_type:
             mirror["mirror_type"] = mirror_type
         if auto_close:
-            mirror["auto_close"] = bool(strtobool(auto_close))
+            mirror["auto_close"] = argToBoolean(auto_close)
         if mirror_direction:
             mirror["mirror_direction"] = mirror_direction
         if mirror_to and mirror["mirror_to"] != mirror_to:
@@ -998,7 +997,7 @@ def check_for_mirrors():
                     direction = mirror["mirror_direction"]
                     channel_id = mirror["channel_id"]
                     if isinstance(auto_close, str):
-                        auto_close = bool(strtobool(auto_close))
+                        auto_close = argToBoolean(auto_close)
                     users: List[Dict] = demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", auto_close)
                     if mirror_type != "none":
                         try:
@@ -1459,7 +1458,7 @@ async def process_mirror(channel_id: str, text: str, user: AsyncSlackResponse):
                 auto_close = mirror["auto_close"]
                 direction = mirror["mirror_direction"]
                 if isinstance(auto_close, str):
-                    auto_close = bool(strtobool(auto_close))
+                    auto_close = argToBoolean(auto_close)
                 demisto.info(f"Mirroring: {investigation_id}")
                 demisto.mirrorInvestigation(investigation_id, f"{mirror_type}:{direction}", auto_close)
                 mirror["mirrored"] = True
@@ -2130,7 +2129,7 @@ def send_message(
 
     if message and not blocks:
         if ignore_add_url and isinstance(ignore_add_url, str):
-            ignore_add_url = bool(strtobool(ignore_add_url))
+            ignore_add_url = argToBoolean(ignore_add_url)
         if not ignore_add_url:
             investigation = demisto.investigation()
             server_links = demisto.demistoUrls()
@@ -2541,7 +2540,7 @@ def get_user():
     # Check if the input might be an email or a user ID
     if re.match(emailRegex, user_input):
         slack_user = get_user_by_email(user_input)
-    elif re.match("^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
+    elif re.match(r"^[UW](?=.*\d)[A-Z0-9]{7,10}$", user_input):
         slack_user = get_user_by_id(user_input)
     else:
         slack_user = get_user_by_name(user_input)
@@ -2595,7 +2594,7 @@ def slack_edit_message():
 
     if message and not blocks:
         if ignore_add_url and isinstance(ignore_add_url, str):
-            ignore_add_url = bool(strtobool(ignore_add_url))
+            ignore_add_url = argToBoolean(ignore_add_url)
         if not ignore_add_url:
             investigation = demisto.investigation()
             server_links = demisto.demistoUrls()

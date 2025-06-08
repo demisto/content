@@ -1,0 +1,418 @@
+{
+  "meta": {
+    "api_version": "v3.0",
+    "total_items": 9
+  },
+  "links": {
+    "self": "https://example.my.redcanary.co/openapi/v3/detections/87/timeline?page=1",
+    "first": "https://example.my.redcanary.co/openapi/v3/detections/87/timeline?page=1",
+    "prev": null,
+    "next": "https://example.my.redcanary.co/openapi/v3/detections/87/timeline?page=2",
+    "count": "https://example.my.redcanary.co/openapi/v3/detections/87/timeline?count_mode=true"
+  },
+  "data": [
+    {
+      "type": "activity_timelines.LatestIndicationSeen",
+      "attributes": {
+        "occurred_at": "2025-04-25T13:08:08.000Z",
+        "analyst_notes": []
+      }
+    },
+    {
+      "type": "activity_timelines.EventActivityOccurred",
+      "attributes": {
+        "analyst_notes": [
+          "This threat has an extended occurrence-to-detection time due to the endpoint being recently registered at `2025-04-25 13:13:41 UTC`.",
+          "Open source research indicates this domain was created recently, registered on `2025-04-20`.\n\n---\n\n[https://www.virustotal.com/gui/domain/example.domain/details](https://www.virustotal.com/gui/domain/example.domain/details)"
+        ],
+        "occurred_at": "2025-04-25T13:08:08.000Z",
+        "type": "primitive_activities.network_connection",
+        "activity": {
+          "domain": "example.domain",
+          "local_ip": "",
+          "host_name": "",
+          "ingest_ts": null,
+          "remote_ip": "",
+          "sensor_id": "none",
+          "local_port": -1,
+          "schema_ver": null,
+          "engine_type": "endpoint",
+          "enrichments": null,
+          "protocol_cd": "",
+          "remote_port": -1,
+          "community_id": null,
+          "direction_cd": "",
+          "customer_name": "example",
+          "event_type_cd": "primitive_activities.network_connection",
+          "activity_at_ts": "2025-04-25T13:08:08Z",
+          "local_ip_type_cd": "",
+          "customer_metadata": null,
+          "endpoint_platform": "",
+          "process_native_id": "",
+          "remote_ip_type_cd": "",
+          "sensor_backend_ts": null,
+          "sensor_product_cd": "microsoft_atp",
+          "remote_location_cd": "",
+          "sensor_product_ver": "",
+          "endpoint_operating_system": "",
+          "globally_unique_process_id": "",
+          "network_application_protocol": null,
+          "globally_unique_process_image_id": ""
+        }
+      }
+    },
+    {
+      "type": "activity_timelines.EventActivityOccurred",
+      "attributes": {
+        "analyst_notes": [
+          "This address is described by Microsoft as an \"internal Defender IP\" although Red Canary cannot confirm the URL was not ultimately accessed.\n\n---\n\n[https://learn.microsoft.com/en-us/defender-endpoint/ios-configure-features#configure-custom-indicators](https://learn.microsoft.com/en-us/defender-endpoint/ios-configure-features#configure-custom-indicators)"
+        ],
+        "occurred_at": "2025-04-25T13:08:08.000Z",
+        "type": "primitive_activities.network_connection",
+        "activity": {
+          "domain": "",
+          "local_ip": "",
+          "host_name": "",
+          "ingest_ts": null,
+          "remote_ip": "1.2.3.4",
+          "sensor_id": "none",
+          "local_port": -1,
+          "schema_ver": null,
+          "engine_type": "endpoint",
+          "enrichments": null,
+          "protocol_cd": "",
+          "remote_port": -1,
+          "community_id": null,
+          "direction_cd": "",
+          "customer_name": "example",
+          "event_type_cd": "primitive_activities.network_connection",
+          "activity_at_ts": "2025-04-25T13:08:08Z",
+          "local_ip_type_cd": "",
+          "customer_metadata": null,
+          "endpoint_platform": "",
+          "process_native_id": "",
+          "remote_ip_type_cd": "",
+          "sensor_backend_ts": null,
+          "sensor_product_cd": "microsoft_atp",
+          "remote_location_cd": "",
+          "sensor_product_ver": "",
+          "endpoint_operating_system": "",
+          "globally_unique_process_id": "",
+          "network_application_protocol": null,
+          "globally_unique_process_image_id": ""
+        }
+      }
+    },
+    {
+      "type": "activity_timelines.ThreatDetected",
+      "attributes": {
+        "occurred_at": "2025-04-25T13:15:32.339Z",
+        "analyst_notes": []
+      }
+    },
+    {
+      "type": "activity_timelines.AnalystConfirmed",
+      "attributes": {
+        "occurred_at": "2025-04-25T14:57:47.698Z",
+        "analyst_notes": []
+      }
+    },
+    {
+      "type": "exec.PlaybookExecution",
+      "id": 100000402983265,
+      "playbook_id": 126619,
+      "playbook": {
+        "type": "exec.Playbook",
+        "id": 126619,
+        "name": "Threat email to SOC",
+        "description": "",
+        "created_at": "2025-02-28T19:38:51.024Z",
+        "updated_at": "2025-03-07T20:58:28.067Z",
+        "deleted_at": null,
+        "editable?": true,
+        "public?": false,
+        "private?": true,
+        "is_response?": false,
+        "active": true,
+        "red_canary_managed": false
+      },
+      "trigger": {
+        "type": "exec.Trigger",
+        "id": 100000000069518,
+        "name": "Threat is published",
+        "trigger": "detection_published",
+        "active": true,
+        "created_at": "2025-03-03T16:03:56.979Z",
+        "updated_at": "2025-03-03T16:03:56.979Z",
+        "deleted_at": null,
+        "conditions": [],
+        "associated_playbook_ids": [126619],
+        "provided_resources": [
+          "Detection",
+          "Endpoint",
+          "EndpointUser",
+          "IntelligenceProfile",
+          "CurrentTime",
+          "Subdomain"
+        ]
+      },
+      "manual_execution": false,
+      "executing_user": {
+        "type": "PortalUser",
+        "attributes": {
+          "id": 2124,
+          "email": "noreply@redcanary.com",
+          "name": "Red Canary",
+          "name_and_email": "Red Canary (noreply@redcanary.com)"
+        }
+      },
+      "resource_name": "THREAT-87",
+      "resource_url": "https://example.my.redcanary.co/threats/87",
+      "created_at": "2025-04-25T14:57:51.820Z",
+      "updated_at": "2025-04-25T14:57:55.213Z",
+      "attribute_hash": {
+        "Endpoint": {
+          "hostname": "user_iphone 14",
+          "platform": "",
+          "sensor_group": [],
+          "endpoint_type": "",
+          "reporting_tags": "{}",
+          "short_hostname": "",
+          "decommissioned?": "false",
+          "endpoint_status": "",
+          "external_service": "",
+          "days_since_last_checkin": ""
+        },
+        "NilClass": {
+
+        },
+        "Detection": {
+          "severity": "medium",
+          "ioc_network_ips": [],
+          "ioc_process_md5s": [],
+          "ioc_process_names": [],
+          "ioc_process_paths": [],
+          "subclassifications": [
+            "16"
+          ],
+          "ioc_network_domains": [],
+          "root_classification": "2",
+          "relevant_process_names": [],
+          "marked_acknowledged_by_user": {
+
+          }
+        },
+        "Subdomain": {
+
+        },
+        "CurrentTime": {
+          "execution_time": "2025-04-25 14:57:49 UTC"
+        },
+        "EndpointUser": {
+          "uid": "s-1-5-21-57989841-261478967-725345543-173955",
+          "domain": "",
+          "username": "user",
+          "reporting_tags": "{\"logon_domain\"=\u003Enil, \"local_account\"=\u003Efalse, \"domain_account\"=\u003Etrue, \"system_account\"=\u003Efalse}",
+          "username_without_domain": ""
+        }
+      }
+    },
+    {
+      "type": "exec.ActionExecution",
+      "id": 100000406808994,
+      "playbook_execution_id": 100000402983265,
+      "state": "succeeded",
+      "message": "This action succeeded.",
+      "action": {
+        "type": "exec/actions/send_mail",
+        "id": 249202,
+        "title": "Send Email",
+        "playbook_id": 126619,
+        "required_resources": [
+          "Detection"
+        ],
+        "supported_services": [
+          "any"
+        ],
+        "row_order": 0,
+        "data": {
+          "to": "user1@example.com,user2@example.com,user3@example.com",
+          "body": "Detection headline - $Detection.headline \n\nDetection URL - $Detection.url \n\nDetection details - $Detection.details \n",
+          "active": "true",
+          "subject": "$Detection.severity Severity $Detection.headline ",
+          "reply_to": "",
+          "template": "custom",
+          "special_message": "",
+          "smtp_authentication": "plain",
+          "smtp_enable_starttls": "true"
+        },
+        "secure_data": {
+          "smtp_password": ""
+        },
+        "async": true,
+        "active": true,
+        "valid": true,
+        "requires_human_approval": null,
+        "created_at": "2025-03-03T16:30:05.956Z",
+        "updated_at": "2025-03-07T20:59:39.836Z",
+        "deleted_at": null,
+        "should_run_if_playbook_successful": false,
+        "indicator": null
+      },
+      "runtime_attributes": {
+
+      },
+      "human_approval_config": {
+
+      },
+      "created_at": "2025-04-25T14:57:52.077Z",
+      "updated_at": "2025-04-25T14:57:55.036Z",
+      "approved_by": null,
+      "approved_at": null,
+      "denied_by": null,
+      "denied_at": null,
+      "result": {
+
+      },
+      "notes": null,
+      "playbookExecution": {
+        "type": "exec.PlaybookExecution",
+        "id": 100000402983265,
+        "playbook_id": 126619,
+        "playbook": {
+          "type": "exec.Playbook",
+          "id": 126619,
+          "name": "Threat email to SOC",
+          "description": "",
+          "created_at": "2025-02-28T19:38:51.024Z",
+          "updated_at": "2025-03-07T20:58:28.067Z",
+          "deleted_at": null,
+          "editable?": true,
+          "public?": false,
+          "private?": true,
+          "is_response?": false,
+          "active": true,
+          "red_canary_managed": false
+        },
+        "trigger": {
+          "type": "exec.Trigger",
+          "id": 100000000069518,
+          "name": "Threat is published",
+          "trigger": "detection_published",
+          "active": true,
+          "created_at": "2025-03-03T16:03:56.979Z",
+          "updated_at": "2025-03-03T16:03:56.979Z",
+          "deleted_at": null,
+          "conditions": [],
+          "associated_playbook_ids": [126619],
+          "provided_resources": [
+            "Detection",
+            "Endpoint",
+            "EndpointUser",
+            "IntelligenceProfile",
+            "CurrentTime",
+            "Subdomain"
+          ]
+        },
+        "manual_execution": false,
+        "executing_user": {
+          "type": "PortalUser",
+          "attributes": {
+            "id": 2124,
+            "email": "noreply@redcanary.com",
+            "name": "Red Canary",
+            "name_and_email": "Red Canary (noreply@redcanary.com)"
+          }
+        },
+        "resource_name": "THREAT-87",
+        "resource_url": "https://example.my.redcanary.co/threats/87",
+        "created_at": "2025-04-25T14:57:51.820Z",
+        "updated_at": "2025-04-25T14:57:55.213Z",
+        "attribute_hash": {
+          "Endpoint": {
+            "hostname": "user_iphone 14",
+            "platform": "",
+            "sensor_group": [],
+            "endpoint_type": "",
+            "reporting_tags": "{}",
+            "short_hostname": "",
+            "decommissioned?": "false",
+            "endpoint_status": "",
+            "external_service": "",
+            "days_since_last_checkin": ""
+          },
+          "NilClass": {
+
+          },
+          "Detection": {
+            "severity": "medium",
+            "ioc_network_ips": [],
+            "ioc_process_md5s": [],
+            "ioc_process_names": [],
+            "ioc_process_paths": [],
+            "subclassifications": [
+              "16"
+            ],
+            "ioc_network_domains": [],
+            "root_classification": "2",
+            "relevant_process_names": [],
+            "marked_acknowledged_by_user": {
+
+            }
+          },
+          "Subdomain": {
+
+          },
+          "CurrentTime": {
+            "execution_time": "2025-04-25 14:57:49 UTC"
+          },
+          "EndpointUser": {
+            "uid": "s-1-5-21-57989841-261478967-725345543-123456",
+            "domain": "",
+            "username": "user",
+            "reporting_tags": "{\"logon_domain\"=\u003Enil, \"local_account\"=\u003Efalse, \"domain_account\"=\u003Etrue, \"system_account\"=\u003Efalse}",
+            "username_without_domain": ""
+          }
+        }
+      },
+      "playbook": {
+        "type": "exec.Playbook",
+        "id": 126619,
+        "name": "Threat email to SOC",
+        "description": "",
+        "created_at": "2025-02-28T19:38:51.024Z",
+        "updated_at": "2025-03-07T20:58:28.067Z",
+        "deleted_at": null,
+        "editable?": true,
+        "public?": false,
+        "private?": true,
+        "is_response?": false,
+        "active": true,
+        "red_canary_managed": false
+      },
+      "state_timeline_badge_props": {
+        "color": "green",
+        "title": "Succeeded",
+        "icon_classes": "fas fa-check"
+      }
+    },
+    {
+      "type": "activity_timelines.MarkedAs",
+      "attributes": {
+        "occurred_at": "2025-04-25T18:02:15.799Z",
+        "analyst_notes": [],
+        "action": "remediated",
+        "actor": "author@example.com"
+      }
+    },
+    {
+      "type": "activity_timelines.Note",
+      "attributes": {
+        "occurred_at": "2025-04-25T18:02:15.844Z",
+        "analyst_notes": [],
+        "author": "author@example.com",
+        "content": "test"
+      }
+    }
+  ]
+}

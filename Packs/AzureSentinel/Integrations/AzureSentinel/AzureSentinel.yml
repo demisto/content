@@ -2488,7 +2488,7 @@ script:
     - contextPath: AzureSentinel.Incident.Etag
       description: The Etag of the incident.
       type: String
-  dockerimage: demisto/crypto:1.0.0.2005673
+  dockerimage: demisto/crypto:1.0.0.3174650
   isfetch: true
   runonce: false
   script: '-'
