@@ -2,7 +2,7 @@ import pytest
 import demistomock as demisto
 from datetime import datetime, timezone
 import CiscoAppDynamicsEventCollector as appdynamics
-from CommonServerPython import timestamp_to_datestring, date_to_timestamp
+from CommonServerPython import timestamp_to_datestring
 from CiscoAppDynamicsEventCollector import (
     add_fields_to_events,
     get_events,
@@ -27,10 +27,14 @@ def client():
 # Dummy client used for test_module_command and get_events
 class DummyClient:
     def __init__(self, num_of_audit: int = 1, num_of_health: int = 1) -> None:
-        self.audit = [{AUDIT.time_field: i + 1620000000000,
-                       "_time": timestamp_to_datestring(i+1620000000000)} for i in range(num_of_audit)]
-        self.health = [{HEALTH_EVENT.time_field: i + num_of_audit + 1620000000000,
-                        "_time": timestamp_to_datestring(i+1620000000000)} for i in range(num_of_health)]
+        self.audit = [
+            {AUDIT.time_field: i + 1620000000000, "_time": timestamp_to_datestring(i + 1620000000000)}
+            for i in range(num_of_audit)
+        ]
+        self.health = [
+            {HEALTH_EVENT.time_field: i + num_of_audit + 1620000000000, "_time": timestamp_to_datestring(i + 1620000000000)}
+            for i in range(num_of_health)
+        ]
 
     def get_audit_logs(self, *args, **kwargs):
         return self.audit
@@ -56,7 +60,7 @@ def test_add_fields_to_events_basic(event_type_name):
     assert "_time" in result[0]
     assert "SOURCE_LOG_TYPE" in result[0]
     assert result[0]["SOURCE_LOG_TYPE"] == event_type.source_log_type
-    assert result[0]["_time"] ==  "2021-05-03T00:00:00.000Z"
+    assert result[0]["_time"] == "2021-05-03T00:00:00.000Z"
 
 
 def test_get_events_command_results(mocker):
@@ -188,6 +192,7 @@ def test_get_audit_logs_adds_fields_and_sorts(client, mocker):
     """
     import random
     from CiscoAppDynamicsEventCollector import timestamp_to_api_format
+
     timestamps = list(range(100))
     random.shuffle(timestamps)
     events = [{"timeStamp": str(ts)} for ts in timestamps]
@@ -195,7 +200,7 @@ def test_get_audit_logs_adds_fields_and_sorts(client, mocker):
 
     end = 1748170800000
     start = 1748170800000 - (60 * 10 * 1000)
-    result = client.get_audit_logs(timestamp_to_api_format(start,AUDIT), timestamp_to_api_format(end,AUDIT))
+    result = client.get_audit_logs(timestamp_to_api_format(start, AUDIT), timestamp_to_api_format(end, AUDIT))
 
     assert len(result) == 100
     times = [ev["_time"] for ev in result]
@@ -339,8 +344,7 @@ def test_fetch_events_audit(mocker):
         - Returns empty events list and empty last_run dict.
     """
     client = DummyClient(num_of_audit=10, num_of_health=10)
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 11748170800000,
-                                                                   HEALTH_EVENT.name: 1748170800000})
+    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 11748170800000, HEALTH_EVENT.name: 1748170800000})
     events, next_run = appdynamics.fetch_events(client, [AUDIT])
     assert len(events) == 10
     assert events[9]["_time"] == timestamp_to_datestring(1620000000000)
@@ -385,9 +389,13 @@ def test_fetch_events_respects_max_fetch(mocker):
     DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: fixed_now)})
     mocker.patch.object(appdynamics, "time", DummyDateTime)
     # prepare events larger than max_fetch
-    full_events = [{"_time": timestamp_to_datestring(1748246400000 + i * (60 * 1000),DATE_FORMAT),
-                    AUDIT.time_field: 1748246400000 + i * (60 * 1000),
-                    } for i in range(5)]
+    full_events = [
+        {
+            "_time": timestamp_to_datestring(1748246400000 + i * (60 * 1000), DATE_FORMAT),
+            AUDIT.time_field: 1748246400000 + i * (60 * 1000),
+        }
+        for i in range(5)
+    ]
     default_limit = AUDIT.max_fetch
     AUDIT.max_fetch = 2
     mocker.patch.object(client, "get_audit_logs", return_value=full_events)

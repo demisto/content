@@ -177,14 +177,14 @@ class Client(BaseClient):
         demisto.debug(f"Received {len(events)} audit logs from API.")
 
         add_fields_to_events(events, AUDIT)
-        
+
         timestamps = [ev[AUDIT.time_field] for ev in events]
 
         if timestamps != sorted(timestamps):
             demisto.debug("Audit events are NOT sorted by timestamp.")
         else:
             demisto.debug("Audit events are already sorted by timestamp.")
-            
+
         events.sort(key=lambda ev: datetime.fromisoformat(ev["_time"].replace("Z", "+00:00")))
 
         return events
@@ -192,7 +192,7 @@ class Client(BaseClient):
     def get_health_events(self, start_time: int, end_time: int) -> list[dict]:
         """
         Fetches all Healthrule Violations Events in a loop,
-        using the API's BETWEEN_TIMES. 
+        using the API's BETWEEN_TIMES.
         start-time and end-time are in milliseconds.
         Args:
             from_date(int): timestamp.
@@ -223,7 +223,7 @@ class Client(BaseClient):
             demisto.debug("Health events are NOT sorted by timestamp.")
         else:
             demisto.debug("Health events are already sorted by timestamp.")
-            
+
         demisto.debug(f"Fetched {len(events)} Healthrule Violations Events from API.")
         return add_fields_to_events(events, HEALTH_EVENT)
 
@@ -255,11 +255,11 @@ def fetch_events(
 
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
-        last_time = last_run[event_type.name] # in the right API format
+        last_time = last_run[event_type.name]  # in the right API format
         demisto.debug(f"Last run {last_time}")
-        events = event_fetch_function[event_type.name](
-            start_time=timestamp_to_api_format(last_time,event_type),
-            end_time=timestamp_to_api_format(current_time,event_type),
+        events = event_fetch_function[event_type.name](  # type: ignore
+            start_time=timestamp_to_api_format(last_time, event_type),
+            end_time=timestamp_to_api_format(current_time, event_type),
         )
         demisto.debug(f"Fetched {len(events)} events")
         if events:
@@ -287,10 +287,11 @@ def add_fields_to_events(events: list[dict], event_type: EventType) -> list[dict
     if not events:
         return []
     for event in events:
-        event["_time"] = timestamp_to_datestring(event[event_type.time_field],DATE_FORMAT,is_utc=True)[:-3] + "Z"
+        event["_time"] = timestamp_to_datestring(event[event_type.time_field], DATE_FORMAT, is_utc=True)[:-3] + "Z"
         event["SOURCE_LOG_TYPE"] = event_type.source_log_type
 
     return events
+
 
 def test_module_command(client: Client):  # pragma: no cover
     """
@@ -309,7 +310,7 @@ def test_module_command(client: Client):  # pragma: no cover
     return "ok"
 
 
-def get_events(client: Client, args: dict[str, Any], params: dict[str,Any]) -> CommandResults:
+def get_events(client: Client, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     A test‐driven version of fetch_events.
 
@@ -332,15 +333,17 @@ def get_events(client: Client, args: dict[str, Any], params: dict[str,Any]) -> C
     end_time = parser.parse(args.get("end_date", "")) if args.get("end_date", "") else now
     start_time = parser.parse(args.get("start_date", "")) if args.get("start_date", "") else (now - timedelta(days=1))
     demisto.debug(f"Get events from {start_time} to {end_time}")
-    event_fetch_function = {
+    event_fetch_function = {  # type: ignore
         AUDIT.name: client.get_audit_logs,
         HEALTH_EVENT.name: client.get_health_events,
     }
 
     fetch_func = event_fetch_function[event_type_name]
-    events = fetch_func(start_time=datetime_to_api_format(start_time,EVENT_TYPE[event_type_name]),
-                        end_time=datetime_to_api_format(end_time,EVENT_TYPE[event_type_name]))
-    
+    events = fetch_func(  # type: ignore
+        start_time=datetime_to_api_format(start_time, EVENT_TYPE[event_type_name]),
+        end_time=datetime_to_api_format(end_time, EVENT_TYPE[event_type_name]),
+    )
+
     events = events[:limit]
     if argToBoolean(args.get("is_fetch_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
@@ -354,18 +357,20 @@ def timestamp_to_api_format(time: int, eventType: EventType) -> str | int:
     if eventType.name == AUDIT.name:
         ts_sec = time / 1000.0
         dt = datetime.fromtimestamp(ts_sec, tz=timezone.utc)
-        return dt.strftime('%Y-%m-%dT%H:%M:%S.') + f"{dt.microsecond // 1000:03d}" + "-0000"
-    
+        return dt.strftime("%Y-%m-%dT%H:%M:%S.") + f"{dt.microsecond // 1000:03d}" + "-0000"
+
     elif eventType.name == HEALTH_EVENT.name:
         return time
     return ""
 
+
 def datetime_to_api_format(time: datetime, eventType: EventType) -> str | int:
     if eventType.name == AUDIT.name:
-        return time.strftime('%Y-%m-%dT%H:%M:%S.') + f"{time.microsecond // 1000:03d}-0000"
+        return time.strftime("%Y-%m-%dT%H:%M:%S.") + f"{time.microsecond // 1000:03d}-0000"
     elif eventType.name == HEALTH_EVENT.name:
         return date_to_timestamp(time)
     return ""
+
 
 def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, int]:
     """
