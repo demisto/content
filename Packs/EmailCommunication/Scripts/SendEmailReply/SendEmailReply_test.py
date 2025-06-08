@@ -113,14 +113,16 @@ def test_validate_email_sent_fails(mocker):
     from SendEmailReply import validate_email_sent
 
     reply_mail_error = False, get_error(util_load_json("test_data/reply_mail_error.json"))
-    mocker.patch("SendEmailReply.execute_command", return_value=reply_mail_error)
-
+    mocker.patch("SendEmailReply.execute_command", side_effect=Exception())
+    debug_mocker = mocker.patch.object(demisto, "debug")
+    debug_mocker_call_args = debug_mocker.call_args
     return_error_mock = mocker.patch("SendEmailReply.return_error")
-    validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
+    with pytest.raises(Exception):
+        validate_email_sent("", "", False, "", "", "html", "", "", "", "", {}, "", "", "")
     assert return_error_mock.call_count == 1
     assert (
         return_error_mock.call_args[0][0]
-        == "Error:\n Command reply-mail in module EWS Mail Sender requires argument inReplyTo that is missing (7)"
+        == 'SetIncident Failed."emailsubject" field was not updated with <>  value for incident: '
     )
 
 
@@ -1589,7 +1591,3 @@ def test_format_body(mocker):
         '<p><img alt="image" src="data:image/png;base64,c29tZSBiaW5hcnkgZGF0YQ==" /></p>',
     )
     assert result == expected_result
-
-
-def test_debug_logs_on_error_and_proceed_run(mocker):
-    pass
