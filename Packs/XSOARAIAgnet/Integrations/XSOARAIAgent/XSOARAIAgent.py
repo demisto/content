@@ -42,9 +42,7 @@ class Client(BaseClient):
     """
 
     # TODO: REMOVE the following dummy function:
-    def baseintegration_dummy(
-        self, dummy: str, dummy2: Optional[int]
-    ) -> Dict[str, str]:
+    def baseintegration_dummy(self, dummy: str, dummy2: Optional[int]) -> Dict[str, str]:
         """Returns a simple python dict with the information provided
         in the input (dummy).
 
@@ -90,9 +88,7 @@ def test_module(client: Client) -> str:
 
 
 # TODO: REMOVE the following dummy command function
-def baseintegration_dummy_command(
-    client: Client, args: Dict[str, Any]
-) -> CommandResults:
+def baseintegration_dummy_command(client: Client, args: Dict[str, Any]) -> CommandResults:
     dummy = args.get("dummy")  # dummy is a required argument, no default
     dummy2 = args.get("dummy2")  # dummy2 is not a required argument
 
@@ -131,14 +127,11 @@ def main():
     command = demisto.command()
     demisto.debug(f"Command being called is {command}")
     try:
-
         # TODO: Make sure you add the proper headers for authentication
         # (i.e. "Authorization": {api key})
         headers = {}
 
-        client = Client(
-            base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy
-        )
+        client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
         args = demisto.args()
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
@@ -148,9 +141,7 @@ def main():
             result = baseintegration_dummy_command(client, args)
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
-        return_results(
-            result
-        )  # Returns either str, CommandResults and a list of CommandResults
+        return_results(result)  # Returns either str, CommandResults and a list of CommandResults
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
