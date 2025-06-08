@@ -270,18 +270,6 @@ def test_execute_reply_mail(test_args, expected_response, mocker):
     assert execute_command_call_args.args[1] == expected_response
 
 
-def test_execute_reply_mail_fail(mocker):
-    """Unit Test
-    Given
-    - function is called to send an email reply
-    When
-    - All input arguments are correctly set, but the execute command is failing
-    Then
-    - Validate that function proceed and no error is raised
-    """
-    from SendEmailReply import execute_reply_mail
-    # TODO: keep from here
-
 GET_EMAIL_RECIPIENTS = [
     # Both service mail and mailbox are configured as different addresses, should remove only mailbox.
     (
