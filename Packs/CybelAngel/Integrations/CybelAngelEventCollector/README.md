@@ -49,6 +49,7 @@ Send events from CybelAngel to XSIAM. Used mainly for debugging.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | should_push_events | Set this argument to True in order to create events, otherwise the command will only display them. Possible values are: True, False. Default is False. | Required | 
+| events_type_to_fetch | Which events to fetch. Possible values are: Reports, Domain wathclish, Credentials watchlist. Default is Reports. | Optional | 
 | start_date | Get events from a specific start date formatted with ISO 8601. | Optional | 
 | end_date | Get events until a specific end date formatted with ISO 8601. | Optional | 
 | limit | The maximum number of events to return. Default is 50. | Optional | 

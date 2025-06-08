@@ -109,6 +109,13 @@ script:
   - name: cybelangel-report-list
     description: 'Retrieve reports from CybelAngel.'
     arguments:
+    - description: 'Which events to fetch.'
+      name: events_type_to_fetch
+      predefined:
+        - 'Reports'
+        - 'Credential watchlist'
+        - 'Domain watchlist'
+      defaultValue: 'Reports'
     - name: start_date
       description: 'Get reports from a specific start date formatted with ISO 8601, Example: "2025-01-14T10:22:45".'
       required: false

@@ -13,8 +13,7 @@ from datetime import datetime, timedelta
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 VENDOR = "cybelangel"
 PRODUCT = "platform"
@@ -172,10 +171,22 @@ class Client(BaseClient):
     ) -> List[dict[str, Any]]:
         """
         Get manual reports from Cybel Angel Collector.
+        The order of the events returned is random, hence need to sort them out to return the oldest events first.
 
-        Note:
-            The order of the events returned is random, hence need to sort them out to return the oldest events first.
+        Args:
+            start_date       (str): DATE_FORMAT lower bound (e.g. "2025-05-01T00:00:00.000Z").
+            end_date         (str): DATE_FORMAT upper bound (e.g. "2025-05-11T14:00:00.000Z").
+            limit            (int): Maximum number of credential entries to retrieve (default: DEFAULT_MAX_FETCH_REPORT).
+
+        Returns:
+            List[dict[str, Any]]: A list of reports events, each containing:
+            - all original API fields
+            - `_time` set to the value of `REPORT.time_field`
+            - `source_log_type` = `REPORT.source_log_type`
+
+            The list is returned in ascending order by detection date.
         """
+
         params = {"start-date": start_date, "end-date": end_date}
         reports = self.get_reports_list(params)
 
@@ -199,15 +210,15 @@ class Client(BaseClient):
         then tag each record with `_time` and `SOURCE_LOG_TYPE`.
 
         Args:
-            start_date       (str): ISO-formatted lower bound for `last_detection_date` (e.g. "2025-05-01T00:00:00").
-            end_date         (str): ISO-formatted upper bound for `last_detection_date` (e.g. "2025-05-11T14:00:00").
+            start_date       (str): DATE_FORMAT lower bound (e.g. "2025-05-01T00:00:00.000Z").
+            end_date         (str): DATE_FORMAT upper bound (e.g. "2025-05-11T14:00:00.000Z").
             limit            (int): Maximum number of credential entries to retrieve (default: DEFAULT_MAX_FETCH_CREDS).
 
         Returns:
             List[dict[str, Any]]: A list of credential-watchlist events, each containing:
             - all original API fields
-            - `_time` set to the value of `TIME_FIELDS[CREDENTIALS]`
-            - `source_log_type` = `CREDENTIALS`
+            - `_time` set to the value of `CREDENTIALS.time_field`
+            - `source_log_type` = `CREDENTIALS.source_log_type`
 
             The list is returned in ascending order by detection date.
         """
@@ -239,16 +250,16 @@ class Client(BaseClient):
         4. Annotates each record with `_time` and `SOURCE_LOG_TYPE`.
 
         Args:
-            start_date (str): ISO-formatted lower bound for `detection_date`.
-            end_date   (str): ISO-formatted upper bound for `detection_date`.
+            start_date       (str): DATE_FORMAT lower bound (e.g. "2025-05-01T00:00:00.000Z").
+            end_date         (str): DATE_FORMAT upper bound (e.g. "2025-05-11T14:00:00.000Z").
             limit      (int): Maximum number of domain entries to retrieve (default: DEFAULT_MAX_FETCH_DOMAINS).
 
         Returns:
             List[dict[str, Any]]: Domain-watchlist events sorted in ascending order by
             detection date, each containing:
             - all original API fields
-            - `_time`: copied from `TIME_FIELDS[DOMAIN]`
-            - `SOURCE_LOG_TYPE`: set to `DOMAIN`
+            - `_time` set to the value of `DOMAIN.time_field`
+            - `source_log_type` = `DOMAIN.source_log_type`
         """
         params = {
             "min-date": start_date,
@@ -565,8 +576,9 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
 
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
-        last_time: str = last_run.get(event_type.name, {}).get(LATEST_TIME, "")
-        last_ids = last_run.get(event_type.name, {}).get(LATEST_FETCHED_IDS, [])
+
+        last_time: str = last_run[event_type.name][LATEST_TIME]
+        last_ids = last_run[event_type.name][LATEST_FETCHED_IDS]
         demisto.debug(f"Last run for {event_type.name}: time={last_time}, ids={len(last_ids)}")
 
         events = event_fetch_function[event_type.name](
@@ -574,7 +586,6 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
             end_date=now.strftime(DATE_FORMAT),
             limit=event_type.max_fetch + len(last_ids),
         )
-
         demisto.debug(f"Fetched {len(events)} raw events for {event_type.name}")
 
         events = dedup_fetched_events(events=events, last_run_fetched_event_ids=set(last_ids), event_type=event_type)
@@ -596,31 +607,33 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
     return all_events, last_run
 
 
-def get_events_command(client: Client, args: dict[str, Any]) -> CommandResults:
+def get_events_command(client: Client, args: dict[str, Any], params: dict[str, Any]) -> CommandResults:
     """
     Get events from Cybel Angel, used mainly for debugging purposes
     """
-    event_type = REPORT
-    if not event_type:
-        return CommandResults(readable_output="Event Type not exists")
+    event_type = EVENT_TYPE.get(params.get("events_type_to_fetch", "")) or REPORT
     limit = int(args.get("limit", 50))
-    demisto.debug(f"Int:{isinstance(limit,int)}, str:{isinstance(limit,str)}")
+
     now = datetime.now()
     end_date = args.get("end_date") or now.strftime(DATE_FORMAT)
     end_dt = dateparser.parse(end_date) or now
-
     start_date = args.get("start_date") or (end_dt - timedelta(minutes=1)).strftime(DATE_FORMAT)
+
     events = []
-    events = client.get_reports(start_date=start_date, end_date=end_date, limit=limit)
+
+    event_fetch_function = {
+        DOMAIN.name: client.get_domain_watchlist,
+        CREDENTIALS.name: client.get_credentials_watchlist,
+        REPORT.name: client.get_reports,
+    }
+
+    events = event_fetch_function[event_type.name](start_date=start_date, end_date=end_date, limit=limit)
     events = events[:limit]
     if argToBoolean(args.get("is_fetch_events") or False):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
         demisto.debug(f"Successfully send {len(events)} to XSIAM.")
     return CommandResults(
-        outputs_prefix="CybleAngel.Events",
-        outputs=events,
-        raw_response=events,
-        readable_output=tableToMarkdown("Report", events, headers=["_time", "SOURCE_LOG_TYPE"], removeNull=False),
+        readable_output=tableToMarkdown(event_type.name, events, removeNull=False),
     )
 
 
@@ -1027,7 +1040,7 @@ def main() -> None:  # pragma: no cover
             demisto.debug(f'Successfully sent event {[event.get("id") for event in events]} IDs to XSIAM')
             demisto.setLastRun(last_run)
         elif command == "cybelangel-get-events":
-            return_results(get_events_command(client, demisto.args()))
+            return_results(get_events_command(client, args, params))
         elif command in commands:
             return_results(commands[command](client, args))
     except Exception as e:
