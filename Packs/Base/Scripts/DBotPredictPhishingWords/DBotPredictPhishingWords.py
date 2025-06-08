@@ -30,6 +30,7 @@ def update_model_in_server(model_data, model_type, model_name):
     )
     if is_error(res):
         raise DemistoException(f"Unable to update model: {res}")
+    demisto.debug(f"Updated model {model_name!r}: {res=}")
 
 
 def get_model_data(model_name: str, store_type: str, is_return_error: bool) -> tuple[str, str]:

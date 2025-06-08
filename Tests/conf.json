@@ -6373,10 +6373,6 @@
             },
             "demisto/pan-os-python:1.0.0.108041": {
                 "memory_threshold": 120
-            },
-            "demisto/ml": {
-                "pid_threshold": 45,
-                "memory_threshold": 500
             }
         }
     },
