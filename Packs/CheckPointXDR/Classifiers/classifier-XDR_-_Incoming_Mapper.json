@@ -1,0 +1,38 @@
+{
+    "defaultIncidentType": "Check Point XDR Incident",
+    "description": "Maps incoming CheckPoint XDR incidents to XSOAR incidents",
+    "feed": false,
+    "fromVersion": "6.9.0",
+    "id": "CheckPointXDR_Incoming_Mapper",
+    "mapping": {
+        "Check Point XDR Incident": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "dbotMirrorId": {
+                    "simple": "id"
+                },
+                "severity": {
+                    "simple": "severity"
+                },
+                "externalId": {
+                    "simple": "id"
+                },
+                "status": {
+                    "simple": "status"
+                },
+                "details": {
+                    "simple": "summary"
+                },
+                "owner": {
+                    "simple": "assignee"
+                },
+                "occurred": {
+                    "simple": "created_at"
+                }
+            }
+        }
+    },
+    "name": "CheckPointXDR_Incoming_Mapper",
+    "type": "mapping-incoming",
+    "version": -1
+}

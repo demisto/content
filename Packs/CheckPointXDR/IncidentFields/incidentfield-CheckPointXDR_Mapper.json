@@ -1,0 +1,33 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Check Point XDR Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "checkpointxdrmapper",
+    "closeForm": false,
+    "content": true,
+    "contentValue": {
+        "incomingMapperId": "CheckPointXDR_Incoming_Mapper",
+        "outgoingMapperId": "CheckPointXDR_Outgoing_Mapper"
+    },
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_checkpointxdrmapper",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "CheckPointXDR Mapper",
+    "neverSetAsRequired": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "shortText",
+    "unmapped": false,
+    "unsearchable": false,
+    "useAsKpi": false,
+    "version": -1,
+    "fromVersion": "6.9.0"
+}

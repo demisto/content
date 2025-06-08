@@ -1,0 +1,27 @@
+{
+    "description": "Maps outgoing XSOAR incident updates to CheckPoint XDR incidents",
+    "fromVersion": "6.9.0",
+    "id": "CheckPointXDR_Outgoing_Mapper",
+    "mapping": {
+        "Check Point XDR Incident": {
+            "status": {
+                "complexMapping": {
+                    "root": "incident",
+                    "filters": [
+                        [
+                            "status",
+                            "isEqualString",
+                            "Closed"
+                        ]
+                    ],
+                    "mapping": {
+                        "simple": "Resolved"
+                    }
+                }
+            }
+        }
+    },
+    "name": "CheckPointXDR_Outgoing_Mapper",
+    "type": "mapping-outgoing",
+    "version": -1
+}

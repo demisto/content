@@ -2,6 +2,8 @@ import demistomock as demisto
 from dateutil import parser
 from CommonServerPython import *
 
+MIRROR_DIRECTION = {"None": None, "Incoming": "In", "Outgoing": "Out", "Incoming And Outgoing": "Both"}
+
 
 class Client(BaseClient):
     def __init__(self, base_url: str, client_id: str, access_key: str, verify: bool, proxy: bool):
@@ -39,6 +41,64 @@ class Client(BaseClient):
 
         return incidents
 
+    def update_incident(self, status: Optional[str] = None, incident_id: Optional[str] = None) -> dict:
+        """
+        Update an incident in CheckPoint XDR.
+
+        Args:
+            status (Optional[str]): The new status of the incident.
+            incident_id (Optional[str]): The ID of the incident to update. If not provided, uses dbotMirrorId from context.
+
+        Returns:
+            dict: The response from the API.
+        """
+        demisto.debug(f"XDR - Starting update_incident with status: {status}")
+
+        if not incident_id:
+            curr_incident = demisto.incident()
+            incident_id = curr_incident.get('dbotMirrorId')
+            if not incident_id:
+                raise DemistoException("No incident ID provided and could not find dbotMirrorId in the current incident")
+
+        demisto.debug(f"XDR - Updating incident with ID: {incident_id}")
+
+        # Log in to ensure we have a valid token
+        self._login()
+
+        headers = {"Authorization": f"Bearer {self.token}"}
+        update_data = {}
+
+        # Only include status in the update if it was provided
+        if status:
+            update_data["status"] = status
+
+        # If no fields to update, log and return
+        if not update_data:
+            demisto.debug("XDR - No fields to update, skipping API call")
+            return {}
+
+        demisto.debug(f"XDR - Sending update with data: {update_data}")
+
+        try:
+            res = self._http_request(
+                'PUT',
+                url_suffix=f"/app/xdr/api/xdr/v1/incidents/{incident_id}",
+                headers=headers,
+                json_data=update_data,
+                resp_type='response'
+            )
+
+            if res.status_code != 200:
+                raise DemistoException(f"Failed to update XDR incident: {str(res.status_code)}: {res.text}")
+
+            response_data = res.json().get("data", {})
+            demisto.debug(f"XDR - Successfully updated incident {incident_id}")
+            return response_data
+
+        except Exception as e:
+            demisto.error(f"XDR - Error updating incident {incident_id}: {str(e)}")
+            raise DemistoException(f"Error updating incident: {str(e)}")
+
 
 def test_module(client: Client, last_run: dict[str, str], first_fetch: datetime):
     try:
@@ -67,7 +127,7 @@ def map_severity(severity: str) -> int:
     return severity_mapping.get(severity.lower(), 1)
 
 
-def parse_incidents(xdr_incidents: list[dict[str, Any]], startTS: int, max_fetch: int):
+def parse_incidents(xdr_incidents: list[dict[str, Any]], mirroring_fields: dict, startTS: int, max_fetch: int):
     incidents: list[dict[str, Any]] = []
     for incident in xdr_incidents.get("incidents", []):
         # Extracting insights and alerts
@@ -111,12 +171,16 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], startTS: int, max_fetch
                 "indicators": incident.get("indicators", []),
                 "mitretacticid": incident.get("mitre_tactics", []),
                 "mitretechniqueid": incident.get("mitre_techniques", []),
+                'dbotMirrorDirection': 'Out',
+                'dbotMirrorInstance': demisto.integrationInstance(),
+                'dbotMirrorTags': 'xdrTag',
             },
             "severity": map_severity(incident.get("severity", "medium")),
             "name": f"#{incident.get('display_id', '')} - {incident.get('summary', '')}",
             'details': incident.get("summary", ""),
             'rawJSON': json.dumps(incident)
         })
+        incident.update(mirroring_fields)
     incidents = sorted(
         incidents,
         key=lambda x: parser.isoparse(x['updated']) if x.get('updated') else datetime.utcfromtimestamp(startTS / 1000)
@@ -131,7 +195,7 @@ def parse_incidents(xdr_incidents: list[dict[str, Any]], startTS: int, max_fetch
     return incidents, last_time
 
 
-def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datetime, max_fetch: int):
+def fetch_incidents(client: Client, mirroring_fields: dict, last_run: dict[str, str], first_fetch: datetime, max_fetch: int):
     last_fetch = last_run.get('last_fetch', first_fetch.isoformat())
     last_fetch_time = dateparser.parse(last_fetch)
     if not last_fetch_time:
@@ -140,9 +204,72 @@ def fetch_incidents(client: Client, last_run: dict[str, str], first_fetch: datet
     startTS = int(last_fetch_time.timestamp() * 1000)
     demisto.debug(f"Fetching incidents since {last_fetch} (timestamp: {startTS})")
     xdr_incidents = client.get_incidents(formatted_fetch, max_fetch)
-    incidents, last_insight_time = parse_incidents(xdr_incidents, startTS, max_fetch)
+    incidents, last_insight_time = parse_incidents(xdr_incidents, mirroring_fields, startTS, max_fetch)
 
     return {'last_fetch': last_insight_time}, incidents
+
+
+def handle_incident_close_out_or_reactivation(delta: dict, incident_status: IncidentStatus):
+    """
+    Handle the incident close out. If the close out is enabled, the incident will be resolved and the classification and
+    determination will be updated according to the close reason.
+
+    Args:
+        delta (dict): The delta of the incident to update.
+        incident_status (IncidentStatus): The incident status in XSOAR.
+
+    """
+    demisto.debug("XDR - Starting handle_incident_close_out_or_reactivation")
+    # Only close or reopen microsoft incidents based on xsoar if close_out is enabled.
+    if not argToBoolean(demisto.params().get("close_out", False)):
+        demisto.debug("XDR - Close out is not enabled")
+        return
+    demisto.debug("XDR - Close out is enabled")
+    if incident_status == IncidentStatus.DONE:
+        if any(delta.get(key) for key in ["closeReason", "closeNotes", "closingUserId"]):
+            delta["status"] = "Resolved"
+            demisto.debug("XDR - Updating incident status to Resolved")
+            # this functionality awaits https://jira-dc.paloaltonetworks.com/browse/CRTX-151123?filter=-2
+            # once resolved the microsoft365classification field needs to be returned to the close form in order to get
+            # the classification and determination fields in delta.
+            if delta.get("closeReason") == "FalsePositive" and delta.get("classification") != "FalsePositive":
+                delta.update({"classification": "FalsePositive", "determination": "Other"})
+                demisto.debug("XDR - Updating classification and determination to FalsePositive and Other")
+            elif delta.get("closeReason") == "Other" or delta.get("closeReason") == "Duplicate":
+                delta.update({"classification": "Unknown", "determination": "NotAvailable"})
+                demisto.debug("XDR - Updating classification and determination to Unknown and NotAvailable")
+    else:
+        if any(delta.get(key) == "" for key in ["closeReason", "closeNotes", "closingUserId"]):
+            delta["status"] = "Active"
+            demisto.debug("XDR - Updating incident status to Active")
+
+
+def update_remote_system_command(client: Client, args: Dict[str, Any]) -> str:
+    update_remote_system_args = UpdateRemoteSystemArgs(args)
+    remote_incident_id = update_remote_system_args.remote_incident_id
+    delta = update_remote_system_args.delta
+    incident_changed = update_remote_system_args.incident_changed
+    inc_status = update_remote_system_args.inc_status
+
+    demisto.debug(
+        f"XDR - update_remote_system_command called with {remote_incident_id=}, {delta=}, "
+        f"{incident_changed=}, {inc_status=}"
+    )
+
+    # Check if we're closing the incident
+    if inc_status == IncidentStatus.DONE:
+        demisto.debug("XDR - Incident is being closed, updating remote system")
+        if argToBoolean(demisto.params().get("close_out", False)):
+            try:
+                # Update XDR incident to Resolved status
+                client.update_incident(status="Resolved", incident_id=remote_incident_id)
+                demisto.debug(f"XDR - Successfully closed incident {remote_incident_id} in XDR")
+            except Exception as e:
+                demisto.error(f"XDR - Failed to close incident {remote_incident_id} in XDR: {str(e)}")
+        else:
+            demisto.debug("XDR - close_out is not enabled, skipping closure in XDR")
+
+    return remote_incident_id
 
 
 def main() -> None:  # pragma: no cover
@@ -161,18 +288,30 @@ def main() -> None:  # pragma: no cover
         raise Exception(f"Invalid first fetch time value '{fetch_time}', must be '<number> <time unit>', e.g., '24 hours'")
 
     command = demisto.command()
+    args = demisto.args()
     demisto.debug(f'Command being called is {command}')
+    mirroring_fields = {
+        "mirror_direction": MIRROR_DIRECTION.get(params.get("mirror_direction", "None")),
+        "mirror_instance": demisto.integrationInstance(),
+        "mirror_tags": [params.get("tag", "xdrTag")],
+    }
 
     try:
         client = Client(base_url, client_id, access_key, verify, proxy)
         last_run = demisto.getLastRun()
         if command == 'test-module':
+            demisto.debug('XDR - test-module')
             return_results(test_module(client, last_run, first_fetch))
         elif command == 'fetch-incidents':
-            next_run, incidents = fetch_incidents(client, last_run, first_fetch, max_fetch)
+            demisto.debug('XDR - fetch-incidents')
+            next_run, incidents = fetch_incidents(client, mirroring_fields, last_run, first_fetch, max_fetch)
             demisto.incidents(incidents)
             demisto.debug(f"Set last run to {next_run.get('last_fetch')}")
             demisto.setLastRun(next_run)
+        elif command == "update-remote-system":
+            demisto.debug('XDR - update-remote-system')
+            demisto.debug(f"XDR - Running update-remote-system command with args: {args}")
+            return_results(update_remote_system_command(client, args))
 
     except Exception as e:
         return_error(f'Failed to execute {demisto.command()} command.\nError:\n{str(e)}')

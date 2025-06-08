@@ -61,15 +61,39 @@ configuration:
   defaultvalue: "1000"
   type: 0
   required: false
+- additionalinfo: Outgoing Mirroring - when selected, closing the Cortex XSOAR incident is mirrored in XDR.
+  defaultvalue: 'false'
+  display: Close Mirrored XDR Incidents
+  name: close_out
+  type: 8
+  section: Collect
+  advanced: true
+  required: false
+- additionalinfo: 'Choose the direction to mirror the incident: Incoming (from ServiceNow to Cortex XSOAR), Outgoing (from Cortex XSOAR to ServiceNow), or Incoming and Outgoing (from/to Cortex XSOAR and ServiceNow).'
+  defaultvalue: None
+  display: Incident Mirroring Direction
+  name: mirror_direction
+  options:
+  - None
+  - Incoming
+  - Outgoing
+  - Incoming And Outgoing
+  type: 15
+  hidden:
+  - marketplacev2
+  required: false
+  section: Collect
 description: Fetch and manage incidents from Check Point XDR.
 display: 'Check Point XDR'
 name: CheckPointXDR
 script:
   isfetch: true
-  runonce: false
-  script: '-'
-  type: python
+  script: ''
   subtype: python3
+  type: python
+  ismappable: true
+  isremotesyncin: true
+  isremotesyncout: true
   dockerimage: demisto/python3:3.11.10.113941
 fromversion: 6.9.0
 tests:
