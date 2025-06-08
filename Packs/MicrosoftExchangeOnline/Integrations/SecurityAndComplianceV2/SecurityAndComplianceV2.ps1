@@ -1649,16 +1649,16 @@ function GetSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwar
 }
 
 function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    $Demisto.results("start StartSearchCommand")
+    # $Demisto.results("start StartSearchCommand")
     $entry_context = @{}
     $raw_response = @{}
     $human_readable = ""
     $continue_polling = ConvertTo-Boolean $kwargs.continue_polling
     if ($continue_polling) {
-        $Demisto.results("call GetSearch")
+        # $Demisto.results("call GetSearch")
         $raw_response = $client.GetSearch($kwargs.search_name)
         $Status = $raw_response.Status
-        $Demisto.results("Status: $Status")
+        # $Demisto.results("Status: $Status")
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** completed !"
             $kwargs.polling = "false"
@@ -1668,7 +1668,7 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
         $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** in progress !"
         return $human_readable, $entry_context, $raw_response
     } 
-    $Demisto.results("call StartSearch")
+    # $Demisto.results("call StartSearch")
     $client.StartSearch($kwargs.search_name)
     $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
 
@@ -2087,7 +2087,7 @@ function Main {
 
         # Return results to Demisto Server
         $polling = ConvertTo-Boolean $command_arguments.polling
-        $Demisto.results("polling: $polling")
+        # $Demisto.results("polling: $polling")
         if ($polling) {
             $command_name = "o365-sc-start-search"
     
@@ -2096,7 +2096,7 @@ function Main {
                 continue_polling    = "true";
                 hide_polling_output = $true;
             };
-            $Demisto.results("call to ReturnPollingOutputs")
+            # $Demisto.results("call to ReturnPollingOutputs")
 
             ReturnPollingOutputs `
             -ReadableOutput $human_readable `

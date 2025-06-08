@@ -531,7 +531,7 @@ script:
     - name: continue_polling
       description: test.
       defaultValue: false
-      # hidden: true
+      hidden: true
     - name: polling
       description: TODO.
       auto: PREDEFINED
