@@ -8,6 +8,14 @@ configuration:
   name: url
   required: true
   type: 0
+- defaultvalue: https://example.com/
+  display: AI Model
+  name: model
+  options:
+    - gpt-4o-mini
+    - models/text-embedding-004
+  required: true
+  type: 15
 - display: API Key
   additionalinfo: The API Key to use for the connection
   name: apikey
@@ -21,38 +29,30 @@ configuration:
   name: proxy
   required: false
   type: 8
-description: '[Enter a comprehensive, yet concise, description of what the integration does, what use cases it is designed for, etc.]'
-display: XSOARAIAgent
+description: 'An AI agent that can run XSOAR commands using free text'
+display: XSOAR AI Agent
 name: XSOARAIAgent
 script:
   commands:
   - arguments:
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
+    - description: "The query to run the command with, For example: `Give details about ticket ID 23 in ServiceNow`"
       isArray: false
-      name: dummy
+      name: query
       required: true
       secret: false
-    - default: false
-      description: '[Enter a description of the argument, including any important information users need to know, for example, default values.]'
-      isArray: false
-      name: dummy2
-      required: false
-      secret: false
-    deprecated: false
-    description: '[Enter a description of the command, including any important information users need to know, for example required permissions.]'
+    description: Execute teh XSOAR AI agent command
     execution: false
-    name: baseintegration-dummy
+    name: xsoar-ai-agent-execute
     outputs:
-    - contextPath: BaseIntegration.Output
-      description: '[Enter a description of the data returned in this output.]'
+    - contextPath: XSOARAIAgent.Output
+      description: The output returned by the AI agent after executing the command
       type: String
   isfetch: false
   runonce: false
   script: '-'
   type: python
   subtype: python3
-  dockerimage: demisto/python3:3.9.8.24399
+  dockerimage: demisto/python3:3.12.8.3296088
 fromversion: 6.1.0
 marketplaces:
 - xsoar
