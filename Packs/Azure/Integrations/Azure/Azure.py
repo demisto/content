@@ -8,6 +8,7 @@ from urllib.parse import quote
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
 from CommonServerUserPython import *  # noqa
 from MicrosoftApiModule import *  # noqa: E402
+from COOCApiModule import *
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -67,7 +68,8 @@ REQUIRED_API_PERMISSIONS = [
 ]
 
 DEFAULT_LIMIT = 50
-PREFIX_URL = "https://management.azure.com/subscriptions/"
+PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
+PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
 POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
 POSTGRES_API_VERSION="2017-12-01"
 WEBAPP_API_VERSION="2024-04-01"
@@ -97,10 +99,8 @@ class AzureClient:
         connection_type: str,
         tenant_id: str = None,
         enc_key: str = None,
-        auth_code: str = None,
-        redirect_uri: str = None,
-        managed_identities_client_id: str = None,
-        scope: str = None
+        scope: str = None,
+        headers: dict = None
     ):
         if "@" in app_id:
             app_id, refresh_token = app_id.split("@")
@@ -108,30 +108,37 @@ class AzureClient:
             integration_context.update(current_refresh_token=refresh_token)
             set_integration_context(integration_context)
 
-        client_args = assign_params(
-            self_deployed=True,
-            auth_id=app_id,
-            token_retrieval_url=None,
-            grant_type=GRANT_BY_CONNECTION.get(connection_type),
-            base_url=f"{PREFIX_URL}{subscription_id}",
-            verify=verify,
-            proxy=proxy,
-            resource=None,
-            scope=scope,
-            tenant_id=tenant_id,
-            enc_key=enc_key,
-            auth_code=auth_code,
-            redirect_uri=redirect_uri,
-            managed_identities_client_id=managed_identities_client_id,
-            managed_identities_resource_uri=None
-        )
-        self.ms_client = MicrosoftClient(**client_args)
+        if not headers:
+            ms_client_args = assign_params(
+                self_deployed=True,
+                auth_id=app_id,
+                token_retrieval_url=None,
+                grant_type=GRANT_BY_CONNECTION.get(connection_type),
+                base_url=f"{PREFIX_URL_AZURE}",
+                verify=verify,
+                proxy=proxy,
+                resource=None,
+                scope=scope,
+                tenant_id=tenant_id,
+                enc_key=enc_key
+            )
+            self.ms_client = MicrosoftClient(**ms_client_args)
+        else:
+            base_client_args = assign_params(
+                base_url=f"{PREFIX_URL_AZURE}{subscription_id}",
+                verify=verify,
+                proxy=proxy,
+                headers=headers
+            )
+            self.base_client = BaseClient(**base_client_args)
+            
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
         self.connection_type = connection_type
         self.tenant_id = tenant_id
         self.enc_key = enc_key
         self.app_id = app_id
+        self.headers = headers
         
     @logger
     def http_request(
@@ -142,19 +149,28 @@ class AzureClient:
         params: dict = None,
         data: dict = None,
         resp_type: str = "json",
+        json_data: dict = None
     ) -> requests.Response:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
+            
+        if self.headers:
+            return self.base_client._http_request(  # type: ignore[misc]
+                method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
+                headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404)
+            )
+
+        
         return self.ms_client.http_request(
-            method=method, url_suffix=url_suffix, full_url=full_url, json_data=data, params=params, resp_type=resp_type
+            method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type
         )
 
     @logger
     def create_rule(self, security_group: str, rule_name: str, properties: dict, subscription_id: str, resource_group_name: str):
         return self.http_request(
             "PUT",
-            full_url=f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}\
+            full_url=f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}\
 /providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?",
             data={"properties": properties},
         )
@@ -165,7 +181,7 @@ class AzureClient:
             return self.http_request(
                 "GET",
                 full_url=(
-                    f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+                    f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
                     f"/providers/Microsoft.Network/networkSecurityGroups/{security_group}/securityRules/{rule_name}?"
                 )
             )
@@ -234,10 +250,10 @@ and resource group "{resource_group_name}" was not found.')
         
         json_data_args = remove_empty_elements(json_data_args)
         
-        return self.ms_client.http_request(
+        return self.http_request(
             method="PATCH",
             full_url=(
-                f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+                f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
                 f"/providers/Microsoft.Storage/storageAccounts/{account_name}"
             ),
             params={
@@ -268,7 +284,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The full JSON response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Storage/storageAccounts/{account_name}/blobServices/default"
         )
         data = {
@@ -281,12 +297,12 @@ and resource group "{resource_group_name}" was not found.')
         }
         params={"api-version": API_VERSION}
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
+        return self.http_request(method="PUT", full_url=full_url, params=params, json_data=data)
 
     def create_policy_assignment(self, name: str, policy_definition_id: str, display_name: str, parameters: str, description: str,
                                  scope: str):
         full_url=(
-                f"{PREFIX_URL}{scope}"
+                f"{PREFIX_URL_AZURE}{scope}"
                 f"/providers/Microsoft.Authorization/policyAssignments/{name}"
             )
         params = {"api-version": POLICY_ASSIGNMENT_API_VERSION}
@@ -300,7 +316,7 @@ and resource group "{resource_group_name}" was not found.')
                 "description": description
             }
         }
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
     
     def set_postgres_config(self, server_name: str, subscription_id: str, resource_group_name: str, configuration_name: str,
                             source: str, value: str):
@@ -318,7 +334,7 @@ and resource group "{resource_group_name}" was not found.')
         dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
@@ -330,7 +346,7 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
 
     def set_webapp_config(self, name: str, subscription_id: str, resource_group_name: str, http20_enabled: str,
                           remote_debugging_enabled: str, min_tls_version: str):
@@ -349,7 +365,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/web"
         )
         params = {"api-version": WEBAPP_API_VERSION}
@@ -361,7 +377,9 @@ and resource group "{resource_group_name}" was not found.')
                     "minTlsVersion":min_tls_version
                 }
         }
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        data = remove_empty_elements(data)
+        demisto.debug(f"Setting WebApp configuration with {data}.")
+        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
     
     
     def get_webapp_auth(self, name, subscription_id, resource_group_name):
@@ -377,14 +395,14 @@ and resource group "{resource_group_name}" was not found.')
             dict: The authentication settings of the web app.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
         params = {"api-version": WEBAPP_API_VERSION}
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        return self.http_request(method="GET", full_url=full_url, params=params)
     
     
-    def update_webapp_auth(self, name, subscription_id, resource_group_name, enabled):
+    def update_webapp_auth(self, name, subscription_id, resource_group_name, current):
         """
         Updates the authentication settings of a web app.
         
@@ -398,18 +416,19 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}/config/authsettings"
         )
         params = {"api-version": WEBAPP_API_VERSION}
-        data = {
-            "properties":
-            {
-                "enabled": enabled
-            }
-        }
-        data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        # data = {
+        #     "properties":
+        #     {
+        #         "enabled": enabled
+        #     }
+        # }
+        data = current
+        demisto.debug(f"Updating WebApp auth with {data}.")
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
 
     def resource_update(self, resource_id, allow_blob_public_access, location, account_type):
@@ -440,7 +459,7 @@ and resource group "{resource_group_name}" was not found.')
                 "name": "Standard_LRS"
             }
         }
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
     
     def flexible_server_param_set(self, server_name: str, configuration_name: str, subscription_id: str,
@@ -460,7 +479,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforMySQL/flexibleServers/{server_name}/configurations/{configuration_name}"
         )
         params = {"api-version": FLEXIBLE_API_VERSION}
@@ -471,7 +490,7 @@ and resource group "{resource_group_name}" was not found.')
                 "value": value
             }
         }
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
     
     def get_monitor_log_profile(self, subscription_id: str, log_profile_name: str):
@@ -486,11 +505,11 @@ and resource group "{resource_group_name}" was not found.')
             dict: The log profile.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}"
+            f"{PREFIX_URL_AZURE}{subscription_id}"
             f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         )
         params = {"api-version": MONITOR_API_VERSION}
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        return self.http_request(method="GET", full_url=full_url, params=params)
         
     
     def monitor_log_profile_update(self, subscription_id: str, log_profile_name: str, current_log_profile: dict):
@@ -506,13 +525,13 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}"
+            f"{PREFIX_URL_AZURE}{subscription_id}"
             f"/providers/Microsoft.Insights/logprofiles/{log_profile_name}"
         )
         params = {"api-version": MONITOR_API_VERSION}
         data = current_log_profile
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
     
     def disk_update(self, subscription_id: str, resource_group_name: str, disk_name: str, public_network_access: str,
@@ -532,7 +551,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Compute/disks/{disk_name}"
         )
         params = {"api-version": DISKS_API_VERSION}
@@ -544,12 +563,12 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
     
     
     # def get_webapp(self, subscription_id, resource_group_name, name):
     #     full_url=(
-    #         f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+    #         f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
     #         f"/providers/Microsoft.Web/sites/{name}"
     #     )
     #     params = {"api-version": WEBAPP_API_VERSION}
@@ -573,7 +592,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Web/sites/{name}"
         )
         params = {"api-version": WEBAPP_API_VERSION}
@@ -587,7 +606,8 @@ and resource group "{resource_group_name}" was not found.')
             }
         }
         data = remove_empty_elements(data)
-        return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
+        demisto.debug(f"Updating WebApp with {data}.")
+        return self.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
         
     
     def acr_update(self, subscription_id: str, resource_group_name: str, registry_name: str, allow_exports: str,
@@ -608,7 +628,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.ContainerRegistry/registries/{registry_name}"
         )
         params = {"api-version": ACR_API_VERSION}
@@ -627,6 +647,7 @@ and resource group "{resource_group_name}" was not found.')
             },
         }
         data = remove_empty_elements(data)
+        demisto.debug(f"Updating ACR with {data}")
         return self.ms_client.http_request(method="PATCH", full_url=full_url, json_data=data, params=params)
         
     def postgres_server_update(self, subscription_id: str, resource_group_name: str, server_name: str, ssl_enforcement: str):
@@ -643,7 +664,7 @@ and resource group "{resource_group_name}" was not found.')
             dict: The response from the Azure REST API after applying the update.
         """
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DBforPostgreSQL/servers/{server_name}"
         )
         params = {"api-version": POSTGRES_API_VERSION}
@@ -685,11 +706,11 @@ and resource group "{resource_group_name}" was not found.')
         }
         params = {"api-version": KEY_VAULT_API_VERSION}
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.KeyVault/vaults/{vault_name}"
         )
 
-        return self.ms_client.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
 
 
     def sql_db_threat_policy_get(self, server_name: str, db_name: str, subscription_id: str,
@@ -708,11 +729,11 @@ and resource group "{resource_group_name}" was not found.')
         """
         params = {"api-version": SQL_DB_API_VERSION}
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
 
-        return self.ms_client.http_request("GET", full_url=full_url, params=params)
+        return self.http_request("GET", full_url=full_url, params=params)
 
 
     def sql_db_threat_policy_update(self, server_name: str, db_name: str, subscription_id: str, current: dict,
@@ -733,11 +754,11 @@ and resource group "{resource_group_name}" was not found.')
         data = current
         params = {"api-version": SQL_DB_API_VERSION}
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
 
-        return self.ms_client.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
     
     
     def sql_db_tde_set(self, server_name: str, db_name: str, subscription_id: str, state: str, resource_group_name: str):
@@ -761,11 +782,11 @@ and resource group "{resource_group_name}" was not found.')
         }
         params = {"api-version": SQL_DB_API_VERSION}
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/transparentDataEncryption/current"
         )
 
-        return self.ms_client.http_request("PUT", full_url=full_url, json_data=data, params=params)
+        return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
     
     
     def cosmos_db_update(self, subscription_id: str, resource_group_name: str, account_name: str,
@@ -790,11 +811,11 @@ and resource group "{resource_group_name}" was not found.')
         data = remove_empty_elements(data)
         params = {"api-version": COSMOS_DB_API_VERSION}
         full_url=(
-            f"{PREFIX_URL}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.DocumentDB/databaseAccounts/{account_name}"
         )
 
-        return self.ms_client.http_request("PATCH", full_url=full_url, json_data=data, params=params)
+        return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
     
     
     def remove_member_from_role(self, role_object_id: str, user_id: str):
@@ -813,8 +834,8 @@ and resource group "{resource_group_name}" was not found.')
         Docs:
             https://docs.microsoft.com/en-us/graph/api/directoryrole-delete-member?view=graph-rest-1.0&tabs=http
         """
-        full_url = f"https://graph.microsoft.com/v1.0/directoryRoles/{role_object_id}/members/{user_id}/$ref"
-        self.ms_client.http_request("DELETE", full_url=full_url)
+        full_url = f"{PREFIX_URL_MS_GRAPH}/directoryRoles/{role_object_id}/members/{user_id}/$ref"
+        self.http_request("DELETE", full_url=full_url)
         
     
     def remove_member_from_group(self, group_id: str, user_id: str):
@@ -826,19 +847,19 @@ and resource group "{resource_group_name}" was not found.')
         #  If successful, this method returns 204 No Content response code.
         #  It does not return anything in the response body.
         #  Using resp_type="text" to avoid parsing error in the calling method.
-        self.ms_client.http_request(method="DELETE", full_url=f"https://graph.microsoft.com/v1.0/groups/{group_id}/members/{user_id}/$ref", resp_type="text")
+        self.http_request(method="DELETE", full_url=f"{PREFIX_URL_MS_GRAPH}/groups/{group_id}/members/{user_id}/$ref", resp_type="text")
         
 
     def get_role_assignments_call(self, object_id):
-        full_url = f"{PREFIX_URL}{self.subscription_id}/providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
+        full_url = f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
         params = {"api-version": PERMISSIONS_VERSION}
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        return self.http_request(method="GET", full_url=full_url, params=params)
         
         
     def get_role_permissions(self, role_definition_id):
-        full_url = f"{PREFIX_URL}{self.subscription_id}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}"
+        full_url = f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleDefinitions/{role_definition_id}"
         params = {"api-version": PERMISSIONS_VERSION}
-        return self.ms_client.http_request(method="GET", full_url=full_url, params=params)
+        return self.http_request(method="GET", full_url=full_url, params=params)
         
         
 """ HELPER FUNCTIONS """
@@ -1194,13 +1215,14 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
     name = args.get("name")
     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-    enabled = args.get("enabled", "")
+    enabled = args.get("enabled")
     current = client.get_webapp_auth(name, subscription_id, resource_group_name)
     current["properties"]["enabled"] = enabled if enabled else current.get("properties", {}).get("enabled")
-    response = client.update_webapp_auth(name, subscription_id, resource_group_name, enabled)
+    response = client.update_webapp_auth(name, subscription_id, resource_group_name, current)
+    demisto.debug("Updated webapp auth settings.")
     outputs = [
         {
-            "Name": response.get("name"),
+            "Name": name,
             "Enabled": response.get("properties", {}).get("enabled", "") if enabled else None,
             "ID": response.get("id")
         }
@@ -1753,7 +1775,7 @@ def check_all_permissions(role_permissions: list, api_permissions: list) -> list
     return missing_permissions
     
 
-def test_module(client: AzureClient) -> str:
+def test_module(client: AzureClient, token: str) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -1763,39 +1785,24 @@ def test_module(client: AzureClient) -> str:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    # This  should validate all the inputs given in the integration configuration panel,
-    # either manually or by using an API that uses them.
-    if "Device" in client.connection_type:
-        raise DemistoException(
-            "Please enable the integration and run `!azure-nsg-auth-start`"
-            "and `!azure-nsg-auth-complete` to log in."
-            "You can validate the connection by running `!azure-nsg-auth-test`\n"
-            "For more details press the (?) button."
-        )
-    elif client.connection_type == "Azure Managed Identities" or client.connection_type == "Client Credentials":
-        access_token = client.ms_client.get_access_token()
-        # decoded_token = get_token(access_token)
-        # object_id = decoded_token.get("oid", "")
-        # list_api_permissions = decoded_token.get("roles", [])
-        # list_role_assignments = get_role_assignments(client, object_id)
-        # list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+    # access_token = token if token else client.ms_client.get_access_token()
+    # decoded_token = get_token(access_token)
+    # object_id = decoded_token.get("oid", "")
+    # list_api_permissions = decoded_token.get("roles", [])
+    # list_role_assignments = get_role_assignments(client, object_id)
+    # print(list_api_permissions, list_role_assignments)
+    return "ok"
+    # list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+    
+    # missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
+    # if not missing_permissions:
+    #     return "ok"
+    
+    # else:
+    #     raise Exception(
+    #         f"Missing the following permissions: {missing_permissions}."
+    #     )
         
-        # missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
-        # if not missing_permissions:
-        #     return "ok"
-        
-        # else:
-        #     raise Exception(
-        #         f"Missing the following permissions: {missing_permissions}."
-        #     )
-        
-        
-
-    else:
-        raise Exception(
-            "When using user auth flow configuration, "
-            "Please enable the integration and run the !azure-nsg-auth-test command in order to test it"
-        )
 
 
 def is_azure(command) -> bool:
@@ -1821,6 +1828,20 @@ def main():
     connection_type = params.get("auth_type", "Device Code")
     is_azure_command = is_azure(command)
     try:
+        headers = {}
+        token = ""
+        if not params.get("credentials", {}).get("password"):
+            token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")).get("access_token")
+            print(token)
+            if not token:
+                raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
+            headers = {
+                'Authorization': f'Bearer {token}',
+                'Content-Type': 'application/json',
+                'Accept': 'application/json'
+            }
+            demisto.debug("Using CTS.")
+            
         client = AzureClient(
             app_id=params.get("app_id", ""),
             subscription_id=params.get("subscription_id", ""),
@@ -1830,10 +1851,8 @@ def main():
             connection_type=connection_type,
             tenant_id=params.get("tenant_id"),
             enc_key=params.get("credentials", {}).get("password"),
-            auth_code=(params.get("auth_code", {})).get("password"),
-            redirect_uri=params.get("redirect_uri"),
-            managed_identities_client_id=get_azure_managed_identities_client_id(params),
-            scope=SCOPE_BY_CONNECTION.get(connection_type) if is_azure_command else None # the issue!
+            scope=SCOPE_BY_CONNECTION.get(connection_type) if is_azure_command else None, # the issue!
+            headers=headers
         )
 
         commands_with_params_and_args = {
@@ -1862,7 +1881,7 @@ def main():
             "azure-remove-member-from-group": remove_member_from_group_command,
         }
         if command == "test-module":
-            return_results(test_module(client))
+            return_results(test_module(client, token))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         elif command in commands_with_args:

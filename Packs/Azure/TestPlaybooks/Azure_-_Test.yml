@@ -1,0 +1,1283 @@
+id: ce23f9da-22de-4749-8f45-e5f0187207f6
+version: 6
+vcShouldKeepItemLegacyProdMachine: false
+name: Azure - Test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 22c516d0-2965-43b1-87cc-16784613d6f0
+    type: start
+    task:
+      id: 22c516d0-2965-43b1-87cc-16784613d6f0
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: a1958337-82b0-44ff-aaeb-af91ccdb28c1
+    type: regular
+    task:
+      id: a1958337-82b0-44ff-aaeb-af91ccdb28c1
+      version: -1
+      name: 'Get Storage Account asset '
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 373
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: 5bbc0525-af30-4ba6-a538-2065ee1dac0a
+    type: regular
+    task:
+      id: 5bbc0525-af30-4ba6-a538-2065ee1dac0a
+      version: -1
+      name: az storage account update
+      description: Updates a specific account storage.
+      script: AZURE|||azure-storage-account-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "3"
+    scriptarguments:
+      allow_cross_tenant_replication:
+        simple: "false"
+      network_ruleset_bypass:
+        simple: AzureServices
+      network_ruleset_default_action:
+        simple: Deny
+      supports_https_traffic_only:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 468
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 993ed806-c034-410a-93d7-bed24c3710f8
+    type: regular
+    task:
+      id: 993ed806-c034-410a-93d7-bed24c3710f8
+      version: -1
+      name: az storage account blob-service-properties update
+      description: Sets properties for the blob service in a specific account storage.
+      script: AZURE|||azure-storage-blob-service-properties-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "22"
+    scriptarguments:
+      delete_rentention_policy_days:
+        simple: "30"
+      delete_rentention_policy_enabled:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 564
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: 6ca7d915-6c8d-460e-937a-3f88688bcb72
+    type: regular
+    task:
+      id: 6ca7d915-6c8d-460e-937a-3f88688bcb72
+      version: -1
+      name: Get PostgreSQL server asset details
+      description: Updates an existing server.
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "5"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 901
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "5":
+    id: "5"
+    taskid: 913d07f0-6f70-4364-b039-5a144a5d356b
+    type: regular
+    task:
+      id: 913d07f0-6f70-4364-b039-5a144a5d356b
+      version: -1
+      name: az postgres server configuration set
+      description: Updates a configuration of a server.
+      script: AZURE|||azure-postgres-config-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "6"
+    scriptarguments:
+      source:
+        simple: user_override
+      value:
+        simple: "on"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 995
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "6":
+    id: "6"
+    taskid: b22faf7f-59e3-4c0f-baff-a61d54f81f4c
+    type: regular
+    task:
+      id: b22faf7f-59e3-4c0f-baff-a61d54f81f4c
+      version: -1
+      name: az postgres server update
+      description: Updates an existing server.
+      script: AZURE|||azure-postgres-server-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "7"
+    scriptarguments:
+      ssl_enforcement:
+        simple: Enabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1091
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "7":
+    id: "7"
+    taskid: 14a39592-64a2-4e28-97c6-15cb10d26e7b
+    type: regular
+    task:
+      id: 14a39592-64a2-4e28-97c6-15cb10d26e7b
+      version: -1
+      name: Get Disk asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "8"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1415
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "8":
+    id: "8"
+    taskid: abc4b000-2aa2-487d-867a-e9efaaf6b643
+    type: regular
+    task:
+      id: abc4b000-2aa2-487d-867a-e9efaaf6b643
+      version: -1
+      name: az disk update
+      description: Updates a disk.
+      script: AZURE|||azure-disk-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "9"
+    scriptarguments:
+      data_access_auth_mode:
+        simple: AzureActiveDirectory
+      network_access_policy:
+        simple: DenyAll
+      public_network_access:
+        simple: Disabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1506
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "9":
+    id: "9"
+    taskid: 0f94181b-a820-4f3a-ae06-1b90f9b7e066
+    type: regular
+    task:
+      id: 0f94181b-a820-4f3a-ae06-1b90f9b7e066
+      version: -1
+      name: Get NSG asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "10"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1810
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 96200013-75ed-4369-9f61-0ece9a7f0f62
+    type: regular
+    task:
+      id: 96200013-75ed-4369-9f61-0ece9a7f0f62
+      version: -1
+      name: az network nsg rule update
+      description: Update a security rule. If one does not exist, it will be created.
+      script: AZURE|||azure-nsg-security-rule-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "11"
+    scriptarguments:
+      access:
+        simple: Deny
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 1904
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "11":
+    id: "11"
+    taskid: e9432825-2d50-4af9-a4ee-236b9477dc75
+    type: regular
+    task:
+      id: e9432825-2d50-4af9-a4ee-236b9477dc75
+      version: -1
+      name: Get Webapp asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "12"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2329
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "12":
+    id: "12"
+    taskid: 3fc12928-841a-4034-a024-08475429533d
+    type: regular
+    task:
+      id: 3fc12928-841a-4034-a024-08475429533d
+      version: -1
+      name: az webapp config set
+      description: Updates the configuration settings of an existing Azure Web App.
+      script: AZURE|||azure-webapp-config-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      http20_enabled:
+        simple: "true"
+      min_tls_version:
+        simple: "1.2"
+      remote_debugging_enabled:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2423
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: 057c4138-6fbb-462b-8f87-1c9aae7c0e30
+    type: regular
+    task:
+      id: 057c4138-6fbb-462b-8f87-1c9aae7c0e30
+      version: -1
+      name: az webapp auth update
+      description: Updates the authentication and authorization settings of an existing
+        Azure Web App.
+      script: AZURE|||azure-webapp-auth-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "14"
+    scriptarguments:
+      enabled:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2520
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "14":
+    id: "14"
+    taskid: 413b4a58-37ee-44d0-9b6e-ca9580113a63
+    type: regular
+    task:
+      id: 413b4a58-37ee-44d0-9b6e-ca9580113a63
+      version: -1
+      name: az webapp identity assign
+      description: Updates an Azure Web App.
+      script: AZURE|||azure-webapp-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      identity_type:
+        simple: SystemAssigned
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2613
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: 5e7d7ba0-351d-4a90-bbc4-0c21f2e11ae4
+    type: regular
+    task:
+      id: 5e7d7ba0-351d-4a90-bbc4-0c21f2e11ae4
+      version: -1
+      name: az webapp update
+      description: Updates an Azure Web App.
+      script: AZURE|||azure-webapp-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      client_cert_enabled:
+        simple: "true"
+      https_only:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 2706
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: 08569bf0-c3f6-433c-b671-9c33be0d36c7
+    type: regular
+    task:
+      id: 08569bf0-c3f6-433c-b671-9c33be0d36c7
+      version: -1
+      name: Get FunctionApp asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "19"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 3206
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 4f422685-c548-4230-af2e-3c25f8533b0a
+    type: regular
+    task:
+      id: 4f422685-c548-4230-af2e-3c25f8533b0a
+      version: -1
+      name: az functionapp identity assign
+      description: Updates an Azure Web App.
+      script: AZURE|||azure-webapp-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "18"
+    scriptarguments:
+      identity_type:
+        simple: SystemAssigned
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3408
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "18":
+    id: "18"
+    taskid: 59bf1884-e826-4250-827b-c987a9daf05e
+    type: regular
+    task:
+      id: 59bf1884-e826-4250-827b-c987a9daf05e
+      version: -1
+      name: az functionapp update
+      description: Updates an Azure Web App.
+      script: AZURE|||azure-webapp-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "20"
+    scriptarguments:
+      client_cert_enabled:
+        simple: "true"
+      https_only:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3511
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "19":
+    id: "19"
+    taskid: 68fc36db-eb6c-407b-99ff-a26d110514b0
+    type: regular
+    task:
+      id: 68fc36db-eb6c-407b-99ff-a26d110514b0
+      version: -1
+      name: az functionapp config set
+      description: Updates the configuration settings of an existing Azure Web App.
+      script: AZURE|||azure-webapp-config-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      http20_enabled:
+        simple: "true"
+      min_tls_version:
+        simple: "1.2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3303
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "20":
+    id: "20"
+    taskid: dc84966a-37cd-456e-963c-93183c9e95e7
+    type: regular
+    task:
+      id: dc84966a-37cd-456e-963c-93183c9e95e7
+      version: -1
+      name: Get LogicApp asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "21"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 3925
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "21":
+    id: "21"
+    taskid: 43dab6cc-d2e5-43c3-b380-25df1f56d27e
+    type: regular
+    task:
+      id: 43dab6cc-d2e5-43c3-b380-25df1f56d27e
+      version: -1
+      name: az logicapp update
+      description: Updates an Azure Web App.
+      script: AZURE|||azure-webapp-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "23"
+    scriptarguments:
+      https_only:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4019
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "22":
+    id: "22"
+    taskid: a7e572a5-a528-4baa-b543-012cf03e441a
+    type: regular
+    task:
+      id: a7e572a5-a528-4baa-b543-012cf03e441a
+      version: -1
+      name: az resource update
+      description: Updates a specific account storage.
+      script: AZURE|||azure-storage-account-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "4"
+    scriptarguments:
+      allow_blob_public_access:
+        simple: "false"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 664
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "23":
+    id: "23"
+    taskid: 5cf19d3a-f546-4906-b2cd-e4c48252b63e
+    type: regular
+    task:
+      id: 5cf19d3a-f546-4906-b2cd-e4c48252b63e
+      version: -1
+      name: Get MySQL flexible server asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "24"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4373
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "24":
+    id: "24"
+    taskid: c885017e-f143-4749-9756-c591a5e76382
+    type: regular
+    task:
+      id: c885017e-f143-4749-9756-c591a5e76382
+      version: -1
+      name: az mysql flexible-server parameter set
+      description: Updates a configuration of a server.
+      script: AZURE|||azure-mysql-flexible-server-param-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "25"
+    scriptarguments:
+      configuration_name:
+        simple: require_secure_transport
+      source:
+        simple: user-override
+      value:
+        simple: "on"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4467
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "25":
+    id: "25"
+    taskid: 48c60541-3fd7-4700-b226-0e1847f1c58f
+    type: regular
+    task:
+      id: 48c60541-3fd7-4700-b226-0e1847f1c58f
+      version: -1
+      name: Get Log Profile asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "26"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 4905
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "26":
+    id: "26"
+    taskid: 60e1ada0-7e24-4eaa-80ec-e33c429211bd
+    type: regular
+    task:
+      id: 60e1ada0-7e24-4eaa-80ec-e33c429211bd
+      version: -1
+      name: az monitor log-profiles update
+      description: Updates a log profile in Azure Monitoring REST API.
+      script: AZURE|||azure-monitor-log-profile-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "27"
+    scriptarguments:
+      location:
+        simple: global
+      retention_policy_days:
+        simple: "365"
+      retention_policy_enabled:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5005
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "27":
+    id: "27"
+    taskid: d0022d0f-f7a4-49c9-8130-7ffcb05de056
+    type: regular
+    task:
+      id: d0022d0f-f7a4-49c9-8130-7ffcb05de056
+      version: -1
+      name: Get Container Registry asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "28"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 5494
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "28":
+    id: "28"
+    taskid: bbf22b4a-b64d-4e2e-909a-04cbcac7775f
+    type: regular
+    task:
+      id: bbf22b4a-b64d-4e2e-909a-04cbcac7775f
+      version: -1
+      name: az acr update
+      description: Updates a container registry.
+      script: AZURE|||azure-acr-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "29"
+    scriptarguments:
+      allow_exports:
+        simple: disabled
+      anonymous_pull_enabled:
+        simple: "false"
+      public_network_access:
+        simple: disabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 5591
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "29":
+    id: "29"
+    taskid: 75acbd91-a34f-47f9-81f0-8c1c97ca8046
+    type: regular
+    task:
+      id: 75acbd91-a34f-47f9-81f0-8c1c97ca8046
+      version: -1
+      name: az acr config authentication-as-arm update
+      description: Updates a container registry.
+      script: AZURE|||azure-acr-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "30"
+    scriptarguments:
+      authentication_as_arm_policy:
+        simple: disabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 5689
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "30":
+    id: "30"
+    taskid: 3de9dccc-8cb1-4231-920d-526e4ae0ae1a
+    type: regular
+    task:
+      id: 3de9dccc-8cb1-4231-920d-526e4ae0ae1a
+      version: -1
+      name: Get Key Vault asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "31"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6051
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "31":
+    id: "31"
+    taskid: eae43fa5-d01c-4473-90f4-ccdbe011e285
+    type: regular
+    task:
+      id: eae43fa5-d01c-4473-90f4-ccdbe011e285
+      version: -1
+      name: az keyvault update
+      description: Updates a key vault in the specified subscription.
+      script: AZURE|||azure-key-vault-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "32"
+    scriptarguments:
+      enable_purge_protection:
+        simple: "true"
+      enable_soft_delete:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6149
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "32":
+    id: "32"
+    taskid: 2d8a5199-1a8f-4b36-aa57-913fc152aa18
+    type: regular
+    task:
+      id: 2d8a5199-1a8f-4b36-aa57-913fc152aa18
+      version: -1
+      name: Get SQL DB asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "33"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6563
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "33":
+    id: "33"
+    taskid: 1ab6f227-0092-459d-9c6c-9eef5e2bffdb
+    type: regular
+    task:
+      id: 1ab6f227-0092-459d-9c6c-9eef5e2bffdb
+      version: -1
+      name: az sql db threat-policy update
+      description: Updates the database's threat detection policy.
+      script: AZURE|||azure-sql-db-threat-policy-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "34"
+    scriptarguments:
+      email_account_admins_enabled:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6659
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "34":
+    id: "34"
+    taskid: 9b7fabe3-f97e-4b62-8727-6945ad2c7eeb
+    type: regular
+    task:
+      id: 9b7fabe3-f97e-4b62-8727-6945ad2c7eeb
+      version: -1
+      name: az sql db tde set
+      description: Updates a logical database's transparent data encryption configuration.
+      script: AZURE|||azure-sql-db-transparent-data-encryption-set
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "35"
+    scriptarguments:
+      state:
+        simple: Enabled
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 6754
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "35":
+    id: "35"
+    taskid: 8f2d682e-ccc4-4176-86c9-23cfcc075e2e
+    type: regular
+    task:
+      id: 8f2d682e-ccc4-4176-86c9-23cfcc075e2e
+      version: -1
+      name: Get CosmosDB asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "36"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7214
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "36":
+    id: "36"
+    taskid: a48b0c8e-8fab-4eda-bc61-41debed70ba5
+    type: regular
+    task:
+      id: a48b0c8e-8fab-4eda-bc61-41debed70ba5
+      version: -1
+      name: az cosmosdb update
+      description: Updates the properties of an existing Azure Cosmos DB database
+        account.
+      script: AZURE|||azure-cosmos-db-update
+      type: regular
+      iscommand: true
+      brand: AZURE
+    scriptarguments:
+      disable_key_based_metadata_write_access:
+        simple: "true"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 7308
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 7328,
+        "width": 382,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
