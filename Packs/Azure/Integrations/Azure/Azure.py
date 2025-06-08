@@ -709,7 +709,7 @@ and resource group "{resource_group_name}" was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.KeyVault/vaults/{vault_name}"
         )
-
+        demisto.debug("Updating key vault.")
         return self.http_request("PATCH", full_url=full_url, json_data=data, params=params)
 
 
@@ -757,7 +757,7 @@ and resource group "{resource_group_name}" was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
-
+        demisto.debug("Updating SQL DB threat policy.")
         return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
     
     
@@ -785,7 +785,7 @@ and resource group "{resource_group_name}" was not found.')
             f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
             f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/transparentDataEncryption/current"
         )
-
+        demisto.debug("Setting SQL DB Transparent Data Encryption state.")
         return self.http_request("PUT", full_url=full_url, json_data=data, params=params)
     
     
@@ -1596,6 +1596,7 @@ def sql_db_threat_policy_update_command(
     )
     if isinstance(current_db, str):  # if there is 404, an error message will return
         return CommandResults(readable_output=current_db)
+    
     current_db["properties"]["emailAccountAdmins"] = email_account_admins or \
         current_db.get("properties", {}).get("emailAccountAdmins")
 
