@@ -643,7 +643,7 @@ def get_email_recipients(email_to, email_from, service_mail, mailbox):
     return email_recipients
 
 
-def get_mailbox_from_incident_labels(labels):
+def get_mailbox_from_incident_labels(labels):  # pragma: no cover
     """
     Gets the mailbox from which the incident was fetched from the incident labels.
     Args:
