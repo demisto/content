@@ -673,7 +673,66 @@
                     "simple": "fine_score"
                 }
             }
-        }
+        },
+        "CrowdStrike Falcon Third Party Detection": {
+			"dontMapEventToLabels": false,
+			"internalMapping": {
+				"Behaviour Tactic": {
+					"simple": "tactic"
+				},
+				"CrowdStrike Falcon Crawled Timestamp": {
+					"simple": "crawled_timestamp"
+				},
+				"CrowdStrike Falcon Detection Type": {
+					"simple": "type"
+				},
+				"CrowdStrike Falcon Pattern ID": {
+					"simple": "pattern_id"
+				},
+				"Display Name": {
+					"simple": "display_name"
+				},
+				"Domain Name": {
+					"simple": "data_domains"
+				},
+				"Last Update Time": {
+					"simple": "updated_timestamp"
+				},
+				"Source IP": {
+					"simple": "source_endpoint_address_ip4"
+				},
+				"State": {
+					"simple": "status"
+				},
+				"Tags": {
+					"simple": "tags"
+				},
+				"Threat Name": {
+					"simple": "name"
+				},
+				"User SID": {
+					"simple": "user_sid"
+				},
+				"Vendor Product": {
+					"simple": "product"
+				},
+				"occurred": {
+					"simple": "created_timestamp"
+				},
+				"severity": {
+					"simple": "severity"
+				},
+                "User Id": {
+                    "simple": "user_id"
+                },
+                "Username": {
+                    "simple": "user_name"
+                },
+                "Source IPV6": {
+                    "simple": "source_endpoint_address_ip6"
+                }
+			}
+		}
     },
     "name": "Legacy CrowdStrike Falcon-Mapper",
     "type": "mapping-incoming",
