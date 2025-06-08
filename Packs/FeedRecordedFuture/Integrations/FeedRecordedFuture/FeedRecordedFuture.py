@@ -499,6 +499,8 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "recordedfutureevidencedetails": lower_case_evidence_details_keys,
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
+                        "recordedfutureriskrulecount": raw_json["RiskString"],
+                        "recordedfuturethreatassesment": raw_json["Criticality Label"]
                     },
                     "score": score,
                 }
