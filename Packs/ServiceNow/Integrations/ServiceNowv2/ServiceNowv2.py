@@ -1552,7 +1552,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
     if is_quick_action:
-        entry_context["MirrorObject"] = mirror_obj.to_context()
+        demisto.results(CommandResults(extended_payload={'MirrorObject': mirror_obj.to_context()}).to_context())
 
     return human_readable, entry_context, result, True
 

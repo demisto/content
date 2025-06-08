@@ -2353,7 +2353,7 @@ def create_issue_command(
 
     if is_quick_action:
         mirror_results = CommandResults(
-            outputs_prefix="MirrorObject", outputs=mirror_obj.to_context(), outputs_key_field="ticket_id"
+            extended_payload={'MirrorObject': mirror_obj.to_context()}
         )
         results.append(mirror_results)
 

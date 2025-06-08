@@ -7318,6 +7318,9 @@ class CommandResults:
     :type scheduled_command: ``ScheduledCommand``
     :param scheduled_command: manages the way the command should be polled.
 
+    :type extended_payload: ``dict``
+    :param extended_payload: (Optional) A dictionary representing the contents of ExtendedPayload for synchronization.
+
     :type execution_metrics: ``ExecutionMetrics``
     :param execution_metrics: contains metric data about a command's execution
 
@@ -7351,9 +7354,10 @@ class CommandResults:
                  relationships=None,
                  entry_type=None,
                  content_format=None,
+                 extended_payload=None,
                  execution_metrics=None,
                  replace_existing=False):
-        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, List[Any], bool) -> None  # noqa: E501
+        # type: (str, object, object, list, str, object, IndicatorsTimeline, Common.Indicator, bool, bool, List[str], ScheduledCommand, list, int, str, dict, List[Any], bool) -> None  # noqa: E501
         if raw_response is None:
             raw_response = outputs
         if outputs is not None:
@@ -7394,6 +7398,7 @@ class CommandResults:
         self.tags = tags
         self.scheduled_command = scheduled_command
         self.relationships = relationships
+        self.extended_payload = extended_payload
         self.execution_metrics = execution_metrics
         self.replace_existing = replace_existing
 
@@ -7489,6 +7494,10 @@ class CommandResults:
             'Note': mark_as_note,
             'Relationships': relationships
         }
+
+        if self.extended_payload:
+            return_entry['ExtendedPayload'] = self.mirror_object
+
         if tags:
             # This is for backward compatibility reasons
             return_entry['Tags'] = tags
