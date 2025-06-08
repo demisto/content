@@ -1,9 +1,9 @@
 category: Cloud Services
 description: The AWS Integration automates management and security configurations across core AWS services—including S3, EC2, EKS, RDS, IAM, and related resources.
-display: AWS - DEV
-name: AWS - DEV
+display: AWS
+name: AWS
 commonfields:
-  id: AWS - DEV
+  id: AWS
   version: -1
 configuration:
 - display: Main Role
