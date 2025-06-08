@@ -22,9 +22,6 @@ args:
   - name: query_name
     required: true
     description: The name to use for the query results. Find the query results under this name in the War Room context.
-  - name: query_id
-    hidden: true
-    description: The internal ID for the query. It cannot be set manually.
   - name: interval_in_seconds
     defaultValue: '30'
     description: The interval in seconds for checking query completion.
