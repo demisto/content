@@ -25,7 +25,7 @@ sendgrid = "^6.11"
 slack_sdk = "^3.31.0"
 
 [tool.poetry.group.dev.dependencies]
-demisto-sdk = "1.38.0" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
+demisto-sdk = "1.38.2" # Only affects GitHub Actions. To control the SDK version elsewhere, modify the infra repo's pyproject file
 pytest = ">=7.1.2"
 requests-mock = ">=1.9.3"
 pytest-mock = ">=3.7.0"
@@ -179,8 +179,6 @@ select = [
     "G101", # logging-extra-attr-clash
     "G201", # logging-exc-info
     "G202", # logging-redundant-exc-info
-
-    "ISC001", # single-line-implicit-string-concatenation
 
     "N804", # invalid-first-argument-name-for-class-method
     "N805", # invalid-first-argument-name-for-method

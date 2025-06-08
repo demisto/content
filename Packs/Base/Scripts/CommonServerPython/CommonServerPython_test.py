@@ -9758,6 +9758,10 @@ def test_create_clickable_test_wrong_text_value():
         "GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: JWT <XX_REPLACED>\\r\\n"
     ),
     (
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: LOG token:signature=\\r\\n'",
+        "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\nAuthorization: LOG <XX_REPLACED>\\r\\n'"
+    ),
+    (
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'",
         str("send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\n'")
     ),
@@ -9773,7 +9777,7 @@ def test_create_clickable_test_wrong_text_value():
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: client\\r\\n'",
         "send: b'GET /api/v1/users HTTP/1.1\\r\\nHost: example.com\\r\\client_name: <XX_REPLACED>\\r\\n'"
     ),],
-    ids=["Bearer", "Cookie", "Authorization", "Bearer", "JWT", "No change", "Key", "credential", "client"],)
+    ids=["Bearer", "Cookie", "Authorization", "Bearer", "JWT", "LOG prefix", "No change", "Key", "credential", "client"],)
 def test_censor_request_logs(request_log, expected_output):
     """
     Given:
@@ -9783,6 +9787,8 @@ def test_censor_request_logs(request_log, expected_output):
         case 3: A request log with a sensitive data under the 'Authorization' header, but with no 'Bearer' prefix.
         case 4: A request log with a sensitive data under the 'Authorization' header, but with no 'send b' prefix at the beginning.
         case 5: A request log with no sensitive data.
+        case 6: A request log with a sensitive data under the 'Authorization' header, with a "LOG" prefix (which used in cases 
+                like HMAC signature authentication).
     When:
         Running censor_request_logs function.
     Then:

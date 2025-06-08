@@ -150,7 +150,7 @@ def get_time_field_from_event_to_dt(event: dict[str, Any], timestamp_field_confi
     timestamp: str | None = dict_safe_get(event, timestamp_field_config.timestamp_field_name)  # noqa
     if timestamp is None:
         raise DemistoException(f"Timestamp field: {timestamp_field_config.timestamp_field_name} not found in event")
-    timestamp_str: str = iso8601_to_datetime_str(timestamp)
+    timestamp_str: str = iso8601_to_datetime_str(str(timestamp))
     # Convert the timestamp to the desired format.
     return timestamp_format_to_datetime(timestamp_str, timestamp_field_config.timestamp_format)
 

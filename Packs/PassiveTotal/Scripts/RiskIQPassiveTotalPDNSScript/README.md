@@ -1,10 +1,12 @@
 Enhancement script to enrich PDNS information for Domain and IP type of indicators.
 It can be set by following these steps:
- - Settings > ADVANCED > Indicator Type
- - Edit Domain and IP Indicator one by one 
- - Add this script into Enhancement Scripts
- 
+
+- Settings > ADVANCED > Indicator Type
+- Edit Domain and IP Indicator one by one
+- Add this script into Enhancement Scripts
+
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -14,11 +16,13 @@ It can be set by following these steps:
 | Cortex XSOAR Version | 5.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
-* pt-get-pdns-details
+- pt-get-pdns-details
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -26,13 +30,16 @@ This script uses the following commands and scripts.
 | indicator_value | domain or IP indicator value that need to enrich |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
 
 ## Script Example
+
 ```!RiskIQPassiveTotalPDNSScript indicator_value="www.furth.com.ar"```
 
 ## Context Example
+
 ```
 {
     "DBotScore": [
@@ -143,7 +150,9 @@ There are no outputs for this script.
 ## Human Readable Output
 
 >### Total Retrieved Record(s): 5
+>
 >### PDNS detail(s)
+>
 >|Resolve|Resolve Type|Record Type|Collected (GMT)|First Seen (GMT)|Last Seen (GMT)|Source|Record Hash|
 >|---|---|---|---|---|---|---|---|
 >| furth.com.ar | domain | CNAME | 2020-06-17 12:26:33 | 2010-12-15 09:10:10 | 2020-06-17 05:26:33 | riskiq, pingly | abf781b2484ea79d521cffb0745b71319d4db1158f71bb019b41077f8e55b035 |

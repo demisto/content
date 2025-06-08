@@ -240,8 +240,8 @@ Permissions: - User.ReadWrite.All (Delegated & Application)
 ### msgraph-user-get
 
 ***
-Retrieves the properties and relationships of a user object. For more information, visit: https://docs.microsoft.com/en-us/graph/api/user-update?view=graph-rest-1.0).
-Permissions: - User.Read (Delegated) - User.Read.All (Application)
+Retrieves the properties and relationships of a user object. For more information, visit: https://learn.microsoft.com/en-us/graph/api/user-get?view=graph-rest-1.0&tabs=http.
+Permissions: - User.Read (Delegated) - User.Read.All (Application).
 
 #### Base Command
 
@@ -251,8 +251,8 @@ Permissions: - User.Read (Delegated) - User.Read.All (Application)
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user | User ID or userPrincipalName. | Required |
-| properties |  A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone" . | Optional |
+| user | User ID or userPrincipalName. | Required | 
+| properties | A CSV list of properties by which to filter the results, for example: "displayName,jobTitle,mobilePhone". For the list of possible properties and the relevant permissions, if needed, visit: https://learn.microsoft.com/en-us/graph/api/resources/user?view=graph-rest-1.0#properties. | Optional | 
 
 #### Context Output
 
