@@ -176,7 +176,6 @@ class Client(BaseClient):
         if start_time >= end_time:
             demisto.debug("Start time is bigger than or equal to end time")
             return []
-
         params = {
             "startTime": start_time.strftime(DATE_FORMAT)[:-3] + start_time.strftime("%z"),
             "endTime": end_time.strftime(DATE_FORMAT)[:-3] + end_time.strftime("%z"),
