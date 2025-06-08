@@ -1,4 +1,5 @@
 Designed to assist security professionals with security investigations, threat hunting, and anomaly detection, leveraging Anthropic Claude's natural language conversational capabilities.
+
 ## Configure Anthropic Claude on Cortex XSOAR
 
 1. Navigate to **Settings** > **Integrations** > **Servers & Services**.
@@ -37,17 +38,17 @@ Send a plain message to the selected Claude model and receive the generated resp
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| message | The message that the Claude model will respond to. | Required | 
-| reset_conversation_history | Whether to keep previously sent messages in a conversation context or start a new conversation. Possible values are: yes, no. | Optional | 
-| max_tokens | The maximum number of tokens that can be generated for the response. | Optional | 
-| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional | 
-| top_p | (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional | 
+| message | The message that the Claude model will respond to. | Required |
+| reset_conversation_history | Whether to keep previously sent messages in a conversation context or start a new conversation. Possible values are: yes, no. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for the response. | Optional |
+| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional |
+| top_p | (0-1) Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. |
 
 ### claude-check-email-header
 
@@ -62,17 +63,17 @@ Checking email header for possible security issues. It is possible to keep askin
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry ID of an uploaded '.eml' file. | Required | 
-| additional_instructions | Additional instructions or security issue to focus on. | Optional | 
-| max_tokens | The maximum number of tokens that can be generated for the response. | Optional | 
-| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional | 
-| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional | 
+| entry_id | Entry ID of an uploaded '.eml' file. | Required |
+| additional_instructions | Additional instructions or security issue to focus on. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for the response. | Optional |
+| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional |
+| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. |
 
 ### claude-check-email-body
 
@@ -87,17 +88,17 @@ Check email body for possible security issues. It is possible to keep asking que
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entry_id | Entry ID of an uploaded '.eml' file. | Required | 
-| additional_instructions | Additional instructions or security issue to focus on. | Optional | 
-| max_tokens | The maximum number of tokens that can be generated for the response. | Optional | 
-| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional | 
-| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional | 
+| entry_id | Entry ID of an uploaded '.eml' file. | Required |
+| additional_instructions | Additional instructions or security issue to focus on. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for the response. | Optional |
+| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional |
+| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. |
 
 ### claude-create-soc-email-template
 
@@ -112,13 +113,13 @@ Create an email template out of the conversation context to be sent from the SOC
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| additional_instructions | Additional instructions or security issue to focus on. | Optional | 
-| max_tokens | The maximum number of tokens that can be generated for the response. | Optional | 
-| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional | 
-| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional | 
+| additional_instructions | Additional instructions or security issue to focus on. | Optional |
+| max_tokens | The maximum number of tokens that can be generated for the response. | Optional |
+| temperature | Sets the randomness in responses. Lower values (closer to 0) produce more deterministic and consistent outputs, while higher values (up to 1) increase randomness and variety. | Optional |
+| top_p | Enables nucleus sampling where only the top 'p' percent of probable tokens are considered. Lower values result in more focused outputs, while higher values increase diversity. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. | 
+| AnthropicClaude.Conversation | Dictionary | Entire conversation \(if not reset\) between the user and the Claude model. |

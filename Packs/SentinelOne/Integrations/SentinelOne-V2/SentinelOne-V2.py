@@ -4152,7 +4152,6 @@ def main():
         "commands_without_params": {
             "get-mapping-fields": get_mapping_fields_command,
         },
-
     }
 
     """ COMMANDS MANAGER / SWITCH PANEL """

@@ -1732,9 +1732,7 @@ class EntryBuilder:
         ):
             return extra_context, entry
         else:
-            return extra_context, build_entry(
-                self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset
-            )
+            return extra_context, build_entry(self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset)
 
 
 """ MAIN FUNCTION """

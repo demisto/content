@@ -21,15 +21,16 @@ This pack should only be installed after installing the Azure Logs pack.
 | [AKSAudit](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aksaudit)                             | kube-audit                 | Kubernetes Audit                 |
 | [AKSAuditAdmin](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/aksauditadmin)                       | kube-audit-admin              | Kubernetes Audit Admin Logs              |
 | [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | kube-apiserver                  | Kubernetes API Server                  |
-| [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | kube-controller-manager                  | Kubernetes Controller Manager                  | 
+| [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | kube-controller-manager                  | Kubernetes Controller Manager                  |
 | [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | kube-scheduler                  | Kubernetes Scheduler                  |
 | [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | cloud-controller-manager                 | Kubernetes Cloud Controller Manager                  |
 | [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | cluster-autoscaler                 | Kubernetes Cluster Autoscaler                  |
-| [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | guard                 | Guard                  | 
+| [AKSControlPlane](https://learn.microsoft.com/en-us/azure/azure-monitor/reference/tables/akscontrolplane)                               | guard                 | Guard                  |
 
 ### Timestamp Ingestion
 
 For *msft_azure_aks_raw*, timestamp ingestion is according to one of the following fields;
+
 * requestreceivedtime
 * TimeGenerated
 * properties.log.requestReceivedTimestamp

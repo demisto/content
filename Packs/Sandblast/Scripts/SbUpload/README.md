@@ -9,7 +9,6 @@ Uses the Upload API to have a client application request that Check Point Threat
 | Script Type | python |
 | Tags | sandblast |
 
-
 ## Dependencies
 
 ---

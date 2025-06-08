@@ -413,53 +413,53 @@
 <div class="cl-preview-section">
 <pre>{
     "DBotScore": {
-        "Vendor": "CrowdStrike Falcon Sandbox", 
-        "Indicator": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355", 
-        "Score": 3, 
+        "Vendor": "CrowdStrike Falcon Sandbox",
+        "Indicator": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355",
+        "Score": 3,
         "Type": "hash"
-    }, 
+    },
     "File": [
         {
-            "compromised_hosts": [], 
-            "vxfamily": "Trojan.Generic", 
-            "environmentId": 100, 
-            "JobID": "5ae5ae527ca3e1156459b9f3", 
-            "classification_tags": [], 
-            "total_processes": 1, 
-            "SHA256": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355", 
-            "size": 38400, 
-            "submitname": "Keygen.exe", 
-            "threat_level": 2, 
-            "target_url": null, 
-            "error_type": null, 
-            "state": "SUCCESS", 
-            "mitre_attcks": [], 
-            "certificates": [], 
-            "verdict": "malicious", 
-            "sha512": "d771eb56097a771b9faab47b3d32007a8a5c2c06c3fa2c590d48d7000bf120f69d41340490d61564cab7f2e9135e3f9465a62b69f8e922602f946cff4a76fc13", 
-            "extracted_files": [], 
-            "isurlanalysis": false, 
-            "environmentDescription": "Windows 7 32 bit", 
-            "SHA1": "f0fe4ae74cfb7be57c99551b75f00d66915e6900", 
-            "hash": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355", 
-            "analysis_start_time": "2018-04-29T13:42:28+00:00", 
-            "tags": [], 
-            "imphash": "610be5e05d19476fe9370d6dd1347f2a", 
-            "total_network_connections": 0, 
-            "av_detect": 48, 
-            "threatscore": 100, 
-            "total_signatures": 18, 
-            "error_origin": null, 
-            "ssdeep": "768:IXD4nBg7xSUrIzAx9BNVk3aEKmICkm2oxAlGrPbKjol0qcDg2p9LjLJvN:I6W8yIzAx9r+UkzaG6Y0qcz9nVvN", 
-            "MD5": "6ba83f1bf6617dab7990c495cd67dcf6", 
-            "processes": [], 
-            "type": "PE32 executable (GUI) Intel 80386, for MS Windows, UPX compressed", 
-            "file_metadata": null, 
-            "hosts": [], 
-            "isinteresting": false, 
-            "domains": [], 
+            "compromised_hosts": [],
+            "vxfamily": "Trojan.Generic",
+            "environmentId": 100,
+            "JobID": "5ae5ae527ca3e1156459b9f3",
+            "classification_tags": [],
+            "total_processes": 1,
+            "SHA256": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355",
+            "size": 38400,
+            "submitname": "Keygen.exe",
+            "threat_level": 2,
+            "target_url": null,
+            "error_type": null,
+            "state": "SUCCESS",
+            "mitre_attcks": [],
+            "certificates": [],
+            "verdict": "malicious",
+            "sha512": "d771eb56097a771b9faab47b3d32007a8a5c2c06c3fa2c590d48d7000bf120f69d41340490d61564cab7f2e9135e3f9465a62b69f8e922602f946cff4a76fc13",
+            "extracted_files": [],
+            "isurlanalysis": false,
+            "environmentDescription": "Windows 7 32 bit",
+            "SHA1": "f0fe4ae74cfb7be57c99551b75f00d66915e6900",
+            "hash": "59e17f98cef7dd1bf4fb791eb1dcd0cea6dd870b6e36af7c37bd732c84d43355",
+            "analysis_start_time": "2018-04-29T13:42:28+00:00",
+            "tags": [],
+            "imphash": "610be5e05d19476fe9370d6dd1347f2a",
+            "total_network_connections": 0,
+            "av_detect": 48,
+            "threatscore": 100,
+            "total_signatures": 18,
+            "error_origin": null,
+            "ssdeep": "768:IXD4nBg7xSUrIzAx9BNVk3aEKmICkm2oxAlGrPbKjol0qcDg2p9LjLJvN:I6W8yIzAx9r+UkzaG6Y0qcz9nVvN",
+            "MD5": "6ba83f1bf6617dab7990c495cd67dcf6",
+            "processes": [],
+            "type": "PE32 executable (GUI) Intel 80386, for MS Windows, UPX compressed",
+            "file_metadata": null,
+            "hosts": [],
+            "isinteresting": false,
+            "domains": [],
             "type_short": [
-                "peexe", 
+                "peexe",
                 "executable"
             ]
         }
@@ -723,105 +723,105 @@
 <pre>{
     "VX.Environment": [
         {
-            "VMs_total": 78, 
-            "description": "Windows 7 32 bit", 
-            "VMs_invalid": 3, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 100, 
-            "VMs_busy": 3, 
+            "VMs_total": 78,
+            "description": "Windows 7 32 bit",
+            "VMs_invalid": 3,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 100,
+            "VMs_busy": 3,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 77, 
-            "description": "Windows 7 32 bit (HWP Support)", 
-            "VMs_invalid": 3, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 110, 
-            "VMs_busy": 3, 
+            "VMs_total": 77,
+            "description": "Windows 7 32 bit (HWP Support)",
+            "VMs_invalid": 3,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 110,
+            "VMs_busy": 3,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 86, 
-            "description": "Windows 7 64 bit", 
-            "VMs_invalid": 0, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 120, 
-            "VMs_busy": 4, 
+            "VMs_total": 86,
+            "description": "Windows 7 64 bit",
+            "VMs_invalid": 0,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 120,
+            "VMs_busy": 4,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 18, 
-            "description": "Linux (Ubuntu 16.04, 64 bit)", 
-            "VMs_invalid": 0, 
-            "groupicon": "linux", 
-            "architecture": "WINDOWS", 
-            "ID": 300, 
-            "VMs_busy": 0, 
+            "VMs_total": 18,
+            "description": "Linux (Ubuntu 16.04, 64 bit)",
+            "VMs_invalid": 0,
+            "groupicon": "linux",
+            "architecture": "WINDOWS",
+            "ID": 300,
+            "VMs_busy": 0,
             "analysisMode": "USERMODE"
-        }, 
+        },
         {
-            "VMs_total": 0, 
-            "description": "Android Static Analysis", 
-            "VMs_invalid": 0, 
-            "groupicon": "android", 
-            "architecture": "ANDROID", 
-            "ID": 200, 
-            "VMs_busy": 0, 
+            "VMs_total": 0,
+            "description": "Android Static Analysis",
+            "VMs_invalid": 0,
+            "groupicon": "android",
+            "architecture": "ANDROID",
+            "ID": 200,
+            "VMs_busy": 0,
             "analysisMode": "USERMODE"
         }
-    ], 
+    ],
     "CrowdStrike.Environment": [
         {
-            "VMs_total": 78, 
-            "description": "Windows 7 32 bit", 
-            "VMs_invalid": 3, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 100, 
-            "VMs_busy": 3, 
+            "VMs_total": 78,
+            "description": "Windows 7 32 bit",
+            "VMs_invalid": 3,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 100,
+            "VMs_busy": 3,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 77, 
-            "description": "Windows 7 32 bit (HWP Support)", 
-            "VMs_invalid": 3, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 110, 
-            "VMs_busy": 3, 
+            "VMs_total": 77,
+            "description": "Windows 7 32 bit (HWP Support)",
+            "VMs_invalid": 3,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 110,
+            "VMs_busy": 3,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 86, 
-            "description": "Windows 7 64 bit", 
-            "VMs_invalid": 0, 
-            "groupicon": "windows", 
-            "architecture": "WINDOWS", 
-            "ID": 120, 
-            "VMs_busy": 4, 
+            "VMs_total": 86,
+            "description": "Windows 7 64 bit",
+            "VMs_invalid": 0,
+            "groupicon": "windows",
+            "architecture": "WINDOWS",
+            "ID": 120,
+            "VMs_busy": 4,
             "analysisMode": "KERNELMODE"
-        }, 
+        },
         {
-            "VMs_total": 18, 
-            "description": "Linux (Ubuntu 16.04, 64 bit)", 
-            "VMs_invalid": 0, 
-            "groupicon": "linux", 
-            "architecture": "WINDOWS", 
-            "ID": 300, 
-            "VMs_busy": 0, 
+            "VMs_total": 18,
+            "description": "Linux (Ubuntu 16.04, 64 bit)",
+            "VMs_invalid": 0,
+            "groupicon": "linux",
+            "architecture": "WINDOWS",
+            "ID": 300,
+            "VMs_busy": 0,
             "analysisMode": "USERMODE"
-        }, 
+        },
         {
-            "VMs_total": 0, 
-            "description": "Android Static Analysis", 
-            "VMs_invalid": 0, 
-            "groupicon": "android", 
-            "architecture": "ANDROID", 
-            "ID": 200, 
-            "VMs_busy": 0, 
+            "VMs_total": 0,
+            "description": "Android Static Analysis",
+            "VMs_invalid": 0,
+            "groupicon": "android",
+            "architecture": "ANDROID",
+            "ID": 200,
+            "VMs_busy": 0,
             "analysisMode": "USERMODE"
         }
     ]
@@ -1045,9 +1045,9 @@
 <div class="cl-preview-section">
 <pre>{
     "CrowdStrike": {
-        "EnvironmentID": 100, 
+        "EnvironmentID": 100,
         "JobID": "5c98a5860388384f701662c1"
-    }, 
+    },
     "File": {
         "SHA256": "955017fdfeb29962d42f2273c4c9535a0da5bd4b4a430b7c9f7ad03e5a42b7a0"
     }
@@ -1423,7 +1423,7 @@
 </div>
 <div class="cl-preview-section">
 <pre>{
-    "VX.Search": [], 
+    "VX.Search": [],
     "File": []
 }
 </pre>
@@ -1905,11 +1905,11 @@
 <div class="cl-preview-section">
 <pre>{
     "CrowdStrike": {
-        "EnvironmentID": 100, 
+        "EnvironmentID": 100,
         "JobID": "58c1c211aac2eda9503bc31f"
-    }, 
+    },
     "File": {
-        "SHA256": "d2edef8e43054be586d17ddcc761e7a1f4a6946c39e653d7e095a826ef34b6a1", 
+        "SHA256": "d2edef8e43054be586d17ddcc761e7a1f4a6946c39e653d7e095a826ef34b6a1",
         "hash": "d2edef8e43054be586d17ddcc761e7a1f4a6946c39e653d7e095a826ef34b6a1"
     }
 }
@@ -2273,9 +2273,9 @@
 <div class="cl-preview-section">
 <pre>{
     "CrowdStrike": {
-        "EnvironmentID": 100, 
+        "EnvironmentID": 100,
         "JobID": "5c98a51e028838377b1662c0"
-    }, 
+    },
     "File": {
         "SHA256": "f317cc246bc0fe55db49a8eb40acab49d9689f3ea764d19abbc464008f01b6d1"
     }

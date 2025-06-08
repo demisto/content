@@ -1326,7 +1326,7 @@ def redactIP(ip):
 def redactemail(email):
     itemlist = email.split("@")
     domain = itemlist[1].split(".")
-    newdomain = ".".join(domain[0: len(domain) - 1]) + "[.]" + str(domain[-1])
+    newdomain = ".".join(domain[0 : len(domain) - 1]) + "[.]" + str(domain[-1])
     newemail = itemlist[0] + "[@]" + str(newdomain)
     return newemail
 

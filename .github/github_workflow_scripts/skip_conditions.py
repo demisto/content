@@ -17,13 +17,13 @@ PACK_METADATA_FILE = "pack_metadata.json"
 RELEASE_NOTES_DIR = "ReleaseNotes"
 LAST_SUITABLE_PR_UPDATE_TIME_DAYS = 14
 t = Terminal()
-FAILED_TO_MERGE = 'Failed to merge'
+FAILED_TO_MERGE = "Failed to merge"
 
 XSOAR_SUPPORT = "xsoar"
 PARTNER_SUPPORT = "partner"
 COMMUNITY_SUPPORT = "community"
-CURRENT_VERSION = 'currentVersion'
-SUPPORT = 'support'
+CURRENT_VERSION = "currentVersion"
+SUPPORT = "support"
 
 
 class UpdateType(str, Enum):
@@ -35,21 +35,24 @@ class UpdateType(str, Enum):
 
 
 class SkipReason:
-    """ Reasons to skip update release notes"""
-    LAST_MODIFIED_TIME = 'The PR was not updated in last {} days. PR last update time: {}'
+    """Reasons to skip update release notes"""
+
+    LAST_MODIFIED_TIME = "The PR was not updated in last {} days. PR last update time: {}"
     NOT_UPDATE_RN_LABEL_EXIST = 'Label "{}" exist in this PR. PR labels: {}.'
-    NO_NEW_RELEASE_NOTES = 'No new files were detected on {} directory.'
-    CONFLICTING_FILES = 'The PR has conflicts not only at {} and {}. The conflicting files are: {}.'
-    NO_CONFLICTING_FILES = 'No conflicts were detected.'
-    NOT_ALLOW_SUPPORTED_TYPE_PACK = 'The pack is not {} supported. Pack {} support type is: {}.'
-    DIFFERENT_MAJOR_VERSION = 'Pack: {} major version different in origin {} and at the branch {}.'
-    EXCEED_MAX_ALLOWED_VERSION = 'Pack: {} has not allowed version part {}. Versions: origin {}, branch {}.'
-    MORE_THAN_ONE_RN = 'Pack: {} has more than one added rn {}.'
-    DIFFERENT_RN_METADATA_VERSIONS = 'Pack: {} has different rn version {}, and metadata version {}.'
-    ALLOWED_BUMP_CONDITION = 'Pack {} version was updated from {} to {} version. Allowed bump only by + 1.'
-    UNALLOWED_KEYS_CHANGED = 'Pack {} metadata file has different keys in master and branch: {}.'
-    FAILED_TO_MERGE = 'Cannot git merge this PR. It can happened when no mutual history between branch and master, ' \
-                      'for example in PR from forked repo.'
+    NO_NEW_RELEASE_NOTES = "No new files were detected on {} directory."
+    CONFLICTING_FILES = "The PR has conflicts not only at {} and {}. The conflicting files are: {}."
+    NO_CONFLICTING_FILES = "No conflicts were detected."
+    NOT_ALLOW_SUPPORTED_TYPE_PACK = "The pack is not {} supported. Pack {} support type is: {}."
+    DIFFERENT_MAJOR_VERSION = "Pack: {} major version different in origin {} and at the branch {}."
+    EXCEED_MAX_ALLOWED_VERSION = "Pack: {} has not allowed version part {}. Versions: origin {}, branch {}."
+    MORE_THAN_ONE_RN = "Pack: {} has more than one added rn {}."
+    DIFFERENT_RN_METADATA_VERSIONS = "Pack: {} has different rn version {}, and metadata version {}."
+    ALLOWED_BUMP_CONDITION = "Pack {} version was updated from {} to {} version. Allowed bump only by + 1."
+    UNALLOWED_KEYS_CHANGED = "Pack {} metadata file has different keys in master and branch: {}."
+    FAILED_TO_MERGE = (
+        "Cannot git merge this PR. It can happened when no mutual history between branch and master, "
+        "for example in PR from forked repo."
+    )
 
 
 class ConditionResult:
@@ -73,9 +76,7 @@ class ConditionResult:
             pr_rn_version(Version): Result artifact: New version of the pack.
             update_type(UpdateType): Result artifact: What update type was at the pr.
         """
-        assert (
-            reason if should_skip else True
-        ), "Condition that should be skipped, should have a reason."
+        assert reason if should_skip else True, "Condition that should be skipped, should have a reason."
         self.should_skip = should_skip
         self.reason = reason
         self.conflicting_packs = conflicting_packs
@@ -122,7 +123,7 @@ class BaseCondition(ABC):
             next condition to check after current condition.
         """
         self.next_cond = condition  # type: ignore[assignment]
-        return self.next_cond   # type: ignore[return-value]
+        return self.next_cond  # type: ignore[return-value]
 
     @abstractmethod
     def generate_skip_reason(self, **kwargs) -> str:
@@ -130,15 +131,11 @@ class BaseCondition(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def _check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Abstract method. Will be over-written by classes that implements Condition."""
         raise NotImplementedError
 
-    def check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Checks conditions one after another.
         Checks condition and if it is pass, checks next_condition.
         If condition fails (should_skip set to True), exit and return last condition result.
@@ -149,9 +146,7 @@ class BaseCondition(ABC):
         """
         curr_result = self._check(previous_result=previous_result)
         if curr_result.should_skip:
-            print(
-                f"{t.red} PR: [{self.pr.number}]. {curr_result.reason} {SKIPPING_MESSAGE}\n\n"
-            )
+            print(f"{t.red} PR: [{self.pr.number}]. {curr_result.reason} {SKIPPING_MESSAGE}\n\n")
             return curr_result
         elif self.next_cond:
             return self.next_cond.check(curr_result)
@@ -240,20 +235,15 @@ class MetadataCondition(BaseCondition):
 class LastModifiedCondition(BaseCondition):
     LAST_SUITABLE_UPDATE_TIME_DAYS = LAST_SUITABLE_PR_UPDATE_TIME_DAYS
 
-    def generate_skip_reason(self, last_updated: str, **kwargs) -> str:     # type: ignore[override]
+    def generate_skip_reason(self, last_updated: str, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             last_updated: when the pr was last updated.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.LAST_MODIFIED_TIME.format(
-            self.LAST_SUITABLE_UPDATE_TIME_DAYS,
-            last_updated
-        )
+        return SkipReason.LAST_MODIFIED_TIME.format(self.LAST_SUITABLE_UPDATE_TIME_DAYS, last_updated)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Checks if the PR was updated in last LAST_SUITABLE_UPDATE_TIME_DAYS days.
         Args:
             previous_result: previous check artifacts.
@@ -275,19 +265,15 @@ class LastModifiedCondition(BaseCondition):
 class LabelCondition(BaseCondition):
     NOT_UPDATE_RN_LABEL = "ignore-auto-bump-version"
 
-    def generate_skip_reason(self, labels: str, **kwargs) -> str:   # type: ignore[override]
+    def generate_skip_reason(self, labels: str, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             labels: pr labels.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.NOT_UPDATE_RN_LABEL_EXIST.format(
-            self.NOT_UPDATE_RN_LABEL, labels
-        )
+        return SkipReason.NOT_UPDATE_RN_LABEL_EXIST.format(self.NOT_UPDATE_RN_LABEL, labels)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Checks if the PR has NOT_UPDATE_RN_LABEL.
         Args:
             previous_result: previous check artifacts.
@@ -312,9 +298,7 @@ class AddedRNFilesCondition(BaseCondition):
         """
         return SkipReason.NO_NEW_RELEASE_NOTES.format(RELEASE_NOTES_DIR)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Checks if there are new Release Notes files in the PR.
         Args:
             previous_result: previous check artifacts.
@@ -323,11 +307,7 @@ class AddedRNFilesCondition(BaseCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         pr_files = list(self.pr.get_files())
-        pr_rn_files = [
-            f
-            for f in pr_files
-            if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts
-        ]
+        pr_rn_files = [f for f in pr_files if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts]
         if not pr_rn_files:
             return ConditionResult(should_skip=True, reason=self.generate_skip_reason())
         else:
@@ -346,13 +326,9 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         elif FAILED_TO_MERGE in conflicting_files:
             return SkipReason.FAILED_TO_MERGE
         else:
-            return SkipReason.CONFLICTING_FILES.format(
-                RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files
-            )
+            return SkipReason.CONFLICTING_FILES.format(RELEASE_NOTES_DIR, PACK_METADATA_FILE, conflicting_files)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None) -> ConditionResult:
         """Checks if the PR conflicting with origin/master on pack_metadata and release notes only.
         Args:
             previous_result: previous check artifacts.
@@ -361,14 +337,8 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
         pr_files = list(self.pr.get_files())
-        added_rn_files = [
-            f.filename
-            for f in pr_files
-            if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts
-        ]
-        changed_metadata_files = [
-            f.filename for f in pr_files if Path(f.filename).name == PACK_METADATA_FILE
-        ]
+        added_rn_files = [f.filename for f in pr_files if f.status == "added" and RELEASE_NOTES_DIR in Path(f.filename).parts]
+        changed_metadata_files = [f.filename for f in pr_files if Path(f.filename).name == PACK_METADATA_FILE]
         (
             conflict_only_rn_and_metadata,
             conflict_files,
@@ -380,13 +350,9 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
             )
         else:
             conflicting_packs = get_pack_names_from_files(conflict_files)
-            return ConditionResult(
-                should_skip=False, conflicting_packs=conflicting_packs
-            )
+            return ConditionResult(should_skip=False, conflicting_packs=conflicting_packs)
 
-    def _has_conflict_on_given_files(
-        self, files_check_to_conflict_with: list
-    ) -> tuple[bool, list]:
+    def _has_conflict_on_given_files(self, files_check_to_conflict_with: list) -> tuple[bool, list]:
         """Checks if a pull request contains merge conflicts with a local branch.
         Arguments:
             files_check_to_conflict_with: files to check if the pr has conflict on given files only.
@@ -399,21 +365,16 @@ class HasConflictOnAllowedFilesCondition(BaseCondition):
         try:
             self.git_repo.git.merge(f"origin/{pr_branch}", "--no-ff", "--no-commit")
         except GitCommandError as e:
-            print(f'Got git error: {e=}')
-            if 'not something we can merge' in e.stderr:
+            print(f"Got git error: {e=}")
+            if "not something we can merge" in e.stderr:
                 return False, [FAILED_TO_MERGE]
             error = e.stdout
             if error:
                 error = error.replace("stdout: '", "").strip()
             conflicting_files = [
-                line.replace("Auto-merging ", "").strip()
-                for line in error.splitlines()
-                if "Auto-merging " in line
+                line.replace("Auto-merging ", "").strip() for line in error.splitlines() if "Auto-merging " in line
             ]
-            conflict_only_with_given_files = all(
-                file_name in files_check_to_conflict_with
-                for file_name in conflicting_files
-            )
+            conflict_only_with_given_files = all(file_name in files_check_to_conflict_with for file_name in conflicting_files)
         self.git_repo.git.merge("--abort")
         self.git_repo.git.clean("-f")
         return bool(conflict_only_with_given_files and conflicting_files), conflicting_files
@@ -428,13 +389,9 @@ class PackSupportCondition(MetadataCondition):
             support_type: pack support type.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.NOT_ALLOW_SUPPORTED_TYPE_PACK.format(
-            self.ALLOWED_SUPPORT_TYPES, self.pack, support_type
-        )
+        return SkipReason.NOT_ALLOW_SUPPORTED_TYPE_PACK.format(self.ALLOWED_SUPPORT_TYPES, self.pack, support_type)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if the pack is XSOAR supported.
         Args:
             previous_result: previous check artifacts.
@@ -453,8 +410,7 @@ class PackSupportCondition(MetadataCondition):
 
 
 class MajorChangeCondition(MetadataCondition):
-
-    def generate_skip_reason(       # type: ignore[override]
+    def generate_skip_reason(  # type: ignore[override]
         self, origin_version: Version, branch_version: Version, **kwargs
     ) -> str:
         """
@@ -463,13 +419,9 @@ class MajorChangeCondition(MetadataCondition):
             branch_version: pack versio in the branch.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.DIFFERENT_MAJOR_VERSION.format(
-            self.pack, str(origin_version), str(branch_version)
-        )
+        return SkipReason.DIFFERENT_MAJOR_VERSION.format(self.pack, str(origin_version), str(branch_version))
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if packs major changed.
         Args:
             previous_result: previous check artifacts.
@@ -477,14 +429,8 @@ class MajorChangeCondition(MetadataCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        origin_pack_metadata_version = Version(
-            self.origin_base_metadata.get(
-                CURRENT_VERSION, self.DEFAULT_VERSION
-            )
-        )
-        branch_pack_metadata_version = Version(
-            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
-        )
+        origin_pack_metadata_version = Version(self.origin_base_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION))
+        branch_pack_metadata_version = Version(self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION))
         if origin_pack_metadata_version.major != branch_pack_metadata_version.major:
             return ConditionResult(
                 should_skip=True,
@@ -500,7 +446,7 @@ class MajorChangeCondition(MetadataCondition):
 class MaxVersionCondition(MetadataCondition):
     MAX_ALLOWED_VERSION = "99"
 
-    def generate_skip_reason(       # type: ignore[override]
+    def generate_skip_reason(  # type: ignore[override]
         self, origin_version: str, branch_version: str, **kwargs
     ) -> str:
         """
@@ -509,13 +455,9 @@ class MaxVersionCondition(MetadataCondition):
             branch_version: pack versio in the branch.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.EXCEED_MAX_ALLOWED_VERSION.format(
-            self.pack, self.MAX_ALLOWED_VERSION, origin_version, branch_version
-        )
+        return SkipReason.EXCEED_MAX_ALLOWED_VERSION.format(self.pack, self.MAX_ALLOWED_VERSION, origin_version, branch_version)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if packs version is 99. (99 is the last supported version number).
         Args:
             previous_result: previous check artifacts.
@@ -523,16 +465,9 @@ class MaxVersionCondition(MetadataCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        origin_pack_metadata_version = self.origin_base_metadata.get(
-            CURRENT_VERSION, self.DEFAULT_VERSION
-        )
-        branch_pack_metadata_version = self.branch_metadata.get(
-            CURRENT_VERSION, self.DEFAULT_VERSION
-        )
-        if (
-            self.MAX_ALLOWED_VERSION in origin_pack_metadata_version
-            or self.MAX_ALLOWED_VERSION in branch_pack_metadata_version
-        ):
+        origin_pack_metadata_version = self.origin_base_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
+        branch_pack_metadata_version = self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
+        if self.MAX_ALLOWED_VERSION in origin_pack_metadata_version or self.MAX_ALLOWED_VERSION in branch_pack_metadata_version:
             return ConditionResult(
                 should_skip=True,
                 reason=self.generate_skip_reason(
@@ -547,19 +482,15 @@ class MaxVersionCondition(MetadataCondition):
 class OnlyVersionChangedCondition(MetadataCondition):
     ALLOWED_CHANGED_KEYS = [CURRENT_VERSION]
 
-    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:      # type: ignore[override]
+    def generate_skip_reason(self, not_allowed_changed_keys, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             not_allowed_changed_keys: pack_metadata keys that was changed.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.UNALLOWED_KEYS_CHANGED.format(
-            self.pack, not_allowed_changed_keys
-        )
+        return SkipReason.UNALLOWED_KEYS_CHANGED.format(self.pack, not_allowed_changed_keys)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if other pack metadata fields changed except ALLOWED CHANGED PACKS.
         Args:
             previous_result: previous check artifacts.
@@ -570,8 +501,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
         not_allowed_changed_keys = [
             k
             for k, v in self.branch_metadata.items()
-            if k not in self.ALLOWED_CHANGED_KEYS
-            and self.origin_base_metadata.get(k) != v
+            if k not in self.ALLOWED_CHANGED_KEYS and self.origin_base_metadata.get(k) != v
         ]
         if not_allowed_changed_keys:
             return ConditionResult(
@@ -585,7 +515,7 @@ class OnlyVersionChangedCondition(MetadataCondition):
 
 
 class OnlyOneRNPerPackCondition(MetadataCondition):
-    def generate_skip_reason(self, rn_files: list, **kwargs) -> str:    # type: ignore[override]
+    def generate_skip_reason(self, rn_files: list, **kwargs) -> str:  # type: ignore[override]
         """
         Args:
             rn_files: release notes files for the pack in current pr.
@@ -593,9 +523,7 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
         """
         return SkipReason.MORE_THAN_ONE_RN.format(self.pack, [str(f) for f in rn_files])
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks that only one release notes files per pack was added.
         Args:
             previous_result: previous check artifacts.
@@ -612,18 +540,13 @@ class OnlyOneRNPerPackCondition(MetadataCondition):
             and "md" in Path(f.filename).suffix
         ]
         if len(pack_new_rn_files) != 1:
-            return ConditionResult(
-                should_skip=True, reason=self.generate_skip_reason(pack_new_rn_files)
-            )
+            return ConditionResult(should_skip=True, reason=self.generate_skip_reason(pack_new_rn_files))
         else:
-            return ConditionResult(
-                should_skip=False, pack_new_rn_file=pack_new_rn_files[0]
-            )
+            return ConditionResult(should_skip=False, pack_new_rn_file=pack_new_rn_files[0])
 
 
 class SameRNMetadataVersionCondition(MetadataCondition):
-
-    def generate_skip_reason(       # type: ignore[override]
+    def generate_skip_reason(  # type: ignore[override]
         self, rn_version: Version, metadata_version: Version, **kwargs
     ) -> str:
         """
@@ -632,13 +555,9 @@ class SameRNMetadataVersionCondition(MetadataCondition):
             metadata_version: version of the pack in the metadata file.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.DIFFERENT_RN_METADATA_VERSIONS.format(
-            self.pack, rn_version, metadata_version
-        )
+        return SkipReason.DIFFERENT_RN_METADATA_VERSIONS.format(self.pack, rn_version, metadata_version)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if the new Release Notes has the same version as pack metadata version.
         Args:
             previous_result: previous check artifacts.
@@ -646,9 +565,7 @@ class SameRNMetadataVersionCondition(MetadataCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        branch_pack_metadata_version = Version(
-            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
-        )
+        branch_pack_metadata_version = Version(self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION))
         assert previous_result, "No previous result was supplied to the SameRNMetadataVersionCondition object."
         assert previous_result.pack_new_rn_file, "No previous result was supplied to the SameRNMetadataVersionCondition object."
         rn_version_file_name = previous_result.pack_new_rn_file.stem
@@ -656,19 +573,14 @@ class SameRNMetadataVersionCondition(MetadataCondition):
         if branch_pack_metadata_version != rn_version:
             return ConditionResult(
                 should_skip=True,
-                reason=self.generate_skip_reason(
-                    rn_version, branch_pack_metadata_version
-                ),
+                reason=self.generate_skip_reason(rn_version, branch_pack_metadata_version),
             )
         else:
-            return previous_result + ConditionResult(
-                should_skip=False, pr_rn_version=rn_version
-            )
+            return previous_result + ConditionResult(should_skip=False, pr_rn_version=rn_version)
 
 
 class AllowedBumpCondition(MetadataCondition):
-
-    def generate_skip_reason(       # type: ignore[override]
+    def generate_skip_reason(  # type: ignore[override]
         self, previous_version: Version, new_version: Version, **kwargs
     ) -> str:
         """
@@ -677,13 +589,9 @@ class AllowedBumpCondition(MetadataCondition):
             new_version: new pack version.
         Returns: Reason why the condition failed, and pr skipped.
         """
-        return SkipReason.ALLOWED_BUMP_CONDITION.format(
-            self.pack, previous_version, new_version
-        )
+        return SkipReason.ALLOWED_BUMP_CONDITION.format(self.pack, previous_version, new_version)
 
-    def _check(
-        self, previous_result: ConditionResult | None = None, **kwargs
-    ) -> ConditionResult:
+    def _check(self, previous_result: ConditionResult | None = None, **kwargs) -> ConditionResult:
         """Checks if the pack version was updated by +1. (The only bump we allow).
         Args:
             previous_result: previous check artifacts.
@@ -691,34 +599,20 @@ class AllowedBumpCondition(MetadataCondition):
         Returns(ConditionResult): whether the condition check pass,
             or we should skip this pr from auto-bumping its release notes, with the reason why to skip.
         """
-        branch_pack_metadata_version = Version(
-            self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
-        )
-        base_pack_metadata_version = Version(
-            self.pr_base_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION)
-        )
-        update_type = self.check_update_type(
-            base_pack_metadata_version, branch_pack_metadata_version
-        )
+        branch_pack_metadata_version = Version(self.branch_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION))
+        base_pack_metadata_version = Version(self.pr_base_metadata.get(CURRENT_VERSION, self.DEFAULT_VERSION))
+        update_type = self.check_update_type(base_pack_metadata_version, branch_pack_metadata_version)
         if not update_type:
             return ConditionResult(
                 should_skip=True,
-                reason=self.generate_skip_reason(
-                    base_pack_metadata_version, branch_pack_metadata_version
-                ),
+                reason=self.generate_skip_reason(base_pack_metadata_version, branch_pack_metadata_version),
             )
         else:
-            assert (
-                previous_result
-            ), "No previous result was supplied to the AllowedBumpCondition object."
-            return previous_result + ConditionResult(
-                should_skip=False, update_type=update_type
-            )
+            assert previous_result, "No previous result was supplied to the AllowedBumpCondition object."
+            return previous_result + ConditionResult(should_skip=False, update_type=update_type)
 
     @staticmethod
-    def check_update_type(
-        prev_version: Version, new_version: Version
-    ) -> UpdateType | None:
+    def check_update_type(prev_version: Version, new_version: Version) -> UpdateType | None:
         """Checks what was the update type when the release notes were generated.
         Args:
             prev_version: the pack version before updating release notes.
@@ -730,17 +624,9 @@ class AllowedBumpCondition(MetadataCondition):
         same_minor = prev_version.minor == prev_version.minor
         if prev_version.micro + 1 == new_version.micro and same_minor and same_major:
             return UpdateType.REVISION
-        elif (
-            prev_version.minor + 1 == new_version.minor
-            and same_major
-            and new_version.micro == 0
-        ):
+        elif prev_version.minor + 1 == new_version.minor and same_major and new_version.micro == 0:
             return UpdateType.MINOR
-        elif (
-            prev_version.major + 1 == new_version.major
-            and new_version.minor == 0
-            and new_version.micro == 0
-        ):
+        elif prev_version.major + 1 == new_version.major and new_version.minor == 0 and new_version.micro == 0:
             return UpdateType.MAJOR
         else:
             return None

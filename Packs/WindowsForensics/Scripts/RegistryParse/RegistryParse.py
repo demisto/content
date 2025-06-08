@@ -34,10 +34,10 @@ def parse_reg_value(value):
     value = value.strip('"')
     try:
         if value.startswith("hex"):
-            value2 = "".join([ch for ch in value[value.find(":") + 1:].split(",") if len(ch) == 2 and ch != "00"])
+            value2 = "".join([ch for ch in value[value.find(":") + 1 :].split(",") if len(ch) == 2 and ch != "00"])
             return bytearray.fromhex(value2).decode()
         if value.startswith("dword"):
-            return str(int("0x" + value[value.find(":") + 1:], 16))
+            return str(int("0x" + value[value.find(":") + 1 :], 16))
         return value
     except Exception:
         return value
@@ -52,7 +52,7 @@ def get_registry(entry_id):
     cfg = configparser.ConfigParser(strict=False, allow_no_value=True)
     cfg.optionxform = str  # type: ignore[assignment, assignment]
     cfg.read_string(
-        data[data.find("["):],
+        data[data.find("[") :],
     )
     reg = {}  # type: ignore[var-annotated]
     for section in cfg.sections():
@@ -73,7 +73,7 @@ def get_sub_keys(reg, key, folder_output_key):
     users = []
     records = []
     for folder in all_folders:
-        new_key = folder[len(key):].strip("\\")
+        new_key = folder[len(key) :].strip("\\")
         if new_key:
             user = reg[folder]
             user = {k.strip('"'): parse_reg_value(v) for k, v in user.items()}

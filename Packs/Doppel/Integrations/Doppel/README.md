@@ -1,6 +1,6 @@
 # Overview
-Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
+Doppel is a Modern Digital Risk Protection Solution, that detects the phishing and brand cyber attacks on the emerging channels. Doppel scans millions of channels online which includes, social media, domains, paid ads, dark web, emerging channels, etc. Doppel can identify the malicious content and cyber threats, and enables their customers to take down the digital risks proactively. The Cortex XSOAR pack for Doppel mirrors the alerts created by Doppel as Cortex XSOAR incidents. The pack also contains the commands to perform different operations on Doppel alerts.
 
 ## Configure Doppel on Cortex XSOAR
 
@@ -21,14 +21,13 @@ Doppel is a Modern Digital Risk Protection Solution, that detects the phishing a
     | Use system proxy settings | Uses your system Proxy Setting | False |
     | Incidents Fetch Interval |  The interval specifies the cadence with which the Doppel alerts be fetched | False |
     | Mirror Direction | Choose the direction to mirror the incident: Incoming \(from Doppel to Cortex XSOAR\), Outgoing \(from Cortex XSOAR to Doppel\), or Incoming and Outgoing \(from/to Cortex XSOAR and Doppel\). | False |
-    
+
 4. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands
 
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 
 ### doppel-get-alert
 
@@ -123,10 +122,10 @@ Retrieves the alert details by ID or entity. Must include either ID or entity.
 #### Human Readable Output
 
 >### Alert Details
+>
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
 >| TST-31 | http://dummyrul.com | test_brand | doppel_review | active | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
-
 
 ### doppel-create-alert
 
@@ -171,6 +170,7 @@ Creates an alert for a specified entity. This command requires the entity to be 
 #### Human Readable Output
 
 >### Created Alert
+>
 >| ID | Entity | Doppel Link |  
 >| --- | --- | --- |  
 >| TST-1001 | http://example.com | [Doppel Link](https://app.doppel.com/alerts/TST-1001) |  
@@ -271,10 +271,10 @@ Updates an alert in the Doppel platform. Either `alert_id` or `entity` must be s
 #### Human Readable Output
 
 >### Updated Alert Details
+>
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
 >| TST-31 | http://dummyrul.com | test_brand | actioned | down | medium | domains | domains | Analyst Upload | 2024-11-27T06:51:50.357664 | [Doppel Link](https://app.doppel.com/alerts/TST-31222) | currentuser@doppel.com |  
-
 
 ### doppel-create-abuse-alert
 
@@ -317,10 +317,10 @@ Create an alert for the provided value to abuse box. Will fail if the alert valu
 #### Human Readable Output
 
 >### Abuse Alert Submission
+>
 >| Message |  
 >| --- |  
 >| Abuse alert created successfully |  
-
 
 ### doppel-get-alerts
 
@@ -441,10 +441,10 @@ Retrieves a list of alerts. The result can be filtered by provided parameters.
 #### Human Readable Output
 
 >### Alert Details
+>
 >| ID | Entity | Brand | Queue State | Entity State | Severity | Product | Platform | Source | Created At | Doppel Link | Uploaded By |  
 >| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |  
 >| ALERT-12345 | http://example.com | Test Brand | doppel_review | active | high | domains | website | Analyst Upload | 2024-11-27T10:20:30Z | [Doppel Link](https://app.doppel.com/alerts/ALERT-12345) | analyst@example.com |  
-
 
 ### get-mapping-fields
 
@@ -463,6 +463,7 @@ Returns the list of fields for an incident type.
 #### Context Output
 
 There is no context output for this command.
+
 ### update-remote-system
 
 ***
@@ -480,6 +481,7 @@ Pushes local changes to the remote system. If an XSOAR Incident is closed, creat
 #### Context Output
 
 There is no context output for this command.
+
 ### get-remote-data
 
 ***
@@ -493,12 +495,13 @@ Get remote data from a remote incident. This method does not update the current 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The ticket ID. | Required | 
-| lastUpdate | Retrieve entries that were created after lastUpdate. | Required | 
+| id | The ticket ID. | Required |
+| lastUpdate | Retrieve entries that were created after lastUpdate. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### get-modified-remote-data
 
 ***
@@ -512,7 +515,7 @@ Gets the list of incidents that were modified since the last update time. Note t
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| last_update | Retrieve entries that were created after lastUpdate. | Optional | 
+| last_update | Retrieve entries that were created after lastUpdate. | Optional |
 
 #### Context Output
 
@@ -523,15 +526,16 @@ There is no context output for this command.
 #### Mirroring In (Doppel → XSOAR)
 
 When incidents are mirrored into Cortex XSOAR from Doppel:
+
 1. Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents.
 
 **Supported Fields**
 
 The following fields are mirrored:
+
 1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
 2. Doppel Entity State – Represents the status of the alert.
-3. Audit Log History – A record of all changes made to the alert. 
-
+3. Audit Log History – A record of all changes made to the alert.
 
 #### Mirroring Out (XSOAR → Doppel)
 
@@ -540,11 +544,13 @@ When incidents are mirrored out from Cortex XSOAR to Doppel. Currently, the Mirr
 **Supported Fields**
 
 The following fields are mirrored:
+
 1. Doppel Queue State – Indicates the queue where the alert is currently assigned.
 
 #### Configuration Steps
 
 To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
+
 1. Enable *Fetching incidents* in your instance configuration.
 2. In the *Mirroring Direction* integration parameter, select in which direction the incidents should be mirrored:
 
@@ -554,7 +560,6 @@ To enable incident mirroring between Cortex XSOAR incidents and Doppel alerts:
     | Incoming | Any changes in Doppel alerts (mirroring incoming fields) will be reflected in Cortex XSOAR incidents. |
     | Outgoing | Mirroring out will only update queue state in Doppel alerts (outgoing mirrored fields). |
     | Incoming And Outgoing | Changes in Cortex XSOAR incidents and Doppel alerts will be reflected in both directions. |
-
 
 Newly fetched incidents will be mirrored in the chosen direction. However, this selection does not affect existing incidents.
 

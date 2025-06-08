@@ -8,18 +8,12 @@ import csv
 class PackNameParseError(Exception):
     def __init__(self, value: str) -> None:
         self.value = value
-        super().__init__(
-            f"Cannot parse pack name out of {value}, expected Packs.<pack_name>.more_parts"
-        )
+        super().__init__(f"Cannot parse pack name out of {value}, expected Packs.<pack_name>.more_parts")
 
 
 def parse_pack_name(class_name: str):
     # parses Packs.IPINFO.Integrations.ipinfo_v2.ipinfo_v2_test into IPINFO
-    if (
-        (not class_name.startswith("Packs."))
-        or len(parts := class_name.split(".")) < 3
-        or not (parsed_pack_name := parts[1])
-    ):
+    if (not class_name.startswith("Packs.")) or len(parts := class_name.split(".")) < 3 or not (parsed_pack_name := parts[1]):
         raise PackNameParseError(class_name)
     return parsed_pack_name
 
@@ -51,9 +45,7 @@ def write_csv(pack_times: dict[str, float], output_path: Path) -> None:
             [
                 {
                     "pack": pack,
-                    "duration": str(
-                        round(duration, 2)
-                    ),  # str avoids floating point percision
+                    "duration": str(round(duration, 2)),  # str avoids floating point percision
                 }
                 for pack, duration in pack_times.items()
             ]

@@ -11,7 +11,7 @@ import time
 # Disable insecure warnings
 urllib3.disable_warnings()
 
-DATE_FORMAT = '%Y-%m-%dT%H:%M:%S'
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"
 VENDOR = "Radware"
 PRODUCT = "cloud ddos"
 
@@ -19,10 +19,9 @@ PAGE_SIZE = 700
 
 
 class Client(BaseClient):
-
     def __init__(self, base_url: str, account_id: str, api_key: str, verify: bool, proxy: bool):
         self.account_id = account_id
-        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={'x-api-key': api_key, 'Context': account_id})
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy, headers={"x-api-key": api_key, "Context": account_id})
 
     def get_events(self, start_time=None, end_time=None, skip=0, take=PAGE_SIZE) -> dict[str, Any] | Response:
         """
@@ -37,21 +36,12 @@ class Client(BaseClient):
 
         params = {
             "criteria": [
-                {
-                    "key": "startTimestamp",
-                    "value": [start_time, None]
-                },
-                {
-                    "key": "endTimestamp",
-                    "value": [None, end_time]
-                },
-                {
-                    "key": "risk",
-                    "value": ["Info", "Low", "Medium", "High", "Critical"]
-                }
+                {"key": "startTimestamp", "value": [start_time, None]},
+                {"key": "endTimestamp", "value": [None, end_time]},
+                {"key": "risk", "value": ["Info", "Low", "Medium", "High", "Critical"]},
             ],
             "skip": skip,
-            "take": take
+            "take": take,
         }
         return self._http_request(
             method="POST",
@@ -72,17 +62,11 @@ class Client(BaseClient):
 
         params = {
             "criteria": [
-                {
-                    "key": "timestamp",
-                    "value": [start_time, end_time]
-                },
-                {
-                    "key": "severity",
-                    "value": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
-                }
+                {"key": "timestamp", "value": [start_time, end_time]},
+                {"key": "severity", "value": ["INFO", "LOW", "MEDIUM", "HIGH", "CRITICAL"]},
             ],
             "skip": skip,
-            "take": take
+            "take": take,
         }
 
         return self._http_request(
@@ -100,12 +84,13 @@ def format_data_fields(events: list[dict], evnet_type: str | None):
         evnet_type: The event type.
     """
     for event in events:
-        event['_time'] = event.get('timestamp')
-        event['source_log_type'] = evnet_type
+        event["_time"] = event.get("timestamp")
+        event["source_log_type"] = evnet_type
 
 
-def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
-                     timestamp: Union[str, None], ids: List[str], data_type: str) -> List[Dict[str, Union[str, Dict]]]:
+def filter_documents(
+    documents: List[Dict[str, Union[str, Dict]]], timestamp: Union[str, None], ids: List[str], data_type: str
+) -> List[Dict[str, Union[str, Dict]]]:
     """
     Filters out documents from the given list based on the specified timestamp and ids.
     Args:
@@ -119,23 +104,25 @@ def filter_documents(documents: List[Dict[str, Union[str, Dict]]],
         return documents
 
     def get_timestamp(data: Dict[str, Union[str, Dict]]) -> Optional[str | dict[Any, Any] | None]:
-        if data_type == 'events':
-            return data.get('endTimestamp')
+        if data_type == "events":
+            return data.get("endTimestamp")
         else:
-            return data.get('context', {}).get('_timestamp')  # type: ignore[union-attr]
+            return data.get("context", {}).get("_timestamp")  # type: ignore[union-attr]
+
     if get_timestamp(documents[-1]) != timestamp:
         return documents
     filtered_documents = []
     for doc in documents:  # Iterate through the original list
-        if get_timestamp(doc) == timestamp and doc.get('_id') in ids:
+        if get_timestamp(doc) == timestamp and doc.get("_id") in ids:
             continue
         filtered_documents.append(doc)
 
     return filtered_documents
 
 
-def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
-                                 data_type: str) -> tuple[Any, list[str | dict[Any, Any] | None]]:
+def get_latest_timestamp_and_ids(
+    documents: List[Dict[str, Union[str, Dict]]], data_type: str
+) -> tuple[Any, list[str | dict[Any, Any] | None]]:
     """
     Retrieves the latest timestamp and the corresponding ids from the given list of documents.
     args:
@@ -147,17 +134,17 @@ def get_latest_timestamp_and_ids(documents: List[Dict[str, Union[str, Dict]]],
         return None, []
 
     def get_timestamp(data):
-        if data_type == 'events':
-            return data.get('endTimestamp')
+        if data_type == "events":
+            return data.get("endTimestamp")
         else:
-            return data.get('context', {}).get('_timestamp')
+            return data.get("context", {}).get("_timestamp")
 
     latest_timestamp = get_timestamp(documents[0])
-    ids = [documents[0].get('_id')]
+    ids = [documents[0].get("_id")]
 
     for doc in documents[1:]:
         if get_timestamp(doc) == latest_timestamp:
-            ids.append(doc.get('_id'))
+            ids.append(doc.get("_id"))
         else:
             break
 
@@ -177,122 +164,119 @@ def fetch_data(client, last_run, data_type):
         tuple: Contains the fetched documents and updated last run dictionary.
     """
     # we are initiating variables based on the data type.
-    last_fetch_key = f'last_fetch_{data_type}'
-    iteration_cache_fetch_key = f'iteration_cache_fetch_{data_type}'
+    last_fetch_key = f"last_fetch_{data_type}"
+    iteration_cache_fetch_key = f"iteration_cache_fetch_{data_type}"
 
     end_time = int(time.time() * 1000)
     latest_fetch = last_run.get(last_fetch_key, {})
-    start_time = latest_fetch.get('latest_timestamp', end_time - 1)
+    start_time = latest_fetch.get("latest_timestamp", end_time - 1)
     iteration_cache = last_run.get(iteration_cache_fetch_key, None)
     skip = 0
 
     if iteration_cache:
-        end_time = iteration_cache.get('end_time')
-        start_time = iteration_cache.get('start_time')
-        skip = iteration_cache.get('fetched_' + data_type)
+        end_time = iteration_cache.get("end_time")
+        start_time = iteration_cache.get("start_time")
+        skip = iteration_cache.get("fetched_" + data_type)
 
-    demisto.debug(f'{data_type=} {start_time=}, {end_time=}, {skip=}')
+    demisto.debug(f"{data_type=} {start_time=}, {end_time=}, {skip=}")
 
-    if data_type == 'events':
+    if data_type == "events":
         response = client.get_events(start_time, end_time, skip, PAGE_SIZE)
-    elif data_type == 'alerts':
+    elif data_type == "alerts":
         response = client.get_alerts(start_time, end_time, skip, PAGE_SIZE)
     else:
         raise ValueError("Invalid data_type. Expected 'events' or 'alerts'.")
 
     documents = response.get("documents")
-    demisto.debug(f'got {len(documents)} documents in the response')
+    demisto.debug(f"got {len(documents)} documents in the response")
     new_iteration_cache = {}
 
-    filtered_documents = filter_documents(documents, timestamp=latest_fetch.get('latest_timestamp'),
-                                          ids=latest_fetch.get('latest_ids'), data_type=data_type)
-    demisto.debug(f'after filter remains {len(filtered_documents)} documents')
+    filtered_documents = filter_documents(
+        documents, timestamp=latest_fetch.get("latest_timestamp"), ids=latest_fetch.get("latest_ids"), data_type=data_type
+    )
+    demisto.debug(f"after filter remains {len(filtered_documents)} documents")
 
     if filtered_documents:
-
         if len(filtered_documents) == PAGE_SIZE:
-            demisto.debug('found next page')
-            new_iteration_cache = {'end_time': end_time, 'start_time': start_time,
-                                       'fetched_' + data_type: len(filtered_documents) + skip}
+            demisto.debug("found next page")
+            new_iteration_cache = {
+                "end_time": end_time,
+                "start_time": start_time,
+                "fetched_" + data_type: len(filtered_documents) + skip,
+            }
 
         if not iteration_cache:
             latest_timestamp, latest_ids = get_latest_timestamp_and_ids(filtered_documents, data_type)
-            last_run[last_fetch_key] = {'latest_timestamp': latest_timestamp, 'latest_ids': latest_ids}
-            demisto.debug(f'saved {last_run[last_fetch_key]=}')
+            last_run[last_fetch_key] = {"latest_timestamp": latest_timestamp, "latest_ids": latest_ids}
+            demisto.debug(f"saved {last_run[last_fetch_key]=}")
 
         if new_iteration_cache:
-            last_run['nextTrigger'] = '0'
+            last_run["nextTrigger"] = "0"
 
-        if data_type == 'events':
-            format_data_fields(filtered_documents, 'security_events')
-        elif data_type == 'alerts':
-            format_data_fields(filtered_documents, 'operational_alerts')
+        if data_type == "events":
+            format_data_fields(filtered_documents, "security_events")
+        elif data_type == "alerts":
+            format_data_fields(filtered_documents, "operational_alerts")
     else:
-        if not latest_fetch.get('latest_timestamp'):
-            last_run[last_fetch_key] = {'latest_timestamp': start_time, 'latest_ids': []}
+        if not latest_fetch.get("latest_timestamp"):
+            last_run[last_fetch_key] = {"latest_timestamp": start_time, "latest_ids": []}
 
     last_run[iteration_cache_fetch_key] = new_iteration_cache
-    demisto.debug(f'set {new_iteration_cache=}')
+    demisto.debug(f"set {new_iteration_cache=}")
 
     return filtered_documents, last_run
 
 
-''' MAIN FUNCTION '''
+""" MAIN FUNCTION """
 
 
 def main() -> None:  # pragma: no cover
     params = demisto.params()
-    account_id: str = params.get('credentials', {}).get('identifier', '')
-    api_key: str = params.get('credentials', {}).get('password', '')
-    base_url: str = params.get('url', '').rstrip('/')
-    verify_certificate = not params.get('insecure', False)
-    proxy = params.get('proxy', False)
+    account_id: str = params.get("credentials", {}).get("identifier", "")
+    api_key: str = params.get("credentials", {}).get("password", "")
+    base_url: str = params.get("url", "").rstrip("/")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
     event_types = argToList(params.get("event_types"))
     last_run = demisto.getLastRun()
-    demisto.debug(f'{last_run=}')
+    demisto.debug(f"{last_run=}")
 
     command = demisto.command()
-    demisto.info(f'Command being called is {command}')
+    demisto.info(f"Command being called is {command}")
     try:
-        client = Client(
-            account_id=account_id,
-            api_key=api_key,
-            base_url=base_url,
-            verify=verify_certificate,
-            proxy=proxy
-        )
-        if command == 'test-module':
+        client = Client(account_id=account_id, api_key=api_key, base_url=base_url, verify=verify_certificate, proxy=proxy)
+        if command == "test-module":
             client.get_events(take=1)
-            return_results('ok')
-        elif command == 'fetch-events':
+            return_results("ok")
+        elif command == "fetch-events":
             events = []
             alerts = []
-            if 'Events' in event_types:
-                events, last_run = fetch_data(client, last_run=last_run, data_type='events')
-            if 'Alerts' in event_types:
-                alerts, last_run = fetch_data(client, last_run=last_run, data_type='alerts')
+            if "Events" in event_types:
+                events, last_run = fetch_data(client, last_run=last_run, data_type="events")
+            if "Alerts" in event_types:
+                alerts, last_run = fetch_data(client, last_run=last_run, data_type="alerts")
 
             demisto.setLastRun(last_run)
-            send_events_to_xsiam(events+alerts, vendor=VENDOR, product=PRODUCT)
-            demisto.debug(f'Successfully sent {len(events)} events and {len(alerts)} alerts to XSIAM')
+            send_events_to_xsiam(events + alerts, vendor=VENDOR, product=PRODUCT)
+            demisto.debug(f"Successfully sent {len(events)} events and {len(alerts)} alerts to XSIAM")
             # demisto.debug(f'Successfully sent event {[event.get("_id") for event in events]} IDs to XSIAM')
             # demisto.debug(f'Successfully sent alert {[alert.get("_id") for alert in alerts]} IDs to XSIAM')
         elif command == "radware-cloud-ddos-protection-services-get-events":
             events = []
             alerts = []
-            if 'Events' in event_types:
-                events, _ = fetch_data(client, last_run=last_run, data_type='events')
-            if 'Alerts' in event_types:
-                alerts, _ = fetch_data(client, last_run=last_run, data_type='alerts')
-            return_results(events+alerts)
+            if "Events" in event_types:
+                events, _ = fetch_data(client, last_run=last_run, data_type="events")
+            if "Alerts" in event_types:
+                alerts, _ = fetch_data(client, last_run=last_run, data_type="alerts")
+            return_results(events + alerts)
 
     except Exception as e:
         demisto.error(traceback.format_exc())
         return_error(f"Failed to execute {command} command.\nError:\ntype:{type(e)}, error:{str(e)}")
 
 
-''' ENTRY POINT '''
+""" ENTRY POINT """
 
 
-if __name__ in ('__main__', '__builtin__', 'builtins'):
+if __name__ in ("__main__", "__builtin__", "builtins"):
     main()

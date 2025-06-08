@@ -125,17 +125,16 @@ class Model:
         top_domains: dict,
         logos_dict: dict,
         custom_logo_associated_domain: dict,
-    ):
-        ...
+    ): ...
 
 
-class ModelData(dict[Literal['top_domains', 'logos_dict', 'custom_logo_associated_domain'], dict]):
-    '''Abstract class that represents the format of the data stored in the server.'''
+class ModelData(dict[Literal["top_domains", "logos_dict", "custom_logo_associated_domain"], dict]):
+    """Abstract class that represents the format of the data stored in the server."""
 
 
 def delete_model():
-    res = demisto.executeCommand('deleteMLModel', {'modelName': URL_PHISHING_MODEL_NAME})
-    demisto.debug(f'Deleted model. server response: {res}')
+    res = demisto.executeCommand("deleteMLModel", {"modelName": URL_PHISHING_MODEL_NAME})
+    demisto.debug(f"Deleted model. server response: {res}")
 
 
 def save_model_data(model_data: ModelData):
@@ -144,40 +143,44 @@ def save_model_data(model_data: ModelData):
     :return: None
     """
     res = demisto.executeCommand(
-        'createMLModel',
+        "createMLModel",
         {
-            'modelData': b64encode_string(json.dumps(model_data)),
-            'modelName': URL_PHISHING_MODEL_NAME,
-            'modelLabels': [MALICIOUS_VERDICT, BENIGN_VERDICT, SUSPICIOUS_VERDICT],
-            'modelOverride': 'true',
-            'modelHidden': True,
-            'modelType': 'url_phishing'
-        }
+            "modelData": b64encode_string(json.dumps(model_data)),
+            "modelName": URL_PHISHING_MODEL_NAME,
+            "modelLabels": [MALICIOUS_VERDICT, BENIGN_VERDICT, SUSPICIOUS_VERDICT],
+            "modelOverride": "true",
+            "modelHidden": True,
+            "modelType": "url_phishing",
+        },
     )
     if is_error(res):
         raise DemistoException(get_error(res))
 
 
 def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Optional[ModelData]:  # pragma: no cover
-    '''Update the model to the new version. This will be eventually deleted.'''
+    """Update the model to the new version. This will be eventually deleted."""
     delete_model()
     if minor_version == 0:  # no changes were made to the model by the user
-        demisto.debug('Old version is unchanged')
+        demisto.debug("Old version is unchanged")
         return None
 
     import warnings
-    warnings.filterwarnings("ignore", module='sklearn')
+
+    warnings.filterwarnings("ignore", module="sklearn")
 
     old_import = dill._dill._import_module
     dill._dill._import_module = lambda x, safe=False: old_import(x, safe=True)
     model = cast(Model, dill.loads(base64_to_bytes(model_data)))  # guardrails-disable-line
     dill._dill._import_module = old_import
 
-    model_data = cast(ModelData, {
-        'top_domains': model.top_domains,
-        'logos_dict': model.logos_dict,
-        'custom_logo_associated_domain': model.custom_logo_associated_domain,
-    })
+    model_data = cast(
+        ModelData,
+        {
+            "top_domains": model.top_domains,
+            "logos_dict": model.logos_dict,
+            "custom_logo_associated_domain": model.custom_logo_associated_domain,
+        },
+    )
     save_model_data(model_data)
     return model_data
 
@@ -185,20 +188,20 @@ def extract_and_save_old_model_data(model_data: str, minor_version: int) -> Opti
 def get_model_data() -> Optional[ModelData]:
     res = demisto.executeCommand("getMLModel", {"modelName": URL_PHISHING_MODEL_NAME})[0]
     if is_error(res):
-        demisto.debug(f'Model not found: {get_error(res)}')
+        demisto.debug(f"Model not found: {get_error(res)}")
         return None
 
-    extra_data = dict_safe_get(res, ('Contents', 'model', 'extra'))
-    model_data = dict_safe_get(res, ('Contents', 'modelData'))
+    extra_data = dict_safe_get(res, ("Contents", "model", "extra"))
+    model_data = dict_safe_get(res, ("Contents", "modelData"))
 
-    if isinstance(extra_data, dict) and 'minor' in extra_data:  # this means the old model exists as a pickled object
-        demisto.debug(f'Old model found. {extra_data=}')
-        return extract_and_save_old_model_data(model_data, extra_data['minor'])
+    if isinstance(extra_data, dict) and "minor" in extra_data:  # this means the old model exists as a pickled object
+        demisto.debug(f"Old model found. {extra_data=}")
+        return extract_and_save_old_model_data(model_data, extra_data["minor"])
     return cast(ModelData, json.loads(b64decode_string(model_data)))
 
 
 def load_model_from_docker(path: str = OUT_OF_THE_BOX_MODEL_PATH) -> Model:
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         return cast(Model, dill.load(f))  # guardrails-disable-line
 
 
@@ -368,8 +371,8 @@ def return_entry_summary(
         image = pred_json[MODEL_KEY_LOGO_IMAGE_BYTES]
         if not image:
             image = base64_to_bytes(output_rasterize.get(KEY_IMAGE_RASTERIZE))  # type: ignore[arg-type]
-        res = fileResult(filename='Logo detection engine', data=image)
-        res['Type'] = entryTypes['image']
+        res = fileResult(filename="Logo detection engine", data=image)
+        res["Type"] = entryTypes["image"]
         if pred_json[MODEL_KEY_LOGO_FOUND]:
             res["Tags"] = ["DBOT_URL_PHISHING_MALICIOUS"]
         return_results(res)
@@ -541,8 +544,15 @@ def get_whois_verdict(domains: list[str]) -> list:
     return default
 
 
-def get_predictions_for_urls(model: Model, urls: list[str], requested_urls: list[str], force_model: bool, debug: bool,
-                             rasterize_timeout: int, protocol: str) -> Optional[list[dict]]:
+def get_predictions_for_urls(
+    model: Model,
+    urls: list[str],
+    requested_urls: list[str],
+    force_model: bool,
+    debug: bool,
+    rasterize_timeout: int,
+    protocol: str,
+) -> Optional[list[dict]]:
     """Generate predictions for the given URL list
 
     :param model: Prediction model to use.
@@ -561,7 +571,7 @@ def get_predictions_for_urls(model: Model, urls: list[str], requested_urls: list
     rasterize_outputs = rasterize_urls(urls, rasterize_timeout)
 
     if not rasterize_outputs:
-        return_results('All URLs failed to be rasterized. Skipping prediction.')
+        return_results("All URLs failed to be rasterized. Skipping prediction.")
         return None
 
     whois_results = get_whois_verdict(domains)
@@ -572,8 +582,9 @@ def get_predictions_for_urls(model: Model, urls: list[str], requested_urls: list
         if in_white_list(model, url):
             is_white_listed = True
             if not force_model:
-                results.append(create_dict_context(requested_url, BENIGN_VERDICT_WHITELIST, {},
-                                                   SCORE_BENIGN, is_white_listed, {}))
+                results.append(
+                    create_dict_context(requested_url, BENIGN_VERDICT_WHITELIST, {}, SCORE_BENIGN, is_white_listed, {})
+                )
                 continue
         else:
             is_white_listed = False
@@ -664,7 +675,7 @@ def get_final_urls(urls: list[str], max_urls: int, model: Model) -> list[str]:
 
 
 def extract_embedded_urls_from_html(html: str) -> list[str]:
-    return [a.get('href') for a in BeautifulSoup(html).find_all('a') if a.get('href')]  # type: ignore
+    return [a.get("href") for a in BeautifulSoup(html).find_all("a") if a.get("href")]  # type: ignore
 
 
 def get_urls_to_run(
@@ -700,7 +711,7 @@ def get_urls_to_run(
         )
 
     if not urls:
-        return_results('No URLs for prediction.')
+        return_results("No URLs for prediction.")
         return [], [], msg_list
     urls = get_final_urls(urls, max_urls, model)
     unescaped_urls = demisto.executeCommand("UnEscapeURLs", {"input": urls}) or []
@@ -714,18 +725,18 @@ def main():
     msg_list: list = []
     try:
         args = demisto.args()
-        reset_model = args.get('resetModel') == 'True'
-        debug = args.get('debug') == 'True'
-        force_model = args.get('forceModel') == 'True'
-        email_body = args.get('emailBody', "")
-        email_html = args.get('emailHTML', "")
-        max_urls = cast(int, arg_to_number(args.get('maxNumberOfURL', 5), 'maxNumberOfURL', required=True))
-        urls_argument = args.get('urls', '')
-        rasterize_timeout = arg_to_number(args.get('rasterize_timeout', TIMEOUT_RASTERIZE)) or 0
+        reset_model = args.get("resetModel") == "True"
+        debug = args.get("debug") == "True"
+        force_model = args.get("forceModel") == "True"
+        email_body = args.get("emailBody", "")
+        email_html = args.get("emailHTML", "")
+        max_urls = cast(int, arg_to_number(args.get("maxNumberOfURL", 5), "maxNumberOfURL", required=True))
+        urls_argument = args.get("urls", "")
+        rasterize_timeout = arg_to_number(args.get("rasterize_timeout", TIMEOUT_RASTERIZE)) or 0
         reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(
             args.get("reliability", DBotScoreReliability.A_PLUS)
         )
-        protocol = demisto.args().get('defaultRequestProtocol', 'HTTP').lower()
+        protocol = demisto.args().get("defaultRequestProtocol", "HTTP").lower()
 
         if reset_model:
             delete_model()
@@ -744,10 +755,10 @@ def main():
                 return general_summary, detailed_summary, msg_list
 
     except Exception as e:
-        return_error(f'Failed to execute URL Phishing script. Error: {e}')
+        return_error(f"Failed to execute URL Phishing script. Error: {e}")
 
     finally:
-        demisto.debug(f'{msg_list=}')
+        demisto.debug(f"{msg_list=}")
 
 
 if __name__ in ["__main__", "__builtin__", "builtins"]:

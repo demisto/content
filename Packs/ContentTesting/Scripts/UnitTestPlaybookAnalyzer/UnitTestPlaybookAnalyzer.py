@@ -50,23 +50,10 @@ def GetSubpbTasks(subplaybook, t, tasks):
 
 def GetTasks(incid: str, subplaybook: str) -> list:
     body = {
-        "states": [
-            "Error",
-            "Waiting",
-            "Completed",
-            "inprogress"
-        ],
-        "types": [
-            "regular",
-            "condition",
-            "playbook,"
-            "collection"
-        ]
+        "states": ["Error", "Waiting", "Completed", "inprogress"],
+        "types": ["regular", "condition", "playbook," "collection"],
     }
-    resp = execute_command("core-api-post", {
-        "uri": f"/investigation/{incid}/workplan/tasks",
-        "body": body
-    })
+    resp = execute_command("core-api-post", {"uri": f"/investigation/{incid}/workplan/tasks", "body": body})
     tasks: list = []
 
     if "response" in resp and resp["response"] is not None:
@@ -122,8 +109,10 @@ def TaskStats(task: list, taskstat: dict) -> dict:
 
 
 def GetTaskStats(playbookname, subplaybookname, firstday, lastday, maxinc):
-    argument = {"size": maxinc,
-                "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"'}
+    argument = {
+        "size": maxinc,
+        "query": f'playbook:"{playbookname}" occurred:>="{firstday}T00:00:00" and occurred:<="{lastday}T23:59:59"',
+    }
     response = execute_command("getIncidents", argument)
     taskstat: dict = {}
     taskstats: dict = {}
