@@ -1661,15 +1661,17 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
         # $Demisto.results("Status: $Status")
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** completed !"
-            $kwargs.polling = "false"
+            $kwargs.polling = $false
             return $human_readable, $entry_context, $raw_response
         }
-        $kwargs.polling = "true"
+        $kwargs.polling = $true
+        $kwargs.continue_polling = $true
         $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** in progress !"
         return $human_readable, $entry_context, $raw_response
     } 
     # $Demisto.results("call StartSearch")
     $client.StartSearch($kwargs.search_name)
+    $kwargs.continue_polling = $true
     $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
 
     return $human_readable, $entry_context, $raw_response 
@@ -2089,14 +2091,11 @@ function Main {
         $polling = ConvertTo-Boolean $command_arguments.polling
         # $Demisto.results("polling: $polling")
         if ($polling) {
-            $command_name = "o365-sc-start-search"
-    
-            $polling_args = @{
-                search_name         = $command_arguments.search_name;
-                continue_polling    = "true";
-                hide_polling_output = $true;
-            };
-            # $Demisto.results("call to ReturnPollingOutputs")
+            $command_name = $command
+            # command_arguments.polling = $false
+            $polling_args = $command_arguments
+
+            # $Demisto.results("after polling_args: $(($polling_args | ConvertTo-Json -Depth 3))")
 
             ReturnPollingOutputs `
             -ReadableOutput $human_readable `
