@@ -1623,7 +1623,13 @@ class EntryBuilder:
         self,
         query: Query,
         entry_params: dict[Hashable, Any],
-    ) -> dict[Hashable, Any]:
+    ) -> tuple[dict[str, Any], dict[Hashable, Any]]:
+        """Build an entry by querying data.
+
+        :param query: The query instance.
+        :param entry_params: Template parameters for an entry.
+        :return: A pair of extra context and entry.
+        """
         query_params = query.query_params
         extra_context: dict[str, Any] = {
             "query": {
@@ -1654,7 +1660,7 @@ class EntryBuilder:
                 entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
 
         entry_type = entry_params.get("type")
         if not entry_type:
@@ -1724,9 +1730,9 @@ class EntryBuilder:
                 entry_params=self.__formatter.build(template=entry_params, context=self.__context.inherit(extra_context)),
             )
         ):
-            return entry
+            return extra_context, entry
         else:
-            return build_entry(self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset)
+            return extra_context, build_entry(self.__formatter.build(template=params, context=self.__context.inherit(extra_context)), recordset)
 
 
 """ MAIN FUNCTION """
@@ -2223,6 +2229,7 @@ class Main:
         self.__query_timeout_duration: int = (
             self.__arg_to_int("query_timeout_duration", DEFAULT_QUERY_TIMEOUT_DURATION) or DEFAULT_QUERY_TIMEOUT_DURATION
         )
+        self.__output_recordset = argToBoolean(args.get("output_recordset", "false"))
 
         self.__xql_query_instance: str | None = demisto.get(self.__template, "query.command.using") or args.get(
             "xql_query_instance"
@@ -2251,25 +2258,27 @@ class Main:
 
         need_query = not entry and self.__is_query_executable()
 
-        entry = entry or EntryBuilder(
-            formatter=formatter,
-            context=self.__context,
-        ).build(
-            query=Query(
-                query_params=query_params,
-                xql_query=XQLQuery(
-                    xql_query_instance=self.__xql_query_instance,
-                    polling_interval=self.__polling_interval,
-                    retry_interval=self.__retry_interval,
-                    retry_max=self.__max_retries,
-                    query_timeout_duration=self.__query_timeout_duration,
-                )
-                if need_query
-                else None,
-                cache=cache if self.__cache_type != CacheType.NONE else None,
-            ),
-            entry_params=self.__template.get("entry") or {},
-        )
+        extra_context: dict[str, Any] = {}
+        if not entry:
+            extra_context, entry = EntryBuilder(
+                formatter=formatter,
+                context=self.__context,
+            ).build(
+                query=Query(
+                    query_params=query_params,
+                    xql_query=XQLQuery(
+                        xql_query_instance=self.__xql_query_instance,
+                        polling_interval=self.__polling_interval,
+                        retry_interval=self.__retry_interval,
+                        retry_max=self.__max_retries,
+                        query_timeout_duration=self.__query_timeout_duration,
+                    )
+                    if need_query
+                    else None,
+                    cache=cache if self.__cache_type != CacheType.NONE else None,
+                ),
+                entry_params=self.__template.get("entry") or {},
+            )
 
         res = {
             "QueryParams": {
@@ -2279,6 +2288,10 @@ class Main:
                 "latest_time": query_params.get_latest_time_iso(),
             },
             "QueryHash": query_params.query_hash(),
+            "RequestURL": demisto.get(extra_context, "query.request_url"),
+            "ResultURL": demisto.get(extra_context, "query.result_url"),
+            "ExecutionID": demisto.get(extra_context, "query.execution_id"),
+            "RecordSet": demisto.get(extra_context, "recordset") or [] if self.__output_recordset else [],
             "Entry": entry,
         }
         if need_query and self.__cache_type == CacheType.ENTRY:
