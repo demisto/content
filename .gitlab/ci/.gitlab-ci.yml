@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: $INFRA_BRANCH
+  CURRENT_BRANCH_NAME: XSUP-51154-hide-mappers-and-classifiers-platform-configurtion
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: $INFRA_BRANCH
+    ref: XSUP-51154-hide-mappers-and-classifiers-platform-configurtion
     project: "${CI_PROJECT_NAMESPACE}/infra"
