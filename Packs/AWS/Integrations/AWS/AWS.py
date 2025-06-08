@@ -591,6 +591,24 @@ def main():  # pragma: no cover
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
 
+    # TODO - Test this
+    # context = demisto.callingContext.get("context", {})
+    # cloud_info = context.get("CloudIntegrationInfo", {})
+    # print(cloud_info)
+    # # x="/cts/accounts/token"
+    
+    # #     request_data = {
+    # #     "connector_id": cloud_info.get("connectorID"),
+    # #     "account_id": account_id,
+    # #     "outpost_id": cloud_info.get("outpostID"),
+    # #     "cloud_type": cloud_type,
+    # # }
+
+    # # demisto._platformAPICall(path=x, method="POST", data={
+    # #     "request_data": request_data
+    # # })
+    
+
     # TODO - credentials = get_cloud_credentials(CloudTypes.GCP)
     credentials = {}
     
