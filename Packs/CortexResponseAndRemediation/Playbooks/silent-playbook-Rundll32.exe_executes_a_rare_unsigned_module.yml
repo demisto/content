@@ -1,7 +1,7 @@
 id: silent-Rundll32.exe executes a rare unsigned module
 version: -1
 name: silent-Rundll32.exe executes a rare unsigned module
-description: "This playbook is designed to handle the alert \"Rundll32.exe executes a rare unsigned module\".\n\nThe playbook executes the following stages:\n\nData Retrieval\n- Retrieve the alert's extra data.\n- Calculate Host Risk Score,\n- Extract the extension of the loaded DLL.\n- Check the similarity between the CGO process signer and the company attribute of the loaded DLLs.\n\nInvestigation:\nDuring the alert investigation, the playbook will perform the following:\n- Checks DLL reputation.\n- Checks the similarity of the CGO process signer and the loaded DLL's company attribute.\n- Checks for the uncommon DLL extensions.\n- Check for uncommon causality chain executions.\n- Searches for related XDR agent alerts to determine if any suspicious behavior occurred as part of the causality chain and the related case ID.\n\nRemediation actions will be taken if:\n- The loaded DLL is malicious.\n- The DLL is loaded from an uncommon causality chain.\n- The DLL extension is uncommon, or the DLL's SHA256 is suspicious, and the host risk score is Medium.\n- The host risk score is High (and the similarity check is less than 0.6).\n\n\nRemediation actions:\n- Terminates the causality chain. \n- Quarantine suspicious or malicious DLLs, if any.\n\nRequires: \n- Enrichment integrations for checking the DLL's SHA256 reputation.\n"
+description: "This playbook handles the \"Rundll32.exe executes a rare unsigned module\" alerts.\n\nThe playbook executes the following stages:\n\nData retrieval:\n- Retrieve the alert extra data.\n- Calculate the host risk score\n- Extract the extension of the loaded DLL.\n- Calculate the similarity between the CGO process signer and the loaded DLL's company attribute.\n\nInvestigation:\n- Check the DLL reputation.\n- Check the similarity between the CGO process signer and the loaded DLL's company attribute.\n- Check for uncommon DLL extensions.\n- Check for uncommon causality chain executions.\n- Search for related XDR agent alerts to determine if any suspicious behavior occurred as part of the causality chain and the related case ID.\n\nRemediation actions will be taken if:\n- The loaded DLL is malicious.\n- The DLL is loaded from an uncommon causality chain.\n- The DLL extension is uncommon, or the DLL's SHA256 is suspicious, and the host risk score is Medium.\n- The host risk score is High (and the similarity check is less than 0.6).\n\n\nRemediation actions:\n- Terminate the causality chain. \n- Quarantine suspicious or malicious DLLs, if any.\n\nThe playbook requires enrichment integrations for checking the DLL's SHA256 reputation.\n"
 starttaskid: "0"
 issilent: true
 tasks:
@@ -176,8 +176,8 @@ tasks:
     task:
       id: 18586617-9004-4196-8b3f-268b95d9e8af
       version: -1
-      name: Check the CGO Singer and DLL's company similarity
-      description: Check the CGO Singer and loadded DLL's company attrebuite similarity.
+      name: Check the CGO signer and DLL company similarity
+      description: Check the similarity between the CGO process signer and the loaded DLL's company attribute.
       scriptName: StringSimilarity
       type: regular
       iscommand: false
@@ -196,7 +196,7 @@ tasks:
               applyIfEmpty: {}
               defaultValue:
                 value:
-                  simple: 'Core.OriginalAlert.event.action_module_file_info.company is empty '
+                  simple: 'Core.OriginalAlert.event.action_module_file_info.company is empty'
       string_B:
         complex:
           root: alert
@@ -308,7 +308,7 @@ tasks:
       id: 7205ed79-a6df-43c5-88db-ac9ea8cb611b
       version: -1
       name: Is CGO uncommon in this alert?
-      description: "Checks if the Causality chain is uncommon in this alert. \nIf the CGO name is one of the mentioned, the alert will be considered as TP."
+      description: "Checks if the causality chain is unusual for this alert. If the CGO name matches one on the list, the alert will be marked as a true positive (TP)."
       type: condition
       iscommand: false
       brand: ""
@@ -447,7 +447,7 @@ tasks:
       description: |-
         Check if there are any related alerts associated with this alert.
         The remediation phase will be taken in one of the following scenarios:
-        - If there are any related alerts (with Low, Medium, or High severity)
+        - If there are any related alerts with Low, Medium, or High severity.
         - If the host risk score is set to Medium, and there are any insights.
       type: condition
       iscommand: false
@@ -1046,8 +1046,8 @@ tasks:
       version: -1
       name: Search related alerts by causality chain
       description: |-
-        This task searches using the causality process chain for suspicious related alerts that may indicate a compromised endpoint.
-        Focus on identifying the following alerts below:
+        This task uses the causality process chain to search for suspicious related alerts that may indicate a compromised endpoint.
+        It searches for the following alerts:
 
         - Regsvr32 may have run code from an untrusted source
         - Process calls ActiveX Object with a shell command
@@ -1160,7 +1160,7 @@ tasks:
       id: d3e8c9d9-2857-497e-8db9-09cd9ee5d6ee
       version: -1
       name: Check if the fuzzyhash is not similar
-      description: Remove False Positives in case the CGO signer is similar to the Company name in the DLL's attribute (excluding Microsoft Corporation).
+      description: Remove false positives if the CGO signer is similar to the company name in the DLL's attribute (excluding Microsoft Corporation).
       type: condition
       iscommand: false
       brand: ""
@@ -1345,7 +1345,7 @@ tasks:
       - "31"
     scriptarguments:
       closeNotes:
-        simple: Resolved as False positive - Handled by the playbook "Rundll32.exe executes a rare unsigned module"
+        simple: Resolved as false positive - handled by the playbook "Rundll32.exe executes a rare unsigned module"
       closeReason:
         simple: Resolved - False Positive
       id:
@@ -1376,7 +1376,7 @@ tasks:
       name: Search related alerts by Case ID
       description: |-
         This task searches within the same case for additional suspicious related alerts that may indicate a compromised endpoint.
-        Focus on identifying the following alerts below:
+        It searches for the following alerts:
 
         - Regsvr32 may have run code from an untrusted source
         - Process calls ActiveX Object with a shell command
@@ -1407,8 +1407,6 @@ tasks:
     scriptarguments:
       fromdate:
         simple: 5 hours ago
-      includeinformational:
-        simple: "true"
       query:
         simple: "(\n${alert.parentXDRIncident=val.split('-')[1]})  \nAND \n(\nname:\"Regsvr32 may have run code from an untrusted source\" OR \nname:\"Process calls ActiveX Object with a shell command\" OR \nname:\"Command-line arguments match Mimikatz execution\" OR \nname:\"Unicode RTL Override Character\" OR\nname:\"Screensaver process executed from Users or temporary folder by a scripting engine process\" OR \nname:\"Unsigned and unpopular process performed a DLL injection\" OR \nname:\"Unsigned and unpopular process performed queue APC injection\" OR \nname:\"Unsigned and unpopular process performed an injection\" OR \nname:\"Unsigned and unpopular process performed process hollowing injection\" OR \nname:\"Unsigned and unpopular process performed a DLL injection to a commonly abused process\" OR \nname:\"Unsigned and unpopular process performed injection into a commonly abused process\" OR \nname:\"Uncommon Service Create/Config\" OR \nname:\"Unsigned and unpopular process injected into a commonly abused process\" OR \nname:\"Unsigned process injects code into a process\" OR \nname:\"New service created via command line\" OR \nname:\"PowerShell is used to execute a CPL file\" OR \nname:\"Task scheduled by commonly abused host process\" OR \nname:\"Unsigned process running from a temporary directory\" OR \nname:\"Suspicious file created in AppData directory\" \n)"
       todate:
