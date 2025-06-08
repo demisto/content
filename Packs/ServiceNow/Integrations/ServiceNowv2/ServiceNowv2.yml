@@ -1585,9 +1585,6 @@ script:
       - description: The ticket ID.
         name: id
         required: true
-      - description: Retrieve entries that were created after lastUpdate.
-        name: lastUpdate
-        required: true
     description: Get remote data preview from a remote incident. This method does not update the current incident, and is used to preview the ticket which would be updated.
     name: get-remote-data-preview
   - arguments:

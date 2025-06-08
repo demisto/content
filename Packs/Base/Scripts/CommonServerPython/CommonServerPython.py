@@ -403,6 +403,7 @@ class MirrorObject:
     """
     ticket_url: Optional[str] = None
     ticket_id: Optional[str] = None
+    ticket_name: Optional[str] = None
 
     def __post_init__(self) -> None:
         """
@@ -418,6 +419,8 @@ class MirrorObject:
             missing_fields_list.append('ticket_url')
         if self.ticket_id is None:
             missing_fields_list.append('ticket_id')
+        if self.ticket_name is None:
+            missing_fields_list.append('ticket_name')
 
         if missing_fields_list:
             demisto.debug(f"MirrorObject: Initialized with missing mandatory fields: {', '.join(missing_fields_list)}")

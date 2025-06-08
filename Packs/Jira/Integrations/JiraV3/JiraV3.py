@@ -2132,7 +2132,7 @@ def get_remote_data_preview_command(client: JiraBaseClient, args: Dict[str, str]
     Returns:
         CommandResults: CommandResults to return to XSOAR.
     """
-    issue_id_or_key = get_issue_id_or_key(issue_id=args.get("issue_id", ""), issue_key=args.get("issue_key", ""))
+    issue_id_or_key = get_issue_id_or_key(issue_id=args.get("id", ""), issue_key=args.get("issue_key", ""))
     issue = client.get_issue(issue_id_or_key=issue_id_or_key)
     context_methods = {
         "id": JiraIssueFieldsParser.get_id_context,
@@ -2338,7 +2338,7 @@ def create_issue_command(
         ui_base_url = server_url
     ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
 
-    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_key)
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_key, ticket_name=ticket_key)
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
