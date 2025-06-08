@@ -24,6 +24,7 @@ MAX_FAILURE_ENTRIES_TO_HANDLE_PER_TYPE = 10
 # Netskope response constants
 RATE_LIMIT_REMAINING = "ratelimit-remaining"  # Rate limit remaining
 RATE_LIMIT_RESET = "ratelimit-reset"  # Rate limit RESET value is in seconds
+RATE_LIMIT_IN_SECOND = "X-RateLimit-Limit-Second" # The maximum number of API requests allowed to send per second.
 VENDOR = "netskope"
 PRODUCT = "netskope"
 XSIAM_SEM = asyncio.Semaphore(20)
@@ -59,27 +60,50 @@ class Client:
         self._base_url = base_url
         self._verify = verify
         self._proxy_url = handle_proxy().get('http') if proxy else None
-        self._async_session = None
+        self._async_sessions = None
 
 
+    async def _init_async_limiter(self):
+        # from aiolimiter import AsyncLimiter
+        url = urljoin(self._base_url, f"events/data/network")
+        params = assign_params(starttime=0, endtime=1, limit=1)
+        demisto.debug('trying to setup the _async_limiter')
+        session = next(iter(self._async_sessions.values()))
+        async with session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
+                resp.raise_for_status()
+                request_count = resp.headers.get(RATE_LIMIT_IN_SECOND)
+                self._async_limiter = AsyncLimiter(int(request_count), 2) ## request_count in a 2 sec
+                demisto.debug(f'setting the _async_limiter to serve {request_count} in 2 seconds')
+    
     async def __aenter__(self):
-        demisto.debug("Opening the aiohttp session")
-        self._async_session = aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self._verify))
+        self.init_sessions()
         return self
 
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        demisto.debug("Closing aiohttp session")
-        await self._async_session.close()
-    
-    async def get_events_data_async(self, type, params):
-        url_suffix = TYPE_TO_ENDPOINT_MAP.get(type, f"events/data/{type}")
-        url = urljoin(self._base_url, url_suffix)
-        async with self.netskope_semaphore:
+        for event_type, session in self._async_sessions.items():
+            demisto.debug(f"Closing aiohttp session for the type {event_type}")
+            await session.close()
 
-            async with self._async_session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
-                demisto.debug(f'getting "{type}" events data, {params=}')
-                resp.raise_for_status()
-                return await resp.json()
+    def init_sessions(self):
+        demisto.debug("Opening the aiohttp session for each event type")
+        if self._async_sessions is None:
+            self._async_sessions = {
+                event_type: aiohttp.ClientSession(connector=aiohttp.TCPConnector(verify_ssl=self._verify))
+                for event_type in self.event_types_to_fetch
+            }    
+        
+    async def get_events_data_async(self, type, params):
+        try:
+            url_suffix = TYPE_TO_ENDPOINT_MAP.get(type, f"events/data/{type}")
+            url = urljoin(self._base_url, url_suffix)
+            async with self.netskope_semaphore:
+                session = self._async_sessions[type]
+                async with session.get(url, params=params, headers=self._headers, proxy=self._proxy_url) as resp:
+                    demisto.debug(f'getting "{type}" events data, {params=}')
+                    resp.raise_for_status()
+                    return await resp.json()
+        except (aiohttp.ClientOSError, aiohttp.ServerDisconnectedError, aiohttp.ClientPayloadError) as e:
+            demisto.error(f"Connection issue while getting {type} events: {e}")
 
     async def get_events_count(self, type, params, limit):
         """Return the count of event existing for the given type and time
@@ -100,15 +124,7 @@ class Client:
             event_count = res[0].get('event_count')
             if event_count is not None:
                 demisto.debug(f'there is {event_count} total "{type}" events for the given time')
-                return event_count
-        ####
-        # search by binary search
-        # offset = limit
-        # offset = offset = offset + limit
-        # params = params | {'fields': 'event_count:count(_id)', 'limit': 1, 'offset': offset}
-        # response = await self.get_events_data_async(type, params | {'fields': 'event_count:count(_id)'})
-        # res = response.get('result')
-        # if res
+                return event_count  
         return None
 
 
@@ -273,6 +289,7 @@ async def honor_rate_limiting_async(headers, event_type, params) -> bool:
 
 
 async def handle_event_type_async(client: Client, event_type: str, start_time: str, end_time: str, offset: int, limit: int, send_to_xsiam: bool, is_re_fetch_failed_fetch: bool = False):
+    start = time.time()
     page_size = min(limit, MAX_EVENTS_PAGE_SIZE)
     time_window_params = get_time_window_params(event_type, start_time, end_time)
 
@@ -305,7 +322,6 @@ async def handle_event_type_async(client: Client, event_type: str, start_time: s
     events = list(chain.from_iterable(success_res))
 
     res_dict = {'events': events, 'failures': failures_data}
-    demisto.debug(f"Fetched {len(events)} '{event_type}' events")
     if not is_re_fetch_failed_fetch:
         # in case of is_re_fetch_failed_fetch=True, it's mean we are trying to fetch a chunk from previos fetch that failed
         # so, no aditional info is needed.
@@ -323,6 +339,7 @@ async def handle_event_type_async(client: Client, event_type: str, start_time: s
             res_dict |= next_fetch_data
         else:
             res_dict |= {"next_fetch_start_time": end_time}
+    demisto.debug(f"Handled {len(events)} '{event_type}' events in {time.time() - start:.2f} seconds")
     return event_type, res_dict
 
 
