@@ -330,3 +330,96 @@ def test_retrieve_takedown_requests_command_error(requests_mock: MagicMock, clie
     # Execute the command
     with pytest.raises(DemistoException, match="Error in API call"):
         retrieve_takedown_requests_command(client, args)
+
+
+def test_retrieve_takedown_requests_command_success(requests_mock, client):
+    """
+    Scenario: Retrieve takedown requests successfully.
+    """
+    from TakedownCyberint import retrieve_takedown_requests_command
+    mock_response = {
+        "data": {
+            "takedown_requests": [
+                {
+                    "reason": "Phishing",
+                    "url": "https://example.com/phishing",
+                    "original_url": "https://example.com",
+                    "customer": "Cyberint",
+                    "status": "Open",
+                    "brand": "Example",
+                    "alert_ref_id": "12345",
+                    "alert_id": 123,
+                    "hosting_providers": ["Provider1"],
+                    "name_servers": ["ns1.example.com"],
+                    "escalation_actions": ["Action1"],
+                    "last_escalation_date": "2024-01-01T00:00:00Z",
+                    "last_status_change_date": "2024-01-02T00:00:00Z",
+                    "last_seen_date": "2024-01-03T00:00:00Z",
+                    "created_date": "2023-12-31T00:00:00Z",
+                    "status_reason": "Submitted",
+                    "id": "67890",
+                }
+            ]
+        }
+    }
+    requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", json=mock_response)
+    args = {"customer_id": "Cyberint"}
+    result = retrieve_takedown_requests_command(client, args)
+    assert result.readable_output.startswith("### Takedown Requests")
+    assert result.outputs_prefix == "Cyberint.takedowns_list"
+    assert result.outputs_key_field == "id"
+    assert result.raw_response == mock_response["data"]["takedown_requests"]
+    assert result.outputs == mock_response["data"]["takedown_requests"]
+
+
+def test_retrieve_takedown_requests_command_empty(requests_mock, client):
+    """
+    Scenario: Retrieve takedown requests returns empty response.
+    """
+    from TakedownCyberint import retrieve_takedown_requests_command
+    mock_response = {"data": {"takedown_requests": []}}
+    requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", json=mock_response)
+    args = {"customer_id": "Cyberint"}
+    result = retrieve_takedown_requests_command(client, args)
+    assert result.readable_output == "### Takedown Requests\n**No entries.**\n"
+    assert result.outputs_prefix == "Cyberint.takedowns_list"
+    assert result.outputs_key_field == "id"
+    assert result.raw_response == []
+    assert result.outputs == []
+
+
+def test_takedown_response_header_transformer():
+    from TakedownCyberint import takedown_response_header_transformer
+    assert takedown_response_header_transformer("customer_id") == "Customer ID"
+    assert takedown_response_header_transformer("actions") == "Actions"
+    assert takedown_response_header_transformer("alert_id") == "Alert ID"
+    assert takedown_response_header_transformer("url") == "URL"
+    # Test fallback
+    assert takedown_response_header_transformer("unknown_field") == "Unknown Field"
+
+
+def test_main_test_module(monkeypatch):
+    """
+    Test the main() function for the 'test-module' command.
+    """
+    import TakedownCyberint
+    called = {}
+    def fake_params():
+        return {"url": BASE_URL, "access_token": {"password": TOKEN}, "insecure": True, "proxy": False}
+    def fake_args():
+        return {}
+    def fake_command():
+        return "test-module"
+    def fake_return_results(res):
+        called["result"] = res
+    monkeypatch.setattr(TakedownCyberint.demisto, "params", fake_params)
+    monkeypatch.setattr(TakedownCyberint.demisto, "args", fake_args)
+    monkeypatch.setattr(TakedownCyberint.demisto, "command", fake_command)
+    monkeypatch.setattr(TakedownCyberint, "return_results", fake_return_results)
+    class DummyClient(TakedownCyberint.Client):
+        def retrieve_takedown_requests(self, *a, **kw):
+            return {"dummy": True}
+    monkeypatch.setattr(TakedownCyberint, "Client", DummyClient)
+    TakedownCyberint.main()
+    assert called["result"] == "ok"
+
