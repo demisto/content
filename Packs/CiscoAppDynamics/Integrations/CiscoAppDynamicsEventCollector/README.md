@@ -31,10 +31,10 @@ You can create new API Client identity types that can be used to generate OAuth 
     | Client ID                                                    | True         |
     | Client Secret                                                | True         |
     | Application ID                                               | True         |
-    | Fetch Events                                                 | False        |
-    | Event types to fetch (Multi-select list)                     | False        |
     | Trust any certificate (not secure)                           | False        |
     | Use system proxy settings                                    | False        |
+    | Fetch Events                                                 | False        |
+    | Event types to fetch (Multi-select list)                     | False        |
     | The maximum number of Audit History API per fetch            | False        |
     | The maximum number of Healthrule Violations Events per fetch | False        |
 
@@ -63,9 +63,3 @@ Retrieves a list of events from the cisappdynamics instance.
 | events_type_to_fetch | Which events to fetch. Possible values are: Audit, Healthrule Violations Events. Default is Audit,Healthrule Violations Events. | Optional | 
 | start_date | The starting date from which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional | 
 | end_date | The date up to which events should be fetched. The date should be in the format "YYYY-MM-DDTHH:MM:SS". Example: 2025-01-01T11:27:08. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| CiscoAppDynamics | List | The list of events. | 

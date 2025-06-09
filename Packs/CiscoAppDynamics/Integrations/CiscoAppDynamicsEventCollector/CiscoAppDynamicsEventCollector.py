@@ -11,13 +11,7 @@ urllib3.disable_warnings()
 VENDOR = "cisco"
 PRODUCT = "appdynamics"
 
-TOKEN_URL = "/api/oauth/access_token"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
-
-DEFAULT_MAX_AUDIT = 100
-DEFAULT_MAX_HEALTH = 3000
-
-HEALTH_RULE_API_LIMIT = 600
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 
 
 class EventType:
@@ -26,14 +20,23 @@ class EventType:
     per-type settings for fetching and deduplicating events.
     """
 
-    def __init__(self, name: str, url_suffix: str, time_field: str, source_log_type: str, default_params: dict = {}):
+    def __init__(
+        self,
+        name: str,
+        url_suffix: str,
+        time_field: str,
+        source_log_type: str,
+        api_limit: int = 0,
+        default_params: dict = {},
+    ):
         """
         Args:
-            name (str): Human-friendly name of the event type.
-            url_suffix (str): URL suffix of the CybelAngel API endpoint (no leading slash).
-            max_fetch (int): Maximum events to fetch to XSIAM each fetch.
-            time_field (str): Field name in the event used for timestamp mapping (`_time`).
+            name            (str): Human-friendly name of the event type.
+            url_suffix      (str): URL suffix of the CybelAngel API endpoint (no leading slash).
+            max_fetch       (int): Maximum events to fetch to XSIAM each fetch.
+            time_field      (str): Field name in the event used for timestamp mapping (`_time`).
             source_log_type (str): Value to assign to each event’s `source_log_type` field in XSIAM.
+            api_limit       (int): Maximum events that the API can retrieve in one call.
             default_params (dict): Dict to contain default parameters for the API calls.
         """
         self.name = name
@@ -41,6 +44,7 @@ class EventType:
         self.max_fetch = 1
         self.time_field = time_field
         self.source_log_type = source_log_type
+        self.api_limit = api_limit
         self.default_params = default_params
 
 
@@ -58,6 +62,7 @@ HEALTH_EVENT = EventType(
     url_suffix="/rest/applications/application_id/problems/healthrule-violations",
     time_field="detectedTimeInMillis",
     source_log_type="Healthrule Violations Event",
+    api_limit=600,
     default_params={
         "time-range-type": "BETWEEN_TIMES",
         "output": "JSON",
@@ -103,7 +108,7 @@ class Client(BaseClient):
 
         headers = {"Content-Type": "application/x-www-form-urlencoded"}
         params = {"grant_type": "client_credentials", "client_id": self.client_id, "client_secret": self.client_secret}
-        response = self._http_request(method="POST", url_suffix=TOKEN_URL, params=params, headers=headers)
+        response = self._http_request(method="POST", url_suffix="/api/oauth/access_token", params=params, headers=headers)
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
         demisto.debug(f"Access token expire in: {expires_in}")
@@ -178,14 +183,7 @@ class Client(BaseClient):
 
         add_fields_to_events(events, AUDIT)
 
-        timestamps = [ev[AUDIT.time_field] for ev in events]
-
-        if timestamps != sorted(timestamps):
-            demisto.debug("Audit events are NOT sorted by timestamp.")
-        else:
-            demisto.debug("Audit events are already sorted by timestamp.")
-
-        events.sort(key=lambda ev: datetime.fromisoformat(ev["_time"].replace("Z", "+00:00")))
+        events.sort(key=lambda ev: int(ev["timeStamp"]))
 
         return events
 
@@ -215,14 +213,9 @@ class Client(BaseClient):
             if not batch:
                 break
             events.extend(batch)
-            if len(batch) < HEALTH_RULE_API_LIMIT:
+            if len(batch) < HEALTH_EVENT.api_limit:
                 break
             start_time = events[-1][HEALTH_EVENT.time_field]
-        timestamps = [ev[HEALTH_EVENT.time_field] for ev in events]
-        if timestamps != sorted(timestamps):
-            demisto.debug("Health events are NOT sorted by timestamp.")
-        else:
-            demisto.debug("Health events are already sorted by timestamp.")
 
         demisto.debug(f"Fetched {len(events)} Healthrule Violations Events from API.")
         return add_fields_to_events(events, HEALTH_EVENT)
@@ -263,9 +256,10 @@ def fetch_events(
         )
         demisto.debug(f"Fetched {len(events)} events")
         if events:
+            events = events[: event_type.max_fetch]
             all_events.extend(events)
         if events:
-            last_run[event_type.name] = events[-1][event_type.time_field] + 1
+            last_run[event_type.name] = int(events[-1][event_type.time_field]) + 1
         else:
             last_run[event_type.name] = current_time + 1
 
@@ -287,7 +281,7 @@ def add_fields_to_events(events: list[dict], event_type: EventType) -> list[dict
     if not events:
         return []
     for event in events:
-        event["_time"] = timestamp_to_datestring(event[event_type.time_field], DATE_FORMAT, is_utc=True)[:-3] + "Z"
+        event["_time"] = timestamp_to_datestring(event[event_type.time_field], DATE_FORMAT, is_utc=True)
         event["SOURCE_LOG_TYPE"] = event_type.source_log_type
 
     return events
@@ -324,7 +318,6 @@ def get_events(client: Client, args: dict[str, Any], params: dict[str, Any]) -> 
     Returns:
       - CommandResults: include human readable from the events.
     """
-    args = demisto.args()
     event_type_name = args.get("events_type_to_fetch", AUDIT.name)
     if event_type_name == HEALTH_EVENT.name:
         HEALTH_EVENT.url_suffix = f"/rest/applications/{params['application_id']}/problems/healthrule-violations"
@@ -345,7 +338,7 @@ def get_events(client: Client, args: dict[str, Any], params: dict[str, Any]) -> 
     )
 
     events = events[:limit]
-    if argToBoolean(args.get("is_fetch_events") or False):
+    if argToBoolean(args.get("is_fetch_events", False)):
         send_events_to_xsiam(vendor=VENDOR, product=PRODUCT, events=events)
         demisto.debug(f"Successfully send {len(events)} to XSIAM.")
     return CommandResults(
@@ -396,7 +389,7 @@ def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, i
         if last_time_iso and event_type in events_type_to_fetch:
             last_run[event_type.name] = last_time_iso
         else:
-            last_run[event_type.name] = now - (60 * 1000)
+            last_run[event_type.name] = now - (60 * 1000) * 60 * 24
 
     return last_run
 
