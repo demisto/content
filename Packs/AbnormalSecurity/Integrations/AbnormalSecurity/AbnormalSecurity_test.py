@@ -919,7 +919,7 @@ def test_get_paginated_threats_list(mocker):
         auth=None,
         headers=headers
     )
-    
+
     # Create a side effect function for threats
     get_threats_side_effect = create_mock_paginator_side_effect("threat")
 
@@ -928,7 +928,7 @@ def test_get_paginated_threats_list(mocker):
         client, 'get_a_list_of_threats_request',
         side_effect=get_threats_side_effect
     )
-    
+
     # Test case 1: Get all threats with high limit (max_incidents_to_fetch > existing items)
     # This should set page_size to the limit (10) but return only as many items as exist
     result = client.get_paginated_threats_list(filter_="test filter", max_incidents_to_fetch=10)
@@ -959,9 +959,9 @@ def test_get_paginated_threats_list(mocker):
 
     # Check first call parameters
     first_call_kwargs = get_threats_mock.call_args_list[0][1]
-    assert first_call_kwargs["filter_"] == "test filter"
-    assert first_call_kwargs["page_size"] == 2
-    assert first_call_kwargs["page_number"] == 1
+    assert first_call_kwargs['filter_'] == "test filter"
+    assert first_call_kwargs['page_size'] == 2
+    assert first_call_kwargs['page_number'] == 1
 
     # If there was a second call, check its parameters
     if get_threats_mock.call_count > 1:
@@ -1016,7 +1016,7 @@ def test_get_paginated_cases_list(mocker):
         auth=None,
         headers=headers
     )
-    
+
     # Create a side effect function for cases
     get_cases_side_effect = create_mock_paginator_side_effect("case")
 
@@ -1113,7 +1113,7 @@ def test_get_paginated_abusecampaigns_list(mocker):
         auth=None,
         headers=headers
     )
-    
+
     # Create a side effect function for campaigns
     get_campaigns_side_effect = create_mock_paginator_side_effect("campaign")
 
