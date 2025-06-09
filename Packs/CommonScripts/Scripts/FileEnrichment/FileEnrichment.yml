@@ -7,29 +7,30 @@ args:
   required: true
 - name: enrichment_brands
   description: |-
-    Integrations brands to use for running the file reputation command. If not provided, the command will run for all available integrations that contain the file reputation command.
-    For multi-select, provide a comma-separated list of integration internal names. For example: "VirusTotal (API v3),WildFire-v2".
+    Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.
+    For multi-select, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2".
   auto: PREDEFINED
   predefined:
   - 'VirusTotal (API v3)'
   - 'WildFire-v2'
   - 'Cortex Core - IR'
+  isArray: true
 - name: verbose
-  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will be containing only summary of the final result.
+  description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   defaultValue: 'false'
 - name: external_enrichment
-  description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in Threat Intelligence Module (TIM) will be retrieved.
+  description: Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module (TIM) will be retrieved.
   auto: PREDEFINED
   predefined:
   - 'true'
   - 'false'
   defaultValue: 'false'
 - name: additional_fields
-  description: Whether to return unmapped File indicator fields from the Threat Intelligence Module (TIM) to the context output under the "FileEnrichment.AdditionalFields" path.
+  description: Whether to return unmapped (secondary) fields to the context output under the "FileEnrichment.AdditionalFields" path.
   auto: PREDEFINED
   predefined:
   - 'true'
@@ -98,7 +99,7 @@ outputs:
   - contextPath: FileEnrichment.Company
     description: The name of the company that released a binary.
     type: String
-  - contextPath: FileEnrichmentProductName
+  - contextPath: FileEnrichment.ProductName
     description: The product title to which the file belongs.
     type: String
   - contextPath: FileEnrichment.DigitalSignature.Publisher
@@ -200,6 +201,15 @@ outputs:
   - contextPath: FileEnrichment.AssociatedFileNames
     description: The names of other files associated with this file.
     type: Array
+  - contextPath: FileEnrichment.GlobalPrevalence
+    description: The global prevalence of the file hash.
+    type: Number
+  - contextPath: FileEnrichment.LocalPrevalence
+    description: The local prevalence of the file hash.
+    type: Number
+  - contextPath: FileEnrichment.AdditionalFields
+    description: Unmapped (secondary) fields.
+    type: Object
 script: '-'
 timeout: '0'
 type: python

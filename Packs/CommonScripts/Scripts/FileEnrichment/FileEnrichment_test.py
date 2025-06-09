@@ -522,6 +522,7 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
         "Status": "Done",  # Got "File" context from two commands
         "Result": "Success",  # No error entries in command results
         "Message": "Found data on file from 2 sources.",
+        "TIM Verdict": "Unknown",
     }
 
     assert summary_command_results.outputs == {
@@ -560,6 +561,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
         "Status": "Not Found",  # No "File" context from any command
         "Result": "Failed",  # Error entry in command results
         "Message": "Could not find data on file. Consider setting external_enrichment=true.",
+        "TIM Verdict": "Unknown",
     }
 
     assert summary_command_results.outputs == {}

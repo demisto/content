@@ -66,6 +66,14 @@ INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING = {
 }
 
 
+DBOT_SCORE_TO_VERDICT = {
+    0: "Unknown",
+    1: "Good",
+    2: "Suspicious",
+    3: "Bad",
+}
+
+
 class ContextPaths(Enum):
     FILE_ENRICHMENT = (
         "FileEnrichment("
@@ -353,6 +361,20 @@ def merge_context_outputs(per_command_context: dict[str, dict], include_addition
             merged_context_output[ContextPaths.FILE_ENRICHMENT.value].append(file_context)
 
     return assign_params(**merged_context_output)
+
+
+def get_tim_file_verdict(per_command_context: dict[str, dict]) -> str:
+    """
+    Gets the file indicator verdict using the score in the Threat Intelligence Module (TIM).
+
+    Args:
+        per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
+
+    Returns:
+        str: Verdict from TIM, if known.
+    """
+    score = per_command_context.get("findIndicators", {}).get("FileEnrichment", {}).get("Score")
+    return DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
 
 
 """ COMMAND EXECUTION FUNCTIONS """
@@ -666,6 +688,7 @@ def summarize_command_results(
     file_found_count = len([value for value in per_command_context.values() if value])
     demisto.debug(f"Found information on file {file_hash} from {file_found_count} sources.")
     summary["Status"] = "Done" if file_found_count > 0 else "Not Found"
+    summary["TIM Verdict"] = get_tim_file_verdict(per_command_context)
 
     # Write summary Message
     if file_found_count > 0:

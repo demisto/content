@@ -16,10 +16,10 @@ This script gathers file reputation data from multiple integrations and returns 
 | **Argument Name** | **Description** |
 | --- | --- |
 | file_hash | Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512. |
-| enrichment_brands | Integrations brands to use for running the file reputation command. If not provided, the command will run for all available integrations that contain the file reputation command.<br/>For multi-select, provide a comma-separated list of integration internal names. For example: "VirusTotal \(API v3\),WildFire-v2". |
-| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will be containing only summary of the final result. Default is false. |
-| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in Threat Intelligence Module \(TIM\) will be retrieved. Default is false. |
-| additional_fields | Whether to return unmapped File indicator fields from the Threat Intelligence Module \(TIM\) to the context output under the "FileEnrichment.AdditionalFields" path. Default is false. |
+| enrichment_brands | Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.<br/>For multi-select, provide a comma-separated list of integration IDs. For example: "VirusTotal \(API v3\),WildFire-v2". |
+| verbose | Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result. Default is false. |
+| external_enrichment | Whether to run additional external indicator enrichment commands. Set to true to enrich with information from the specified source brands. If set to false, only existing indicators in the Threat Intelligence Module \(TIM\) will be retrieved. Default is false. |
+| additional_fields | Whether to return unmapped \(secondary\) fields to the context output under the "FileEnrichment.AdditionalFields" path. Default is false. |
 
 ## Outputs
 
@@ -47,7 +47,7 @@ This script gathers file reputation data from multiple integrations and returns 
 | FileEnrichment.Hostname | The hostname of the device where the file was found. | String |
 | FileEnrichment.Path | The directory path where the file is located. | String |
 | FileEnrichment.Company | The name of the company that released a binary. | String |
-| FileEnrichmentProductName | The product title to which the file belongs. | String |
+| FileEnrichment.ProductName | The product title to which the file belongs. | String |
 | FileEnrichment.DigitalSignature.Publisher | The entity that issued the digital signature of the file. | String |
 | FileEnrichment.Actor | The threat actor associated with the file, if applicable. | String |
 | FileEnrichment.Tags | Tags assigned to the file for categorization or identification. | Array |
@@ -81,3 +81,6 @@ This script gathers file reputation data from multiple integrations and returns 
 | FileEnrichment.Quarantined | Indicates whether the file has been quarantined to prevent potential harm. | Bool |
 | FileEnrichment.Organization | The organization to which the file is attributed. | String |
 | FileEnrichment.AssociatedFileNames | The names of other files associated with this file. | Array |
+| FileEnrichment.GlobalPrevalence | The global prevalence of the file hash. | Number |
+| FileEnrichment.LocalPrevalence | The local prevalence of the file hash. | Number |
+| FileEnrichment.AdditionalFields | Unmapped \(secondary\) fields. | Object |
