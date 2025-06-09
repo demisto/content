@@ -176,7 +176,6 @@ class Client(BaseClient):
         Args:
             start_date       (str): DATE_FORMAT lower bound (e.g. "2025-05-01T00:00:00.000Z").
             end_date         (str): DATE_FORMAT upper bound (e.g. "2025-05-11T14:00:00.000Z").
-            limit            (int): Maximum number of credential entries to retrieve (default: DEFAULT_MAX_FETCH_REPORT).
 
         Returns:
             List[dict[str, Any]]: A list of reports events, each containing:
@@ -241,6 +240,7 @@ class Client(BaseClient):
     ) -> List[dict[str, Any]]:
         """
         Fetch domain-watchlist events from CybelAngel, handling pagination when more than `limit` events exist.
+        API return in descending order, in order the fetch the oldeset we fetch the whole time interval first.
 
         CybelAngel’s API returns events in descending order by detection date.
         In order the fetch the first 'limit' events we do as follow:
@@ -269,7 +269,7 @@ class Client(BaseClient):
 
         response = self.http_request(method="GET", url_suffix=DOMAIN.url_suffix, params=params) or {}
 
-        events = response.get("results", [])  # type: ignore
+        events = response["results"]  # type: ignore
         total = response.get("total", 0)  # type: ignore
         demisto.debug(f"Fetched {len(events)} / {total} domain events on first call")
 
@@ -520,7 +520,7 @@ def test_module(client: Client, events_type_to_fetch: list[EventType]) -> str:
     """
     Tests that the authentication to the api is ok.
     """
-    start_time = (datetime.now() - timedelta(days=1)).strftime(DATE_FORMAT)
+    start_time = (datetime.now() - timedelta(minutes=30)).strftime(DATE_FORMAT)
     end_time = datetime.now().strftime(DATE_FORMAT)
     event_fetch_function = {
         DOMAIN.name: client.get_domain_watchlist,
@@ -539,9 +539,7 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
 
     For each event type, this function:
       1. Retrieves the previous run's timestamp and IDs via `get_last_run()`.
-      2. Fetch events for each type using the relevant command:
-        2.1 For REPORT fetches all events in the time interval.
-        2.2 For DOMAIN/CREDENTIALS fetches up `event_type.max_fetch + previous_count`.
+      2. Fetch events for each type using the relevant command.
       3. Removes any events already fetched.
       4. If no new events remain:
          - Sets this type's last-run timestamp to now and clears its ID list.
@@ -577,7 +575,7 @@ def fetch_events(client: Client, events_type_to_fetch: list[EventType]) -> tuple
     for event_type in events_type_to_fetch:
         demisto.debug(f"Fetching {event_type.name}")
 
-        last_time: str = last_run[event_type.name][LATEST_TIME]
+        last_time = last_run[event_type.name][LATEST_TIME]
         last_ids = last_run[event_type.name][LATEST_FETCHED_IDS]
         demisto.debug(f"Last run for {event_type.name}: time={last_time}, ids={len(last_ids)}")
 
