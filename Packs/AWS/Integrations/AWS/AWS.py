@@ -28,7 +28,13 @@ def arg_to_bool_or_none(value):
         return None
     else:
         return argToBoolean(value)
-  
+
+def parse_resource_ids(resource_id: str | None) -> list[str]:
+    if resource_id is None:
+        raise ValueError("Resource ID cannot be empty")
+    id_list = resource_id.replace(" ", "")
+    resource_ids = id_list.split(",")
+    return resource_ids
 
 class AWSServices(StrEnum):
     S3 = 's3'
@@ -68,20 +74,8 @@ class S3:
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
-        try:
-            response = client.get_public_access_block(Bucket=args.get('bucket'))
-            public_access_block_configuration = response.get('PublicAccessBlockConfiguration')
-            kwargs = {
-                'BlockPublicAcls': public_access_block_configuration.get('BlockPublicAcls'),
-                'IgnorePublicAcls': public_access_block_configuration.get('IgnorePublicAcls'),
-                'BlockPublicPolicy': public_access_block_configuration.get('BlockPublicPolicy'),
-                'RestrictPublicBuckets': public_access_block_configuration.get('RestrictPublicBuckets')
-            }
-        except Exception:
-            return CommandResults(
-                readable_output=f"Couldn't check current public access block to the {args.get('bucket')} bucket")
 
-        command_args: dict[str, Union[bool, None]] = {
+        kwargs: dict[str, Union[bool, None]] = {
             'BlockPublicAcls': argToBoolean(args.get('block_public_acls')) if args.get('block_public_acls') else None,
             'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')) if args.get('ignore_public_acls') else None,
             'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')) if args.get('block_public_policy') else None,
@@ -89,17 +83,18 @@ class S3:
                 argToBoolean(args.get('restrict_public_buckets')) if args.get('restrict_public_buckets') else None
         }
 
-        remove_nulls_from_dictionary(command_args)
-        for arg_key, arg_value in command_args.items():
-            kwargs[arg_key] = arg_value
-
-        response = client.put_public_access_block(Bucket=args.get('bucket'),
-                                                  PublicAccessBlockConfiguration=kwargs)
+        remove_nulls_from_dictionary(kwargs)
+        response = client.put_public_access_block(Bucket=args.get('bucket'), PublicAccessBlockConfiguration=kwargs)
 
         if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
             return CommandResults(
-                readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
-        return CommandResults(readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket")
+                readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket"
+                )
+            
+        return CommandResults(
+            entry_type=EntryType.ERROR,
+            readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket"
+            )
 
 class IAM:
     service = AWSServices.IAM
@@ -141,6 +136,7 @@ class IAM:
             kwargs = response['PasswordPolicy']
         except Exception:
             return CommandResults(
+                entry_type=EntryType.ERROR,
                 readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}"
             )
 
@@ -245,16 +241,80 @@ class EC2:
     @staticmethod
     def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
-        
-        Args:
-            client (BotoClient): _description_
-            args (Dict[str, Any]): _description_
-
-        Returns:
-            CommandResults: _description_
+        Modify the specified attribute of an Amazon Machine Image (AMI).
         """
+        # Build the base kwargs dictionary
+        kwargs = {
+            "Attribute": args.get("Attribute"),
+            "ImageId": args.get("ImageId"),
+            "Value": args.get("Value"),
+            "OperationType": args.get("OperationType")
+        }
         
+        # Add description if provided
+        if args.get("Description"):
+            kwargs["Description"] = {"Value": args.get("Description")}
         
+        # Parse resource IDs
+        for resource_type in ["UserIds", "UserGroups", "ProductCodes"]:
+            if args.get(resource_type):
+                kwargs[resource_type] = parse_resource_ids(args.get(resource_type))
+        
+        # Handle LaunchPermission configuration
+        launch_permission = {"Add": [], "Remove": []}
+        
+        # Process Add permissions
+        for permission_type in ["Group", "UserId"]:
+            if value := args.get(f"LaunchPermission-Add-{permission_type}"):
+                launch_permission["Add"].append({permission_type: value})
+        
+        # Process Remove permissions
+        for permission_type in ["Group", "UserId"]:
+            if value := args.get(f"LaunchPermission-Remove-{permission_type}"):
+                launch_permission["Remove"].append({permission_type: value})
+        
+        # Only add LaunchPermission if any values were added
+        if launch_permission["Add"] or launch_permission["Remove"]:
+            kwargs["LaunchPermission"] = launch_permission
+
+        remove_nulls_from_dictionary(kwargs)
+        
+        response = client.modify_image_attribute(**kwargs)
+        if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
+            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+        return CommandResults(readable_output="Image attribute successfully modified")
+    
+    @staticmethod
+    def authorize_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+        Adds an inbound rule to a security group, allowing inbound traffic based on the specified parameters.
+        """
+        kwargs = {
+            "GroupId": args.get("groupId")
+        }
+        if IpPermissionsFull := args.get("IpPermissionsFull", None):
+            IpPermissions = json.loads(IpPermissionsFull)
+        else:
+            IpPermissions = []
+            UserIdGroupPairs = []
+            IpPermissions_dict = create_ip_permissions_dict(args)
+            UserIdGroupPairs_dict = create_user_id_group_pairs_dict(args)
+
+            kwargs.update(create_policy_kwargs_dict(args))
+
+            UserIdGroupPairs.append(UserIdGroupPairs_dict)
+            IpPermissions_dict.update({"UserIdGroupPairs": UserIdGroupPairs})  # type: ignore
+
+            IpPermissions.append(IpPermissions_dict)
+        
+        kwargs["IpPermissions"] = IpPermissions
+        response = client.authorize_security_group_ingress(**kwargs)
+        
+        if not (response["ResponseMetadata"]["HTTPStatusCode"] == 200 and response["Return"]):
+            raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
+        return CommandResults(readable_output="The Security Group ingress rule was created")
+
+
 class EKS:
     service = AWSServices.EKS
     
@@ -527,44 +587,44 @@ class RDS:
         
 REQUIRED_PERMISSIONS = set()
 
-CONCURRENCY_LIMIT = 25           # Rate limit by AWS
-SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
+# CONCURRENCY_LIMIT = 25           # Rate limit by AWS
+# SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
 
-async def fetch_permissions_for_account(account_id: str) -> set:
-    async with SEMAPHORE:
-        # TODO
-        await asyncio.sleep(0) # placeholder for the real awaitable
+# async def fetch_permissions_for_account(account_id: str) -> set:
+#     async with SEMAPHORE:
+#         # TODO
+#         await asyncio.sleep(0) # placeholder for the real awaitable
         
-    return set()
+#     return set()
 
-async def check_permissions():
-    errors: list[CommandResults] = []
+# async def check_permissions():
+#     errors: list[CommandResults] = []
     
-    accounts: list[str] = get_accounts_by_connector_id(connector_id='1')
-    tasks = [asyncio.create_task(fetch_permissions_for_account(account)) for account in accounts]
+#     accounts: list[str] = get_accounts_by_connector_id(connector_id='1')
+#     tasks = [asyncio.create_task(fetch_permissions_for_account(account)) for account in accounts]
     
-    for task in asyncio.as_completed(tasks):
-        try:
-            account_permissions = await task
+#     for task in asyncio.as_completed(tasks):
+#         try:
+#             account_permissions = await task
     
-            for missing in REQUIRED_PERMISSIONS - account_permissions:
-                errors.append(HealthCheckResult.error(
-                    account_id=account,
-                    connector_id=connector_id,
-                    message=f"Missing permission {missing}",
-                    error="ErrPermissionMissing", # TODO - enum it
-                    error_type=ErrorType.PERMISSION_ERROR,
-                ))
-        except Exception as exc:
-            # Prefer logging to stdout/stderr or struct-logging here
-            print(f"[WARN] Account task failed: {exc!r}")
-    return []
+#             for missing in REQUIRED_PERMISSIONS - account_permissions:
+#                 errors.append(HealthCheckResult.error(
+#                     account_id=account,
+#                     connector_id=connector_id,
+#                     message=f"Missing permission {missing}",
+#                     error="ErrPermissionMissing", # TODO - enum it
+#                     error_type=ErrorType.PERMISSION_ERROR,
+#                 ))
+#         except Exception as exc:
+#             # Prefer logging to stdout/stderr or struct-logging here
+#             print(f"[WARN] Account task failed: {exc!r}")
+#     return []
 
-def health_check() -> list[CommandResults] | str:
-    """
-    """    
-    errors: list[CommandResults] = asyncio.run(check_permissions())
-    return errors or HealthCheckResult.ok()
+# def health_check() -> list[CommandResults] | str:
+#     """
+#     """    
+#     errors: list[CommandResults] = asyncio.run(check_permissions())
+#     return errors or HealthCheckResult.ok()
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
@@ -590,30 +650,50 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-    account_id = args.get('account_id')
     
-    try:
-        credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
-        aws_session: Session = Session(
-            aws_access_key_id=credentials.get('key') or params.get('access_key_id'),
-            aws_secret_access_key=credentials.get('access_token') or params.get('secret_access_key').get('password'),
-            aws_session_token=credentials.get('session_token'),
-            region_name=args.get('region') or params.get('region', '')
-        )
-    
-        if command == "test-module":
-            return_results(health_check())         
-        elif command in COMMANDS_MAPPING:
-            service = AWSServices(command.split('-')[1])
-            service_client: BotoClient = aws_session.client(service)
-            return_results(
-                COMMANDS_MAPPING[command](service_client, args)
-            )
-        else:
-            raise NotImplementedError(f'Command {command} is not implemented')
 
-    except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    return_results("ok")
+    # try:
+    #     context = demisto.callingContext.get("context", {})
+    #     cloud_info = context.get("CloudIntegrationInfo", {})
+    #     if command == "test-module":
+    #         if (connector_id := cloud_info.get("connectorID")):
+    #             health_check(connector_id)
+    #         else:
+    #             pass
+    #         return_results("ok")
+    #         # errors = [
+    #         #         {
+    #         #             HealthCheckResult.error(
+    #         #                 account_id=account_id,
+    #         #                 connector_id=credentials.get('connector_id'),
+    #         #                 message=f"Failed to retrieve cloud credentials for account {account_id}",
+    #         #                 error="ErrCredentialsRetrieval",
+    #         #                 error_type=ErrorType.PERMISSION_ERROR
+    #         #             )
+    #         #         }
+    #         # ]
+    #         # return_results(CommandResults(entry_type=EntryType.ERROR,outputs=errors))         
+    #     elif command in COMMANDS_MAPPING:
+            
+    #         account_id = args.get('account_id')
+    #         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+    #         aws_session: Session = Session(
+    #             aws_access_key_id=credentials.get('key') or params.get('access_key_id'),
+    #             aws_secret_access_key=credentials.get('access_token') or params.get('secret_access_key').get('password'),
+    #             aws_session_token=credentials.get('session_token'),
+    #             region_name=args.get('region') or params.get('region', '')
+    #         )
+    #         service = AWSServices(command.split('-')[1])
+    #         service_client: BotoClient = aws_session.client(service)
+    #         return_results(
+    #             COMMANDS_MAPPING[command](service_client, args)
+    #         )
+    #     else:
+    #         raise NotImplementedError(f'Command {command} is not implemented')
+
+    # except Exception as e:
+    #     return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

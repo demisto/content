@@ -12,7 +12,7 @@ configuration:
   section: Connect
   required: false
   additionalinfo: Main Role to be used for authentication e.g. 'PowerUserAccess'
-- display: Test AWS Account ID
+- display: Deafult AWS Account ID
   name: test_account_id
   type: 0
   section: Connect
