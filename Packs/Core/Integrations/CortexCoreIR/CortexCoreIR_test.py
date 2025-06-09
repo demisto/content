@@ -584,7 +584,7 @@ def test_parse_expiration_date():
 
     # Case 7: "Broken Never"
     result = parse_expiration_date("never")
-    assert result == "never"
+    assert result == "Never"
 
     # Case 8: "Broken String"
     result = parse_expiration_date("brokenstring")
@@ -749,7 +749,7 @@ class TestCoreAddIndicator:
 
         args = {
             "ioc_object": csv_payload,
-            "input_format": "JSON",
+            "input_format": "CSV",
             "indicator": "ignored",
             "type": "ignored",
             "severity": "ignored",
@@ -812,7 +812,7 @@ class TestCoreAddIndicator:
         args = {"ioc_object": "not a json or csv string"}
         with pytest.raises(
             DemistoException,
-            match="Core Add Indicator Rule Command: Invalid ioc_object" " must be either valid JSON or CSV string.",
+            match="Core Add Indicator Rule Command: The IOC object provided isn't in a valid JSON format.",
         ):
             core_add_indicator_rule_command(client, args)
 

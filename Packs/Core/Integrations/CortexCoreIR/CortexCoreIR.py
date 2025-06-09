@@ -204,7 +204,7 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
     """
     # Return None - give the indicator the default expiration date value for the indicator type
     if not expiration:
-        return expiration
+        return None
 
     if expiration.lower() == "never":
         return "Never"
