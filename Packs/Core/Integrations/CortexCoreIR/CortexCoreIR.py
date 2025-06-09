@@ -202,10 +202,11 @@ def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]
             str: "Never" - The rule has no expiration date.
             int: epoch milliseconds of the expiration date.
     """
-
+    # Return None - give the indicator the default expiration date value for the indicator type
     if not expiration:
-        return None
-    if expiration == "Never":
+        return expiration
+
+    if expiration.lower() == "never":
         return "Never"
 
     try:
