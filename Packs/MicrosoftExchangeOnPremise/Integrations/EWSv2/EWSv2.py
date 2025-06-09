@@ -1153,7 +1153,7 @@ def fetch_attachments_for_message(
                             attachment_subject=attachment.item.subject,
                         )
                         + ".eml",
-                        attached_email.as_string(),
+                        get_formatted_message(attached_email),
                     )
                 )
 
@@ -1442,7 +1442,7 @@ def get_item_as_eml(client: EWSClient, item_id, target_mailbox=None):  # pragma:
                         if "There may be at most" not in str(err):
                             raise err
         eml_name = item.subject if item.subject else "demisto_untitled_eml"
-        file_result = fileResult(eml_name + ".eml", email_content.as_string())
+        file_result = fileResult(eml_name + ".eml", get_formatted_message(email_content))
         file_result = file_result if file_result else "Failed uploading eml file to war room"
 
         return file_result
