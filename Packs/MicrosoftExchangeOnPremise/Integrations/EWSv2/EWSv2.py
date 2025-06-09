@@ -828,10 +828,7 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
-                            try:
-                                formatted_message = attached_email.as_string()
-                            except UnicodeEncodeError:
-                                formatted_message = attached_email.as_bytes()
+                            formatted_message = get_formatted_message(attached_email)
                             file_result = fileResult(
                                 get_attachment_name(
                                     attachment_name=attachment.name,
