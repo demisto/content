@@ -163,7 +163,7 @@ def test_submit_takedown_request_command(requests_mock: MagicMock, mock_client: 
 
     # Assert the results
     assert result.readable_output.startswith("### Takedown Request")
-    assert result.outputs_prefix == "Cyberint.Takedowns"
+    assert result.outputs_prefix == "Cyberint.takedowns_submit"
     assert result.outputs_key_field == "id"
     assert result.raw_response == mock_response["data"]["takedown_request"]
     assert result.outputs == mock_response["data"]["takedown_request"]
@@ -201,7 +201,7 @@ def test_submit_takedown_request_command_empty_response(requests_mock: MagicMock
 
     # Assert the results
     assert result.readable_output == "### Takedown Request\n**No entries.**\n"
-    assert result.outputs_prefix == "Cyberint.Takedowns"
+    assert result.outputs_prefix == "Cyberint.takedowns_submit"
     assert result.outputs_key_field == "id"
     assert result.raw_response == {}
     assert result.outputs == {}
@@ -258,7 +258,7 @@ def test_retrieve_takedown_requests_command(requests_mock: MagicMock, mock_clien
 
     # Assert the results
     assert result.readable_output.startswith("### Takedown Requests")
-    assert result.outputs_prefix == "Cyberint.Takedowns"
+    assert result.outputs_prefix == "Cyberint.takedowns_list"
     assert result.outputs_key_field == "id"
     assert result.raw_response == mock_response["data"]["takedown_requests"]
     assert result.outputs == mock_response["data"]["takedown_requests"]
@@ -291,7 +291,7 @@ def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicM
 
     # Assert the results
     assert result.readable_output == "### Takedown Requests\n**No entries.**\n"
-    assert result.outputs_prefix == "Cyberint.Takedowns"
+    assert result.outputs_prefix == "Cyberint.takedowns_list"
     assert result.outputs_key_field == "id"
     assert result.raw_response == []
     assert result.outputs == []
