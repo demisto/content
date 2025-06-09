@@ -5746,8 +5746,8 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version. |
 | PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. |
 | PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. |
-| PANOS.ShowSystemInfo.Result.advanced_routing | string | Advanced Routing Engine Feature. |
-| PANOS.ShowSystemInfo.Result.multi_vsys | string | Virtual System Feature. |
+| PANOS.ShowSystemInfo.Result.advanced_routing | string | Advanced routing engine feature. |
+| PANOS.ShowSystemInfo.Result.multi_vsys | string | Virtual system feature. |
 
 #### Command example
 
