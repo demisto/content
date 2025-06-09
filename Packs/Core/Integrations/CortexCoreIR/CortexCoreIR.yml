@@ -4116,13 +4116,13 @@ script:
       description: The command that was executed by the script.
       type: String
   - arguments:
-    - description: String that identifies the indicator you want to insert into Cortex. Required when ioc_object is not in use.
+    - description: String that identifies the indicator you want to ingest into XSIAM. Required when the ioc_object is not in use.
       name: indicator
       required: false
       isArray: false
       type: String
     - auto: PREDEFINED
-      description: Keyword identifying the type of indicator. Required when ioc_object is not in use.
+      description: The keyword identifying the type of indicator. Required when the ioc_object is not in use.
       name: type
       predefined:
         - 'HASH'
@@ -4134,7 +4134,7 @@ script:
       isArray: false
       type: String
     - auto: PREDEFINED
-      description: Keyword identifying the indicator's severity. Required when ioc_object is not in use.
+      description: The keyword identifying the indicator's severity. Required when the ioc_object is not in use.
       name: severity
       predefined:
         - 'INFO'
@@ -4205,7 +4205,7 @@ script:
       isArray: false
       type: String
     - auto: PREDEFINED
-      description: Character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined.
+      description: The character representing the vendor's reliability rating. Valid values are A-F. A is the most reliable, F is the least. Required when vendor_reputation is defined.
       name: vendor_reliability
       predefined:
         - 'A'
@@ -4232,13 +4232,13 @@ script:
       required: false
       isArray: false
       type: String
-    description: "Upload IOCs rules to XSIAM. When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
+    description: "Upload the IOC rules to XSIAM. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence.
                   If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-                      Adding rule with the same indicator and different parameters will result in an update to the existing rule."
+                      Adding a rule with the same indicator, but with different parameters, will update the existing rule."
     name: core-add-indicator-rule
     outputs:
     - contextPath: Core.Indicator.indicator
-      description: String that identifies the indicator that was insert into Cortex.
+      description: String that identifies the indicator that was ingested into XSIAM.
       type: String
     - contextPath: Core.Indicator.type
       description: Keyword identifying the type of indicator.

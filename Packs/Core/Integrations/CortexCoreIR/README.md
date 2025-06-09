@@ -3305,9 +3305,9 @@ Run a shell command on a specific endpoint and return its result.
 
 ***
 Upload IOCs Rule to XSIAM. 
-When `ioc_object` is defined, disregard any other provided arguments as `ioc_object` takes precedence.
+When the `ioc_object` is defined, disregard any other provided arguments, as ioc_object takes precedence.
 If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format.
-Adding the same indicator with different parameters will result in an update to the existing rule.
+Adding the same indicator, but with different parameters, will update the existing rule.
 
 
 #### Base Command
@@ -3318,7 +3318,7 @@ Adding the same indicator with different parameters will result in an update to 
 
 | **Argument Name** | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    | **Required** |
 | --- |--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------| --- |
-| indicator | String that identifies the indicator you want to insert into Cortex.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required | 
+| indicator | String that identifies the indicator you want to ingest into XSIAM.                                                                                                                                                                                                                                                                                                                                                                                                                                               | Required | 
 | type | Keyword identifying the type of indicator. Possible values are: HASH, IP, PATH, DOMAIN_NAME, FILENAME.                                                                                                                                                                                                                                                                                                                                                                                                             | Required | 
 | severity | Keyword identifying the indicator's severity. Possible values are: INFO, LOW, MEDIUM, HIGH, CRITICAL.                                                                                                                                                                                                                                                                                                                                                                                                              | Required | 
 | expiration_date | Integer representing the indicator's expiration timestamp. This is a Unix epoch timestamp value, in milliseconds. Also valid is the UTC date or relative timestamp to set the IOC rule expiration date, for example: '7 Days', '12 hours'. Supported formats: N minutes, N hours, N days, N weeks, N months, N years, yyyy-mm-dd, yyyy-mm-ddTHH:MM:SSZ. If this indicator has no expiration, use Never. If this value is NULL, the indicator receives the indicator's type value with the default expiration date. | Optional | 
@@ -3336,7 +3336,7 @@ Adding the same indicator with different parameters will result in an update to 
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Core.Indicator.indicator | String | String that identifies the indicator that was insert into Cortex. | 
+| Core.Indicator.indicator | String | String that identifies the indicator that was ingested into XSIAM. | 
 | Core.Indicator.type | String | Keyword identifying the type of indicator. | 
 | Core.Indicator.severity | String | Keyword identifying the indicator's severity. | 
 | Core.Indicator.expiration_date | Number | Integer representing the indicator's expiration timestamp. | 
