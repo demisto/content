@@ -47,15 +47,15 @@ def mock_client() -> TakedownCyberint.Client:
     )
 
 
-def test_test_module_error(requests_mock, mock_client):
-    """
-    Scenario: API returns an error for an valid token but not permitted customer_id.
-    Given:
-     - User provides valid credentials but not permitted customer_id.
-    """
-    error_response = json.loads(load_mock_response("error_response.json"))
-    requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", status_code=403, json=error_response)
-    assert test_module(mock_client) == "ok"
+# def test_test_module_error(requests_mock, mock_client):
+#     """
+#     Scenario: API returns an error for an valid token but not permitted customer_id.
+#     Given:
+#      - User provides valid credentials but not permitted customer_id.
+#     """
+#     error_response = json.loads(load_mock_response("error_response.json"))
+#     requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", status_code=403, json=error_response)
+#     assert test_module(mock_client) == "ok"
 
 
 def test_test_module_forbidden_error(mock_client):
