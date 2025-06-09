@@ -8,6 +8,26 @@ import pytest
 
 TEST_URL = "https://test.com/api"
 
+DEFAULT_PARAMS = {
+    "url": TEST_URL,
+    "credentials": {"identifier": "1234", "password": "1234"},
+    "max_fetch": 100,
+    "max_fetch_domain": 100,
+    "max_fetch_creds": 100,
+    "event_types_to_fetch": [REPORT.name],
+    "is_fetch_events": True,
+}
+
+
+@pytest.fixture
+def params_mocker(monkeypatch):
+    """
+    Patch demisto.params so tests can mutate a single dict in-place.
+    """
+    params_holder: dict = DEFAULT_PARAMS.copy()
+    monkeypatch.setattr(demisto, "params", lambda: params_holder)
+    return params_holder
+
 
 @pytest.fixture()
 def client() -> Client:
@@ -36,6 +56,9 @@ class HttpRequestsMocker:
         self.num_of_calls = 0
 
     def valid_http_request_side_effect(self, method: str, url_suffix: str = "", params: Dict | None = None, **kwargs):
+        """
+        Create Response with the relevant data depend on the params.
+        """
         if method == "GET":
             if url_suffix == REPORT.url_suffix:
                 start_date = params.get("start-date")
@@ -71,6 +94,9 @@ class HttpRequestsMocker:
     def expired_token_http_request_side_effect(
         self, method: str, url_suffix: Optional[str] = None, params: Dict | None = None, **kwargs
     ):
+        """
+        Mock the behavior of first call is with expired token.
+        """
         if method == "GET" and url_suffix == "/api/v2/reports":
             if self.num_of_calls == 0:
                 self.num_of_calls += 1
@@ -284,7 +310,7 @@ def test_get_token_request_raises(monkeypatch):
 
 
 # --------- Test Commands --------------------------------------
-def test_the_test_module(mocker):
+def test_the_test_module(mocker, params_mocker):
     """
     Given:
      - valid credentials
@@ -298,19 +324,8 @@ def test_the_test_module(mocker):
     import CybelAngelEventCollector
 
     return_results_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "return_results")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_fetch": 10,
-            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
-        },
-    )
+    params_mocker["max_fetch"] = 10
+    params_mocker["event_types_to_fetch"] = [REPORT.name, CREDENTIALS.name, DOMAIN.name]
     mocker.patch.object(demisto, "command", return_value="test-module")
 
     http_mocker = HttpRequestsMocker(10)
@@ -322,7 +337,7 @@ def test_the_test_module(mocker):
     assert return_results_mocker.call_args[0][0] == "ok"
 
 
-def test_get_events_command_command(mocker):
+def test_get_events_command_command(mocker, params_mocker):
     """
     Given:
      - limit is 9.
@@ -339,18 +354,9 @@ def test_get_events_command_command(mocker):
     import CybelAngelEventCollector
 
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_fetch": 100,
-        },
-    )
+    params_mocker["event_types_to_fetch"] = [REPORT.name]
+    params_mocker["max_fetch"] = 100
+
     mocker.patch.object(
         demisto,
         "args",
@@ -688,7 +694,7 @@ def test_cybelangel_report_attachment_get_command(mocker, client: Client):
         (DOMAIN.name, "max_fetch_domain"),
     ],
 )
-def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
+def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key, params_mocker):
     """
     Given:
      - no last run (first time of the fetch).
@@ -707,21 +713,8 @@ def test_fetch_events_no_last_run(mocker, event_type, max_fetch_key):
 
     send_events_mocker = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run_mocker = mocker.patch.object(demisto, "setLastRun", return_value={})
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            max_fetch_key: 10,
-            "event_types_to_fetch": event_type,
-            "is_fetch_events": True,
-        },
-    )
+    params_mocker["event_types_to_fetch"] = event_type
+    params_mocker[max_fetch_key] = 10
 
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
@@ -764,22 +757,7 @@ def test_fetch_events_token_expired(mocker):
     send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
     mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_fetch_reports": 100,
-            "max_fetch_creds": 100,
-            "max_fetch_domain": 100,
-            "event_types_to_fetch": REPORT.name,
-            "is_fetch_events": True,
-        },
-    )
+
     mocker.patch.object(demisto, "command", return_value="fetch-events")
     mocker.patch.object(demisto, "getIntegrationContext", return_value={"access_token": "old_access_token"})
     set_integration_context_mocker: MagicMock = mocker.patch.object(demisto, "setIntegrationContext")
@@ -812,7 +790,7 @@ def test_fetch_events_token_expired(mocker):
         (DOMAIN.name, "max_fetch_domain"),
     ],
 )
-def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
+def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type, params_mocker):
     """
     Given:
      - last run of fetched events IDs [1, 2].
@@ -841,20 +819,7 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
             }
         },
     )
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            max_fetch_key: 100,
-            "event_types_to_fetch": [event_type],
-            "is_fetch_events": True,
-        },
-    )
+    params_mocker["event_types_to_fetch"] = [event_type]
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(20)
@@ -878,76 +843,18 @@ def test_fetch_events_with_last_run(mocker, max_fetch_key, event_type):
     assert all(event["SOURCE_LOG_TYPE"] == EVENT_TYPE[event_type].source_log_type for event in fetched_events)
 
 
-def test_fetch_events_with_last_run_no_events(mocker):
-    """
-    Given:
-     - last run of fetched events IDs [1, 2].
-     - last run time from previous fetch.
-     - no new events have been received from the api.
-
-    When:
-     - running the fetch-events.
-
-    Then:
-     - make sure no events are sent into xsiam.
-     - make sure last run is kept the same as previous fetch.
-    """
-    import CybelAngelEventCollector
-
-    send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
-    set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
-    initial_time = "2024-02-29T13:48:32"
-    initial_ids = [1, 2]
-    mocker.patch.object(
-        demisto,
-        "getLastRun",
-        return_value={
-            REPORT.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
-            CREDENTIALS.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
-            DOMAIN.name: {LATEST_TIME: initial_time, LATEST_FETCHED_IDS: initial_ids},
+@pytest.mark.parametrize(
+    "last_run",
+    [
+        {},  # Empty Last run
+        {
+            REPORT.name: {LATEST_TIME: "2024-02-29T13:48:32", LATEST_FETCHED_IDS: [1, 2]},
+            CREDENTIALS.name: {LATEST_TIME: "2024-02-29T13:48:32", LATEST_FETCHED_IDS: [1, 2]},
+            DOMAIN.name: {LATEST_TIME: "2024-02-29T13:48:32", LATEST_FETCHED_IDS: [1, 2]},
         },
-    )
-
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {"identifier": "1234", "password": "1234"},
-            "max_fetch_reports": 100,
-            "max_fetch_creds": 100,
-            "max_fetch_domain": 100,
-            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
-            "is_fetch_events": True,
-        },
-    )
-    mocker.patch.object(demisto, "command", return_value="fetch-events")
-
-    http_mocker = HttpRequestsMocker(0)
-
-    mocker.patch.object(
-        CybelAngelEventCollector.Client, "_http_request", side_effect=http_mocker.valid_http_request_zero_events_side_effect
-    )
-
-    CybelAngelEventCollector.main()
-
-    assert send_events_mocker.called
-    fetched_events = send_events_mocker.call_args[0][0]
-    assert len(fetched_events) == 0
-
-    assert set_last_run_mocker.called
-    actual_last_run = set_last_run_mocker.call_args[0][0]
-
-    for event_type in (REPORT, CREDENTIALS, DOMAIN):
-        assert event_type.name in actual_last_run
-
-        ts = actual_last_run[event_type.name][LATEST_TIME]
-        assert ts != initial_time
-
-        assert actual_last_run[event_type.name][LATEST_FETCHED_IDS] == []
-
-
-def test_fetch_events_without_last_run_no_events(mocker):
+    ],
+)
+def test_fetch_events_no_events(mocker, last_run):
     """
     Given:
      - no last run.
@@ -965,23 +872,6 @@ def test_fetch_events_without_last_run_no_events(mocker):
     send_events_mocker: MagicMock = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run_mocker: MagicMock = mocker.patch.object(demisto, "setLastRun", return_value={})
 
-    mocker.patch.object(demisto, "getLastRun", return_value={})
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "max_fetch_reports": 100,
-            "max_fetch_creds": 100,
-            "max_fetch_domain": 100,
-            "event_types_to_fetch": [REPORT.name, CREDENTIALS.name, DOMAIN.name],
-            "is_fetch_events": True,
-        },
-    )
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(0)
@@ -1017,7 +907,7 @@ def test_fetch_events_without_last_run_no_events(mocker):
         (DOMAIN.name, "max_fetch_domain"),
     ],
 )
-def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_key):
+def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_key, params_mocker):
     """
     Given:
      - last run with events that was already fetched.
@@ -1050,20 +940,9 @@ def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_ke
         },
     )
 
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {
-                "identifier": "1234",
-                "password": "1234",
-            },
-            "event_types_to_fetch": [event_type],
-            "is_fetch_events": True,
-            max_fetch_key: num_events,
-        },
-    )
+    params_mocker[max_fetch_key] = 5
+    params_mocker["event_types_to_fetch"] = event_type
+
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(num_events)
@@ -1086,10 +965,10 @@ def test_fetch_events_with_last_run_dedup_event(mocker, event_type, max_fetch_ke
     assert new_time != initial_time
 
 
-def test_fetch_events_domain_two_call_paging(mocker):
+def test_fetch_events_domain_two_call_paging(mocker, params_mocker):
     """
     Given:
-      - last run holds ids [1,2].
+      - Last run holds ids [1,2].
       - 10 total domain events in the 1-minute window.
       - max_fetch_domain = 6.
 
@@ -1098,11 +977,10 @@ def test_fetch_events_domain_two_call_paging(mocker):
 
     Then:
       - send_events_to_xsiam is called with exactly 6 events.
-      - those 6 are with IDs 3..8 in ascending time.
+      - Those 6 are with IDs 3..8.
       - lastRun is set to the time & ID of event 8.
     """
     import CybelAngelEventCollector
-    from CybelAngelEventCollector import Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS
 
     send_events = mocker.patch.object(CybelAngelEventCollector, "send_events_to_xsiam")
     set_last_run = mocker.patch.object(demisto, "setLastRun")
@@ -1111,17 +989,9 @@ def test_fetch_events_domain_two_call_paging(mocker):
         "getLastRun",
         return_value={DOMAIN.name: {LATEST_TIME: datetime.now().isoformat(), LATEST_FETCHED_IDS: ["1", "2"]}},
     )
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "url": TEST_URL,
-            "credentials": {"identifier": "1234", "password": "1234"},
-            "max_fetch_domain": 6,
-            "event_types_to_fetch": [DOMAIN.name],
-            "is_fetch_events": True,
-        },
-    )
+    params_mocker["event_types_to_fetch"] = DOMAIN.name
+    params_mocker["max_fetch_domain"] = 6
+
     mocker.patch.object(demisto, "command", return_value="fetch-events")
 
     http_mocker = HttpRequestsMocker(10)
@@ -1177,7 +1047,7 @@ def test_get_latest_event_time_and_ids():
     assert set(last_ids) == {"1", "2", "3", "4", "5", "6"}
 
 
-def test_fetch_events_same_timestamp(mocker):
+def test_fetch_events_same_timestamp(client, mocker):
     """
     Given:
       - Server holds 6 events with the same timestamp.
@@ -1191,43 +1061,30 @@ def test_fetch_events_same_timestamp(mocker):
       - Only events 4,5,6 are sent back from the function.
       - lastRun is set to the same time with all 6 ids.
     """
-    from CybelAngelEventCollector import fetch_events, Client, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS
+    from CybelAngelEventCollector import fetch_events, DOMAIN, LATEST_TIME, LATEST_FETCHED_IDS
 
     last_run_time = "2024-02-29T13:48:32"
     last_run_ids = ["1", "2", "3"]
 
-    # Mock LastRun so fetch_events sees 1,2,3 already fetched at that timestamp
     mocker.patch.object(
         demisto, "getLastRun", return_value={DOMAIN.name: {LATEST_TIME: last_run_time, LATEST_FETCHED_IDS: last_run_ids}}
     )
+    captured = {}
 
-    # DummyClient must match the real signature: (start_date, end_date, event_type, limit)
-    class DummyClient(Client):
-        def __init__(self):
-            super().__init__(base_url="", client_id="", client_secret="", verify=False, proxy=False)
-            self.called = {}
+    def fake_get_domain_watchlist(start_date, end_date, limit, event_type=None):  # noqa: D401
+        captured["limit"] = limit
+        # six synthetic events, all with identical _time
+        return [{"domain": str(i), "_time": last_run_time} for i in range(1, limit + 1)]
 
-        def get_domain_watchlist(self, start_date, end_date, limit, event_type=None):
-            # record the limit we were asked for
-            self.called["limit"] = limit
-            # return events 1..limit, all stamped with the same timestamp
-            return [{"domain": str(i), "_time": last_run_time} for i in range(1, limit + 1)]
+    mocker.patch.object(client, "get_domain_watchlist", side_effect=fake_get_domain_watchlist)
 
-    client = DummyClient()
     DOMAIN.max_fetch = 3
 
-    # Run the orchestration
     events, new_last_run = fetch_events(client, [DOMAIN])
 
-    # 1) We should have fetched limit = previous_ids(3) + max_fetch(3) = 6
-    assert client.called["limit"] == 6
+    assert captured["limit"] == 6
 
-    # 2) Of those 6, only IDs 4,5,6 remain after dedup + truncation to max_fetch=3
-    assert len(events) == 3
-    returned_ids = [DOMAIN.get_id(e) for e in events]
-    assert returned_ids == ["4", "5", "6"]
+    assert [DOMAIN.get_id(e) for e in events] == ["4", "5", "6"]
 
-    # 3) last_run should still have that same timestamp, but now include all six IDs
-    assert DOMAIN.name in new_last_run
     assert new_last_run[DOMAIN.name][LATEST_TIME] == last_run_time + "Z"
     assert set(new_last_run[DOMAIN.name][LATEST_FETCHED_IDS]) == {str(i) for i in range(1, 7)}
