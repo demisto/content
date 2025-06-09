@@ -447,7 +447,7 @@ script:
       name: recipient
     - description: Filters threats based on the reporter name or email address.
       name: reporter
-    - 
+    - auto: PREDEFINED
       description: Filters threats based on the type of attack.
       name: attackType
       predefined:

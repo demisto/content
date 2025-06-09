@@ -594,7 +594,7 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     polling_lag = timedelta(minutes=5)
 
     # Calculate expected timestamps
-    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC)
+    original_timestamp = datetime.fromisoformat(last_run["last_fetch"][:-1]).replace(tzinfo=UTC) + timedelta(milliseconds=1)
     adjusted_start_time = original_timestamp - polling_lag
     expected_start_time = adjusted_start_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
@@ -606,10 +606,10 @@ def test_polling_lag(mocker, mock_get_details_of_a_threat_request):
     adjusted_end_time = fixed_current_time - polling_lag
     expected_end_time = adjusted_end_time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
-    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lt {expected_end_time}"
+    expected_filter = f"latestTimeRemediated gte {expected_start_time} and latestTimeRemediated lte {expected_end_time}"
 
     # Call fetch_incidents with the polling lag
-    _, incidents = fetch_incidents(
+    _, _ = fetch_incidents(
         client=client,
         last_run=last_run,
         first_fetch_time=first_fetch_time,
@@ -849,7 +849,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
 
     # Verify the filter contains latestTimeRemediated with adjusted time due to polling lag
     assert "latestTimeRemediated gte" in threats_call_kwargs["filter_"]
-    assert "latestTimeRemediated lt" in threats_call_kwargs["filter_"]
+    assert "latestTimeRemediated lte" in threats_call_kwargs["filter_"]
     assert threats_call_kwargs["max_incidents_to_fetch"] == max_incidents
 
     # 2. Verify abuse campaigns pagination (this is called next in the code)
@@ -858,6 +858,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
 
     # Verify the filter contains lastReportedTime
     assert "lastReportedTime gte" in campaigns_call_kwargs["filter_"]
+    assert "lastReportedTime lte" in campaigns_call_kwargs["filter_"]
     assert campaigns_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids)
 
     # 3. Verify cases pagination (this is called last in the code)
@@ -865,6 +866,7 @@ def test_pagination_methods_in_fetch_incidents(mocker):
     cases_call_kwargs = get_paginated_cases_spy.call_args.kwargs
     # Verify the filter contains lastModifiedTime
     assert "lastModifiedTime gte" in cases_call_kwargs["filter_"]
+    assert "lastModifiedTime lte" in cases_call_kwargs["filter_"]
     assert cases_call_kwargs["max_incidents_to_fetch"] == max_incidents - len(threat_ids) - len(campaign_ids)
 
     # Verify we got the expected number of incidents
