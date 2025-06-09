@@ -1,7 +1,7 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import pytest
 from AnomaliThreatStreamFeed import Client
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 from typing import Any
 
 
@@ -456,7 +456,7 @@ def test_get_past_time_basic_interval(mocker):
         - Mocks 'AnomaliThreatStreamFeed.get_current_utc_time' to return a fixed datetime.
         - The function returns the expected past time in ISO 8601 format with milliseconds and 'Z'.
     """
-    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500Z"
 
@@ -870,9 +870,7 @@ def test_parse_indicator_for_fetch_various_scenarios(
 
 
 TEST_CASES = [
-    # Scenario 1: First run, no last_run, single page of indicators
     {
-        "name": "First run, single page, default fetchBy (modified_ts)",
         "params": {
             "createRelationships": True,
             "tlp_color": "WHITE",
@@ -888,65 +886,21 @@ TEST_CASES = [
         ],
         "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
         "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
-        "expected_info_calls": [f"{THREAT_STREAM} - First fetch detected. Retrieving indicators from the last 60 minutes."],
-        "expected_debug_calls": [
-            f"""{THREAT_STREAM} - Initial API call for fetch-indicators with params: {{'limit': 50, 'status': 'active',
-            'order_by': 'modified_ts', 'confidence__gt': 65, 'modified_ts__gte': '2023-08-01T11:00:00.000Z'}}""",
-            f"{THREAT_STREAM} - Total raw indicators fetched: 1",
-            f"{THREAT_STREAM} - Successfully parsed 1 indicators for fetch.",
-        ],
-        "expected_error_calls": [],
         "expected_exception": None,
-        "expected_http_calls": [
-            {
-                "method": "GET",
-                "url_suffix": "v2/intelligence",
-                "params": {
-                    "limit": 50,
-                    "status": "active",
-                    "order_by": "modified_ts",
-                    "confidence__gt": 65,
-                    "modified_ts__gte": "2023-08-01T11:00:00.000Z",
-                },
-            }
-        ],
     },
     {
-        "name": "No new indicators",
         "params": {},  # Use defaults
         "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
         "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
         "mock_get_past_time_return": None,
         "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [],
-        "expected_info_calls": [
-            f"{THREAT_STREAM} - Fetching indicators modified since 2023-08-01T09:00:00Z.",
-            f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.",
-        ],
-        "expected_debug_calls": [
-            f"""{THREAT_STREAM} - Initial API call for fetch-indicators with params: {{'limit': 50, 'status': 'active',
-            'order_by': 'modified_ts', 'confidence__gt': 65, 'modified_ts__gte': '2023-08-01T09:00:00Z'}}"""
-        ],
-        "expected_error_calls": [],
         "expected_exception": None,
-        "expected_http_calls": [
-            {
-                "method": "GET",
-                "url_suffix": "v2/intelligence",
-                "params": {
-                    "limit": 50,
-                    "status": "active",
-                    "order_by": "modified_ts",
-                    "confidence__gt": 65,
-                    "modified_ts__gte": "2023-08-01T09:00:00Z",
-                },
-            }
-        ],
     },
 ]
 
@@ -1000,12 +954,6 @@ def test_fetch_indicators_command_scenarios(mocker, test_case):
 
         assert next_run_timestamp == test_case["expected_next_run_timestamp"]
         assert parsed_indicators_list == test_case["expected_parsed_indicators"]
-
-        # # Assert get_past_time call only if expected
-        # if "last_successful_run" not in test_case["last_run"]:
-        #     mock_get_past_time.assert_called_once_with(test_case["params"].get("feedFetchInterval", 240))
-        # else:
-        #     mock_get_past_time.assert_not_called()
 
         # Assert parse_indicator_for_fetch calls (check number of calls for simplicity)
         if test_case["expected_parsed_indicators"]:
