@@ -4,7 +4,6 @@ import TakedownCyberint
 import pytest
 from CommonServerPython import DemistoException
 import json
-from TakedownCyberint import test_module
 
 
 BASE_URL = "https://test.cyberint.io"
@@ -32,7 +31,7 @@ def load_mock_empty_response() -> str:
 
 
 @pytest.fixture()
-def mock_client() -> TakedownCyberint.Client:
+def client() -> TakedownCyberint.Client:
     """
     Establish a mock connection to the client with access token.
 
@@ -42,36 +41,23 @@ def mock_client() -> TakedownCyberint.Client:
     return TakedownCyberint.Client(
         base_url=BASE_URL,
         access_token=TOKEN,
-        verify=False,
-        proxy=False,
     )
 
 
-# def test_test_module_error(requests_mock, mock_client):
-#     """
-#     Scenario: API returns an error for an valid token but not permitted customer_id.
-#     Given:
-#      - User provides valid credentials but not permitted customer_id.
-#     """
-#     error_response = json.loads(load_mock_response("error_response.json"))
-#     requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", status_code=403, json=error_response)
-#     assert test_module(mock_client) == "ok"
-
-
-def test_test_module_forbidden_error(mock_client):
+def test_test_module_forbidden_error(client):
     """Test test_module with a forbidden error."""
     # Mock `retrieve_takedown_requests` to raise a DemistoException with FORBIDDEN status
     exception = DemistoException("Forbidden")
     exception.res = MagicMock(status_code=403)
-    mock_client.retrieve_takedown_requests = MagicMock(side_effect=exception)
+    client.retrieve_takedown_requests = MagicMock(side_effect=exception)
 
-    result = test_module(mock_client)
+    result = TakedownCyberint.test_module(client)
 
     assert result == "ok"
-    mock_client.retrieve_takedown_requests.assert_called_once_with(customer_id="Cyberint", url="https://cyberint.com")
+    client.retrieve_takedown_requests.assert_called_once_with(customer_id="Cyberint", url="https://cyberint.com")
 
 
-def test_test_module_ok(requests_mock, mock_client):
+def test_test_module_ok(requests_mock, client):
     """
     Scenario: Verify date format.
     Given:
@@ -84,23 +70,22 @@ def test_test_module_ok(requests_mock, mock_client):
     mock_response = json.loads(load_mock_response("test_content.json"))
     requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", json=mock_response)
 
-    result = test_module(mock_client)
+    result = TakedownCyberint.test_module(client)
 
     assert result == "ok"
 
 
-def test_test_module_unexpected_error(mock_client):
+def test_test_module_unexpected_error(client):
     """Test test_module with an unexpected error."""
     # Mock `retrieve_takedown_requests` to raise a generic DemistoException
     exception = DemistoException("Unexpected error")
-    mock_client.retrieve_takedown_requests = MagicMock(side_effect=exception)
+    client.retrieve_takedown_requests = MagicMock(side_effect=exception)
 
     with pytest.raises(DemistoException, match="Unexpected error"):
-        mock_client.retrieve_takedown_requests()
-        mock_client.assert_called_once_with(customer_id="Cyberint", url="https://cyberint.com")
+        client.retrieve_takedown_requests()
 
 
-def test_submit_takedown_request_command(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+def test_submit_takedown_request_command(requests_mock: MagicMock, client: MagicMock) -> None:
     """
     Scenario: Submit a takedown request successfully.
     Given:
@@ -150,7 +135,7 @@ def test_submit_takedown_request_command(requests_mock: MagicMock, mock_client: 
     }
 
     # Execute the command
-    result = submit_takedown_request_command(mock_client, args)
+    result = submit_takedown_request_command(client, args)
 
     # Assert the results
     assert result.readable_output.startswith("### Takedown Request")
@@ -160,7 +145,7 @@ def test_submit_takedown_request_command(requests_mock: MagicMock, mock_client: 
     assert result.outputs == mock_response["data"]["takedown_request"]
 
 
-def test_submit_takedown_request_command_empty_response(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+def test_submit_takedown_request_command_empty_response(requests_mock: MagicMock, client: MagicMock) -> None:
     """
     Scenario: Submit a takedown request but the API returns an empty response.
     Given:
@@ -188,7 +173,7 @@ def test_submit_takedown_request_command_empty_response(requests_mock: MagicMock
     }
 
     # Execute the command
-    result = submit_takedown_request_command(mock_client, args)
+    result = submit_takedown_request_command(client, args)
 
     # Assert the results
     assert result.readable_output == "### Takedown Request\n**No entries.**\n"
@@ -198,7 +183,7 @@ def test_submit_takedown_request_command_empty_response(requests_mock: MagicMock
     assert result.outputs == {}
 
 
-def test_retrieve_takedown_requests_command(requests_mock: MagicMock, mock_client: MagicMock):
+def test_retrieve_takedown_requests_command(requests_mock: MagicMock, client: MagicMock):
     """
     Scenario: Retrieve takedown requests successfully.
     Given:
@@ -245,7 +230,7 @@ def test_retrieve_takedown_requests_command(requests_mock: MagicMock, mock_clien
     }
 
     # Execute the command
-    result = retrieve_takedown_requests_command(mock_client, args)
+    result = retrieve_takedown_requests_command(client, args)
 
     # Assert the results
     assert result.readable_output.startswith("### Takedown Requests")
@@ -255,7 +240,7 @@ def test_retrieve_takedown_requests_command(requests_mock: MagicMock, mock_clien
     assert result.outputs == mock_response["data"]["takedown_requests"]
 
 
-def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicMock, client: MagicMock) -> None:
     """
     Scenario: Retrieve takedown requests, but the API returns an empty response.
     Given:
@@ -278,7 +263,7 @@ def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicM
     }
 
     # Execute the command
-    result = retrieve_takedown_requests_command(mock_client, args)
+    result = retrieve_takedown_requests_command(client, args)
 
     # Assert the results
     assert result.readable_output == "### Takedown Requests\n**No entries.**\n"
@@ -288,7 +273,7 @@ def test_retrieve_takedown_requests_command_empty_response(requests_mock: MagicM
     assert result.outputs == []
 
 
-def test_submit_takedown_request_command_error(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+def test_submit_takedown_request_command_error(requests_mock: MagicMock, client: MagicMock) -> None:
     """
     Scenario: Submit a takedown request but the API returns an error.
     Given:
@@ -317,10 +302,10 @@ def test_submit_takedown_request_command_error(requests_mock: MagicMock, mock_cl
 
     # Execute the command
     with pytest.raises(DemistoException, match="Error in API call"):
-        submit_takedown_request_command(mock_client, args)
+        submit_takedown_request_command(client, args)
 
 
-def test_retrieve_takedown_requests_command_error(requests_mock: MagicMock, mock_client: MagicMock) -> None:
+def test_retrieve_takedown_requests_command_error(requests_mock: MagicMock, client: MagicMock) -> None:
     """
     Scenario: Retrieve takedown requests but the API returns an error.
     Given:
@@ -344,4 +329,4 @@ def test_retrieve_takedown_requests_command_error(requests_mock: MagicMock, mock
 
     # Execute the command
     with pytest.raises(DemistoException, match="Error in API call"):
-        retrieve_takedown_requests_command(mock_client, args)
+        retrieve_takedown_requests_command(client, args)

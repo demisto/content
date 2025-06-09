@@ -412,7 +412,7 @@ exclude = [
 [tool.autopep8]
 max_line_length = 130
 
-[tool.pytest]
+[tool.pytest.ini_options]
 asyncio_mode = "auto"
 
 [tool.coverage.run]

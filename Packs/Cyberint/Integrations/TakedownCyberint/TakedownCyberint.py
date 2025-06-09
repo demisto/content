@@ -1,6 +1,5 @@
 from typing import Any
 import http
-import demistomock as demisto
 import urllib3
 from CommonServerPython import *
 
@@ -28,7 +27,7 @@ class Client(BaseClient):
             "X-Integration-Customer-Name": params.get("client_name", ""),
             "X-Integration-Version": "1.1.8",
         }
-        super().__init__(base_url, verify=verify, proxy=proxy)
+        super().__init__(base_url=base_url, verify=verify, proxy=proxy)
 
     @logger
     def submit_takedown_request(
@@ -292,30 +291,6 @@ def retrieve_takedown_requests_command(
     )
 
 
-def test_module(client: Client) -> str:
-    """
-    Builds the iterator to check that the feed is accessible.
-
-    Args:
-        client: Client object.
-
-    Returns:
-        Outputs.
-    """
-    try:
-        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
-    except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
-            return "ok"
-
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
-            return "Authorization Error: invalid `API Token`"
-
-        raise exc
-
-    return "ok"
-
-
 @logger
 def main():
     """
@@ -354,6 +329,28 @@ def main():
 
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
+
+
+def test_module(client: Client) -> str:
+    """
+    Builds the iterator to check that the feed is accessible.
+
+    Args:
+        client: Client object.
+
+    Returns:
+        Outputs.
+    """
+    try:
+        result = client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
+        if result:
+            return "ok"
+    except DemistoException as exc:
+        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+            return "ok"
+
+        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
+            return "Authorization Error: invalid `API Token`"
 
 
 def takedown_response_header_transformer(header: str) -> str:
@@ -415,3 +412,5 @@ def takedown_response_header_transformer(header: str) -> str:
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
+
+
