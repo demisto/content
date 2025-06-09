@@ -1,7 +1,4 @@
 [MODEL: dataset = "msft_azure_flowlogs_raw"]
-//
-// Commented XDM fields will be added in XSIAM v2.7
-//
 // --- NSG Flow Logs ---
 filter category = "NetworkSecurityGroupFlowEvent"
 | alter
@@ -42,7 +39,7 @@ filter category = "NetworkSecurityGroupFlowEvent"
 	xdm.target.sent_bytes = to_integer(bytesDtoS);
 
 
-// --- Network Analytics Flow Logs --- 
+// --- NTA Flow Logs --- 
 filter _raw_log -> Type = "NTAIpDetails"
 | alter
 	lower_ThreatType = lowercase(_raw_log -> ThreatType),
