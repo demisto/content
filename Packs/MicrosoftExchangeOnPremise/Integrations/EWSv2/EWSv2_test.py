@@ -8,7 +8,8 @@ import demistomock as demisto
 import EWSv2
 import pytest
 from EWSApiModule import EWSClient
-from EWSv2 import fetch_last_emails, get_attachment_name, get_message_for_body_type, parse_item_as_dict, parse_physical_address
+from EWSv2 import (fetch_last_emails, get_attachment_name, get_message_for_body_type, parse_item_as_dict, parse_physical_address,
+                   get_formatted_message)
 from exchangelib import Body, Contact, EWSDate, EWSDateTime, EWSTimeZone, HTMLBody, Mailbox, Message
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound, ErrorNameResolutionNoResults, UnauthorizedError
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
