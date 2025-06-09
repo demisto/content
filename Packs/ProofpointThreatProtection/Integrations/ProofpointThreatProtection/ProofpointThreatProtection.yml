@@ -34,6 +34,7 @@ configuration:
   name: cluster_id
   required: true
   type: 0
+  section: Connect
 description: Threat Protection APIs are REST APIs that allow Proofpoint On Demand customers to retrieve, add, update or delete certain PoD configurations.
 display: Proofpoint Threat Protection
 name: Proofpoint Threat Protection
