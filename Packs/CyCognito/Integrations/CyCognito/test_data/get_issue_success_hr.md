@@ -1,4 +1,4 @@
-### Issue detail:
+### Issue detail: 
 #### ID: 127.0.0.1-test
 |Title|Affected Asset|Detection Complexity|Investigation Status|Exploitation Score|Organizations|Locations|Potential Threat|Severity|Issue Type|Remediation Steps|Potential Impact|Tags|References|Summary|Link to Platform|
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|

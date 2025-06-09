@@ -1,9 +1,9 @@
 ### Ignite URL reputation for http://dummy.com
-Reputation: Malicious
+Reputation: Suspicious
 
-### Events in which this IOC observed
-|Date Observed (UTC)|Name|Tags|
-|---|---|---|
-| Sep 09, 2001  01:46 | Sample info | sample_tags |
 
-All events and details (ignite): [https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22](https://mock_dummy.com/cti/malware/iocs?sort_date=All%20Time&types=url&query=%22http%3A//dummy.com%22)
+|ID|URL|Malware Description|Tags|Related IOCs|Created At|Modified At|Last Seen At|
+|---|---|---|---|---|---|---|---|
+|  dummy-id-123 | http://dummy.com | Dummy malware description | dummy_latest_sighting_tag_1,<br>dummy_latest_sighting_tag_2,<br>dummy-tag-1,<br>dummy-tag-2 | **-**	***type***: url<br>	***value***: http://dummyurl.com<br>**-**	***type***: ipv4<br>	***value***: 0.0.0.1 | Apr 01, 2025  00:00 | Apr 01, 2025  00:00 | Apr 01, 2025  00:00 |
+
+Platform Link(ignite): [https://dummy-platform.com/dummy-url](https://dummy-platform.com/dummy-url)

@@ -2,45 +2,20 @@
     "URL(val.Data && val.Data == obj.Data)": [
         {
             "Data": "http://dummy.com",
-            "Malicious": {
-                "Vendor": "Ignite",
-                "Description": "Found in malicious indicators dataset"
-            },
             "Relationships": [
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "http://dummy.com",
                     "EntityAType": "URL",
-                    "EntityB": "T1016",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "http://dummyurl.com",
+                    "EntityBType": "URL"
                 },
                 {
-                    "Relationship": "indicator-of",
+                    "Relationship": "related-to",
                     "EntityA": "http://dummy.com",
                     "EntityAType": "URL",
-                    "EntityB": "T1027",
-                    "EntityBType": "Attack Pattern"
-                },
-                {
-                    "Relationship": "indicator-of",
-                    "EntityA": "http://dummy.com",
-                    "EntityAType": "URL",
-                    "EntityB": "T1033",
-                    "EntityBType": "Attack Pattern"
-                },
-                {
-                    "Relationship": "indicator-of",
-                    "EntityA": "http://dummy.com",
-                    "EntityAType": "URL",
-                    "EntityB": "T1047",
-                    "EntityBType": "Attack Pattern"
-                },
-                {
-                    "Relationship": "indicator-of",
-                    "EntityA": "http://dummy.com",
-                    "EntityAType": "URL",
-                    "EntityB": "T1048",
-                    "EntityBType": "Attack Pattern"
+                    "EntityB": "0.0.0.1",
+                    "EntityBType": "IP"
                 }
             ]
         }
@@ -51,36 +26,62 @@
             "Reliability": "B - Usually reliable",
             "Type": "url",
             "Vendor": "Ignite",
-            "Score": 3
+            "Score": 2
         }
     ],
-    "Ignite.URL.Event(val.Fpid && val.Fpid == obj.Fpid)": [
-        {
-            "Fpid": "sample_fpid",
-            "EventDetails": {
-                "Tags": [
-                    "sample_tags"
+    "Ignite.URL(val.id && val.id == obj.id)": {
+        "id": " dummy-id-123",
+        "type": "url",
+        "value": "http://dummy.com",
+        "href": "https://dummy-api.com/dummy-endpoint",
+        "entity_type": "indicator",
+        "score": {
+            "value": "suspicious",
+            "last_scored_at": "2025-04-01T00:00:00"
+        },
+        "modified_at": "2025-04-01T00:00:00",
+        "created_at": "2025-04-01T00:00:00",
+        "last_seen_at": "2025-04-01T00:00:00",
+        "sort_date": "2025-04-01T00:00:00",
+        "platform_urls": {
+            "ignite": "https://dummy-platform.com/dummy-url"
+        },
+        "apt_description": "Dummy APT description",
+        "malware_description": "Dummy malware description",
+        "sightings": [
+            {
+                "source": "dummy-source",
+                "sighted_at": "2025-04-01T00:00:00",
+                "tags": [
+                    "dummy-tag-1",
+                    "dummy-tag-2"
                 ],
-                "attack_ids": [
-                    "T1016",
-                    "T1027",
-                    "T1033",
-                    "T1047",
-                    "T1048"
-                ],
-                "event_uuid": "sample_uuid",
-                "fpid": "sample_fpid",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
-                "info": "Sample info",
-                "timestamp": "1000000001"
-            },
-            "Category": "Network activity",
-            "Href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
-            "Timestamp": "1000000001",
-            "Type": "url",
-            "Uuid": "sample_uuid",
-            "Comment": "",
-            "Url": "http://dummy.com"
-        }
-    ]
+                "related_iocs": [
+                    {
+                        "id": "dummy-id-1",
+                        "type": "ipv4",
+                        "value": "0.0.0.1",
+                        "href": "https://dummy-api.com/dummy-endpoint-1"
+                    }
+                ]
+            }
+        ],
+        "latest_sighting": {
+            "source": "dummy-source",
+            "sighted_at": "2025-04-01T00:00:00",
+            "tags": [
+                "dummy_latest_sighting_tag_1",
+                "dummy_latest_sighting_tag_2"
+            ],
+            "related_iocs": [
+                {
+                    "id": "dummy-id-1",
+                    "type": "url",
+                    "value": "http://dummyurl.com",
+                    "href": "https://dummy-api.com/dummy-endpoint-2"
+                }
+            ]
+        },
+        "total_sightings": 1
+    }
 }

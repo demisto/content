@@ -83,7 +83,7 @@ _http_request is a universal method that can handle any request and throw standa
     `None`, will use self._ok_codes. **Default is `None`**.
 
 The method returns depends on the resp_type parameter
-can be ``dict``, ``str``, ``requests.Response`` or ``ElemntTree``
+can be ``dict``, ``str``, ``requests.Response`` or ``ElementTree``
 
 ## How to use in integration:
 Never use raw `BaseClient`. Base client is meant to be inherited from.

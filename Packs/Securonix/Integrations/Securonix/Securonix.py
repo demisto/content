@@ -44,6 +44,10 @@ XSOAR_TO_SECURONIX_STATE_MAPPING: dict = {}
 # Policy types for which retry should have end time to the current time.
 POLICY_TYPES_TO_RETRY = ["DIRECTIVE", "LAND SPEED", "TIER2", "BEACONING"]
 
+MESSAGE = {
+    "INVALID_MAX_VALUE": "Please provide a value for 'max' between 1 and 10,000.",
+}
+
 
 def reformat_resource_groups_outputs(text: str) -> str:
     """rg_*text -> ResourceGroupText
@@ -738,7 +742,7 @@ class Client(BaseClient):
 
         except requests.exceptions.ConnectionError as exception:
             error_class = str(exception.__class__)
-            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"
+            err_type = "<" + error_class[error_class.find("'") + 1 : error_class.rfind("'")] + ">"  # noqa: E203
             err_msg = (
                 f"Error Type: {err_type}\n"
                 f"Error Number: [{exception.errno}]\n"
@@ -873,11 +877,13 @@ class Client(BaseClient):
             if re.findall(r"index\s*=\s*\w+", query):
                 params["query"] = query
             else:
-                params["query"] = f'{params["query"]} AND {query}'
+                params["query"] = f"{params['query']} AND {query}"
         activity_data = self.http_request("GET", "/spotter/index/search", headers={"token": self._token}, params=params)
         return activity_data
 
-    def list_violation_data_request(self, from_: str, to_: str, query: str = None, query_id: str = None) -> dict:
+    def list_violation_data_request(
+        self, from_: str, to_: str, query: str = None, query_id: str = None, max_violations: int | None = 50
+    ) -> dict:
         """List violation data.
 
         Args:
@@ -885,6 +891,7 @@ class Client(BaseClient):
             to_: eventtime end range in format MM/dd/yyyy HH:mm:ss.
             query: open query.
             query_id: query_id to paginate violations.
+            max_violations: max number of violations to return.
 
         Returns:
             Response from API.
@@ -895,12 +902,13 @@ class Client(BaseClient):
             "generationtime_to": to_,
             "queryId": query_id,
             "prettyJson": True,
+            "max": max_violations,
         }
         if query:
             if re.findall(r"index\s*=\s*\w+", query):
                 params["query"] = query
             else:
-                params["query"] = f'{params["query"]} AND {query}'
+                params["query"] = f"{params['query']} AND {query}"
 
         remove_nulls_from_dictionary(params)
         violation_data = self.http_request("GET", "/spotter/index/search", headers={"token": self._token}, params=params)
@@ -1555,7 +1563,7 @@ def get_default_assignee_for_workflow(client: Client, args: dict) -> tuple[str, 
         "Value": default_assignee.get("value"),
     }
     entry_context = {"Securonix.Workflows(val.Workflow === obj.Workflow)": workflow_output}
-    human_readable = f'Default assignee for the workflow {workflow} is: {default_assignee.get("value")}.'
+    human_readable = f"Default assignee for the workflow {workflow} is: {default_assignee.get('value')}."
     return human_readable, entry_context, default_assignee
 
 
@@ -1570,7 +1578,7 @@ def list_possible_threat_actions(client: Client, *_) -> tuple[str, dict, dict]:
         Outputs.
     """
     threat_actions = client.list_possible_threat_actions_request()
-    human_readable = f'Possible threat actions are: {", ".join(threat_actions)}.'
+    human_readable = f"Possible threat actions are: {', '.join(threat_actions)}."
     entry_context = {"Securonix.ThreatActions": threat_actions}
     return human_readable, entry_context, threat_actions
 
@@ -1662,8 +1670,7 @@ def list_activity_data(client: Client, args) -> tuple[str, dict, dict]:
 
     if activity_data.get("error"):
         raise Exception(
-            'Failed to get activity data in the given time frame.\n'
-            f'Error from Securonix is: {activity_data.get("errorMessage")}'
+            f"Failed to get activity data in the given time frame.\nError from Securonix is: {activity_data.get('errorMessage')}"
         )
 
     activity_events = activity_data.get("events")
@@ -1717,12 +1724,17 @@ def list_violation_data(client: Client, args) -> list[CommandResults]:
     to_ = args.get("to", "").strip()
     query = escape_spotter_query(args.get("query", "").strip())
     query_id = args.get("query_id", "").strip()
-    violation_data = client.list_violation_data_request(from_, to_, query, query_id)
+    max_violations = arg_to_number(args.get("max", "50"))
+
+    if max_violations is not None and max_violations <= 0:
+        raise ValueError(MESSAGE["INVALID_MAX_VALUE"])
+
+    violation_data = client.list_violation_data_request(from_, to_, query, query_id, max_violations)
 
     if violation_data.get("error"):
         raise Exception(
-            f'Failed to get violation data in the given time frame.\n'
-            f'Error from Securonix is: {violation_data.get("errorMessage")}'
+            f"Failed to get violation data in the given time frame.\n"
+            f"Error from Securonix is: {violation_data.get('errorMessage')}"
         )
     violation_events = violation_data.get("events")
     if len(violation_events) > 0:  # type: ignore[arg-type]
@@ -1971,7 +1983,7 @@ def get_incident_attachments(client: Client, args: dict, incident_id: str = None
         # So if there is no attachments then in response status code will be 200 and in content there is json with
         # error field
         if "Content-Disposition" not in attachments_res.headers:
-            return CommandResults(readable_output=f"#### No Attachments found for Incident ID:{incident_id_}")
+            return CommandResults(readable_output=f"#### No Attachments found for Incident ID: {incident_id_}")
     except requests.exceptions.JSONDecodeError:  # type: ignore
         # Here if API have attachments then it will return byte data so then res.json() raise decode error. Means we
         # received attachments that's in below code there is debug log
@@ -1989,7 +2001,7 @@ def get_incident_attachments(client: Client, args: dict, incident_id: str = None
             CommandResults(
                 outputs_prefix="Securonix.Incidents.Attachments",
                 outputs=[{"IncidentID": incident_id_, "Files": zip_filenames}],
-                readable_output=f"### Incident ID:{incident_id_}",
+                readable_output=f"### Incident ID: {incident_id_}",
             )
         )
         for name in zip_filenames:
@@ -2002,7 +2014,7 @@ def get_incident_attachments(client: Client, args: dict, incident_id: str = None
                 CommandResults(
                     outputs_prefix="Securonix.Incidents.Attachments",
                     outputs=[{"IncidentID": incident_id_, "Files": filename}],
-                    readable_output=f"### Incident ID:{incident_id_}",
+                    readable_output=f"### Incident ID: {incident_id_}",
                 ),
                 fileResult(filename=filename, data=attachments_res.content),
             ]
@@ -2080,9 +2092,9 @@ def create_incident(client: Client, args: dict) -> tuple[str, dict, dict]:
     if message:
         if isinstance(message, list) and "Invalid" in message[0]:
             message = message[0]
-            raise Exception(f"Failed to create the incident with message:\n{message}")
+            raise Exception(f"Failed to create the incident with message: \n{message}")
         if "Invalid" in message:
-            raise Exception(f"Failed to create the incident with message:\n{message}")
+            raise Exception(f"Failed to create the incident with message: \n{message}")
 
     incident_data = result.get("data")
     incident_items = incident_data.get("incidentItems")
@@ -2108,7 +2120,7 @@ def list_watchlists(client: Client, *_) -> tuple[str, dict, dict]:
     if not watchlists:
         raise Exception("Failed to list watchlists.")
 
-    human_readable = f'Watchlists: {", ".join(watchlists)}.'
+    human_readable = f"Watchlists: {', '.join(watchlists)}."
     entry_context = {"Securonix.WatchlistsNames": watchlists}
     return human_readable, entry_context, watchlists
 
@@ -2141,7 +2153,7 @@ def get_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     }
     headers = ["Entityname", "Fullname", "Workemail", "Expired"]
     human_readable = tableToMarkdown(
-        name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}:",
+        name=f"Watchlist {watchlist_name} of type {watchlist_outputs.get('Type')}: ",
         t=watchlist_readable,
         headers=headers,
         removeNull=True,
@@ -2165,7 +2177,7 @@ def create_watchlist(client: Client, args) -> tuple[str, dict, dict]:
     response = client.create_watchlist_request(watchlist_name, tenant_name)
 
     if "successfully" not in response:
-        raise Exception(f"Failed to list watchlists.\nResponse from Securonix is:{response!s}")
+        raise Exception(f"Failed to list watchlists.\nResponse from Securonix is: {response!s}")
     human_readable = f"Watchlist {watchlist_name} was created successfully."
     watchlist = {"Watchlistname": watchlist_name, "TenantName": tenant_name}
     remove_nulls_from_dictionary(watchlist)
@@ -2488,7 +2500,7 @@ def create_whitelist(client: Client, args) -> tuple[str, dict, dict]:
     response = client.create_whitelist_request(tenant_name, whitelist_name, entity_type)
 
     if "successfully" not in str(response.get("messages")).lower():
-        raise Exception(f"Failed to create whitelist.\nResponse from Securonix is:{response!s}")
+        raise Exception(f"Failed to create whitelist.\nResponse from Securonix is: {response!s}")
 
     human_readable = f"Whitelist {whitelist_name} was created successfully."
 
@@ -2548,7 +2560,7 @@ def delete_whitelist_entry(client: Client, args) -> tuple[str, dict, dict]:
     result = response.get("result", [])
 
     if "successfully" not in str(result).lower():
-        raise Exception(f"Failed to remove entry from whitelist.\nResponse from Securonix is:{result!s}")
+        raise Exception(f"Failed to remove entry from whitelist.\nResponse from Securonix is: {result!s}")
 
     human_readable = "".join(result).replace(" ..! ", ".")
 
@@ -2789,7 +2801,7 @@ def create_lookup_table(client: Client, args) -> tuple[str, dict, dict]:
 
     response = client.create_lookup_table_request(tenant_name, name, scope, field_names, encrypt, key)
     if "successfully" not in response.lower():  # type: ignore[attr-defined]
-        raise Exception(f"Failed to create lookup table.\nResponse from Securonix is:{response}")
+        raise Exception(f"Failed to create lookup table.\nResponse from Securonix is: {response}")
     human_readable = f"Lookup Table {name} created successfully."
 
     return human_readable, {}, response
@@ -2815,7 +2827,7 @@ def delete_lookup_table_entries(client: Client, args: dict[str, Any]):
         raise ValueError("At least one lookup table key is required to execute the command.")
 
     response = client.delete_lookup_table_entries(name=name, lookup_unique_keys=lookup_unique_keys)
-    human_readable = f'Successfully deleted following entries from {name}: {", ".join(lookup_unique_keys)}.'
+    human_readable = f"Successfully deleted following entries from {name}: {', '.join(lookup_unique_keys)}."
 
     return human_readable, {}, response
 
@@ -2916,9 +2928,9 @@ def fetch_securonix_incident(
                                 continue
                             stage_policies_str = ", ".join(str(policy) for policy in stage_policies)  # type: ignore
                             policy_list.extend(stage_policies)  # type: ignore
-                            policy_stages_json[f"{stage_key}:{stage_name}"] = stage_policies
+                            policy_stages_json[f"{stage_key}:{stage_name}"] = stage_policies  # noqa: E231
                             policy_stages_table.append(
-                                {"Stage Name": f"{stage_key}:{stage_name}", "Policies": stage_policies_str}
+                                {"Stage Name": f"{stage_key}:{stage_name}", "Policies": stage_policies_str}  # noqa: E231
                             )
 
             if policy_list:
@@ -3223,10 +3235,10 @@ def get_remote_data_command(
         new_entries_to_return.append(
             {
                 "Type": EntryType.NOTE,
-                "Contents": f'[Mirrored From Securonix]\n'
-                f'Added By: {entry.get("username")}\n'
-                f'Added At: {entry.get("eventTime")} UTC\n'
-                f'Comment Content: {", ".join(comments_text)}',
+                "Contents": f"[Mirrored From Securonix]\n"
+                f"Added By: {entry.get('username')}\n"
+                f"Added At: {entry.get('eventTime')} UTC\n"
+                f"Comment Content: {', '.join(comments_text)}",
                 "ContentsFormat": EntryFormat.TEXT,
                 "Note": True,
             }
@@ -3317,14 +3329,13 @@ def update_remote_system(client: Client, args: dict[str, Any]) -> str:
 
     if new_entries:
         for entry in new_entries:
-            demisto.debug(f'Sending the entry with ID: {entry.get("id")} and Type: {entry.get("type")}')
+            demisto.debug(f"Sending the entry with ID: {entry.get('id')} and Type: {entry.get('type')}")
 
             entry_content = entry.get("contents", "")
             entry_user = entry.get("user", "dbot") or "dbot"
 
             comment_str = (
-                f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\n"
-                f"Added By: {entry_user}\nComment: {entry_content}"
+                f"[Mirrored From XSOAR] XSOAR Incident ID: {xsoar_incident_id}\nAdded By: {entry_user}\nComment: {entry_content}"
             )
             client.add_comment_to_incident_request(remote_incident_id, comment_str)
 
@@ -3365,7 +3376,7 @@ def main():
     if not host:
         server_url = tenant
         if not tenant.startswith("http://") and not tenant.startswith("https://"):
-            server_url = f"https://{tenant}"
+            server_url = f"https://{tenant}"  # noqa: E231
         if not tenant.endswith(".securonix.net/Snypr/ws/"):
             server_url += ".securonix.net/Snypr/ws/"
     else:
