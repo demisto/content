@@ -8,7 +8,7 @@ from typing import Callable
 
 class CloudTypes(Enum):
     AWS = "AWS"
-    AZURE = "Azure"
+    AZURE = "AZURE"
     GCP = "GCP"
     OCI = "OCI"
 
@@ -149,7 +149,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     all_accounts = []
     next_token = ""
     while True:
-        params = {"entity_type": "connector", "entity_id": {connector_id}}
+        params = {"entity_type": "connector", "entity_id": connector_id}
         if next_token:
             params["next_token"] = next_token
 
