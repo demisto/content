@@ -226,7 +226,7 @@ def submit_takedown_request_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint.Takedowns",
+        outputs_prefix="Cyberint.takedowns_submit",
         outputs_key_field="id",
         raw_response=takedown_request,
         outputs=takedown_request,
@@ -288,7 +288,7 @@ def retrieve_takedown_requests_command(
 
     return CommandResults(
         readable_output=human_readable,
-        outputs_prefix="Cyberint.Takedowns",
+        outputs_prefix="Cyberint.takedowns_list",
         outputs_key_field="id",
         raw_response=takedown_requests,
         outputs=takedown_requests,
