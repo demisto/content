@@ -2177,8 +2177,8 @@ tasks:
     task:
       id: 109e0fc7-f839-41d7-ad45-45c91aab1b28
       version: -1
-      name: Save if Anomalies >=2
-      description: Save **User Agent, ASN, and country** if two of these are identified **as new**
+      name: Save Anomalies
+      description: Save *User Agent, ASN, and Country* if **two** of these are identified **as new**
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
