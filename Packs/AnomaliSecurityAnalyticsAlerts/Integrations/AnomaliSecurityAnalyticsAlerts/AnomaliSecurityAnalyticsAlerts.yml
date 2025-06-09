@@ -103,7 +103,7 @@ script:
     description: Get the status of one or more search jobs.
     arguments:
     - name: job_id
-      description: Unique identifier assigned to a background process or job.
+      description: Comma-separated list of job IDs to get their statuses.
       required: true
       isArray: true
     execution: false
@@ -214,9 +214,12 @@ script:
       required: false
     execution: false
     outputs:
-      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.message
-        description: Confirmation message returned after updating the alert status.
+      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.uuid
+        description: The UUID of the updated alert.
         type: String
+      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.updated_fields
+        description: The fields that were updated in the alert.
+        type: Dictionary
   isfetch: true
   runonce: false
   script: '-'
