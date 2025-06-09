@@ -580,7 +580,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CommandLineAnalysis.analysis.original.indicators.URL}
+              simple: CommandLineAnalysis.analysis.original.indicators.URL
             iscontext: true
     continueonerrortype: ""
     view: |-
@@ -1277,7 +1277,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CommandLineAnalysis.analysis.original.indicators.Domain}
+              simple: CommandLineAnalysis.analysis.original.indicators.Domain
             iscontext: true
           right:
             value: {}
