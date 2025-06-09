@@ -7,7 +7,7 @@ urllib3.disable_warnings()
 
 """ CONSTANTS """
 
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%fZ"
 VENDOR = "manage"
 PRODUCT = "engine"
 PAGE_LIMIT_DEFAULT = 5000
@@ -247,7 +247,7 @@ def fetch_events(
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
     max_timestamp = int(events[-1]["eventTime"] if events else now_ts) + 1
-    demisto.debug(f"Max timestamp {max_timestamp}")
+    demisto.debug(f"Max timestamp {max_timestamp - 1}")
     last_run = {"last_time": f"{max_timestamp}"}
     return last_run, events
 

@@ -69,11 +69,11 @@ script:
       name: limit
       required: false
     - default: false
-      description: Date from which to get events, For example 2018-11-06T08:56:41Z.
+      description: Date from which to get events, For example 2018-11-06T08:56:41.000Z.
       name: start_date
       required: false
     - default: false
-      description: Date to which to get events , For example 2018-11-06T08:56:41Z.
+      description: Date to which to get events , For example 2018-11-06T08:56:41.000Z.
       name: end_date
       required: false
     deprecated: false

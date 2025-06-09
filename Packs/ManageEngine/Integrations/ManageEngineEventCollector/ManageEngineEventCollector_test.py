@@ -152,7 +152,7 @@ def test_add_time_to_events():
     """
     from ManageEngineEventCollector import add_time_to_events
 
-    iso = "2021-01-01T00:00:00Z"
+    iso = "2021-01-01T00:00:00.000000Z"
     ts = 1609459200000  # ms for that exact UTC moment
 
     evs = [{"eventTime": ts}]
@@ -189,9 +189,14 @@ def test_get_events_no_push(client: Client, mocker):
     )
     result_markdown = tableToMarkdown(
         name="ManageEngine Audit Logs",
-        t={"id": "1", "eventTime": 1609459200000, "_time": "2021-01-01T00:00:00Z"},
+        t={"id": "1", "eventTime": 1609459200000, "_time": "2021-01-01T00:00:00.000000Z"},
     )
-    args = {"should_push_events": "false", "limit": "1", "start_date": "2021-01-01T00:00:00Z", "end_date": "2021-01-01T00:00:00Z"}
+    args = {
+        "should_push_events": "false",
+        "limit": "1",
+        "start_date": "2021-01-01T00:00:00.0Z",
+        "end_date": "2021-01-01T00:00:00.0Z",
+    }
     results = get_events(client, args)
 
     assert isinstance(results, CommandResults)
