@@ -193,7 +193,7 @@ class Client(BaseClient):
     @staticmethod
     def _generic_error_handler(res):
         err_msg = BeautifulSoup(res.text)
-        err_msg_body = err_msg.body.text if err_msg.body else str(err_msg.body)
+        err_msg_body = err_msg.body.text if err_msg.body else err_msg.title
 
         if res.status_code == 400:
             raise DemistoException(f"Bad request. Origin response from server: {err_msg_body}")
