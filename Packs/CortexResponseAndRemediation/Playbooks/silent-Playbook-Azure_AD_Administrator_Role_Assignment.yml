@@ -968,7 +968,7 @@ tasks:
     task:
       id: 2b218acd-ab4d-42d2-a9a2-baeb9dfb1ce5
       version: -1
-      name: Save Assignee Creation Age if <= 7D
+      name: Save Assignee Creation Age
       description: Saves the **number of days** since the assignee user's creation, if created within the **last 7 days**
       scriptName: SetAndHandleEmpty
       type: regular
@@ -1297,7 +1297,7 @@ tasks:
     task:
       id: c634d83e-303d-4fc6-96b7-2782813ee1fb
       version: -1
-      name: IF Remove the Admin Role Assignment
+      name: Remove the Admin Role Assignment
       type: condition
       iscommand: false
       brand: ""
@@ -1359,7 +1359,7 @@ tasks:
     task:
       id: ec57442b-622a-4075-ae16-be28be48d93c
       version: -1
-      name: IF Disable Assignor User
+      name: Disable Assignor User
       type: condition
       iscommand: false
       brand: ""
@@ -1420,7 +1420,7 @@ tasks:
     task:
       id: 3a10921e-5d67-4798-b5c4-a9efcd18e7bf
       version: -1
-      name: IF Disable Assignee User
+      name: Disable Assignee User
       type: condition
       iscommand: false
       brand: ""
@@ -1909,7 +1909,7 @@ tasks:
     task:
       id: d89eab88-461a-4329-8830-aeb3bd44782c
       version: -1
-      name: Save Assignor Creation Age if <= 7D
+      name: Save Assignor Creation Age
       description: Saves the **number of days** since the assignor user's creation, if created within the **last 7 days**
       scriptName: SetAndHandleEmpty
       type: regular
