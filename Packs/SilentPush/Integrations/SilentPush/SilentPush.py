@@ -2557,7 +2557,7 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
 @metadata_collector.command(
     command_name="silentpush-get-nameserver-reputation",
     inputs_list=NAMESERVER_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.SubnetReputation",
+    outputs_prefix="SilentPush.NameserverReputation",
     outputs_list=NAMESERVER_REPUTATION_OUTPUTS,
     description="This command retrieves historical reputation data for a specified nameserver,"
     "including reputation scores and optional detailed calculation information.",
@@ -2608,7 +2608,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         reputation_data = []
 
     return CommandResults(
-        outputs_prefix="SilentPush.SubnetReputation",
+        outputs_prefix="SilentPush.NameserverReputation",
         outputs_key_field="ns_server",
         outputs={"nameserver": nameserver, "reputation_data": reputation_data},
         readable_output=readable_output,
@@ -2619,7 +2619,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
 @metadata_collector.command(
     command_name="silentpush-get-subnet-reputation",
     inputs_list=SUBNET_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.SubnetReputation",
+    outputs_prefix="SilentPush.NameserverReputation",
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet.",
 )
