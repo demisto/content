@@ -1,5 +1,5 @@
 import demistomock as demisto  # noqa: F401
-from CommonServerPython import return_results, tableToMarkdown, CommandResults
+from CommonServerPython import *
 
 ASIMILY_ASSET_CONTEXT_OUTPUT_KEY_ORDER = [
     "asimilydeviceid",

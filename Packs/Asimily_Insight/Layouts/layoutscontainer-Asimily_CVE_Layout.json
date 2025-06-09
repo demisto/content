@@ -1,5 +1,4 @@
 {
-  "cacheVersn": 0,
   "close": {
     "sections": [
       {
@@ -34,10 +33,7 @@
   },
   "definitionId": "",
   "description": "",
-  "detached": false,
-  "details": null,
   "detailsV2": {
-    "TypeName": "",
     "tabs": [
       {
         "id": "summary",
@@ -666,7 +662,7 @@
             "minH": 1,
             "moved": false,
             "name": "Incident Asset Context Data",
-            "query": "e4c42bb3-c26d-48c2-8d8c-862fade191dd",
+            "query": "AsimilyExtraAssetContextData",
             "queryType": "script",
             "static": false,
             "type": "dynamic",
@@ -908,18 +904,9 @@
       }
     ]
   },
-  "fromServerVersion": "",
   "group": "incident",
   "id": "Asimily CVE Layout",
-  "indicatorsDetails": null,
-  "indicatorsQuickView": null,
-  "isOverridable": false,
-  "itemVersion": "",
-  "locked": false,
-  "mobile": null,
   "name": "Asimily CVE Layout",
-  "packID": "",
-  "packName": "",
   "quickView": {
     "sections": [
       {
@@ -1162,9 +1149,7 @@
       }
     ]
   },
-  "quickViewV2": null,
   "system": false,
-  "toServerVersion": "",
   "version": -1,
   "fromVersion": "6.10.0",
   "marketplaces": [
