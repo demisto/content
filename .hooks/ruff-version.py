@@ -1,6 +1,6 @@
-import subprocess
 import sys
 import shutil
+import importlib.metadata
 
 
 def check_which_ruff():
@@ -15,14 +15,17 @@ def check_which_ruff():
 
 def get_ruff_version():
     try:
-        result = subprocess.run([sys.executable, "-m", "ruff", "--version"], capture_output=True, text=True, check=True)
-        return result.stdout.strip()
-    except subprocess.CalledProcessError:
-        return "subprocess.CalledProcessError"
-    except FileNotFoundError:
-        return "FileNotFoundError"
-    except Exception:
-        return "Exception"
+        # Attempt to get the version of the 'ruff' package
+        ruff_version = importlib.metadata.version("ruff")
+        sys.stdout.write(f"Ruff package is installed. Version: {ruff_version}\n")
+        return ruff_version
+    except importlib.metadata.PackageNotFoundError:
+        sys.stdout.write("Ruff package is NOT installed in this Python environment.")
+        return None
+    except Exception as e:
+        # Catch any other unexpected errors during the process
+        sys.stdout.write(f"An unexpected error occurred while checking ruff version: {e}")
+        return None
 
 
 if __name__ == "__main__":
