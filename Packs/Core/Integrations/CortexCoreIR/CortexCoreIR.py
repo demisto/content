@@ -464,7 +464,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
                 ioc_payload = json.loads(ioc_object)
             except json.JSONDecodeError:
                 raise DemistoException(
-                    "Core Add Indicator Rule Command: Problem in the JSON format of ioc_object"
+                    "Core Add Indicator Rule Command: The IOC object provided isn't in a valid JSON format."
                 )
     else:
         if not (indicator and indicator_type and severity):
