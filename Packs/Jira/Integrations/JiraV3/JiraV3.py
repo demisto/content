@@ -2338,7 +2338,7 @@ def create_issue_command(
         ui_base_url = server_url
     ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
 
-    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_key, ticket_name=ticket_key)
+    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_key, ticket_name=ticket_key).to_context()
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
@@ -2353,7 +2353,7 @@ def create_issue_command(
 
     if is_quick_action:
         mirror_results = CommandResults(
-            extended_payload={'MirrorObject': mirror_obj.to_context()}
+            extended_payload={'MirrorObject': mirror_obj}
         )
         results.append(mirror_results)
 

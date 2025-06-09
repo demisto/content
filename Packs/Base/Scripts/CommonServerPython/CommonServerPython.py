@@ -7499,7 +7499,7 @@ class CommandResults:
         }
 
         if self.extended_payload:
-            return_entry['ExtendedPayload'] = self.mirror_object
+            return_entry['ExtendedPayload'] = self.extended_payload
 
         if tags:
             # This is for backward compatibility reasons
