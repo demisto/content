@@ -148,7 +148,7 @@ configuration:
   section: Collect
   hidden:
   - xsoar
-- display: Max allowed concurrent tasks 
+- display: Max allowed concurrent tasks
   name: max_concurrent_tasks
   type: 0
   defaultvalue: '100'
