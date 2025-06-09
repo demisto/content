@@ -6301,7 +6301,9 @@
     "playbook-checkEmailAuthenticity-test",
     "FormatURL-Test",
     "Test CommonServer",
-    "PowerShellCommon-Test"
+    "PowerShellCommon-Test",
+
+    "Autofocus Query Samples, Sessions and Tags Test Playbook"
     ],
     "parallel_integrations": [
         "AWS - ACM",
