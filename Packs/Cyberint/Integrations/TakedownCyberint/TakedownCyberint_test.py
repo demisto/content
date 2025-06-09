@@ -7,7 +7,7 @@ from CommonServerPython import DemistoException
 import json
 
 
-BASE_URL = "https://td-example.com"
+BASE_URL = "https://test.cyberint.io"
 TOKEN = "example_token"
 
 

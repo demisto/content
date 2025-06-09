@@ -10,7 +10,7 @@ category: Data Enrichment & Threat Intelligence
 description: Use the Cyberint Takedowns integration to manage takedowns requests.
 configuration:
 - display: Cyberint API URL
-  additionalinfo: Cyberint API URL on which the services run (i.e https://your-company.cyberint.io)
+  additionalinfo: Cyberint API URL on which the services run (i.e https://yourcompany.cyberint.io)
   name: url
   required: true
   type: 0
@@ -112,55 +112,55 @@ script:
       type: String
       description: URL for the takedown request.
     outputs:
-    - contextPath: Cyberint.takedowns.reason
+    - contextPath: Cyberint.takedowns_list.reason
       description: Reason.
       type: String
-    - contextPath: Cyberint.takedowns.url
+    - contextPath: Cyberint.takedowns_list.url
       description: URL.
       type: String
-    - contextPath: Cyberint.takedowns.original_url
+    - contextPath: Cyberint.takedowns_list.original_url
       description: Original URL.
       type: String
-    - contextPath: Cyberint.takedowns.customer
+    - contextPath: Cyberint.takedowns_list.customer
       description: Customer.
       type: String
-    - contextPath: Cyberint.takedowns.status
+    - contextPath: Cyberint.takedowns_list.status
       description: Status.
       type: String
-    - contextPath: Cyberint.takedowns.brand
+    - contextPath: Cyberint.takedowns_list.brand
       description: Brand.
       type: String
-    - contextPath: Cyberint.takedowns.alert_ref_id
+    - contextPath: Cyberint.takedowns_list.alert_ref_id
       description: Alert Ref ID.
       type: String
-    - contextPath: Cyberint.takedowns.alert_id
+    - contextPath: Cyberint.takedowns_list.alert_id
       description: Alert ID.
       type: Number
-    - contextPath: Cyberint.takedowns.hosting_providers
+    - contextPath: Cyberint.takedowns_list.hosting_providers
       description: Hosting Providers.
       type: String
-    - contextPath: Cyberint.takedowns.name_servers
+    - contextPath: Cyberint.takedowns_list.name_servers
       description: Name Servers.
       type: String
-    - contextPath: Cyberint.takedowns.escalation_actions
+    - contextPath: Cyberint.takedowns_list.escalation_actions
       description: Escalation Actions.
       type: String
-    - contextPath: Cyberint.takedowns.last_escalation_date
+    - contextPath: Cyberint.takedowns_list.last_escalation_date
       description: Last Escalation Date.
       type: String
-    - contextPath: Cyberint.takedowns.last_status_change_date
+    - contextPath: Cyberint.takedowns_list.last_status_change_date
       description: Last Status Change Date.
       type: String
-    - contextPath: Cyberint.takedowns.last_seen_date
+    - contextPath: Cyberint.takedowns_list.last_seen_date
       description: Last Seen Date.
       type: String
-    - contextPath: Cyberint.takedowns.created_date
+    - contextPath: Cyberint.takedowns_list.created_date
       description: Created Date.
       type: String
-    - contextPath: Cyberint.takedowns.status_reason
+    - contextPath: Cyberint.takedowns_list.status_reason
       description: Status Reason.
       type: String
-    - contextPath: Cyberint.takedowns.id
+    - contextPath: Cyberint.takedowns_list.id
       description: ID.
       type: String
   - name: cyberint-takedown-url
@@ -176,55 +176,55 @@ script:
       type: String
       description: URL for takedown request
     outputs:
-    - contextPath: Cyberint.takedowns.reason
+    - contextPath: Cyberint.takedowns_submit.reason
       description: Reason.
       type: String
-    - contextPath: Cyberint.takedowns.url
+    - contextPath: Cyberint.takedowns_submit.url
       description: URL.
       type: String
-    - contextPath: Cyberint.takedowns.original_url
+    - contextPath: Cyberint.takedowns_submit.original_url
       description: Original URL.
       type: String
-    - contextPath: Cyberint.takedowns.customer
+    - contextPath: Cyberint.takedowns_submit.customer
       description: Customer.
       type: String
-    - contextPath: Cyberint.takedowns.status
+    - contextPath: Cyberint.takedowns_submit.status
       description: Status.
       type: String
-    - contextPath: Cyberint.takedowns.brand
+    - contextPath: Cyberint.takedowns_submit.brand
       description: Brand.
       type: String
-    - contextPath: Cyberint.takedowns.alert_ref_id
+    - contextPath: Cyberint.takedowns_submit.alert_ref_id
       description: Alert Ref ID.
       type: String
-    - contextPath: Cyberint.takedowns.alert_id
+    - contextPath: Cyberint.takedowns_submit.alert_id
       description: Alert ID.
       type: Number
-    - contextPath: Cyberint.takedowns.hosting_providers
+    - contextPath: Cyberint.takedowns_submit.hosting_providers
       description: Hosting Providers.
       type: String
-    - contextPath: Cyberint.takedowns.name_servers
+    - contextPath: Cyberint.takedowns_submit.name_servers
       description: Name Servers.
       type: String
-    - contextPath: Cyberint.takedowns.escalation_actions
+    - contextPath: Cyberint.takedowns_submit.escalation_actions
       description: Escalation Actions.
       type: String
-    - contextPath: Cyberint.takedowns.last_escalation_date
+    - contextPath: Cyberint.takedowns_submit.last_escalation_date
       description: Last Escalation Date.
       type: String
-    - contextPath: Cyberint.takedowns.last_status_change_date
+    - contextPath: Cyberint.takedowns_submit.last_status_change_date
       description: Last Status Change Date.
       type: String
-    - contextPath: Cyberint.takedowns.last_seen_date
+    - contextPath: Cyberint.takedowns_submit.last_seen_date
       description: Last Seen Date.
       type: String
-    - contextPath: Cyberint.takedowns.created_date
+    - contextPath: Cyberint.takedowns_submit.created_date
       description: Created Date.
       type: String
-    - contextPath: Cyberint.takedowns.status_reason
+    - contextPath: Cyberint.takedowns_submit.status_reason
       description: Status Reason.
       type: String
-    - contextPath: Cyberint.takedowns.id
+    - contextPath: Cyberint.takedowns_submit.id
       description: ID.
       type: String
   dockerimage: demisto/python3:3.11.11.1940698

@@ -55,25 +55,25 @@ Retrieve takedowns requests.
 
 #### Context Output
 
-| **Path**                                         | **Type** | **Description**                     |
-|--------------------------------------------------|----------|-------------------------------------|
-| Cyberint.takedowns.reason                  | String   | Reason for the takedown request.    |
-| Cyberint.takedowns.url                     | String   | URL for the takedown request.       |
-| Cyberint.takedowns.original_url            | String   | Original URL.                       |
-| Cyberint.takedowns.customer                | String   | Customer.                           |
-| Cyberint.takedowns.status                  | String   | Status.                             |
-| Cyberint.takedowns.brand                   | String   | Brand.                              |
-| Cyberint.takedowns.alert_ref_id            | String   | Alert reference ID.                 |
-| Cyberint.takedowns.alert_id                | Number   | Alert ID.                           |
-| Cyberint.takedowns.hosting_providers       | Array    | List of hosting providers.          |
-| Cyberint.takedowns.name_servers            | Array    | List of name servers.               |
-| Cyberint.takedowns.escalation_actions      | Array    | List of escalation actions.         |
-| Cyberint.takedowns.last_escalation_date    | String   | Last escalation date (ISO 8601).    |
-| Cyberint.takedowns.last_status_change_date | String   | Last status change date.            |
-| Cyberint.takedowns.last_seen_date          | String   | Last seen date.                     |
-| Cyberint.takedowns.created_date            | String   | Created date.                       |
-| Cyberint.takedowns.status_reason           | String   | Status reason.                      |
-| Cyberint.takedowns.id                      | String   | Takedown request ID (UUID).         |
+| **Path**                                   | **Type** | **Description**                     |
+|--------------------------------------------|----------|-------------------------------------|
+| Cyberint.takedowns_list.reason             | String   | Reason for the takedown request.    |
+| Cyberint.takedowns_list.url                     | String   | URL for the takedown request.       |
+| Cyberint.takedowns_list.original_url            | String   | Original URL.                       |
+| Cyberint.takedowns_list.customer                | String   | Customer.                           |
+| Cyberint.takedowns_list.status                  | String   | Status.                             |
+| Cyberint.takedowns_list.brand                   | String   | Brand.                              |
+| Cyberint.takedowns_list.alert_ref_id            | String   | Alert reference ID.                 |
+| Cyberint.takedowns_list.alert_id                | Number   | Alert ID.                           |
+| Cyberint.takedowns_list.hosting_providers       | Array    | List of hosting providers.          |
+| Cyberint.takedowns_list.name_servers            | Array    | List of name servers.               |
+| Cyberint.takedowns_list.escalation_actions      | Array    | List of escalation actions.         |
+| Cyberint.takedowns_list.last_escalation_date    | String   | Last escalation date (ISO 8601).    |
+| Cyberint.takedowns_list.last_status_change_date | String   | Last status change date.            |
+| Cyberint.takedowns_list.last_seen_date          | String   | Last seen date.                     |
+| Cyberint.takedowns_list.created_date            | String   | Created date.                       |
+| Cyberint.takedowns_list.status_reason           | String   | Status reason.                      |
+| Cyberint.takedowns_list.id                      | String   | Takedown request ID (UUID).         |
 
 #### Command example
 
@@ -167,29 +167,29 @@ Submit takedown request.
 
 #### Context Output
 
-| **Path**                                              | **Type** | **Description**                     |
-|-------------------------------------------------------|----------|-------------------------------------|
-| Cyberint.takedown_request.reason                      | String   | Reason for the takedown request.    |
-| Cyberint.takedown_request.url                         | String   | URL for the takedown request.       |
-| Cyberint.takedown_request.original_url                | String   | Original URL.                       |
-| Cyberint.takedown_request.customer                    | String   | Customer.                           |
-| Cyberint.takedown_request.status                      | String   | Status.                             |
-| Cyberint.takedown_request.brand                       | String   | Brand.                              |
-| Cyberint.takedown_request.alert_ref_id                | String   | Alert reference ID.                 |
-| Cyberint.takedown_request.alert_id                    | Number   | Alert ID.                           |
-| Cyberint.takedown_request.hosting_providers           | Array    | List of hosting providers.          |
-| Cyberint.takedown_request.name_servers                | Array    | List of name servers.               |
-| Cyberint.takedown_request.escalation_actions          | Array    | List of escalation actions.         |
-| Cyberint.takedown_request.last_escalation_date        | String   | Last escalation date (ISO 8601).    |
-| Cyberint.takedown_request.last_status_change_date     | String   | Last status change date.            |
-| Cyberint.takedown_request.last_seen_date              | String   | Last seen date.                     |
-| Cyberint.takedown_request.created_date                | String   | Created date.                       |
-| Cyberint.takedown_request.status_reason               | String   | Status reason.                      |
-| Cyberint.takedown_request.id                          | String   | Takedown request ID (UUID).         |
+| **Path**                                          | **Type** | **Description**                     |
+|---------------------------------------------------|----------|-------------------------------------|
+| Cyberint.takedowns_submit.reason                  | String   | Reason for the takedown request.    |
+| Cyberint.takedowns_submit.url                     | String   | URL for the takedown request.       |
+| Cyberint.takedowns_submit.original_url            | String   | Original URL.                       |
+| Cyberint.takedowns_submit.customer                | String   | Customer.                           |
+| Cyberint.takedowns_submit.status                  | String   | Status.                             |
+| Cyberint.takedowns_submit.brand                   | String   | Brand.                              |
+| Cyberint.takedowns_submit.alert_ref_id            | String   | Alert reference ID.                 |
+| Cyberint.takedowns_submit.alert_id                | Number   | Alert ID.                           |
+| Cyberint.takedowns_submit.hosting_providers       | Array    | List of hosting providers.          |
+| Cyberint.takedowns_submit.name_servers            | Array    | List of name servers.               |
+| Cyberint.takedowns_submit.escalation_actions      | Array    | List of escalation actions.         |
+| Cyberint.takedowns_submit.last_escalation_date    | String   | Last escalation date (ISO 8601).    |
+| Cyberint.takedowns_submit.last_status_change_date | String   | Last status change date.            |
+| Cyberint.takedowns_submit.last_seen_date          | String   | Last seen date.                     |
+| Cyberint.takedowns_submit.created_date            | String   | Created date.                       |
+| Cyberint.takedowns_submit.status_reason           | String   | Status reason.                      |
+| Cyberint.takedowns_submit.id                      | String   | Takedown request ID (UUID).         |
 
 #### Command example
 
-```!cyberint-takedown-url customer=Cyberint reason=Description url=https://dummy-url-for-takedown.com```
+```!cyberint-takedown-url customer=Cyberint reason=Description url=http://hacking.enterprises```
 
 #### Context Example
 
