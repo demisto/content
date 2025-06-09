@@ -33,7 +33,8 @@
         "CrowdStrike Falcon Mobile Detection",
         "CrowdStrike Falcon On-Demand Scans Detection",
         "CrowdStrike Falcon OFP Detection",
-        "CrowdStrike Falcon Third Party Detection"
+        "CrowdStrike Falcon Third Party Detection",
+        "CrowdStrike Falcon NGSIEM Detection"
     ],
     "systemAssociatedTypes": [
         "CrowdStrike Falcon OFP Detection"

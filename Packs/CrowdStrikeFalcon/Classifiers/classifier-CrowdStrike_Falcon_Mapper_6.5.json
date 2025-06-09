@@ -1553,6 +1553,7 @@
                 "Last Update Time": {
 					"simple": "updated_timestamp"
 				}
+            }
         }
     },
     "name": "CrowdStrike Falcon Mapper",
