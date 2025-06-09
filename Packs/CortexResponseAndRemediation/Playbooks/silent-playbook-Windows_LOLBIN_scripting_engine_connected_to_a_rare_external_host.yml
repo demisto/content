@@ -372,8 +372,8 @@ tasks:
     task:
       id: 2da21b06-122c-435f-9612-116647dea67d
       version: -1
-      name: Check known related BTP alerts, bad URLs, or suspicious commands found
-      description: This task checks for known related Behavioral Threat Protection alerts, bad URLs, or suspicious commands found in alerts. It evaluates multiple conditions including WildFire Malware, Powershell Activity, Script Activity, Suspicious .NET Behavior, command line analysis scores, and malicious URL or domain detections.
+      name: Check for known related BTP alerts, Malicious domains or URLs, or suspicious commands.
+      description: This task checks for known related Behavioral Threat Protection alerts, Malicious indicators, or suspicious commands found in alerts. It evaluates multiple conditions including WildFire Malware, Powershell Activity, Script Activity, Suspicious .NET Behavior, command line analysis scores, and malicious URL or domain detections.
       type: condition
       iscommand: false
       brand: ""
@@ -558,10 +558,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "121":
     id: "121"
-    taskid: 36903aec-5044-483f-8a12-d9baaeed1074
+    taskid: 5e171439-8c8d-4d87-969f-7fb3e9cfa8b7
     type: condition
     task:
-      id: 36903aec-5044-483f-8a12-d9baaeed1074
+      id: 5e171439-8c8d-4d87-969f-7fb3e9cfa8b7
       version: -1
       name: Check if any URLS were found in the command line
       description: Checks if any URLs were identified in the analyzed command line and routes the playbook flow accordingly.
@@ -580,8 +580,10 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CommandLineAnalysis.analysis.original.indicators.URL}
+              simple: CommandLineAnalysis.analysis.original.indicators.URL
             iscontext: true
+          right:
+            value: {}
     continueonerrortype: ""
     view: |-
       {
@@ -1012,7 +1014,7 @@ tasks:
       id: 62977917-f33f-4bf0-b516-34a7d5f98988
       version: -1
       name: Close the Alert as False Positive
-      description: Close the Alert as False Positive
+      description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1102,10 +1104,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "139":
     id: "139"
-    taskid: fe41233e-d2da-4970-848c-c20412043108
+    taskid: a0d425e9-6a01-4864-9ee8-0198f9f874f9
     type: collection
     task:
-      id: fe41233e-d2da-4970-848c-c20412043108
+      id: a0d425e9-6a01-4864-9ee8-0198f9f874f9
       version: -1
       name: Approve the URL block using PAN-OS
       description: Analyst approval is required to block the malicious URL.
@@ -1149,7 +1151,7 @@ tasks:
       - id: "0"
         label: ""
         labelarg:
-          simple: "Block the following malicious URL using PAN-OS? \n- ${badUrls}"
+          simple: "Block the following malicious URL using PAN-OS? \n - ${DBotScore(val.Type === 'url' && val.Score === 3).Indicator=>val.filter((v,i,a)=>a.indexOf(v)==i).join(\"\\n - \")}"
         required: false
         gridcolumns: []
         defaultrows: []
@@ -1224,7 +1226,7 @@ tasks:
       id: 2efec428-4939-4160-9a15-4a8dac23fd72
       version: -1
       name: Close the Alert as True Positive
-      description: Close the Alert as True Positive
+      description: commands.local.cmd.close.inv
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1255,10 +1257,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "142":
     id: "142"
-    taskid: b0bad8f4-b418-46c8-8833-0c95094b80fe
+    taskid: 3f7f5dc3-af5f-4635-81f6-40ab9b4033c3
     type: condition
     task:
-      id: b0bad8f4-b418-46c8-8833-0c95094b80fe
+      id: 3f7f5dc3-af5f-4635-81f6-40ab9b4033c3
       version: -1
       name: Check if any domains were found in the command line
       description: Checks if any domains were identified in the analyzed command line and routes the playbook flow accordingly.
@@ -1277,7 +1279,7 @@ tasks:
       - - operator: isNotEmpty
           left:
             value:
-              simple: ${CommandLineAnalysis.analysis.original.indicators.Domain}
+              simple: CommandLineAnalysis.analysis.original.indicators.Domain
             iscontext: true
           right:
             value: {}
@@ -1434,4 +1436,3 @@ issilent: true
 marketplaces: ["marketplacev2", "platform"]
 tests:
 - No tests (auto formatted)
-
