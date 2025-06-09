@@ -982,6 +982,17 @@ def test_login_command_success(mocker):
 
 
 def test_module_of_testing_success_and_failure(mocker):
+    """
+    Test module_of_testing when login and fetch success.
+
+    Given:
+        - OAuth is enabled.
+        - login works.
+    When:
+        - module_of_testing is called.
+    Then:
+        - module_of_testing return "ok" message.
+    """
     client = Client(
         use_oauth=True,
         credentials={"username": "test", "password": "test"},
