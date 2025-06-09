@@ -20,7 +20,7 @@ def get_ruff_version():
         sys.stdout.write(f"Ruff package is installed. Version: {ruff_version}\n")
         return ruff_version
     except importlib.metadata.PackageNotFoundError:
-        sys.stdout.write("Ruff package is NOT installed in this Python environment.")
+        sys.stdout.write("Ruff package is NOT installed in this Python environment.\n")
         return None
     except Exception as e:
         # Catch any other unexpected errors during the process
