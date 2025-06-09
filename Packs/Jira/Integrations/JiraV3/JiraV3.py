@@ -2352,10 +2352,7 @@ def create_issue_command(
     results.append(ticket_results)
 
     if is_quick_action:
-        mirror_results = CommandResults(
-            extended_payload={'MirrorObject': mirror_obj}
-        )
-        results.append(mirror_results)
+        ticket_results.extended_payload = {'MirrorObject': mirror_obj}
 
     return results
 
