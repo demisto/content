@@ -1,9 +1,8 @@
 from datetime import datetime, timedelta
-import time
 import pytest
 import urllib3
 
-from CommonServerPython import date_to_timestamp, get_integration_context, set_integration_context
+from CommonServerPython import date_to_timestamp
 from ProofpointThreatProtection import *
 
 urllib3.disable_warnings()
@@ -94,10 +93,6 @@ def test_expired_access_token(mocker):
     assert obtained_token == ACCESS_TOKEN_VALUE
 
 
-
-
-
-
 def test_non_existent_access_token(mocker):
     c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
     mocker.patch.object(c, "get_shared_integration_context", return_value={})
@@ -124,14 +119,15 @@ def test_non_existent_access_token(mocker):
     assert obtained_token == ACCESS_TOKEN_VALUE
 
 
-
 def test_bad_get_access_token_request(mocker):
     c = Client(base_url=TEST_SERVER_BASE_URL, verify=False)
     mocker.patch.object(c, "get_shared_integration_context", return_value={})
     mocker.patch.object(c, "get_auth_host", return_value=TEST_AUTH_HOST)
-    mocker.patch.object(c, "_http_request", side_effect=Exception(
-        "Error occurred while creating an access token. Please check the instance configuration."
-    ))
+    mocker.patch.object(
+        c,
+        "_http_request",
+        side_effect=Exception("Error occurred while creating an access token. Please check the instance configuration."),
+    )
     mock_set_context = mocker.patch.object(c, "set_shared_integration_context")
 
     with pytest.raises(Exception) as error_info:
