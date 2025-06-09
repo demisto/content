@@ -455,19 +455,16 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
 
     # Handle pre-built IOC object
     if ioc_object:
-        # Try to detect JSON
-        try:
-            ioc_payload = json.loads(ioc_object)
-            input_format = "JSON"
-        except json.JSONDecodeError:
-            # Not JSON, check if it looks like CSV (very basic check)
-            if "," in ioc_object and ("\\n" in ioc_object or "\n" in ioc_object):
-                ioc_object = ioc_object.replace("\\n", "\n")
-                ioc_payload = ioc_object  # Leave as raw string
-                input_format = "CSV"
-            else:
+        if input_format == "CSV":
+            ioc_object = ioc_object.replace("\\n", "\n")
+            ioc_payload = ioc_object  # Leave as raw string
+        else:
+            # Try to detect JSON
+            try:
+                ioc_payload = json.loads(ioc_object)
+            except json.JSONDecodeError:
                 raise DemistoException(
-                    "Core Add Indicator Rule Command: Invalid ioc_object" " must be either valid JSON or CSV string."
+                    "Core Add Indicator Rule Command: Problem in the JSON format of ioc_object"
                 )
     else:
         if not (indicator and indicator_type and severity):
