@@ -90,9 +90,11 @@ script:
       name: name
     description: Delete domain.
     name: umbrella-domain-delete
-  dockerimage: demisto/python3:3.11.10.116439
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: true
   script: '-'
   subtype: python3
   type: python
 fromversion: 5.0.0
+tests:
+- No tests (auto formatted)

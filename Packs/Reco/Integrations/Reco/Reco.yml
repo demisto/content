@@ -78,7 +78,7 @@ description: Reco is a Saas data security solution that protects your data from 
 display: Reco
 name: Reco
 script:
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: "-"
@@ -383,7 +383,7 @@ script:
     description: Get files user has access to from Reco.
     name: reco-get-assets-shared-externally
   - arguments: []
-    description: Get Private emails with access
+    description: Get Private emails with access.
     name: reco-get-private-email-list-with-access
     outputs:
     - contextPath: Reco.privateEmails.email_account
