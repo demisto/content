@@ -41,6 +41,8 @@ repos:
     min_py_version: '3.7'
     skip:docker_autoupdate: true
     parallel: false
+    args:
+    - -n
   - id: ruff
     args:
     - --version
