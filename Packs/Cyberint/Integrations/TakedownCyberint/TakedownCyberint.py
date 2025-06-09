@@ -131,6 +131,23 @@ class Client(BaseClient):
         return response
 
 
+def test_module(client):
+    """Test module for Cyberint integration."""
+    try:
+        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
+        return "ok"
+    except DemistoException as exc:
+        error_msg = str(exc)
+
+        if "[403] - Forbidden" in error_msg:
+            return "ok"
+        elif "[401] - Unauthorized" in error_msg:
+            raise DemistoException("Authentication failed: Invalid API token")
+        else:
+            # Re-raise the original exception for all other cases
+            raise exc
+
+
 def submit_takedown_request_command(
     client: Client,
     args: dict[str, Any],
@@ -331,28 +348,6 @@ def main():
         return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
-def test_module(client: Client) -> str:
-    """
-    Builds the iterator to check that the feed is accessible.
-
-    Args:
-        client: Client object.
-
-    Returns:
-        Outputs.
-    """
-    try:
-        result = client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
-        if result:
-            return "ok"
-    except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
-            return "ok"
-
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
-            return "Authorization Error: invalid `API Token`"
-
-
 def takedown_response_header_transformer(header: str) -> str:
     """
     Returns a correct header.
@@ -412,5 +407,3 @@ def takedown_response_header_transformer(header: str) -> str:
 
 if __name__ in ["__main__", "builtin", "builtins"]:
     main()
-
-
