@@ -88,7 +88,7 @@ filter channel in ("System", "Application") or provider_name in("Microsoft-Windo
         xdm.event.description = coalesce(message, if(channel="System", event_data -> updateTitle), if(channel="Application", event_data -> param3)),
         xdm.event.duration = to_integer(scan_duration),
         xdm.event.id = event_id_string,
-        xdm.event.log_level = if(LogLevel="information", XDM_CONST.LOG_LEVEL_INFORMATIONAL, LogLevel="error", XDM_CONST.LOG_LEVEL_ERROR, LogLevel="warning", XDM_CONST.LOG_LEVEL_WARNING, LogLevel="critical", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(opcode, log_level))),
+        xdm.event.log_level = if(LogLevel="information", XDM_CONST.LOG_LEVEL_INFORMATIONAL, LogLevel="error", XDM_CONST.LOG_LEVEL_ERROR, LogLevel="warning", XDM_CONST.LOG_LEVEL_WARNING, LogLevel="critical", XDM_CONST.LOG_LEVEL_CRITICAL, to_string(coalesce(to_string(opcode), log_level))),
         xdm.event.operation_sub_type = coalesce(check_message_action, detection_type, arrayindex(regextract(message, "(^.*?)\."), 0), if(channel="System", event_data_param2)),
         xdm.event.original_event_type = event_type,
         xdm.event.outcome_reason = coalesce(if(channel="Application" and task="TM", event_data_param2), action_status, error_message, Failure_Reason),
