@@ -373,8 +373,13 @@ def get_tim_file_verdict(per_command_context: dict[str, dict]) -> str:
     Returns:
         str: Verdict from TIM, if known.
     """
-    score = per_command_context.get("findIndicators", {}).get("FileEnrichment", {}).get("Score")
-    return DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
+    if find_indicators_file_context := per_command_context.get("findIndicators", {}).get("FileEnrichment"):
+        demisto.debug(f"Getting Score from find indicators file context: {find_indicators_file_context}.")
+        score = find_indicators_file_context[0].get("Score")
+        return DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
+
+    demisto.debug("No file indicator found. Retuning unknown verdict.")
+    return "Unknown"
 
 
 """ COMMAND EXECUTION FUNCTIONS """

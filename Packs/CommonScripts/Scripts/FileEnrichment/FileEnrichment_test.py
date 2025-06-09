@@ -219,6 +219,32 @@ def test_merge_context_outputs():
     assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
 
 
+@pytest.mark.parametrize(
+    "find_indicator_file_context, expected_verdict",
+    [
+        pytest.param({}, "Unknown", id="No score"),
+        pytest.param({"SHA256": SHA_256_HASH, "Score": 3}, "Bad", id="Bad score"),
+        pytest.param({"SHA256": SHA_256_HASH, "Score": 1}, "Good", id="Good score"),
+    ],
+)
+def test_get_tim_file_verdict(find_indicator_file_context: dict[str, dict], expected_verdict: str):
+    """
+    Given:
+        - The per-command entry context from containing the "FileEnrichment" context from the "findIndicators" command.
+
+    When:
+        - Calling `get_tim_file_verdict`.
+
+    Assert:
+        - Ensure TIM verdict is as expected.
+    """
+    from FileEnrichment import get_tim_file_verdict
+
+    per_command_context = {"findIndicators": {"FileEnrichment": [find_indicator_file_context]}}
+
+    assert get_tim_file_verdict(per_command_context) == expected_verdict
+
+
 def test_execute_file_reputation(mocker: MockerFixture):
     """
     Given:
