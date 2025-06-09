@@ -98,35 +98,37 @@ class Client(BaseClient):
         Returns:
             response (dict): API response from Cyberint.
         """
+        filters = {
+            "actions": {"action": action} if action else None,
+            "alert_id": alert_id,
+            "alert_ref_id": alert_ref_id,
+            "blocklist_requests": {"blocked_date": blocked_date, "sent_date": sent_date}
+            if blocked_date or sent_date
+            else None,
+            "brand": brand,
+            "created_date": created_date,
+            "customer": customer,
+            "domain": domain,
+            "email_ticket_id": email_ticket_id,
+            "hostname": hostname,
+            "id": id,
+            "last_action_date": last_action_date,
+            "last_email_date": last_email_date,
+            "last_monitored_date": last_monitored_date,
+            "last_seen_date": last_seen_date,
+            "last_submit_date": last_submit_date,
+            "metadata": {"date": metadata_date} if metadata_date else None,
+            "reason": reason,
+            "requested_by": requested_by,
+            "status": status,
+            "url": url,
+        }
+
         body = {
             "customer_id": customer_id,
-            "filters": {
-                "actions": {"action": action} if action else None,
-                "alert_id": alert_id,
-                "alert_ref_id": alert_ref_id,
-                "blocklist_requests": {"blocked_date": blocked_date, "sent_date": sent_date}
-                if blocked_date or sent_date
-                else None,
-                "brand": brand,
-                "created_date": created_date,
-                "customer": customer,
-                "domain": domain,
-                "email_ticket_id": email_ticket_id,
-                "hostname": hostname,
-                "id": id,
-                "last_action_date": last_action_date,
-                "last_email_date": last_email_date,
-                "last_monitored_date": last_monitored_date,
-                "last_seen_date": last_seen_date,
-                "last_submit_date": last_submit_date,
-                "metadata": {"date": metadata_date} if metadata_date else None,
-                "reason": reason,
-                "requested_by": requested_by,
-                "status": status,
-                "url": url,
-            },
+            "filters": remove_empty_elements(filters),
         }
-        body = remove_empty_elements(body)
+
         response = self._http_request(method="POST", json_data=body, cookies=self._cookies, url_suffix="takedown/api/v1/request")
         return response
 
@@ -339,7 +341,7 @@ def main():
             return_results(submit_takedown_request_command(client, args))
 
         elif command == "cyberint-retrieve-takedowns":
-            return_results(submit_takedown_request_command(client, args))
+            return_results(retrieve_takedown_requests_command(client, args))
 
         else:
             raise NotImplementedError(f"Command {command} is not implemented.")
