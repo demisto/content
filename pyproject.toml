@@ -413,7 +413,7 @@ exclude = [
 max_line_length = 130
 
 [tool.pytest.ini_options]
-asyncio_mode = "auto"
+# asyncio_mode = "auto"
 
 [tool.coverage.run]
 relative_files = true
