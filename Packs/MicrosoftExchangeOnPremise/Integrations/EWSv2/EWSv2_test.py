@@ -16,8 +16,6 @@ from exchangelib.items import Item
 from exchangelib.properties import ItemId
 from pytest_mock import MockerFixture
 
-from Packs.MicrosoftExchangeOnPremise.Integrations.EWSv2.EWSv2 import get_formatted_message
-
 
 class TestNormalCommands:
     """ """
@@ -207,14 +205,6 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
 
     x = fetch_last_emails(client, since_datetime="since_datetime")
     assert len(x) == expected_result
-
-
-def test_get_formatted_message():
-    import email.message
-
-    msg = email.message.Message()
-    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-    assert get_formatted_message(msg) == ""
 
 
 def test_fetch_last_emails_fail(mocker):

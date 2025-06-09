@@ -51,8 +51,6 @@ from exchangelib.version import VERSIONS as EXC_VERSIONS
 from future import utils as future_utils
 from requests.exceptions import ConnectionError
 
-from Packs.Base.Scripts.CommonServerPython.demistomock import demisto
-
 
 # Exchange2 2019 patch - server dosen't connect with 2019 but with other versions creating an error mismatch (see CIAC-3086),
 # overriding this function to remove minor version test and remove error throw.
@@ -802,6 +800,7 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                         # other item attachment
                         label_attachment_type = "attachmentItems"
                         label_attachment_id_type = "attachmentItemsId"
+                        formatted_message: str | bytes
                         # save the attachment
                         if hasattr(attachment, "item") and attachment.item.mime_content:
                             # Some items arrive with bytes attachemnt
@@ -829,7 +828,10 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
                                         except ValueError as err:
                                             if "There may be at most" not in str(err):
                                                 raise err
-                            formatted_message = get_formatted_message(attached_email)
+                            try:
+                                formatted_message = attached_email.as_string()
+                            except UnicodeEncodeError:
+                                formatted_message = attached_email.as_bytes()
                             file_result = fileResult(
                                 get_attachment_name(
                                     attachment_name=attachment.name,
@@ -939,21 +941,6 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
             raise e
 
     return incident
-
-
-def get_formatted_message_bad_header(attached_email) -> str|bytes:
-    """
-    Given a message that has a bad header
-    When: Calling get_formatted_message
-    Then: There should be no exceptions
-    """
-    try:
-        return attached_email.as_string()
-    except UnicodeEncodeError:
-        return attached_email.as_bytes()
-    except Exception as e:
-        demisto.info(f"Could not parse attached mail as message, {e}")
-        return "Could not format message"
 
 
 def fetch_emails_as_incidents(
