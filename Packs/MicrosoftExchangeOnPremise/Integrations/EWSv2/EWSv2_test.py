@@ -207,6 +207,32 @@ def test_fetch_last_emails_limit(mocker, limit, expected_result):
     assert len(x) == expected_result
 
 
+def test_get_formatted_message_bad_header():
+    """
+    Given a message that has a bad header
+    When: Calling get_formatted_message
+    Then: There should be no exceptions
+    """
+    import email.message
+
+    msg = email.message.Message()
+    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
+    assert get_formatted_message(msg) == ""
+
+
+
+def test_get_formatted_message_good_header():
+    """
+    Given a message that has a bad header
+    When: Calling get_formatted_message
+    Then: There should be no exceptions
+    """
+    import email.message
+
+    msg = email.message.Message()
+    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
+    assert get_formatted_message(msg) == ""
+
 def test_fetch_last_emails_fail(mocker):
     """
     This UT is added due to the following issue: XSUP-28730
