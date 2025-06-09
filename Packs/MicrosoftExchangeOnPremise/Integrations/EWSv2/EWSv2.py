@@ -940,14 +940,14 @@ def parse_incident_from_item(item, is_fetch, mark_as_read):  # pragma: no cover
     return incident
 
 
-def get_formatted_message(attached_email) -> str|bytes:
+def get_formatted_message(attached_email) -> str | bytes:
     try:
         return attached_email.as_string()
     except UnicodeEncodeError:
         return attached_email.as_bytes()
     except Exception as e:
         demisto.info(f"Could not parse attached mail as message, {e}")
-        return "Could not format message"
+        return " Could not format message"
 
 
 def fetch_emails_as_incidents(

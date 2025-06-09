@@ -8,8 +8,14 @@ import demistomock as demisto
 import EWSv2
 import pytest
 from EWSApiModule import EWSClient
-from EWSv2 import (fetch_last_emails, get_attachment_name, get_message_for_body_type, parse_item_as_dict, parse_physical_address,
-                   get_formatted_message)
+from EWSv2 import (
+    fetch_last_emails,
+    get_attachment_name,
+    get_message_for_body_type,
+    parse_item_as_dict,
+    parse_physical_address,
+    get_formatted_message,
+)
 from exchangelib import Body, Contact, EWSDate, EWSDateTime, EWSTimeZone, HTMLBody, Mailbox, Message
 from exchangelib.errors import ErrorInvalidIdMalformed, ErrorItemNotFound, ErrorNameResolutionNoResults, UnauthorizedError
 from exchangelib.indexed_properties import PhoneNumber, PhysicalAddress
@@ -214,25 +220,39 @@ def test_get_formatted_message_bad_header():
     When: Calling get_formatted_message
     Then: There should be no exceptions
     """
-    import email.message
-
+    import email
     msg = email.message.Message()
-    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-    assert get_formatted_message(msg) == ""
+    msg['From'] = f"hello@example.com"
+    msg['To'] = f"world@example.com"
+    msg['Subject'] = f"Test Email - subject"
 
+    # Set a random body
+    body = f"This is a randomly generated message body"
+    msg.set_payload(body)
+    msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
+    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
+    assert get_formatted_message(msg) == " Could not format message"
 
 
 def test_get_formatted_message_good_header():
     """
-    Given a message that has a bad header
+    Given a message that has a good header
     When: Calling get_formatted_message
-    Then: There should be no exceptions
+    Then: The mail should be parsed properly
     """
     import email.message
 
     msg = email.message.Message()
-    msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
-    assert get_formatted_message(msg) == ""
+    msg['From'] = f"hello@example.com"
+    msg['To'] = f"world@example.com"
+    msg['Subject'] = f"Test Email - subject"
+
+    # Set a random body
+    body = f"This is a randomly generated message body"
+    msg.set_payload(body)
+    msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
+    assert get_formatted_message(msg) == 'From: hello@example.com\nTo: world@example.com\nSubject: Test Email - subject\nFoo: From: value==value=<= .palo.com =?utf-8?q?=3E?=\n\nThis is a randomly generated message body'
+
 
 def test_fetch_last_emails_fail(mocker):
     """
