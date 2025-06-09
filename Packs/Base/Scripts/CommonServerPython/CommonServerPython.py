@@ -12467,7 +12467,7 @@ def is_time_sensitive():
         :return: bool
         :rtype: ``bool``
     """
-    return hasattr(demisto, 'isTimeSensitive') and demisto.isTimeSensitive()
+    demisto.isTimeSensitive()
 
 
 def parse_json_string(json_string):
@@ -12706,10 +12706,19 @@ def override_cortex_module_function(func):
     module_switcher.override_function("cortex_module_test", func.__name__, func)
     return func
 
+# # Test a bug solution with the override decorator:
+# @override_cortex_module_function
+# def argToBoolean(value):
+
+#     return "In argToBoolean from OLD CSP!"
+
+
+
 # Injects the Demisto object to the cortex-module package: 
 try:
     from cortex_module_test import test_override_csp
     test_override_csp.demisto = demisto
+    
 except ModuleNotFoundError:
     pass
 
@@ -12722,7 +12731,7 @@ except ModuleNotFoundError:
 #     setattr(module_to_change, "demisto", getattr(builtins, "demisto", None))
 #     sys.modules["cortex_module_test.test_override_csp"] = module_to_change
 
-# # Injects the Demisto object to the cortex-module package:
+# Injects the Demisto object to the cortex-module package:
 # import uuid
 # DemistoModule = types.ModuleType("DemistoModule")
 # DemistoModule.demisto = demisto
@@ -12731,9 +12740,6 @@ except ModuleNotFoundError:
 # DemistoModule.sys = sys
 # DemistoModule.os = os
 # sys.modules["DemistoModule"] = DemistoModule
-
-
-
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402
 
