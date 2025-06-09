@@ -8,7 +8,7 @@ from typing import Callable
 
 class CloudTypes(Enum):
     AWS = "AWS"
-    AZURE = "Azure"
+    AZURE = "AZURE"
     GCP = "GCP"
     OCI = "OCI"
 
