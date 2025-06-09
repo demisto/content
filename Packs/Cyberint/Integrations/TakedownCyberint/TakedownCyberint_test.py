@@ -1,10 +1,10 @@
 from unittest.mock import MagicMock
-import http
 from typing import Any
 import TakedownCyberint
 import pytest
 from CommonServerPython import DemistoException
 import json
+from TakedownCyberint import test_module
 
 
 BASE_URL = "https://test.cyberint.io"
@@ -47,24 +47,15 @@ def mock_client() -> TakedownCyberint.Client:
     )
 
 
-def test_module(mock_client):
+def test_test_module_error(requests_mock, mock_client):
     """
-    Builds the iterator to check that the feed is accessible.
-
-    Args:
-        client: Client object.
-
-    Returns:
-        Outputs.
+    Scenario: API returns an error for an valid token but not permitted customer_id.
+    Given:
+     - User provides valid credentials but not permitted customer_id.
     """
-    try:
-        mock_client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
-    except DemistoException as exc:
-        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
-            return "ok"
-
-        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
-            return "Authorization Error: invalid `API Token`"
+    error_response = json.loads(load_mock_response("error_response.json"))
+    requests_mock.post(f"{BASE_URL}/takedown/api/v1/request", status_code=403, json=error_response)
+    assert test_module(mock_client) == "ok"
 
 
 def test_test_module_forbidden_error(mock_client):
@@ -95,7 +86,7 @@ def test_test_module_ok(requests_mock, mock_client):
 
     result = test_module(mock_client)
 
-    assert result is None
+    assert result == "ok"
 
 
 def test_test_module_unexpected_error(mock_client):

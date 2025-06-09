@@ -1,5 +1,5 @@
 from typing import Any
-
+import http
 import demistomock as demisto
 import urllib3
 from CommonServerPython import *
@@ -290,6 +290,30 @@ def retrieve_takedown_requests_command(
         raw_response=takedown_requests,
         outputs=takedown_requests,
     )
+
+
+def test_module(client: Client) -> str:
+    """
+    Builds the iterator to check that the feed is accessible.
+
+    Args:
+        client: Client object.
+
+    Returns:
+        Outputs.
+    """
+    try:
+        client.retrieve_takedown_requests(customer_id="Cyberint", url="https://cyberint.com")
+    except DemistoException as exc:
+        if exc.res and (exc.res.status_code == http.HTTPStatus.FORBIDDEN):
+            return "ok"
+
+        if exc.res and (exc.res.status_code == http.HTTPStatus.UNAUTHORIZED):
+            return "Authorization Error: invalid `API Token`"
+
+        raise exc
+
+    return "ok"
 
 
 @logger
