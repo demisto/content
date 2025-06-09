@@ -4,22 +4,22 @@ from COOCApiModule import *  # noqa: E402
 from CommonServerPython import *  # noqa: F401
 from http import HTTPStatus
 from datetime import date
-from typing import Callable
+from collections.abc import Callable
 from enum import StrEnum
 from botocore.client import BaseClient as BotoClient
 from boto3 import Session
-import asyncio
 
 DEFAULT_MAX_RETRIES: int = 5
 DEFAULT_SESSION_NAME = "cortex-session"
 
+
 def arg_to_bool_or_none(value):
     """
     Converts a value to a boolean or None.
-    
+
     Args:
         value: The value to convert to boolean or None.
-    
+
     Returns:
         bool or None: Returns None if the input is None, otherwise returns the boolean representation of the value
         using the argToBoolean function.
@@ -29,6 +29,7 @@ def arg_to_bool_or_none(value):
     else:
         return argToBoolean(value)
 
+
 def parse_resource_ids(resource_id: str | None) -> list[str]:
     if resource_id is None:
         raise ValueError("Resource ID cannot be empty")
@@ -36,13 +37,14 @@ def parse_resource_ids(resource_id: str | None) -> list[str]:
     resource_ids = id_list.split(",")
     return resource_ids
 
+
 class AWSServices(StrEnum):
-    S3 = 's3'
-    IAM = 'iam'
-    EC2 = 'ec2'
-    RDS = 'rds'
-    EKS = 'eks'
-    LAMBDA = 'lambda'
+    S3 = "s3"
+    IAM = "iam"
+    EC2 = "ec2"
+    RDS = "rds"
+    EKS = "eks"
+    LAMBDA = "lambda"
 
 
 # =================== #
@@ -52,9 +54,9 @@ class DatetimeEncoder(json.JSONEncoder):
     # pylint: disable=method-hidden
     def default(self, obj):
         if isinstance(obj, datetime):
-            return obj.strftime('%Y-%m-%dT%H:%M:%S')
+            return obj.strftime("%Y-%m-%dT%H:%M:%S")
         elif isinstance(obj, date):
-            return obj.strftime('%Y-%m-%d')
+            return obj.strftime("%Y-%m-%d")
         # Let the base class default method raise the TypeError
         return json.JSONEncoder.default(self, obj)
 
@@ -66,35 +68,34 @@ class S3:
     def put_public_access_block_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Create or Modify the PublicAccessBlock configuration for an Amazon S3 bucket.
-        
+
         Args:
             client (BotoClient): The boto3 client for S3 service
             args (Dict[str, Any]): Command arguments including bucket name and access block settings
-            
+
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
 
         kwargs: dict[str, Union[bool, None]] = {
-            'BlockPublicAcls': argToBoolean(args.get('block_public_acls')) if args.get('block_public_acls') else None,
-            'IgnorePublicAcls': argToBoolean(args.get('ignore_public_acls')) if args.get('ignore_public_acls') else None,
-            'BlockPublicPolicy': argToBoolean(args.get('block_public_policy')) if args.get('block_public_policy') else None,
-            'RestrictPublicBuckets':
-                argToBoolean(args.get('restrict_public_buckets')) if args.get('restrict_public_buckets') else None
+            "BlockPublicAcls": argToBoolean(args.get("block_public_acls")) if args.get("block_public_acls") else None,
+            "IgnorePublicAcls": argToBoolean(args.get("ignore_public_acls")) if args.get("ignore_public_acls") else None,
+            "BlockPublicPolicy": argToBoolean(args.get("block_public_policy")) if args.get("block_public_policy") else None,
+            "RestrictPublicBuckets": argToBoolean(args.get("restrict_public_buckets"))
+            if args.get("restrict_public_buckets")
+            else None,
         }
 
         remove_nulls_from_dictionary(kwargs)
-        response = client.put_public_access_block(Bucket=args.get('bucket'), PublicAccessBlockConfiguration=kwargs)
+        response = client.put_public_access_block(Bucket=args.get("bucket"), PublicAccessBlockConfiguration=kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
-            return CommandResults(
-                readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket"
-                )
-            
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+            return CommandResults(readable_output=f"Successfully applied public access block to the {args.get('bucket')} bucket")
+
         return CommandResults(
-            entry_type=EntryType.ERROR,
-            readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket"
-            )
+            entry_type=EntryType.ERROR, readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket"
+        )
+
 
 class IAM:
     service = AWSServices.IAM
@@ -103,60 +104,64 @@ class IAM:
     def get_account_password_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Get AWS account password policy.
-        
+
         Args:
             client (BotoClient): The boto3 client for IAM service
             args (Dict[str, Any]): Command arguments including account ID
-            
+
         Returns:
             CommandResults: Results containing the current password policy configuration
         """
         response = client.get_account_password_policy()
-        data = json.loads(json.dumps(response['PasswordPolicy'], cls=DatetimeEncoder))
+        data = json.loads(json.dumps(response["PasswordPolicy"], cls=DatetimeEncoder))
 
-        human_readable = tableToMarkdown('AWS IAM Account Password Policy', data)
+        human_readable = tableToMarkdown("AWS IAM Account Password Policy", data)
 
-        return CommandResults(outputs=data, readable_output=human_readable, outputs_prefix='AWS.IAM.PasswordPolicy',
-                              outputs_key_field='AccountId')
+        return CommandResults(
+            outputs=data, readable_output=human_readable, outputs_prefix="AWS.IAM.PasswordPolicy", outputs_key_field="AccountId"
+        )
 
     @staticmethod
     def update_account_password_policy_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Create or Update AWS account password policy.
-        
+
         Args:
             client (BotoClient): The boto3 client for IAM service
             args (Dict[str, Any]): Command arguments including password policy parameters
-            
+
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
         try:
             response = client.get_account_password_policy()
-            kwargs = response['PasswordPolicy']
+            kwargs = response["PasswordPolicy"]
         except Exception:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}"
+                readable_output=f"Couldn't check current account password policy for account: {args.get('account_id')}",
             )
 
         # ExpirePasswords is part of the response but cannot be included in the request
-        if 'ExpirePasswords' in kwargs:
-            kwargs.pop('ExpirePasswords')
+        if "ExpirePasswords" in kwargs:
+            kwargs.pop("ExpirePasswords")
 
         command_args: dict[str, Union[int, bool, None]] = {
-            'MinimumPasswordLength': arg_to_number(args.get('minimum_password_length')),
-            'RequireSymbols': argToBoolean(args.get('require_symbols')) if args.get('require_symbols') else None,
-            'RequireNumbers': argToBoolean(args.get('require_numbers')) if args.get('require_numbers') else None,
-            'RequireUppercaseCharacters':
-                argToBoolean(args.get('require_uppercase_characters')) if args.get('require_uppercase_characters') else None,
-            'RequireLowercaseCharacters':
-                argToBoolean(args.get('require_lowercase_characters')) if args.get('require_lowercase_characters') else None,
-            'AllowUsersToChangePassword':
-                argToBoolean(args.get('allow_users_to_change_password')) if args.get('allow_users_to_change_password') else None,
-            'MaxPasswordAge': arg_to_number(args.get('max_password_age')),
-            'PasswordReusePrevention': arg_to_number(args.get('password_reuse_prevention')),
-            'HardExpiry': argToBoolean(args.get('hard_expiry')) if args.get('hard_expiry') else None,
+            "MinimumPasswordLength": arg_to_number(args.get("minimum_password_length")),
+            "RequireSymbols": argToBoolean(args.get("require_symbols")) if args.get("require_symbols") else None,
+            "RequireNumbers": argToBoolean(args.get("require_numbers")) if args.get("require_numbers") else None,
+            "RequireUppercaseCharacters": argToBoolean(args.get("require_uppercase_characters"))
+            if args.get("require_uppercase_characters")
+            else None,
+            "RequireLowercaseCharacters": argToBoolean(args.get("require_lowercase_characters"))
+            if args.get("require_lowercase_characters")
+            else None,
+            "AllowUsersToChangePassword": argToBoolean(args.get("allow_users_to_change_password"))
+            if args.get("allow_users_to_change_password")
+            else None,
+            "MaxPasswordAge": arg_to_number(args.get("max_password_age")),
+            "PasswordReusePrevention": arg_to_number(args.get("password_reuse_prevention")),
+            "HardExpiry": argToBoolean(args.get("hard_expiry")) if args.get("hard_expiry") else None,
         }
 
         remove_nulls_from_dictionary(command_args)
@@ -165,13 +170,15 @@ class IAM:
 
         response = client.update_account_password_policy(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(
                 readable_output=f"Successfully updated account password policy for account: {args.get('account_id')}"
             )
         else:
             return CommandResults(
-                readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}")
+                readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
+            )
+
 
 class EC2:
     service = AWSServices.EC2
@@ -180,34 +187,34 @@ class EC2:
     def modify_instance_metadata_options_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Modify the EC2 instance metadata parameters on a running or stopped instance.
-        
+
         Args:
             client (BotoClient): The boto3 client for EC2 service
             args (Dict[str, Any]): Command arguments including instance ID and metadata options
-            
+
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
         kwargs = {
-            'InstanceId': args.get('instance_id'),
-            'HttpTokens': args.get('http_tokens'),
-            'HttpEndpoint': args.get('http_endpoint')
+            "InstanceId": args.get("instance_id"),
+            "HttpTokens": args.get("http_tokens"),
+            "HttpEndpoint": args.get("http_endpoint"),
         }
         remove_nulls_from_dictionary(kwargs)
 
         response = client.modify_instance_metadata_options(**kwargs)
 
-        if response['ResponseMetadata']['HTTPStatusCode'] == HTTPStatus.OK:
+        if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
             return CommandResults(readable_output=f"Successfully updated EC2 instance metadata for {args.get('instance_id')}")
         else:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}"
+                readable_output=f"Couldn't updated public EC2 instance metadata for {args.get('instance_id')}",
             )
 
     @staticmethod
     def modify_instance_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
-        """ 
+        """
         Modify an EC2 instance attribute.
         Args:
             client (BotoClient): The boto3 client for EC2 service
@@ -216,28 +223,31 @@ class EC2:
         Returns
             CommandResults: Results of the operation with success/failure message
         """
+
         def parse_security_groups(csv_list):
             if csv_list is None:
                 return None
-            
+
             security_groups_str = csv_list.replace(" ", "")
             security_groups_list = security_groups_str.split(",")
             return security_groups_list
-          
+
         kwargs = {
-            'InstanceId': args.get('instance_id'),
-            'Attribute': args.get('attribute'),
-            'Value': args.get('value'),
-            'DisableApiStop': arg_to_bool_or_none(args.get('disable_api_stop')),
-            'Groups':  parse_security_groups(args.get('groups')),
+            "InstanceId": args.get("instance_id"),
+            "Attribute": args.get("attribute"),
+            "Value": args.get("value"),
+            "DisableApiStop": arg_to_bool_or_none(args.get("disable_api_stop")),
+            "Groups": parse_security_groups(args.get("groups")),
         }
         remove_nulls_from_dictionary(kwargs)
         response = client.modify_instance_attribute(**kwargs)
-        
+
         if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
-            return CommandResults(readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem}")    
+            return CommandResults(
+                readable_output=f"Successfully modified EC2 instance `{args.get('instance_id')}` attribute `{kwargs.popitem}"
+            )
         raise DemistoException(f"Unexpected response from AWS - \n{response}")
-    
+
     @staticmethod
     def modify_image_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -248,50 +258,48 @@ class EC2:
             "Attribute": args.get("Attribute"),
             "ImageId": args.get("ImageId"),
             "Value": args.get("Value"),
-            "OperationType": args.get("OperationType")
+            "OperationType": args.get("OperationType"),
         }
-        
+
         # Add description if provided
         if args.get("Description"):
             kwargs["Description"] = {"Value": args.get("Description")}
-        
+
         # Parse resource IDs
         for resource_type in ["UserIds", "UserGroups", "ProductCodes"]:
             if args.get(resource_type):
                 kwargs[resource_type] = parse_resource_ids(args.get(resource_type))
-        
+
         # Handle LaunchPermission configuration
         launch_permission = {"Add": [], "Remove": []}
-        
+
         # Process Add permissions
         for permission_type in ["Group", "UserId"]:
             if value := args.get(f"LaunchPermission-Add-{permission_type}"):
                 launch_permission["Add"].append({permission_type: value})
-        
+
         # Process Remove permissions
         for permission_type in ["Group", "UserId"]:
             if value := args.get(f"LaunchPermission-Remove-{permission_type}"):
                 launch_permission["Remove"].append({permission_type: value})
-        
+
         # Only add LaunchPermission if any values were added
         if launch_permission["Add"] or launch_permission["Remove"]:
             kwargs["LaunchPermission"] = launch_permission
 
         remove_nulls_from_dictionary(kwargs)
-        
+
         response = client.modify_image_attribute(**kwargs)
         if response["ResponseMetadata"]["HTTPStatusCode"] != HTTPStatus.OK:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
         return CommandResults(readable_output="Image attribute successfully modified")
-    
+
     @staticmethod
     def authorize_security_group_ingress_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Adds an inbound rule to a security group, allowing inbound traffic based on the specified parameters.
         """
-        kwargs = {
-            "GroupId": args.get("groupId")
-        }
+        kwargs = {"GroupId": args.get("groupId")}
         if IpPermissionsFull := args.get("IpPermissionsFull", None):
             IpPermissions = json.loads(IpPermissionsFull)
         else:
@@ -306,10 +314,10 @@ class EC2:
             IpPermissions_dict.update({"UserIdGroupPairs": UserIdGroupPairs})  # type: ignore
 
             IpPermissions.append(IpPermissions_dict)
-        
+
         kwargs["IpPermissions"] = IpPermissions
         response = client.authorize_security_group_ingress(**kwargs)
-        
+
         if not (response["ResponseMetadata"]["HTTPStatusCode"] == 200 and response["Return"]):
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
         return CommandResults(readable_output="The Security Group ingress rule was created")
@@ -317,48 +325,58 @@ class EC2:
 
 class EKS:
     service = AWSServices.EKS
-    
+
     @staticmethod
     def update_cluster_config_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Updates an Amazon EKS cluster configuration. Only a single type of update (logging / resources_vpc_config) is allowed per call.
-        
+
         Args:
             client (BotoClient): The boto3 client for EKS service
             args (Dict[str, Any]): Command arguments including cluster name and configuration options
-            
+
         Returns:
             CommandResults: Results of the operation with update information
         """
-        
+
         def validate_args(args: Dict[str, Any]) -> dict:
             """
             Check that exactly one argument is passed, and if not raises a value error
             """
             validated_args = {"name": args.get("cluster_name")}
-            if resources_vpc_config := args.get('resources_vpc_config'):
-                resources_vpc_config = json.loads(resources_vpc_config) if isinstance(resources_vpc_config, str) else resources_vpc_config
+            if resources_vpc_config := args.get("resources_vpc_config"):
+                resources_vpc_config = (
+                    json.loads(resources_vpc_config) if isinstance(resources_vpc_config, str) else resources_vpc_config
+                )
                 validated_args["resourcesVpcConfig"] = resources_vpc_config
                 # Convert specific string boolean values to actual boolean values
                 if isinstance(resources_vpc_config, dict):
-                    if 'endpointPublicAccess' in resources_vpc_config and isinstance(resources_vpc_config['endpointPublicAccess'], str):
-                        resources_vpc_config['endpointPublicAccess'] = resources_vpc_config['endpointPublicAccess'].lower() == 'true'
-                    if 'endpointPrivateAccess' in resources_vpc_config and isinstance(resources_vpc_config['endpointPrivateAccess'], str):
-                        resources_vpc_config['endpointPrivateAccess'] = resources_vpc_config['endpointPrivateAccess'].lower() == 'true'
-            
-            if logging_arg := args.get('logging'):
+                    if "endpointPublicAccess" in resources_vpc_config and isinstance(
+                        resources_vpc_config["endpointPublicAccess"], str
+                    ):
+                        resources_vpc_config["endpointPublicAccess"] = (
+                            resources_vpc_config["endpointPublicAccess"].lower() == "true"
+                        )
+                    if "endpointPrivateAccess" in resources_vpc_config and isinstance(
+                        resources_vpc_config["endpointPrivateAccess"], str
+                    ):
+                        resources_vpc_config["endpointPrivateAccess"] = (
+                            resources_vpc_config["endpointPrivateAccess"].lower() == "true"
+                        )
+
+            if logging_arg := args.get("logging"):
                 logging_arg = json.loads(logging_arg) if isinstance(logging_arg, str) else logging_arg
                 validated_args["logging"] = logging_arg
-                
+
             if logging_arg and resources_vpc_config:
                 raise ValueError
-            
+
             result = remove_empty_elements(validated_args)
             if isinstance(result, dict):
                 return result
             else:
                 raise ValueError("No valid configuration argument provided")
-                                  
+
         validated_args: dict = validate_args(args)
         try:
             response = client.update_cluster_config(**validated_args)
@@ -387,9 +405,10 @@ class EKS:
             else:
                 raise e
 
+
 class RDS:
     service = AWSServices.RDS
-    
+
     @staticmethod
     def modify_db_cluster_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -440,7 +459,7 @@ class RDS:
 
         except Exception as e:
             return CommandResults(readable_output=f"Error modifying DB cluster: {str(e)}")
-    
+
     @staticmethod
     def modify_db_cluster_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
@@ -478,7 +497,7 @@ class RDS:
                     )
                     readable_output += "\n\nUpdated DB Cluster Snapshot Attributes:"
                     readable_output += tableToMarkdown("", attributes)
-                    
+
                 return CommandResults(
                     readable_output=readable_output,
                     outputs_prefix="AWS.RDS.DBClusterSnapshotAttributes",
@@ -488,14 +507,13 @@ class RDS:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to modify DB cluster snapshot attribute. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
 
         except Exception as e:
             return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}"
-                )
+                entry_type=EntryType.ERROR, readable_output=f"Error modifying DB cluster snapshot attribute: {str(e)}"
+            )
 
     @staticmethod
     def modify_db_instance_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
@@ -505,7 +523,7 @@ class RDS:
         Args:
             client (BotoClient): The boto3 client for RDS service
             args (Dict[str, Any]): Command arguments including instance identifier and configuration options
-            
+
         Returns:
             CommandResults: Results of the operation with update information
         """
@@ -513,18 +531,17 @@ class RDS:
             kwargs = {
                 "DBInstanceIdentifier": args.get("db_instance_identifier"),
                 "MultiAZ": arg_to_bool_or_none(args.get("multi_az")),
-                "ApplyImmediately": arg_to_bool_or_none(args.get('apply_immediately')),
-                "AutoMinorVersionUpgrade": arg_to_bool_or_none(args.get('auto_minor_version_upgrade')),
-                "DeletionProtection": arg_to_bool_or_none(args.get('deletion_protection')),
-                "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get('enable_iam_database_authentication')),
-                "PubliclyAccessible": arg_to_bool_or_none(args.get('publicly_accessible')),
-                "CopyTagsToSnapshot": arg_to_bool_or_none(args.get('copy_tags_to_snapshot')),
-                "BackupRetentionPeriod": arg_to_bool_or_none(args.get('backup_retention_period')),
-                
+                "ApplyImmediately": arg_to_bool_or_none(args.get("apply_immediately")),
+                "AutoMinorVersionUpgrade": arg_to_bool_or_none(args.get("auto_minor_version_upgrade")),
+                "DeletionProtection": arg_to_bool_or_none(args.get("deletion_protection")),
+                "EnableIAMDatabaseAuthentication": arg_to_bool_or_none(args.get("enable_iam_database_authentication")),
+                "PubliclyAccessible": arg_to_bool_or_none(args.get("publicly_accessible")),
+                "CopyTagsToSnapshot": arg_to_bool_or_none(args.get("copy_tags_to_snapshot")),
+                "BackupRetentionPeriod": arg_to_bool_or_none(args.get("backup_retention_period")),
             }
             remove_nulls_from_dictionary(kwargs)
             response = client.modify_db_instance(**kwargs)
-   
+
             if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
                 db_instance = response.get("DBInstance", {})
                 readable_output = f"Successfully modified DB instance {args.get('db-instance-identifier')}"
@@ -542,24 +559,21 @@ class RDS:
             else:
                 return CommandResults(
                     entry_type=EntryType.ERROR,
-                    readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}"
+                    readable_output=f"Failed to modify DB instance. Status code: {response['ResponseMetadata']['HTTPStatusCode']}",
                 )
 
         except Exception as e:
-            return CommandResults(
-                entry_type=EntryType.ERROR,
-                readable_output=f"Error modifying DB instance: {str(e)}"
-                )
-    
+            return CommandResults(entry_type=EntryType.ERROR, readable_output=f"Error modifying DB instance: {str(e)}")
+
     @staticmethod
     def modify_db_snapshot_attribute_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
         """
         Adds or removes permission for the specified AWS account IDs to restore the specified DB snapshot.
-        
+
         Args:
             client (BotoClient): The boto3 client for RDS service
             args (Dict[str, Any]): Command arguments including snapshot identifier and attribute settings
-            
+
         Returns:
             CommandResults: Results of the operation with success/failure message
         """
@@ -582,9 +596,10 @@ class RDS:
         else:
             return CommandResults(
                 entry_type=EntryType.ERROR,
-                readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}"
+                readable_output=f"Couldn't modify DB snapshot attribute for {args.get('db_snapshot_identifier')}",
             )
-        
+
+
 REQUIRED_PERMISSIONS = set()
 
 # CONCURRENCY_LIMIT = 25           # Rate limit by AWS
@@ -594,19 +609,19 @@ REQUIRED_PERMISSIONS = set()
 #     async with SEMAPHORE:
 #         # TODO
 #         await asyncio.sleep(0) # placeholder for the real awaitable
-        
+
 #     return set()
 
 # async def check_permissions():
 #     errors: list[CommandResults] = []
-    
+
 #     accounts: list[str] = get_accounts_by_connector_id(connector_id='1')
 #     tasks = [asyncio.create_task(fetch_permissions_for_account(account)) for account in accounts]
-    
+
 #     for task in asyncio.as_completed(tasks):
 #         try:
 #             account_permissions = await task
-    
+
 #             for missing in REQUIRED_PERMISSIONS - account_permissions:
 #                 errors.append(HealthCheckResult.error(
 #                     account_id=account,
@@ -622,7 +637,7 @@ REQUIRED_PERMISSIONS = set()
 
 # def health_check() -> list[CommandResults] | str:
 #     """
-#     """    
+#     """
 #     errors: list[CommandResults] = asyncio.run(check_permissions())
 #     return errors or HealthCheckResult.ok()
 
@@ -633,14 +648,21 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
     "aws-ec2-instance-attribute-modify": EC2.modify_instance_attribute_command,
     "aws-ec2-image-attribute-modify": EC2.modify_image_attribute_command,
-    
     "aws-eks-cluster-config-update": EKS.update_cluster_config_command,
-    "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,   
-    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,   
-    "aws-rds-db-instance-modify": RDS.modify_db_instance_command,   
-    "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,   
+    "aws-rds-db-cluster-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-cluster-snapshot-attribute-modify": RDS.modify_db_cluster_command,
+    "aws-rds-db-instance-modify": RDS.modify_db_instance_command,
+    "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
 }
 
+
+def test_module():
+    # TODO - Bring back what was here before
+    return "ok"
+
+def health_check(connector_id: str):
+    pass
+    return "ok"
 
 def main():  # pragma: no cover
     params = demisto.params()
@@ -650,50 +672,45 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-    
 
-    return_results("ok")
-    # try:
-    #     context = demisto.callingContext.get("context", {})
-    #     cloud_info = context.get("CloudIntegrationInfo", {})
-    #     if command == "test-module":
-    #         if (connector_id := cloud_info.get("connectorID")):
-    #             health_check(connector_id)
-    #         else:
-    #             pass
-    #         return_results("ok")
-    #         # errors = [
-    #         #         {
-    #         #             HealthCheckResult.error(
-    #         #                 account_id=account_id,
-    #         #                 connector_id=credentials.get('connector_id'),
-    #         #                 message=f"Failed to retrieve cloud credentials for account {account_id}",
-    #         #                 error="ErrCredentialsRetrieval",
-    #         #                 error_type=ErrorType.PERMISSION_ERROR
-    #         #             )
-    #         #         }
-    #         # ]
-    #         # return_results(CommandResults(entry_type=EntryType.ERROR,outputs=errors))         
-    #     elif command in COMMANDS_MAPPING:
-            
-    #         account_id = args.get('account_id')
-    #         credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
-    #         aws_session: Session = Session(
-    #             aws_access_key_id=credentials.get('key') or params.get('access_key_id'),
-    #             aws_secret_access_key=credentials.get('access_token') or params.get('secret_access_key').get('password'),
-    #             aws_session_token=credentials.get('session_token'),
-    #             region_name=args.get('region') or params.get('region', '')
-    #         )
-    #         service = AWSServices(command.split('-')[1])
-    #         service_client: BotoClient = aws_session.client(service)
-    #         return_results(
-    #             COMMANDS_MAPPING[command](service_client, args)
-    #         )
-    #     else:
-    #         raise NotImplementedError(f'Command {command} is not implemented')
+    try:
+        context = demisto.callingContext.get("context", {})
+        cloud_info = context.get("CloudIntegrationInfo", {})
+        if command == "test-module":
+            #
+            results: Union[str, list[CommandResults], CommandResults] = (
+                health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
+            )
+            return_results(results)
+            # errors = [
+            #         {
+            #             HealthCheckResult.error(
+            #                 account_id=account_id,
+            #                 connector_id=credentials.get('connector_id'),
+            #                 message=f"Failed to retrieve cloud credentials for account {account_id}",
+            #                 error="ErrCredentialsRetrieval",
+            #                 error_type=ErrorType.PERMISSION_ERROR
+            #             )
+            #         }
+            # ]
+            # return_results(CommandResults(entry_type=EntryType.ERROR,outputs=errors))
+        elif command in COMMANDS_MAPPING:
+            account_id = args.get("account_id")
+            credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+            aws_session: Session = Session(
+                aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
+                aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key").get("password"),
+                aws_session_token=credentials.get("session_token"),
+                region_name=args.get("region") or params.get("region", ""),
+            )
+            service = AWSServices(command.split("-")[1])
+            service_client: BotoClient = aws_session.client(service)
+            return_results(COMMANDS_MAPPING[command](service_client, args))
+        else:
+            raise NotImplementedError(f"Command {command} is not implemented")
 
-    # except Exception as e:
-    #     return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+    except Exception as e:
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):  # pragma: no cover

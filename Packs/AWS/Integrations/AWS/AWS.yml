@@ -47,7 +47,7 @@ configuration:
   required: false
 - display: Default AWS region.
   name: region
-  required: false
+  type: 0
   additionalinfo: "The AWS region to use for API requests when a region is not explicitly specified in a command. This serves as the default region for operations across all AWS service-specific commands."
 - display: Timeout
   name: timeout
