@@ -6275,7 +6275,6 @@
     "CreateCertificate-Test",
     "Get EWS Folder Test",
     "palo_alto_panorama_test_pb",
-    "palo_alto_firewall_test_pb",
     "EWS search-mailbox test",
     "EWS V2 Send Mail Test",
     "Send Email To Recipients",
