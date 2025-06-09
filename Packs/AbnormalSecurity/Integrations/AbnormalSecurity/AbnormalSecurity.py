@@ -984,7 +984,7 @@ def fetch_incidents(
     next_run = {
         "last_fetch": current_datetime.strftime(ISO_8601_FORMAT)
     }
-    
+
     return next_run, all_incidents[:max_incidents_to_fetch]
 
 
