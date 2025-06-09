@@ -1,4 +1,7 @@
 category: Email
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Proofpoint Threat Protection
   version: -1
