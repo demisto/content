@@ -4,7 +4,6 @@
 	"feed": false,
 	"id": "Reliaquest Takedown Mapper",
 	"fromVersion": "6.10.0",
-	"keyTypeMap": {},
 	"locked": false,
 	"logicalVersion": 9,
 	"mapping": {
