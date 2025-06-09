@@ -241,7 +241,8 @@ class Client(BaseClient):
 
     @staticmethod
     def _computer_lock_erase_error_handler(res):
-        err_msg = str(BeautifulSoup(res.text).body.text)
+        err_msg = BeautifulSoup(res.text)
+        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
         if res.status_code == 400 and "Unable to match computer" in res.text:
             raise DemistoException(f"ID doesn't exist. Origin error from server: {err_msg}")
         if res.status_code == 400 and "is not managed" in res.text:
@@ -346,7 +347,8 @@ class Client(BaseClient):
 
     @staticmethod
     def _mobile_lost_erase_error_handler(res):
-        err_msg = str(BeautifulSoup(res.text).body.text)
+        err_msg = BeautifulSoup(res.text)
+        err_msg = str(err_msg.body.text) if err_msg.body else str(err_msg.title)
         if res.status_code == 400 and "Unable to match mobile device" in res.text:
             raise DemistoException(f"Unable to match mobile device. Origin error from server: {err_msg}")
         if res.status_code == 400 and "not support" in res.text:
