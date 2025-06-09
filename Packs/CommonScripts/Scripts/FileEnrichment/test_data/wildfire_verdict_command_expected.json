@@ -13,13 +13,11 @@
             {
                 "Source": "WildFire-v2",
                 "Score": 3,
+                "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+                "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
                 "Verdict": 1,
                 "VerdictDescription": "malware",
                 "AdditionalFields": {
-                    "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-                    "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-                    "Verdict": 1,
-                    "VerdictDescription": "malware",
                     "Type": "JAVA JAR"
                 }
             }

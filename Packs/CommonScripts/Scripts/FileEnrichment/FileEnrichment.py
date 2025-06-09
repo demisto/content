@@ -11,7 +11,6 @@ from collections.abc import Callable
 
 
 class Brands(Enum):
-    FILE_REPUTATION = "Reputation"  # [Built-in command] `!file` command
     TIM = "TIM"  # [Built-in component] Threat Intelligence Module
     WILDFIRE_V2 = "WildFire-v2"  # [Installable integration] Palo Alto Networks WildFire v2
     CORE_IR = "Cortex Core - IR"  # [Installable integration] Core - Investigation & Response
@@ -445,9 +444,13 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict[str, list], list[Co
             file_context = assign_params(
                 Source=Brands.WILDFIRE_V2.value,
                 Score=dbot_score.get("Score", Common.DBotScore.NONE),
-                Verdict=wild_fire_verdict_context.get("Verdict"),
-                VerdictDescription=wild_fire_verdict_context.get("VerdictDescription"),
-                AdditionalFields=wild_fire_verdict_context,
+                Verdict=wild_fire_verdict_context.pop("Verdict", None),
+                VerdictDescription=wild_fire_verdict_context.pop("VerdictDescription", None),
+                MD5=wild_fire_verdict_context.pop("MD5", None),
+                SHA1=wild_fire_verdict_context.pop("SHA1", None),
+                SHA256=wild_fire_verdict_context.pop("SHA256", None),
+                SHA512=wild_fire_verdict_context.pop("SHA512", None),
+                AdditionalFields=wild_fire_verdict_context,  # remaining fields after "popping" mapped fields
             )
             context_output["FileEnrichment"].append(file_context)
 
@@ -478,6 +481,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict[str, list], list[C
         if hash_analytics_context := get_from_context(context_item, ContextPaths.CORE_IR_HASH_ANALYTICS):
             file_context = assign_params(
                 Source=Brands.CORE_IR.value,
+                SHA256=command.args.get("sha256"),  # Hash not returned in context, so take from command args
                 GlobalPrevalence=demisto.get(hash_analytics_context, "data.global_prevalence.value"),
                 LocalPrevalence=demisto.get(hash_analytics_context, "data.local_prevalence.value"),
                 AdditionalFields=hash_analytics_context,

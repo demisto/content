@@ -93,18 +93,17 @@
         {
             "Source": "WildFire-v2",
             "Score": 3,
+            "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
+            "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
             "Verdict": 1,
             "VerdictDescription": "malware",
             "AdditionalFields": {
-                "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
-                "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
-                "Verdict": 1,
-                "VerdictDescription": "malware",
                 "Type": "JAVA JAR"
             }
         },
         {
             "Source": "Cortex Core - IR",
+            "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
             "GlobalPrevalence": 0,
             "LocalPrevalence": 0.058823529411764705,
             "AdditionalFields": {
