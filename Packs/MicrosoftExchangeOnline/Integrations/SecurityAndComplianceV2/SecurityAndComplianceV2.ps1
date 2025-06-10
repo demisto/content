@@ -1696,13 +1696,19 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
     $Demisto.results("start NewSearchActionCommand")
-    $Demisto.results("continue_polling: " +($kwargs.continue_polling))
-    # $polling_args = @{}
+    $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
 
     $results = ConvertTo-Boolean $kwargs.results
+    $polling = ConvertTo-Boolean $kwargs.polling
+    $continue_polling = ConvertTo-Boolean $kwargs.continue_polling
 
-    if ($kwargs.continue_polling){
-        $raw_response = $client.GetSearchAction($kwargs.action_search_name)
+    $polling_args = @{}
+    $human_readable = ""
+    $entry_context = @{}
+    $raw_response = @{}
+    # ConvertTo-Boolean $kwargs.continue_polling
+    if ($continue_polling){
+        $raw_response = $client.GetSearchAction($kwargs.search_action_name)
         $Status = $raw_response.Status
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search action **$($kwargs.search_name)** completed !"
@@ -1716,19 +1722,16 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
                 $human_readable += TableToMarkdown $parsed_results "Search action results"
             }
             
-            $kwargs.polling = $false
-
+            return $human_readable, $entry_context, $raw_response, $polling_args
+        }
+        else {
+            $polling_args = @{
+                search_action_name = $kwargs.search_action_name
+                continue_polling = $true
+            }
             return $human_readable, $entry_context, $raw_response, $polling_args
         }
     }
-    else {
-        $polling_args = @{
-            polling = $true
-            continue_polling = $true
-        }
-        return $human_readable, $entry_context, $raw_response, $polling_args
-    }
-
     # Raw response
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type,
                                             $kwargs.share_point_archive_format, $kwargs.format,
@@ -1747,21 +1750,23 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
         return $human_readable, $entry_context, $raw_response, $polling_args
     }
-    $action_search_name = $raw_response.Name
-
+    
     # Human readable
+    $search_action_name = $raw_response.Name
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
-    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($action_search_name)' created"
+    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($search_action_name)' created"
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response
     }
 
-    $polling_args = @{
-        action_search_name = $action_search_name
-        continue_polling = $true
+    if ($polling) {
+        $polling_args = @{
+            search_action_name = $search_action_name
+            continue_polling = $true
+            search_name = $kwargs.search_name
+        }
     }
-
     return $human_readable, $entry_context, $raw_response, $polling_args
 }
 

@@ -608,6 +608,30 @@ script:
       - 'IndexedItemsOnly'
       - 'UnindexedItemsOnly'
       - 'BothIndexedAndUnindexedItems'
+
+    - name: search_action_name
+      description: The name of the compliance search action.
+      hidden: true
+    - name: polling
+      description: TODO.
+      auto: PREDEFINED
+      predefined:
+      - true
+      - false
+      defaultValue: false
+    - name: continue_polling
+      description: test.
+      defaultValue: false
+      hidden: true
+    - description: Whether to print the results in the War Room. Default is "false".
+      name: results
+      auto: PREDEFINED
+      defaultValue: 'false'
+      predefined:
+      - 'true'
+      - 'false'
+      
+
     description: After you create a content search using the o365-sc-new-search command and run it using the o365-sc-start-search command, you assign a search action to the search using the o365-sc-new-search-action command.
     name: o365-sc-new-search-action
     polling: true
