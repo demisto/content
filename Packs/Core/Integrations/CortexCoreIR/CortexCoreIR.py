@@ -148,6 +148,91 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
     )
 
 
+def parse_expiration_date(expiration: Optional[str]) -> Optional[Union[int, str]]:
+    """
+     Converts relative expiration strings / numbers to epoch milliseconds or returns 'Never'.
+
+    Args:
+        expiration Optional[str]: The input from the command argument
+
+    Returns:
+        Optional[int, str]: The value that represent the expiration date of the IOC rule:
+            None: the rule get a default value.
+            str: "Never" - The rule has no expiration date.
+            int: epoch milliseconds of the expiration date.
+    """
+    # Return None - give the indicator the default expiration date value for the indicator type
+    if not expiration:
+        return None
+
+    if expiration.lower() == "never":
+        return "Never"
+
+    try:
+        dt = arg_to_datetime(expiration)
+    except ValueError:
+        return expiration  # Invalid input, pass through
+
+    if dt:
+        # check if the input matches a relative time format:
+        if bool(re.match(r"^\s*\d+\s+(minutes|hours|days|weeks|months|years)\s*$", expiration, flags=re.IGNORECASE)):
+            # Using dt that takes relative time and converts it into datetime (if its relative then in the past)
+            now = date_to_timestamp(get_current_time())
+            # the dt is a time in the past
+            delta = now - date_to_timestamp(dt)
+            return now + delta
+        else:
+            return date_to_timestamp(dt)
+    else:
+        raise DemistoException("The expiration date cannot be converted to epoch milliseconds.")
+
+
+def prepare_ioc_to_output(ioc_payload: Union[dict, str], input_format: str) -> dict:
+    """
+    Prepare the IOC data to output:
+        if it's a Dictionary - return it, else converts a single-row CSV IOC definition into a JSON object (Python dict).
+
+    Args:
+        ioc_payload Union[dict, str]: the data contained in the IOC payload.
+        input_format str: representing what is the input format.
+
+    Returns:
+        dict: Parsed JSON-style IOC object.
+    """
+    if input_format.upper() == "JSON":
+        if not isinstance(ioc_payload, dict):
+            raise ValueError("Expected a dict for JSON input format.")
+        return ioc_payload
+
+    ioc_payload = cast(str, ioc_payload)
+
+    # Split CSV string into lines
+    lines = ioc_payload.strip().splitlines()
+    header = lines[0].split(",")
+    values = lines[1].split(",")
+
+    # Map headers to values, collecting all duplicate fields
+    # Create a flat mapping, keeping the last occurrence of each header
+    field_map: dict[str, Any] = {}
+    for i, key in enumerate(header):
+        field_map[key] = values[i]  # always overwrite (keep last)
+
+    if "expiration_date" in field_map:
+        int_val_date = int(field_map["expiration_date"])
+        field_map["expiration_date"] = int_val_date
+
+    # Extract vendor fields
+    vendor_name = field_map.pop("vendor.name", None)
+    vendor_reliability = field_map.pop("vendor.reliability", None)
+    vendor_reputation = field_map.pop("vendor.reputation", None)
+
+    # Attach vendor only if name exists
+    if vendor_name:
+        field_map["vendors"] = [{"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}]
+
+    return field_map
+
+
 def core_execute_command_reformat_readable_output(script_res: list) -> str:
     """
     Reformat the human-readable output of the 'core_execute_command' command
@@ -279,6 +364,114 @@ def core_execute_command_command(client: Client, args: dict) -> PollResult:
         # delete ScriptRun from context data
         script_res.outputs = None
     return script_res
+
+
+def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResults:
+    """
+    Add Indicator Rule to XSIAM command.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                    - indicator (str): String that identifies the indicator to insert into Cortex. **Required.**
+                    - type (str): Type of indicator. One of: 'HASH', 'IP', 'PATH', 'DOMAIN_NAME', 'FILENAME'. **Required.**
+                    - severity (str): Indicator severity. One of: 'INFO', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'. **Required.**
+                    - expiration_date (str, optional): Expiration as relative time ('7 days', '30 days', etc.), epoch millis,
+                     or "Never". If null, defaults by type.
+                    - comment (str, optional): Comment string describing the indicator.
+                    - reputation (str, optional): Indicator reputation. One of: 'GOOD', 'BAD', 'SUSPICIOUS', 'UNKNOWN'.
+                    - reliability (str, optional): Reliability rating (A-F). A is most reliable, F is least.
+                    - class (str, optional): Indicator classification (e.g., "Malware").
+                    - vendor_name (str, optional): Name of the vendor reporting the indicator.
+                    - vendor_reputation (str, optional): Vendor reputation. Required if vendor_name is provided. One of: 'GOOD',
+                        'BAD',
+                     'SUSPICIOUS', 'UNKNOWN'.
+                    - vendor_reliability (str, optional): Vendor reliability rating (A-F).
+                        Required if vendor_reputation is provided.
+                    - input_format (str, optional): Input format. One of: 'CSV', 'JSON'. Defaults to 'JSON'.
+                    - ioc_object (str, optional): Full IOC object as JSON or CSV string, depending on input_format.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    indicator = args.get("indicator")
+    indicator_type = args.get("type")
+    severity = args.get("severity")
+    ioc_object = args.get("ioc_object")
+    expiration_date = args.get("expiration_date")
+    comment = args.get("comment")
+    reputation = args.get("reputation")
+    reliability = args.get("reliability")
+    indicator_class = args.get("class")
+    vendor_name = args.get("vendor_name")
+    vendor_reputation = args.get("vendor_reputation")
+    vendor_reliability = args.get("vendor_reliability")
+    input_format = args.get("input_format", "JSON")  # Default to 'JSON'
+
+    ioc_payload: Union[dict, str]
+
+    # Handle pre-built IOC object
+    if ioc_object:
+        if input_format == "CSV":
+            ioc_object = ioc_object.replace("\\n", "\n")
+            ioc_payload = ioc_object  # Leave as raw string
+        else:
+            # Try to detect JSON
+            try:
+                ioc_payload = json.loads(ioc_object)
+            except json.JSONDecodeError:
+                raise DemistoException("Core Add Indicator Rule Command: The IOC object provided isn't in a valid JSON format.")
+    else:
+        if not (indicator and indicator_type and severity):
+            raise DemistoException(
+                "Core Add Indicator Rule Command: when 'ioc_object' is not provided,"
+                " 'indicator', 'type', and 'severity' are required arguments."
+            )
+        # Build payload from individual arguments
+        ioc_payload = {"indicator": indicator, "type": indicator_type, "severity": severity}
+        parsed_expiration_date = parse_expiration_date(expiration_date)
+        ioc_payload["expiration_date"] = parsed_expiration_date
+        ioc_payload["comment"] = comment
+        ioc_payload["reputation"] = reputation
+        ioc_payload["reliability"] = reliability
+        ioc_payload["class"] = indicator_class
+
+        if vendor_name:
+            ioc_payload["vendors"] = [
+                {"vendor_name": vendor_name, "reliability": vendor_reliability, "reputation": vendor_reputation}
+            ]
+        input_format = "JSON"
+
+    # Request According to format
+    if input_format == "CSV":
+        suffix = "indicators/insert_csv"
+    else:
+        suffix = "indicators/insert_jsons"
+
+    try:
+        response = client.create_indicator_rule_request(ioc_payload, suffix=suffix)
+    except DemistoException as error:
+        raise DemistoException(f"Core Add Indicator Rule Command: During post, exception occurred {str(error)}")
+
+    is_success = response.get("reply", {}).get("success")
+
+    if not is_success:
+        # Something went wrong in the creation of new IOC rule.
+        errors_array = []
+        for error_obj in response["reply"]["validation_errors"]:
+            errors_array.append(error_obj["error"])
+        error_string = ", ".join(errors_array)
+        raise DemistoException(f"Core Add Indicator Rule Command: post of IOC rule failed: {error_string}")
+
+    ioc_payload_output = prepare_ioc_to_output(ioc_payload, input_format)
+    return CommandResults(
+        readable_output=f"IOC rule for {ioc_payload_output['indicator']} was successfully added.",
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.Indicator",
+        outputs=ioc_payload_output,
+        raw_response=response,
+    )
 
 
 def main():  # pragma: no cover
@@ -664,6 +857,9 @@ def main():  # pragma: no cover
 
         elif command == "core-execute-command":
             return_results(core_execute_command_command(client, args))
+
+        elif command == "core-add-indicator-rule":
+            return_results(core_add_indicator_rule_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
