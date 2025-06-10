@@ -23,7 +23,7 @@ configuration:
   required: false
   section: Connect
 - display: First fetch timestamp (<number> <time unit>. For example, 12 hours, 7 days)
-  name: first_fetch
+  name: first_fetch_time
   defaultvalue: '1 days'
   type: 0
   required: false
