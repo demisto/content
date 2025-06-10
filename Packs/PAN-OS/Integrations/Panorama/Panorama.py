@@ -408,6 +408,8 @@ def http_request(
     """
     Makes an API call with the given arguments
     """
+    if is_time_sensitive():
+        params['timeout'] = 30
     result = requests.request(method, uri, headers=headers, data=body, verify=USE_SSL, params=params, files=files)
 
     if result.status_code < 200 or result.status_code >= 300:
