@@ -4,7 +4,7 @@
 
 Retrieve and analyze network access controls across Tufin-managed firewalls, SDN, and public cloud to identify vulnerable access paths of an attack
 This integration was integrated and tested with version 19.3 of Tufin Orchestration Suite
-
+ 
 ## Tufin Playbook
 
 ---
