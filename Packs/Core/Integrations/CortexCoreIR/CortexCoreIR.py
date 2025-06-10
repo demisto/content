@@ -72,6 +72,12 @@ class Client(CoreClient):
         )
         return reply
 
+    def create_indicator_rule_request(self, request_data: Union[dict, str], suffix: str):
+        reply = self._http_request(
+            method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
+        )
+        return reply
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
