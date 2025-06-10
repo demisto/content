@@ -3,7 +3,8 @@ from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable, List, Any, Optional, Dict, Union, cast
+from collections.abc import Callable
+from typing import Any, Optional, cast
 
 
 class CloudTypes(Enum):
@@ -72,7 +73,7 @@ class HealthCheckResult:
         return CommandResults(outputs=result, outputs_prefix="HealthCheck", outputs_key_field="account_id")
 
     @staticmethod
-    def aggregate_results(results: List[CommandResults]) -> Union[str, CommandResults]:
+    def aggregate_results(results: list[CommandResults]) -> str | CommandResults:
         """
         Aggregates health check results by keeping only the most severe error for each account.
 
@@ -86,7 +87,7 @@ class HealthCheckResult:
             return HealthCheckResult.ok()
 
         # Group by account_id and keep only the most severe result for each account
-        accounts_results: Dict[str, Dict[str, Any]] = {}
+        accounts_results: dict[str, dict[str, Any]] = {}
         overall_status = HealthStatus.OK
 
         for result in results:
@@ -94,7 +95,7 @@ class HealthCheckResult:
                 continue
 
             # Handle outputs safely with type casting
-            outputs = cast(Dict[str, Any], result.outputs) if hasattr(result, "outputs") else None
+            outputs = cast(dict[str, Any], result.outputs) if hasattr(result, "outputs") else None
             if not outputs:
                 continue
 
@@ -263,7 +264,7 @@ def _check_account_permissions(account: dict, connector_id: str, permission_chec
 
 def run_permissions_check_for_accounts(
     connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
-) -> Union[str, CommandResults]:
+) -> str | CommandResults:
     """
     Runs a permission check function for each account associated with a connector concurrently.
     Args:
