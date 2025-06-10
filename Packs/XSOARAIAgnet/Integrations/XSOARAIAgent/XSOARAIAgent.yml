@@ -35,7 +35,7 @@ name: XSOARAIAgent
 script:
   commands:
   - arguments:
-    - description: "The query to run the command with, For example: `Give details about ticket ID 23 in ServiceNow`"
+    - description: "The query to run the command with, For example: `Provide details about incident ID 23 in ServiceNow`"
       isArray: false
       name: query
       required: true
