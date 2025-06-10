@@ -1014,7 +1014,7 @@ tasks:
       id: 62977917-f33f-4bf0-b516-34a7d5f98988
       version: -1
       name: Close the Alert as False Positive
-      description: commands.local.cmd.close.inv
+      description: Close the Alert as False Positive
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
@@ -1226,7 +1226,7 @@ tasks:
       id: 2efec428-4939-4160-9a15-4a8dac23fd72
       version: -1
       name: Close the Alert as True Positive
-      description: commands.local.cmd.close.inv
+      description: Close the Alert as True Positive
       script: Builtin|||closeInvestigation
       type: regular
       iscommand: true
