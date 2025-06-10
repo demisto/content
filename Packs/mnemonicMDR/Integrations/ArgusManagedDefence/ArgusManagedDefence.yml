@@ -13,10 +13,12 @@ configuration:
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - display: API URL
   name: api_url
   defaultvalue: https://api.mnemonic.no

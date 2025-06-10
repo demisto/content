@@ -594,34 +594,13 @@
                         "hideName": false,
                         "i": "caseinfoid-qqqh8wylok-dvg34wneuu-caseinfoid-dvg34wneuu-souvg7gsor-caseinfoid-ndwmhmrgfx-caseinfoid-f986bc90-760e-11ed-8f4a-ddc1ddfd0374",
                         "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "notecontent",
-                                "height": 53,
-                                "id": "7d0f86f0-760f-11ed-8f4a-ddc1ddfd0374",
-                                "index": 0,
-                                "listId": "caseinfoid-f986bc90-760e-11ed-8f4a-ddc1ddfd0374",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
+
                             {
                                 "endCol": 2,
                                 "fieldId": "arguscommentcontent",
                                 "height": 53,
                                 "id": "9248b630-95c8-11ed-8a1b-615fa6ccd239",
                                 "index": 0,
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            },
-                            {
-                                "dropEffect": "move",
-                                "endCol": 2,
-                                "fieldId": "commentcontent",
-                                "height": 106,
-                                "id": "c2a40ac0-9a5d-11ed-8778-6501054371a7",
-                                "index": 0,
-                                "listId": "caseinfoid-qqqh8wylok-dvg34wneuu-caseinfoid-dvg34wneuu-souvg7gsor-caseinfoid-ndwmhmrgfx-caseinfoid-f986bc90-760e-11ed-8f4a-ddc1ddfd0374",
                                 "sectionItemType": "field",
                                 "startCol": 0
                             },
@@ -740,42 +719,6 @@
                     }
                 ],
                 "showEmptyFields": true,
-                "type": "custom"
-            },
-            {
-                "hidden": false,
-                "id": "qqqh8wylok",
-                "name": "IR procedure",
-                "sections": [
-                    {
-                        "displayType": "ROW",
-                        "h": 4,
-                        "hideName": false,
-                        "i": "caseinfoid-qqqh8wylok-caseinfoid-qqqh8wylok-caseinfoid-d094a940-7c68-11ed-9175-cdf1c3d97917",
-                        "items": [
-                            {
-                                "dropEffect": "move",
-                                "endCol": 6,
-                                "fieldId": "vmpirprocedure",
-                                "height": 44,
-                                "id": "ff8974e0-9254-11ed-aea2-618232ce3838",
-                                "index": 0,
-                                "listId": "caseinfoid-qqqh8wylok-caseinfoid-qqqh8wylok-caseinfoid-d094a940-7c68-11ed-9175-cdf1c3d97917",
-                                "sectionItemType": "field",
-                                "startCol": 0
-                            }
-                        ],
-                        "maxH": null,
-                        "maxW": 3,
-                        "minH": 1,
-                        "moved": false,
-                        "name": "Incident procedure",
-                        "static": false,
-                        "w": 3,
-                        "x": 0,
-                        "y": 0
-                    }
-                ],
                 "type": "custom"
             },
             {

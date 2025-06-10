@@ -16,7 +16,7 @@ args:
   required: true
   default: true
   description: Which field to grab comment from in incident.
-  defaultValue: commentcontent
+  defaultValue: arguscommentcontent
   type: unknown
 scripttarget: 0
 subtype: python3

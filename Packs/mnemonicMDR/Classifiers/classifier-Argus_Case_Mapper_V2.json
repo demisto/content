@@ -3,7 +3,7 @@
     "feed": false,
     "id": "Argus Case Mapper V2",
     "mapping": {
-        "Abusive content": {
+        "Argus - Administrative": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -33,9 +33,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -48,235 +45,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Administrative": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
                 "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Adware": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Anomaly": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -337,9 +106,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -352,7 +118,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -383,7 +149,7 @@
                 }
             }
         },
-        "Argus Case V2": {
+        "Argus - Case V2": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -413,9 +179,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -428,7 +191,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -459,7 +222,7 @@
                 }
             }
         },
-        "Argus-abusive-content": {
+        "Argus - Abusive Content": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -480,9 +243,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -492,7 +252,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -523,7 +283,7 @@
                 }
             }
         },
-        "Argus-adware": {
+        "Argus - Adware": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -544,9 +304,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -556,7 +313,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -587,7 +344,7 @@
                 }
             }
         },
-        "Argus-anomaly": {
+        "Argus - Anomaly": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -608,9 +365,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -620,7 +374,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -651,7 +405,68 @@
                 }
             }
         },
-        "Argus-attempted-compromise": {
+        "Argus - Attempted Compromise": {
+            "dontMapEventToLabels": false,
+            "internalMapping": {
+                "Argus Case Category": {
+                    "simple": "category.shortName"
+                },
+                "Argus Case HTML": {
+                    "simple": "description"
+                },
+                "Argus Case ID": {
+                    "simple": "id"
+                },
+                "Argus Case Link": {
+                    "simple": "url"
+                },
+                "Argus Case Status V2": {
+                    "simple": "status"
+                },
+                "Argus Case Service": {
+                    "simple": "service.name"
+                },
+                "Argus Case Type": {
+                    "simple": "type"
+                },
+                "Argus Customer ID": {
+                    "simple": "customer.id"
+                },
+                "Argus Customer Name": {
+                    "simple": "customer.name"
+                },
+                "Argus Case Status": {
+                    "simple": "status"
+                },
+                "dbotMirrorDirection": {
+                    "simple": "xsoar_mirroring.dbotMirrorDirection"
+                },
+                "dbotMirrorId": {
+                    "simple": "xsoar_mirroring.dbotMirrorId"
+                },
+                "dbotMirrorInstance": {
+                    "simple": "xsoar_mirroring.dbotMirrorInstance"
+                },
+                "dbotMirrorTags": {
+                    "simple": "xsoar_mirroring.dbotMirrorTags"
+                },
+                "occurred": {
+                    "complex": {
+                        "filters": [],
+                        "root": "createdTimestamp",
+                        "transformers": []
+                    }
+                },
+                "severity": {
+                    "complex": {
+                        "filters": [],
+                        "root": "priority",
+                        "transformers": []
+                    }
+                }
+            }
+        },
+        "Argus - Compromise": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -672,9 +487,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -684,7 +496,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -715,7 +527,7 @@
                 }
             }
         },
-        "Argus-compromise": {
+        "Argus - Fraud": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -736,9 +548,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -748,7 +557,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -779,7 +588,7 @@
                 }
             }
         },
-        "Argus-dos": {
+        "Argus - Denial of Service": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -800,9 +609,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Type": {
                     "simple": "type"
                 },
@@ -812,7 +618,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -843,327 +649,7 @@
                 }
             }
         },
-        "Argus-fraud": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Argus-misconfigured": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Argus-poor-practice": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Argus-reconnaissance": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Argus-vulnerability": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Attempted compromise": {
+        "Argus - Change": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -1193,9 +679,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1208,159 +691,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Change": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
                 "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Compromise": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1421,9 +752,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1436,7 +764,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1494,9 +822,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1509,7 +834,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1540,7 +865,7 @@
                 }
             }
         },
-        "Fraud": {
+        "Argus - Informational": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -1570,9 +895,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1585,7 +907,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1616,7 +938,7 @@
                 }
             }
         },
-        "Informational": {
+        "Argus - Misconfigured": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -1646,9 +968,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1661,7 +980,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1692,7 +1011,7 @@
                 }
             }
         },
-        "Misconfigured": {
+        "Argus - Operational": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -1722,9 +1041,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1737,7 +1053,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1768,7 +1084,7 @@
                 }
             }
         },
-        "Operational": {
+        "Argus - Poor Practice": {
             "dontMapEventToLabels": false,
             "internalMapping": {
                 "Argus Case Category": {
@@ -1798,9 +1114,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1813,83 +1126,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
-                    "simple": "status"
-                },
-                "dbotMirrorDirection": {
-                    "simple": "xsoar_mirroring.dbotMirrorDirection"
-                },
-                "dbotMirrorId": {
-                    "simple": "xsoar_mirroring.dbotMirrorId"
-                },
-                "dbotMirrorInstance": {
-                    "simple": "xsoar_mirroring.dbotMirrorInstance"
-                },
-                "dbotMirrorTags": {
-                    "simple": "xsoar_mirroring.dbotMirrorTags"
-                },
-                "occurred": {
-                    "complex": {
-                        "filters": [],
-                        "root": "createdTimestamp",
-                        "transformers": []
-                    }
-                },
-                "severity": {
-                    "complex": {
-                        "filters": [],
-                        "root": "priority",
-                        "transformers": []
-                    }
-                }
-            }
-        },
-        "Poor practice": {
-            "dontMapEventToLabels": false,
-            "internalMapping": {
-                "Argus Case Category": {
-                    "simple": "category.shortName"
-                },
-                "Argus Case HTML": {
-                    "simple": "description"
-                },
-                "Argus Case ID": {
-                    "simple": "id"
-                },
-                "Argus Case Initial Priority": {
-                    "simple": "initialPriority"
-                },
-                "Argus Case Last Updated": {
-                    "simple": "lastUpdatedTime"
-                },
-                "Argus Case Link": {
-                    "simple": "url"
-                },
-                "Argus Case Priority": {
-                    "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
-                "Argus Case Service": {
-                    "simple": "service.name"
-                },
                 "Argus Case Status": {
-                    "simple": "status"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
-                },
-                "Argus Case Type": {
-                    "simple": "type"
-                },
-                "Argus Customer ID": {
-                    "simple": "customer.id"
-                },
-                "Argus Customer Name": {
-                    "simple": "customer.name"
-                },
-                "Argus status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -1947,9 +1184,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -1962,7 +1196,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {
@@ -2020,9 +1254,6 @@
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
-                "Argus Case Status": {
-                    "simple": "status"
-                },
                 "Argus Case Status V2": {
                     "simple": "status"
                 },
@@ -2035,7 +1266,7 @@
                 "Argus Customer Name": {
                     "simple": "customer.name"
                 },
-                "Argus status": {
+                "Argus Case Status": {
                     "simple": "status"
                 },
                 "dbotMirrorDirection": {

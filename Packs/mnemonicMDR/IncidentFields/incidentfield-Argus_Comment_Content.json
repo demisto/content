@@ -5,7 +5,7 @@
     "name": "Argus Comment Content",
     "ownerOnly": false,
     "description": "Comment to submit to Argus",
-    "cliName": "commentcontent",
+    "cliName": "arguscommentcontent",
     "type": "markdown",
     "closeForm": false,
     "editForm": true,
