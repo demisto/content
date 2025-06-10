@@ -8,7 +8,7 @@ from unittest.mock import patch
 import pytest
 
 import Ignite
-from CommonServerPython import DemistoException, get_current_time, urllib
+from CommonServerPython import DemistoException, get_current_time
 from Ignite import (
     DATE_FORMAT,
     MESSAGES,
@@ -25,7 +25,6 @@ from Ignite import (
     FILTER_DATE_VALUES,
     IS_FRESH_VALUES,
     MAX_FETCH_LIMIT,
-    QUERY,
     MAX_ALERTS_LIMIT,
     ALERT_STATUS_VALUES,
     ALERT_ORIGIN_VALUES,
@@ -78,8 +77,8 @@ def test_test_module(mock_client, requests_mock):
     """Test test_module."""
     from Ignite import test_module
 
-    response = util_load_json("test_data/indicator_search_1.json")
-    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?limit=1', json=response, status_code=200)
+    response = util_load_json("test_data/ip_lookup_reputation.json")
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}?size=1', json=response, status_code=200)
 
     assert test_module(client=mock_client) == "ok"
 
@@ -173,7 +172,7 @@ def test_test_module_invalid_response(requests_mock, mock_client, status_code, e
     from Ignite import test_module
 
     response = {"message": "invalid_response"}
-    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?limit=1', json=response, status_code=status_code)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}?size=1', json=response, status_code=status_code)
 
     with pytest.raises(DemistoException) as err:
         test_module(mock_client)
@@ -196,7 +195,7 @@ def test_test_module_invalid_json_response(requests_mock, mock_client):
     from Ignite import test_module
 
     response = "invalid_response"
-    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?limit=1', text=response, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}?size=1', text=response, status_code=200)
 
     with pytest.raises(DemistoException) as err:
         test_module(mock_client)
@@ -223,7 +222,14 @@ def test_fetch_incidents_when_valid_incidents_return(mocker, mock_client, reques
 
     incidents_response = util_load_json("test_data/incidents_compromised_credentials.json")
 
-    params: dict = {"fetch_type": "", "first_fetch": "2024-05-16T10:22:38Z", "is_fresh": "true", "max_fetch": 1}
+    params: dict = {
+        "fetch_type": "",
+        "first_fetch": "2024-05-16T10:22:38Z",
+        "is_fresh_compromised_credentials": "true",
+        "password_has_lowercase": "true",
+        "password_has_number": "true",
+        "max_fetch": 1,
+    }
     demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
     mocker.patch.object(demisto, "params", return_value=demisto_params)
 
@@ -1224,12 +1230,11 @@ def test_domain_lookup_command_success(mock_return, requests_mock, mocker):
     with open("test_data/hr_output_for_domain_lookup_reputation.md") as file:
         hr_output_for_domain_lookup_reputation = file.read()
 
-    query = r'+type:("domain") +value.\*.keyword:"dummy.com"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
 
     requests_mock.get(url, json=domain_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"domain": "dummy.com"}
+    args = {"domain": "dummy_domain.com"}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="domain")
     mocker.patch.object(demisto, "args", return_value=args)
@@ -1259,12 +1264,12 @@ def test_domain_lookup_command_success_when_empty_response(mock_return, requests
     with open("test_data/hr_output_for_domain_lookup_empty_reputation.md") as file:
         hr_output_for_domain_lookup_reputation = file.read()
 
-    query = r'+type:("domain") +value.\*.keyword:"dummy.com"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
+    response = util_load_json("test_data/domain_lookup_v2_empty_response.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
 
-    requests_mock.get(url, json={}, status_code=200)
+    requests_mock.get(url, json=response, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"domain": "dummy.com"}
+    args = {"domain": "dummy_domain.com"}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="domain")
     mocker.patch.object(demisto, "args", return_value=args)
@@ -1273,7 +1278,7 @@ def test_domain_lookup_command_success_when_empty_response(mock_return, requests
 
     assert hr_output_for_domain_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert domain_lookup_empty_reputation_context == mock_return.call_args.args[0].get("EntryContext")
-    assert mock_return.call_args.args[0].get("Contents") == {}
+    assert mock_return.call_args.args[0].get("Contents") == response
 
 
 def test_domain_lookup_command_when_invalid_value_is_provided(mocker):
@@ -1319,8 +1324,7 @@ def test_ip_lookup_command_success(mock_return, requests_mock, mocker):
     with open("test_data/hr_output_for_ip_lookup_reputation.md") as file:
         hr_output_for_ip_lookup_reputation = file.read()
 
-    query = QUERY + "0.0.0.1" + '"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
     requests_mock.get(url, json=ip_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"ip": "0.0.0.1"}
@@ -1349,9 +1353,9 @@ def test_ip_lookup_command_community_search_success(mock_return, requests_mock, 
        - Returns list of command results.
     """
 
-    query = QUERY + "0.0.0.1" + '"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
-    requests_mock.get(url, json={}, status_code=200)
+    empty_response = util_load_json("test_data/ip_lookup_reputation_v2_empty_response.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=empty_response, status_code=200)
 
     ip_lookup_community_search_reputation = util_load_json("test_data/ip_lookup_community_search_reputation.json")
     ip_lookup_community_search_reputation_context = util_load_json("test_data/ip_lookup_community_search_reputation_context.json")
@@ -1392,9 +1396,9 @@ def test_ip_lookup_command_success_when_empty_response(mock_return, requests_moc
     with open("test_data/hr_output_for_ip_lookup_empty_reputation.md") as file:
         hr_output_for_ip_lookup_reputation = file.read()
 
-    query = QUERY + "0.0.0.1" + '"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
-    requests_mock.get(url, json={}, status_code=200)
+    empty_response = util_load_json("test_data/ip_lookup_reputation_v2_empty_response.json")
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=empty_response, status_code=200)
 
     ip_lookup_community_search_empty_reputation = util_load_json("test_data/ip_lookup_community_search_empty_reputation.json")
     community_search_url = f'{MOCK_URL}{URL_SUFFIX["COMMUNITY_SEARCH"]}'
@@ -1409,7 +1413,7 @@ def test_ip_lookup_command_success_when_empty_response(mock_return, requests_moc
 
     assert hr_output_for_ip_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert ip_lookup_empty_reputation_context == mock_return.call_args.args[0].get("EntryContext")
-    assert mock_return.call_args.args[0].get("Contents") == {}
+    assert mock_return.call_args.args[0].get("Contents") == empty_response
 
 
 @pytest.mark.parametrize(
@@ -1463,10 +1467,9 @@ def test_common_lookup_command_success(mock_return, requests_mock, mocker):
     with open("test_data/hr_output_for_common_lookup_reputation.md") as file:
         hr_output_for_common_lookup_reputation = file.read()
 
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(r'+value.\*.keyword:"dummy@dummy.com"')
-    requests_mock.get(url, json=common_lookup_reputation, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=common_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
-    args = {"indicator": "dummy@dummy.com"}
+    args = {"indicator": "00000000000000000000000000000001"}
     mocker.patch.object(demisto, "params", return_value=params)
     mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-common-lookup")
     mocker.patch.object(demisto, "args", return_value=args)
@@ -1492,14 +1495,12 @@ def test_common_lookup_command_success_when_indicator_type_is_ipv4(mock_return, 
        - Returns list of command results.
     """
 
-    common_lookup_reputation = util_load_json("test_data/common_lookup_reputation.json")
+    common_lookup_reputation = util_load_json("test_data/common_lookup_ipv4_reputation.json")
     common_lookup_reputation_context = util_load_json("test_data/common_lookup_ipv4_reputation_context.json")
     with open("test_data/hr_output_for_common_lookup_ipv4_reputation.md") as file:
         hr_output_for_common_lookup_reputation = file.read()
 
-    query = r'+type:("ip-src","ip-dst","ip-dst|port") +value.\*:"0.0.0.0"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
-    requests_mock.get(url, json=common_lookup_reputation, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=common_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"indicator": "0.0.0.0"}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1527,14 +1528,12 @@ def test_common_lookup_command_success_when_indicator_type_is_ipv6(mock_return, 
        - Returns list of command results.
     """
 
-    common_lookup_reputation = util_load_json("test_data/common_lookup_reputation.json")
+    common_lookup_reputation = util_load_json("test_data/common_lookup_ipv6_reputation.json")
     common_lookup_reputation_context = util_load_json("test_data/common_lookup_ipv6_reputation_context.json")
     with open("test_data/hr_output_for_common_lookup_ipv6_reputation.md") as file:
         hr_output_for_common_lookup_reputation = file.read()
 
-    query = r'+type:("ip-src","ip-dst","ip-dst|port") +value.\*:"0:0:0:0:0:0:0:0"'
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(query)
-    requests_mock.get(url, json=common_lookup_reputation, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=common_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"indicator": "0:0:0:0:0:0:0:0"}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1546,6 +1545,39 @@ def test_common_lookup_command_success_when_indicator_type_is_ipv6(mock_return, 
     assert hr_output_for_common_lookup_reputation == mock_return.call_args.args[0].get("HumanReadable")
     assert common_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert common_lookup_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+def test_common_lookup_command_when_custom_indicator_provided(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of flashpoint-ignite-common-lookup command through main function
+    when it returns reputation about given indicator.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `common_lookup_command` function
+    Then:
+       - Returns list of command results.
+    """
+
+    indicator_reputation = util_load_json("test_data/common_lookup_custom_indicator_reputation.json")
+    indicator_reputation_context = util_load_json("test_data/common_lookup_custom_indicator_reputation_context.json")
+    with open("test_data/hr_output_for_common_lookup_custom_indicator_reputation.md") as file:
+        hr_output_for_indicator_reputation = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=indicator_reputation, status_code=200)
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"indicator": "dummy_value"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-common-lookup")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert hr_output_for_indicator_reputation == mock_return.call_args.args[0].get("HumanReadable")
+    assert indicator_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert indicator_reputation == mock_return.call_args.args[0].get("Contents")
 
 
 @patch("demistomock.results")
@@ -1562,11 +1594,12 @@ def test_common_lookup_command_success_when_empty_response(mock_return, requests
        - Returns list of command results.
     """
 
+    common_lookup_reputation = util_load_json("test_data/common_lookup_reputation_empty.json")
+    common_lookup_reputation_context = util_load_json("test_data/common_lookup_reputation_context_empty.json")
     with open("test_data/hr_output_for_common_lookup_empty_response.md") as file:
         hr_output_for_common_lookup_empty_response = file.read()
 
-    url = f'{MOCK_URL}{URL_SUFFIX["INDICATOR_SEARCH"]}?query=' + urllib.parse.quote(r'+value.\*.keyword:"dummy@dummy.com"')
-    requests_mock.get(url, json={}, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=common_lookup_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"indicator": "dummy@dummy.com"}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1576,8 +1609,8 @@ def test_common_lookup_command_success_when_empty_response(mock_return, requests
     main()
 
     assert hr_output_for_common_lookup_empty_response == mock_return.call_args.args[0].get("HumanReadable")
-    assert mock_return.call_args.args[0].get("EntryContext") == {}
-    assert mock_return.call_args.args[0].get("Contents") == {}
+    assert common_lookup_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert common_lookup_reputation == mock_return.call_args.args[0].get("Contents")
 
 
 def test_common_lookup_command_when_invalid_value_is_provided(mocker):
@@ -1605,9 +1638,130 @@ def test_common_lookup_command_when_invalid_value_is_provided(mocker):
 
 
 @patch("demistomock.results")
-def test_url(mock_return, requests_mock, mocker):
+def test_indicator_get_command_success(mock_return, requests_mock, mocker):
     """
-    Test case for successful execution of url command through main function
+    Test case for successful execution of flashpoint-ignite-indicator-get command through main function
+    when it returns reputation about given indicator.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `indicator_get_command` function
+    Then:
+       - Returns list of command results.
+    """
+
+    indicator_reputation = util_load_json("test_data/indicator_reputation.json")
+    indicator_reputation_context = util_load_json("test_data/indicator_reputation_context.json")
+    with open("test_data/hr_output_for_indicator_reputation.md") as file:
+        hr_output_for_indicator_reputation = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}/dummy_id', json=indicator_reputation, status_code=200)
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"indicator_id": "dummy_id"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-indicator-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert hr_output_for_indicator_reputation == mock_return.call_args.args[0].get("HumanReadable")
+    assert indicator_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert indicator_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+def test_indicator_get_command_when_custom_indicator_provided(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of flashpoint-ignite-indicator-get command through main function
+    when it returns reputation about given indicator.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `indicator_get_command` function
+    Then:
+       - Returns list of command results.
+    """
+
+    indicator_reputation = util_load_json("test_data/custom_indicator_reputation.json")
+    indicator_reputation_context = util_load_json("test_data/custom_indicator_reputation_context.json")
+    with open("test_data/hr_output_for_custom_indicator_reputation.md") as file:
+        hr_output_for_indicator_reputation = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}/dummy_id', json=indicator_reputation, status_code=200)
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"indicator_id": "dummy_id"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-indicator-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert hr_output_for_indicator_reputation == mock_return.call_args.args[0].get("HumanReadable")
+    assert indicator_reputation_context == mock_return.call_args.args[0].get("EntryContext")
+    assert indicator_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+@patch("demistomock.results")
+def test_indicator_get_command_success_when_empty_response(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of flashpoint-ignite-indicator-get command through main function
+    when it returns empty reputation about given indicator.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `indicator_get_command` function
+    Then:
+       - Returns list of command results.
+    """
+
+    with open("test_data/hr_output_for_indicator_empty_response.md") as file:
+        hr_output_for_indicator_empty_response = file.read()
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}/dummy_id', json={}, status_code=200)
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"indicator_id": "dummy_id"}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-indicator-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    main()
+
+    assert mock_return.call_args.args[0].get("HumanReadable") == hr_output_for_indicator_empty_response
+    assert mock_return.call_args.args[0].get("EntryContext") == {}
+    assert mock_return.call_args.args[0].get("Contents") == {}
+
+
+def test_indicator_get_command_when_invalid_value_is_provided(mocker):
+    """
+    Test case for  execution of flashpoint-ignite-indicator-get command through main function
+    when indicator's value is blank.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `indicator_get_command` function
+    Then:
+       - raises error.
+    """
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"indicator_id": " "}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="flashpoint-ignite-indicator-get")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("indicator_id") in return_error.call_args[0][0]
+
+
+@patch("demistomock.results")
+def test_url_lookup_command_success(mock_return, requests_mock, mocker):
+    """
+    Test case for successful execution of url lookup command through main function
     when it returns reputation about given url.
 
     Given:
@@ -1622,7 +1776,8 @@ def test_url(mock_return, requests_mock, mocker):
     url_reputation_context = util_load_json("test_data/url_reputation_context.json")
     with open("test_data/url_reputation_hr.md") as file:
         url_reputation_hr = file.read()
-    requests_mock.get(f"{MOCK_URL}/technical-intelligence/v1/simple", json=url_reputation, status_code=200)
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=url_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"url": "http://dummy.com"}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1636,9 +1791,9 @@ def test_url(mock_return, requests_mock, mocker):
 
 
 @patch("demistomock.results")
-def test_url_empty_response(mock_return, requests_mock, mocker):
+def test_url_lookup_command_success_when_empty_response(mock_return, requests_mock, mocker):
     """
-    Test case for successful execution of url command through main function
+    Test case for successful execution of url lookup command through main function
     when Ignite do not have data about that url.
 
     Given:
@@ -1654,7 +1809,7 @@ def test_url_empty_response(mock_return, requests_mock, mocker):
     with open("test_data/url_reputation_hr_empty.md") as file:
         url_reputation_hr = file.read()
 
-    requests_mock.get(f"{MOCK_URL}/technical-intelligence/v1/simple", json=url_reputation, status_code=200)
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}', json=url_reputation, status_code=200)
 
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"url": "http://dummy2.com"}
@@ -1668,8 +1823,32 @@ def test_url_empty_response(mock_return, requests_mock, mocker):
     assert url_reputation == mock_return.call_args.args[0].get("Contents")
 
 
+def test_url_lookup_command_when_invalid_value_is_provided(mocker):
+    """
+    Test case for successful execution of url lookup command through main function
+    when url indicator's value is blank.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `url_lookup_command` function
+    Then:
+       - Returns list of command results.
+    """
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"url": " "}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="url")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("url") in return_error.call_args[0][0]
+
+
 @patch("demistomock.results")
-def test_file(mock_return, requests_mock, mocker):
+def test_file_lookup_command_success(mock_return, requests_mock, mocker):
     """
     Test case for successful execution of file command through main function
     when it returns reputation about given file.
@@ -1687,7 +1866,8 @@ def test_file(mock_return, requests_mock, mocker):
     with open("test_data/file_reputation_hr.md") as file:
         file_reputation_hr = file.read()
 
-    requests_mock.get(f"{MOCK_URL}/technical-intelligence/v1/simple", json=file_reputation, status_code=200)
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=file_reputation, status_code=200)
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"file": "00000000000000000000000000000001"}
     mocker.patch.object(demisto, "params", return_value=params)
@@ -1718,7 +1898,8 @@ def test_file_empty_response(mock_return, requests_mock, mocker):
     with open("test_data/file_reputation_empty_hr.md") as file:
         file_reputation_empty_hr = file.read()
 
-    requests_mock.get(f"{MOCK_URL}/technical-intelligence/v1/simple", json=file_reputation, status_code=200)
+    url = f'{MOCK_URL}{URL_SUFFIX["LIST_INDICATORS"]}'
+    requests_mock.get(url, json=file_reputation, status_code=200)
 
     params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
     args = {"file": "10000000000000000000000000000000"}
@@ -1730,6 +1911,30 @@ def test_file_empty_response(mock_return, requests_mock, mocker):
     assert file_reputation_empty_hr == mock_return.call_args.args[0].get("HumanReadable")
     assert file_reputation_context == mock_return.call_args.args[0].get("EntryContext")
     assert file_reputation == mock_return.call_args.args[0].get("Contents")
+
+
+def test_file_lookup_command_when_invalid_value_is_provided(mocker):
+    """
+    Test case for unsuccessful execution of file look up command through main function
+    when file indicator's value is blank.
+
+    Given:
+       - mocked client
+    When:
+       - Calling `file_lookup_command` function
+    Then:
+       - Returns list of command results.
+    """
+    params = {**BASIC_PARAMS, "integrationReliability": "B - Usually reliable"}
+    args = {"file": " "}
+    mocker.patch.object(demisto, "params", return_value=params)
+    mocker.patch.object(demisto, "command", return_value="file")
+    mocker.patch.object(demisto, "args", return_value=args)
+
+    return_error = mocker.patch.object(Ignite, "return_error")
+    main()
+
+    assert MESSAGES["MISSING_REQUIRED_ARGS"].format("file") in return_error.call_args[0][0]
 
 
 def test_fetch_incidents_alerts_success(mocker, mock_client, requests_mock):
@@ -2082,3 +2287,84 @@ def test_module_fetch_incidents_when_max_product_exceed_total_limit(mock_client,
         fetch_incidents(client=mock_client, last_run={}, params={}, is_test=True)
 
     assert str(error.value) == error_message
+
+
+def test_fetch_incidents_when_empty_password_complexity_filter_params_passed(mocker, mock_client, requests_mock):
+    """
+    Test case scenario for execution of fetch_incidents for fetch compromised credentials.
+
+    Given:
+        - mock client
+    When:
+        - Calling `fetch_incidents` function.
+    Then:
+        - Returns a valid output.
+    """
+    from Ignite import fetch_incidents
+
+    last_run: dict = {}
+
+    mock_response: dict = util_load_json("test_data/fetch_compromised_credentials.json")
+
+    incidents_response = util_load_json("test_data/incidents_compromised_credentials.json")
+
+    params: dict = {
+        "fetch_type": "",
+        "first_fetch": "2024-05-16T10:22:38Z",
+        "is_fresh_compromised_credentials": "true",
+        "password_min_length": "",
+        "password_has_symbol": "",
+        "password_has_uppercase": "",
+        "password_has_lowercase": "",
+        "password_has_number": "",
+        "max_fetch": 1,
+    }
+    demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
+    mocker.patch.object(demisto, "params", return_value=demisto_params)
+
+    requests_mock.get(f'{MOCK_URL}{URL_SUFFIX["COMPROMISED_CREDENTIALS"]}', json=mock_response, status_code=200)
+    next_run, incidents = fetch_incidents(client=mock_client, last_run=last_run, params=params)
+
+    END_TIME = next_run.get("end_time")
+    expected_next_run = {
+        "fetch_count": 1,
+        "fetch_sum": 1,
+        "total": 31,
+        "end_time": END_TIME,
+        "last_time": "2021-03-31T19:42:05Z",
+        "hit_ids": ["sample_id_1"],
+        "last_timestamp": 1617219725,
+        "start_time": "2024-05-16T10:22:38Z",
+    }
+
+    assert incidents == incidents_response
+    assert next_run == expected_next_run
+
+
+def test_fetch_incidents_when_invalid_password_complexity_filter_params_passed(mocker, mock_client):
+    """
+    Test case scenario for execution of fetch_incidents for fetch compromised credentials.
+
+    Given:
+        - mock client
+    When:
+        - Calling `fetch_incidents` function.
+    Then:
+        - raise value error.
+    """
+    from Ignite import fetch_incidents
+
+    params: dict = {
+        "fetch_type": "",
+        "first_fetch": "2025-05-10T10:22:38Z",
+        "is_fresh_compromised_credentials": "true",
+        "password_min_length": "-1",
+        "max_fetch": 1,
+    }
+    demisto_params = {**BASIC_PARAMS, "severity": "Medium"}
+    mocker.patch.object(demisto, "params", return_value=demisto_params)
+
+    with pytest.raises(ValueError) as error:
+        fetch_incidents(client=mock_client, last_run={}, params=params)
+
+    assert str(error.value) == MESSAGES["INVALID_PASSWORD_LENGTH"]
