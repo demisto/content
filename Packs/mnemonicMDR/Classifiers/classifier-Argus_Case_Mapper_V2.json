@@ -27,14 +27,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -99,9 +96,6 @@
                 },
                 "Argus Case Priority": {
                     "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
@@ -173,9 +167,6 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
@@ -237,7 +228,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -298,7 +289,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -359,7 +350,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -481,7 +472,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -542,7 +533,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -603,7 +594,7 @@
                 "Argus Case Link": {
                     "simple": "url"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
@@ -672,9 +663,6 @@
                 },
                 "Argus Case Priority": {
                     "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
@@ -746,9 +734,6 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
-                    "simple": "status"
-                },
                 "Argus Case Service": {
                     "simple": "service.name"
                 },
@@ -815,9 +800,6 @@
                 },
                 "Argus Case Priority": {
                     "simple": "priority"
-                },
-                "Argus Case Satus V2": {
-                    "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
@@ -889,14 +871,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -962,14 +941,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -1035,14 +1011,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -1108,14 +1081,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -1178,14 +1148,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
@@ -1248,14 +1215,11 @@
                 "Argus Case Priority": {
                     "simple": "priority"
                 },
-                "Argus Case Satus V2": {
+                "Argus Case Status V2": {
                     "simple": "status"
                 },
                 "Argus Case Service": {
                     "simple": "service.name"
-                },
-                "Argus Case Status V2": {
-                    "simple": "status"
                 },
                 "Argus Case Type": {
                     "simple": "type"
