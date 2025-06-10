@@ -189,7 +189,13 @@ class Client(BaseClient):
             query = self.add_query(query, f"limit={limit}")
         else:
             query = self.add_query(query, "limit=5000")
-        res = self._http_request(method="GET", url_suffix=f"/audit-log/v1/events{query}", headers=self._headers)
+        res = self._http_request(
+            method="GET",
+            url_suffix=f"/audit-log/v1/events{query}",
+            headers=self._headers,
+            retries=3,
+            status_list_to_retry=[502],
+        )
         return res.get("events", [])
 
     def get_vuln_export_uuid(self, num_assets: int, last_found: Optional[float]):
