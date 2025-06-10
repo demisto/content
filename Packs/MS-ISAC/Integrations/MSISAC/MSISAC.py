@@ -86,7 +86,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def get_event_command(client: Client, args: Dict[str, Any], internal=False):
+def get_event_command(client: Client, args: Dict[str, Any]):
     """msisac-get-event command: Returns an MS-ISAC event with detailed stream information
 
     :type client: ``Client``
@@ -115,16 +115,13 @@ def get_event_command(client: Client, args: Dict[str, Any], internal=False):
     # Have 404 as on 'ok' response in the base class, and use this JSON path to provide output
     if "error" in event and event["error"]["message"] == "Event does not exist":
         # If there are ever more errors to parse we can expand this conditional
-        if internal:
-            return {}
-        else:
-            return CommandResults(
-                readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
-                raw_response=event,
-                outputs_prefix="MSISAC.Event",
-                outputs_key_field="event_id",
-                outputs=output
-            )
+        return CommandResults(
+            readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
+            raw_response=event,
+            outputs_prefix="MSISAC.Event",
+            outputs_key_field="event_id",
+            outputs=output
+        )
 
     # the json_data in the payload is the most verbose and should be our final output
     # However there are several keys that are not present in json_data we still want/need in the markdown and context
@@ -151,17 +148,13 @@ def get_event_command(client: Client, args: Dict[str, Any], internal=False):
 
     output["Stream"] = stream
 
-
-    if internal:
-        return output
-    else:
-        return CommandResults(
-            readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
-            raw_response=event,
-            outputs_prefix="MSISAC.Event",
-            outputs_key_field="event_id",
-            outputs=output,
-        )
+    return CommandResults(
+        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
+        raw_response=event,
+        outputs_prefix="MSISAC.Event",
+        outputs_key_field="event_id",
+        outputs=output,
+    )
 
 
 def retrieve_events_command(client: Client, args: Dict[str, Any]):
@@ -270,7 +263,6 @@ def fetch_incidents(
 
     return events_to_fetch, next_run_dict
     
-    
 @logger
 def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
     """Calculates the lookback period in days between two datetimes.
@@ -330,7 +322,7 @@ def main():
             return_results(result)
 
         elif command == 'fetch-incidents':
-            first_fetch = arg_to_datetime(params.get("first_fetch", "1 day ago"))
+            first_fetch: datetime =  cast(datetime, arg_to_datetime(params.get("first_fetch", "1 day ago"), required=True))
             events, next_run = fetch_incidents(client=client,
                                         first_fetch=first_fetch,
                                         last_run=demisto.getLastRun()
