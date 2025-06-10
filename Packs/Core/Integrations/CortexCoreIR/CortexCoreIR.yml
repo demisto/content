@@ -209,7 +209,9 @@ script:
       name: endpoint_id
       required: true
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Issue remote host: ${issue.xdmtargetagentidentifier}
     - auto: PREDEFINED
       defaultValue: 'false'
       description: Suppress an error when trying to isolate a disconnected endpoint. When set to false, an error is returned.
@@ -1050,17 +1052,21 @@ script:
       isArray: true
       name: endpoint_id_list
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Initiator host endpoint ID: ${issue.xdmsourceagentidentifier}
+        Remote host endpoint ID: ${issue.xdmtargetagentidentifier}
       required: true
     - description: String that represents the path of the file you want to quarantine.
       name: file_path
       prettyname: File Path
-      prettypredefined: {}
+      prettypredefined:
+        File path from issue: ${issue.filepath}
       required: true
     - description: String that represents the file’s hash. Must be a valid SHA256 hash.
       name: file_hash
       prettyname: File Hash (SHA256)
-      prettypredefined: {}
+      prettypredefined:
+        File SHA256 from issue: ${issue.filesha256}
       required: true
     - description: For polling use.
       isArray: true
@@ -1169,7 +1175,8 @@ script:
     - description: String that represents the file in hash. Must be a valid SHA256 hash.
       name: file_hash
       prettyname: File Hash (SHA256)
-      prettypredefined: {}
+      prettypredefined:
+        File SHA256 from issue: ${issue.filesha256}
       required: true
     - description: String that represents the endpoint ID. If you do not enter a specific endpoint ID, the request will run restore on all endpoints which relate to the quarantined file you defined.
       name: endpoint_id
@@ -1320,7 +1327,9 @@ script:
       required: true
       name: endpoint_id_list
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Issue remote host: ${issue.xdmtargetagentidentifier}
     - description: Name of the distribution list.
       isArray: true
       name: dist_name
@@ -1732,7 +1741,9 @@ script:
       name: endpoint_ids
       required: true
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Issue initiator host: ${issue.xdmsourceagentidentifier}
+        Remote host: ${issue.xdmtargetagentidentifier}
     - description: A comma-separated list of file paths on the Windows platform.
       isArray: true
       name: windows_file_paths
@@ -1747,7 +1758,9 @@ script:
       name: generic_file_path
       prettyname: File to retrieve
       required: true
-      prettypredefined: {}
+      prettypredefined:
+        Issue initiator file: ${issue.initiatorpath}
+        Issue CGO file path: ${issue.cgopath}
     - description: For polling use.
       isArray: true
       name: action_id
@@ -3655,7 +3668,9 @@ script:
       name: endpoint_ids
       required: true
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Initiator host: ${issue.xdmsourceagentidentifier}
+        Remote host: ${issue.xdmtargetagentidentifier}
     - description: Unique identifier of the script. Can be retrieved by running the core-get-scripts command.
       name: script_uid
       required: true
@@ -3870,14 +3885,16 @@ script:
     - description: The agent ID.
       name: agent_id
       prettyname: Run action on
-      prettypredefined: {}
+      prettypredefined:
+        Affected host: ${issue.agentid}
       isArray: false
       required: true
     - description: The causality ID.
       name: causality_id
       isArray: true
       required: true
-      prettypredefined: {}
+      prettypredefined:
+        CGO identifier: ${issue.cid}
     - description: The process name.
       name: process_name
       isArray: false
