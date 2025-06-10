@@ -132,12 +132,12 @@ class Command:
         demisto.debug(f"Command: {self} with brand {self.brand} is not in enrichment brands.")
         return False
 
-    def has_enabled_instance(self, modules: dict) -> bool:
+    def has_enabled_instance(self, enabled_brands: list[str]) -> bool:
         """
         Checks if command source brand has an enabled integration instance.
 
         Args:
-            modules (dict[str, Any]): Modules context from `demisto.getModules()`.
+            enabled_brands (list[str]): Set of enabled integration brands.
 
         Returns:
             bool: True if the command brand has an enabled instance. Otherwise, False.
@@ -145,9 +145,6 @@ class Command:
         if not self.brand:
             demisto.debug(f"Command: {self} is not associated with any integration brand.")
             return True
-
-        enabled_brands = {module.get("brand") for module in modules.values() if module.get("state") == "active"}
-        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
 
         if self.brand.value in enabled_brands:
             demisto.debug(f"Command: {self} with brand {self.brand} has an enabled instance.")
@@ -493,7 +490,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict[str, list], list[C
 
 def enrich_with_command(
     command: Command,
-    modules: dict[str, Any],
+    enabled_brands: list[str],
     enrichment_brands: list[str],
     per_command_context: dict[str, dict],
     verbose_command_results: list[CommandResults],
@@ -505,7 +502,7 @@ def enrich_with_command(
 
     Args:
         command (Command): The command to be executed.
-        modules (dict[str, Any]): Modules context from `demisto.getModules()`.
+        enabled_brands (list[str]): Set of enabled integration brands.
         enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
@@ -514,7 +511,7 @@ def enrich_with_command(
         demisto.debug(f"Skipping command {command.name}. The brand {command.brand} is not in the enrichment brands.")
         return
 
-    if not command.has_enabled_instance(modules):
+    if not command.has_enabled_instance(enabled_brands):
         demisto.debug(f"Skipping command {command.name}. The brand {command.brand} has no enabled instance.")
         return
 
@@ -592,7 +589,7 @@ def search_file_indicator(
 def run_external_enrichment(
     file_hash: str,
     hash_type: str,
-    modules: dict,
+    enabled_brands: list[str],
     enrichment_brands: list[str],
     per_command_context: dict[str, dict],
     verbose_command_results: list,
@@ -603,7 +600,7 @@ def run_external_enrichment(
     Args:
         file_hash (str): The hash of the file.
         hash_type (str): The type of file hash normalized to lower case; can be 'md5', 'sha1', 'sha256', or 'sha512'.
-        modules (dict): Modules context from `demisto.getModules()`.
+        enabled_brands (list[str]): Set of enabled integration brands.
         enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
@@ -617,7 +614,7 @@ def run_external_enrichment(
     )
     enrich_with_command(
         command=file_reputation_command,
-        modules=modules,
+        enabled_brands=enabled_brands,
         enrichment_brands=enrichment_brands,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
@@ -631,7 +628,7 @@ def run_external_enrichment(
     )
     enrich_with_command(
         command=wildfire_verdict_command,
-        modules=modules,
+        enabled_brands=enabled_brands,
         enrichment_brands=enrichment_brands,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
@@ -646,7 +643,7 @@ def run_external_enrichment(
         )
         enrich_with_command(
             command=hash_analytics_command,
-            modules=modules,
+            enabled_brands=enabled_brands,
             enrichment_brands=enrichment_brands,
             per_command_context=per_command_context,
             verbose_command_results=verbose_command_results,
@@ -728,6 +725,10 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
 
     Returns:
         list[CommandResults]: List of CommandResults objects.
+
+    Raises:
+        ValueError: If the file hash is not valid.
+        DemistoException: If none of the enrichment brands has an enabled integration instance.
     """
     demisto.debug(f"Parsing and validating script args: {args}.")
 
@@ -752,15 +753,25 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         verbose_command_results=verbose_command_results,
     )
 
-    if external_enrichment:
-        demisto.debug("Getting integration instances on tenant.")
-        modules = demisto.getModules()
+    if external_enrichment or enrichment_brands:
+        demisto.debug("Getting integration brands on tenant.")
+        enabled_brands = list(
+            {module.get("brand") for module in demisto.getModules().values() if module.get("state") == "active"}
+        )
+        demisto.debug(f"Found {len(enabled_brands)} enabled integration brands.")
+
+        demisto.debug(f"Validating overlap between enrichment brands: {enrichment_brands} and enabled integration brands.")
+        if enrichment_brands and not set(enrichment_brands).intersection(enabled_brands):
+            raise DemistoException(
+                "None of the enrichment brands has an enabled integration instance. "
+                f"Ensure valid integration IDs are specified. For example: '{Brands.CORE_IR},{Brands.WILDFIRE_V2.value}'"
+            )
 
         demisto.debug(f"Running Step 2: External enrichment commands on {file_hash} using brands: {enrichment_brands}.")
         run_external_enrichment(
             file_hash=file_hash,
             hash_type=hash_type,
-            modules=modules,
+            enabled_brands=enabled_brands,
             enrichment_brands=enrichment_brands,
             per_command_context=per_command_context,
             verbose_command_results=verbose_command_results,

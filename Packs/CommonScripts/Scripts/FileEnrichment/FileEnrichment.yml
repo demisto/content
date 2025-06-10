@@ -8,12 +8,7 @@ args:
 - name: enrichment_brands
   description: |-
     Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.
-    For multi-select, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2".
-  auto: PREDEFINED
-  predefined:
-  - 'VirusTotal (API v3)'
-  - 'WildFire-v2'
-  - 'Cortex Core - IR'
+    For multi-select, provide a comma-separated list of integration IDs. For example: "VirusTotal (API v3),WildFire-v2,Cortex Core - IR". Specifying enrichment_brands will force enable external_enrichment.
   isArray: true
 - name: verbose
   description: Whether to retrieve a human-readable entry for every command. When set to false, human-readable will only summarize the final result.

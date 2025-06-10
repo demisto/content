@@ -15,47 +15,35 @@ def util_load_json(path: str):
 
 
 @pytest.mark.parametrize(
-    "command, modules, expected_has_enabled_instance",
+    "command, enabled_brands, expected_has_enabled_instance",
     [
         pytest.param(
             Command("wildfire-get-verdict", {"file_hash": SHA_256_HASH}, Brands.WILDFIRE_V2),
-            {
-                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
-            },
+            [Brands.WILDFIRE_V2.value],
             True,
             id="Command brand active, other brand disabled",
         ),
         pytest.param(
             Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR),
-            {
-                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
-            },
+            [Brands.WILDFIRE_V2.value],
             False,
             id="Command brand disabled, other brand active",
         ),
         pytest.param(
             Command("core-get-endpoints", {"limit": 10}, Brands.CORE_IR),
-            {
-                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
-            },
+            [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value],
             True,
             id="All brands active",
         ),
         pytest.param(
             Command("wildfire-get-sample", {"sha256": SHA_256_HASH}, Brands.WILDFIRE_V2),
-            {
-                "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "disabled"},
-                "instance_ir": {"brand": Brands.CORE_IR.value, "state": "disabled"},
-            },
+            [],
             False,
             id="All brands disabled",
         ),
     ],
 )
-def test_command_has_enabled_instance(command: Command, modules: dict, expected_has_enabled_instance: bool):
+def test_command_has_enabled_instance(command: Command, enabled_brands: list[str], expected_has_enabled_instance: bool):
     """
     Given:
         - Command objects with source brand and arguments dictionaries and modules context from `demisto.getModules()`.
@@ -66,7 +54,7 @@ def test_command_has_enabled_instance(command: Command, modules: dict, expected_
     Assert:
         - Ensure value is True if an integration instance of the brand is active. Otherwise, False.
     """
-    assert command.has_enabled_instance(modules) == expected_has_enabled_instance
+    assert command.has_enabled_instance(enabled_brands) == expected_has_enabled_instance
 
 
 @pytest.mark.parametrize(
@@ -336,11 +324,10 @@ def test_enrich_with_command_known_command(mocker: MockerFixture):
     mock_execution_function = mocker.patch("FileEnrichment.execute_ir_hash_analytics", return_value=("", ""))
 
     command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
 
     enrich_with_command(
         command=command,
-        modules=modules,
+        enabled_brands=[Brands.CORE_IR.value],
         enrichment_brands=[],
         per_command_context={},
         verbose_command_results=[],
@@ -363,12 +350,12 @@ def test_enrich_with_command_unknown_command():
     from FileEnrichment import enrich_with_command
 
     command = Command("core-get-endpoints", {"limit": "10"}, Brands.CORE_IR)
-    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"}}
+    enabled_brands = [Brands.CORE_IR.value]
 
     with pytest.raises(ValueError, match="Unknown command: core-get-endpoints"):
         enrich_with_command(
             command=command,
-            modules=modules,
+            enabled_brands=enabled_brands,
             enrichment_brands=[],
             per_command_context={},
             verbose_command_results=[],
@@ -391,12 +378,12 @@ def test_enrich_with_command_with_no_enabled_instance(mocker: MockerFixture):
     mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
 
     command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "enabled"}}
+    enabled_brands = [Brands.CORE_IR.value]
     enrichment_brands = [Brands.WILDFIRE_V2.value]
 
     enrich_with_command(
         command=command,
-        modules=modules,
+        enabled_brands=enabled_brands,
         enrichment_brands=enrichment_brands,
         per_command_context={},
         verbose_command_results=[],
@@ -421,11 +408,10 @@ def test_enrich_with_command_not_in_enrichment_brands(mocker: MockerFixture):
     mock_execution_function = mocker.patch("FileEnrichment.execute_file_reputation")
 
     command = Command("core-get-hash-analytics-prevalence", {"sha256": SHA_256_HASH}, Brands.CORE_IR)
-    modules = {"instance_ir": {"brand": Brands.CORE_IR.value, "state": "enabled"}}
 
     enrich_with_command(
         command=command,
-        modules=modules,
+        enabled_brands=[Brands.CORE_IR.value],
         enrichment_brands=["VirusTotal (API v3)"],
         per_command_context={},
         verbose_command_results=[],
@@ -471,10 +457,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
     """
     from FileEnrichment import run_external_enrichment
 
-    modules = {
-        "instance_wf": {"brand": Brands.WILDFIRE_V2.value, "state": "active"},
-        "instance_ir": {"brand": Brands.CORE_IR.value, "state": "active"},
-    }
+    enabled_brands = [Brands.WILDFIRE_V2.value, Brands.CORE_IR.value]
     enrichment_brands = [Brands.WILDFIRE_V2.value]
 
     mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
@@ -482,7 +465,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
     run_external_enrichment(
         file_hash=SHA_256_HASH,
         hash_type="sha256",
-        modules=modules,
+        enabled_brands=enabled_brands,
         enrichment_brands=enrichment_brands,
         per_command_context={},
         verbose_command_results=[],
