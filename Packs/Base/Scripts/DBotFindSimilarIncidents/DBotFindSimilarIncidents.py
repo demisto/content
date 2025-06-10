@@ -478,7 +478,7 @@ class Model:
                     skip_reason = FIELD_SKIP_REASON_FALSY_VALUE.format(field=field, val=val)
                 elif valid_types and not isinstance(val, valid_types):
                     skip_reason = FIELD_SKIP_REASON_INVALID_TYPE.format(field=field, valid=valid_types, type=type(val))
-                elif len(val) < 2:
+                elif isinstance(val, str) and len(val) < 2:
                     skip_reason = FIELD_SKIP_REASON_TOO_SHORT.format(field=field, val=val, len=len(val))
                 elif isinstance(val, list) and all(not x for x in val):
                     skip_reason = FIELD_SKIP_REASON_LIST_OF_FALSY_VALS.format(field=field, val=val)
