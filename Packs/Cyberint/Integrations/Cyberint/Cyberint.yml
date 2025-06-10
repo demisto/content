@@ -133,13 +133,16 @@ configuration:
   - exposed_web_interfaces
   - hijackable_subdomains
   - website_vulnerabilities
+  - vulnerabilities
   - exposed_cloud_storage
   - exploitable_ports
   - mail_servers_in_blacklist
   - server_connected_to_botnet
   - email_security_issues
   - certificate_authority_issues
+  - user_defined_saved_query
   - other
+  - ssl_tls
   section: Collect
 - display: Fetch Limit
   name: max_fetch
@@ -253,13 +256,16 @@ script:
       - exposed_web_interfaces
       - hijackable_subdomains
       - website_vulnerabilities
+      - vulnerabilities
       - exposed_cloud_storage
       - exploitable_ports
       - mail_servers_in_blacklist
       - server_connected_to_botnet
       - email_security_issues
       - certificate_authority_issues
+      - user_defined_saved_query
       - other
+      - ssl_tls
     description: List alerts according to parameters.
     name: cyberint-alerts-fetch
     outputs:
