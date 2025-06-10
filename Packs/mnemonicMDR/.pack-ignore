@@ -68,4 +68,4 @@ ignore=BA101,BA124
 ignore=BA101,BA124
 
 [file:classifier-Argus_Case_5_9_9.json]
-ignore=BA106
+ignore=BA106,BA101
