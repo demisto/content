@@ -188,7 +188,7 @@ script:
       description: The employee's username in the app.
       type: String
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: A User Profile indicator.
       name: user-profile
@@ -228,7 +228,7 @@ script:
       description: The employee's username in the app.
       type: String
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: Group SCIM data with the display name.
       name: scim

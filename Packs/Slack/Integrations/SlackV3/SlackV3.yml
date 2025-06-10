@@ -449,7 +449,7 @@ script:
     description: Reset user session token in Slack.
     name: slack-user-session-reset
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: 'Supply this argument to only return channels with this name.'
       name: name_filter

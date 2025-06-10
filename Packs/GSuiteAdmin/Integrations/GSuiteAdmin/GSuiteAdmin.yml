@@ -1030,7 +1030,7 @@ script:
       Signs a user out of all web and device sessions and reset their sign-in cookies.
     name: gsuite-user-signout
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: Immutable ID of the G Suite account.
       name: customer_id
@@ -1855,7 +1855,7 @@ script:
       description: Custom fields of the user.
       type: Unknown
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: 'One of the following: user email address, alias email address, or the unique user ID.'
       name: user

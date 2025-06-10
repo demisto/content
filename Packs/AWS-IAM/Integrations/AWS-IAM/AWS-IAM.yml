@@ -1444,7 +1444,7 @@ script:
     description: Adds or updates an inline policy document that is embedded in the specified IAM user.
     name: aws-iam-put-user-policy
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: The policy document. You must provide policies in JSON format in IAM.
       name: policyDocument

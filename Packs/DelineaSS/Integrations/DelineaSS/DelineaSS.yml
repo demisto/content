@@ -474,7 +474,7 @@ script:
       description: User object.
       type: String
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: Filter users by Active Directory domain (integer).
       name: filter_domainid
@@ -603,7 +603,7 @@ script:
       description: User object.
       type: String
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: Secret ID.
       name: secret_id

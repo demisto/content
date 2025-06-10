@@ -73,7 +73,7 @@ script:
       description: LogoutUser command results.
     description: Force logout a specific user from Prisma Access.
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - name: prisma-access-query
     arguments:
     - name: query

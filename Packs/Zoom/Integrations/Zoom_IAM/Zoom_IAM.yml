@@ -112,7 +112,7 @@ script:
       description: The employee's username in the app.
       type: String
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: >-
         A User Profile indicator.
@@ -158,7 +158,7 @@ script:
     name: iam-get-user
     arguments:
     - description: >-
-        A User Profile indicator.          
+        A User Profile indicator.
 
         For example: `{"email": "john.doe@example.com"}`.
       name: user-profile

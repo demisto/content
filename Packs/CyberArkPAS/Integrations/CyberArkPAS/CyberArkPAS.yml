@@ -900,7 +900,7 @@ script:
     description: Enable users to set the account's credentials to use for the next Central Policy Manager (CPM) change.
     name: cyberark-pas-credentials-change-set-new-password
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: |-
         The starting date to get the security events from. Must be in the following timestamp format:

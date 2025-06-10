@@ -166,7 +166,7 @@ script:
       Permission: Directory.AccessAsUser.All(Delegated).
     name: msgraph-user-account-disable
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: User ID or userPrincipalName.
       name: user
@@ -174,7 +174,7 @@ script:
     description: Unblock a user.
     name: msgraph-user-unblock
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: User ID or userPrincipalName to update properties for.
       name: user
@@ -233,7 +233,7 @@ script:
     execution: true
     name: msgraph-user-delete
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - auto: PREDEFINED
       defaultValue: 'true'
@@ -627,7 +627,7 @@ script:
     execution: true
     name: msgraph-user-change-password
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - description: Tests connectivity to Microsoft Graph User.
     name: msgraph-user-test
   - arguments:
@@ -635,12 +635,12 @@ script:
       name: user
       required: true
     description: |-
-      Revoke a user session by invalidating all refresh tokens issued to applications for a user. 
+      Revoke a user session by invalidating all refresh tokens issued to applications for a user.
       This command requires an administrator role.
       Permission required: Directory.AccessAsUser.All (Delegated).
     name: msgraph-user-session-revoke
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: The Azure AD user ID.
       name: user_id
@@ -685,8 +685,8 @@ script:
       required: false
       defaultValue: 60
     - description: |-
-        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting. 
-        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.   
+        Determines if the pass is limited to a one-time use. If true, the pass can be used once; if false, the TAP can be used multiple times within its 'lifetime_in_minutes' setting.
+        A multi-use Temporary Access Pass (isUsableOnce = false) can only be created and used for sign-in if it is allowed by the Temporary Access Pass authentication method policy.
       name: is_usable_once
       required: false
       defaultValue: false
@@ -702,9 +702,9 @@ script:
       defaultValue: now
     description: |-
       Create a new TAP policy for a user.
-      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password. 
+      During the command execution, a password-protected zip file will be generated, including the new TAP password. You can download the file, use your password to unlock it, and get the TAP password.
       A user can only have one Temporary Access Pass that's usable within its specified lifetime.
-      Permission:UserAuthenticationMethod.ReadWrite.All  
+      Permission:UserAuthenticationMethod.ReadWrite.All
     name: msgraph-user-tap-policy-create
     outputs:
     - contextPath: MSGraphUser.TAPPolicy.ID

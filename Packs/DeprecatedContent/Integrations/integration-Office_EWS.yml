@@ -1335,7 +1335,7 @@ script:
       description: ID of deleted items.
     description: Delete an item (e.g. an e-mail) from a mailbox in the Exchange store.
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - name: ews-delete-attachments
     deprecated: true
     arguments:
@@ -1641,7 +1641,7 @@ script:
       description: The old item id.
     description: Move one or more item to one destination folder. Note that after an item is moved, a new id will be associated with it.
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   isfetch: true
 tests:
 - No test

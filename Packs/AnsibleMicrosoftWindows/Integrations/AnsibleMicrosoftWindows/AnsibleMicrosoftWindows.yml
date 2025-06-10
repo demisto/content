@@ -4244,7 +4244,7 @@ script:
       description: Whether the user can change their own password.
       type: boolean
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: Hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true

@@ -127,7 +127,7 @@ script:
     description: Tag a user as risky in Reco.
     name: reco-add-risky-user-label
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: Email address of the user.
       name: email_address
@@ -147,7 +147,7 @@ script:
     description: Tag a user as leaving org user in Reco.
     name: reco-add-leaving-org-user-label
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - arguments:
     - description: Asset name to search for.
       name: asset_name

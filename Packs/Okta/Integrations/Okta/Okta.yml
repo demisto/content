@@ -50,7 +50,7 @@ script:
     execution: true
     deprecated: true
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - name: okta-activate-user
     arguments:
     - name: username
@@ -61,7 +61,7 @@ script:
     execution: true
     deprecated: true
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - name: okta-suspend-user
     arguments:
     - name: username
@@ -72,7 +72,7 @@ script:
     execution: true
     deprecated: true
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - name: okta-unsuspend-user
     arguments:
     - name: username
@@ -128,7 +128,7 @@ script:
     execution: true
     deprecated: true
     compliantpolicies:
-    - Users Soft Remediation
+    - User Soft Remediation
   - name: okta-reset-factor
     arguments:
     - name: userId

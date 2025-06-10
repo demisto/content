@@ -4447,7 +4447,7 @@ script:
     description: Manages local Windows user accounts.
     name: win-user
     compliantpolicies:
-    - Users Hard Remediation
+    - User Hard Remediation
   - arguments:
     - description: hostname or IP of target. Optionally the port can be specified using :PORT. If multiple targets are specified using an array, the integration will use the configured concurrency factor for high performance.
       isArray: true
