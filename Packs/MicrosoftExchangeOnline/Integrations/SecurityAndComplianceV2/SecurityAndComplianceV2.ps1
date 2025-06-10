@@ -1954,56 +1954,72 @@ function CaseHoldPolicySetCommand([SecurityAndComplianceClient]$client, [hashtab
     return $human_readable, $entry_context, $raw_response
 }
 
-function DeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
-    # Command arguemnts parsing
+function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $Demisto.results("kwargs: " + (ConvertTo-Json $kwargs -Depth 3))
+    # Command arguments parsing
     $internet_message_id = $kwargs.internet_message_id
-    $kql = "InternetMessageId:$internet_message_id"
-
-    $allow_not_found_exchange_locations = ConvertTo-Boolean $kwargs.allow_not_found_exchange_locations
     $exchange_location = ArgToList $kwargs.exchange_location
-    $public_folder_location = ArgToList $kwargs.public_folder_location
-    $share_point_location = ArgToList $kwargs.share_point_location
-    $share_point_location_exclusion = ArgToList $kwargs.share_point_location_exclusion
 
-    $temp_search_name = "XSOAR-$(New-Guid)"
+    # $entry_context = @{ 'KeyName' = 'Value' }
 
-    # NewSearch
-    $raw_response = $client.NewSearch($temp_search_name, $kwargs.case, $kql, $kwargs.description, $allow_not_found_exchange_locations,
-                                      $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    # If this is the first run
+    if (-not $kwargs.search_name) {
+        # create Search
+        $kql = "InternetMessageId:$internet_message_id"
+        $search_name = $internet_message_id
+        $client.NewSearch($search_name, '', $kql, $kwargs.description, $false, $exchange_location, @(), @(), @())
+        # $client.NewSearch($search_name, $kwargs.case, $kql, $kwargs.description, $allow_not_found_exchange_locations,
+        #                                   $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
+    
+        # start search
+        $client.StartSearch($search_name)
+    
+        # human readable
+        $human_readable = "$script:INTEGRATION_NAME - search **$($search_name)** started !"
 
-    # start-search
-    $client.StartSearch($temp_search_name)
-
-    Start-Sleep 5
-
-    $searchStatus = ""
-    $i = 0
-    while($i -lt $timeout)
-    {
-        $searchStatus = Get-ComplianceSearch $searchName
-        "Search status: " + $searchStatus.Status
-        if ($searchStatus.Status -eq "Completed")
-        {
-            break
-        }
-        "Waiting for search to complete..."
-        Start-Sleep 1
-        $i++
+        # Call polling to check search status
+        $polling_args = $kwargs + @{ search_name = $search_name }
+        return $human_readable, $entry_context, $raw_response, $polling_args
     }
 
-    # new-search-action 
-    # $raw_response = $client.NewSearchAction($temp_search_name, $kwargs.action, $kwargs.purge_type,
-    # $kwargs.share_point_archive_format, $kwargs.format,
-    # $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
-    # $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+    # check if search is completed
+    $raw_response = $client.GetSearch($kwargs.search_name)
+    $status = $raw_response.Status
+    if ($status -ne "Completed") {
+        $polling_args = $kwargs
+        return $human_readable, $entry_context, $raw_response, $polling_args
+    }
 
-    # Human readable
-    $md_columns = $raw_response | Select-Object -Property Name, Description, CreatedBy, LastModifiedTime, ContentMatchQuery
-    $human_readable = TableToMarkdown $md_columns  "$script:INTEGRATION_NAME - New search '$($temp_search_name)' created"
+    if (-not $kwargs.search_action_name) {
+        # start search action - delete
+        $raw_response = $client.NewSearchAction($kwargs.search_name, "Purge", $kwargs.purge_type)
+        # $raw_response = $client.NewSearchAction($kwargs.search_name, "Purge", $kwargs.purge_type,
+        # $kwargs.share_point_archive_format, $kwargs.format,
+        # $kwargs.include_sharepoint_document_versions, $kwargs.notify_email,
+        # $kwargs.notify_email_cc, $kwargs.scenario, $kwargs.scope)
+
+
+        $search_action_name = $raw_response.Name
+        $polling_args = $kwargs + @{ search_action_name = $search_action_name }
+        $human_readable = "$script:INTEGRATION_NAME - search **$($search_action_name)** started !"
+        return $human_readable, $entry_context, $raw_response, $polling_args
+    }
+
+    # check if action search is completed
+    $raw_response = $client.GetSearchAction($kwargs.search_action_name)
+    $status = $raw_response.Status
+    if ($status -ne "Completed") {
+        $polling_args = $kwargs
+        return $human_readable, $entry_context, $raw_response, $polling_args
+    }
+
     # Entry context
     $entry_context = @{
-        $script:SEARCH_ENTRY_CONTEXT = ParseSearchToEntryContext $raw_response
+        $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
     }
+    # Human readable
+    $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, JobEndTime, Status
+    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($kwargs.search_action_name)'"
 
     return $human_readable, $entry_context, $raw_response
 }
@@ -2125,11 +2141,11 @@ function Main {
             "$script:COMMAND_PREFIX-case-hold-policy-set" {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
-            "$script:COMMAND_PREFIX-delete-email" {
-                ($human_readable, $entry_context, $raw_response) = DeleteEmailCommand $cs_client $command_arguments
+            "$script:COMMAND_PREFIX-search-and-delete-email" {
+                ($human_readable, $entry_context, $raw_response) = SearchAndDeleteEmailCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-recovery-email" {
-                ($human_readable, $entry_context, $raw_response) = DeleteEmailCommand $cs_client $command_arguments
+                ($human_readable, $entry_context, $raw_response) = RecoveryEmailCommand $cs_client $command_arguments
             }
         }
 
