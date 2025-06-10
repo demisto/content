@@ -221,13 +221,14 @@ def test_get_formatted_message_bad_header():
     Then: There should be no exceptions
     """
     import email
+
     msg = email.message.Message()
-    msg['From'] = f"hello@example.com"
-    msg['To'] = f"world@example.com"
-    msg['Subject'] = f"Test Email - subject"
+    msg["From"] = "hello@example.com"
+    msg["To"] = "world@example.com"
+    msg["Subject"] = "Test Email - subject"
 
     # Set a random body
-    body = f"This is a randomly generated message body"
+    body = "This is a randomly generated message body"
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     msg.add_header("Foo", "From: \tvalue=\r\n =value=\t<\r\n= .palo.com\r\n =?utf-8?q?=3E?=\r\n")
@@ -243,15 +244,18 @@ def test_get_formatted_message_good_header():
     import email.message
 
     msg = email.message.Message()
-    msg['From'] = f"hello@example.com"
-    msg['To'] = f"world@example.com"
-    msg['Subject'] = f"Test Email - subject"
+    msg["From"] = "hello@example.com"
+    msg["To"] = "world@example.com"
+    msg["Subject"] = "Test Email - subject"
 
     # Set a random body
-    body = f"This is a randomly generated message body"
+    body = "This is a randomly generated message body"
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
-    assert get_formatted_message(msg) == 'From: hello@example.com\nTo: world@example.com\nSubject: Test Email - subject\nFoo: From: value==value=<= .palo.com =?utf-8?q?=3E?=\n\nThis is a randomly generated message body'
+    assert (
+        get_formatted_message(msg)
+        == "From: hello@example.com\nTo: world@example.com\nSubject: Test Email - subject\nFoo: From: value==value=<= .palo.com =?utf-8?q?=3E?=\n\nThis is a randomly generated message body"
+    )
 
 
 def test_fetch_last_emails_fail(mocker):
