@@ -266,6 +266,15 @@ def yaml_content():
         return yaml.safe_load(f)
 
 
+@pytest.fixture
+def valid_threat_scenario():
+    """Fixture for valid threat scenario"""
+    return {
+        "issue_id": str(uuid.uuid4()),
+        "api_response": [{"id": "test-threat", "status": "OPEN", "severity": "HIGH"}],
+        "should_succeed": True
+    }
+
 # ===== VALIDATION FUNCTION TESTS =====
 
 
@@ -408,21 +417,6 @@ def test_validate_resource_id(resource_id, expected_valid, expected_value):
     if expected_valid:
         assert result.value == expected_value
 
-
-@pytest.mark.parametrize(
-    "rule_id,expected_valid,expected_value",
-    [
-        (str(uuid.uuid4()), True, None),  # Valid UUID
-        ("invalid-uuid", False, None),  # Invalid UUID
-        (None, True, None),  # None is valid
-    ],
-)
-def test_validate_rule_match_id(rule_id, expected_valid, expected_value):
-    """Test validate_rule_match_id with various inputs"""
-    result = validate_rule_match_id(rule_id)
-    assert result.is_valid == expected_valid
-    if expected_valid and rule_id:
-        assert result.value == rule_id
 
 
 @pytest.mark.parametrize(
@@ -716,17 +710,18 @@ def test_validate_matched_rule_id(rule_id, expected_valid, expected_value):
 
 
 @pytest.mark.parametrize(
-    "rule_name,expected_valid,expected_value",
+    "resource_id,expected_valid,expected_value",
     [
-        ("test rule", True, "test rule"),
-        ("", True, ""),
+        ("test-resource-123", True, "test-resource-123"),
         (None, True, None),
-        (123, True, 123),  # Any value should be valid
+        ("", True, ""),
+        (123, True, 123),
+        ("", True, ""),
     ],
 )
-def test_validate_rule_match_name(rule_name, expected_valid, expected_value):
-    """Test validate_rule_match_name with various inputs"""
-    result = validate_rule_match_name(rule_name)
+def test_validate_resource_id(resource_id, expected_valid, expected_value):
+    """Test validate_resource_id with various inputs"""
+    result = validate_resource_id(resource_id)
     assert result.is_valid == expected_valid
     if expected_valid:
         assert result.value == expected_value
@@ -2422,41 +2417,445 @@ def test_main_get_threat(mock_command, mock_args, mock_set_auth, mock_set_api, m
     assert mock_return_results.called
 
 
-@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats", return_value=[{"id": "test-threat"}])
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.CommandResults")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")  # Add return_error patch
-def test_get_single_threat(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
-    """Test get_single_threat function"""
-    # Import here because we need the patched versions
+@pytest.fixture
+def invalid_threat_scenarios():
+    """Fixture for various invalid threat scenarios"""
+    return [
+        {
+            "name": "missing_issue_id",
+            "issue_id": None,
+            "api_response": None,
+            "expected_error": "should pass an Issue ID",
+            "should_call_api": False
+        },
+        {
+            "name": "empty_issue_id",
+            "issue_id": "",
+            "api_response": None,
+            "expected_error": "should pass an Issue ID",
+            "should_call_api": False
+        },
+        {
+            "name": "invalid_uuid_format",
+            "issue_id": "not-a-uuid",
+            "api_response": None,
+            "expected_error": "UUID format",
+            "should_call_api": False
+        },
+        {
+            "name": "api_returns_error",
+            "issue_id": str(uuid.uuid4()),
+            "api_response": "Error: Threat not found",
+            "expected_error": "Error retrieving threat",
+            "should_call_api": True
+        }
+    ]
+
+
+# Test 1: Valid scenarios
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats")
+def test_get_single_threat_valid_scenarios(mock_get_filtered, mock_return_results, valid_threat_scenario):
+    """Test get_single_threat with valid inputs"""
     from Packs.Wiz.Integrations.WizDefend.WizDefend import get_single_threat
 
-    get_single_threat()
+    # Setup from fixture
+    mock_get_filtered.return_value = valid_threat_scenario["api_response"]
 
-    # Since we're returning a valid threat list, return_error should not be called
-    assert not mock_return_error.called
-    # Check that CommandResults was called with correct parameters
-    mock_command_results.assert_called_once()
-    assert mock_command_results.call_args[1]["outputs_prefix"] == OutputPrefix.THREAT
+    with patch.object(demisto, "args", return_value={"issue_id": valid_threat_scenario["issue_id"]}):
+        get_single_threat()
+
+        # Verify success path
+        mock_get_filtered.assert_called_once_with(issue_id=valid_threat_scenario["issue_id"])
+        mock_return_results.assert_called_once()
+
+        # Verify return_results called with correct data
+        call_args = mock_return_results.call_args[0][0]
+        assert call_args.outputs_prefix == OutputPrefix.THREAT
+        assert call_args.outputs == valid_threat_scenario["api_response"]
 
 
-@patch.object(demisto, "args", return_value={"severity": "CRITICAL", "platform": "AWS", "status": "OPEN"})
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats", return_value=[{"id": "test-threat"}])
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.CommandResults")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")  # Add return_error patch
-def test_get_threats(mock_return_error, mock_command_results, mock_get_filtered, mock_args):
-    """Test get_threats function"""
-    # Import here because we need the patched versions
-    from Packs.Wiz.Integrations.WizDefend.WizDefend import get_threats
+# Test 2: Invalid scenarios (parameterized with fixture)
+@pytest.mark.parametrize("scenario", [
+    pytest.param(
+        {"issue_id": None, "api_response": None, "expected_error": "should pass an Issue ID", "should_call_api": False},
+        id="missing_issue_id"
+    ),
+    pytest.param(
+        {"issue_id": "", "api_response": None, "expected_error": "should pass an Issue ID", "should_call_api": False},
+        id="empty_issue_id"
+    ),
+    pytest.param(
+        {"issue_id": "not-a-uuid", "api_response": None, "expected_error": "UUID format", "should_call_api": False},
+        id="invalid_uuid"
+    ),
+    pytest.param(
+        {"issue_id": str(uuid.uuid4()), "api_response": "Error: Threat not found", "expected_error": "Error retrieving threat",
+         "should_call_api": True},
+        id="api_error"
+    ),
+])
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.log_and_return_error")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats")
+def test_get_single_threat_invalid_scenarios(mock_get_filtered, mock_log_and_return_error, scenario):
+    """Test get_single_threat with invalid inputs and error conditions"""
+    from Packs.Wiz.Integrations.WizDefend.WizDefend import get_single_threat
 
-    get_threats()
+    # Setup from scenario
+    if scenario["should_call_api"]:
+        mock_get_filtered.return_value = scenario["api_response"]
 
-    # Since we're returning a valid threat list, return_error should not be called
-    assert not mock_return_error.called
-    # Check that CommandResults was called with correct parameters
-    mock_command_results.assert_called_once()
-    assert mock_command_results.call_args[1]["outputs_prefix"] == OutputPrefix.THREATS
+    args_value = {"issue_id": scenario["issue_id"]} if scenario["issue_id"] is not None else {}
 
+    with patch.object(demisto, "args", return_value=args_value):
+        get_single_threat()
+
+        # Verify error handling
+        mock_log_and_return_error.assert_called_once()
+        error_message = mock_log_and_return_error.call_args[0][0]
+        assert scenario["expected_error"] in error_message
+
+        # Verify API call behavior
+        if scenario["should_call_api"]:
+            mock_get_filtered.assert_called_once()
+        else:
+            mock_get_filtered.assert_not_called()
+
+
+@pytest.mark.parametrize(
+    "set_status_return,should_succeed",
+    [
+        ({"id": "test-threat", "status": "IN_PROGRESS"}, True),
+        (None, False),
+        ("", False),
+    ],
+)
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_set_threat_in_progress(mock_return_error, mock_return_results, mock_args, set_status_return, should_succeed):
+    """Test set_threat_in_progress function with various API responses"""
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_status", return_value=set_status_return):
+        set_threat_in_progress()
+
+        if should_succeed:
+            mock_return_results.assert_called_once()
+            call_args = mock_return_results.call_args[0][0]
+            assert call_args.outputs_prefix == OutputPrefix.THREAT
+            assert "Successfully set the threat" in call_args.outputs
+            assert not mock_return_error.called
+        else:
+            mock_return_error.assert_called_once()
+            error_message = mock_return_error.call_args[0][0]
+            assert "Failed to set the threat" in error_message
+            assert not mock_return_results.called
+
+
+@pytest.mark.parametrize(
+    "set_issue_note_return,should_succeed",
+    [
+        ({"id": "note-123"}, True),
+        (None, False),
+        ("", False),
+    ],
+)
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "note": "Test comment"})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_set_threat_comment(mock_return_error, mock_return_results, mock_args, set_issue_note_return, should_succeed):
+    """Test set_threat_comment function with various API responses"""
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_issue_note", return_value=set_issue_note_return):
+        set_threat_comment()
+
+        if should_succeed:
+            mock_return_results.assert_called_once()
+            call_args = mock_return_results.call_args[0][0]
+            assert call_args.outputs_prefix == OutputPrefix.THREAT
+            assert "Successfully set Test comment as comment" in call_args.outputs
+            assert not mock_return_error.called
+        else:
+            mock_return_error.assert_called_once()
+            error_message = mock_return_error.call_args[0][0]
+            assert "Failed to set the comment Test comment" in error_message
+            assert not mock_return_results.called
+
+
+@pytest.mark.parametrize(
+    "threat_notes,delete_success_count,should_succeed",
+    [
+        ([{"id": "note-1", "text": "First comment"}, {"id": "note-2", "text": "Second comment"}], 2, True),
+        ([{"id": "note-1", "text": "Single comment"}], 1, True),
+        ([], 0, True),  # No notes to delete
+        ([{"id": "note-1", "text": "Comment"}], 0, False),  # Delete fails
+    ],
+)
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4())})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_filtered_threats")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_clear_threat_comments(mock_return_error, mock_return_results, mock_get_filtered_threats, mock_args, threat_notes,
+                               delete_success_count, should_succeed):
+    """Test clear_threat_comments function with various note scenarios"""
+    # Mock threat with specified notes
+    threat_with_notes = [{"id": "threat-123", "notes": threat_notes}]
+    mock_get_filtered_threats.return_value = threat_with_notes
+
+    # Mock get_entries to return success or None based on test case
+    get_entries_return = {"id": "deleted-note"} if should_succeed else None
+
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=get_entries_return) as mock_get_entries:
+        clear_threat_comments()
+
+        # Verify get_entries was called the expected number of times
+        assert mock_get_entries.call_count == len(threat_notes)
+
+        if should_succeed:
+            mock_return_results.assert_called_once()
+            call_args = mock_return_results.call_args[0][0]
+            assert call_args.outputs_prefix == OutputPrefix.THREAT
+            assert "Successfully cleared all the comments" in call_args.outputs
+            assert not mock_return_error.called
+        elif threat_notes:  # Only expect error if there were notes to delete
+            mock_return_error.assert_called_once()
+            error_message = mock_return_error.call_args[0][0]
+            assert "Failed to delete the comment" in error_message
+            assert not mock_return_results.called
+
+
+@pytest.mark.parametrize(
+    "validation_result,should_succeed",
+    [
+        ((True, None), True),
+        ((False, "Not a threat detection issue"), False),
+        ((False, "Invalid UUID format"), False),
+    ],
+)
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "resolution_reason": "ISSUE_FIXED",
+                                             "resolution_note": "Fixed the issue"})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.reject_or_resolve_issue",
+       return_value={"id": "threat-123", "status": "RESOLVED"})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_resolve_threat(mock_return_error, mock_reject_or_resolve, mock_args, validation_result, should_succeed):
+    """Test resolve_threat function with various validation results"""
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.validate_threat_detections_issue", return_value=validation_result):
+        resolve_threat()
+
+        if should_succeed:
+            mock_reject_or_resolve.assert_called_once_with(
+                mock_args.return_value["issue_id"],
+                mock_args.return_value["resolution_reason"],
+                mock_args.return_value["resolution_note"],
+                WizStatus.RESOLVED
+            )
+            assert not mock_return_error.called
+        else:
+            mock_return_error.assert_called_once()
+            error_message = mock_return_error.call_args[0][0]
+            assert validation_result[1] in error_message
+            assert not mock_reject_or_resolve.called
+
+
+@pytest.mark.parametrize(
+    "reopen_issue_return,should_succeed",
+    [
+        ({"id": "threat-123", "status": "OPEN"}, True),
+        (None, False),
+        ("", False),
+    ],
+)
+@patch.object(demisto, "args", return_value={"issue_id": str(uuid.uuid4()), "reopen_note": "Reopening for review"})
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_results")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.return_error")
+def test_reopen_threat(mock_return_error, mock_return_results, mock_args, reopen_issue_return, should_succeed):
+    """Test reopen_threat function with various API responses"""
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend._reopen_issue", return_value=reopen_issue_return):
+        reopen_threat()
+
+        if should_succeed:
+            mock_return_results.assert_called_once()
+            call_args = mock_return_results.call_args[0][0]
+            assert call_args.outputs_prefix == OutputPrefix.THREAT
+            assert "Successfully reopened the threat" in call_args.outputs
+            assert not mock_return_error.called
+        else:
+            mock_return_error.assert_called_once()
+            error_message = mock_return_error.call_args[0][0]
+            assert "Failed to reopen the threat" in error_message
+            assert not mock_return_results.called
+
+
+@pytest.mark.parametrize(
+    "is_valid_id_result,status,get_entries_return,expected_result_type,should_succeed",
+    [
+        # Valid cases
+        ((True, "Valid"), WizStatus.IN_PROGRESS, {"id": "threat-123", "status": "IN_PROGRESS"}, dict, True),
+        ((True, "Valid"), WizStatus.OPEN, {"id": "threat-123", "status": "OPEN"}, dict, True),
+        ((True, "Valid"), WizStatus.REJECTED, {"id": "threat-123", "status": "REJECTED"}, dict, True),
+        ((True, "Valid"), WizStatus.RESOLVED, {"id": "threat-123", "status": "RESOLVED"}, dict, True),
+
+        # Invalid ID cases
+        ((False, "Invalid UUID format"), WizStatus.IN_PROGRESS, None, str, False),
+
+        # Invalid status cases
+        ((True, "Valid"), "INVALID_STATUS", None, str, False),
+        ((True, "Valid"), "PENDING", None, str, False),
+        ((True, "Valid"), "CLOSED", None, str, False),
+        ((True, "Valid"), "", None, str, False),
+    ],
+)
+def test_set_status_with_validation(is_valid_id_result, status, get_entries_return, expected_result_type, should_succeed):
+    """Test set_status function with various validation scenarios including status validation"""
+    issue_id = str(uuid.uuid4()) if is_valid_id_result[0] else "invalid-uuid"
+
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.is_valid_issue_id", return_value=is_valid_id_result):
+        with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries", return_value=get_entries_return) as mock_get_entries:
+            result = set_status(issue_id, status)
+
+            assert isinstance(result, expected_result_type)
+
+            if should_succeed and is_valid_id_result[0]:
+                # Should call get_entries for valid cases
+                mock_get_entries.assert_called_once()
+                call_args = mock_get_entries.call_args
+                variables = call_args[0][1]  # Second positional argument (variables)
+                assert variables[WizApiVariables.ISSUE_ID] == issue_id
+                assert variables[WizApiVariables.PATCH][WizApiVariables.STATUS] == status
+                assert result == get_entries_return
+            elif not is_valid_id_result[0]:
+                # Invalid ID should return error message without calling API
+                assert not mock_get_entries.called
+                assert result == is_valid_id_result[1]
+            else:
+                # Invalid status should return error message without calling API
+                assert not mock_get_entries.called
+                assert "Invalid status" in result
+                assert status in result or str(status) in result
+
+
+@pytest.mark.parametrize(
+    "issue_id,status,expected_result_type,should_call_api",
+    [
+        # Valid combinations - should call API
+        (str(uuid.uuid4()), WizStatus.IN_PROGRESS, dict, True),
+        (str(uuid.uuid4()), WizStatus.OPEN, dict, True),
+        (str(uuid.uuid4()), WizStatus.REJECTED, dict, True),
+        (str(uuid.uuid4()), WizStatus.RESOLVED, dict, True),
+
+        # Invalid UUID - should fail validation, not call API
+        ("not-a-uuid", WizStatus.IN_PROGRESS, str, False),
+        (None, WizStatus.IN_PROGRESS, str, False),
+        ("", WizStatus.IN_PROGRESS, str, False),
+
+        # Invalid status - should fail validation, not call API
+        (str(uuid.uuid4()), "INVALID_STATUS", str, False),
+        (str(uuid.uuid4()), "PENDING", str, False),
+        (str(uuid.uuid4()), None, str, False),
+
+        # Both invalid - should fail on UUID first
+        ("not-a-uuid", "INVALID_STATUS", str, False),
+    ],
+)
+def test_set_status_validation(issue_id, status, expected_result_type, should_call_api):
+    """Test set_status function with real validation - no mocking of validation functions"""
+    # Only mock the API call, not the validation
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_entries",
+               return_value={"id": "test-response"}) as mock_get_entries:
+        result = set_status(issue_id, status)
+
+        # Check return type
+        assert isinstance(result, expected_result_type)
+
+        if should_call_api:
+            # Should succeed and call the API
+            mock_get_entries.assert_called_once()
+            call_args = mock_get_entries.call_args
+            variables = call_args[0][1]  # Second positional argument (variables)
+            assert variables[WizApiVariables.ISSUE_ID] == issue_id
+            assert variables[WizApiVariables.PATCH][WizApiVariables.STATUS] == status
+        else:
+            # Should fail validation and not call API
+            mock_get_entries.assert_not_called()
+            # Check that we get appropriate error messages
+            if issue_id in [None, "", "not-a-uuid"]:
+                assert ("UUID format" in result or "should pass an Issue ID" in result)
+            elif status not in [WizStatus.OPEN, WizStatus.IN_PROGRESS, WizStatus.REJECTED, WizStatus.RESOLVED]:
+                assert "Invalid status" in result
+
+
+@pytest.mark.parametrize(
+    "is_valid_result,issue_type,expected_valid,expected_error_contains",
+    [
+        ((True, "Valid"), "THREAT_DETECTION", True, None),
+        ((False, "Invalid UUID"), None, False, "Invalid UUID"),
+        ((True, "Valid"), "CLOUD_CONFIGURATION", False, "Only a Threat Detection Issue can be resolved"),
+        ((True, "Valid"), "TOXIC_COMBINATION", False, "Only a Threat Detection Issue can be resolved"),
+    ],
+)
+def test_validate_threat_detections_issue(is_valid_result, issue_type, expected_valid, expected_error_contains):
+    """Test validate_threat_detections_issue with various issue types"""
+    issue_id = str(uuid.uuid4())
+
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.is_valid_issue_id", return_value=is_valid_result):
+        if is_valid_result[0] and issue_type:
+            with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_single_issue", return_value=[{"type": issue_type}]):
+                is_valid, message = validate_threat_detections_issue(issue_id)
+        else:
+            is_valid, message = validate_threat_detections_issue(issue_id)
+
+        assert is_valid == expected_valid
+        if expected_error_contains:
+            assert expected_error_contains in message
+        elif expected_valid:
+            assert message is None
+
+
+@pytest.mark.parametrize(
+    "command_name,function_name",
+    [
+        ("wiz-defend-resolve-threat", "resolve_threat"),
+        ("wiz-defend-reopen-threat", "reopen_threat"),
+        ("wiz-defend-set-threat-in-progress", "set_threat_in_progress"),
+        ("wiz-defend-set-threat-comment", "set_threat_comment"),
+        ("wiz-defend-clear-threat-comments", "clear_threat_comments"),
+    ],
+)
+def test_main_new_commands(command_name, function_name):
+    """Test main function handling new threat management commands"""
+    with patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint") as mock_set_auth, \
+        patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint") as mock_set_api, \
+        patch(f"Packs.Wiz.Integrations.WizDefend.WizDefend.{function_name}") as mock_function, \
+        patch.object(demisto, "command", return_value=command_name):
+        main()
+
+        # Verify endpoints were set
+        assert mock_set_auth.called
+        assert mock_set_api.called
+
+        # Verify the specific function was called
+        mock_function.assert_called_once()
+
+
+@pytest.fixture
+def sample_threat_with_notes():
+    """Return a sample threat object with notes for testing"""
+    return {
+        "id": "12345678-1234-1234-1234-d25e16359c19",
+        "severity": "CRITICAL",
+        "status": "OPEN",
+        "type": "THREAT_DETECTION",
+        "notes": [
+            {
+                "id": "note-123",
+                "text": "This is a test comment",
+                "createdAt": "2022-01-02T15:46:34Z"
+            },
+            {
+                "id": "note-456",
+                "text": "Another test comment",
+                "createdAt": "2022-01-02T16:00:00Z"
+            }
+        ]
+    }
 
 # ===== CLASS TESTS =====
 

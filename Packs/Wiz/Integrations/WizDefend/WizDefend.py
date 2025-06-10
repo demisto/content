@@ -1883,43 +1883,6 @@ def validate_resource_id(resource_id):
     return ValidationResponse.create_success(resource_id)
 
 
-def validate_rule_match_id(rule_match_id):
-    """
-    Validates the rule match ID (must be a valid UUID if provided)
-
-    Args:
-        rule_match_id (str): The rule match ID to validate
-
-    Returns:
-        ValidationResponse: Response with validation results
-    """
-    if not rule_match_id:
-        return ValidationResponse.create_success()
-
-    if is_valid_uuid(rule_match_id):
-        return ValidationResponse.create_success(rule_match_id)
-    else:
-        error_msg = f"Invalid rule match ID: {rule_match_id}. Must be a valid UUID."
-        demisto.error(error_msg)
-        return ValidationResponse.create_error(error_msg)
-
-
-def validate_rule_match_name(rule_match_name):
-    """
-    Validates the rule match name
-
-    Args:
-        rule_match_name (str): The rule match name to validate
-
-    Returns:
-        ValidationResponse: Response with validation results
-    """
-    if not rule_match_name and not isinstance(rule_match_name, str):
-        return ValidationResponse.create_success()
-
-    return ValidationResponse.create_success(rule_match_name)
-
-
 def validate_project(project):
     """
     Validates the project parameter
@@ -2984,17 +2947,33 @@ def get_threats():
 
 def set_status(issue_id, status):
     """
-    Set a Wiz Issue to In Progress
-    """
+    Set a Wiz Issue status with validation
 
+    Args:
+        issue_id (str): The issue ID
+        status (str): The status to set (must be a valid WizStatus value)
+
+    Returns:
+        dict/str: API response or error message
+    """
     demisto.debug(f"Starting set status function for: {status}")
 
+    # Validate issue ID
     is_valid_id, message = is_valid_issue_id(issue_id)
     if not is_valid_id:
         return message
 
-    variables = {WizApiVariables.ISSUE_ID: issue_id,
-                 WizApiVariables.PATCH: {WizApiVariables.STATUS: status}}
+    # Validate status is in WizStatus
+    valid_statuses = [WizStatus.OPEN, WizStatus.IN_PROGRESS, WizStatus.REJECTED, WizStatus.RESOLVED]
+    if status not in valid_statuses:
+        error_msg = f"Invalid status: {status}. Valid statuses are: {', '.join(valid_statuses)}."
+        demisto.error(error_msg)
+        return error_msg
+
+    variables = {
+        WizApiVariables.ISSUE_ID: issue_id,
+        WizApiVariables.PATCH: {WizApiVariables.STATUS: status}
+    }
     query = UPDATE_ISSUE_QUERY
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
@@ -3166,8 +3145,9 @@ def clear_threat_comments():
     for note in threat_notes:
         variables = {"input": {"id": note["id"]}}
         if not get_entries(DELETE_NOTE_QUERY, variables, "deleteIssueNote"):
-            return_error(f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
-                         f"Please check the input parameters and try again.")
+            log_and_return_error(f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
+                                 f"Please check the input parameters and try again.")
+            return
 
     return_results(CommandResults(outputs_prefix=OutputPrefix.THREAT,
                                   outputs=f"Successfully cleared all the comments from the threat with ID {issue_id}."))
