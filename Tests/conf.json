@@ -906,10 +906,13 @@
         },
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",
-            "timeout": 60000,
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "integrations": "Rasterize",
+            "timeout": 1000
         },
         {
             "integrations": "ZeroFox",
@@ -4045,8 +4048,11 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "fromversion": "5.5.0",
-            "timeout": 1000
+            "fromversion": "6.10.0",
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "integrations": "Rasterize"
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -4161,8 +4167,7 @@
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
-            "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "instance_names": "ml_dummy_prod"
         },
         {
             "integrations": [
