@@ -74,7 +74,6 @@ class Modules:
             demisto.debug(f"Skipping command '{command.name}' since the brand '{command.brand}' is not available.")
         elif not self.is_brand_in_brands_to_run(command):
             is_available = False
-
         return is_available
 
 
@@ -134,7 +133,7 @@ def create_user(
     id: Optional[str] = None,
     username: Optional[str] = None,
     email_address: Optional[str] = None,
-    risk_level: Optional[str] = None,
+    risk_level: Optional[int] = None,
     additional_fields=False,
     **kwargs,
 ) -> dict[str, Any]:
@@ -158,7 +157,7 @@ def create_user(
         "ID": id,
         "Username": username,
         "Email": email_address,
-        "risk_level": risk_level,
+        "RiskLevel ": risk_level,
     }
     if additional_fields:
         user["AdditionalFields"] = kwargs
@@ -364,63 +363,16 @@ def run_execute_command(command_name: str, args: dict[str, Any]) -> tuple[list[d
     return entry_context_list, human_readable, errors_command_results
 
 
-def identityiq_search_identities(
-    command: Command,
-    additional_fields=False
-) -> tuple[list[CommandResults], dict[str, Any]]:
-    readable_outputs_list = []
-
-    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
-    readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("IdentityIQ.Identity", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("id", ""),
-        username=outputs.pop("userName", ""),
-        email_address=outputs.get("emails", {}).pop("value", ""),
-        additional_fields=additional_fields,
-        **outputs,
-    )
-
-    return readable_outputs_list, user_output
-
-
-def identitynow_get_accounts(
-    command: Command,
-    additional_fields: bool,
-) -> tuple[list[CommandResults], dict[str, Any]]:
-    readable_outputs_list = []
-
-    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
-    readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("IdentityNow.Account", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("id", None),
-        username=outputs.pop("name", None),
-        additional_fields=additional_fields,
-        **outputs,
-    )
-
-    return readable_outputs_list, user_output
-
-
 def ad_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
-    # is_found = True # todo: found
+    command.args["attributes"] = demisto.args().get("attributes")
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
 
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
     output_key = get_output_key("ActiveDirectory.Users", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
-    # if not outputs: # todo: found
-    #     is_found = False
+
     username = outputs.pop("name", None)
     if isinstance(username, list) and len(username) == 1:
         username = username[0]
@@ -434,26 +386,6 @@ def ad_get_user(command: Command, additional_fields=False) -> tuple[list[Command
         source=command.brand,
         username=username,
         email_address=mail,
-        additional_fields=additional_fields,
-        **outputs,
-    )
-
-    return readable_outputs_list, user_output # todo: found
-
-
-def pingone_get_user(command: Command, additional_fields=False) -> tuple[list[CommandResults], dict[str, Any]]:
-    readable_outputs_list = []
-
-    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
-    readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key("PingOne.Account", entry_context[0])
-    outputs = get_outputs(output_key, entry_context[0])
-    user_output = create_user(
-        source=command.brand,
-        id=outputs.pop("ID", None),
-        username=outputs.pop("Username", None),
-        email_address=outputs.pop("Email", None),
         additional_fields=additional_fields,
         **outputs,
     )
@@ -491,15 +423,31 @@ def aws_iam_get_user(command: Command, additional_fields: bool) -> tuple[list[Co
     outputs = get_outputs(output_key, entry_context[0])
     user_output = create_user(
         source=command.brand,
-        id=outputs.pop("UserId", ""),
-        username=outputs.pop("UserName", ""),
-        email_address="",
+        id=outputs.pop("UserId", None),
+        username=outputs.pop("UserName", None),
         additional_fields=additional_fields,
         **outputs,
     )
 
     return readable_outputs_list, user_output
 
+def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
+    readable_outputs_list = []
+
+    entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
+    readable_outputs_list.extend(readable_errors)
+    readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
+    output_key = get_output_key("PrismaCloud.Users", entry_context[0])
+    outputs = get_outputs(output_key, entry_context[0])
+    user_output = create_user(
+        source=command.brand,
+        username=outputs.pop("username", None),
+        email_address=outputs.pop("email", None),
+        additional_fields=additional_fields,
+        **outputs,
+    )
+
+    return readable_outputs_list, user_output
 
 def msgraph_user_get(command: Command, additional_fields:bool) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
@@ -536,11 +484,6 @@ def msgraph_user_get_manager(
         "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
         "manager_email": outputs.get("Manager", {}).get("Mail")
     }
-    # user_output = create_user(
-    #     source=command.brand,
-    #     manager_display_name=outputs.get("Manager", {}).get("DisplayName"),
-    #     manager_email=outputs.get("Manager", {}).get("Mail"),
-    # )
 
     return manager_output
 
@@ -560,7 +503,7 @@ def xdr_list_risky_users(
 
     account_output = create_user(
         source=command.brand,
-        id=outputs.pop("id", None),
+        id=outputs.get("id"),
         risk_level=outputs.pop("risk_level", None),
         username=outputs.pop("id", None),
         **outputs,
@@ -601,48 +544,14 @@ def azure_get_risky_user(
 
     account_output = create_user(
         source=command.brand,
-        id=outputs.pop("id", None),
-        risk_level=outputs.pop("risk_level", None),
+        id=outputs.get("id"),
+        risk_level=outputs.pop("riskLevel", None),
         username=outputs.pop("id", None),
         **outputs,
         additional_fields=additional_fields
     )
 
     return readable_outputs_list, account_output
-def iam_get_user_command(
-    user_id: str= None, user_name: str=None, user_email: str=None, domain: str=None, additional_fields: bool= False
-) -> tuple[list[CommandResults], list[dict[str, Any]]]:
-    command_name = "iam-get-user"
-    if user_name and domain:
-        user_name = f"{user_name}@{domain}"
-    args = {
-        "user-profile": {
-            "id": user_id,
-            "email": user_email,
-            "username": user_name,
-        }
-    }
-    readable_outputs_list = []
-
-    entry_context, human_readable, readable_errors = run_execute_command(command_name, args)
-    readable_outputs_list.extend(readable_errors)
-    readable_outputs_list.extend(prepare_human_readable(command_name, args, human_readable))
-    user_outputs = []
-    for output_entry in entry_context:
-        output_key = get_output_key("IAM.Vendor", output_entry)
-        outputs = get_outputs(output_key, output_entry)
-        if outputs.get("success"):
-            user_outputs.append(
-                create_user(
-                    source=outputs.pop("brand"),
-                    id=outputs.pop("id", None),
-                    username=outputs.pop("username", None),
-                    email_address=outputs.pop("email", None),
-                    additional_fields=additional_fields,
-                    **outputs,
-                )
-            )
-    return readable_outputs_list, user_outputs
 
 
 def get_command_results(command: Command, cmd_to_run: Callable, modules: Modules, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]] | None:
@@ -656,10 +565,14 @@ def get_data(modules: Modules, brand_name: str, command_name: str,  arg_name: st
         name=command_name,
         args={arg_name: arg_value},
     )
-    if modules.is_brand_available(get_user_command) and is_valid_args(
-        get_user_command
-    ):
-        return cmd(get_user_command, additional_fields)
+    if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
+        readable_outputs, outputs =  cmd(get_user_command, additional_fields)
+        if len(outputs) == 1: # contains only the source key
+            outputs["Status"] = f"User not found: {arg_name} {arg_value}."
+        else:
+            outputs["Status"] = "found."
+        return readable_outputs, outputs
+    return [], {}
 """ MAIN FUNCTION """
 
 
@@ -669,7 +582,6 @@ def main():
         users_ids = argToList(args.get("user_id", []))
         users_names = argToList(args.get("user_name", []))
         users_emails = argToList(args.get("user_email", []))
-        attributes = args.get("attributes")
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
@@ -683,10 +595,9 @@ def main():
 
         command_results_list: list[CommandResults] = []
         user_outputs_list: list[dict[str, Any]] = []
-        users_not_found_list: list[str] = []
-        are_users_found: list[bool] = []
         users_outputs: list[dict] = []
         users_readables: list = []
+
 
         #################################
         ### Running for Usernames ###
@@ -695,22 +606,6 @@ def main():
             demisto.debug(f"Start getting user data for {user_name=}")
             if "\\" not in (user_name or ""):
 
-                ################################
-                ## Running for SailPointIdentityNow ###
-                ################################
-                readable_output, outputs = get_data(
-                    modules=modules,
-                    brand_name="SailPointIdentityNow",
-                    command_name="identitynow-get-accounts",
-                    arg_name="name",
-                    arg_value=user_name,
-                    cmd=identitynow_get_accounts,
-                    additional_fields=additional_fields)
-                if readable_output and outputs:
-                    users_outputs.append(outputs)
-                    users_readables.extend(readable_output)
-
-
                 #################################
                 ### Running for Active Directory Query v2 ###
                 #################################
@@ -718,25 +613,9 @@ def main():
                     modules=modules,
                     brand_name="Active Directory Query v2",
                     command_name="ad-get-user",
-                    arg_name="username",
+                    arg_name="name",
                     arg_value=user_name,
                     cmd=ad_get_user,
-                    additional_fields=additional_fields)
-                if readable_output and outputs:
-                    users_outputs.append(outputs)
-                    users_readables.extend(readable_output)
-
-
-                #################################
-                ### Running for PingOne ###
-                #################################
-                readable_output, outputs = get_data(
-                    modules=modules,
-                    brand_name="PingOne",
-                    command_name="pingone-get-user",
-                    arg_name="username",
-                    arg_value=user_name,
-                    cmd=pingone_get_user,
                     additional_fields=additional_fields)
                 if readable_output and outputs:
                     users_outputs.append(outputs)
@@ -774,6 +653,7 @@ def main():
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
 
+
                 #################################
                 ### Running for Microsoft Graph User ###
                 #################################
@@ -797,100 +677,31 @@ def main():
                         outputs["AdditionalFields"].extend(manager_output)
                     users_outputs.append(outputs)
 
+
+                #################################
+                ### Running for Prismacloud v2 ###
+                #################################
+                readable_output, outputs = get_data(
+                    modules=modules,
+                    brand_name="PrismaCloud v2",
+                    command_name="prisma-cloud-users-list",
+                    arg_name="usernames",
+                    arg_value=user_name,
+                    cmd=prisma_cloud_get_user,
+                    additional_fields=additional_fields)
+                if readable_output and outputs:
+                    users_outputs.append(outputs)
+                    users_readables.extend(readable_output)
+
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
 
-            #################################
-            ### Running for Cortex XDR - IR (XDR) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex XDR - IR",
-                command_name="xdr-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=xdr_get_risky_user,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-
-            #################################
-            ### Running for Cortex XDR - IR (Core) ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Cortex Core - IR",
-                command_name="core-list-risky-users",
-                arg_name="user_id",
-                arg_value=user_name,
-                cmd=xdr_get_risky_user,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-
-            #################################
-            ### Running for Azure Risky Users	 ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Azure Risky Users",
-                command_name="azure-risky-user-get",
-                arg_name="id",
-                arg_value=user_name,
-                cmd=azure_get_risky_user,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-            #################################
-            ### Running for iam-get-user ###
-            #################################
-            if modules.is_brand_in_brands_to_run(Command(brand="iam-get-user", name="iam-get-user", args={})):
-                readable_outputs, outputs = iam_get_user_command(user_name=user_name, domain=domain, additional_fields=additional_fields)
-                users_readables.extend(readable_outputs)
-                users_outputs.extend(outputs)
 
         #################################
         ### Running for Users IDs ###
         #################################
         for user_id in users_ids:
             demisto.debug(f"Start getting user data for {user_id=}")
-
-            ################################
-            ## Running for SailPointIdentityNow ###
-            ################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="SailPointIdentityNow",
-                command_name="identitynow-get-accounts",
-                arg_name="id",
-                arg_value=user_id,
-                cmd=identitynow_get_accounts,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-
-            #################################
-            ### Running for PingOne ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="PingOne",
-                command_name="pingone-get-user",
-                arg_name="userId",
-                arg_value=user_id,
-                cmd=pingone_get_user,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
 
             #################################
             ### Running for Okta v2 ###
@@ -933,22 +744,6 @@ def main():
 
 
             #################################
-            ### Running for SailPointIdentityIQ ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="SailPointIdentityIQ",
-                command_name="identityiq-search-identities",
-                arg_name="id",
-                arg_value=user_id,
-                cmd=identityiq_search_identities,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-
-            #################################
             ### Running for Cortex XDR - IR (XDR) ###
             #################################
             readable_output, outputs = get_data(
@@ -973,7 +768,7 @@ def main():
                 command_name="core-list-risky-users",
                 arg_name="user_id",
                 arg_value=user_id,
-                cmd=xdr_get_risky_user,
+                cmd=core_get_risky_user,
                 additional_fields=additional_fields)
             if readable_output and outputs:
                 users_outputs.append(outputs)
@@ -994,14 +789,6 @@ def main():
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
-
-            #################################
-            ### Running for iam-get-user ###
-            #################################
-            if modules.is_brand_in_brands_to_run(Command(brand="iam-get-user", name="iam-get-user", args={})):
-                readable_outputs, outputs = iam_get_user_command(user_id=user_id, additional_fields=additional_fields)
-                users_readables.extend(readable_outputs)
-                users_outputs.extend(outputs)
 
 
         #################################
@@ -1025,47 +812,6 @@ def main():
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
 
-
-            #################################
-            ### Running for SailPointIdentityIQ ###
-            #################################
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="SailPointIdentityIQ",
-                command_name="identityiq-search-identities",
-                arg_name="email",
-                arg_value=user_email,
-                cmd=identityiq_search_identities,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
-
-            #################################
-            ### Running for iam-get-user ###
-            #################################
-            if modules.is_brand_in_brands_to_run(Command(brand="iam-get-user", name="iam-get-user", args={})):
-                readable_outputs, outputs = iam_get_user_command(user_email=user_email, additional_fields=additional_fields)
-                users_readables.extend(readable_outputs)
-                users_outputs.extend(outputs)
-
-        #################################
-        ### Running for Active Directory Query v2 with attributes ###
-        #################################
-        if attributes:
-            readable_output, outputs = get_data(
-                modules=modules,
-                brand_name="Active Directory Query v2",
-                command_name="ad-get-user",
-                arg_name="attributes",
-                arg_value=attributes,
-                cmd=ad_get_user,
-                additional_fields=additional_fields)
-            if readable_output and outputs:
-                users_outputs.append(outputs)
-                users_readables.extend(readable_output)
-
         if verbose:
             command_results_list.extend(users_readables)
 
@@ -1073,220 +819,20 @@ def main():
         command_results_list.append(
             CommandResults(
                 outputs_prefix="UserData",
-                outputs_key_field=["Username", "Source"],
                 # because if source1 and source2 got the same username, we don't want any of the sources to overrides the other
-                outputs=user_outputs_list,
+                outputs_key_field=["Username", "Source"],
+                outputs=users_outputs,
                 readable_output=tableToMarkdown(
                     name="User(s) data",
-                    t=user_outputs_list,
-                    headers=["Source", "ID", "Username", "Email"],
-                    removeNull=True,
+                    t=users_outputs,
+                    headers=["Source", "ID", "Username", "Email", "Status"],
+                    removeNull=False,
                 ),
             )
         )
         return_results(command_results_list)
 
-        # # todo: to be deleted
-        # for user_id, user_name, user_email in list(itertools.zip_longest(users_ids, users_names, users_emails, fillvalue="")):
-        #     #################################
-        #     ### Running for a single user ###
-        #     #################################
-        #     demisto.debug(f"Start getting user account data for user: {user_id=}, {user_name=}, {user_email=}")
-        #     single_user_outputs = []
-        #     single_user_readable_outputs = []
-        #     outputs: dict[str, Any] | list[dict[str, Any]]
-        #     if "\\" not in (user_name or ""):  # If the user_name does not contain a domain
-        #         identitynow_get_accounts_command = Command(
-        #             brand="SailPointIdentityNow",
-        #             name="identitynow-get-accounts",
-        #             args={"id": user_id, "name": user_name},
-        #         )
-        #         if modules.is_brand_available(identitynow_get_accounts_command) and is_valid_args(
-        #             identitynow_get_accounts_command
-        #         ):
-        #             readable_outputs, outputs = identitynow_get_accounts(identitynow_get_accounts_command, additional_fields)
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             single_user_outputs.append(outputs)
-        #
-        #         #################################
-        #         ### Running for Active Directory Query v2 ###
-        #         #################################
-        #         ad_get_user_command = Command(
-        #             brand="Active Directory Query v2",
-        #             name="ad-get-user",
-        #             args={"username": user_name, "email": user_email, "attributes": attributes},
-        #         )
-        #         if modules.is_brand_available(ad_get_user_command) and is_valid_args(ad_get_user_command):
-        #             readable_outputs, outputs = ad_get_user(ad_get_user_command, additional_fields)   # todo: added found
-        #             # is_user_found.append(is_found)  # todo: found
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             if outputs:
-        #                 single_user_outputs.append(outputs)
-        #
-        #         #################################
-        #         ### Running for PingOne ###
-        #         #################################
-        #         pingone_get_user_command = Command(
-        #             brand="PingOne",
-        #             name="pingone-get-user",
-        #             args={"userId": user_id, "username": user_name},
-        #         )
-        #         if modules.is_brand_available(pingone_get_user_command) and is_valid_args(pingone_get_user_command):
-        #             readable_outputs, outputs = pingone_get_user(pingone_get_user_command, additional_fields)
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             if outputs:
-        #                 single_user_outputs.append(outputs)
-        #
-        #         #################################
-        #         ### Running for Okta v2 ###
-        #         #################################
-        #         okta_get_user_command = Command(
-        #             brand="Okta v2",
-        #             name="okta-get-user",
-        #             args={"userId": user_id, "username": user_name},
-        #         )
-        #         if modules.is_brand_available(okta_get_user_command) and is_valid_args(okta_get_user_command):
-        #             readable_outputs, outputs = okta_get_user(okta_get_user_command, additional_fields)
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             if outputs:
-        #                 single_user_outputs.append(outputs)
-        #
-        #         #################################
-        #         ### Running for AWS - IAM ###
-        #         #################################
-        #         aws_iam_get_user_command = Command(
-        #             brand="AWS - IAM",
-        #             name="aws-iam-get-user",
-        #             args={"userName": user_name},
-        #         )
-        #         if modules.is_brand_available(aws_iam_get_user_command) and is_valid_args(aws_iam_get_user_command):
-        #             readable_outputs, outputs = aws_iam_get_user(aws_iam_get_user_command, additional_fields)
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             if outputs:
-        #                 single_user_outputs.append(outputs)
-        #
-        #         #################################
-        #         ### Running for Microsoft Graph User ###
-        #         #################################
-        #         msgraph_user_get_command = Command(
-        #             brand="Microsoft Graph User",
-        #             name="msgraph-user-get",
-        #             args={"user": user_name or user_id},
-        #         )
-        #         if modules.is_brand_available(msgraph_user_get_command) and is_valid_args(msgraph_user_get_command):
-        #             readable_outputs, outputs = msgraph_user_get(msgraph_user_get_command, additional_fields)
-        #             single_user_readable_outputs.extend(readable_outputs)
-        #             if outputs.get("id") and additional_fields:
-        #                 msgraph_user_get_manager_command = Command(
-        #                     brand="Microsoft Graph User",
-        #                     name="msgraph-user-get-manager",
-        #                     args={"user": user_name or user_id},
-        #                 )
-        #                 manager_output = msgraph_user_get_manager(msgraph_user_get_manager_command, additional_fields)
-        #                 outputs["AdditionalFields"].extend(manager_output)
-        #             if outputs:
-        #                 single_user_outputs.append(outputs)
-        #     else:
-        #         demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
-        #
-        #     #################################
-        #     ### Running for SailPointIdentityIQ ###
-        #     #################################
-        #     identityiq_search_identities_command = Command(
-        #         brand="SailPointIdentityIQ",
-        #         name="identityiq-search-identities",
-        #         args={"id": user_id, "email": user_email},
-        #     )
-        #     if modules.is_brand_available(identityiq_search_identities_command) and is_valid_args(
-        #         identityiq_search_identities_command
-        #     ):
-        #         readable_outputs, outputs = identityiq_search_identities(identityiq_search_identities_command, additional_fields)
-        #         single_user_readable_outputs.extend(readable_outputs)
-        #         if outputs:
-        #             single_user_outputs.append(outputs)
-        #
-        #     #################################
-        #     ### Running for Cortex XDR - IR (XDR) ###
-        #     #################################
-        #     xdr_list_risky_users_command = Command(
-        #         brand="Cortex XDR - IR",
-        #         name="xdr-list-risky-users",
-        #         args={"user_id": user_name},
-        #     )
-        #     if modules.is_brand_available(xdr_list_risky_users_command) and is_valid_args(xdr_list_risky_users_command):
-        #         readable_outputs, outputs = xdr_list_risky_users(
-        #             xdr_list_risky_users_command,
-        #             user_name,
-        #             outputs_key_field="PaloAltoNetworksXDR",
-        #             additional_fields=additional_fields
-        #         )
-        #         single_user_readable_outputs.extend(readable_outputs)
-        #         if outputs:
-        #             single_user_outputs.append(outputs)
-        #
-        #     #################################
-        #     ### Running for Cortex XDR - IR (Core) ###
-        #     #################################
-        #     core_list_risky_users_command = Command(
-        #         brand="Cortex Core - IR",
-        #         name="core-list-risky-users",
-        #         args={"user_id": user_name},
-        #     )
-        #     if modules.is_brand_available(core_list_risky_users_command) and is_valid_args(core_list_risky_users_command):
-        #         readable_outputs, outputs = xdr_list_risky_users(
-        #             core_list_risky_users_command, user_name, outputs_key_field="Core", additional_fields=True
-        #         )
-        #         single_user_readable_outputs.extend(readable_outputs)
-        #         if outputs:
-        #             single_user_outputs.append(outputs)
-        #
-        #     # todo: should remain here, as its not in the loop to any of the inputs
-        #     #################################
-        #     ### Running for iam-get-user ###
-        #     #################################
-        #     if modules.is_brand_in_brands_to_run(Command(brand="iam-get-user", name="iam-get-user", args={})):
-        #         readable_outputs, outputs = iam_get_user_command(user_id, user_name, user_email, domain, additional_fields)
-        #         single_user_readable_outputs.extend(readable_outputs)
-        #         single_user_outputs.extend(outputs)
-        #
-        #     if verbose:
-        #         command_results_list.extend(single_user_readable_outputs)
-        #     ## Merge single user account data ###
-        #     # merged_output = merge_accounts(single_user_outputs)
-        #     if single_user_outputs:
-        #         user_outputs_list.extend(single_user_outputs)
-        #     else:
-        #         users_not_found_list.append(user_id or user_name or user_email)
-        # ##############################
-        # ### Complete for all users ###
-        # ##############################
-        #
-        # if users_not_found_list:
-        #     command_results_list.append(
-        #         CommandResults(
-        #             readable_output=tableToMarkdown(
-        #                 name="User(s) not found",
-        #                 headers=["User ID/Name/Email"],
-        #                 t=users_not_found_list,
-        #             )
-        #         )
-        #     )
-        # if user_outputs_list:
-        #     demisto.debug(f"users list: {user_outputs_list}")
-        #     command_results_list.append(
-        #         CommandResults(
-        #             outputs_prefix="UserData",
-        #             outputs_key_field=["Username","Source"],    # because if source1 and source2 got the same username, we don't want any of the sources to overrides the other
-        #             outputs=user_outputs_list,
-        #             readable_output=tableToMarkdown(
-        #                 name="User(s) data",
-        #                 t=user_outputs_list,
-        #                 headers=["Source", "ID", "Username", "Email"],
-        #                 removeNull=True,
-        #             ),
-        #         )
-        #     )
-        # return_results(command_results_list)
+
     except Exception as e:
         return_error(f"Failed to execute get-user-data. Error: {e!s}")
 

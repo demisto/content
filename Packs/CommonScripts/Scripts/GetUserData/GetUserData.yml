@@ -59,6 +59,9 @@ outputs:
 - contextPath: UserData.Email
   description: The email address of the account.
   type: String
+- contextPath: UserData.RiskLevel
+  description: The risk level of the user.
+  type: String
 - contextPath: UserData.AdditionalFields
   description: All the other outputs returned.
   type: String

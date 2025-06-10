@@ -1548,18 +1548,21 @@ def test_main_successful_execution(mocker: MockerFixture):
         demisto,
         "args",
         return_value={
-            "user_id": "123",
-            "user_name": "johndoe",
-            "user_email": "john@example.com",
+            "user_id": ["123", "456"],
+            "user_name": ["johndoe", "usertwo"],
+            "user_email": ["john@example.com"],
         },
     )
 
     # Mock demisto.getModules()
     mocker.patch.object(demisto, "getModules", return_value={})
 
+    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
+    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
+
     # Mock other necessary functions
     mocker.patch("GetUserData.identitynow_get_accounts", return_value=([], {}))
-    mocker.patch("GetUserData.ad_get_user", return_value=([], {}, None))
+    mocker.patch("GetUserData.ad_get_user", return_value=(["test"], {"Source": "test"}))
     mocker.patch("GetUserData.pingone_get_user", return_value=([], {}))
     mocker.patch("GetUserData.okta_get_user", return_value=([], {}))
     mocker.patch("GetUserData.aws_iam_get_user", return_value=([], {}))
@@ -1567,12 +1570,13 @@ def test_main_successful_execution(mocker: MockerFixture):
     mocker.patch("GetUserData.identityiq_search_identities", return_value=([], {}))
     mocker.patch("GetUserData.xdr_list_risky_users", return_value=([], {}))
     mocker.patch("GetUserData.iam_get_user_command", return_value=([], []))
-
+    mocker.patch("GetUserData.azure_get_risky_user", return_value=([], {}))
     # Mock return_results
     mock_return_results = mocker.patch("GetUserData.return_results")
 
     # Call the main function
     main()
+    m = ''
 
     # Assert that return_results was called
     assert mock_return_results.called
