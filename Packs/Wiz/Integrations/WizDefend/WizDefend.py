@@ -42,12 +42,21 @@ class WizInputParam:
     RULE_MATCH_ID = "rule_match_id"
     RULE_MATCH_NAME = "rule_match_name"
     PROJECT_ID = "project"
+    RESOLUTION_REASON = "resolution_reason"
+    RESOLUTION_NOTE = "resolution_note"
+    REOPEN_NOTE = "reopen_note"
+    NOTE = "note"
 
 
 class WizApiResponse:
     DATA = "data"
     DETECTIONS = "detections"
     ISSUES = "issues"
+    UPDATE_ISSUE = "updateIssue"
+    CREATE_ISSUE_NOTE = "createIssueNote"
+    CLOUD_RESOURCES = "cloudResources"
+    PROJECTS = "projects"
+    GRAPH_SEARCH = "graphSearch"
     NODES = "nodes"
     PAGE_INFO = "pageInfo"
     HAS_NEXT_PAGE = "hasNextPage"
@@ -57,6 +66,7 @@ class WizApiResponse:
     TYPE = "type"
     ERRORS = "errors"
     MESSAGE = "message"
+    NOTES = "notes"
 
 
 class WizApiInputFields:
@@ -124,6 +134,9 @@ class WizApiVariables:
     THREAT_RESOURCE = "threatResource"
     IDS = "ids"
     FETCH_CLOUD_ACCOUNTS_AND_CLOUD_ORG = "fetchCloudAccountsAndCloudOrganizations"
+    PATCH = "patch"
+    NOTE = "note"
+    RESOLUTION_REASON = "resolutionReason"
 
 
 class WizThreatVariables:
@@ -155,6 +168,17 @@ class WizDetectionStatus:
     REJECTED = "REJECTED"
 
 
+class WizIssueType:
+    TOXIC_COMBINATION = "TOXIC_COMBINATION"
+    THREAT_DETECTION = "THREAT_DETECTION"
+    CLOUD_CONFIGURATION = "CLOUD_CONFIGURATION"
+
+
+class WizOperation:
+    REJECT = "reject"
+    RESOLUTION = "resolution"
+
+
 class WizSeverity:
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
@@ -166,10 +190,16 @@ class WizSeverity:
 class DemistoCommands:
     TEST_MODULE = "test-module"
     FETCH_INCIDENTS = "fetch-incidents"
-    WIZ_GET_DETECTIONS = "wiz-get-detections"
-    WIZ_GET_DETECTION = "wiz-get-detection"
-    WIZ_GET_THREAT = "wiz-get-threat"
-    WIZ_GET_THREATS = "wiz-get-threats"
+    WIZ_DEFEND_GET_DETECTIONS = "wiz-defend-get-detections"
+    WIZ_DEFEND_GET_DETECTION = "wiz-defend-get-detection"
+    WIZ_DEFEND_GET_THREAT = "wiz-defend-get-threat"
+    WIZ_DEFEND_GET_THREATS = "wiz-defend-get-threats"
+    WIZ_DEFEND_REOPEN_THREAT = "wiz-defend-reopen-threat"
+    WIZ_DEFEND_RESOLVE_THREAT = "wiz-defend-resolve-threat"
+    WIZ_DEFEND_SET_THREAT_IN_PROGRESS = "wiz-defend-set-threat-in-progress"
+    WIZ_DEFEND_SET_THREAT_COMMENT = "wiz-defend-set-threat-comment"
+    WIZ_DEFEND_CLEAR_THREAT_COMMENTS = "wiz-defend-clear-threat-comments"
+    # WIZ_DEFEND_COPY_TO_FORENSICS_ACCOUNT = "wiz-defend-copy-to-forensics-account"
 
 
 class AuthParams:
@@ -903,6 +933,63 @@ fragment ThreatDetectionDetailsMainDetection on ThreatDetectionIssueDetails {
 }
 """
 
+UPDATE_ISSUE_QUERY = """
+mutation UpdateIssue(
+    $issueId: ID!
+    $patch: UpdateIssuePatch
+    $override: UpdateIssuePatch
+  ) {
+    updateIssue(input: { id: $issueId, patch: $patch, override: $override }) {
+      issue {
+        id
+        notes {
+          ...IssueNoteDetails
+        }
+        status
+        dueAt
+        resolutionReason
+      }
+    }
+  }
+
+  fragment IssueNoteDetails on IssueNote {
+    id
+    text
+    updatedAt
+    createdAt
+    user {
+      id
+      email
+    }
+    serviceAccount {
+      id
+      name
+    }
+  }
+"""
+CREATE_COMMENT_QUERY = """
+mutation CreateIssueComment($input: CreateIssueNoteInput!) {
+    createIssueNote(input: $input) {
+      issueNote {
+        createdAt
+        id
+        text
+        user {
+          id
+          email
+        }
+      }
+    }
+  }
+    """
+DELETE_NOTE_QUERY = """
+    mutation DeleteIssueNote($input: DeleteIssueNoteInput!) {
+    deleteIssueNote(input: $input) {
+      _stub
+    }
+  }
+    """
+
 PULL_THREAT_ISSUE_VARIABLES = {
     WizApiVariables.FILTER_BY: {WizApiVariables.TYPE: [WizThreatVariables.THREAT_DETECTION]},
     WizApiVariables.FILTER_SCOPE: WizThreatVariables.ALL_ISSUE_DETECTIONS,
@@ -985,22 +1072,32 @@ def get_entries(query, variables, wiz_type):
             demisto.error(error_message)
             raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
 
-        return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], response_json[WizApiResponse.DATA][wiz_type][
-            WizApiResponse.PAGE_INFO
-        ]
+        if WizApiResponse.NODES in response_json[WizApiResponse.DATA][wiz_type]:
+            return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], \
+                   response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
+        else:
+            return response_json[WizApiResponse.DATA][wiz_type], None
 
     except Exception as e:
         error_message = f"Received an error while performing an API call.\nError info: {str(e)}"
         demisto.error(error_message)
-        raise Exception(f"An unexpected error occurred.\nError info: {error_message}")
+        return_error(error_message)
 
 
-def query_detections(query, variables, paginate=True):
-    return query_api(query, variables, WizApiResponse.DETECTIONS, paginate=paginate)
+def query_detections(variables, paginate=True):
+    return query_api(PULL_DETECTIONS_QUERY, variables, WizApiResponse.DETECTIONS, paginate=paginate)
 
 
-def query_threats(query, variables, paginate=True):
-    return query_api(query, variables, WizApiResponse.ISSUES, paginate=paginate)
+def query_issues(variables, paginate=True):
+    return query_api(PULL_ISSUE_QUERY, variables, WizApiResponse.ISSUES, paginate=paginate)
+
+
+def query_single_issue(issue_id):
+    issue_variables = {
+        WizApiVariables.FIRST: 1,
+        WizApiVariables.FILTER_BY: {WizApiVariables.ID: issue_id},
+    }
+    return query_issues(issue_variables, paginate=False)
 
 
 def query_api(query, variables, wiz_type, paginate=True):
@@ -2576,7 +2673,7 @@ def get_filtered_detections(
     detection_variables[WizApiVariables.FIRST] = api_limit
     detection_variables = apply_all_detection_filters(detection_variables, validated_values)
 
-    wiz_detections = query_detections(query=PULL_DETECTIONS_QUERY, variables=detection_variables, paginate=paginate)
+    wiz_detections = query_detections(variables=detection_variables, paginate=paginate)
 
     if add_detection_url:
         for detection in wiz_detections:
@@ -2668,7 +2765,7 @@ def get_filtered_threats(
     threat_variables[WizApiVariables.FIRST] = api_limit
     threat_variables = apply_all_threat_filters(threat_variables, validated_values)
 
-    wiz_threats = query_threats(query=PULL_ISSUE_QUERY, variables=threat_variables, paginate=paginate)
+    wiz_threats = query_issues(variables=threat_variables, paginate=paginate)
 
     if add_threat_url:
         for threat in wiz_threats:
@@ -2694,6 +2791,17 @@ def get_error_output(wiz_api_response):
                 error_output_message = error_output_message + error_message + "\n"
 
     return error_output_message if error_output_message else wiz_api_response
+
+
+def log_and_return_error(message):
+    """
+    Logs an error message and returns error to Demisto.
+
+    Args:
+        message (str): The error message to log and return
+    """
+    demisto.error(message)
+    return_error(message)
 
 
 def is_valid_uuid(uuid_string):
@@ -2726,102 +2834,343 @@ def is_valid_param_id(detection_id, param_name=WizInputParam.DETECTION_ID):
 def get_detections():
     """
     Retrieves detections based on command arguments.
-
-    Returns:
-        CommandResults: Command results object containing the detections
     """
-    demisto_args = demisto.args()
-    detection_type = demisto_args.get(WizInputParam.TYPE)
-    detection_platform = demisto_args.get(WizInputParam.PLATFORM)
-    detection_origin = demisto_args.get(WizInputParam.ORIGIN)
-    detection_cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
-    resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
-    severity = demisto_args.get(WizInputParam.SEVERITY)
-    creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, "10")
-    matched_rule = demisto_args.get(WizInputParam.RULE_MATCH_ID)
-    matched_rule_name = demisto_args.get(WizInputParam.RULE_MATCH_NAME)
-    project_id = demisto_args.get(WizInputParam.PROJECT_ID)
+    try:
+        demisto_args = demisto.args()
+        detection_type = demisto_args.get(WizInputParam.TYPE)
+        detection_platform = demisto_args.get(WizInputParam.PLATFORM)
+        detection_origin = demisto_args.get(WizInputParam.ORIGIN)
+        detection_cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
+        resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+        severity = demisto_args.get(WizInputParam.SEVERITY)
+        creation_minutes_back = demisto_args.get(WizInputParam.CREATION_MINUTES_BACK, "10")
+        matched_rule = demisto_args.get(WizInputParam.RULE_MATCH_ID)
+        matched_rule_name = demisto_args.get(WizInputParam.RULE_MATCH_NAME)
+        project_id = demisto_args.get(WizInputParam.PROJECT_ID)
+        issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
 
-    detections = get_filtered_detections(
-        detection_type=detection_type,
-        detection_platform=detection_platform,
-        detection_origin=detection_origin,
-        detection_cloud_account_or_cloud_organization=detection_cloud_account_or_cloud_organization,
-        resource_id=resource_id,
-        severity=severity,
-        creation_minutes_back=creation_minutes_back,
-        rule_match_id=matched_rule,
-        rule_match_name=matched_rule_name,
-        project_id=project_id,
-    )
+        detections = get_filtered_detections(
+            detection_type=detection_type,
+            detection_platform=detection_platform,
+            detection_origin=detection_origin,
+            detection_cloud_account_or_cloud_organization=detection_cloud_account_or_cloud_organization,
+            resource_id=resource_id,
+            severity=severity,
+            creation_minutes_back=creation_minutes_back,
+            rule_match_id=matched_rule,
+            rule_match_name=matched_rule_name,
+            project_id=project_id,
+            issue_id=issue_id
+        )
 
-    if isinstance(detections, str):
-        return CommandResults(readable_output=f"Error: {detections}", outputs={}, raw_response=detections)
-    else:
-        return CommandResults(outputs_prefix=OutputPrefix.DETECTIONS, outputs=detections, raw_response=detections)
+        if isinstance(detections, str):
+            log_and_return_error(f"Error retrieving detections: {detections}")
+            return
+        else:
+            return_results(CommandResults(
+                outputs_prefix=OutputPrefix.DETECTIONS,
+                outputs=detections,
+                raw_response=detections
+            ))
+    except Exception as err:
+        demisto.error(str(traceback.format_exc()))
+        log_and_return_error(f"An error occurred while retrieving detections: {str(err)}")
 
 
 def get_single_detection():
     """Retrieves a single detection by ID."""
-    demisto_args = demisto.args()
-    detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
-    if not detection_id:
-        return CommandResults(
-            readable_output=f"Error: Missing required argument: {WizInputParam.DETECTION_ID}", outputs={}, raw_response={}
-        )
+    try:
+        demisto_args = demisto.args()
+        detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
+        if not detection_id:
+            log_and_return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
+            return
 
-    detection = get_filtered_detections(detection_id=detection_id)
+        detection = get_filtered_detections(detection_id=detection_id)
 
-    if isinstance(detection, str):
-        return CommandResults(readable_output=f"Error: {detection}", outputs={}, raw_response=detection)
-    else:
-        return CommandResults(
-            outputs_prefix=OutputPrefix.DETECTION, outputs=detection, readable_output=detection, raw_response=detection
-        )
+        if isinstance(detection, str):
+            log_and_return_error(f"Error retrieving detection: {detection}")
+            return
+        else:
+            return_results(CommandResults(
+                outputs_prefix=OutputPrefix.DETECTION,
+                outputs=detection,
+                readable_output=detection,
+                raw_response=detection
+            ))
+    except Exception as err:
+        demisto.error(str(traceback.format_exc()))
+        log_and_return_error(f"An error occurred while retrieving detection: {str(err)}")
+
+
+def is_valid_issue_id(issue_id):
+    if not issue_id:
+        error_message = "You should pass an Issue ID."
+        demisto.error(error_message)
+        return False, error_message
+
+    if not is_valid_uuid(issue_id):
+        error_message = f"Wrong format: The Issue ID should be in UUID format. Received: {issue_id}"
+        demisto.error(error_message)
+        return False, error_message
+
+    return True, f"The Issue ID {issue_id} is in a valid format"
 
 
 def get_single_threat():
     """Retrieves a single threat by Issue ID."""
-    demisto_args = demisto.args()
-    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
-    if not issue_id:
-        return CommandResults(
-            readable_output=f"Error: Missing required argument: {WizInputParam.ISSUE_ID}", outputs={}, raw_response={}
-        )
+    try:
+        demisto_args = demisto.args()
+        issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+        is_valid_id, message = is_valid_issue_id(issue_id)
+        if not is_valid_id:
+            log_and_return_error(message)
+            return
 
-    threat = get_filtered_threats(issue_id=issue_id)
+        threat = get_filtered_threats(issue_id=issue_id)
 
-    if isinstance(threat, str):
-        return CommandResults(readable_output=f"Error: {threat}", outputs={}, raw_response=threat)
-    else:
-        return CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=threat, readable_output=threat, raw_response=threat)
+        if isinstance(threat, str):
+            log_and_return_error(f"Error retrieving threat: {threat}")
+            return
+        else:
+            return_results(CommandResults(
+                outputs_prefix=OutputPrefix.THREAT,
+                outputs=threat,
+                readable_output=threat,
+                raw_response=threat
+            ))
+    except Exception as err:
+        demisto.error(str(traceback.format_exc()))
+        log_and_return_error(f"An error occurred while retrieving threat: {str(err)}")
 
 
 def get_threats():
     """Retrieves threats based on command arguments."""
-    demisto_args = demisto.args()
-    creation_days_back = demisto_args.get(WizInputParam.CREATION_DAYS_BACK, "5")
-    platform = demisto_args.get(WizInputParam.PLATFORM)
-    project_id = demisto_args.get(WizInputParam.PROJECT_ID)
-    resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
-    severity = demisto_args.get(WizInputParam.SEVERITY)
-    status = demisto_args.get(WizInputParam.STATUS)
-    cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
+    try:
+        demisto_args = demisto.args()
+        severity = demisto_args.get(WizInputParam.SEVERITY)
+        platform = demisto_args.get(WizInputParam.PLATFORM)
+        status = demisto_args.get(WizInputParam.STATUS)
+        origin = demisto_args.get(WizInputParam.ORIGIN)
+        cloud_account_or_cloud_organization = demisto_args.get(WizInputParam.CLOUD_ACCOUNT_OR_CLOUD_ORG)
+        resource_id = demisto_args.get(WizInputParam.RESOURCE_ID)
+        creation_days_back = demisto_args.get(WizInputParam.CREATION_DAYS_BACK)
+        project_id = demisto_args.get(WizInputParam.PROJECT_ID)
 
-    threats = get_filtered_threats(
-        platform=platform,
-        cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
-        resource_id=resource_id,
-        severity=severity,
-        status=status,
-        creation_days_back=creation_days_back,
-        project_id=project_id,
-    )
+        threats = get_filtered_threats(
+            severity=severity,
+            platform=platform,
+            status=status,
+            origin=origin,
+            cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
+            resource_id=resource_id,
+            creation_days_back=creation_days_back,
+            project_id=project_id
+        )
 
-    if isinstance(threats, str):
-        return CommandResults(readable_output=f"Error: {threats}", outputs={}, raw_response=threats)
+        if isinstance(threats, str):
+            log_and_return_error(f"Error retrieving threats: {threats}")
+            return
+        else:
+            return_results(CommandResults(
+                outputs_prefix=OutputPrefix.THREATS,
+                outputs=threats,
+                raw_response=threats
+            ))
+    except Exception as err:
+        demisto.error(str(traceback.format_exc()))
+        log_and_return_error(f"An error occurred while retrieving threats: {str(err)}")
+
+
+def set_status(issue_id, status):
+    """
+    Set a Wiz Issue to In Progress
+    """
+
+    demisto.debug(f"Starting set status function for: {status}")
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
+    variables = {WizApiVariables.ISSUE_ID: issue_id,
+                 WizApiVariables.PATCH: {WizApiVariables.STATUS: status}}
+    query = UPDATE_ISSUE_QUERY
+
+    response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
+
+    return response
+
+
+def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolve_comment, status):
+    """
+    Reject a Wiz Issue
+    """
+    demisto.debug(f"Starting reject or resolve issue : {status}, enter")
+    operation = WizOperation.REJECT if status == WizStatus.REJECTED else WizOperation.RESOLUTION
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return return_error(f"Error: {message}")
+
+    if not reject_or_resolve_reason or not reject_or_resolve_comment:
+        error_message = f"You should pass all of: Issue ID, {operation} reason and {operation} note."
+        demisto.error(error_message)
+        return return_error(f"Error: {error_message}")
+
+    variables = {
+        WizApiVariables.ISSUE_ID: issue_id,
+        WizApiVariables.PATCH: {WizApiVariables.STATUS: status,
+                                WizApiVariables.NOTE: reject_or_resolve_comment,
+                                WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason},
+    }
+    query = UPDATE_ISSUE_QUERY
+
+    response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
+    if response:
+        return_results(CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}."
+        ))
     else:
-        return CommandResults(outputs_prefix=OutputPrefix.THREATS, outputs=threats, raw_response=threats)
+        error_message = f"Failed to {operation} issue with ID {issue_id}. Please check the input parameters."
+        demisto.error(error_message)
+        return_error(f"Error: {error_message}")
+
+
+def validate_threat_detections_issue(issue_id):
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return False, message
+
+    issue_object = query_single_issue(issue_id=issue_id)
+    issue_type = issue_object[0][WizApiResponse.TYPE]
+
+    if issue_type != WizIssueType.THREAT_DETECTION:
+        error_message = f"Only a Threat Detection Issue can be resolved.\nReceived an Issue of type {issue_type}."
+        demisto.error(error_message)
+        return False, error_message
+
+    return True, None
+
+
+def resolve_threat():
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
+    resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
+    demisto.debug(f"resolve_threat called with issue_id: {issue_id}, "
+                  f"resolution_reason: {resolution_reason}, resolution_note: {resolution_note}")
+
+    is_threat_issue, message = validate_threat_detections_issue(issue_id)
+    if not is_threat_issue:
+        return return_error(f"Error: {message}")
+
+    return reject_or_resolve_issue(issue_id, resolution_reason, resolution_note, WizStatus.RESOLVED)
+
+
+def set_issue_note(issue_id, comment):
+    """
+    Set a note on Wiz Issue
+    """
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return message
+
+    variables = {"input": {"issueId": issue_id, "text": comment}}
+    query = CREATE_COMMENT_QUERY
+
+    response = get_entries(query, variables, WizApiResponse.CREATE_ISSUE_NOTE)
+    if not response:
+        return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n"
+                     f"Please check the input parameters.")
+    return response
+
+
+def _reopen_issue(issue_id, reopen_note):
+    """
+    Re-open a Wiz Issue
+    """
+
+    demisto.debug("reopen_issue, enter")
+
+    is_valid_id, message = is_valid_issue_id(issue_id)
+    if not is_valid_id:
+        return return_error(message)
+
+    query = UPDATE_ISSUE_QUERY
+    variables = {"issueId": issue_id, "patch": {"status": "OPEN"}}
+
+    response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
+    demisto.info(f"Ariel the response is {response}")
+    if not response:
+        error_message = f"Failed to reopen issue with ID {issue_id}. Please check the input parameters."
+        demisto.error(error_message)
+        return_error(f"Error: {error_message}")
+
+    if reopen_note:
+        return set_issue_note(issue_id, reopen_note)
+
+    return response
+
+
+def reopen_threat():
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    reopen_note = demisto_args.get(WizInputParam.REOPEN_NOTE)
+    demisto.debug(f"reopen_threat called with issue_id: {issue_id}, reopen_note: {reopen_note}")
+
+    if _reopen_issue(issue_id, reopen_note):
+        return_results(CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}."))
+    else:
+        return_error(f"Error: Failed to reopen the threat with ID {issue_id}. "
+                     f"Please check the input parameters and try again.")
+
+
+def set_threat_in_progress():
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    demisto.debug(f"set_threat_in_progress called with issue_id: {issue_id}")
+
+    if set_status(issue_id, WizStatus.IN_PROGRESS):
+        return_results(CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set the threat with ID {issue_id} to In Progress."))
+    else:
+        return_error(f"Error: Failed to set the threat with ID {issue_id} to In Progress. "
+                     f"Please check the input parameters and try again.")
+
+
+def set_threat_comment():
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    note = demisto_args.get(WizInputParam.NOTE)
+    demisto.debug(f"set_threat_note called with issue_id: {issue_id} and note {note}")
+
+    if set_issue_note(issue_id, note):
+        return_results(CommandResults(
+            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set {note} as comment to the threat with ID {issue_id}"))
+    else:
+        return_error(f"Error: Failed to set the comment {note} to the threat with ID {issue_id}. "
+                     f"Please check the input parameters and try again.")
+
+
+def clear_threat_comments():
+    demisto_args = demisto.args()
+    issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
+    demisto.debug(f"clear_threat_note called with issue_id: {issue_id}")
+
+    threat = get_filtered_threats(issue_id=issue_id)
+    threat_notes = threat[0].get(WizApiResponse.NOTES, [])
+
+    for note in threat_notes:
+        variables = {"input": {"id": note["id"]}}
+        if not get_entries(DELETE_NOTE_QUERY, variables, "deleteIssueNote"):
+            return_error(f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
+                         f"Please check the input parameters and try again.")
+
+    return_results(CommandResults(outputs_prefix=OutputPrefix.THREAT,
+                                  outputs=f"Successfully cleared all the comments from the threat with ID {issue_id}."))
 
 
 def main():
@@ -2831,7 +3180,8 @@ def main():
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
-        demisto.debug(f"Extracting parameters from integration settings: {params}")
+        demisto.debug(f"Extracting parameters from integration settings: {params}\n"
+                      f"Command arguments: {demisto.args()}\n")
 
         if command == "test-module":
             test_module()
@@ -2839,21 +3189,38 @@ def main():
         elif command == "fetch-incidents":
             fetch_incidents()
 
-        elif command == "wiz-get-detection":
-            return_results(get_single_detection())
+        elif command == "wiz-defend-get-detection":
+            get_single_detection()
 
-        elif command == "wiz-get-detections":
-            return_results(get_detections())
+        elif command == "wiz-defend-get-detections":
+            get_detections()
 
-        elif command == "wiz-get-threat":
-            return_results(get_single_threat())
+        elif command == "wiz-defend-get-threat":
+            get_single_threat()
 
-        elif command == "wiz-get-threats":
-            return_results(get_threats())
+        elif command == "wiz-defend-get-threats":
+            get_threats()
+
+        elif command == "wiz-defend-resolve-threat":
+            resolve_threat()
+
+        elif command == "wiz-defend-reopen-threat":
+            reopen_threat()
+
+        elif command == "wiz-defend-set-threat-in-progress":
+            set_threat_in_progress()
+
+        elif command == "wiz-defend-set-threat-comment":
+            set_threat_comment()
+
+        elif command == "wiz-defend-clear-threat-comments":
+            clear_threat_comments()
+
+        # elif command == "wiz-copy-threat-to-forensics-account":
+        #     return_results(copy_to_forensics())
 
         else:
             raise Exception("Unrecognized command: " + command)
-
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
         return_error(f"An error occurred: {str(err)}")

@@ -1209,6 +1209,10 @@ def test_get_entries_error(mock_response_factory, mocker, mock_api_error_respons
     # Mock token
     WizDefend.TOKEN = "test-token"
 
+    # Mock return_error to prevent sys.exit(0)
+    mock_return_error = mocker.MagicMock(side_effect=Exception("Mocked return_error"))
+    mocker.patch.object(WizDefend, "return_error", mock_return_error)
+
     # Mock the response
     mock_response = mock_response_factory(status_code=200, json_data=mock_api_error_response)
     mocker.patch("requests.post", return_value=mock_response)
@@ -1216,8 +1220,12 @@ def test_get_entries_error(mock_response_factory, mocker, mock_api_error_respons
     # Call the function and check exception
     with pytest.raises(Exception) as e:
         WizDefend.get_entries("test_query", {}, WizApiResponse.DETECTIONS)
-    assert "Wiz API error details" in str(e.value)
-    assert "Resource not found" in str(e.value)
+
+    # Verify that return_error was called with the expected error message
+    assert mock_return_error.called
+    error_call_args = mock_return_error.call_args[0][0]
+    assert "Wiz API error details" in error_call_args
+    assert "Resource not found" in error_call_args
 
 
 def test_get_entries_http_error(mock_response_factory, mocker):
@@ -1228,6 +1236,10 @@ def test_get_entries_http_error(mock_response_factory, mocker):
     # Mock token
     WizDefend.TOKEN = "test-token"
 
+    # Mock return_error to prevent sys.exit(0)
+    mock_return_error = mocker.MagicMock(side_effect=Exception("Mocked return_error"))
+    mocker.patch.object(WizDefend, "return_error", mock_return_error)
+
     # Mock the response
     mock_response = mock_response_factory(status_code=500, text="Internal Server Error")
     mocker.patch("requests.post", return_value=mock_response)
@@ -1235,7 +1247,11 @@ def test_get_entries_http_error(mock_response_factory, mocker):
     # Call the function and check exception
     with pytest.raises(Exception) as e:
         WizDefend.get_entries("test_query", {}, WizApiResponse.DETECTIONS)
-    assert "Got an error querying Wiz API [500] - Internal Server Error" in str(e.value)
+
+    # Verify that return_error was called with the expected error message
+    assert mock_return_error.called
+    error_call_args = mock_return_error.call_args[0][0]
+    assert "Got an error querying Wiz API [500] - Internal Server Error" in error_call_args
 
 
 # Modify test_get_token_success function in WizDefend_test.py
@@ -1390,7 +1406,7 @@ def test_query_threats(mocker, sample_threat):
 
     try:
         # Call the function
-        result = WizDefend.query_threats("test_query", {}, WizApiResponse.ISSUES)
+        result = WizDefend.query_issues({})
 
         # Verify result
         assert result == [sample_threat]
@@ -1413,7 +1429,7 @@ def test_query_threats_with_pagination(mock_get_entries, sample_threat):
     ]
 
     # Call the function
-    result = query_threats("test_query", {}, paginate=True)
+    result = query_issues({}, paginate=True)
 
     # Verify result contains both threats
     assert len(result) == 2
@@ -1428,7 +1444,7 @@ def test_query_threats_with_pagination_disabled(mock_get_entries, sample_threat)
     mock_get_entries.return_value = ([sample_threat], {"hasNextPage": True, "endCursor": "cursor1"})
 
     # Call the function with paginate=False
-    result = query_threats("test_query", {}, paginate=False)
+    result = query_issues({}, paginate=False)
 
     # Verify result only contains first page
     assert len(result) == 1
@@ -2142,7 +2158,7 @@ def test_main_fetch_incidents(mock_command, mock_set_auth, mock_set_api, mock_fe
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint")
 @patch.object(demisto, "args")
-@patch.object(demisto, "command", return_value="wiz-get-detections")
+@patch.object(demisto, "command", return_value="wiz-defend-get-detections")
 def test_main_get_detections(mock_command, mock_args, mock_set_auth, mock_set_api, mock_filtered_detections, mock_return_results):
     """Test main function handling wiz-get-detections command"""
     # Set up mock args
@@ -2164,7 +2180,7 @@ def test_main_get_detections(mock_command, mock_args, mock_set_auth, mock_set_ap
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint")
 @patch.object(demisto, "args")
-@patch.object(demisto, "command", return_value="wiz-get-detection")
+@patch.object(demisto, "command", return_value="wiz-defend-get-detection")
 def test_main_get_detection(mock_command, mock_args, mock_set_auth, mock_set_api, mock_filtered_detections, mock_return_results):
     """Test main function handling wiz-get-detection command"""
     # Set up mock args
@@ -2186,7 +2202,7 @@ def test_main_get_detection(mock_command, mock_args, mock_set_auth, mock_set_api
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint")
 @patch.object(demisto, "args", side_effect=Exception("Test error"))
-@patch.object(demisto, "command", return_value="wiz-get-detections")
+@patch.object(demisto, "command", return_value="wiz-defend-get-detections")
 def test_main_error_handling(mock_command, mock_args, mock_set_auth, mock_set_api, mock_return_error):
     """Test main function error handling"""
     # Call the function
@@ -2273,7 +2289,7 @@ def test_get_threat_url(mocker, sample_threat):
     "Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters",
     return_value=(True, None, {"severity": ["CRITICAL"], "platform": ["AWS"], "status": ["OPEN"]}),
 )
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats", return_value=[{"id": "test-threat"}])
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_issues", return_value=[{"id": "test-threat"}])
 def test_get_filtered_threats_success(mock_query_threats, mock_validate, sample_threat):
     """Test get_filtered_threats with successful validation and API call"""
     # Replace the API call with our mock threat
@@ -2301,7 +2317,7 @@ def test_get_filtered_threats_validation_error(mock_validate):
 
 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_issues")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.get_threat_url", return_value="https://app.wiz.io/threats/123")
 def test_get_filtered_threats_with_all_params(mock_url, mock_query_threats, mock_validate, sample_threat):
     """Test get_filtered_threats with all parameters specified"""
@@ -2341,7 +2357,7 @@ def test_get_filtered_threats_with_all_params(mock_url, mock_query_threats, mock
 
 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.validate_all_threat_parameters")
-@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_threats")
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.query_issues")
 def test_get_filtered_threats_with_no_url(mock_query_threats, mock_validate, sample_threat):
     """Test get_filtered_threats with add_threat_url=False"""
     # Set up validated values
@@ -2366,7 +2382,7 @@ def test_get_filtered_threats_with_no_url(mock_query_threats, mock_validate, sam
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint")
 @patch.object(demisto, "args")
-@patch.object(demisto, "command", return_value="wiz-get-threats")
+@patch.object(demisto, "command", return_value="wiz-defend-get-threats")
 def test_main_get_threats(mock_command, mock_args, mock_set_auth, mock_set_api, mock_filtered_threats, mock_return_results):
     """Test main function handling wiz-get-threats command"""
     # Set up mock args
@@ -2388,7 +2404,7 @@ def test_main_get_threats(mock_command, mock_args, mock_set_auth, mock_set_api, 
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_api_endpoint")
 @patch("Packs.Wiz.Integrations.WizDefend.WizDefend.set_authentication_endpoint")
 @patch.object(demisto, "args")
-@patch.object(demisto, "command", return_value="wiz-get-threat")
+@patch.object(demisto, "command", return_value="wiz-defend-get-threat")
 def test_main_get_threat(mock_command, mock_args, mock_set_auth, mock_set_api, mock_filtered_threats, mock_return_results):
     """Test main function handling wiz-get-threat command"""
     # Set up mock args
@@ -2528,11 +2544,11 @@ def test_cloud_platform_values_consistency(yaml_content):
     yaml_platform_values_threats = []
 
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-detections":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_DETECTIONS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "platform":
                     yaml_platform_values_detections = arg.get("predefined", [])
-        elif command.get("name") == "wiz-get-threats":
+        elif command.get("name") == DemistoCommands.WIZ_DEFEND_GET_THREATS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "platform":
                     yaml_platform_values_threats = arg.get("predefined", [])
@@ -2586,7 +2602,7 @@ def test_detection_type_values_consistency(yaml_content):
     yaml_type_values_config = []
 
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-detections":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_DETECTIONS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "type":
                     yaml_type_values_command = arg.get("predefined", [])
@@ -2628,11 +2644,11 @@ def test_severity_values_consistency(yaml_content):
     yaml_severity_config = []
 
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-detections":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_DETECTIONS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "severity":
                     yaml_severity_values_detections = arg.get("predefined", [])
-        elif command.get("name") == "wiz-get-threats":
+        elif command.get("name") == DemistoCommands.WIZ_DEFEND_GET_THREATS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "severity":
                     yaml_severity_values_threats = arg.get("predefined", [])
@@ -2697,7 +2713,7 @@ def test_status_values_consistency(yaml_content):
     yaml_status_values = []
 
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-threats":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_THREATS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "status":
                     yaml_status_values = arg.get("predefined", [])
@@ -2725,11 +2741,11 @@ def test_origin_values_consistency(yaml_content):
     yaml_origin_config = []
 
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-detections":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_DETECTIONS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "origin":
                     yaml_origin_values_detections = arg.get("predefined", [])
-        elif command.get("name") == "wiz-get-threats":
+        elif command.get("name") == DemistoCommands.WIZ_DEFEND_GET_THREATS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "origin":
                     yaml_origin_values_threats = arg.get("predefined", [])
@@ -2858,7 +2874,7 @@ def test_threats_days_params_consistency(yaml_content):
     # Find the creation_days_back argument in wiz-get-threats command
     creation_days_back_arg = None
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-threats":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_THREATS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "creation_days_back":
                     creation_days_back_arg = arg
@@ -2908,7 +2924,7 @@ def test_fetch_interval_consistency(yaml_content):
     # Find the creation_minutes_back argument in wiz-get-detections command
     creation_minutes_back_arg = None
     for command in yaml_content.get("script", {}).get("commands", []):
-        if command.get("name") == "wiz-get-detections":
+        if command.get("name") == DemistoCommands.WIZ_DEFEND_GET_DETECTIONS:
             for arg in command.get("arguments", []):
                 if arg.get("name") == "creation_minutes_back":
                     creation_minutes_back_arg = arg
@@ -3216,15 +3232,32 @@ def test_command_validation(demisto_command, example, mocker):
     # Mock demisto.command() to return our command
     mocker.patch.object(demisto, "command", return_value=getattr(DemistoCommands, demisto_command))
 
-    # Create mock result
-    mock_result = [{"id": "test-id", "severity": "CRITICAL"}]
+    # Create mock results
+    mock_result = [{"id": "test-id", "severity": "CRITICAL", "type": "THREAT_DETECTION"}]
+    mock_threat_with_notes = [{"id": "test-id", "severity": "CRITICAL", "notes": [{"id": "note1", "text": "test note"}]}]
+    mock_api_response = {"data": {"updateIssue": {"id": "test-id", "status": "RESOLVED"}}}
+    mock_single_issue = [{"id": "test-id", "type": "THREAT_DETECTION"}]
 
     # Import the module directly to patch internal functions
     from Packs.Wiz.Integrations.WizDefend import WizDefend
 
-    # Patch at module level
+    # Patch query functions
     mocker.patch.object(WizDefend, "query_detections", return_value=mock_result)
-    mocker.patch.object(WizDefend, "query_threats", return_value=mock_result)
+    mocker.patch.object(WizDefend, "query_issues", return_value=mock_result)
+    mocker.patch.object(WizDefend, "query_single_issue", return_value=mock_single_issue)
+
+    # Patch API functions for threat management commands
+    mocker.patch.object(WizDefend, "get_entries", return_value=mock_api_response)
+
+    # Patch validation functions
+    mocker.patch.object(WizDefend, "is_valid_issue_id", return_value=(True, "Valid"))
+    mocker.patch.object(WizDefend, "validate_threat_detections_issue", return_value=(True, None))
+
+    # Patch get_filtered_threats for commands that need it (like clear_threat_comments)
+    mocker.patch.object(WizDefend, "get_filtered_threats", return_value=mock_threat_with_notes)
+
+    # Patch set_issue_note for commands that use it
+    mocker.patch.object(WizDefend, "set_issue_note", return_value=mock_api_response)
 
     # Create the mock functions with MagicMock to track calls
     mock_return_results = mocker.MagicMock(return_value=True)

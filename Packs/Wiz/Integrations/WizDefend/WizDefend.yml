@@ -175,7 +175,7 @@ display: WizDefend
 name: WizDefend
 script:
   commands:
-  - name: wiz-get-detections
+  - name: wiz-defend-get-detections
     description: Retrieve Wiz security detections based on specified filters.
     arguments:
     - name: creation_minutes_back
@@ -313,7 +313,7 @@ script:
     - contextPath: Wiz.Manager.Detections.status
       description: Wiz Detection status.
       type: String
-  - name: wiz-get-detection
+  - name: wiz-defend-get-detection
     description: Retrieve detailed information about a specific Wiz detection by ID.
     arguments:
     - description: Wiz internal detection ID to retrieve.
@@ -339,7 +339,7 @@ script:
     - contextPath: Wiz.Manager.Detection.url
       description: URL to the Wiz Detection in the Wiz console.
       type: String
-  - name: wiz-get-threat
+  - name: wiz-defend-get-threat
     description: Retrieve detailed information about a specific Wiz threat by issue ID.
     arguments:
     - description: Wiz internal issue ID to retrieve.
@@ -365,15 +365,15 @@ script:
     - contextPath: Wiz.Manager.Threat.url
       description: URL to the Wiz Threat in the Wiz console.
       type: String
-  - name: wiz-get-threats
-    description: Retrieve Wiz threats based on specified filters.
+  - name: wiz-defend-get-threats
+    description: Retrieve Wiz threats based on specified filtering criteria.
     arguments:
     - name: creation_days_back
-      description: Time window in days to retrieve threats (range 1-30).
+      description: Number of days back to get threats  (range 1-30).
       defaultValue: 5
       required: false
-    - name: cloud_account_or_cloud_organization
-      description: Threat cloud account or cloud organization to fetch.
+    - name: resource_id
+      description: Filter threats by Wiz resource ID.
       required: false
     - name: platform
       description: Get Threats for cloud platform. You can insert multiple platforms in this format PLATFORM1,PLATFORM2 etc...
@@ -410,8 +410,9 @@ script:
       - LKE
       auto: PREDEFINED
       isArray: true
-    - name: resource_id
-      description: Filter threats by specific resource ID.
+    - name: cloud_account_or_cloud_organization
+      description: Threat cloud account or cloud organization to fetch.
+      required: false
     - name: severity
       auto: PREDEFINED
       predefined:
@@ -497,6 +498,58 @@ script:
     - contextPath: Wiz.Manager.Threats.status
       description: Wiz Threat status.
       type: String
+  - name: wiz-defend-reopen-threat
+    description: Reopen a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+    - name: reopen_note
+      description: reopen note.
+      required: false
+  - name: wiz-defend-resolve-threat
+    description: Resolve a Wiz Threat.
+    arguments:
+    - name: issue_id
+      required: true
+      description: threat issue id.
+    - name: resolution_reason
+      description: resolution reason.
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - OBJECT_DELETED
+      - ISSUE_FIXED
+      - FALSE_POSITIVE
+      - EXCEPTION
+      - CONTROL_DISABLED
+      - CONTROL_DELETED
+      - WONT_FIX
+      - DETECTION_EXPIRED
+    - name: resolution_note
+      description: resolution note.
+      required: true
+  - name: wiz-defend-set-threat-in-progress
+    description: Set a Wiz Threat to in progress.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+  - name: wiz-defend-set-threat-comment
+    description: Set a comment on a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
+    - name: note
+      description: note.
+      required: true
+  - name: wiz-defend-clear-threat-comments
+    description: Clear all the comments from a Wiz Threat.
+    arguments:
+    - name: issue_id
+      description: threat issue id.
+      required: true
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
