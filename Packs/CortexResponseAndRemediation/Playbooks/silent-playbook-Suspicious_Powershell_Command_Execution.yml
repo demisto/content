@@ -156,7 +156,7 @@ tasks:
             args:
               item:
                 value:
-                  simple: CommandLineAnalysis.analysis.original.indicators
+                  simple: CommandLineAnalysis.analysis.decoded.indicators
                 iscontext: true
               raw: {}
           - operator: uniq
