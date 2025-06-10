@@ -74,7 +74,6 @@
 	"hidden": false,
 	"id": "incident_dstakedowncomments",
 	"isReadOnly": false,
-	"locked": false,
 	"name": "DS Takedown Comments",
 	"neverSetAsRequired": true,
 	"openEnded": false,

@@ -15,7 +15,6 @@
 	"hoursR": 0,
 	"id": "Reliaquest Takedown Type",
 	"layout": "Reliaquest Takedown Layout",
-	"locked": false,
 	"name": "Reliaquest Takedown Type",
 	"onChangeRepAlg": 0,
 	"preProcessingScript": "",

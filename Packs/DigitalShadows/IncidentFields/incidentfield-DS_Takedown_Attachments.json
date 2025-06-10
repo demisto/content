@@ -61,7 +61,6 @@
 	"hidden": false,
 	"id": "incident_dstakedownattachments",
 	"isReadOnly": false,
-	"locked": false,
 	"name": "DS Takedown Attachments",
 	"neverSetAsRequired": false,
 	"openEnded": false,

@@ -60,7 +60,6 @@
 	"hidden": false,
 	"id": "incident_dstargets",
 	"isReadOnly": false,
-	"locked": false,
 	"name": "DS Targets",
 	"neverSetAsRequired": true,
 	"openEnded": false,
