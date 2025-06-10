@@ -14,26 +14,24 @@ def set_incident_type():
 
     if "arguscaseservice" in incident["CustomFields"]:  # noqa SIM102
         if incident["CustomFields"]["arguscaseservice"] == "Administrative":
-            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Administrative"})
-            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Administrative"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Argus - Administrative"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Argus - Administrative"})
             return "Done"
 
     if "arguscasetype" in incident["CustomFields"]:
-        if (
-            incident["CustomFields"]["arguscasetype"].lower() == "informational"
-            or incident["CustomFields"]["arguscasetype"].lower() == "change"
-        ):
-            demisto.executeCommand(
-                "setIncident", {"id": incident["id"], "type": incident["CustomFields"]["arguscasetype"].capitalize()}
-            )
-            demisto.executeCommand(
-                "setIncident", {"id": incident["id"], "rawType": incident["CustomFields"]["arguscasetype"].capitalize()}
-            )
+        if incident["CustomFields"]["arguscasetype"].lower() == "informational":
+            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Argus - Informational"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Argus - Informational"})
+            return "Done"
+
+        if incident["CustomFields"]["arguscasetype"].lower() == "change":
+            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Argus - Change"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Argus - Change"})
             return "Done"
 
         if incident["CustomFields"]["arguscasetype"].lower() == "operationalincident":
-            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Operational"})
-            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Operational"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "type": "Argus - Operational"})
+            demisto.executeCommand("setIncident", {"id": incident["id"], "rawType": "Argus - Operational"})
             return "Done"
 
     return "Incident type not found"

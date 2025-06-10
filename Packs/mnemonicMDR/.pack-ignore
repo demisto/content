@@ -57,3 +57,12 @@ ignore=IF115
 
 [file:incidentfield-Argus_Case_Last_Updated.json]
 ignore=IF115
+
+[file:ArgusAddComment.yml]
+ignore=BA101
+
+[file:ArgusSetEventField.yml]
+ignore=BA101
+
+[file:ArgusSetNonSecMonCategories.yml]
+ignore=BA101
