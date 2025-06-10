@@ -111,7 +111,7 @@ tasks:
       agent_id:
         simple: ${incident.sysdigagentid}
       capture_name:
-        simple: xsoar-capture-${incident.eventid}
+        simple: xsoar-capture-${incident.id}
       container_id:
         simple: ${incident.sysdigcontainerid}
       customer_id:
