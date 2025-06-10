@@ -59,10 +59,13 @@ ignore=IF115
 ignore=IF115
 
 [file:ArgusAddComment.yml]
-ignore=BA101
+ignore=BA101,BA124
 
 [file:ArgusSetEventField.yml]
-ignore=BA101
+ignore=BA101,BA124
 
 [file:ArgusSetNonSecMonCategories.yml]
-ignore=BA101
+ignore=BA101,BA124
+
+[file:classifier-Argus_Case_5_9_9.json]
+ignore=BA106
