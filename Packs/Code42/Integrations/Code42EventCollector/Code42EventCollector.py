@@ -320,17 +320,19 @@ def fetch_events(
     """
     Fetch audit-logs & file-events
     """
+    last_run.pop("nextTrigger", None)  # temp
     if "File" in event_types_to_fetch:
         file_events, file_events_last_run = fetch_file_events(
             client, last_run=last_run, max_fetch_file_events=max_fetch_file_events
         )
 
         last_run.update(file_events_last_run)
-        futures = send_events_to_xsiam(
-            file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT, chunk_size=XSIAM_EVENT_CHUNK_SIZE_LIMIT)
+        futures = send_events_to_xsiam(file_events, multiple_threads=True, vendor=VENDOR, product=PRODUCT)
         if futures:
             tuple(concurrent.futures.as_completed(futures))  # wait for all the alerts to be sent XSIAM
         demisto.updateModuleHealth({f"{EventType.FILE} events sent": len(file_events)})
+        if file_events:
+            last_run["nextTrigger"] = "30"
     if "Audit" in event_types_to_fetch:
         audit_logs, audit_logs_last_run = fetch_audit_logs(
             client, last_run=last_run, max_fetch_audit_events=max_fetch_audit_events
