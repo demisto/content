@@ -168,13 +168,37 @@ script:
     arguments:
     - name: customer
       type: String
-      description: Customer name
+      description: Customer name (ID of the customer)
     - name: reason
       type: String
       description: Reason for takedown request
     - name: url
       type: String
       description: URL for takedown request
+      options:
+        - phishing
+        - brand_abuse
+        - impersonating_application
+        - unofficial_application_distribution
+        - malicious_content
+        - social_media_impersonation
+        - social_media_employee_impersonation
+        - fake_job_post
+        - sensitive_file_on_antivirus_repository
+        - instant_messaging_impersonation
+        - other
+    - name: brand
+      type: String
+      description: The brand the offending URL is targeting
+    - name: original_url
+      type: String
+      description: URL of the original copyrighted content
+    - name: alert_id
+      type: Number
+      description: Alert ID
+    - name: note
+      type: String
+      description: Comment
     outputs:
     - contextPath: Cyberint.takedowns_submit.reason
       description: Reason.
