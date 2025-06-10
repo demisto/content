@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "There is a breaking change in the silentpush-get-nameserver-reputation command, where the output context has been updated."
+}
