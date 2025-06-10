@@ -257,8 +257,6 @@ script:
       required: true
       description: "The attribute value to update."
     description: Updates attributes of an existing Active Directory contact.
-    compliantpolicies:
-    - Users Hard Remediation
   - name: ad-disable-account
     arguments:
     - name: username
