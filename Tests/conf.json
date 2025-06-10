@@ -6305,7 +6305,8 @@
     "SplunkPy-Test-V2_requests_handler",
     "Autofocus Query Samples, Sessions and Tags Test Playbook",
     "Endpoint Enrichment - Generic v2.1 - Test",
-    "servicenow_test_v2"
+    "servicenow_test_v2",
+    "Rasterize Test"
     ],
     "parallel_integrations": [
         "AWS - ACM",
