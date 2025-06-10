@@ -1967,6 +1967,7 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
         # create Search
         $kql = "InternetMessageId:$internet_message_id"
         $search_name = $internet_message_id
+        $Demisto.results("search_name: " + $search_name)
         $client.NewSearch($search_name, '', $kql, $kwargs.description, $false, $exchange_location, @(), @(), @())
         # $client.NewSearch($search_name, $kwargs.case, $kql, $kwargs.description, $allow_not_found_exchange_locations,
         #                                   $exchange_location, $public_folder_location, $share_point_location, $share_point_location_exclusion)
@@ -2142,7 +2143,7 @@ function Main {
                 ($human_readable, $entry_context, $raw_response) = CaseHoldPolicySetCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-search-and-delete-email" {
-                ($human_readable, $entry_context, $raw_response) = SearchAndDeleteEmailCommand $cs_client $command_arguments
+                ($human_readable, $entry_context, $raw_response, $polling_args) = SearchAndDeleteEmailCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-recovery-email" {
                 ($human_readable, $entry_context, $raw_response) = RecoveryEmailCommand $cs_client $command_arguments
