@@ -1,8 +1,6 @@
 Use the JsonWhoIs integration to  enrich domain indicators.
 
-
 ## Configure JsonWhoIs in Cortex
-
 
 | **Parameter** | **Description** | **Example** |
 | ---------             | -----------           | -------            |
@@ -11,7 +9,6 @@ Use the JsonWhoIs integration to  enrich domain indicators.
 | System proxy | Runs the integration instance using the proxy server (HTTP or HTTPS) that you defined in the server configuration.     | https:/<span></span>/proxyserver.com |
 | Trust any certificate (not secure) | When selected, certificates are not checked. | N/A |
 | Do Not Use by Default  | If checked the commands will not be used by default (this is influenced if two command are the same). | N/A  |
-
 
 ## Commands
 
@@ -22,7 +19,6 @@ You can execute these commands from the CLI, as part of an automation, or in a p
 Returns enriched data for Domains, URLs, and IP addresses.
 
 Notice: Submitting indicators using this command might make the indicator data publicly available. See the vendor’s documentation for more details.
-
 
 ##### Base Command
 
@@ -55,11 +51,13 @@ Notice: Submitting indicators using this command might make the indicator data p
 | Domain.WHOIS.Admin.Phone | String | The Admin phone. |
 
 ##### Command Example
+
 ```
 !whois query=demisto.com
 ```
 
 ##### Context Example
+
 ```
 {
     "Domain": {

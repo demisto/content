@@ -1,6 +1,7 @@
 Checks whether the values provided in the arguments are equal. If either of the arguments are missing, "no" is returned.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,8 +9,8 @@ Checks whether the values provided in the arguments are equal. If either of the 
 | Script Type | javascript |
 | Tags | Utility, Condition |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -18,6 +19,7 @@ Checks whether the values provided in the arguments are equal. If either of the 
 | right | The second value for comparison. |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

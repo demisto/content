@@ -7,3 +7,4 @@
 !cdl-query-url-logs action="alert" ip="1.1.1.1" limit="1"
 !cdl-query-file-data source_ip="10.10.10.101" time_range="6 months" limit="1"
 !cdl-reset-authentication-timeout
+!cdl-query-gp-logs time_range="10 days" limit="1"

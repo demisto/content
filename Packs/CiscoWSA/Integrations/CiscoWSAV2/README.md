@@ -1,11 +1,10 @@
 Cisco Secure Web Appliance protects your organization by automatically blocking risky sites and testing unknown sites before allowing users to click on them.
 This integration was integrated and tested with version 14.0.3-014 of Cisco WSA V2
 
-Some changes have been made that might affect your existing content. 
+Some changes have been made that might affect your existing content.
 If you are upgrading from a previous version of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-cisco-wsa-v2).
 
 ## Configure Cisco WSA V2 in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -14,7 +13,6 @@ If you are upgrading from a previous version of this integration, see [Breaking 
 | Password | True |
 | Use system proxy settings | False |
 | Trust any certificate (not secure) | False |
-
 
 ## Commands
 
@@ -35,30 +33,33 @@ Access policies contain allowed/blocked URL categories in the network.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_names | Policy names to retrieve. | Optional | 
-| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional | 
-| page_size | The number of results per page. The maximum value is 100. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| policy_names | Policy names to retrieve. | Optional |
+| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional |
+| page_size | The number of results per page. The maximum value is 100. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoWSA.AccessPolicy.policy_expiry | String | Policy expiry date. | 
-| CiscoWSA.AccessPolicy.policy_status | String | Policy status. | 
-| CiscoWSA.AccessPolicy.policy_name | String | Policy name. | 
-| CiscoWSA.AccessPolicy.policy_description | String | Policy description. | 
-| CiscoWSA.AccessPolicy.membership | Unknown | Identification Profiles info. | 
-| CiscoWSA.AccessPolicy.objects | Unknown | Policy custom objects blocking settings. | 
-| CiscoWSA.AccessPolicy.protocols_user_agents | Unknown | Policy protocols and user agents settings. | 
-| CiscoWSA.AccessPolicy.http_rewrite_profile | Unknown | Policy HTTP rewrite profile settings. | 
-| CiscoWSA.AccessPolicy.avc | Unknown | Application visibility and control. | 
-| CiscoWSA.AccessPolicy.url_filtering | Unknown | URL filtering settings. | 
-| CiscoWSA.AccessPolicy.amw_reputation | Unknown | Anti-Malware and reputation settings. | 
+| CiscoWSA.AccessPolicy.policy_expiry | String | Policy expiry date. |
+| CiscoWSA.AccessPolicy.policy_status | String | Policy status. |
+| CiscoWSA.AccessPolicy.policy_name | String | Policy name. |
+| CiscoWSA.AccessPolicy.policy_description | String | Policy description. |
+| CiscoWSA.AccessPolicy.membership | Unknown | Identification Profiles info. |
+| CiscoWSA.AccessPolicy.objects | Unknown | Policy custom objects blocking settings. |
+| CiscoWSA.AccessPolicy.protocols_user_agents | Unknown | Policy protocols and user agents settings. |
+| CiscoWSA.AccessPolicy.http_rewrite_profile | Unknown | Policy HTTP rewrite profile settings. |
+| CiscoWSA.AccessPolicy.avc | Unknown | Application visibility and control. |
+| CiscoWSA.AccessPolicy.url_filtering | Unknown | URL filtering settings. |
+| CiscoWSA.AccessPolicy.amw_reputation | Unknown | Anti-Malware and reputation settings. |
 
 #### Command example
+
 ```!cisco-wsa-access-policy-list page=1 page_size=3```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -812,10 +813,10 @@ Access policies contain allowed/blocked URL categories in the network.
 #### Human Readable Output
 
 >### Access Policies
+>
 >|Policy Name|Policy Status|Policy Description|
 >|---|---|---|
 >| global_policy | enable | Default settings |
-
 
 ### cisco-wsa-access-policy-create
 
@@ -836,18 +837,21 @@ cisco-wsa-access-policy-anti-malware-update (Update the anti-malware policy for 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name. | Required | 
-| policy_status | Policy status. Possible values are: enable, disable. | Required | 
-| policy_description | Policy description. | Optional | 
-| policy_order | Index of the policies in the collection. | Required | 
-| policy_expiry | Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z. | Optional | 
-| identification_profiles | Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.). | Required | 
+| policy_name | Policy name. | Required |
+| policy_status | Policy status. Possible values are: enable, disable. | Required |
+| policy_description | Policy description. | Optional |
+| policy_order | Index of the policies in the collection. | Required |
+| policy_expiry | Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z. | Optional |
+| identification_profiles | Comma-separated list of valid identification profile name. (Dependencies - use cisco-wsa-identification-profiles-list command to get all the identification profiles.). | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-create policy_name=test policy_status=enable policy_description=test policy_order=1 identification_profile_name=global_identification_profile identification_profiles=test7```
+
 #### Human Readable Output
 
 >Created "test" access policy successfully.
@@ -865,18 +869,21 @@ Update the access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| new_policy_name | New policy name. | Optional | 
-| policy_status | Policy status. Possible values are: enable, disable. | Optional | 
-| policy_order | Index of policies in the collection. Not applicable for global_policy. | Optional | 
-| policy_expiry | Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z. | Optional | 
-| policy_description | Policy description to update. | Optional | 
+| policy_name | Policy name to update. | Required |
+| new_policy_name | New policy name. | Optional |
+| policy_status | Policy status. Possible values are: enable, disable. | Optional |
+| policy_order | Index of policies in the collection. Not applicable for global_policy. | Optional |
+| policy_expiry | Policy expiry date, format yyyy-MM-ddTHH:mm:ssZ, e.g., 2023-02-21T16:16:29Z. | Optional |
+| policy_description | Policy description to update. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-update policy_name=test policy_description=test1```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -894,17 +901,20 @@ Update the Protocols and User Agents policy for access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| settings_status | Settings status for the Protocols and User Agents. Possible values are: custom, use_global, disable. Default is custom. | Optional | 
-| block_custom_user_agents | Comma-separated list of custom user agents to block, in regular expression format.<br/>Pattern examples:<br/>All Firefox versions: "Mozilla/.* Gecko/.* Firefox/"	<br/>Firefox versions 1.5.x: "Mozilla/.* Gecko/.* Firefox/1\.5"	<br/>All Internet Explorer versions: "Mozilla/.*compatible; MSIE"<br/>Internet Explorer version 5.5: "Mozilla/.*compatible; MSIE 5\.5"<br/>Specific user agent: Mozilla/4.0 (compatible; MSIE 5.5;): "Mozilla/4.0 \(compatible; MSIE 5.5;\)"<br/>Relevant while settings_status is custom. | Optional | 
-| allow_connect_ports | Comma-separated list of HTTP connect ports.<br/>HTTP CONNECT enables applications to tunnel outbound traffic over HTTP,<br/>unless the protocol is blocked above.<br/>Traffic tunneled through HTTP CONNECT will not be scanned,<br/>except for SSL ports (specified on Security Services &gt; HTTPS Proxy)<br/>e.g. 1-65535,20,21.<br/>Relevant while settings_status is custom. | Optional | 
-| block_protocols | Block network protocols. Relevant while settings_status is custom. Possible values are: ftp, http. | Optional | 
+| policy_name | Policy name to update. | Required |
+| settings_status | Settings status for the Protocols and User Agents. Possible values are: custom, use_global, disable. Default is custom. | Optional |
+| block_custom_user_agents | Comma-separated list of custom user agents to block, in regular expression format.<br/>Pattern examples:<br/>All Firefox versions: "Mozilla/.*Gecko/.* Firefox/" <br/>Firefox versions 1.5.x: "Mozilla/.*Gecko/.* Firefox/1\.5" <br/>All Internet Explorer versions: "Mozilla/.*compatible; MSIE"<br/>Internet Explorer version 5.5: "Mozilla/.*compatible; MSIE 5\.5"<br/>Specific user agent: Mozilla/4.0 (compatible; MSIE 5.5;): "Mozilla/4.0 \(compatible; MSIE 5.5;\)"<br/>Relevant while settings_status is custom. | Optional |
+| allow_connect_ports | Comma-separated list of HTTP connect ports.<br/>HTTP CONNECT enables applications to tunnel outbound traffic over HTTP,<br/>unless the protocol is blocked above.<br/>Traffic tunneled through HTTP CONNECT will not be scanned,<br/>except for SSL ports (specified on Security Services &gt; HTTPS Proxy)<br/>e.g. 1-65535,20,21.<br/>Relevant while settings_status is custom. | Optional |
+| block_protocols | Block network protocols. Relevant while settings_status is custom. Possible values are: ftp, http. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-protocols-user-agents-update policy_name=test block_custom_user_agents=test allow_connect_ports=22,24 block_protocols=http```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -922,25 +932,28 @@ Update the URL filtering policy for access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| predefined_categories_action | Predefined categories action. Possible values are: block, monitor, warn. | Optional | 
-| predefined_categories | Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
-| youtube_categories_action | YouTube categories action. Possible values are: block, monitor, allow. | Optional | 
-| youtube_categories | Comma-separated list of YouTube categories. | Optional | 
-| custom_categories_action | Custom categories action. Possible values are: block, monitor, warn. | Optional | 
-| custom_categories | Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
-| uncategorized_url | Uncategorized URL action. Possible values are: use_global, block, monitor, warn. | Optional | 
-| update_categories_action | When predefined URL categories are periodically updated,<br/>new categories may be introduced, or two (or more) existing categories may be merged.<br/>Select whether the most or least restrictive action should be applied in these cases.<br/>For new categories, in Access policies,<br/>most restrictive is always Block and least restrictive is always Monitor.<br/>For merged categories, the most or least restrictive setting will be selected out of the<br/>settings previously assigned.<br/>For instance, if category A was set to Block, and category B was set to Warn,<br/>and the two are merged into category C,<br/>the most restrictive action will be Block and the least restrictive action will be Warn. Possible values are: use_global, most restrictive, least restrictive. | Optional | 
-| content_rating_status | When Site Content Rating is enabled, user access to web content rated as adult oriented or<br/>explicit on sites that support content rating will be denied.<br/>Supported sites include Flickr, Craigslist and YouTube.<br/>However, users can still access content on these websites that is not rated as adult oriented or explicit. Possible values are: enable, disable. | Optional | 
-| content_rating_action | Action if site setting (content_rating_status) allows adult/explicit content. Possible values are: block, warn. | Optional | 
-| safe_search_status | When Safe Search is enabled, non-safe content, including the cached non-safe content<br/>will be blocked from the search result from the following search engines:<br/>Dogpile, Yandex, Google, Yahoo, Bing, WebCrawler, DuckDuckGo, Dailymotion and eBay.<br/>If safe search failed to be enforced on a supported search engine, it will be blocked. Possible values are: enable, disable. | Optional | 
-| unsupported_safe_search_engine | Action for search engines that don't support safe search. Possible values are: block, monitor. | Optional | 
+| policy_name | Policy name to update. | Required |
+| predefined_categories_action | Predefined categories action. Possible values are: block, monitor, warn. | Optional |
+| predefined_categories | Comma-separated list of predefined categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
+| youtube_categories_action | YouTube categories action. Possible values are: block, monitor, allow. | Optional |
+| youtube_categories | Comma-separated list of YouTube categories. | Optional |
+| custom_categories_action | Custom categories action. Possible values are: block, monitor, warn. | Optional |
+| custom_categories | Comma-separated list of custom categories. (Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
+| uncategorized_url | Uncategorized URL action. Possible values are: use_global, block, monitor, warn. | Optional |
+| update_categories_action | When predefined URL categories are periodically updated,<br/>new categories may be introduced, or two (or more) existing categories may be merged.<br/>Select whether the most or least restrictive action should be applied in these cases.<br/>For new categories, in Access policies,<br/>most restrictive is always Block and least restrictive is always Monitor.<br/>For merged categories, the most or least restrictive setting will be selected out of the<br/>settings previously assigned.<br/>For instance, if category A was set to Block, and category B was set to Warn,<br/>and the two are merged into category C,<br/>the most restrictive action will be Block and the least restrictive action will be Warn. Possible values are: use_global, most restrictive, least restrictive. | Optional |
+| content_rating_status | When Site Content Rating is enabled, user access to web content rated as adult oriented or<br/>explicit on sites that support content rating will be denied.<br/>Supported sites include Flickr, Craigslist and YouTube.<br/>However, users can still access content on these websites that is not rated as adult oriented or explicit. Possible values are: enable, disable. | Optional |
+| content_rating_action | Action if site setting (content_rating_status) allows adult/explicit content. Possible values are: block, warn. | Optional |
+| safe_search_status | When Safe Search is enabled, non-safe content, including the cached non-safe content<br/>will be blocked from the search result from the following search engines:<br/>Dogpile, Yandex, Google, Yahoo, Bing, WebCrawler, DuckDuckGo, Dailymotion and eBay.<br/>If safe search failed to be enforced on a supported search engine, it will be blocked. Possible values are: enable, disable. | Optional |
+| unsupported_safe_search_engine | Action for search engines that don't support safe search. Possible values are: block, monitor. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-url-filtering-update policy_name=test predefined_categories_action=monitor predefined_categories=Astrology custom_categories_action=block custom_categories=test```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -958,17 +971,20 @@ Update applications policy for access policy. Only applicable for global_policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| settings_status | Applications settings status. Possible values are: custom, use_global. Default is custom. | Optional | 
-| application | Application type to perform the action on. Possible values are: Games, Enterprise Applications, Media, Collaboration, Instant Messaging, Facebook, Social Networking, Internet Utilities, Webmail, Proxies, Presentation / Conferencing, Software Updates, iTunes, Google+, File Sharing, Myspace, Blogging, LinkedIn, Office Suites. | Required | 
-| action | Application action. Possible values are: monitor, block. | Required | 
-| values | Comma-separated list of application values to perform the action on. | Required | 
+| policy_name | Policy name to update. | Required |
+| settings_status | Applications settings status. Possible values are: custom, use_global. Default is custom. | Optional |
+| application | Application type to perform the action on. Possible values are: Games, Enterprise Applications, Media, Collaboration, Instant Messaging, Facebook, Social Networking, Internet Utilities, Webmail, Proxies, Presentation / Conferencing, Software Updates, iTunes, Google+, File Sharing, Myspace, Blogging, LinkedIn, Office Suites. | Required |
+| action | Application action. Possible values are: monitor, block. | Required |
+| values | Comma-separated list of application values to perform the action on. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-applications-update policy_name=test application=Blogging action=block values=Blogger```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -986,19 +1002,22 @@ Update objects policy for access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| object_type | Object type to perform the action on. Possible values are: Executable Code, Web Page Content, Media, P2P Metafiles, Miscellaneous, Document Types, Archives, Installers, Inspectable Archives. | Optional | 
-| object_action | Object action.<br/>Note: "inspect" and "allow" actions are only valid when the object type is "Inspectable Archives". Possible values are: monitor, block, allow, inspect. | Optional | 
-| object_values | Comma-separated list of object values to perform the action on. | Optional | 
-| block_custom_mime_types | Block custom MIME types, e.g., audio/x-mpeg3 or audio/*. | Optional | 
-| http_or_https_max_object_size_mb | HTTP/HTTPS maximum download size. | Optional | 
-| ftp_max_object_size_mb | FTP maximum download size. | Optional | 
+| policy_name | Policy name to update. | Required |
+| object_type | Object type to perform the action on. Possible values are: Executable Code, Web Page Content, Media, P2P Metafiles, Miscellaneous, Document Types, Archives, Installers, Inspectable Archives. | Optional |
+| object_action | Object action.<br/>Note: "inspect" and "allow" actions are only valid when the object type is "Inspectable Archives". Possible values are: monitor, block, allow, inspect. | Optional |
+| object_values | Comma-separated list of object values to perform the action on. | Optional |
+| block_custom_mime_types | Block custom MIME types, e.g., audio/x-mpeg3 or audio/*. | Optional |
+| http_or_https_max_object_size_mb | HTTP/HTTPS maximum download size. | Optional |
+| ftp_max_object_size_mb | FTP maximum download size. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-objects-update policy_name=test object_type=Media object_action=block object_values=Audio http_or_https_max_object_size_mb=30 ftp_max_object_size_mb=20```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -1016,21 +1035,24 @@ Update the anti-malware policy for access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_name | Policy name to update. | Required | 
-| settings_status | Settings status for the anti-malware. Possible values are: custom, use_global. Default is custom. | Optional | 
-| web_reputation_status | Web Reputation Filters will automatically block transactions with a low Web Reputation score.<br/>For transactions with a higher Web Reputation score,<br/>scanning will be performed using the services selected by Adaptive Scanning.<br/>If Web Reputation Filtering is disabled in this policy,<br/>transactions will not be automatically blocked based on low Web Reputation Score.<br/>Blocking of sites that contain malware or other high-risk content is controlled by the additional arguments. Possible values are: enable, disable. | Optional | 
-| file_reputation_filtering_status | File Reputation Filters will identify transactions containing known malicious or high-risk files.<br/>Files that are unknown may be forwarded to the cloud for file analysis. Possible values are: enable, disable. | Optional | 
-| file_reputation_action | File Reputation action. Possible values are: monitor, block. | Optional | 
-| anti_malware_scanning_status | Anti-Malware scanning status. Possible values are: enable, disable. | Optional | 
-| suspect_user_agent_scanning | Suspect user agent scanning action.<br/>Required while anti_malware_scanning_status is enabled.<br/>Not relevant while anti_malware_scanning_status is disabled. Possible values are: block, scan, none. | Optional | 
-| block_malware_categories | Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled. Possible values are: Adware, Browser Helper Object, Commercial System Monitor, Dialer, Generic Spyware, Hijacker, Other Malware, Phishing URL, PUA, System Monitor, Trojan Downloader, Trojan Horse, Trojan Phisher, Virus, Worm. | Optional | 
-| block_other_categories | Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled. Possible values are: Encrypted File, Outbreak Heuristics, Unscannable. | Optional | 
+| policy_name | Policy name to update. | Required |
+| settings_status | Settings status for the anti-malware. Possible values are: custom, use_global. Default is custom. | Optional |
+| web_reputation_status | Web Reputation Filters will automatically block transactions with a low Web Reputation score.<br/>For transactions with a higher Web Reputation score,<br/>scanning will be performed using the services selected by Adaptive Scanning.<br/>If Web Reputation Filtering is disabled in this policy,<br/>transactions will not be automatically blocked based on low Web Reputation Score.<br/>Blocking of sites that contain malware or other high-risk content is controlled by the additional arguments. Possible values are: enable, disable. | Optional |
+| file_reputation_filtering_status | File Reputation Filters will identify transactions containing known malicious or high-risk files.<br/>Files that are unknown may be forwarded to the cloud for file analysis. Possible values are: enable, disable. | Optional |
+| file_reputation_action | File Reputation action. Possible values are: monitor, block. | Optional |
+| anti_malware_scanning_status | Anti-Malware scanning status. Possible values are: enable, disable. | Optional |
+| suspect_user_agent_scanning | Suspect user agent scanning action.<br/>Required while anti_malware_scanning_status is enabled.<br/>Not relevant while anti_malware_scanning_status is disabled. Possible values are: block, scan, none. | Optional |
+| block_malware_categories | Comma-separated list of malware categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled. Possible values are: Adware, Browser Helper Object, Commercial System Monitor, Dialer, Generic Spyware, Hijacker, Other Malware, Phishing URL, PUA, System Monitor, Trojan Downloader, Trojan Horse, Trojan Phisher, Virus, Worm. | Optional |
+| block_other_categories | Comma-separated list of other categories to block. Required while anti_malware_scanning_status is enabled. Not relevant while anti_malware_scanning_status is disabled. Possible values are: Encrypted File, Outbreak Heuristics, Unscannable. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-anti-malware-update policy_name=test web_reputation_status=enable file_reputation_filtering_status=enable file_reputation_action=block anti_malware_scanning_status=enable suspect_user_agent_scanning=block block_malware_categories=Adware block_other_categories=Unscannable```
+
 #### Human Readable Output
 
 >Updated "test" access policy successfully.
@@ -1048,13 +1070,16 @@ Delete access policy.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| policy_names | Comma-separated list of policy names to delete. | Required | 
+| policy_names | Comma-separated list of policy names to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-access-policy-delete policy_names=test```
+
 #### Human Readable Output
 
 >Deleted Access policy profiles successfully.
@@ -1073,23 +1098,26 @@ Domain maps are DNS mappings of domain to IP addresses.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_names | Comma-separated list of domain names to retrieve. | Optional | 
-| ip_addresses | Comma-separated list of IP addresses to search for.<br/>This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. . | Optional | 
-| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional | 
-| page_size | The number of results per page. The maximum value is 100. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| domain_names | Comma-separated list of domain names to retrieve. | Optional |
+| ip_addresses | Comma-separated list of IP addresses to search for.<br/>This argument will retrieve the domain map record if one of the IP addresses specified is mapped to the domain. . | Optional |
+| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional |
+| page_size | The number of results per page. The maximum value is 100. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoWSA.DomainMap.domain_name | String | Domain name. | 
-| CiscoWSA.DomainMap.ip_addresses | String | Mapped IP addresses. | 
-| CiscoWSA.DomainMap.order | Number | Index of the domain map in the collection. | 
+| CiscoWSA.DomainMap.domain_name | String | Domain name. |
+| CiscoWSA.DomainMap.ip_addresses | String | Mapped IP addresses. |
+| CiscoWSA.DomainMap.order | Number | Index of the domain map in the collection. |
 
 #### Command example
+
 ```!cisco-wsa-domain-map-list limit=5```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1135,6 +1163,7 @@ Domain maps are DNS mappings of domain to IP addresses.
 #### Human Readable Output
 
 >### Domain Map
+>
 >|Domain Name|Ip Addresses|Order|
 >|---|---|---|
 >| ascxcdfdgdfgsfvd | 19.23.2.23 | 1 |
@@ -1142,7 +1171,6 @@ Domain maps are DNS mappings of domain to IP addresses.
 >| ascxcvd | 19.23.2.2 | 3 |
 >| asd | 19.2.2.2 | 4 |
 >| cccc |  | 5 |
-
 
 ### cisco-wsa-domain-map-create
 
@@ -1157,15 +1185,18 @@ Create domain mapping for IP addresses.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_name | The domain name to create. | Required | 
-| order | Index of the domain map in the collection. | Required | 
-| ip_addresses | Comma-separated list of IP addresses to map for the domain. | Required | 
+| domain_name | The domain name to create. | Required |
+| order | Index of the domain map in the collection. | Required |
+| ip_addresses | Comma-separated list of IP addresses to map for the domain. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-create domain_name=test.com order=1 ip_addresses=1.1.1.1```
+
 #### Human Readable Output
 
 >Domain "test.com" mapping created successfully.
@@ -1183,16 +1214,19 @@ Update the domain map.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_name | The domain name to update. | Required | 
-| new_domain_name | New domain name. | Optional | 
-| order | Index of the domain map in the collection. | Optional | 
-| ip_addresses | Comma-separated list of IP addresses to map for the domain.<br/>Updating this will overwrite the existing IP addresses. | Optional | 
+| domain_name | The domain name to update. | Required |
+| new_domain_name | New domain name. | Optional |
+| order | Index of the domain map in the collection. | Optional |
+| ip_addresses | Comma-separated list of IP addresses to map for the domain.<br/>Updating this will overwrite the existing IP addresses. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-update domain_name=test.com new_domain_name=test1.com order=2 ip_addresses=1.1.1.1,2.2.2.2```
+
 #### Human Readable Output
 
 >Domain "test.com" mapping updated successfully.
@@ -1210,13 +1244,16 @@ Delete domain map.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| domain_names | Comma-separated list of domain names to delete. | Required | 
+| domain_names | Comma-separated list of domain names to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-domain-map-delete domain_names=test1.com```
+
 #### Human Readable Output
 
 >Domain "test1.com" deleted successfully.
@@ -1235,31 +1272,34 @@ Identification profiles are classifications of users, defining authentication re
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_names | Comma-separated list of profile names to retrieve. | Optional | 
-| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional | 
-| page_size | The number of results per page. The maximum value is 100. | Optional | 
-| limit | The maximum number of records to retrieve. Default is 50. | Optional | 
+| profile_names | Comma-separated list of profile names to retrieve. | Optional |
+| page | The page number of the results to retrieve.<br/>Minimum value is 1. | Optional |
+| page_size | The number of results per page. The maximum value is 100. | Optional |
+| limit | The maximum number of records to retrieve. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoWSA.IdentificationProfile.status | String | Identification Profile status. | 
-| CiscoWSA.IdentificationProfile.profile_name | String | Identification Profile name. | 
-| CiscoWSA.IdentificationProfile.description | String | Identification Profile description. | 
-| CiscoWSA.IdentificationProfile.protocols | String | Identification Profile protocol. | 
-| CiscoWSA.IdentificationProfile.order | Number | Identification Profile order in the list. | 
-| CiscoWSA.IdentificationProfile.UrlCategories.predefined | String | Identification Profile predefined URL categories. | 
-| CiscoWSA.IdentificationProfile.UrlCategories.custom | String | Identification Profile custom URL categories. | 
-| CiscoWSA.IdentificationProfile.UrlCategories.uncategorized | String | Identification Profile uncategorized URL categories status. | 
-| CiscoWSA.IdentificationProfile.ip | String | Identification Profile IP. | 
-| CiscoWSA.IdentificationProfile.proxy_port | String | Identification Profile proxy port. | 
-| CiscoWSA.IdentificationProfile.UserAgents.predefined | String | The predefined user-agent. | 
-| CiscoWSA.IdentificationProfile.UserAgents.custom | String | User-agent custom. | 
+| CiscoWSA.IdentificationProfile.status | String | Identification Profile status. |
+| CiscoWSA.IdentificationProfile.profile_name | String | Identification Profile name. |
+| CiscoWSA.IdentificationProfile.description | String | Identification Profile description. |
+| CiscoWSA.IdentificationProfile.protocols | String | Identification Profile protocol. |
+| CiscoWSA.IdentificationProfile.order | Number | Identification Profile order in the list. |
+| CiscoWSA.IdentificationProfile.UrlCategories.predefined | String | Identification Profile predefined URL categories. |
+| CiscoWSA.IdentificationProfile.UrlCategories.custom | String | Identification Profile custom URL categories. |
+| CiscoWSA.IdentificationProfile.UrlCategories.uncategorized | String | Identification Profile uncategorized URL categories status. |
+| CiscoWSA.IdentificationProfile.ip | String | Identification Profile IP. |
+| CiscoWSA.IdentificationProfile.proxy_port | String | Identification Profile proxy port. |
+| CiscoWSA.IdentificationProfile.UserAgents.predefined | String | The predefined user-agent. |
+| CiscoWSA.IdentificationProfile.UserAgents.custom | String | User-agent custom. |
 
 #### Command example
+
 ```!cisco-wsa-identification-profiles-list page=1 page_size=2```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1301,11 +1341,11 @@ Identification profiles are classifications of users, defining authentication re
 #### Human Readable Output
 
 >### Identification Profiles
+>
 >|Order|Profile Name|Status|Description|Members|
 >|---|---|---|---|---|
 >| 1 | hello | enable | Sample description | ip: 12.2.2.6<br/>protocols: http,<br/>https,<br/>ftp<br/>proxy_ports: 4000,<br/>5006 |
 >| 2 | test123 | enable | test | ip: 10.10.10.10<br/>protocols: http,<br/>https,<br/>ftp,<br/>socks<br/>proxy_ports: 20-200,<br/>966 |
-
 
 ### cisco-wsa-identification-profiles-create
 
@@ -1320,21 +1360,24 @@ Create an identification profile.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | Profile name to create. | Required | 
-| status | Status of new identification profile. Possible values are: enable, disable. Default is enable. | Optional | 
-| description | Description of new identification profile. | Required | 
-| order | Index of the identification profiles in the collection.<br/>Not applicable for global_identification_profile. Default is 1. | Optional | 
-| protocols | Comma-separated list of network protocols of identification profile. Possible values are: HTTPS, SOCKS. Default is HTTPS. | Optional | 
-| proxy_ports | Comma-separated list of proxy ports.<br/>Membership is defined by proxy port for forward connections,<br/>where certain clients have been configured to use a specific connecting port.<br/>For transparent connections, membership by proxy port applies to the port of the destination URL.<br/>Leave this field blank if membership by connecting proxy port is not needed.<br/>e.g., 22-1000,3331. | Optional | 
-| members_by_subnet | Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5. | Optional | 
-| predefined_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
-| custom_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
+| profile_name | Profile name to create. | Required |
+| status | Status of new identification profile. Possible values are: enable, disable. Default is enable. | Optional |
+| description | Description of new identification profile. | Required |
+| order | Index of the identification profiles in the collection.<br/>Not applicable for global_identification_profile. Default is 1. | Optional |
+| protocols | Comma-separated list of network protocols of identification profile. Possible values are: HTTPS, SOCKS. Default is HTTPS. | Optional |
+| proxy_ports | Comma-separated list of proxy ports.<br/>Membership is defined by proxy port for forward connections,<br/>where certain clients have been configured to use a specific connecting port.<br/>For transparent connections, membership by proxy port applies to the port of the destination URL.<br/>Leave this field blank if membership by connecting proxy port is not needed.<br/>e.g., 22-1000,3331. | Optional |
+| members_by_subnet | Comma-separated list of members by Subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5. | Optional |
+| predefined_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
+| custom_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-create profile_name=test status=enable description=test protocols=HTTPS order=1```
+
 #### Human Readable Output
 
 >Created identification profile "test" successfully.
@@ -1352,22 +1395,25 @@ Update the identification profile. This command rewrites the profile values (doe
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_name | Profile name to update. | Required | 
-| new_profile_name | New profile name for the identification profile. | Optional | 
-| status | Updated the status of the identification profile. Possible values are: enable, disable. | Optional | 
-| description | Updated description of the identification profile. | Optional | 
-| order | Index of the Identification profile in the collection.<br/>Not applicable for global_identification_profile. | Optional | 
-| protocols | Comma-separated list of network protocols of the identification profile. Possible values are: HTTPS, SOCKS. Default is HTTPS. | Optional | 
-| proxy_ports | Comma-separated list of proxy ports.<br/>Membership is defined by the proxy port for forward connections,<br/>where certain clients have been configured to use a specific connecting port.<br/>For transparent connections, membership by proxy port applies to the port of the destination URL.<br/>Leave this field blank if membership by connecting proxy port is not needed.<br/>e.g.,  22-1000,3331. | Optional | 
-| members_by_subnet | Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5. | Optional | 
-| predefined_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
-| custom_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional | 
+| profile_name | Profile name to update. | Required |
+| new_profile_name | New profile name for the identification profile. | Optional |
+| status | Updated the status of the identification profile. Possible values are: enable, disable. | Optional |
+| description | Updated description of the identification profile. | Optional |
+| order | Index of the Identification profile in the collection.<br/>Not applicable for global_identification_profile. | Optional |
+| protocols | Comma-separated list of network protocols of the identification profile. Possible values are: HTTPS, SOCKS. Default is HTTPS. | Optional |
+| proxy_ports | Comma-separated list of proxy ports.<br/>Membership is defined by the proxy port for forward connections,<br/>where certain clients have been configured to use a specific connecting port.<br/>For transparent connections, membership by proxy port applies to the port of the destination URL.<br/>Leave this field blank if membership by connecting proxy port is not needed.<br/>e.g.,  22-1000,3331. | Optional |
+| members_by_subnet | Comma-separated list of members by subnet. e.g., 10.1.1.0,10.1.1.0/24,10.1.1.1-10,2001:420:80:1::5. | Optional |
+| predefined_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
+| custom_url_categories | Comma-separated list of URL categories to use as membership criteria.<br/>Leave blank if membership by URL category is not needed.<br/>(Dependencies - use cisco-wsa-url-categories-list command to get all the custom &amp; predefined categories.). | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-update profile_name=test description=testtest protocols=HTTPS,SOCKS order=2```
+
 #### Human Readable Output
 
 >Updated identification profile "test" successfully.
@@ -1385,13 +1431,16 @@ Delete identification profiles.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| profile_names | Comma-separated list of profile names to delete. | Required | 
+| profile_names | Comma-separated list of profile names to delete. | Required |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!cisco-wsa-identification-profiles-delete profile_names=test```
+
 #### Human Readable Output
 
 >Deleted identification profiles successfully.
@@ -1409,19 +1458,22 @@ Retrieve URL categories of available categories to allow/block in access policie
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| contain | A string that contains the category to search for. | Optional | 
-| type | Type of category. Possible values are: custom, predefined. | Optional | 
+| contain | A string that contains the category to search for. | Optional |
+| type | Type of category. Possible values are: custom, predefined. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| CiscoWSA.UrlCategory.predefined | String | Predefined URL categories. | 
-| CiscoWSA.UrlCategory.custom | String | Custom URL categories. | 
+| CiscoWSA.UrlCategory.predefined | String | Predefined URL categories. |
+| CiscoWSA.UrlCategory.custom | String | Custom URL categories. |
 
 #### Command example
+
 ```!cisco-wsa-url-categories-list```
+
 #### Context Example
+
 ```json
 {
     "CiscoWSA": {
@@ -1546,7 +1598,7 @@ Retrieve URL categories of available categories to allow/block in access policie
 #### Human Readable Output
 
 >### URL categories
+>
 >|Custom|Predefined|
 >|---|---|
 >| test,<br/>Adult | Adult,<br/>Advertisements,<br/>Alcohol,<br/>Animals and Pets,<br/>Arts,<br/>Astrology,<br/>Auctions,<br/>Business and Industry,<br/>Cannabis,<br/>Chat and Instant Messaging,<br/>Cheating and Plagiarism,<br/>Child Abuse Content,<br/>Cloud and Data Centers,<br/>Computer Security,<br/>Computers and Internet,<br/>Conventions, Conferences and Trade Shows,<br/>Cryptocurrency,<br/>Cryptomining,<br/>DIY Projects,<br/>DNS-Tunneling,<br/>Dating,<br/>Digital Postcards,<br/>Dining and Drinking,<br/>DoH and DoT,<br/>Dynamic DNS Provider,<br/>Dynamic and Residential,<br/>Education,<br/>Entertainment,<br/>Extreme,<br/>Fashion,<br/>File Transfer Services,<br/>Filter Avoidance,<br/>Finance,<br/>Freeware and Shareware,<br/>Gambling,<br/>Games,<br/>Government and Law,<br/>Hacking,<br/>Hate Speech,<br/>Health and Medicine,<br/>Humor,<br/>Hunting,<br/>Illegal Activities,<br/>Illegal Downloads,<br/>Illegal Drugs,<br/>Infrastructure and Content Delivery Networks,<br/>Internet Telephony,<br/>Internet of Things,<br/>Job Search,<br/>Lingerie and Swimsuits,<br/>Lotteries,<br/>Military,<br/>Mobile Phones,<br/>Museums,<br/>Nature and Conservation,<br/>News,<br/>Non-governmental Organizations,<br/>Non-sexual Nudity,<br/>Not Actionable,<br/>Online Communities,<br/>Online Document Sharing and Collaboration,<br/>Online Meetings,<br/>Online Storage and Backup,<br/>Online Trading,<br/>Organizational Email,<br/>Paranormal,<br/>Parked Domains,<br/>Peer File Transfer,<br/>Personal Sites,<br/>Personal VPN,<br/>Photo Search and Images,<br/>Politics,<br/>Pornography,<br/>Private IP Addresses as Host,<br/>Professional Networking,<br/>Real Estate,<br/>Recipes and Food,<br/>Reference,<br/>Regional Restricted Sites (Germany),<br/>Regional Restricted Sites (Great Britain),<br/>Regional Restricted Sites (Italy),<br/>Regional Restricted Sites (Poland),<br/>Religion,<br/>SaaS and B2B,<br/>Safe for Kids,<br/>Science and Technology,<br/>Search Engines and Portals,<br/>Sex Education,<br/>Shopping,<br/>Social Networking,<br/>Social Science,<br/>Society and Culture,<br/>Software Updates,<br/>Sports and Recreation,<br/>Streaming Audio,<br/>Streaming Video,<br/>Terrorism and Violent Extremism,<br/>Tobacco,<br/>Transportation,<br/>Travel,<br/>URL Shorteners,<br/>Weapons,<br/>Web Cache and Archives,<br/>Web Hosting,<br/>Web Page Translation,<br/>Web-based Email |
-

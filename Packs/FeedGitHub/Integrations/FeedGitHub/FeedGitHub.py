@@ -1,9 +1,9 @@
 import demistomock as demisto
-from CommonServerPython import *
-from TAXII2ApiModule import *
 import plyara
 import plyara.utils
 import tldextract
+from CommonServerPython import *
+from TAXII2ApiModule import *
 
 CONTEXT_PREFIX = "GITHUB"
 RAW_RESPONSE = []
@@ -621,7 +621,7 @@ def main():  # pragma: no cover
 
     except Exception as e:
         demisto.error(traceback.format_exc())
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{e!s}")
 
 
 if __name__ in ("__main__", "__builtin__", "builtins"):

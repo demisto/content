@@ -681,6 +681,11 @@ def fetch_restore_requests(client: Client, params: dict):
         for restore_request in result["responseData"]:
             entity_info = restore_request.get("entityInfo")
             entity_payload = restore_request.get("entityPayload")
+
+            if entity_payload.get("emailSplit") == "split":
+                # is master email, skipping
+                continue
+
             if (occurred := entity_payload.get("restoreRequestTime")) <= last_fetch:
                 continue
 
@@ -688,6 +693,7 @@ def fetch_restore_requests(client: Client, params: dict):
             count = last_run.get(count_field, 0) + 1
             last_run[count_field] = count
 
+            entity_payload['entityId'] = entity_info.get("entityId")
             incidents.append(
                 {
                     "dbotMirrorId": entity_info.get("entityId"),

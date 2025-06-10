@@ -1,7 +1,6 @@
-import pytest
 import demistomock as demisto
+import pytest
 from TroubleshootExecutePlaybookByAlertQuery import *
-
 
 PLAYBOOKS_DICT = {"123": "Test Playbook 1", "456": "Test Playbook 2"}
 PLAYBOOK_ID = "123"

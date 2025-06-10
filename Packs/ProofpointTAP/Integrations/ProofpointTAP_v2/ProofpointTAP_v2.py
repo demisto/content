@@ -573,7 +573,7 @@ def fetch_incidents(
                 "rawJSON": raw_json,
                 "occurred": raw_event["messageTime"],
             }
-            demisto.debug(f'Event Time: {incident.get("occurred")}')
+            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         message_blocked = raw_events.get("messagesBlocked", [])
@@ -588,9 +588,9 @@ def fetch_incidents(
             incident = {
                 "name": f"Proofpoint - Message Blocked - {event_guid}",
                 "rawJSON": raw_json,
-                "occured": raw_event["messageTime"],
+                "occurred": raw_event["messageTime"],
             }
-            demisto.debug(f'Event Time: {incident.get("occurred")}')
+            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         clicks_permitted = raw_events.get("clicksPermitted", [])
@@ -607,7 +607,7 @@ def fetch_incidents(
                 "rawJSON": raw_json,
                 "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
             }
-            demisto.debug(f'Event Time: {incident.get("occurred")}')
+            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
         clicks_blocked = raw_events.get("clicksBlocked", [])
@@ -624,7 +624,7 @@ def fetch_incidents(
                 "rawJSON": raw_json,
                 "occurred": max(raw_event["threatTime"], raw_event["clickTime"]),
             }
-            demisto.debug(f'Event Time: {incident.get("occurred")}')
+            demisto.debug(f'{event_guid=} - Event Time: {incident.get("occurred")}')
             incidents.append(incident)
 
     # Cut the milliseconds from last fetch if exists

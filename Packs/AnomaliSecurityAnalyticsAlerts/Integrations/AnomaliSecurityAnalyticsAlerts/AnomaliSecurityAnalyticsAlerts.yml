@@ -1,0 +1,143 @@
+category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
+commonfields:
+  id: AnomaliSecurityAnalyticsAlerts
+  version: -1
+configuration:
+- defaultvalue: https://optic.threatstream.com
+  display: Server URL
+  name: url
+  required: true
+  type: 0
+  section: Connect
+- display: Username
+  displaypassword: API Key
+  name: credentials
+  required: true
+  type: 9
+  section: Connect
+- display: Trust any certificate (not secure)
+  name: insecure
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+- display: Use system proxy settings
+  name: proxy
+  required: false
+  type: 8
+  section: Connect
+  advanced: true
+description: The Anomali Security Analytics pack allows users to manage security alerts by interacting directly with the Anomali Security Analytics platform. It supports creating search jobs, monitoring their status, retrieving results, and updating alert statuses or comments, streamlining integration with Palo Alto XSOAR.
+display: Anomali Security Analytics Alerts
+name: AnomaliSecurityAnalyticsAlerts
+script:
+  commands:
+  - name: anomali-security-analytics-search-job-create
+    description: Create a new search job.
+    arguments:
+    - name: query
+      description: Search expression or keyword you're looking for in logs, e.g. alerts.
+      required: true
+    - name: source
+      defaultValue: third_party
+      description: Filters results by the log source or origin system, e.g. third_party_xsoar_integration. Default value is third_party.
+      required: false
+    - name: from
+      defaultValue: 1 day
+      description: Timerange - start time, e.g., 1 hour, 30 minutes. Default value is 1 day.
+      required: false
+    - name: to
+      defaultValue: 0 minutes
+      description: Timerange - end time, e.g., 1 hour, 30 minutes. Default value is present.
+      required: false
+    - name: timezone
+      defaultValue: "UTC"
+      description: The desired timezone for the log source. Pass the official IANA name for the time zone you are interested in, e.g. Europe/London, America/New_York. Default value is UTC.
+      required: false
+    execution: false
+    outputs:
+      - contextPath: AnomaliSecurityAnalytics.SearchJob.job_id
+        description: Job ID of the search job.
+        type: String
+  - name: anomali-security-analytics-search-job-results
+    description: Get search job results.
+    arguments:
+    - name: job_id
+      description: Unique identifier assigned to a background process or job.
+      required: true
+      isArray: true
+    - name: offset
+      defaultValue: 0
+      description:  Offset of records returned from the search result job. For example, if offset=10 and fetch_size=30, then this API will return results indexed 10 to 40. Default value is 0.
+      required: false
+    - name: fetch_size
+      defaultValue: 25
+      description: Number of records returned from the search result job. Maximum rows is 1000. Default value is 25.
+      required: false
+    execution: false
+    outputs:
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.job_id
+        description: Job ID of the search job.
+        type: String
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.status
+        description: Status of the search.
+        type: String
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.count
+        description: Number of records returned.
+        type: Number
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.has_next
+        description: Indicates if more pages are available.
+        type: Boolean
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.is_aggregated
+        description: Indicates if the search is aggregated.
+        type: Boolean
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.records
+        description: List of records containing the fields included in the fields response attribute.
+        type: Array
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.result_row_count
+        description: Total number of records retrieved by the search.
+        type: Number
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.search_end_time
+        description: End timestamp of the search (UNIX timestamp in milliseconds).
+        type: Number
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.search_start_time
+        description: Start timestamp of the search (UNIX timestamp in milliseconds).
+        type: Number
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.status
+        description: Status of the search job.
+        type: String
+      - contextPath: AnomaliSecurityAnalytics.SearchJobResults.types
+        description: Data types of the search record attributes.
+        type: Array
+  - name: anomali-security-analytics-alert-update
+    description: Update alert's comment or status.
+    arguments:
+    - name: uuid
+      description: Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command.
+      required: true
+    - name: comment
+      description: Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide either 'status' or 'comment' parameter.
+      required: false
+    - name: status
+      description: Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide either 'status' or 'comment' parameter.
+      required: false
+    execution: false
+    outputs:
+      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.message
+        description: Confirmation message returned after updating the alert status.
+        type: String
+  isfetch: false
+  runonce: false
+  script: '-'
+  type: python
+  subtype: python3
+  dockerimage: demisto/python3:3.12.8.1983910
+fromversion: 6.10.0
+marketplaces:
+- xsoar
+- marketplacev2
+tests:
+- No tests

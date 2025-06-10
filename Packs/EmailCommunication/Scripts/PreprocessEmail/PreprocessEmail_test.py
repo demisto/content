@@ -137,6 +137,16 @@ EXPECTED_RESULT_3 = (
     "</u><div>\n<p>please add multiple inline images</p></div></blockquote></div></body></html>"
 )
 
+EXPECTED_RESULT_XSOAR_SAAS = (
+    '\n<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body><div '
+    'dir="ltr">image 1:\n<div><div><img src=xsoar/entry/download/37@119 alt="image_1.png" width="275" height="184">'
+    '<br></div></div><div>image 2:\n</div><div><div><img src="cid:ii_kgjzygxz1" alt="image_2.png" width="225" '
+    'height="224"><br></div></div></div><br>\n<div class="gmail_quote"><div dir="ltr" class="gmail_attr">On Thu,'
+    ' Oct 22, 2020 at 1:56 AM Avishai Brandeis &lt;\n<a href="mailto:avishai@demistodev.onmicrosoft.com">'
+    'avishai@demistodev.onmicrosoft.com</a>&gt; wrote:<br></div>\n<blockquote class="gmail_quote" style="margin:'
+    ' 0px 0px 0px 0.8ex;border-left:1px solid rgb(204,204,204)"><u></u><div>\n<p>please add multiple inline '
+    "images</p></div></blockquote></div></body></html>"
+)
 EXPECTED_RESULT_NO_ALT = """
 <html><head>
 
@@ -182,6 +192,26 @@ def test_create_email_html(email_html, entry_id_list, expected):
     """
     from PreprocessEmail import create_email_html
 
+    result = create_email_html(email_html, entry_id_list)
+    assert result == expected
+
+
+def test_create_email_html_saas(mocker):
+    """
+    Given
+    - The email's Html representation on saas xsoar/xsiam machine.
+    When
+    - Creating the html thread
+    Then
+    - The images' src attribute would be replaced as expected with a prefix of xsoar.
+    """
+
+    from PreprocessEmail import create_email_html
+
+    email_html = EMAIL_HTML
+    entry_id_list = [("image_1.png", "37@119")]
+    expected = EXPECTED_RESULT_XSOAR_SAAS
+    mocker.patch("PreprocessEmail.is_xsiam_or_xsoar_saas", return_value=True)
     result = create_email_html(email_html, entry_id_list)
     assert result == expected
 

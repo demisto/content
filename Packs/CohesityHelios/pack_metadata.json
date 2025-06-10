@@ -12,7 +12,10 @@
     "itemPrefix": [
         "Cohesity Helios"
     ],
-    "tags": [],
+    "tags": [
+        "Alerts",
+        "Security"
+    ],
     "useCases": [],
     "keywords": [
         "Ransomware",

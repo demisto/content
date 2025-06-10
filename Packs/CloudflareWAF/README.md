@@ -1,4 +1,5 @@
 # Cloudflare WAF Pack
+
 Use Cloudflare WAF to manage firewall rules, filters, and IP-lists.
 
 ## What does this pack do?
@@ -15,6 +16,7 @@ This pack contains an integration, whose main purpose is to manage firewall rule
 In addition, this pack includes XSIAM content.
 
 <~XSIAM>
+
 ### Collect Events from Cloudflare WAF (XSIAM)
 
 We currently support the retrieval of events from Cloudflare WAF by using an HTTP Log Collector, and Cloudflare waf logpush v2.
@@ -34,9 +36,10 @@ We currently support the retrieval of events from Cloudflare WAF by using an HTT
 
 **On Cloudflare:**
 
-In order to configure the logpush on the Cloudflare side, read [this documentation](https://developers.cloudflare.com/logs/get-started/enable-destinations/http/). 
+In order to configure the logpush on the Cloudflare side, read [this documentation](https://developers.cloudflare.com/logs/get-started/enable-destinations/http/).
 
 *Guidelines:*
+
 1. For the **destination_conf**, use the API URL (copied in step 5 on the XSIAM side) and the newly created token (copied in step 4 on the XSIAM side) to create a value in the following format: `"{XSIAM API URL}?header_Authorization=Basic%20{XSIAM API Token}"`.
 2. **Important:**
    Make sure to specify under **logpull_options** in the Logpush API configuration the string `EdgeEndTimestamp&timestamps=rfc3339`.

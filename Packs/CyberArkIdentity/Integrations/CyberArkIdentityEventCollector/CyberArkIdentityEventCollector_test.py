@@ -1,7 +1,7 @@
 import json
-import requests_mock
-import demistomock as demisto
 
+import demistomock as demisto
+import requests_mock
 
 URL = "https://example.my.idaptive.app/"
 DEMISTO_PARAMS = {

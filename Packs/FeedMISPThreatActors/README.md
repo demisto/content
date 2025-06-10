@@ -17,6 +17,7 @@ The MISP Threat Actors Feed pack allows you to ingest threat actor data from the
 ## Pack Contents
 
 ### Integrations
+
 **FeedMISPThreatActors**: The main integration for fetching and processing threat actor data.
 
 ## Use Cases

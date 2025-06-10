@@ -22,7 +22,7 @@ This integration was integrated and tested with version 2.0 of cybleeventsv2
 4. To ensure that fetch incidents works:
     * Select the Fetches incidents radio button.
     * Under Incident type, select Cyble Vision Alert V2.
-   
+
 5. Click **Test** to validate the URLs, token, and connection.
 
 ## Commands

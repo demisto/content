@@ -194,8 +194,7 @@ tasks:
       description: |-
         This playbook retrieves a file from a path on an endpoint using VMware Carbon Black EDR (Live Response API).
         Make sure to provide the Carbon Black sensor ID of the endpoint from which you want to retrieve the file.
-      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response
-        API
+      playbookName: Get File Sample From Path - VMware Carbon Black EDR - Live Response API
       type: playbook
       iscommand: false
       brand: ""
@@ -266,8 +265,7 @@ inputs:
 - key: Agent_ID
   value: {}
   required: false
-  description: The ID of the agent, or of the endpoint, in the relevant integration
-    (such as EDR).
+  description: The ID of the agent, or of the endpoint, in the relevant integration (such as EDR).
   playbookInputQuery:
 outputs:
 - contextPath: File.Size
@@ -325,3 +323,8 @@ tests:
 - File Enrichment - Generic v2 - Test
 - IP Enrichment - Generic v2 - Test
 fromversion: 5.0.0
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS

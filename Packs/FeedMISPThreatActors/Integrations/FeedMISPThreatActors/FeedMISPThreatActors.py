@@ -477,6 +477,7 @@ def fetch_indicators_command(client: Client, feed_tags: str, tlp_color: str) -> 
         indicator = {
             "value": value,
             "type": "Threat Actor",
+            "rawJSON": threat_actor,
             "fields": {
                 "description": threat_actor.get("description", ""),
                 "trafficlightprotocol": tlp_color,

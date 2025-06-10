@@ -2,7 +2,6 @@ Use the Cisco Webex Feed integration to fetch indicators from WeBex.
 
 ## Configure Cisco Webex Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Fetch indicators |  | False |
@@ -18,34 +17,39 @@ Use the Cisco Webex Feed integration to fetch indicators from WeBex.
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
 
-
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### webex-get-indicators
+
 ***
 Gets indicators from the feed.
-
 
 #### Base Command
 
 `webex-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 30. | Optional | 
-| indicator_type | The indicator type. Possible values are: CIDR, DOMAIN, Both. Default is Both. | Optional | 
-
+| limit | The maximum number of results to return. Default is 30. | Optional |
+| indicator_type | The indicator type. Possible values are: CIDR, DOMAIN, Both. Default is Both. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!webex-get-indicators indicator_type=Both limit=3```
+
 #### Human Readable Output
 
->### Indicators from Webex:
+>### Indicators from Webex
+>
 >|value|type|
 >|---|---|
 >| 1.1.1.1/1 | CIDR |

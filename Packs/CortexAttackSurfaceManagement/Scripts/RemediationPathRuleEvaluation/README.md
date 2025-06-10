@@ -1,6 +1,7 @@
 For a given alert and remediation path rules that are defined for that alert's attack surface rule, this script takes each remediation path rule and looks at the rule criteria to see if the rule matches for the given alert. If multiple rules match, it will return the most recently created rule. This assumes that the rules passed in are filtered to correlate with the alert's attack surface rule.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -8,6 +9,7 @@ For a given alert and remediation path rules that are defined for that alert's a
 | Script Type | python3 |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -22,5 +24,6 @@ For a given alert and remediation path rules that are defined for that alert's a
 | remediation_path_rules | List of remediation path rules for the alert's attack surface rule. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

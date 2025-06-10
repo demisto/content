@@ -1,7 +1,7 @@
 import copy
+from unittest.mock import Mock
 
 import pytest
-from unittest.mock import Mock
 from CommonServerPython import *
 
 SUBSCRIPTION_ID = "sub_id"
@@ -1375,8 +1375,8 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     Then:
      - Ensure the out[ut are as expected
     """
-    from AzureFirewall import main, MANAGED_IDENTITIES_TOKEN_URL, Resources
     import AzureFirewall
+    from AzureFirewall import MANAGED_IDENTITIES_TOKEN_URL, Resources, main
 
     mock_token = {"access_token": "test_token", "expires_in": "86400"}
     get_mock = requests_mock.get(MANAGED_IDENTITIES_TOKEN_URL, json=mock_token)
@@ -1396,7 +1396,7 @@ def test_test_module_command_with_managed_identities(mocker, requests_mock, clie
     assert "ok" in AzureFirewall.return_results.call_args[0][0]
     qs = get_mock.last_request.qs
     assert qs["resource"] == [Resources.management_azure]
-    assert client_id and qs["client_id"] == [client_id] or "client_id" not in qs
+    assert (client_id and qs["client_id"] == [client_id]) or "client_id" not in qs
 
 
 def test_azure_firewall_resource_group_list_command(requests_mock):

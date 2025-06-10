@@ -557,8 +557,9 @@ def main():
             security_reviewer = determine_random_reviewer(security_reviewer, content_repo)
         # else security_reviewer is a string of a single reviewer, just add it to the list of reviewers
         print(f'The selected security reviewer {security_reviewer}')
-        reviewers.append(security_reviewer)
-        pr.add_to_assignees(security_reviewer)
+        if security_reviewer:
+            reviewers.append(security_reviewer)
+            pr.add_to_assignees(security_reviewer)
         pr.add_to_labels(SECURITY_LABEL)
 
     # adding TIM reviewer
@@ -573,9 +574,6 @@ def main():
     message_to_send = WELCOME_MSG if pr.user.login == MARKETPLACE_CONTRIBUTION_PR_AUTHOR else WELCOME_MSG_WITH_GFORM
     body = message_to_send.format(selected_reviewer=content_reviewer)
     pr.create_issue_comment(body)
-    pr.create_issue_comment("Unfortunately, your PR review will be slightly delayed because of an Israeli holiday in the "
-                            "upcoming week (the 12th of April - the 19th of April). Thank you in advance for your patience "
-                            "and understanding.")
     print(f'{t.cyan}Created welcome comment{t.normal}')
 
     print('contributors.md section')

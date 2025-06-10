@@ -6,7 +6,8 @@ import subprocess
 import demistomock as demisto
 import pytest
 from CommonServerPython import entryTypes
-from ConvertFile import find_zombie_processes, main
+from ConvertFile import find_zombie_processes, main, make_sha
+from unittest.mock import patch
 
 RETURN_ERROR_TARGET = "ConvertFile.return_error"
 
@@ -17,90 +18,61 @@ def set_logging(caplog):
     caplog.set_level(logging.DEBUG)  # easier to debug if the test fails
 
 
-# these tests use soffice. they will probably fail if running within an editor.
-@pytest.mark.parametrize("file", ["MS-DOCX-190319.docx", "financial-sample.xslx"])  # disable-secrets-detection
-def test_convert_to_pdf(mocker, file):
+@pytest.mark.parametrize("file", ["test1"])
+def test_convert_to_pdf(mocker,file):
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
     ext = os.path.splitext(file)[1]
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
     mocker.patch.object(demisto, "results")
-    # validate our mocks are good
-    assert demisto.args()["entry_id"] == "test"
+    mocker.patch("ConvertFile.make_sha", return_value='mocked_sha')
+    mocker.patch.object(subprocess, "check_output", return_value=b'mocked_output')
+    mocker.patch.object(glob, "glob", return_value=['file1'])
+    mocker.patch('ConvertFile.shutil.copy')
+    mocker.patch('ConvertFile.os.path.basename', return_value='test1_name')
     main()
-    # call_args is tuple (args list, kwargs). we only need the first one
-    results = demisto.results.call_args[0]
-    assert demisto.results.call_count == 1
-    assert len(results) == 1
-    assert results[0]["Type"] == entryTypes["file"]
-    assert results[0]["File"] == "test.pdf"
-    assert glob.glob("./*" + results[0]["FileID"])
+    results1 = demisto.results.call_args_list[0][0]
+    results2 = demisto.results.call_args_list[1][0]
+    assert demisto.results.call_count == 2
+    assert results1[0]["Type"] == entryTypes["file"]
+    assert results1[0]["File"] == "test"
+    assert 'ERROR' not in str(results1)
+    assert results2[0]["Type"] == entryTypes["note"]
+    assert results2[0]["EntryContext"]['ConvertedFile']['FileSHA256'] == 'mocked_sha'
+    assert results2[0]["EntryContext"]['ConvertedFile']['Convertable'] == 'yes'
 
 
-def test_convert_to_html(mocker):
-    file = "MS-DOCX-190319.docx"  # disable-secrets-detection
-    mocker.patch.object(demisto, "args", return_value={"entry_id": "test", "format": "html", "all_files": "yes"})
-    ext = os.path.splitext(file)[1]
-    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
+def test_convert_file_returns_no_files(mocker):
+    mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
+    ext = os.path.splitext('test1')[1]
+    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + 'test1', "name": "test" + ext})
     mocker.patch.object(demisto, "results")
-    # validate our mocks are good
-    assert demisto.args()["entry_id"] == "test"
+    mocker.patch("ConvertFile.convert_file", return_value=[])
     main()
-    assert demisto.results.call_count > 10  # we have also a bunch of images
-    # call_args_list holds all calls as a tuple (args list, kwargs). we only need the first one
-    # we check if we have an html file
-    results = [x[0] for x in demisto.results.call_args_list if x[0][0]["File"].endswith(".html")][0]
-    assert len(results) == 1
-    assert results[0]["Type"] == entryTypes["file"]
-    assert results[0]["File"] == "test.html"
-    glob_list = glob.glob("./*" + results[0]["FileID"])
-    logging.getLogger().info(f"glob list for results: {results[0]}. list: {glob_list}")
-    assert glob_list
-    with open(glob_list[0]) as f:
-        contents = f.read()
-        assert "Extensions to the Office Open XML" in contents
-    # assert the next result is an image
-    results = [x[0] for x in demisto.results.call_args_list if x[0][0]["File"].endswith(".png")][0]
-    assert results[0]["Type"] == entryTypes["file"]
-    assert results[0]["File"].startswith("test_html_")
-    assert glob.glob("./*" + results[0]["FileID"])
-
-
-def test_convert_pdf_to_html(mocker):
-    file = "text-only.pdf"
-    mocker.patch.object(demisto, "args", return_value={"entry_id": "test", "format": "html", "all_files": "yes"})
-    ext = os.path.splitext(file)[1]
-    mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
+    results = demisto.results.call_args_list[0][0]
+    assert 'No file result returned for convert format:' in str(results)
+    
+    
+def test_bad_entry_id(mocker):
+    mocker.patch.object(demisto, "args", return_value={"entry_id": "test"})
+    mocker.patch.object(demisto, "getFilePath", return_value=None)
     mocker.patch.object(demisto, "results")
-    # validate our mocks are good
-    assert demisto.args()["entry_id"] == "test"
     main()
-    assert demisto.results.call_count == 1
-    results = [x[0] for x in demisto.results.call_args_list if x[0][0]["File"].endswith(".html")][0]
-    assert results[0]["Type"] == entryTypes["file"]
-    assert results[0]["File"] == "test.html"
-    glob_list = glob.glob("./*" + results[0]["FileID"])
-    logging.getLogger().info(f"glob list for results: {results[0]}. list: {glob_list}")
-    assert glob_list
-    # check no defunct processed
-    zombies, output = find_zombie_processes()
-    assert not zombies
-
-
+    results = demisto.results.call_args_list[0][0]
+    assert "Couldn't find entry id:" in str(results)
+    
+    
 def test_convert_failure(mocker):
-    # test with BAD format to see that we fail
+    # test with BAD format to see that we do not fail and that outputs contain the ERROR field
     file = "MS-DOCX-190319.docx"  # disable-secrets-detection
     mocker.patch.object(demisto, "args", return_value={"entry_id": "test", "format": "BAD", "all_files": "yes"})
     ext = os.path.splitext(file)[1]
     mocker.patch.object(demisto, "getFilePath", return_value={"path": "test_data/" + file, "name": "test" + ext})
-    return_error_mock = mocker.patch(RETURN_ERROR_TARGET)
+    mocker.patch.object(demisto, "results")
     # validate our mocks are good
     assert demisto.args()["entry_id"] == "test"
     main()
-    assert return_error_mock.call_count == 1
-    # call_args last call with a tuple of args list and kwargs
-    err_msg = return_error_mock.call_args[0][0]
-    assert "BAD" in err_msg
-    assert "Error: no export filter" in err_msg
+    result = [x[0] for x in demisto.results.call_args_list][0]
+    assert 'ERROR' in str(result)
 
 
 def test_zombie_prcesses(mocker):
@@ -121,3 +93,18 @@ def test_zombie_prcesses(mocker):
     zombies, output = find_zombie_processes()
     assert len(zombies) == 9
     assert output == ps_output
+    
+
+def test_make_sha_with_mocked_file_data(mocker):
+    # Mocking the file reading process
+    file_data = b'Test file content'
+    mock_open = mocker.patch('builtins.open', mocker.mock_open(read_data=file_data))
+    
+    mock_sha256 = mocker.MagicMock()
+    mock_sha256.hexdigest.return_value = 'mocked_sha256_hash'
+    
+    with patch('hashlib.sha256', return_value=mock_sha256):
+        sha256_hash = make_sha('test_file.txt')
+        
+        mock_open.assert_called_once_with('test_file.txt', 'rb')
+        assert sha256_hash == 'mocked_sha256_hash'

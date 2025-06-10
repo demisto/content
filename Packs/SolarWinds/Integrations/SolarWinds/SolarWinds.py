@@ -57,7 +57,7 @@ QUERY_PARAM = {
     "B.TriggeredCount, B.LastTriggeredDateTime, B.Context, B.AlertNote, C.AlertMessage, C.AlertRefID,"
     "C.Name, C.Description as ConfigurationDescription, C.ObjectType, C.Enabled, C.Frequency,"
     "C.Trigger, C.Reset, C.Severity, C.NotifyEnabled, C.NotificationSettings, C.LastEdit, C.CreatedBy,"
-    "C.Category, C.Canned, D.ResponsibleTeam FROM Orion.AlertActive AS A "
+    "C.Category, C.Canned FROM Orion.AlertActive AS A "
     "INNER JOIN Orion.AlertObjects AS B ON A.AlertObjectID = B.AlertObjectID "
     "INNER JOIN Orion.AlertConfigurations AS C ON B.AlertID = C.AlertID "
     "INNER JOIN Orion.AlertConfigurationsCustomProperties AS D ON C.AlertID = D.AlertID",
@@ -77,7 +77,7 @@ QUERY_PARAM = {
     "B.Context, B.AlertNote, C.AlertMessage, C.AlertRefID, C.Name, "
     "C.Description as ConfigurationDescription, C.ObjectType, C.Enabled, C.Frequency, "
     "C.Trigger, C.Reset, C.Severity, C.NotifyEnabled, C.NotificationSettings, C.LastEdit,"
-    "C.CreatedBy, C.Category, C.Canned, D.ResponsibleTeam "
+    "C.CreatedBy, C.Category, C.Canned "
     "FROM Orion.AlertActive AS A "
     "INNER JOIN Orion.AlertObjects AS B ON A.AlertObjectID = B.AlertObjectID "
     "INNER JOIN Orion.AlertConfigurations AS C ON B.AlertID = C.AlertID "

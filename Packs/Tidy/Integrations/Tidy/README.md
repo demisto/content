@@ -1,6 +1,6 @@
 ## Tidy
 
-### Description:
+### Description
 
 Usually, the main bottlenecks in an on-boarding process are the various software and programs required for the new recruit's computer.
 Whether if it's a developer, customer success engineer, or a product specialist, on average it takes about three days to get everything up and running. Also, this process generally requires help from other colleagues.
@@ -29,6 +29,7 @@ With the **Tidy** pack you can create a role-based playbook that will execute al
 - **Edit a file**, can be used to modify the configuration file or bash_profile file on the machine.
 - Install **OSx command line tools** on the machine.
 - Execute a command on the machine.
+
 ### tidy-pyenv
 
 ***
@@ -42,24 +43,25 @@ Install Python versions, Using Pyenv.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| versions | Python versions to be installed. Default is 2.7.18,3.8.5. | Required | 
-| globals | Python versions to define as globals in enviorment. Default is 3.8.5. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| versions | Python versions to be installed. Default is 2.7.18,3.8.5. | Required |
+| globals | Python versions to define as globals in enviorment. Default is 3.8.5. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-goenv
 
 ***
@@ -73,24 +75,25 @@ Install GoLang versions, Using Goenv.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| versions | GoLang versions to be installed. Default is 1.16.0. | Required | 
-| globals | GoLang versions to define as globals in enviorment. Default is 1.16.0. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| versions | GoLang versions to be installed. Default is 1.16.0. | Required |
+| globals | GoLang versions to define as globals in enviorment. Default is 1.16.0. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-nodenv
 
 ***
@@ -104,24 +107,25 @@ Install Node.js versions, Using nodenv.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| versions | Node.js versions to be installed. Default is 12.20.1. | Required | 
-| globals | Node.js versions to define as globals in enviorment. Default is 12.20.1. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| versions | Node.js versions to be installed. Default is 12.20.1. | Required |
+| globals | Node.js versions to define as globals in enviorment. Default is 12.20.1. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-homebrew
 
 ***
@@ -135,25 +139,26 @@ Install and configure homebrew, Install additional homebrew/-cask packages.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| apps | Comma seprated list of homebrew packages (https://formulae.brew.sh/). | Optional | 
-| cask_apps | Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/). | Optional | 
-| homebrew_taps | Hombrew taps packages to install. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| apps | Comma seprated list of homebrew packages (https://formulae.brew.sh/). | Optional |
+| cask_apps | Comma seprated list of homebrew cask packages (https://formulae.brew.sh/cask/). | Optional |
+| homebrew_taps | Hombrew taps packages to install. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-github-ssh-key
 
 ***
@@ -167,23 +172,24 @@ Generate private/public key, Configure ssh client, and deploy keys to your GitHu
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| access_token | GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token). | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| access_token | GitHub access token with public keys admin permissions.. (https://docs.github.com/en/free-pro-team@latest/github/authenticating-to-github/creating-a-personal-access-token). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-git-clone
 
 ***
@@ -197,26 +203,27 @@ Clone git repository to destination.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| repo | Repository to be cloned (SSH/HTTPS). | Required | 
-| dest | The path of where the repository should be checked out. | Required | 
-| force | If yes, any modified files in the working repository will be discarded. Possible values are: yes, no. Default is no. | Required | 
-| update | If no, do not retrieve new revisions from the origin repository. Possible values are: yes, no. Default is yes. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| repo | Repository to be cloned (SSH/HTTPS). | Required |
+| dest | The path of where the repository should be checked out. | Required |
+| force | If yes, any modified files in the working repository will be discarded. Possible values are: yes, no. Default is no. | Required |
+| update | If no, do not retrieve new revisions from the origin repository. Possible values are: yes, no. Default is yes. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-git-config
 
 ***
@@ -230,25 +237,26 @@ Configure git cli.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| key | The name of the setting. . Possible values are: user.name, user.email, core.editor. | Required | 
-| value | Git key: value to set. | Required | 
-| scope | Specify which scope to read/set values from. . Possible values are: local, global, system. Default is global. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| key | The name of the setting. . Possible values are: user.name, user.email, core.editor. | Required |
+| value | Git key: value to set. | Required |
+| scope | Specify which scope to read/set values from. . Possible values are: local, global, system. Default is global. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-zsh
 
 ***
@@ -262,22 +270,23 @@ Install zsh, oh-my-zsh.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-block-in-file
 
 ***
@@ -291,26 +300,27 @@ Insert/update/remove a block of multi-line text surrounded by customizable marke
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| path | The file to modify. | Required | 
-| block | Text block to be added. | Required | 
-| marker | Marker to manage block if needed to change in the future. Default is " ". | Required | 
-| create | Create a new file if it does not exist. Possible values are: yes, no. Default is yes. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| path | The file to modify. | Required |
+| block | Text block to be added. | Required |
+| marker | Marker to manage block if needed to change in the future. Default is " ". | Required |
+| create | Create a new file if it does not exist. Possible values are: yes, no. Default is yes. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-exec
 
 ***
@@ -324,24 +334,25 @@ Run command in host.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
-| command | Bash command to execute. | Required | 
-| chdir | Change directory before executing command. Default is $HOME. | Required | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
+| command | Bash command to execute. | Required |
+| chdir | Change directory before executing command. Default is $HOME. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-osx-command-line-tools
 
 ***
@@ -355,22 +366,23 @@ Install OSx command line tools.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-demisto-server
 
 ***
@@ -384,22 +396,23 @@ Set demisto developement server.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-demisto-web-client
 
 ***
@@ -413,22 +426,23 @@ Set demisto developement web-client.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| hostname | Endpoint IP/URL to be installed. | Optional | 
-| user | Endpoint user to be installed. | Optional | 
-| password | User login password. | Optional | 
+| hostname | Endpoint IP/URL to be installed. | Optional |
+| user | Endpoint user to be installed. | Optional |
+| password | User login password. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Tidy.Install.Status | String | The status of the installation | 
-| Tidy.Install.ReturnCode | Number | The return code of the ansible execution | 
-| Tidy.Install.Canceled | Boolean | Whether the execution was canceled | 
-| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error | 
-| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out | 
-| Tidy.Install.Stats | String | Aditional stats about the ansible execution | 
-| Tidy.Install.InstalledSoftware | String | The name of the installed software | 
-| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software | 
+| Tidy.Install.Status | String | The status of the installation |
+| Tidy.Install.ReturnCode | Number | The return code of the ansible execution |
+| Tidy.Install.Canceled | Boolean | Whether the execution was canceled |
+| Tidy.Install.Errored | Boolean | Whether the execution has encountered an error |
+| Tidy.Install.TimedOut | Boolean | Whether the execution has timed out |
+| Tidy.Install.Stats | String | Aditional stats about the ansible execution |
+| Tidy.Install.InstalledSoftware | String | The name of the installed software |
+| Tidy.Install.AdditionalInfo | String | Additinal information about the installed software |
+
 ### tidy-python-env
 
 ***

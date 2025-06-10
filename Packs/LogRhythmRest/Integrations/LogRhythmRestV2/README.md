@@ -1,13 +1,10 @@
 LogRhythm security intelligence.
 This integration was integrated and tested with version 7.7 of LogRhythm Rest API. Previous versions that have been declared [EOL](https://docs.logrhythm.com/docs/enterprise/find-more-information/end-of-life-policy-for-software-and-hardware#EndofLifePolicyforSoftwareandHardware-Appendix:EndofLifeTables) by the vendor, are not supported.
 
-
-
-Some changes have been made that might affect your existing content. 
+Some changes have been made that might affect your existing content.
 If you are upgrading from a previous of this integration, see [Breaking Changes](#breaking-changes-from-the-previous-version-of-this-integration-logrhythmrest-v2).
 
 ## Configure LogRhythmRest v2 in Cortex
-
 
 | **Parameter** | **Required** |
 | --- | --- |
@@ -30,46 +27,49 @@ If you are upgrading from a previous of this integration, see [Breaking Changes]
 | Trust any certificate (not secure) | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### lr-alarms-list
+
 ***
 Gets the details of the alarms using the filter criteria.
-
 
 #### Base Command
 
 `lr-alarms-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_status | The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor". Possible values are: New, Opened, Working, Escalated, Closed, Closed_FalseAlarm, Closed_Resolved, Closed_Unresolved, Closed_Reported, Closed_Monitor. | Optional | 
-| offset | The number of alarms to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The numbers of alarms to return. Default is 50. | Optional | 
-| alarm_rule_name | Filter by alarm rule name. | Optional | 
-| entity_name | Filter by entity name. | Optional | 
-| alarm_id | Filter by alarm ID. | Optional | 
-| case_association | Filter by case ID. | Optional | 
-
+| alarm_status | The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor". Possible values are: New, Opened, Working, Escalated, Closed, Closed_FalseAlarm, Closed_Resolved, Closed_Unresolved, Closed_Reported, Closed_Monitor. | Optional |
+| offset | The number of alarms to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The numbers of alarms to return. Default is 50. | Optional |
+| alarm_rule_name | Filter by alarm rule name. | Optional |
+| entity_name | Filter by entity name. | Optional |
+| alarm_id | Filter by alarm ID. | Optional |
+| case_association | Filter by case ID. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Alarm.alarmId | Number | The alarm ID. | 
-| LogRhythm.Alarm.alarmDataCached | String | A flag indicating whether the alarm data is cached. | 
-| LogRhythm.Alarm.alarmRuleName | String | The alarm rule name. | 
-| LogRhythm.Alarm.alarmStatus | String | The alarm status | 
-| LogRhythm.Alarm.dateInserted | Date | The alarm date inserted. | 
-| LogRhythm.Alarm.entityName | String | The alarm entity name. | 
-| LogRhythm.Alarm.associatedCases | String | The alarm associated cases. | 
-
+| LogRhythm.Alarm.alarmId | Number | The alarm ID. |
+| LogRhythm.Alarm.alarmDataCached | String | A flag indicating whether the alarm data is cached. |
+| LogRhythm.Alarm.alarmRuleName | String | The alarm rule name. |
+| LogRhythm.Alarm.alarmStatus | String | The alarm status |
+| LogRhythm.Alarm.dateInserted | Date | The alarm date inserted. |
+| LogRhythm.Alarm.entityName | String | The alarm entity name. |
+| LogRhythm.Alarm.associatedCases | String | The alarm associated cases. |
 
 #### Command Example
+
 ```!lr-alarms-list count=2 alarm_status=Opened```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -110,34 +110,35 @@ Gets the details of the alarms using the filter criteria.
 #### Human Readable Output
 
 >### Alarms
+>
 >|Alarm Id|Alarm Status|Associated Cases|Alarm Rule Name|Date Inserted|Entity Name|Alarm Data Cached|
 >|---|---|---|---|---|---|---|
 >| 882 | Opened | 7C2A040E-3014-41D5-ADF0-164A202D3518,<br/> 5FAA1AFB-5453-4FF7-92F8-28222A586368,<br/> 0795BCB1-28AA-4C3F-9739-B5431AE4004B | LogRhythm Agent Heartbeat Missed | 2021-10-13T09:13:20.103 | EchoTestEntity | N |
 >| 334 | Opened | 15E63C0A-91EC-49E6-9694-32A432DD657E,<br/> CCB51B6F-083D-442F-8E3F-67BD797A6B52,<br/> 10F65BB5-8B49-42FF-862E-ABDEDF1BA7DE,<br/> C52E0A86-D894-4424-A7A6-EE152B232146,<br/> 58437431-2117-4982-A2B1-FDEC2F083A43 | LogRhythm Agent Heartbeat Missed | 2021-08-29T11:30:48.083 | EchoTestEntity | N |
 
-
 ### lr-alarm-update
+
 ***
 Updates the alarm status and RBP based on the alarm ID supplied. alarm_status or rbp are required.
-
 
 #### Base Command
 
 `lr-alarm-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | The alarm ID. | Required | 
-| alarm_status | The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor". Possible values are: New, Opened, Working, Escalated, Closed, Closed_FalseAlarm, Closed_Resolved, Closed_Unresolved, Closed_Reported, Closed_Monitor. | Optional | 
-| rbp | The alarm rbp. | Optional | 
-
+| alarm_id | The alarm ID. | Required |
+| alarm_status | The alarm status. Possible values: "New", "Opened", "Working", "Escalated", Closed, "Closed_FalseAlarm", "Closed_Resolved", "Closed_Unresolved", "Closed_Reported", "Closed_Monitor". Possible values are: New, Opened, Working, Escalated, Closed, Closed_FalseAlarm, Closed_Resolved, Closed_Unresolved, Closed_Reported, Closed_Monitor. | Optional |
+| rbp | The alarm rbp. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-alarm-update alarm_id=200 alarm_status=Closed rbp=100```
 
 #### Human Readable Output
@@ -145,26 +146,27 @@ There is no context output for this command.
 >Alarm 200 has been updated.
 
 ### lr-alarm-add-comment
+
 ***
 Updates the Alarm History table with comments in the Comments column based on the alarm ID supplied.
-
 
 #### Base Command
 
 `lr-alarm-add-comment`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | The alarm ID. | Required | 
-| alarm_comment | The alarm comment. | Required | 
-
+| alarm_id | The alarm ID. | Required |
+| alarm_comment | The alarm comment. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-alarm-add-comment alarm_id=200 alarm_comment=test```
 
 #### Human Readable Output
@@ -172,40 +174,41 @@ There is no context output for this command.
 >Comment added successfully to the alarm 200.
 
 ### lr-alarm-history-list
+
 ***
 Gets the alarm history details by ID and filter criteria.
-
 
 #### Base Command
 
 `lr-alarm-history-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | The alarm ID. | Required | 
-| person_id | Filter by person ID. | Optional | 
-| date_updated | Filter by when the alarm was updated. The returned value will be greater than or equal to the given date. | Optional | 
-| type | Filter by history type. Possible type: "comment", "status", and "rbp". Possible values are: comment, status, rbp. | Optional | 
-| offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The numbers of items to return. Default is 50. | Optional | 
-
+| alarm_id | The alarm ID. | Required |
+| person_id | Filter by person ID. | Optional |
+| date_updated | Filter by when the alarm was updated. The returned value will be greater than or equal to the given date. | Optional |
+| type | Filter by history type. Possible type: "comment", "status", and "rbp". Possible values are: comment, status, rbp. | Optional |
+| offset | The number of items to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The numbers of items to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmHistory.alarmId | Number | The alarm ID. | 
-| LogRhythm.AlarmHistory.personId | Number | The ID of the person who edited the alarm \(changed status/ added comment, etc.\). | 
-| LogRhythm.AlarmHistory.comments | String | The alarm comments. | 
-| LogRhythm.AlarmHistory.dateInserted | Date | The date when the alarm was inserted. | 
-| LogRhythm.AlarmHistory.dateUpdated | Date | The date when the alarm was updated. | 
-
+| LogRhythm.AlarmHistory.alarmId | Number | The alarm ID. |
+| LogRhythm.AlarmHistory.personId | Number | The ID of the person who edited the alarm \(changed status/ added comment, etc.\). |
+| LogRhythm.AlarmHistory.comments | String | The alarm comments. |
+| LogRhythm.AlarmHistory.dateInserted | Date | The date when the alarm was inserted. |
+| LogRhythm.AlarmHistory.dateUpdated | Date | The date when the alarm was updated. |
 
 #### Command Example
+
 ```!lr-alarm-history-list alarm_id=200 type=status```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -316,6 +319,7 @@ Gets the alarm history details by ID and filter criteria.
 #### Human Readable Output
 
 >### History for alarm 200
+>
 >|Alarm Id|Comments|Date Inserted|Date Updated|Person Id|
 >|---|---|---|---|---|
 >| 200 | Changed status to: Closed | 2021-10-30T20:16:33.673 | 2021-10-30T20:16:33.673 | 1 |
@@ -333,179 +337,179 @@ Gets the alarm history details by ID and filter criteria.
 >| 200 | Changed status to: Closed: False Alarm | 2021-08-19T14:57:35.607 | 2021-08-19T14:57:35.607 | 1 |
 >| 200 | Changed status to: Closed | 2021-08-19T14:56:36.82 | 2021-08-19T14:56:36.82 | 1 |
 
-
 ### lr-alarm-events-list
+
 ***
 Gets a list of events for the specified alarm ID.
 Note: Currently, this command does not work as expected on LogRhythm's side. It always returns a list of one item, even if the given alarm ID is associated with more than one event.
 
-
 #### Base Command
 
 `lr-alarm-events-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | The alarm ID. | Required | 
-
+| alarm_id | The alarm ID. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmEvents.alarmId | Number | The alarm ID. | 
-| LogRhythm.AlarmEvents.account | String | The alarm event account. | 
-| LogRhythm.AlarmEvents.action | String | The alarm event action. | 
-| LogRhythm.AlarmEvents.amount | Unknown | The number of events related to the alarm. | 
-| LogRhythm.AlarmEvents.bytesIn | Number | The number of bytes received or input from a device, system, or process. | 
-| LogRhythm.AlarmEvents.bytesOut | Unknown | The number of bytes sent from a device, system, or process. | 
-| LogRhythm.AlarmEvents.classificationId | Number | The alarm event classification ID. | 
-| LogRhythm.AlarmEvents.classificationName | String | The alarm event classification name. | 
-| LogRhythm.AlarmEvents.classificationTypeName | String | The alarm event classification type. | 
-| LogRhythm.AlarmEvents.command | String | The specific command executed that was recorded in the log message. | 
-| LogRhythm.AlarmEvents.commonEventId | Number | The common event name. | 
-| LogRhythm.AlarmEvents.cve | String | The alarm event CVE. | 
-| LogRhythm.AlarmEvents.commonEventName | String | The alarm event name. | 
-| LogRhythm.AlarmEvents.count | Number | The number of alarm events. | 
-| LogRhythm.AlarmEvents.directionId | Number | The direction by ID of the activity between a log’s origin and impacted zones. | 
-| LogRhythm.AlarmEvents.directionName | String | The direction by name of the activity between a log’s origin and impacted zones. Values can be Internal, External, Outbound, Local, or Unknown. | 
-| LogRhythm.AlarmEvents.domain | String | The alarm event domain. | 
-| LogRhythm.AlarmEvents.duration | Number | The alarm event duration. | 
-| LogRhythm.AlarmEvents.entityId | Number | The alarm event entity ID. | 
-| LogRhythm.AlarmEvents.entityName | String | The alarm event entity name. | 
-| LogRhythm.AlarmEvents.group | String | The alarm event group. | 
-| LogRhythm.AlarmEvents.impactedEntityId | Number | The ID of the entity that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedEntityName | String | The name of the entity that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedHostId | Number | The ID of the host that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedHostName | String | The name of the host that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedInterface | String | The interface that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedIP | Unknown | The IP address that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.countryCode | String | The country code of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.name | String | The country name of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.latitude | Number | The latitude of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.locationId | Number | The ID of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.locationKey | String | The key of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.longitude | Number | The longitude of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.parentLocationId | Number | The parent location ID of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.recordStatus | String | The record status of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.regionCode | String | The region code of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.type | String | The type of the location that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedLocation.dateUpdated | Date | The date the impacted location was last updated. | 
-| LogRhythm.AlarmEvents.impactedMAC | String | The MAC that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedName | String | The name of the event that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNATIP | String | The NAT IP address that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNATPort | Unknown | The NAT port that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value | String | The beginning of the IP range for the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.dateUpdated | Date | The date the impacted network was last updated. | 
-| LogRhythm.AlarmEvents.impactedNetwork.riskThreshold | String | The risk threshold of the network impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value | String | The end of the IP range for the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.entityId | Number | The ID of the entity for the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.hostZone | String | The host zone for the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.locationId | Number | The location ID of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.longDesc | String | The long description of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.name | String | The name of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.networkId | Number | The ID of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.recordStatus | String | The status of the record of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedNetwork.shortDesc | String | The short description of the network that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedPort | Number | The port that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.impactedZone | String | The zone that was impacted by the alarm. | 
-| LogRhythm.AlarmEvents.itemsPacketsIn | Number | Items such as packets received or input from a device, system, or process. | 
-| LogRhythm.AlarmEvents.itemsPacketsOut | Number | Items such as packets sent from a device, system, or process. | 
-| LogRhythm.AlarmEvents.logDate | Date | The event log date. | 
-| LogRhythm.AlarmEvents.login | String | The user associated with the log activity. | 
-| LogRhythm.AlarmEvents.logMessage | String | The event log message. | 
-| LogRhythm.AlarmEvents.logSourceHostId | Unknown | The host ID of the log source of the event. | 
-| LogRhythm.AlarmEvents.logSourceHostName | String | The log source host name. | 
-| LogRhythm.AlarmEvents.logSourceName | String | The log source name. | 
-| LogRhythm.AlarmEvents.logSourceTypeName | String | The log source type. | 
-| LogRhythm.AlarmEvents.messageId | Number | The event message ID. | 
-| LogRhythm.AlarmEvents.mpeRuleId | Number | The event MPE rule ID, | 
-| LogRhythm.AlarmEvents.mpeRuleName | String | The event MPE rule name. | 
-| LogRhythm.AlarmEvents.normalDateMax | Date | If the message is aggregated, the maximum creation date contained in the group of logs. It can be in UTC or user-selected time zone. | 
-| LogRhythm.AlarmEvents.objectName | String | The object name of the event. | 
-| LogRhythm.AlarmEvents.objectType | String | The object type of the event. | 
-| LogRhythm.AlarmEvents.originEntityId | Number | The origin entity ID of the event. | 
-| LogRhythm.AlarmEvents.originEntityName | String | The origin entity name of the event. | 
-| LogRhythm.AlarmEvents.originHostId | Number | The host ID of where the event originated. | 
-| LogRhythm.AlarmEvents.originHostName | String | The host name of where the event originated. | 
-| LogRhythm.AlarmEvents.originInterface | String | The interface of where the event originated. | 
-| LogRhythm.AlarmEvents.originIP | Unknown | The IP address of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.countryCode | String | The country code of the  location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.name | String | The name of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.latitude | Number | The latitude of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.locationId | Number | The location ID of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.locationKey | String | The location key of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.longitude | Number | The longitude of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.parentLocationId | Number | The parent location ID of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.recordStatus | String | The record status of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.regionCode | String | The region code of the location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.type | String | The type of location of where the event originated. | 
-| LogRhythm.AlarmEvents.originLocation.dateUpdated | Date | The date the location of where the event originated was last updated. | 
-| LogRhythm.AlarmEvents.originMAC | String | The MAC address of where the event originated. | 
-| LogRhythm.AlarmEvents.originName | String | The name of where the event originated. | 
-| LogRhythm.AlarmEvents.originNATIP | String | The NAT IP address of where the event originated. | 
-| LogRhythm.AlarmEvents.originNATPort | Unknown | The NAT port of where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.beginIPRange.value | String | The beginning address of the IP range of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.dateUpdated | Date | The date of the network when the event originate was last updated. | 
-| LogRhythm.AlarmEvents.originNetwork.riskThreshold | String | The risk threshold of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.endIPRange.value | String | The end of the IP range for the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.entityId | Number | The entity ID of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.hostZone | String | The host zone of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.locationId | Number | The ID of the location of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.longDesc | String | The long description of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.name | String | The name of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.networkId | Number | The ID of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.recordStatus | String | The record status of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originNetwork.shortDesc | String | The short description of the network where the event originated. | 
-| LogRhythm.AlarmEvents.originPort | Number | The port where the event originated. | 
-| LogRhythm.AlarmEvents.originZone | String | The zone where the event originated. | 
-| LogRhythm.AlarmEvents.parentProcessId | String | The parent process ID of the event. | 
-| LogRhythm.AlarmEvents.parentProcessName | String | The parent process name of the event. | 
-| LogRhythm.AlarmEvents.parentProcessPath | String | The parent process path of the event. | 
-| LogRhythm.AlarmEvents.policy | String | The event policy. | 
-| LogRhythm.AlarmEvents.priority | Number | The event priority. | 
-| LogRhythm.AlarmEvents.process | String | The event process. | 
-| LogRhythm.AlarmEvents.processId | Number | The event process ID. | 
-| LogRhythm.AlarmEvents.protocolId | Number | The event protocol ID. | 
-| LogRhythm.AlarmEvents.protocolName | String | The event protocol name. | 
-| LogRhythm.AlarmEvents.quantity | Number | The event quantity. | 
-| LogRhythm.AlarmEvents.rate | Number | The event rate. | 
-| LogRhythm.AlarmEvents.reason | String | The event reason. | 
-| LogRhythm.AlarmEvents.recipient | String | The event recipient. | 
-| LogRhythm.AlarmEvents.result | String | The event result. | 
-| LogRhythm.AlarmEvents.responseCode | String | The event response code. | 
-| LogRhythm.AlarmEvents.sender | String | The event sender. | 
-| LogRhythm.AlarmEvents.session | String | The event session. | 
-| LogRhythm.AlarmEvents.sessionType | String | The event session type. | 
-| LogRhythm.AlarmEvents.serialNumber | String | The event serial number. | 
-| LogRhythm.AlarmEvents.serviceId | Number | The event service ID. | 
-| LogRhythm.AlarmEvents.serviceName | String | The event service name. | 
-| LogRhythm.AlarmEvents.severity | String | The event severity. | 
-| LogRhythm.AlarmEvents.status | String | The event status. | 
-| LogRhythm.AlarmEvents.size | Number | The event size. | 
-| LogRhythm.AlarmEvents.subject | String | The event subject. | 
-| LogRhythm.AlarmEvents.threatId | String | The event threat ID. | 
-| LogRhythm.AlarmEvents.threatName | String | The event threat name. | 
-| LogRhythm.AlarmEvents.url | String | The event URL. | 
-| LogRhythm.AlarmEvents.userAgent | String | The event user agent. | 
-| LogRhythm.AlarmEvents.vendorInfo | String | The event vendor info. | 
-| LogRhythm.AlarmEvents.vendorMsgId | String | The event vendor message ID. | 
-| LogRhythm.AlarmEvents.version | String | The alarm event version | 
-| LogRhythm.AlarmEvents.originUserIdentityName | String | The event origin user identity. | 
-| LogRhythm.AlarmEvents.impactedUserIdentityName | String | The event impacted user identity. | 
-| LogRhythm.AlarmEvents.originUserIdentityId | Unknown | The event origin user identity ID. | 
-| LogRhythm.AlarmEvents.impactedUserIdentityId | Unknown | The event impacted user identity ID. | 
-| LogRhythm.AlarmEvents.senderIdentityId | Unknown | The event sender identity ID. | 
-| LogRhythm.AlarmEvents.senderIdentityName | String | The event sender identity name. | 
-| LogRhythm.AlarmEvents.recipientIdentityId | Unknown | The event recipient identity ID. | 
-| LogRhythm.AlarmEvents.recipientIdentityName | String | The event recipient identity. | 
-
+| LogRhythm.AlarmEvents.alarmId | Number | The alarm ID. |
+| LogRhythm.AlarmEvents.account | String | The alarm event account. |
+| LogRhythm.AlarmEvents.action | String | The alarm event action. |
+| LogRhythm.AlarmEvents.amount | Unknown | The number of events related to the alarm. |
+| LogRhythm.AlarmEvents.bytesIn | Number | The number of bytes received or input from a device, system, or process. |
+| LogRhythm.AlarmEvents.bytesOut | Unknown | The number of bytes sent from a device, system, or process. |
+| LogRhythm.AlarmEvents.classificationId | Number | The alarm event classification ID. |
+| LogRhythm.AlarmEvents.classificationName | String | The alarm event classification name. |
+| LogRhythm.AlarmEvents.classificationTypeName | String | The alarm event classification type. |
+| LogRhythm.AlarmEvents.command | String | The specific command executed that was recorded in the log message. |
+| LogRhythm.AlarmEvents.commonEventId | Number | The common event name. |
+| LogRhythm.AlarmEvents.cve | String | The alarm event CVE. |
+| LogRhythm.AlarmEvents.commonEventName | String | The alarm event name. |
+| LogRhythm.AlarmEvents.count | Number | The number of alarm events. |
+| LogRhythm.AlarmEvents.directionId | Number | The direction by ID of the activity between a log’s origin and impacted zones. |
+| LogRhythm.AlarmEvents.directionName | String | The direction by name of the activity between a log’s origin and impacted zones. Values can be Internal, External, Outbound, Local, or Unknown. |
+| LogRhythm.AlarmEvents.domain | String | The alarm event domain. |
+| LogRhythm.AlarmEvents.duration | Number | The alarm event duration. |
+| LogRhythm.AlarmEvents.entityId | Number | The alarm event entity ID. |
+| LogRhythm.AlarmEvents.entityName | String | The alarm event entity name. |
+| LogRhythm.AlarmEvents.group | String | The alarm event group. |
+| LogRhythm.AlarmEvents.impactedEntityId | Number | The ID of the entity that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedEntityName | String | The name of the entity that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedHostId | Number | The ID of the host that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedHostName | String | The name of the host that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedInterface | String | The interface that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedIP | Unknown | The IP address that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.countryCode | String | The country code of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.name | String | The country name of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.latitude | Number | The latitude of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.locationId | Number | The ID of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.locationKey | String | The key of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.longitude | Number | The longitude of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.parentLocationId | Number | The parent location ID of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.recordStatus | String | The record status of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.regionCode | String | The region code of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.type | String | The type of the location that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedLocation.dateUpdated | Date | The date the impacted location was last updated. |
+| LogRhythm.AlarmEvents.impactedMAC | String | The MAC that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedName | String | The name of the event that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNATIP | String | The NAT IP address that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNATPort | Unknown | The NAT port that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.beginIPRange.value | String | The beginning of the IP range for the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.dateUpdated | Date | The date the impacted network was last updated. |
+| LogRhythm.AlarmEvents.impactedNetwork.riskThreshold | String | The risk threshold of the network impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.endIPRange.value | String | The end of the IP range for the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.entityId | Number | The ID of the entity for the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.hostZone | String | The host zone for the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.locationId | Number | The location ID of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.longDesc | String | The long description of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.name | String | The name of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.networkId | Number | The ID of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.recordStatus | String | The status of the record of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedNetwork.shortDesc | String | The short description of the network that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedPort | Number | The port that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.impactedZone | String | The zone that was impacted by the alarm. |
+| LogRhythm.AlarmEvents.itemsPacketsIn | Number | Items such as packets received or input from a device, system, or process. |
+| LogRhythm.AlarmEvents.itemsPacketsOut | Number | Items such as packets sent from a device, system, or process. |
+| LogRhythm.AlarmEvents.logDate | Date | The event log date. |
+| LogRhythm.AlarmEvents.login | String | The user associated with the log activity. |
+| LogRhythm.AlarmEvents.logMessage | String | The event log message. |
+| LogRhythm.AlarmEvents.logSourceHostId | Unknown | The host ID of the log source of the event. |
+| LogRhythm.AlarmEvents.logSourceHostName | String | The log source host name. |
+| LogRhythm.AlarmEvents.logSourceName | String | The log source name. |
+| LogRhythm.AlarmEvents.logSourceTypeName | String | The log source type. |
+| LogRhythm.AlarmEvents.messageId | Number | The event message ID. |
+| LogRhythm.AlarmEvents.mpeRuleId | Number | The event MPE rule ID, |
+| LogRhythm.AlarmEvents.mpeRuleName | String | The event MPE rule name. |
+| LogRhythm.AlarmEvents.normalDateMax | Date | If the message is aggregated, the maximum creation date contained in the group of logs. It can be in UTC or user-selected time zone. |
+| LogRhythm.AlarmEvents.objectName | String | The object name of the event. |
+| LogRhythm.AlarmEvents.objectType | String | The object type of the event. |
+| LogRhythm.AlarmEvents.originEntityId | Number | The origin entity ID of the event. |
+| LogRhythm.AlarmEvents.originEntityName | String | The origin entity name of the event. |
+| LogRhythm.AlarmEvents.originHostId | Number | The host ID of where the event originated. |
+| LogRhythm.AlarmEvents.originHostName | String | The host name of where the event originated. |
+| LogRhythm.AlarmEvents.originInterface | String | The interface of where the event originated. |
+| LogRhythm.AlarmEvents.originIP | Unknown | The IP address of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.countryCode | String | The country code of the  location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.name | String | The name of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.latitude | Number | The latitude of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.locationId | Number | The location ID of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.locationKey | String | The location key of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.longitude | Number | The longitude of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.parentLocationId | Number | The parent location ID of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.recordStatus | String | The record status of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.regionCode | String | The region code of the location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.type | String | The type of location of where the event originated. |
+| LogRhythm.AlarmEvents.originLocation.dateUpdated | Date | The date the location of where the event originated was last updated. |
+| LogRhythm.AlarmEvents.originMAC | String | The MAC address of where the event originated. |
+| LogRhythm.AlarmEvents.originName | String | The name of where the event originated. |
+| LogRhythm.AlarmEvents.originNATIP | String | The NAT IP address of where the event originated. |
+| LogRhythm.AlarmEvents.originNATPort | Unknown | The NAT port of where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.beginIPRange.value | String | The beginning address of the IP range of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.dateUpdated | Date | The date of the network when the event originate was last updated. |
+| LogRhythm.AlarmEvents.originNetwork.riskThreshold | String | The risk threshold of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.endIPRange.value | String | The end of the IP range for the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.entityId | Number | The entity ID of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.hostZone | String | The host zone of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.locationId | Number | The ID of the location of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.longDesc | String | The long description of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.name | String | The name of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.networkId | Number | The ID of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.recordStatus | String | The record status of the network where the event originated. |
+| LogRhythm.AlarmEvents.originNetwork.shortDesc | String | The short description of the network where the event originated. |
+| LogRhythm.AlarmEvents.originPort | Number | The port where the event originated. |
+| LogRhythm.AlarmEvents.originZone | String | The zone where the event originated. |
+| LogRhythm.AlarmEvents.parentProcessId | String | The parent process ID of the event. |
+| LogRhythm.AlarmEvents.parentProcessName | String | The parent process name of the event. |
+| LogRhythm.AlarmEvents.parentProcessPath | String | The parent process path of the event. |
+| LogRhythm.AlarmEvents.policy | String | The event policy. |
+| LogRhythm.AlarmEvents.priority | Number | The event priority. |
+| LogRhythm.AlarmEvents.process | String | The event process. |
+| LogRhythm.AlarmEvents.processId | Number | The event process ID. |
+| LogRhythm.AlarmEvents.protocolId | Number | The event protocol ID. |
+| LogRhythm.AlarmEvents.protocolName | String | The event protocol name. |
+| LogRhythm.AlarmEvents.quantity | Number | The event quantity. |
+| LogRhythm.AlarmEvents.rate | Number | The event rate. |
+| LogRhythm.AlarmEvents.reason | String | The event reason. |
+| LogRhythm.AlarmEvents.recipient | String | The event recipient. |
+| LogRhythm.AlarmEvents.result | String | The event result. |
+| LogRhythm.AlarmEvents.responseCode | String | The event response code. |
+| LogRhythm.AlarmEvents.sender | String | The event sender. |
+| LogRhythm.AlarmEvents.session | String | The event session. |
+| LogRhythm.AlarmEvents.sessionType | String | The event session type. |
+| LogRhythm.AlarmEvents.serialNumber | String | The event serial number. |
+| LogRhythm.AlarmEvents.serviceId | Number | The event service ID. |
+| LogRhythm.AlarmEvents.serviceName | String | The event service name. |
+| LogRhythm.AlarmEvents.severity | String | The event severity. |
+| LogRhythm.AlarmEvents.status | String | The event status. |
+| LogRhythm.AlarmEvents.size | Number | The event size. |
+| LogRhythm.AlarmEvents.subject | String | The event subject. |
+| LogRhythm.AlarmEvents.threatId | String | The event threat ID. |
+| LogRhythm.AlarmEvents.threatName | String | The event threat name. |
+| LogRhythm.AlarmEvents.url | String | The event URL. |
+| LogRhythm.AlarmEvents.userAgent | String | The event user agent. |
+| LogRhythm.AlarmEvents.vendorInfo | String | The event vendor info. |
+| LogRhythm.AlarmEvents.vendorMsgId | String | The event vendor message ID. |
+| LogRhythm.AlarmEvents.version | String | The alarm event version |
+| LogRhythm.AlarmEvents.originUserIdentityName | String | The event origin user identity. |
+| LogRhythm.AlarmEvents.impactedUserIdentityName | String | The event impacted user identity. |
+| LogRhythm.AlarmEvents.originUserIdentityId | Unknown | The event origin user identity ID. |
+| LogRhythm.AlarmEvents.impactedUserIdentityId | Unknown | The event impacted user identity ID. |
+| LogRhythm.AlarmEvents.senderIdentityId | Unknown | The event sender identity ID. |
+| LogRhythm.AlarmEvents.senderIdentityName | String | The event sender identity name. |
+| LogRhythm.AlarmEvents.recipientIdentityId | Unknown | The event recipient identity ID. |
+| LogRhythm.AlarmEvents.recipientIdentityName | String | The event recipient identity. |
 
 #### Command Example
+
 ```!lr-alarm-events-list alarm_id=200```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -680,58 +684,59 @@ Note: Currently, this command does not work as expected on LogRhythm's side. It 
 #### Human Readable Output
 
 >### Events for alarm 200
+>
 >|Common Event Name|Log Message|Priority|Log Date|Impacted Host Id|Impacted Zone|Service Name||Entity Name|Classification Name|Classification Type Name|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| LogRhythm Agent Heartbeat Missed | A heartbeat message from the LogRhythm System Monitor Agent service was not received in the allotted time. | 100 | 2021-08-18T13:05:59.477 | 3 | Internal | LogRhythm Agent |  | EchoTestEntity | Error | Operations |
 
-
 ### lr-alarm-summary
+
 ***
 Get the alarm summary by the specified alarm ID.
-
 
 #### Base Command
 
 `lr-alarm-summary`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | Numeric ID of the alarm to get. | Required | 
-
+| alarm_id | Numeric ID of the alarm to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmSummary.dateInserted | Date | The date the alarm was inserted. | 
-| LogRhythm.AlarmSummary.rbpMax | Number | The alarm rbp max. | 
-| LogRhythm.AlarmSummary.rbpAvg | Number | The alarm rbp average. | 
-| LogRhythm.AlarmSummary.alarmRuleId | Number | The alarm rule ID. | 
-| LogRhythm.AlarmSummary.alarmRuleGroup | String | The alarm rule group. | 
-| LogRhythm.AlarmSummary.briefDescription | String | The alarm brief description. | 
-| LogRhythm.AlarmSummary.additionalDetails | String | The alarm additional details. | 
-| LogRhythm.AlarmSummary.alarmId | Number | The alarm ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.msgClassId | Number | The alarm summary message class ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.msgClassName | String | The alarm summary message class name. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.commonEventId | Number | The alarm summary common event ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.commonEventName | String | The alarm summary common event name. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.originHostId | Number | The alarm summary origin host ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.impactedHostId | Number | The alarm summary impacted host ID | 
-| LogRhythm.AlarmSummary.alarmEventSummary.originUser | String | The alarm summary origin user. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.impactedUser | String | The alarm summary impacted user. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityId | Unknown | The alarm summary origin user identity ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityId | Unknown | The alarm summary impacted user identity ID. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityName | String | The alarm summary origin user identity name. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityName | String | The alarm summary impacted user identity name. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.originEntityName | String | The alarm summary origin entity name. | 
-| LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName | String | The alarm summary impacted entity name. | 
-
+| LogRhythm.AlarmSummary.dateInserted | Date | The date the alarm was inserted. |
+| LogRhythm.AlarmSummary.rbpMax | Number | The alarm rbp max. |
+| LogRhythm.AlarmSummary.rbpAvg | Number | The alarm rbp average. |
+| LogRhythm.AlarmSummary.alarmRuleId | Number | The alarm rule ID. |
+| LogRhythm.AlarmSummary.alarmRuleGroup | String | The alarm rule group. |
+| LogRhythm.AlarmSummary.briefDescription | String | The alarm brief description. |
+| LogRhythm.AlarmSummary.additionalDetails | String | The alarm additional details. |
+| LogRhythm.AlarmSummary.alarmId | Number | The alarm ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.msgClassId | Number | The alarm summary message class ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.msgClassName | String | The alarm summary message class name. |
+| LogRhythm.AlarmSummary.alarmEventSummary.commonEventId | Number | The alarm summary common event ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.commonEventName | String | The alarm summary common event name. |
+| LogRhythm.AlarmSummary.alarmEventSummary.originHostId | Number | The alarm summary origin host ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.impactedHostId | Number | The alarm summary impacted host ID |
+| LogRhythm.AlarmSummary.alarmEventSummary.originUser | String | The alarm summary origin user. |
+| LogRhythm.AlarmSummary.alarmEventSummary.impactedUser | String | The alarm summary impacted user. |
+| LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityId | Unknown | The alarm summary origin user identity ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityId | Unknown | The alarm summary impacted user identity ID. |
+| LogRhythm.AlarmSummary.alarmEventSummary.originUserIdentityName | String | The alarm summary origin user identity name. |
+| LogRhythm.AlarmSummary.alarmEventSummary.impactedUserIdentityName | String | The alarm summary impacted user identity name. |
+| LogRhythm.AlarmSummary.alarmEventSummary.originEntityName | String | The alarm summary origin entity name. |
+| LogRhythm.AlarmSummary.alarmEventSummary.impactedEntityName | String | The alarm summary impacted entity name. |
 
 #### Command Example
+
 ```!lr-alarm-summary alarm_id=200```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -770,169 +775,171 @@ Get the alarm summary by the specified alarm ID.
 #### Human Readable Output
 
 >### Alarm summary
+>
 >|Additional Details|Alarm Id|Alarm Rule Group|Alarm Rule Id|Brief Description|Date Inserted|Rbp Avg|Rbp Max|
 >|---|---|---|---|---|---|---|---|
 >| Action:<br/>1.  Use LogRhythm to analyze and collect all information regarding the alarm, related events/logs, and surrounding logs from affected sources. <br/>2.  Check System Monitor service health (try restarting). <br/>3.  Check network connectivity between Agent and Mediator. <br/>4.  Check scsm.log for errors. <br/>5.  If the steps above do not provide a solution or if you require assistance, please contact LogRhythm Support. | 200 | LogRhythm Diagnostics | 98 | Alarms on the occurrence of a LogRhythm Agent Heartbeat Missed event which could indicate a LogRhythm Agent going down. | 2021-08-18T13:05:59.683 | 100 | 100 |
+>
 >### Alarm event summary
+>
 >|Common Event Id|Common Event Name|Impacted Entity Name|Impacted Host Id|Impacted User|Impacted User Identity Id|Impacted User Identity Name|Msg Class Id|Msg Class Name|Origin Entity Name|Origin Host Id|Origin User|Origin User Identity Id|Origin User Identity Name|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| -1100003 | LogRhythm Agent Heartbeat Missed | EchoTestEntity | 3 |  |  |  | 3200 | Error | EchoTestEntity | 3 |  |  |  |
 
-
 ### lr-alarm-drilldown
+
 ***
 Gets the drill-down logs per rule block for a specific alarm Id that fired associated with an AIE alarm.
-
 
 #### Base Command
 
 `lr-alarm-drilldown`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | Numeric ID of the alarm to get. | Required | 
-
+| alarm_id | Numeric ID of the alarm to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmDrilldown.AlarmID | Number | The alarm ID. | 
-| LogRhythm.AlarmDrilldown.AIERuleID | Number | The alarm AIE rule ID. | 
-| LogRhythm.AlarmDrilldown.Status.value | Number | The value of the drilldown request. | 
-| LogRhythm.AlarmDrilldown.Status.name | String | The name of the drilldown request. | 
-| LogRhythm.AlarmDrilldown.Status.description | String | The description of the drilldown request. | 
-| LogRhythm.AlarmDrilldown.RetryCount | Number | The number of times the Data Indexer is queried for the drill-down results. | 
-| LogRhythm.AlarmDrilldown.LastDxTimestamp | Date | The timestamp, in UTC, at which the Data Indexer was queried to obtain the drill-down results. | 
-| LogRhythm.AlarmDrilldown.DateInserted | Date | The timestamp, in UTC, when the Alarm was added to the cache. | 
-| LogRhythm.AlarmDrilldown.AlarmGuid | String | The unique identification of the Alarm GUID. | 
-| LogRhythm.AlarmDrilldown.WebConsoleId | String | The unique identification of the Web Console ID. | 
-| LogRhythm.AlarmDrilldown.NotificationSent | Boolean | The unique identification of the Alarm GUID. | 
-| LogRhythm.AlarmDrilldown.AIEMsgXml | String | The message XML associated with the event that triggered by the AI Engine. | 
-| LogRhythm.AlarmDrilldown.EventID | Number | The event ID associated with the AI Engine alarm. | 
-| LogRhythm.AlarmDrilldown.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurrence of the log. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockID | Number | The Rule Block Id associated with the AI Engine rule that triggered the alarm. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockTypeID | Number | The type of rule block as specified in the Events Msg XML. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.DrillDownLogs | String | Logs that triggered the AI Engine rule associated with the rule block. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.AIECount | Number | The number of logs identified by the AI Engine that triggered the alarm. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.DXCount | Number | The number of logs stored in the Data Indexer that matched the drill-down criteria. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurence of the log. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateUpper | Date | The date, in UTC, that specifies the upper bound for the rule block triggered. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateLower | Date | The date, in UTC, that specifies the lower bound for the rule block triggered. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.SummaryFieldType | Number | The Summary Field type selected for the rule block. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DrillDownSummaries | String | The aggregate of the Summary Field type as found in the drill-down logs associated with the alarm. | 
-| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue | String | The value populated from the ARM when an alarm is added to the cache. | 
-
+| LogRhythm.AlarmDrilldown.AlarmID | Number | The alarm ID. |
+| LogRhythm.AlarmDrilldown.AIERuleID | Number | The alarm AIE rule ID. |
+| LogRhythm.AlarmDrilldown.Status.value | Number | The value of the drilldown request. |
+| LogRhythm.AlarmDrilldown.Status.name | String | The name of the drilldown request. |
+| LogRhythm.AlarmDrilldown.Status.description | String | The description of the drilldown request. |
+| LogRhythm.AlarmDrilldown.RetryCount | Number | The number of times the Data Indexer is queried for the drill-down results. |
+| LogRhythm.AlarmDrilldown.LastDxTimestamp | Date | The timestamp, in UTC, at which the Data Indexer was queried to obtain the drill-down results. |
+| LogRhythm.AlarmDrilldown.DateInserted | Date | The timestamp, in UTC, when the Alarm was added to the cache. |
+| LogRhythm.AlarmDrilldown.AlarmGuid | String | The unique identification of the Alarm GUID. |
+| LogRhythm.AlarmDrilldown.WebConsoleId | String | The unique identification of the Web Console ID. |
+| LogRhythm.AlarmDrilldown.NotificationSent | Boolean | The unique identification of the Alarm GUID. |
+| LogRhythm.AlarmDrilldown.AIEMsgXml | String | The message XML associated with the event that triggered by the AI Engine. |
+| LogRhythm.AlarmDrilldown.EventID | Number | The event ID associated with the AI Engine alarm. |
+| LogRhythm.AlarmDrilldown.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurrence of the log. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockID | Number | The Rule Block Id associated with the AI Engine rule that triggered the alarm. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.RuleBlockTypeID | Number | The type of rule block as specified in the Events Msg XML. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.DrillDownLogs | String | Logs that triggered the AI Engine rule associated with the rule block. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.AIECount | Number | The number of logs identified by the AI Engine that triggered the alarm. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.DXCount | Number | The number of logs stored in the Data Indexer that matched the drill-down criteria. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDate | Date | The date, in UTC, that specifies the time of occurence of the log. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateUpper | Date | The date, in UTC, that specifies the upper bound for the rule block triggered. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.NormalMessageDateLower | Date | The date, in UTC, that specifies the lower bound for the rule block triggered. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.SummaryFieldType | Number | The Summary Field type selected for the rule block. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DrillDownSummaries | String | The aggregate of the Summary Field type as found in the drill-down logs associated with the alarm. |
+| LogRhythm.AlarmDrilldown.RuleBlocks.DDSummaries.DefaultValue | String | The value populated from the ARM when an alarm is added to the cache. |
 
 ### lr-get-alarm-details
+
 ***
 Get the details of an alarm by the specified alarm ID.
-
 
 #### Base Command
 
 `lr-get-alarm-details`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| alarm_id | Numeric ID of the alarm to get. | Required | 
-
+| alarm_id | Numeric ID of the alarm to get. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmDetails.alarmId | Number | The alarm ID. | 
-| LogRhythm.AlarmDetails.personId | Number | The person ID. | 
-| LogRhythm.AlarmDetails.entityId | Number | The entity ID. | 
-| LogRhythm.AlarmDetails.entityName | String | The name of the entity. | 
-| LogRhythm.AlarmDetails.alarmDate | String | The date in UTC of the alarm. | 
-| LogRhythm.AlarmDetails.alarmRuleID | Number | The Rule ID of the rule which triggered the alarm | 
-| LogRhythm.AlarmDetails.alarmRuleName | String | The name of the rule which triggered the alarm | 
-| LogRhythm.AlarmDetails.alarmStatus | String | The status of the alarm. | 
-| LogRhythm.AlarmDetails.alarmStatusName | String | The name for the status of the alarm. | 
-| LogRhythm.AlarmDetails.lastUpdatedID | Number | The ID of the last person to update the alarm. | 
-| LogRhythm.AlarmDetails.lastUpdatedName | String | The name of the last person to update the alarm. | 
-| LogRhythm.AlarmDetails.dateInserted | String | The date in UTC, that the alarm was inserted. | 
-| LogRhythm.AlarmDetails.dateUpdated | String | The date in UTC, that the alarm was updated. | 
-| LogRhythm.AlarmDetails.associatedCases | String | The cases associated with this alarm. | 
-| LogRhythm.AlarmDetails.lastPersonID | Number | The ID of the last person to edit this alarm. | 
-| LogRhythm.AlarmDetails.eventCount | Number | The amount of events that triggered this alarm. | 
-| LogRhythm.AlarmDetails.eventDateFirst | String | The date in UTC of the first event to trigger this alarm. | 
-| LogRhythm.AlarmDetails.eventDateLast | String | The date in UTC of the last event to trigger this alarm. | 
-| LogRhythm.AlarmDetails.rBPMax | Number | The maximum Risk Based Priority for this alarm. | 
-| LogRhythm.AlarmDetails.rBPAvg | Number | The average Risk Based Priority for this alarm. | 
-| LogRhythm.AlarmDetails.executionTarget | Number | The target which the alarm was executed against. | 
-| LogRhythm.AlarmDetails.alarmDataCached | String | The cached alarm data. | 
+| LogRhythm.AlarmDetails.alarmId | Number | The alarm ID. |
+| LogRhythm.AlarmDetails.personId | Number | The person ID. |
+| LogRhythm.AlarmDetails.entityId | Number | The entity ID. |
+| LogRhythm.AlarmDetails.entityName | String | The name of the entity. |
+| LogRhythm.AlarmDetails.alarmDate | String | The date in UTC of the alarm. |
+| LogRhythm.AlarmDetails.alarmRuleID | Number | The Rule ID of the rule which triggered the alarm |
+| LogRhythm.AlarmDetails.alarmRuleName | String | The name of the rule which triggered the alarm |
+| LogRhythm.AlarmDetails.alarmStatus | String | The status of the alarm. |
+| LogRhythm.AlarmDetails.alarmStatusName | String | The name for the status of the alarm. |
+| LogRhythm.AlarmDetails.lastUpdatedID | Number | The ID of the last person to update the alarm. |
+| LogRhythm.AlarmDetails.lastUpdatedName | String | The name of the last person to update the alarm. |
+| LogRhythm.AlarmDetails.dateInserted | String | The date in UTC, that the alarm was inserted. |
+| LogRhythm.AlarmDetails.dateUpdated | String | The date in UTC, that the alarm was updated. |
+| LogRhythm.AlarmDetails.associatedCases | String | The cases associated with this alarm. |
+| LogRhythm.AlarmDetails.lastPersonID | Number | The ID of the last person to edit this alarm. |
+| LogRhythm.AlarmDetails.eventCount | Number | The amount of events that triggered this alarm. |
+| LogRhythm.AlarmDetails.eventDateFirst | String | The date in UTC of the first event to trigger this alarm. |
+| LogRhythm.AlarmDetails.eventDateLast | String | The date in UTC of the last event to trigger this alarm. |
+| LogRhythm.AlarmDetails.rBPMax | Number | The maximum Risk Based Priority for this alarm. |
+| LogRhythm.AlarmDetails.rBPAvg | Number | The average Risk Based Priority for this alarm. |
+| LogRhythm.AlarmDetails.executionTarget | Number | The target which the alarm was executed against. |
+| LogRhythm.AlarmDetails.alarmDataCached | String | The cached alarm data. |
 
 ### lr-cases-list
+
 ***
 Get cases details using filter criteria.
-
 
 #### Base Command
 
 `lr-cases-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | The case ID by which to filter the results. | Optional | 
-| timestamp_filter_type | The type by which to filter case results combined with the argument timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter", and "createdBefore". Possible values are: updatedAfter, updatedBefore, createdAfter, createdBefore. | Optional | 
-| timestamp | The timestamp by which to filter case results combined with the argument timestamp_filter_type. | Optional | 
-| priority | The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Optional | 
-| status | The status by which to filter the results. Possible values are "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5" (resolved). Possible values are: 1, 2, 3, 4, 5. | Optional | 
-| owners | A comma-separated list of owner numbers. | Optional | 
-| tags | A comma-separated list of  tag numbers. | Optional | 
-| text | Filter results that have a case number or name that contains the specified value. | Optional | 
-| evidence_type | Filter results that have evidence of the specified type. Possible values: "alarm", "userEvents", "log", no"te, and "file". Possible values are: alarm, userEvents, log, note, file. | Optional | 
-| reference_id | Filter results that have evidence with the given reference identifier. For example, an alarm ID. | Optional | 
-| external_id | Filter results that have the specified, unique, external identifier. | Optional | 
-| offset | The number of cases to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The number of cases to return. Default is 50. | Optional | 
-
+| case_id | The case ID by which to filter the results. | Optional |
+| timestamp_filter_type | The type by which to filter case results combined with the argument timestamp. Possible values: "updatedAfter", "updatedBefore", "createdAfter", and "createdBefore". Possible values are: updatedAfter, updatedBefore, createdAfter, createdBefore. | Optional |
+| timestamp | The timestamp by which to filter case results combined with the argument timestamp_filter_type. | Optional |
+| priority | The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Optional |
+| status | The status by which to filter the results. Possible values are "1", (created), "2" (completed), "3" (incident), "4" (mitigated), and "5" (resolved). Possible values are: 1, 2, 3, 4, 5. | Optional |
+| owners | A comma-separated list of owner numbers. | Optional |
+| tags | A comma-separated list of  tag numbers. | Optional |
+| text | Filter results that have a case number or name that contains the specified value. | Optional |
+| evidence_type | Filter results that have evidence of the specified type. Possible values: "alarm", "userEvents", "log", no"te, and "file". Possible values are: alarm, userEvents, log, note, file. | Optional |
+| reference_id | Filter results that have evidence with the given reference identifier. For example, an alarm ID. | Optional |
+| external_id | Filter results that have the specified, unique, external identifier. | Optional |
+| offset | The number of cases to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The number of cases to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the case owner is disabled. | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the user who last updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the case owner is disabled. |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the user who last updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-cases-list priority=5```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1407,6 +1414,7 @@ Get cases details using filter criteria.
 #### Human Readable Output
 
 >### Cases
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-11T14:10:08.617291Z | 2021-08-31T15:18:26.8118901Z | 2021-08-12T14:10:08.617291Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity |  | B055F3D5-6F49-4D94-AEF1-FAEDC4A25251 | number: 1<br/>name: LR Soap API<br/>disabled: false | test case | 4 | number: 1<br/>name: LR Soap API<br/>disabled: false | 5 |  |  |  | name: Incident<br/>number: 3 |  |  |
@@ -1421,65 +1429,65 @@ Get cases details using filter criteria.
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-10-19T05:44:36.6091003Z | 2021-10-19T05:44:36.6091003Z | 2021-10-20T05:44:36.6091003Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity |  | 97F336B2-D18E-438A-8FB1-7F49DCB0A867 | number: 1<br/>name: LR Soap API<br/>disabled: false | test777777 | 59 | number: 1<br/>name: LR Soap API<br/>disabled: false | 5 |  |  |  | name: Created<br/>number: 1 |  |  |
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-10-19T05:51:51.6372007Z | 2021-10-19T05:51:51.6372007Z | 2021-10-20T05:51:51.6372007Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity |  | 064C632E-E7E8-4913-A123-EB6153FE4BE4 | number: 1<br/>name: LR Soap API<br/>disabled: false | test777777 | 60 | number: 1<br/>name: LR Soap API<br/>disabled: false | 5 |  |  |  | name: Created<br/>number: 1 |  |  |
 
-
 ### lr-case-create
+
 ***
 Create a new case.
-
 
 #### Base Command
 
 `lr-case-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| name | Name of the case. | Required | 
-| priority | The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Required | 
-| external_id | Externally defined identifier for the case. | Optional | 
-| due_date | The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z. | Optional | 
-| summary | Note summarizing the case. | Optional | 
-
+| name | Name of the case. | Required |
+| priority | The priority by which to filter the results. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Required |
+| external_id | Externally defined identifier for the case. | Optional |
+| due_date | The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z. | Optional |
+| summary | Note summarizing the case. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-case-create name=test priority=1 external_id=8200 summary=`test case````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1532,72 +1540,73 @@ Create a new case.
 #### Human Readable Output
 
 >### Case created successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-10-30T20:33:44.6636405Z | 2021-10-30T20:33:44.6636405Z | 2021-10-31T20:33:44.6636405Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 8200 | 83E66AB6-5F9A-441E-BF96-52CA53E20BEA | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 98 | number: 1<br/>name: LR Soap API<br/>disabled: false | 1 |  |  |  | name: Created<br/>number: 1 | test case |  |
 
-
 ### lr-case-update
+
 ***
 Update case information. For example, the case name, priority, and due date.
-
 
 #### Base Command
 
 `lr-case-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| name | Name of the case. | Optional | 
-| priority | The priority of the case. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Optional | 
-| external_id | Externally defined identifier for the case. | Optional | 
-| due_date | The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z. | Optional | 
-| summary | Note summarizing the case. | Optional | 
-| entity_id | Entity to assign to the case. | Optional | 
-| resolution | Description of how the case was resolved. | Optional | 
-
+| case_id | Unique identifier for the case. | Required |
+| name | Name of the case. | Optional |
+| priority | The priority of the case. Possible values: "1", "2", "3", "4", and "5", where 1 is the highest priority. Possible values are: 1, 2, 3, 4, 5. | Optional |
+| external_id | Externally defined identifier for the case. | Optional |
+| due_date | The timedate of when the case is due, as an RFC 3339 formatted string. E.g., 2020-04-20T14:15:22Z. | Optional |
+| summary | Note summarizing the case. | Optional |
+| entity_id | Entity to assign to the case. | Optional |
+| resolution | Description of how the case was resolved. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-case-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE priority=3```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1650,66 +1659,67 @@ Update case information. For example, the case name, priority, and due date.
 #### Human Readable Output
 
 >### Case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE updated successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-08-31T15:31:24.9870972Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case |  |
 
-
 ### lr-case-status-change
+
 ***
 Update the status of a case.
-
 
 #### Base Command
 
 `lr-case-status-change`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| status | The case status. Possible values: "Created", "Completed", "Incident", "Mitigated", and "Resolved". Possible values are: Created, Completed, Incident, Mitigated, Resolved. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| status | The case status. Possible values: "Created", "Completed", "Incident", "Mitigated", and "Resolved". Possible values are: Created, Completed, Incident, Mitigated, Resolved. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled. |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-case-status-change case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE status=Incident```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1762,55 +1772,56 @@ Update the status of a case.
 #### Human Readable Output
 
 >### Case status updated successfully
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-08-31T15:31:24.9870972Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case |  |
 
-
 ### lr-case-evidence-list
+
 ***
 Return a list of evidence summaries for a case.
-
 
 #### Base Command
 
 `lr-case-evidence-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| evidence_type | Filter results that have evidence of the specified type. Possible values are: "alarm", "userEvents", "log", "note", and "file". Possible values are: alarm, userEvents, log, note, file. | Optional | 
-| status | Filter results that have a specific evidence status. Possible values: "pending", "completed", and "failed". Possible values are: pending, completed, failed. | Optional | 
-| evidence_number | Filter results by evidence number. | Optional | 
-
+| case_id | Unique identifier for the case. | Required |
+| evidence_type | Filter results that have evidence of the specified type. Possible values are: "alarm", "userEvents", "log", "note", and "file". Possible values are: alarm, userEvents, log, note, file. | Optional |
+| status | Filter results that have a specific evidence status. Possible values: "pending", "completed", and "failed". Possible values are: pending, completed, failed. | Optional |
+| evidence_number | Filter results by evidence number. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.CaseEvidence.CaseID | String | The case ID. | 
-| LogRhythm.CaseEvidence.Evidences.number | Number | The evidence number. | 
-| LogRhythm.CaseEvidence.Evidences.dateCreated | Date | The date the evidence was created. | 
-| LogRhythm.CaseEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. | 
-| LogRhythm.CaseEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. | 
-| LogRhythm.CaseEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. | 
-| LogRhythm.CaseEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. | 
-| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the case evidence. | 
-| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the case evidence. | 
-| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case evidence is disabled. | 
-| LogRhythm.CaseEvidence.Evidences.type | String | The evidence type. | 
-| LogRhythm.CaseEvidence.Evidences.status | String | The evidence status | 
-| LogRhythm.CaseEvidence.Evidences.statusMessage | Unknown | The evidence status message. | 
-| LogRhythm.CaseEvidence.Evidences.text | String | The evidence text. | 
-| LogRhythm.CaseEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. | 
-| LogRhythm.CaseEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. | 
-
+| LogRhythm.CaseEvidence.CaseID | String | The case ID. |
+| LogRhythm.CaseEvidence.Evidences.number | Number | The evidence number. |
+| LogRhythm.CaseEvidence.Evidences.dateCreated | Date | The date the evidence was created. |
+| LogRhythm.CaseEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. |
+| LogRhythm.CaseEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. |
+| LogRhythm.CaseEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. |
+| LogRhythm.CaseEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. |
+| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the case evidence. |
+| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the case evidence. |
+| LogRhythm.CaseEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case evidence is disabled. |
+| LogRhythm.CaseEvidence.Evidences.type | String | The evidence type. |
+| LogRhythm.CaseEvidence.Evidences.status | String | The evidence status |
+| LogRhythm.CaseEvidence.Evidences.statusMessage | Unknown | The evidence status message. |
+| LogRhythm.CaseEvidence.Evidences.text | String | The evidence text. |
+| LogRhythm.CaseEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. |
+| LogRhythm.CaseEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. |
 
 #### Command Example
+
 ```!lr-case-evidence-list case_id=583A7DAA-872A-4ECE-80B8-0DECB6FC3061```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -1909,63 +1920,64 @@ Return a list of evidence summaries for a case.
 #### Human Readable Output
 
 >### Evidences for case 583A7DAA-872A-4ECE-80B8-0DECB6FC3061
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 58 | alarm | completed | 2021-08-19T14:21:01.7066667Z | number: -100<br/>name: LogRhythm Administrator<br/>disabled: false |  | alarmId: 212<br/>alarmDate: 2021-08-19T13:08:08.713Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-19T13:08:08.727Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 39 |  |
 >| 59 | alarm | completed | 2021-08-19T14:21:11.7766667Z | number: -100<br/>name: LogRhythm Administrator<br/>disabled: false |  | alarmId: 211<br/>alarmDate: 2021-08-19T11:07:56.86Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-19T11:07:56.877Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 39 |  |
 >| 61 | note | completed | 2021-08-19T14:25:33.5976206Z | number: -100<br/>name: LogRhythm Administrator<br/>disabled: false | test note |  |  |
 
-
 ### lr-case-alarm-evidence-add
+
 ***
 Add multiple alarms as evidence on a case.
-
 
 #### Base Command
 
 `lr-case-alarm-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| alarm_numbers | A comma-separated list of alarm IDs. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| alarm_numbers | A comma-separated list of alarm IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.AlarmEvidence.CaseID | String | The case ID. | 
-| LogRhythm.AlarmEvidence.Evidences.number | Number | The evidence number. | 
-| LogRhythm.AlarmEvidence.Evidences.dateCreated | Date | The date the evidence was created. | 
-| LogRhythm.AlarmEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. | 
-| LogRhythm.AlarmEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. | 
-| LogRhythm.AlarmEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. | 
-| LogRhythm.AlarmEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. | 
-| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the alarm evidence. | 
-| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the alarm evidence. | 
-| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the alarm evidence is disabled. | 
-| LogRhythm.AlarmEvidence.Evidences.type | String | The evidence type. | 
-| LogRhythm.AlarmEvidence.Evidences.status | String | The evidence status | 
-| LogRhythm.AlarmEvidence.Evidences.statusMessage | Unknown | The evidence status message. | 
-| LogRhythm.AlarmEvidence.Evidences.text | String | The evidence text. | 
-| LogRhythm.AlarmEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. | 
-| LogRhythm.AlarmEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.alarmId | Number | The alarm ID. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.alarmDate | Date | The alarm date. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleId | Number | The alarm rule ID. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleName | String | The alarm rule name. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.dateInserted | Date | The date the alarm was inserted. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.entityId | Number | The alarm entity ID. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.entityName | String | The alarm entity name. | 
-| LogRhythm.AlarmEvidence.Evidences.alarm.riskBasedPriorityMax | Number | The maximum Risk Based Priority \(RBP\) threshold of events to monitor. | 
-
+| LogRhythm.AlarmEvidence.CaseID | String | The case ID. |
+| LogRhythm.AlarmEvidence.Evidences.number | Number | The evidence number. |
+| LogRhythm.AlarmEvidence.Evidences.dateCreated | Date | The date the evidence was created. |
+| LogRhythm.AlarmEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. |
+| LogRhythm.AlarmEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. |
+| LogRhythm.AlarmEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. |
+| LogRhythm.AlarmEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. |
+| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the alarm evidence. |
+| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the alarm evidence. |
+| LogRhythm.AlarmEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the alarm evidence is disabled. |
+| LogRhythm.AlarmEvidence.Evidences.type | String | The evidence type. |
+| LogRhythm.AlarmEvidence.Evidences.status | String | The evidence status |
+| LogRhythm.AlarmEvidence.Evidences.statusMessage | Unknown | The evidence status message. |
+| LogRhythm.AlarmEvidence.Evidences.text | String | The evidence text. |
+| LogRhythm.AlarmEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. |
+| LogRhythm.AlarmEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.alarmId | Number | The alarm ID. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.alarmDate | Date | The alarm date. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleId | Number | The alarm rule ID. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.alarmRuleName | String | The alarm rule name. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.dateInserted | Date | The date the alarm was inserted. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.entityId | Number | The alarm entity ID. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.entityName | String | The alarm entity name. |
+| LogRhythm.AlarmEvidence.Evidences.alarm.riskBasedPriorityMax | Number | The maximum Risk Based Priority \(RBP\) threshold of events to monitor. |
 
 #### Command Example
+
 ```!lr-case-alarm-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE alarm_numbers=200,201```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2043,54 +2055,55 @@ Add multiple alarms as evidence on a case.
 #### Human Readable Output
 
 >### Alarms added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 62 | alarm | completed | 2021-08-19T15:41:35.54Z | number: 1<br/>name: LR Soap API<br/>disabled: false |  | alarmId: 200<br/>alarmDate: 2021-08-18T13:05:59.663Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-18T13:05:59.683Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 100 |  |
 >| 63 | alarm | completed | 2021-08-19T15:41:35.54Z | number: 1<br/>name: LR Soap API<br/>disabled: false |  | alarmId: 201<br/>alarmDate: 2021-08-18T15:06:10.623Z<br/>alarmRuleId: 98<br/>alarmRuleName: LogRhythm Agent Heartbeat Missed<br/>dateInserted: 2021-08-18T15:06:10.637Z<br/>entityId: 2<br/>entityName: EchoTestEntity<br/>riskBasedPriorityMax: 39 |  |
 
-
 ### lr-case-note-evidence-add
+
 ***
 Add a note as evidence on a case.
-
 
 #### Base Command
 
 `lr-case-note-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| note | Note text. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| note | Note text. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.NoteEvidence.CaseID | String | The case ID. | 
-| LogRhythm.NoteEvidence.Evidences.number | Number | The evidence number. | 
-| LogRhythm.NoteEvidence.Evidences.dateCreated | Date | The date the evidence was created. | 
-| LogRhythm.NoteEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. | 
-| LogRhythm.NoteEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. | 
-| LogRhythm.NoteEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. | 
-| LogRhythm.NoteEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. | 
-| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the evidence. | 
-| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the evidence. | 
-| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the evidence is disabled. | 
-| LogRhythm.NoteEvidence.Evidences.type | String | The evidence type. | 
-| LogRhythm.NoteEvidence.Evidences.status | String | The evidence status, | 
-| LogRhythm.NoteEvidence.Evidences.statusMessage | Unknown | The evidence status message. | 
-| LogRhythm.NoteEvidence.Evidences.text | String | The evidence text. | 
-| LogRhythm.NoteEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. | 
-| LogRhythm.NoteEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. | 
-
+| LogRhythm.NoteEvidence.CaseID | String | The case ID. |
+| LogRhythm.NoteEvidence.Evidences.number | Number | The evidence number. |
+| LogRhythm.NoteEvidence.Evidences.dateCreated | Date | The date the evidence was created. |
+| LogRhythm.NoteEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. |
+| LogRhythm.NoteEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. |
+| LogRhythm.NoteEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. |
+| LogRhythm.NoteEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. |
+| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the evidence. |
+| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the evidence. |
+| LogRhythm.NoteEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the evidence is disabled. |
+| LogRhythm.NoteEvidence.Evidences.type | String | The evidence type. |
+| LogRhythm.NoteEvidence.Evidences.status | String | The evidence status, |
+| LogRhythm.NoteEvidence.Evidences.statusMessage | Unknown | The evidence status message. |
+| LogRhythm.NoteEvidence.Evidences.text | String | The evidence text. |
+| LogRhythm.NoteEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. |
+| LogRhythm.NoteEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. |
 
 #### Command Example
+
 ```!lr-case-note-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE note=test```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2127,53 +2140,54 @@ Add a note as evidence on a case.
 #### Human Readable Output
 
 >### Note added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 243 | note | completed | 2021-10-30T20:17:09.2251906Z | number: 1<br/>name: LR Soap API<br/>disabled: false | test |  |  |
 
-
 ### lr-case-file-evidence-add
+
 ***
 Upload a file as evidence on a case.
-
 
 #### Base Command
 
 `lr-case-file-evidence-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case,. | Required | 
-| entryId | The entry ID of the file to attach. | Required | 
-
+| case_id | Unique identifier for the case,. | Required |
+| entryId | The entry ID of the file to attach. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.FileEvidence.CaseID | String | The case ID. | 
-| LogRhythm.FileEvidence.Evidences.number | Number | The evidence number. | 
-| LogRhythm.FileEvidence.Evidences.dateCreated | Date | The date the evidence was created. | 
-| LogRhythm.FileEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. | 
-| LogRhythm.FileEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. | 
-| LogRhythm.FileEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. | 
-| LogRhythm.FileEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. | 
-| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the evidence. | 
-| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the evidence. | 
-| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the evidence is disabled. | 
-| LogRhythm.FileEvidence.Evidences.type | String | The evidence type. | 
-| LogRhythm.FileEvidence.Evidences.status | String | The evidence status | 
-| LogRhythm.FileEvidence.Evidences.statusMessage | Unknown | The evidence status message. | 
-| LogRhythm.FileEvidence.Evidences.text | String | The evidence text. | 
-| LogRhythm.FileEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. | 
-| LogRhythm.FileEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. | 
-
+| LogRhythm.FileEvidence.CaseID | String | The case ID. |
+| LogRhythm.FileEvidence.Evidences.number | Number | The evidence number. |
+| LogRhythm.FileEvidence.Evidences.dateCreated | Date | The date the evidence was created. |
+| LogRhythm.FileEvidence.Evidences.dateUpdated | Date | The date the evidence was updated. |
+| LogRhythm.FileEvidence.Evidences.createdBy.number | Number | The ID of the user who created the evidence. |
+| LogRhythm.FileEvidence.Evidences.createdBy.name | String | The name of the user who created the evidence. |
+| LogRhythm.FileEvidence.Evidences.createdBy.disabled | Boolean | Whether the user is disabled. |
+| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.number | Number | The ID of the user who last updated the evidence. |
+| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.name | String | The name of the user who last updated the evidence. |
+| LogRhythm.FileEvidence.Evidences.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the evidence is disabled. |
+| LogRhythm.FileEvidence.Evidences.type | String | The evidence type. |
+| LogRhythm.FileEvidence.Evidences.status | String | The evidence status |
+| LogRhythm.FileEvidence.Evidences.statusMessage | Unknown | The evidence status message. |
+| LogRhythm.FileEvidence.Evidences.text | String | The evidence text. |
+| LogRhythm.FileEvidence.Evidences.pinned | Boolean | Whether the evidence is pinned. |
+| LogRhythm.FileEvidence.Evidences.datePinned | Unknown | The date the evidence was pinned. |
 
 #### Command Example
+
 ```!lr-case-file-evidence-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE entryId=8502@383ed6ae-1fd7-431a-858d-a11f2620c73b```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2214,32 +2228,33 @@ Upload a file as evidence on a case.
 #### Human Readable Output
 
 >### File added as evidence to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE successfully
+>
 >|Number|Type|Status|Date Created|Created By|Text|Alarm|File|
 >|---|---|---|---|---|---|---|---|
 >| 244 | file | pending | 2021-10-30T20:33:46.8Z | number: 1<br/>name: LR Soap API<br/>disabled: false |  |  | name: File.jpeg<br/>size: 170781 |
 
-
 ### lr-case-evidence-delete
+
 ***
 Remove evidence from a case.
-
 
 #### Base Command
 
 `lr-case-evidence-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| evidence_number | Unique, numeric identifier for the evidence to remove. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| evidence_number | Unique, numeric identifier for the evidence to remove. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-case-evidence-delete case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=65```
 
 #### Human Readable Output
@@ -2247,29 +2262,31 @@ There is no context output for this command.
 >Evidence deleted successfully from case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE.
 
 ### lr-case-file-evidence-download
+
 ***
 Download an item of file evidence from a case.
-
 
 #### Base Command
 
 `lr-case-file-evidence-download`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| evidence_number | Unique, numeric identifier for the evidence. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| evidence_number | Unique, numeric identifier for the evidence. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-case-file-evidence-download case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE evidence_number=66```
 
 #### Context Example
+
 ```json
 {
     "File": {
@@ -2290,63 +2307,62 @@ There is no context output for this command.
 
 #### Human Readable Output
 
-
-
 ### lr-case-tags-add
+
 ***
 Add tags to a case.
-
 
 #### Base Command
 
 `lr-case-tags-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| tag_numbers | A comma-separated list of tag numbers to add. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| tag_numbers | A comma-separated list of tag numbers to add. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled or not | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled or not |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-case-tags-add case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=2,3```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2408,66 +2424,67 @@ Add tags to a case.
 #### Human Readable Output
 
 >### Tags added successfully to case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-10-30T20:17:15.9861818Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case | {'number': 2, 'text': 'tag #2'},<br/>{'number': 3, 'text': 'tag #3'} |
 
-
 ### lr-case-tags-remove
+
 ***
 Remove tags from a case.
-
 
 #### Base Command
 
 `lr-case-tags-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| tag_numbers | A comma-separated list of tag numbers to remove. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| tag_numbers | A comma-separated list of tag numbers to remove. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Case.id | String | The case ID. | 
-| LogRhythm.Case.number | Number | The case number. | 
-| LogRhythm.Case.externalId | String | The case external ID. | 
-| LogRhythm.Case.dateCreated | Date | The date the case was created. | 
-| LogRhythm.Case.dateUpdated | Date | The date the case was updated. | 
-| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. | 
-| LogRhythm.Case.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.Case.owner.name | String | The name of the case owner. | 
-| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled or not | 
-| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. | 
-| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. | 
-| LogRhythm.Case.name | String | The case name. | 
-| LogRhythm.Case.status.name | String | The case status. | 
-| LogRhythm.Case.status.number | Number | The case status number. | 
-| LogRhythm.Case.priority | Number | The case priority. | 
-| LogRhythm.Case.dueDate | Date |  The datetime the case is due. | 
-| LogRhythm.Case.resolution | Unknown | The case resolution. | 
-| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. | 
-| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. | 
-| LogRhythm.Case.summary | String | The case summary. | 
-| LogRhythm.Case.entity.number | Number | The case entity number. | 
-| LogRhythm.Case.entity.name | String | The case entity name. | 
-| LogRhythm.Case.entity.fullName | String | The case entity full name. | 
-| LogRhythm.Case.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.Case.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-| LogRhythm.Case.tags.text | String | The case tag name. | 
-| LogRhythm.Case.tags.number | Number | The case tag number. | 
-
+| LogRhythm.Case.id | String | The case ID. |
+| LogRhythm.Case.number | Number | The case number. |
+| LogRhythm.Case.externalId | String | The case external ID. |
+| LogRhythm.Case.dateCreated | Date | The date the case was created. |
+| LogRhythm.Case.dateUpdated | Date | The date the case was updated. |
+| LogRhythm.Case.dateClosed | Unknown | The date the case was closed. |
+| LogRhythm.Case.owner.number | Number | The ID of the case owner. |
+| LogRhythm.Case.owner.name | String | The name of the case owner. |
+| LogRhythm.Case.owner.disabled | Boolean | Whether the owner is disabled or not |
+| LogRhythm.Case.lastUpdatedBy.number | Number | The ID of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.name | String | The name of the user who last updated the case. |
+| LogRhythm.Case.lastUpdatedBy.disabled | Boolean | Whether the last user who updated the case is disabled. |
+| LogRhythm.Case.name | String | The case name. |
+| LogRhythm.Case.status.name | String | The case status. |
+| LogRhythm.Case.status.number | Number | The case status number. |
+| LogRhythm.Case.priority | Number | The case priority. |
+| LogRhythm.Case.dueDate | Date |  The datetime the case is due. |
+| LogRhythm.Case.resolution | Unknown | The case resolution. |
+| LogRhythm.Case.resolutionDateUpdated | Unknown | The date the case resolution was last updated. |
+| LogRhythm.Case.resolutionLastUpdatedBy | Unknown | The user who last updated the case resolution. |
+| LogRhythm.Case.summary | String | The case summary. |
+| LogRhythm.Case.entity.number | Number | The case entity number. |
+| LogRhythm.Case.entity.name | String | The case entity name. |
+| LogRhythm.Case.entity.fullName | String | The case entity full name. |
+| LogRhythm.Case.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.Case.collaborators.name | String | The case collaborator name. |
+| LogRhythm.Case.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
+| LogRhythm.Case.tags.text | String | The case tag name. |
+| LogRhythm.Case.tags.number | Number | The case tag number. |
 
 #### Command Example
+
 ```!lr-case-tags-remove case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE tag_numbers=1,2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2525,44 +2542,45 @@ Remove tags from a case.
 #### Human Readable Output
 
 >### Tags removed successfully from case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE
+>
 >|Collaborators|Date Closed|Date Created|Date Updated|Due Date|Entity|External Id|Id|Last Updated By|Name|Number|Owner|Priority|Resolution|Resolution Date Updated|Resolution Last Updated By|Status|Summary|Tags|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| {'number': 1, 'name': 'LR Soap API', 'disabled': False} |  | 2021-08-19T15:38:07.8995494Z | 2021-10-30T20:17:17.3901952Z | 2021-08-20T15:38:07.8995494Z | number: -100<br/>name: Global Entity<br/>fullName: Global Entity | 9930 | 2E7FA20D-191E-4733-B7DC-A18BBFE762CE | number: 1<br/>name: LR Soap API<br/>disabled: false | test | 17 | number: 1<br/>name: LR Soap API<br/>disabled: false | 3 |  |  |  | name: Incident<br/>number: 3 | test case | {'number': 3, 'text': 'tag #3'} |
 
-
 ### lr-tags-list
+
 ***
 Return a list of tags using filter criteria.
-
 
 #### Base Command
 
 `lr-tags-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| tag_name | Filter results that have a tag name that contains the specified value. | Optional | 
-| offset | The number of tags to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The numbers of tags to return. Default is 50. | Optional | 
-
+| tag_name | Filter results that have a tag name that contains the specified value. | Optional |
+| offset | The number of tags to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The numbers of tags to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Tag.number | Number | The tag number. | 
-| LogRhythm.Tag.text | String | The tag text. | 
-| LogRhythm.Tag.dateCreated | Date | The date the tag was created. | 
-| LogRhythm.Tag.createdBy.number | Number | The ID of the user who created the tag. | 
-| LogRhythm.Tag.createdBy.name | String | The name of the user who created the tag. | 
-| LogRhythm.Tag.createdBy.disabled | Boolean | Whether the user is disabled. | 
-
+| LogRhythm.Tag.number | Number | The tag number. |
+| LogRhythm.Tag.text | String | The tag text. |
+| LogRhythm.Tag.dateCreated | Date | The date the tag was created. |
+| LogRhythm.Tag.createdBy.number | Number | The ID of the user who created the tag. |
+| LogRhythm.Tag.createdBy.name | String | The name of the user who created the tag. |
+| LogRhythm.Tag.createdBy.disabled | Boolean | Whether the user is disabled. |
 
 #### Command Example
+
 ```!lr-tags-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2595,44 +2613,45 @@ Return a list of tags using filter criteria.
 #### Human Readable Output
 
 >### Tags
+>
 >|Number|Text|Date Created|Created By|
 >|---|---|---|---|
 >| 2 | tag #2 | 2021-08-11T13:44:00.4433333Z | number: 1<br/>name: LR Soap API<br/>disabled: false |
 >| 3 | tag #3 | 2021-08-11T13:44:05.7433333Z | number: 1<br/>name: LR Soap API<br/>disabled: false |
 
-
 ### lr-case-collaborators-list
+
 ***
 Returns the owner and a list of collaborators associated with a specific case.
-
 
 #### Base Command
 
 `lr-case-collaborators-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.CaseCollaborator.CaseID | String | The case ID. | 
-| LogRhythm.CaseCollaborator.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.CaseCollaborator.owner.name | String | The name of the case owner. | 
-| LogRhythm.CaseCollaborator.owner.disabled | Boolean | Whether the owner is disabled. | 
-| LogRhythm.CaseCollaborator.collaborators.number | Number | The case collaborator number. | 
-| LogRhythm.CaseCollaborator.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.CaseCollaborator.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-
+| LogRhythm.CaseCollaborator.CaseID | String | The case ID. |
+| LogRhythm.CaseCollaborator.owner.number | Number | The ID of the case owner. |
+| LogRhythm.CaseCollaborator.owner.name | String | The name of the case owner. |
+| LogRhythm.CaseCollaborator.owner.disabled | Boolean | Whether the owner is disabled. |
+| LogRhythm.CaseCollaborator.collaborators.number | Number | The case collaborator number. |
+| LogRhythm.CaseCollaborator.collaborators.name | String | The case collaborator name. |
+| LogRhythm.CaseCollaborator.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
 
 #### Command Example
+
 ```!lr-case-collaborators-list case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2658,49 +2677,52 @@ Returns the owner and a list of collaborators associated with a specific case.
 #### Human Readable Output
 
 >### Case owner
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
+>
 >### Case collaborators
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
-
 
 ### lr-case-collaborators-update
+
 ***
 Updates the owner and collaborators associated with a specific case.
-
 
 #### Base Command
 
 `lr-case-collaborators-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| case_id | Unique identifier for the case. | Required | 
-| owner | Unique, numeric identifier for the person. | Required | 
-| collaborators | A comma-separated list of user IDs. | Required | 
-
+| case_id | Unique identifier for the case. | Required |
+| owner | Unique, numeric identifier for the person. | Required |
+| collaborators | A comma-separated list of user IDs. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.CaseCollaborator.CaseID | String | The case ID. | 
-| LogRhythm.CaseCollaborator.owner.number | Number | The ID of the case owner. | 
-| LogRhythm.CaseCollaborator.owner.name | String | The name of the case owner. | 
-| LogRhythm.CaseCollaborator.owner.disabled | Boolean | Whether the owner is disabled. | 
-| LogRhythm.CaseCollaborator.collaborators.number | Number | The case collaborator ID. | 
-| LogRhythm.CaseCollaborator.collaborators.name | String | The case collaborator name. | 
-| LogRhythm.CaseCollaborator.collaborators.disabled | Boolean | Whether the case collaborator is disabled. | 
-
+| LogRhythm.CaseCollaborator.CaseID | String | The case ID. |
+| LogRhythm.CaseCollaborator.owner.number | Number | The ID of the case owner. |
+| LogRhythm.CaseCollaborator.owner.name | String | The name of the case owner. |
+| LogRhythm.CaseCollaborator.owner.disabled | Boolean | Whether the owner is disabled. |
+| LogRhythm.CaseCollaborator.collaborators.number | Number | The case collaborator ID. |
+| LogRhythm.CaseCollaborator.collaborators.name | String | The case collaborator name. |
+| LogRhythm.CaseCollaborator.collaborators.disabled | Boolean | Whether the case collaborator is disabled. |
 
 #### Command Example
+
 ```!lr-case-collaborators-update case_id=2E7FA20D-191E-4733-B7DC-A18BBFE762CE collaborators=1 owner=1```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2726,50 +2748,54 @@ Updates the owner and collaborators associated with a specific case.
 #### Human Readable Output
 
 >### Case 2E7FA20D-191E-4733-B7DC-A18BBFE762CE updated successfully
+>
 >### Case owner
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
+>
 >### Case collaborators
+>
 >|Disabled|Name|Number|
 >|---|---|---|
 >| false | LR Soap API | 1 |
-
 
 ### lr-entities-list
+
 ***
 Returns all Entities that match the specified criteria.
-
 
 #### Base Command
 
 `lr-entities-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| parent_entity_id | Filter by the object parent entity ID. | Optional | 
-| entity_id | Filter by the entity ID. | Optional | 
-| offset | The number of entities to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The number of entities to return. Default is 50. | Optional | 
-
+| parent_entity_id | Filter by the object parent entity ID. | Optional |
+| entity_id | Filter by the entity ID. | Optional |
+| offset | The number of entities to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The number of entities to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Entity.id | Number | The entity ID. | 
-| LogRhythm.Entity.name | String | The entity name. | 
-| LogRhythm.Entity.fullName | String | The entity full name. | 
-| LogRhythm.Entity.recordStatusName | String | The entity record status. | 
-| LogRhythm.Entity.shortDesc | String | The entity short description. | 
-| LogRhythm.Entity.dateUpdated | Date | The date the entity was updated. | 
-
+| LogRhythm.Entity.id | Number | The entity ID. |
+| LogRhythm.Entity.name | String | The entity name. |
+| LogRhythm.Entity.fullName | String | The entity full name. |
+| LogRhythm.Entity.recordStatusName | String | The entity record status. |
+| LogRhythm.Entity.shortDesc | String | The entity short description. |
+| LogRhythm.Entity.dateUpdated | Date | The date the entity was updated. |
 
 #### Command Example
+
 ```!lr-entities-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2798,62 +2824,63 @@ Returns all Entities that match the specified criteria.
 #### Human Readable Output
 
 >### Entities
+>
 >|Id|Name|Full Name|Record Status Name|Short Desc|Date Updated|
 >|---|---|---|---|---|---|
 >| 2 | EchoTestEntity | EchoTestEntity | Active | LogRhythm ECHO | 2021-10-12T14:01:21.54Z |
 >| -100 | Global Entity | Global Entity | Active | Global entity containing shared network and host records | 2021-10-27T16:27:14.363Z |
 
-
 ### lr-hosts-list
+
 ***
 Returns all hosts that match the specified criteria.
-
 
 #### Base Command
 
 `lr-hosts-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | Filter by host ID. | Optional | 
-| host_name | Filter by host name. | Optional | 
-| entity_name | Filter by entity name. | Optional | 
-| record_status | Filter by record status. Possible values: "all", "active", "retired". Possible values are: all, active, retired. | Optional | 
-| offset | The number of hosts to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The number of hosts to return. Default is 50. | Optional | 
-
+| host_id | Filter by host ID. | Optional |
+| host_name | Filter by host name. | Optional |
+| entity_name | Filter by entity name. | Optional |
+| record_status | Filter by record status. Possible values: "all", "active", "retired". Possible values are: all, active, retired. | Optional |
+| offset | The number of hosts to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The number of hosts to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Host.id | Number | The host ID. | 
-| LogRhythm.Host.entity.id | Number | The host entity ID. | 
-| LogRhythm.Host.entity.name | String | The host entity name. | 
-| LogRhythm.Host.name | String | The host name. | 
-| LogRhythm.Host.riskLevel | String | The host risk level. | 
-| LogRhythm.Host.threatLevel | String | The host threat level. | 
-| LogRhythm.Host.threatLevelComments | String | The threat level comments | 
-| LogRhythm.Host.recordStatusName | String | The host record status name. | 
-| LogRhythm.Host.hostZone | String | The host zone. | 
-| LogRhythm.Host.location.id | Number | The host location ID. | 
-| LogRhythm.Host.os | String | The operating system type supported by LogRhythm. | 
-| LogRhythm.Host.useEventlogCredentials | Boolean | Whether to use the event log credentials. | 
-| LogRhythm.Host.osType | String | The agent server type on which the operating system is installed. | 
-| LogRhythm.Host.dateUpdated | Date | The date the host was updated. | 
-| LogRhythm.Host.shortDesc | String | The host short description. | 
-| LogRhythm.Host.osVersion | String | The host operation system version. | 
-| LogRhythm.Host.hostIdentifiers.type | String | The host identifier type. | 
-| LogRhythm.Host.hostIdentifiers.value | String | The host identifier value. | 
-| LogRhythm.Host.hostIdentifiers.dateAssigned | Date | The date the host identifier was assigned. | 
-| LogRhythm.Host.eventlogPassword | String | The event log password. | 
-
+| LogRhythm.Host.id | Number | The host ID. |
+| LogRhythm.Host.entity.id | Number | The host entity ID. |
+| LogRhythm.Host.entity.name | String | The host entity name. |
+| LogRhythm.Host.name | String | The host name. |
+| LogRhythm.Host.riskLevel | String | The host risk level. |
+| LogRhythm.Host.threatLevel | String | The host threat level. |
+| LogRhythm.Host.threatLevelComments | String | The threat level comments |
+| LogRhythm.Host.recordStatusName | String | The host record status name. |
+| LogRhythm.Host.hostZone | String | The host zone. |
+| LogRhythm.Host.location.id | Number | The host location ID. |
+| LogRhythm.Host.os | String | The operating system type supported by LogRhythm. |
+| LogRhythm.Host.useEventlogCredentials | Boolean | Whether to use the event log credentials. |
+| LogRhythm.Host.osType | String | The agent server type on which the operating system is installed. |
+| LogRhythm.Host.dateUpdated | Date | The date the host was updated. |
+| LogRhythm.Host.shortDesc | String | The host short description. |
+| LogRhythm.Host.osVersion | String | The host operation system version. |
+| LogRhythm.Host.hostIdentifiers.type | String | The host identifier type. |
+| LogRhythm.Host.hostIdentifiers.value | String | The host identifier value. |
+| LogRhythm.Host.hostIdentifiers.dateAssigned | Date | The date the host identifier was assigned. |
+| LogRhythm.Host.eventlogPassword | String | The event log password. |
 
 #### Command Example
+
 ```!lr-hosts-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -2910,54 +2937,55 @@ Returns all hosts that match the specified criteria.
 #### Human Readable Output
 
 >### Hosts
+>
 >|Date Updated|Entity|Host Identifiers|Host Roles|Host Zone|Id|Location|Name|Os|Os Type|Record Status Name|Risk Level|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-27T15:56:14.34Z | id: -100<br/>name: Global Entity |  |  | Internal | -1000001 | id: -1 | AI Engine Server | Unknown | Server | Active | None | None |  | false |
 >| 2021-07-27T15:56:14.343Z | id: 1<br/>name: Primary Site |  |  | Internal | -1000002 | id: -1 | AI Engine Server | Unknown | Server | Active | None | None |  | false |
 
-
 ### lr-users-list
+
 ***
 Returns user records based on the permissions of the currently logged in user and the specified criteria.
-
 
 #### Base Command
 
 `lr-users-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| user_ids | A comma-separated list of user IDs. | Optional | 
-| entity_ids | A comma-separated list of entity IDs. | Optional | 
-| user_status | Filter by user status. Possible values: "Active" and "Retired". Possible values are: Active, Retired. | Optional | 
-| offset | The ID of users to skip before starting to collect the result set. Default is 0. | Optional | 
-| count | The IDs of the users to return. Default is 50. | Optional | 
-
+| user_ids | A comma-separated list of user IDs. | Optional |
+| entity_ids | A comma-separated list of entity IDs. | Optional |
+| user_status | Filter by user status. Possible values: "Active" and "Retired". Possible values are: Active, Retired. | Optional |
+| offset | The ID of users to skip before starting to collect the result set. Default is 0. | Optional |
+| count | The IDs of the users to return. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.User.firstName | String | The user first name. | 
-| LogRhythm.User.lastName | String | The user last name. | 
-| LogRhythm.User.userType | String | The user type | 
-| LogRhythm.User.fullName | String | The user full name. | 
-| LogRhythm.User.objectPermissions.readAccess | String | The user read access permissions. | 
-| LogRhythm.User.objectPermissions.writeAccess | String | The user write access permissions. | 
-| LogRhythm.User.objectPermissions.entity.id | Number | The user permissions entity ID. | 
-| LogRhythm.User.objectPermissions.entity.name | String | The user permissions entity name. | 
-| LogRhythm.User.objectPermissions.owner.id | Number | The user permissions owner ID. | 
-| LogRhythm.User.objectPermissions.owner.name | String | The user permissions owner. | 
-| LogRhythm.User.id | Number | The user ID. | 
-| LogRhythm.User.recordStatusName | String | The user record status. | 
-| LogRhythm.User.dateUpdated | Date | The date the user was updated. | 
-
+| LogRhythm.User.firstName | String | The user first name. |
+| LogRhythm.User.lastName | String | The user last name. |
+| LogRhythm.User.userType | String | The user type |
+| LogRhythm.User.fullName | String | The user full name. |
+| LogRhythm.User.objectPermissions.readAccess | String | The user read access permissions. |
+| LogRhythm.User.objectPermissions.writeAccess | String | The user write access permissions. |
+| LogRhythm.User.objectPermissions.entity.id | Number | The user permissions entity ID. |
+| LogRhythm.User.objectPermissions.entity.name | String | The user permissions entity name. |
+| LogRhythm.User.objectPermissions.owner.id | Number | The user permissions owner ID. |
+| LogRhythm.User.objectPermissions.owner.name | String | The user permissions owner. |
+| LogRhythm.User.id | Number | The user ID. |
+| LogRhythm.User.recordStatusName | String | The user record status. |
+| LogRhythm.User.dateUpdated | Date | The date the user was updated. |
 
 #### Command Example
+
 ```!lr-users-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -3012,62 +3040,63 @@ Returns user records based on the permissions of the currently logged in user an
 #### Human Readable Output
 
 >### Users
+>
 >|Id|Full Name|User Type|First Name|Last Name|Record Status Name|Date Updated|Object Permissions|
 >|---|---|---|---|---|---|---|---|
 >| 1 | LR Soap API | Role |  |  | Active | 2021-07-27T20:38:31.443Z | readAccess: PublicGlobalAdmin<br/>writeAccess: PublicGlobalAdmin<br/>entity: {"id": 1, "name": "Primary Site"}<br/>owner: {"id": -100, "name": "LogRhythmAdmin"} |
 >| -101 | LogRhythm Analyst | Role | LogRhythm | Analyst | Active | 2021-07-27T15:07:47.05Z | readAccess: PublicAll<br/>writeAccess: PublicGlobalAdmin<br/>entity: {"id": -100, "name": "Global Entity"}<br/>owner: {"id": -100, "name": "LogRhythmAdmin"} |
 
-
 ### lr-lists-get
+
 ***
 Returns list details using the filter criteria.
-
 
 #### Base Command
 
 `lr-lists-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity". Possible values are: None, Application, Classification, CommonEvent, Host, Location, MsgSource, MsgSourceType, MPERule, Network, User, GeneralValue, Entity, RootEntity, IP, IPRange, Identity. | Optional | 
-| list_name | The name of the object or regex match. | Optional | 
-| can_edit | Specifies if Write Only (true) or Read Only (false) lists are required for a user. Possible values: "true" and "false". Possible values are: true, false. | Optional | 
-
+| list_type | The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity". Possible values are: None, Application, Classification, CommonEvent, Host, Location, MsgSource, MsgSourceType, MPERule, Network, User, GeneralValue, Entity, RootEntity, IP, IPRange, Identity. | Optional |
+| list_name | The name of the object or regex match. | Optional |
+| can_edit | Specifies if Write Only (true) or Read Only (false) lists are required for a user. Possible values: "true" and "false". Possible values are: true, false. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.List.listType | String | The list type. | 
-| LogRhythm.List.status | String | The list status. | 
-| LogRhythm.List.name | String | The list name. | 
-| LogRhythm.List.shortDescription | String | The list short description. | 
-| LogRhythm.List.useContext | String | The use context type. | 
-| LogRhythm.List.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. | 
-| LogRhythm.List.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. | 
-| LogRhythm.List.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. | 
-| LogRhythm.List.id | Number | The list ID. | 
-| LogRhythm.List.guid | String | The list GUID. | 
-| LogRhythm.List.dateCreated | Date | The date the list was created. | 
-| LogRhythm.List.dateUpdated | Date | The date the list was updated. | 
-| LogRhythm.List.readAccess | String | The read permission level. | 
-| LogRhythm.List.writeAccess | String | The write permission level. | 
-| LogRhythm.List.restrictedRead | Boolean | Whether the list is read restricted. | 
-| LogRhythm.List.entityName | String | The list entity name. | 
-| LogRhythm.List.entryCount | Number | The list entry count. | 
-| LogRhythm.List.needToNotify | Boolean | Whether the list will notify the user when updated. | 
-| LogRhythm.List.doesExpire | Boolean | Whether the list expires. | 
-| LogRhythm.List.owner | Number | The ID of the list owner. | 
-| LogRhythm.List.longDescription | String | The list long description. | 
-| LogRhythm.List.timeToLiveSeconds | Number | The list time for the list to live in seconds. | 
-| LogRhythm.List.revisitDate | Date | The list revisit date. | 
-
+| LogRhythm.List.listType | String | The list type. |
+| LogRhythm.List.status | String | The list status. |
+| LogRhythm.List.name | String | The list name. |
+| LogRhythm.List.shortDescription | String | The list short description. |
+| LogRhythm.List.useContext | String | The use context type. |
+| LogRhythm.List.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. |
+| LogRhythm.List.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. |
+| LogRhythm.List.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. |
+| LogRhythm.List.id | Number | The list ID. |
+| LogRhythm.List.guid | String | The list GUID. |
+| LogRhythm.List.dateCreated | Date | The date the list was created. |
+| LogRhythm.List.dateUpdated | Date | The date the list was updated. |
+| LogRhythm.List.readAccess | String | The read permission level. |
+| LogRhythm.List.writeAccess | String | The write permission level. |
+| LogRhythm.List.restrictedRead | Boolean | Whether the list is read restricted. |
+| LogRhythm.List.entityName | String | The list entity name. |
+| LogRhythm.List.entryCount | Number | The list entry count. |
+| LogRhythm.List.needToNotify | Boolean | Whether the list will notify the user when updated. |
+| LogRhythm.List.doesExpire | Boolean | Whether the list expires. |
+| LogRhythm.List.owner | Number | The ID of the list owner. |
+| LogRhythm.List.longDescription | String | The list long description. |
+| LogRhythm.List.timeToLiveSeconds | Number | The list time for the list to live in seconds. |
+| LogRhythm.List.revisitDate | Date | The list revisit date. |
 
 #### Command Example
+
 ```!lr-lists-get```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -4886,6 +4915,7 @@ Returns list details using the filter criteria.
 #### Human Readable Output
 
 >### Lists
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| B1E34445-2693-411E-8BE2-9B97AFFF20A9 | Windows System32 Hashes | GeneralValue | Active | Hashes of executables in the %systemroot%\system32 directory. Use Case: Masquerading technique in MITRE ATT&CK -1000130 | Global Entity | 2019-11-05T04:11:38.303Z | -1000000 | PublicGlobalAdmin | PublicAll |
@@ -4959,62 +4989,62 @@ Returns list details using the filter criteria.
 >| CB767AFE-65BC-4243-AC82-22B398FB61D9 | test1818_false | Application | Active |  | 2042 | Global Entity | 2021-10-27T14:02:32.25Z | 1 | PublicAll | PublicAll |
 >| F89F6CAF-4892-4E83-81C5-C64DE02591E8 | test1818_true | Application | Active |  | 2043 | Global Entity | 2021-10-27T14:02:44.92Z | 1 | PublicAll | PublicAll |
 
-
 ### lr-list-summary-create-update
+
 ***
 Updates a list summary based on the GUID and other required details. Searches the system for existing list summaries by GUID. Creates a new list summary if the GUID does not exist. Otherwise, updates the list summary.
-
 
 #### Base Command
 
 `lr-list-summary-create-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_type | The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity". Possible values are: None, Application, Classification, CommonEvent, Host, Location, MsgSource, MsgSourceType, MPERule, Network, User, GeneralValue, Entity, RootEntity, IP, IPRange, Identity. | Required | 
-| name | The list name. | Required | 
-| enabled | Whether the list auto import is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| use_patterns | Whether the auto import use patterns is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| replace_existing | Whether the auto import replace existing is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| read_access | The read permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin". Possible values are: Private, PublicAll, PublicGlobalAdmin, PublicGlobalAnalyst, PublicRestrictedAnalyst, PublicRestrictedAdmin. | Required | 
-| write_access | The write permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin". Possible values are: Private, PublicAll, PublicGlobalAdmin, PublicGlobalAnalyst, PublicRestrictedAnalyst, PublicRestrictedAdmin. | Required | 
-| restricted_read | Whether the list is read restricted. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| entity_name | The entity name. | Required | 
-| need_to_notify | Whether the list need to notify. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| does_expire | Whether the list expires. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| owner | The ID of the owner. | Optional | 
-
+| list_type | The list type. Possible values: "None", "Application", "Classification", "CommonEvent", "Host", "Location", "MsgSource", "MsgSourceType", "MPERule", "Network", "User", "GeneralValue", "Entity", "RootEntity", "IP", "IPRange", and "Identity". Possible values are: None, Application, Classification, CommonEvent, Host, Location, MsgSource, MsgSourceType, MPERule, Network, User, GeneralValue, Entity, RootEntity, IP, IPRange, Identity. | Required |
+| name | The list name. | Required |
+| enabled | Whether the list auto import is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| use_patterns | Whether the auto import use patterns is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| replace_existing | Whether the auto import replace existing is enabled. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| read_access | The read permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin". Possible values are: Private, PublicAll, PublicGlobalAdmin, PublicGlobalAnalyst, PublicRestrictedAnalyst, PublicRestrictedAdmin. | Required |
+| write_access | The write permission level. Possible values: "Private", "PublicAll", "PublicGlobalAdmin", "PublicGlobalAnalyst", "PublicRestrictedAnalyst", "PublicRestrictedAdmin". Possible values are: Private, PublicAll, PublicGlobalAdmin, PublicGlobalAnalyst, PublicRestrictedAnalyst, PublicRestrictedAdmin. | Required |
+| restricted_read | Whether the list is read restricted. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| entity_name | The entity name. | Required |
+| need_to_notify | Whether the list need to notify. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| does_expire | Whether the list expires. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| owner | The ID of the owner. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.List.listType | String | The list type. | 
-| LogRhythm.List.status | String | The list status. | 
-| LogRhythm.List.name | String | The list name. | 
-| LogRhythm.List.useContext | String | The use context type. | 
-| LogRhythm.List.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. | 
-| LogRhythm.List.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. | 
-| LogRhythm.List.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. | 
-| LogRhythm.List.id | Number | The list ID. | 
-| LogRhythm.List.guid | String | The list GUID. | 
-| LogRhythm.List.dateCreated | Date | The date the list was created. | 
-| LogRhythm.List.dateUpdated | Date | The date the list was updated. | 
-| LogRhythm.List.readAccess | String | The read permission level. | 
-| LogRhythm.List.writeAccess | String | The write permission level. | 
-| LogRhythm.List.restrictedRead | Boolean | Whether the list is read restricted. | 
-| LogRhythm.List.entityName | String | The list entity name. | 
-| LogRhythm.List.entryCount | Number | The list entry count. | 
-| LogRhythm.List.needToNotify | Boolean | Whether the list will notify the user when updated. | 
-| LogRhythm.List.doesExpire | Boolean | Whether the list expires. | 
-| LogRhythm.List.owner | Number | The ID of the list owner. | 
-
+| LogRhythm.List.listType | String | The list type. |
+| LogRhythm.List.status | String | The list status. |
+| LogRhythm.List.name | String | The list name. |
+| LogRhythm.List.useContext | String | The use context type. |
+| LogRhythm.List.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. |
+| LogRhythm.List.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. |
+| LogRhythm.List.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. |
+| LogRhythm.List.id | Number | The list ID. |
+| LogRhythm.List.guid | String | The list GUID. |
+| LogRhythm.List.dateCreated | Date | The date the list was created. |
+| LogRhythm.List.dateUpdated | Date | The date the list was updated. |
+| LogRhythm.List.readAccess | String | The read permission level. |
+| LogRhythm.List.writeAccess | String | The write permission level. |
+| LogRhythm.List.restrictedRead | Boolean | Whether the list is read restricted. |
+| LogRhythm.List.entityName | String | The list entity name. |
+| LogRhythm.List.entryCount | Number | The list entry count. |
+| LogRhythm.List.needToNotify | Boolean | Whether the list will notify the user when updated. |
+| LogRhythm.List.doesExpire | Boolean | Whether the list expires. |
+| LogRhythm.List.owner | Number | The ID of the list owner. |
 
 #### Command Example
+
 ```!lr-list-summary-create-update does_expire=false enabled=true entity_name=`Global Entity` list_type=User name=test1 need_to_notify=false read_access=Private replace_existing=false restricted_read=false use_patterns=false write_access=Private owner=1```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5050,66 +5080,67 @@ Updates a list summary based on the GUID and other required details. Searches th
 #### Human Readable Output
 
 >### List created successfully
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| 4BC51B20-640B-4F58-A448-A5C8A52161D2 | test1 | User | Active |  | 2044 | Global Entity | 2021-10-30T20:17:42.433Z | 1 | Private | Private |
 
-
 ### lr-list-details-and-items-get
+
 ***
 Returns list details and list items based on the list GUID.
-
 
 #### Base Command
 
 `lr-list-details-and-items-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_guid | The GUID stored in the database. | Required | 
-| max_items | The maximum number of items that can be returned in a single request. Default is 100. | Optional | 
-
+| list_guid | The GUID stored in the database. | Required |
+| max_items | The maximum number of items that can be returned in a single request. Default is 100. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.ListDetails.listType | String | The list type. | 
-| LogRhythm.ListDetails.status | String | The list status. | 
-| LogRhythm.ListDetails.name | String | The list name. | 
-| LogRhythm.ListDetails.useContext | String | The use context type. | 
-| LogRhythm.ListDetails.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. | 
-| LogRhythm.ListDetails.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. | 
-| LogRhythm.ListDetails.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. | 
-| LogRhythm.ListDetails.id | Number | The list ID. | 
-| LogRhythm.ListDetails.guid | String | The list GUID. | 
-| LogRhythm.ListDetails.dateCreated | Date | The date the list was created. | 
-| LogRhythm.ListDetails.dateUpdated | Date | The date the list was updated. | 
-| LogRhythm.ListDetails.revisitDate | Date | The date the list was revisited. | 
-| LogRhythm.ListDetails.readAccess | String | The read permission level. | 
-| LogRhythm.ListDetails.writeAccess | String | The write permission level. | 
-| LogRhythm.ListDetails.restrictedRead | Boolean | Whether the list is read restricted. | 
-| LogRhythm.ListDetails.entityName | String | The list entity name. | 
-| LogRhythm.ListDetails.entryCount | Number | The list entry count. | 
-| LogRhythm.ListDetails.needToNotify | Boolean | Whether the list will notify the user when updated. | 
-| LogRhythm.ListDetails.doesExpire | Boolean | Whether the list expires. | 
-| LogRhythm.ListDetails.owner | Number | The ID of the list owner. | 
-| LogRhythm.ListDetails.listItemsCount | Number | The list items count. | 
-| LogRhythm.ListDetails.items.displayValue | String | The list items value. | 
-| LogRhythm.ListDetails.items.expirationDate | Unknown | The list item expiration date. | 
-| LogRhythm.ListDetails.items.isExpired | Boolean | Whether the item is expired. | 
-| LogRhythm.ListDetails.items.isListItem | Boolean | Whether the item is a list item. | 
-| LogRhythm.ListDetails.items.isPattern | Boolean | Whether the item is a pattern. | 
-| LogRhythm.ListDetails.items.listItemDataType | String | The item data type. | 
-| LogRhythm.ListDetails.items.listItemType | String | The item type. | 
-| LogRhythm.ListDetails.items.value | String | The item value. | 
-
+| LogRhythm.ListDetails.listType | String | The list type. |
+| LogRhythm.ListDetails.status | String | The list status. |
+| LogRhythm.ListDetails.name | String | The list name. |
+| LogRhythm.ListDetails.useContext | String | The use context type. |
+| LogRhythm.ListDetails.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. |
+| LogRhythm.ListDetails.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. |
+| LogRhythm.ListDetails.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. |
+| LogRhythm.ListDetails.id | Number | The list ID. |
+| LogRhythm.ListDetails.guid | String | The list GUID. |
+| LogRhythm.ListDetails.dateCreated | Date | The date the list was created. |
+| LogRhythm.ListDetails.dateUpdated | Date | The date the list was updated. |
+| LogRhythm.ListDetails.revisitDate | Date | The date the list was revisited. |
+| LogRhythm.ListDetails.readAccess | String | The read permission level. |
+| LogRhythm.ListDetails.writeAccess | String | The write permission level. |
+| LogRhythm.ListDetails.restrictedRead | Boolean | Whether the list is read restricted. |
+| LogRhythm.ListDetails.entityName | String | The list entity name. |
+| LogRhythm.ListDetails.entryCount | Number | The list entry count. |
+| LogRhythm.ListDetails.needToNotify | Boolean | Whether the list will notify the user when updated. |
+| LogRhythm.ListDetails.doesExpire | Boolean | Whether the list expires. |
+| LogRhythm.ListDetails.owner | Number | The ID of the list owner. |
+| LogRhythm.ListDetails.listItemsCount | Number | The list items count. |
+| LogRhythm.ListDetails.items.displayValue | String | The list items value. |
+| LogRhythm.ListDetails.items.expirationDate | Unknown | The list item expiration date. |
+| LogRhythm.ListDetails.items.isExpired | Boolean | Whether the item is expired. |
+| LogRhythm.ListDetails.items.isListItem | Boolean | Whether the item is a list item. |
+| LogRhythm.ListDetails.items.isPattern | Boolean | Whether the item is a pattern. |
+| LogRhythm.ListDetails.items.listItemDataType | String | The item data type. |
+| LogRhythm.ListDetails.items.listItemType | String | The item type. |
+| LogRhythm.ListDetails.items.value | String | The item value. |
 
 #### Command Example
+
 ```!lr-list-details-and-items-get list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5169,63 +5200,66 @@ Returns list details and list items based on the list GUID.
 #### Human Readable Output
 
 >### List EA778B8F-20CA-4413-9A2D-CF69FB536793 details
+>
 >|Guid|Name|List Type|Status|Short Description|Id|Entity Name|Date Created|Owner|Write Access|Read Access|
 >|---|---|---|---|---|---|---|---|---|---|---|
 >| EA778B8F-20CA-4413-9A2D-CF69FB536793 | test list 2 | Application | Active |  | 2002 | Primary Site | 2021-08-09T05:41:30.443Z | -100 | Private | Private |
+>
 >### List items
+>
 >|Display Value|Expiration Date|Is Expired|Is List Item|Is Pattern|List Item Data Type|List Item Type|Value|
 >|---|---|---|---|---|---|---|---|
 >| 8081,8085 |  | false | false | false | PortRange | PortRange | 8081,8085 |
 >| 1,100 |  | false | false | false | PortRange | PortRange | 1,100 |
 
-
 ### lr-list-items-add
+
 ***
 Adds more items to an existing list.
-
 
 #### Base Command
 
 `lr-list-items-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_guid | The GUID stored in the database. | Required | 
-| items | The body of the list item so that the list can be updated with new items (JSON format). | Required | 
-
+| list_guid | The GUID stored in the database. | Required |
+| items | The body of the list item so that the list can be updated with new items (JSON format). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.ListItemsAdd.listType | String | The list type. | 
-| LogRhythm.ListItemsAdd.status | String | The list status. | 
-| LogRhythm.ListItemsAdd.name | String | The list name. | 
-| LogRhythm.ListItemsAdd.useContext | String | The use context type. | 
-| LogRhythm.ListItemsAdd.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. | 
-| LogRhythm.ListItemsAdd.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. | 
-| LogRhythm.ListItemsAdd.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. | 
-| LogRhythm.ListItemsAdd.id | Number | The list ID. | 
-| LogRhythm.ListItemsAdd.guid | String | The list GUID. | 
-| LogRhythm.ListItemsAdd.dateCreated | Date | The date the list was created. | 
-| LogRhythm.ListItemsAdd.dateUpdated | Date | The date the list was updated. | 
-| LogRhythm.ListItemsAdd.revisitDate | Date | The list revisit date. | 
-| LogRhythm.ListItemsAdd.readAccess | String | The read permission level. | 
-| LogRhythm.ListItemsAdd.writeAccess | String | The write permission level. | 
-| LogRhythm.ListItemsAdd.restrictedRead | Boolean | Whether the list is read restricted. | 
-| LogRhythm.ListItemsAdd.entityName | String | The list entity name. | 
-| LogRhythm.ListItemsAdd.entryCount | Number | The list entry count. | 
-| LogRhythm.ListItemsAdd.needToNotify | Boolean | Whether the list will notify the user when updated. | 
-| LogRhythm.ListItemsAdd.doesExpire | Boolean | Whether the list expires. | 
-| LogRhythm.ListItemsAdd.owner | Number | The ID of the list owner. | 
-| LogRhythm.ListItemsAdd.listItemsCount | Number | The list items count. | 
-
+| LogRhythm.ListItemsAdd.listType | String | The list type. |
+| LogRhythm.ListItemsAdd.status | String | The list status. |
+| LogRhythm.ListItemsAdd.name | String | The list name. |
+| LogRhythm.ListItemsAdd.useContext | String | The use context type. |
+| LogRhythm.ListItemsAdd.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. |
+| LogRhythm.ListItemsAdd.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. |
+| LogRhythm.ListItemsAdd.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. |
+| LogRhythm.ListItemsAdd.id | Number | The list ID. |
+| LogRhythm.ListItemsAdd.guid | String | The list GUID. |
+| LogRhythm.ListItemsAdd.dateCreated | Date | The date the list was created. |
+| LogRhythm.ListItemsAdd.dateUpdated | Date | The date the list was updated. |
+| LogRhythm.ListItemsAdd.revisitDate | Date | The list revisit date. |
+| LogRhythm.ListItemsAdd.readAccess | String | The read permission level. |
+| LogRhythm.ListItemsAdd.writeAccess | String | The write permission level. |
+| LogRhythm.ListItemsAdd.restrictedRead | Boolean | Whether the list is read restricted. |
+| LogRhythm.ListItemsAdd.entityName | String | The list entity name. |
+| LogRhythm.ListItemsAdd.entryCount | Number | The list entry count. |
+| LogRhythm.ListItemsAdd.needToNotify | Boolean | Whether the list will notify the user when updated. |
+| LogRhythm.ListItemsAdd.doesExpire | Boolean | Whether the list expires. |
+| LogRhythm.ListItemsAdd.owner | Number | The ID of the list owner. |
+| LogRhythm.ListItemsAdd.listItemsCount | Number | The list items count. |
 
 #### Command Example
+
 ```!lr-list-items-add list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"listItemDataType": "PortRange","listItemType": "PortRange","value": "200,300","valueAsListReference":{"listType": "Network"}}````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5262,59 +5296,60 @@ Adds more items to an existing list.
 
 #### Human Readable Output
 
->### The item added to the list EA778B8F-20CA-4413-9A2D-CF69FB536793.
+>### The item added to the list EA778B8F-20CA-4413-9A2D-CF69FB536793
+>
 >|Auto Import Option|Date Created|Date Updated|Does Expire|Entity Name|Entry Count|Guid|Id|List Items Count|List Type|Name|Need To Notify|Owner|Read Access|Restricted Read|Revisit Date|Status|Use Context|Write Access|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| enabled: false<br/>usePatterns: false<br/>replaceExisting: false | 2021-08-09T05:41:30.443Z | 2021-10-30T20:33:48.12Z | false | Primary Site | 3 | EA778B8F-20CA-4413-9A2D-CF69FB536793 | 2002 | 0 | Application | test list 2 | false | -100 | Private | false | 2031-10-30T20:33:48.12Z | Active | None | Private |
 
-
 ### lr-list-items-remove
+
 ***
 Removes items from an existing list.
-
 
 #### Base Command
 
 `lr-list-items-remove`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| list_guid | The GUID stored in the database. | Required | 
-| items | Body of the list items to be removed from the list (JSON format). | Required | 
-
+| list_guid | The GUID stored in the database. | Required |
+| items | Body of the list items to be removed from the list (JSON format). | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.ListItemsRemove.listType | String | The list type. | 
-| LogRhythm.ListItemsRemove.status | String | The list status. | 
-| LogRhythm.ListItemsRemove.name | String | The list name. | 
-| LogRhythm.ListItemsRemove.useContext | String | The use context type. | 
-| LogRhythm.ListItemsRemove.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. | 
-| LogRhythm.ListItemsRemove.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. | 
-| LogRhythm.ListItemsRemove.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. | 
-| LogRhythm.ListItemsRemove.id | Number | The list ID. | 
-| LogRhythm.ListItemsRemove.guid | String | The list GUID. | 
-| LogRhythm.ListItemsRemove.dateCreated | Date | The date the list was created. | 
-| LogRhythm.ListItemsRemove.dateUpdated | Date | The date the list was updated. | 
-| LogRhythm.ListItemsRemove.revisitDate | Date | The list revisit date. | 
-| LogRhythm.ListItemsRemove.readAccess | String | The read permission level. | 
-| LogRhythm.ListItemsRemove.writeAccess | String | The write permission level. | 
-| LogRhythm.ListItemsRemove.restrictedRead | Boolean | Whether the list is read restricted. | 
-| LogRhythm.ListItemsRemove.entityName | String | The list entity name. | 
-| LogRhythm.ListItemsRemove.entryCount | Number | The list entry count. | 
-| LogRhythm.ListItemsRemove.needToNotify | Boolean | Whether the list will notify the user when updated. | 
-| LogRhythm.ListItemsRemove.doesExpire | Boolean | Whether the list expires. | 
-| LogRhythm.ListItemsRemove.owner | Number | The ID of the list owner. | 
-| LogRhythm.ListItemsRemove.listItemsCount | Number | The list items count. | 
-
+| LogRhythm.ListItemsRemove.listType | String | The list type. |
+| LogRhythm.ListItemsRemove.status | String | The list status. |
+| LogRhythm.ListItemsRemove.name | String | The list name. |
+| LogRhythm.ListItemsRemove.useContext | String | The use context type. |
+| LogRhythm.ListItemsRemove.autoImportOption.enabled | Boolean | Whether the list auto import is enabled. |
+| LogRhythm.ListItemsRemove.autoImportOption.usePatterns | Boolean | Whether the auto import use patterns is enabled. |
+| LogRhythm.ListItemsRemove.autoImportOption.replaceExisting | Boolean | Whether the auto import replace existing is enabled. |
+| LogRhythm.ListItemsRemove.id | Number | The list ID. |
+| LogRhythm.ListItemsRemove.guid | String | The list GUID. |
+| LogRhythm.ListItemsRemove.dateCreated | Date | The date the list was created. |
+| LogRhythm.ListItemsRemove.dateUpdated | Date | The date the list was updated. |
+| LogRhythm.ListItemsRemove.revisitDate | Date | The list revisit date. |
+| LogRhythm.ListItemsRemove.readAccess | String | The read permission level. |
+| LogRhythm.ListItemsRemove.writeAccess | String | The write permission level. |
+| LogRhythm.ListItemsRemove.restrictedRead | Boolean | Whether the list is read restricted. |
+| LogRhythm.ListItemsRemove.entityName | String | The list entity name. |
+| LogRhythm.ListItemsRemove.entryCount | Number | The list entry count. |
+| LogRhythm.ListItemsRemove.needToNotify | Boolean | Whether the list will notify the user when updated. |
+| LogRhythm.ListItemsRemove.doesExpire | Boolean | Whether the list expires. |
+| LogRhythm.ListItemsRemove.owner | Number | The ID of the list owner. |
+| LogRhythm.ListItemsRemove.listItemsCount | Number | The list items count. |
 
 #### Command Example
+
 ```!lr-list-items-remove list_guid=EA778B8F-20CA-4413-9A2D-CF69FB536793 items=`{"displayValue": "201,301","listItemType": "PortRange","value": "201,301"}````
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5351,75 +5386,76 @@ Removes items from an existing list.
 
 #### Human Readable Output
 
->### The item deleted from the list EA778B8F-20CA-4413-9A2D-CF69FB536793.
+>### The item deleted from the list EA778B8F-20CA-4413-9A2D-CF69FB536793
+>
 >|Auto Import Option|Date Created|Date Updated|Does Expire|Entity Name|Entry Count|Guid|Id|List Items Count|List Type|Name|Need To Notify|Owner|Read Access|Restricted Read|Revisit Date|Status|Use Context|Write Access|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| enabled: false<br/>usePatterns: false<br/>replaceExisting: false | 2021-08-09T05:41:30.443Z | 2021-10-30T20:33:49.717Z | false | Primary Site | 3 | EA778B8F-20CA-4413-9A2D-CF69FB536793 | 2002 | 0 | Application | test list 2 | false | -100 | Private | false | 2031-10-30T20:33:49.717Z | Active | None | Private |
 
-
 ### lr-execute-search-query
+
 ***
 Execute a search query on the LogRhythm log database.
-
 
 #### Base Command
 
 `lr-execute-search-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| number_of_days | Number of days to search. | Required | 
-| search_name | Name of the search. | Optional | 
-| source_type | Log source type. Possible values are: all, API_-_AWS_CloudTrail, API_-_AWS_CloudWatch_Alarm, API_-_AWS_Config_Event, API_-_AWS_S3_Flat_File, API_-_AWS_S3_Server_Access_Event, API_-_BeyondTrust_Retina_Vulnerability_Management, API_-_Box_Event, API_-_Cisco_IDS/IPS, API_-_Cradlepoint_ECM, API_-_IP360_Vulnerability_Scanner, API_-_Metasploit_Penetration_Scanner, API_-_Nessus_Vulnerability_Scanner, API_-_NetApp_CIFS_Security_Audit_Event_Log, API_-_NeXpose_Vulnerability_Scanner, API_-_Office_365_Management_Activity, API_-_Office_365_Message_Tracking, API_-_Okta_Event, API_-_Qualys_Vulnerability_Scanner, API_-_Salesforce_EventLogFile, API_-_Sourcefire_eStreamer, API_-_Tenable_SecurityCenter, API_-_Tenable.io_Scanner, Flat_File_-_ActivIdentity_CMS, Flat_File_-_Airwatch_MDM, Flat_File_-_Alfresco, Flat_File_-_AllScripts, Flat_File_-_Apache_Access_Log, Flat_File_-_Apache_Error_Log, Flat_File_-_Apache_SSL_Access_Log, Flat_File_-_Apache_SSL_Error_Log, Flat_File_-_Apache_Tomcat_Access_Log, Flat_File_-_Apache_Tomcat_Console_Log, Flat_File_-_Avaya_Secure_Access_Link_Remote_Access_Log, Flat_File_-_Avaya_Voice_Mail_Log, Flat_File_-_Axway_SFTP, Flat_File_-_Beacon_Endpoint_Profiler, Flat_File_-_Bind_9, Flat_File_-_BlackBerry_Enterprise_Server, Flat_File_-_Blue_Coat_Proxy_BCREPORTERMAIN_Format, Flat_File_-_Blue_Coat_Proxy_CSV_Format, Flat_File_-_Blue_Coat_Proxy_SQUID-1_Format, Flat_File_-_Blue_Coat_Proxy_W3C_Format, Flat_File_-_Bro_IDS_Critical_Stack_Intel_Log, Flat_File_-_Broadcom_SiteMinder, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTDS, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTEL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTJL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTLL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTNV, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTOM, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTPW, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRV, Flat_File_-_CA_ControlMinder, Flat_File_-_Cerberus_FTP_Server, Flat_File_-_Cerner, Flat_File_-_Cisco_AMP_for_Endpoints, Flat_File_-_Cisco_Email_Security_Appliance, Flat_File_-_Cisco_LMS_(cwcli), Flat_File_-_Cisco_LMS_(Syslog), Flat_File_-_Cisco_NGFW, Flat_File_-_Cisco_Secure_ACS_CSV_File, Flat_File_-_Cisco_Security_Agent, Flat_File_-_Cisco_Umbrella_DNS, Flat_File_-_Cisco_Web_Security_aclog, Flat_File_-_Citrix_Access_Gateway_IIS_Format, Flat_File_-_Citrix_Access_Gateway_NCSA_Common_Format, Flat_File_-_Citrix_Access_Gateway_W3C_Format, Flat_File_-_Citrix_Presentation_Server, Flat_File_-_Citrix_Secure_Gateway, Flat_File_-_ClamAV_Anti-Virus, Flat_File_-_ColdFusion_Application_Log, Flat_File_-_ColdFusion_Exception_Log, Flat_File_-_ColdFusion_Mail_Log, Flat_File_-_ColdFusion_Mailsent_Log, Flat_File_-_ColdFusion_Server_Log, Flat_File_-_Cornerstone_Managed_File_Transfer, Flat_File_-_Coyote_Point_Equalizer, Flat_File_-_DB2_Audit_Log, Flat_File_-_DB2_via_BMC_Log_Master, Flat_File_-_Defender_Server, Flat_File_-_DocWorks, Flat_File_-_eClinicalWorks_Audit_Log, Flat_File_-_EMC_Isilon, Flat_File_-_Epicor_Coalition, Flat_File_-_FairWarning_Ready-For-Healthcare, Flat_File_-_FileZilla_System_Log, Flat_File_-_FireEye_Web_MPS, Flat_File_-_Forcepoint_Web_Security_CEF_Cloud_Format, Flat_File_-_Forescout_CounterACT, Flat_File_-_FoxT_BoKS_Server_Access_Control, Flat_File_-_FundsXpress, Flat_File_-_Gene6_FTP, Flat_File_-_GlobalSCAPE_EFT, Flat_File_-_Hadoop, Flat_File_-_HMC, Flat_File_-_HP-UX_Audit_Log, Flat_File_-_IBM_4690_POS, Flat_File_-_IBM_Informix_Application_Log, Flat_File_-_IBM_Informix_Audit_Log, Flat_File_-_IBM_Tivoli_Storage_Manager, Flat_File_-_IBM_WebSphere_App_Server_v7_Audit_Log, Flat_File_-_IBM_WebSphere_Cast_Iron_Cloud_Integration, Flat_File_-_IBM_ZOS_Batch_Decryption_Log, Flat_File_-_IBM_ZOS_CICS_Decryption_Log, Flat_File_-_IBM_ZOS_RACF_Access_Log, Flat_File_-_IBM_ZOS_RACF_SMF_Type_80, Flat_File_-_IPSwitch_WS_FTP, Flat_File_-_Irix_Audit_Logs, Flat_File_-_IT-CUBE_AgileSI, Flat_File_-_JBoss_Log_File, Flat_File_-_Juniper_Steel_Belted_Radius_Server, Flat_File_-_Kerio_Mail_Server, Flat_File_-_KERISYS_Doors_Event_Export_Format, Flat_File_-_Kippo_Honeypot, Flat_File_-_Linux_Audit_ASCII, Flat_File_-_Linux_Audit_Log, Flat_File_-_Linux_Host_Secure_Log, Flat_File_-_LOGbinder_EX, Flat_File_-_LogRhythm_Alarm_Reingest, Flat_File_-_LogRhythm_Data_Indexer_Monitor, Flat_File_-_LogRhythm_Oracle_Log, Flat_File_-_LogRhythm_System_Monitor, Flat_File_-_LogRhythm_System_Monitor_Log_File, Flat_File_-_LogRhythm_Trebek_Log, Flat_File_-_LogRhythm_Zeus_Log, Flat_File_-_Lotus_Domino_Client_Log, Flat_File_-_McAfee_Cloud_Proxy_do_not_use, Flat_File_-_McAfee_ePO_HIPS, Flat_File_-_McAfee_Foundstone, Flat_File_-_McAfee_Proxy_Cloud, Flat_File_-_McAfee_SaaS_Web_Protection, Flat_File_-_McAfee_Web_Gateway_Audit_Log, Flat_File_-_Merak, Flat_File_-_Meridian, Flat_File_-_Microsoft_ActiveSync_2010, Flat_File_-_Microsoft_CRM, Flat_File_-_Microsoft_DHCP_Server_Log, Flat_File_-_Microsoft_Forefront_TMG, Flat_File_-_Microsoft_Forefront_TMG_Web_Proxy, Flat_File_-_Microsoft_IIS_(IIS_Format)_File, Flat_File_-_Microsoft_IIS_7.x_W3C_Extended_Format, Flat_File_-_Microsoft_IIS_Error_Log_V6, Flat_File_-_Microsoft_IIS_FTP_IIS_Log_File_Format, Flat_File_-_Microsoft_IIS_FTP_W3C_Extended_Format, Flat_File_-_Microsoft_IIS_NCSA_Common_Format_File, Flat_File_-_Microsoft_IIS_SMTP_W3C_Format, Flat_File_-_Microsoft_IIS_URL_Scan_Log, Flat_File_-_Microsoft_IIS_W3C_File, Flat_File_-_Microsoft_ISA_Server_2004, Flat_File_-_Microsoft_ISA_Server_W3C_File, Flat_File_-_Microsoft_Netlogon, Flat_File_-_Microsoft_Port_Reporter_PR-PORTS_Log, Flat_File_-_Microsoft_Semantic_Logging, Flat_File_-_Microsoft_SQL_Server_2000_Error_Log, Flat_File_-_Microsoft_SQL_Server_2005_Error_Log, Flat_File_-_Microsoft_SQL_Server_2008_Error_Log, Flat_File_-_Microsoft_SQL_Server_2012_Error_Log, Flat_File_-_Microsoft_SQL_Server_2014_Error_Log, Flat_File_-_Microsoft_Windows_2003_DNS, Flat_File_-_Microsoft_Windows_2008_DNS, Flat_File_-_Microsoft_Windows_2012_DNS, Flat_File_-_Microsoft_Windows_Firewall, Flat_File_-_MicroStrategy, Flat_File_-_Mimecast_Audit, Flat_File_-_Mimecast_Email, Flat_File_-_Monetra, Flat_File_-_MongoDB, Flat_File_-_MS_Exchange_2003_Message_Tracking_Log, Flat_File_-_MS_Exchange_2007_Message_Tracking_Log, Flat_File_-_MS_Exchange_2010_Message_Tracking_Log, Flat_File_-_MS_Exchange_2013_Message_Tracking_Log, Flat_File_-_MS_Exchange_2016_Message_Tracking_Log, Flat_File_-_MS_Exchange_RPC_Client_Access, Flat_File_-_MS_IAS/RAS_Server_NPS_DB_Log_Format, Flat_File_-_MS_IAS/RAS_Server_Standard_Log_Format, Flat_File_-_MS_ISA_Server_2006_ISA_All_Fields, Flat_File_-_MS_ISA_Server_2006_W3C_All_Fields, Flat_File_-_MS_SQL_Server_Reporting_Services_2008, Flat_File_-_MySQL, Flat_File_-_MySQL_error.log, Flat_File_-_MySQL_mysql.log, Flat_File_-_MySQL_mysql-slow.log, Flat_File_-_Nessus_System_Log, Flat_File_-_NetApp_Cluster, Flat_File_-_Nginx_Log, Flat_File_-_Novell_Audit, Flat_File_-_Novell_GroupWise, Flat_File_-_Novell_LDAP, Flat_File_-_ObserveIT_Enterprise, Flat_File_-_Office_365_Message_Tracking, Flat_File_-_OpenDJ, Flat_File_-_OpenVMS, Flat_File_-_OpenVPN, Flat_File_-_Oracle_11g_Fine_Grained_Audit_Trail, Flat_File_-_Oracle_9i, Flat_File_-_Oracle_BRM_CM_Log, Flat_File_-_Oracle_BRM_DM_Log, Flat_File_-_Oracle_Listener_Audit_Trail, Flat_File_-_Oracle_SunOne_Directory_Server, Flat_File_-_Oracle_SunOne_Web_Server_Access_Log, Flat_File_-_Oracle_Virtual_Directory, Flat_File_-_Oracle_WebLogic_11g_Access_Log, Flat_File_-_Other, Flat_File_-_PeopleSoft, Flat_File_-_PhpMyAdmin_Honeypot, Flat_File_-_Postfix, Flat_File_-_PowerBroker_Servers, Flat_File_-_Princeton_Card_Secure, Flat_File_-_ProFTPD, Flat_File_-_PureMessage_For_Exchange_SMTP_Log, Flat_File_-_PureMessage_For_UNIX_Blocklist_Log, Flat_File_-_PureMessage_For_UNIX_Message_Log, Flat_File_-_RACF_(SMF), Flat_File_-_Radmin, Flat_File_-_Restic_Backup_Log, Flat_File_-_RL_Patient_Feedback, Flat_File_-_RSA_Adaptive_Authentication, Flat_File_-_RSA_Authentication_Manager_6.1, Flat_File_-_S2_Badge_Reader, Flat_File_-_Safenet, Flat_File_-_Sendmail_File, Flat_File_-_Sharepoint_ULS, Flat_File_-_ShoreTel_VOIP, Flat_File_-_Siemens_Radiology_Information_System, Flat_File_-_Snort_Fast_Alert_File, Flat_File_-_Solaris_-_Sulog, Flat_File_-_Solaris_Audit_Log, Flat_File_-_SpamAssassin, Flat_File_-_Squid_Proxy, Flat_File_-_Subversion, Flat_File_-_Sudo.Log, Flat_File_-_Swift_Alliance, Flat_File_-_Symantec_Antivirus_10.x_Corporate_Edtn, Flat_File_-_Symantec_Antivirus_12.x_Corporate_Edtn, Flat_File_-_Symitar_Episys_Console_Log, Flat_File_-_Symitar_Episys_Sysevent_Log, Flat_File_-_Tandem_EMSOUT_Log_File, Flat_File_-_Tandem_XYGATE, Flat_File_-_Tectia_SSH_Server, Flat_File_-_Trade_Innovations_CSCS, Flat_File_-_Trend_Micro_IMSS, Flat_File_-_Trend_Micro_Office_Scan, Flat_File_-_Tumbleweed_Mailgate_Server, Flat_File_-_Verint_Audit_Trail_File, Flat_File_-_VMWare_Virtual_Machine, Flat_File_-_Voltage_Securemail, Flat_File_-_Vormetric_Log_File, Flat_File_-_vsFTP_Daemon_Log, Flat_File_-_Vyatta_Firewall_Kernel_Log, Flat_File_-_WordPot_Honeypot, Flat_File_-_X-NetStat_Log, Flat_File_-_XPient_POS_CCA_Manager, Flat_File_-_XPIENT_POS_POSLOG, Flat_File_-_XPIENT_POS_Shell_Log, IPFIX_-_IP_Flow_Information_Export, J-Flow_-_Juniper_J-Flow_Version_5, J-Flow_-_Juniper_J-Flow_Version_9, LogRhythm_CloudAI, LogRhythm_Data_Loss_Defender, LogRhythm_Demo_File_-_Application_Server_Log, LogRhythm_Demo_File_-_Content_Inspection_Log, LogRhythm_Demo_File_-_Database_Audit_Log, LogRhythm_Demo_File_-_Ecom_Server_Log, LogRhythm_Demo_File_-_File_Server_Log, LogRhythm_Demo_File_-_Firewall_Log, LogRhythm_Demo_File_-_FTP_Log, LogRhythm_Demo_File_-_IDS_Alarms_Log, LogRhythm_Demo_File_-_Mail_Server_Log, LogRhythm_Demo_File_-_Netflow_Log, LogRhythm_Demo_File_-_Network_Device_Log, LogRhythm_Demo_File_-_Network_Server_Log, LogRhythm_Demo_File_-_VPN_Log, LogRhythm_Demo_File_-_Web_Access_Log, LogRhythm_File_Monitor_(AIX), LogRhythm_File_Monitor_(HP-UX), LogRhythm_File_Monitor_(Linux), LogRhythm_File_Monitor_(Solaris), LogRhythm_File_Monitor_(Windows), LogRhythm_Filter, LogRhythm_Network_Connection_Monitor_(AIX), LogRhythm_Network_Connection_Monitor_(HP-UX), LogRhythm_Network_Connection_Monitor_(Linux), LogRhythm_Network_Connection_Monitor_(Solaris), LogRhythm_Network_Connection_Monitor_(Windows), LogRhythm_Process_Monitor_(AIX), LogRhythm_Process_Monitor_(HP-UX), LogRhythm_Process_Monitor_(Linux), LogRhythm_Process_Monitor_(Solaris), LogRhythm_Process_Monitor_(Windows), LogRhythm_Registry_Integrity_Monitor, LogRhythm_SQL_Server_2000_C2_Audit_Log, LogRhythm_SQL_Server_2005_C2_Audit_Log, LogRhythm_SQL_Server_2008_C2_Audit_Log, LogRhythm_SQL_Server_2012+_C2_Audit_Log, LogRhythm_User_Activity_Monitor_(AIX), LogRhythm_User_Activity_Monitor_(HP-UX), LogRhythm_User_Activity_Monitor_(Linux), LogRhythm_User_Activity_Monitor_(Solaris), LogRhythm_User_Activity_Monitor_(Windows), MS_Event_Log_for_XP/2000/2003_-_Application, MS_Event_Log_for_XP/2000/2003_-_Application_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_BioPassword, MS_Event_Log_for_XP/2000/2003_-_DFS, MS_Event_Log_for_XP/2000/2003_-_Directory_Service, MS_Event_Log_for_XP/2000/2003_-_DNS, MS_Event_Log_for_XP/2000/2003_-_DotDefender, MS_Event_Log_for_XP/2000/2003_-_EMC_Celerra_NAS, MS_Event_Log_for_XP/2000/2003_-_File_Rep_Service, MS_Event_Log_for_XP/2000/2003_-_HA, MS_Event_Log_for_XP/2000/2003_-_Kaspersky, MS_Event_Log_for_XP/2000/2003_-_Micros_POS, MS_Event_Log_for_XP/2000/2003_-_PatchLink, MS_Event_Log_for_XP/2000/2003_-_SafeWord_2008, MS_Event_Log_for_XP/2000/2003_-_SCE, MS_Event_Log_for_XP/2000/2003_-_Security, MS_Event_Log_for_XP/2000/2003_-_Security_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_SMS_2003, MS_Event_Log_for_XP/2000/2003_-_System, MS_Event_Log_for_XP/2000/2003_-_System_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_Virtual_Server, MS_Windows_Event_Logging_-_ADFS_Admin, MS_Windows_Event_Logging_-_Application, MS_Windows_Event_Logging_-_AppLockerApp, MS_Windows_Event_Logging_-_Backup, MS_Windows_Event_Logging_-_Citrix_Delivery_Services, MS_Windows_Event_Logging_-_Citrix_XenApp, MS_Windows_Event_Logging_-_DFS, MS_Windows_Event_Logging_-_DHCP_Admin, MS_Windows_Event_Logging_-_DHCP_Operational, MS_Windows_Event_Logging_-_Diagnosis-PLA, MS_Windows_Event_Logging_-_Digital_Persona, MS_Windows_Event_Logging_-_Dir_Service, MS_Windows_Event_Logging_-_DNS, MS_Windows_Event_Logging_-_Dot_Defender, MS_Windows_Event_Logging_-_ESD_Data_Flow_Track, MS_Windows_Event_Logging_-_Exchange_Mailbox_DB_Failures, MS_Windows_Event_Logging_-_FailoverClustering/Operational, MS_Windows_Event_Logging_-_Firewall_With_Advanced_Security, MS_Windows_Event_Logging_-_Forefront_AV, MS_Windows_Event_Logging_-_Group_Policy_Operational, MS_Windows_Event_Logging_-_Hyper-V_Hvisor, MS_Windows_Event_Logging_-_Hyper-V_IMS, MS_Windows_Event_Logging_-_Hyper-V_Network, MS_Windows_Event_Logging_-_Hyper-V_SynthSt, MS_Windows_Event_Logging_-_Hyper-V_VMMS, MS_Windows_Event_Logging_-_Hyper-V_Worker, MS_Windows_Event_Logging_-_Kaspersky, MS_Windows_Event_Logging_-_Kernel_PnP_Configuration, MS_Windows_Event_Logging_-_Lync_Server, MS_Windows_Event_Logging_-_MSExchange_Management, MS_Windows_Event_Logging_-_Operations_Manager, MS_Windows_Event_Logging_-_PowerShell, MS_Windows_Event_Logging_-_Print_Services, MS_Windows_Event_Logging_-_Quest_ActiveRoles_EDM_Server, MS_Windows_Event_Logging_-_Replication, MS_Windows_Event_Logging_-_SafeWord_2008, MS_Windows_Event_Logging_-_Security, MS_Windows_Event_Logging_-_Setup, MS_Windows_Event_Logging_-_Sysmon, MS_Windows_Event_Logging_-_System, MS_Windows_Event_Logging_-_Task_Scheduler, MS_Windows_Event_Logging_-_TS_Gateway, MS_Windows_Event_Logging_-_TS_Licensing, MS_Windows_Event_Logging_-_TS_Local_Session_Manager, MS_Windows_Event_Logging_-_TS_Remote_Connection_Manager, MS_Windows_Event_Logging_-_TS_Session_Broker, MS_Windows_Event_Logging_-_TS_Session_Broker_Client, MS_Windows_Event_Logging_-_VisualSVN, MS_Windows_Event_Logging_:_Deutsch_-_Security, MS_Windows_Event_Logging_:_Espaniol_-_Application, MS_Windows_Event_Logging_:_Espaniol_-_Security, MS_Windows_Event_Logging_:_Espaniol_-_System, MS_Windows_Event_Logging_:_Francais_-_System, MS_Windows_Event_Logging_:_Francais_-_Security, MS_Windows_Event_Logging_XML_-_ADFS, MS_Windows_Event_Logging_XML_-_Application, MS_Windows_Event_Logging_XML_-_Forwarded_Events, MS_Windows_Event_Logging_XML_-_Generic, MS_Windows_Event_Logging_XML_-_Security, MS_Windows_Event_Logging_XML_-_Sysmon, MS_Windows_Event_Logging_XML_-_Sysmon_7.01, MS_Windows_Event_Logging_XML_-_Sysmon_8/9/10, MS_Windows_Event_Logging_XML_-_System, MS_Windows_Event_Logging_XML_-_Unisys_Stealth, MS_Windows_Event_Logging_XML_-_Windows_Defender, Netflow_-_Cisco_Netflow_Version_1, Netflow_-_Cisco_Netflow_Version_5, Netflow_-_Cisco_Netflow_Version_9, Netflow_-_Palo_Alto_Version_9, Netflow_-_SonicWALL_Version_5, Netflow_-_SonicWALL_Version_9, OPSEC_LEA_-_Checkpoint_Firewall, OPSEC_LEA_-_Checkpoint_Firewall_Audit_Log, OPSEC_LEA_-_Checkpoint_For_LR_7.4.1+, OPSEC_LEA_-_Checkpoint_Log_Server, sFlow_-_Version_5, SNMP_Trap_-_Audiolog, SNMP_Trap_-_Autoregistered, SNMP_Trap_-_Brocade_Switch, SNMP_Trap_-_Cisco_5508_Wireless_Controller, SNMP_Trap_-_Cisco_IP_SLA, SNMP_Trap_-_Cisco_Prime, SNMP_Trap_-_Cisco_Router-Switch, SNMP_Trap_-_CyberArk, SNMP_Trap_-_Dell_OpenManage, SNMP_Trap_-_HP_Network_Node_Manager, SNMP_Trap_-_IBM_TS3000_Series_Tape_Drive, SNMP_Trap_-_Riverbed_SteelCentral_NetShark, SNMP_Trap_-_RSA_Authentication_Manager, SNMP_Trap_-_Swift_Alliance, SNMP_Trap_-_Trend_Micro_Control_Manager, Syslog_-_3Com_Switch, Syslog_-_A10_Networks_AX1000_Load_Balancer, Syslog_-_A10_Networks_Web_Application_Firewall, Syslog_-_Accellion_Secure_File_Transfer_Application, Syslog_-_Active_Scout_IPS, Syslog_-_Adallom, Syslog_-_Adtran_Switch, Syslog_-_Aerohive_Access_Point, Syslog_-_Aerohive_Firewall, Syslog_-_AIMIA_Tomcat, Syslog_-_AirDefense_Enterprise, Syslog_-_Airmagnet_Wireless_IDS, Syslog_-_AirTight_IDS/IPS, Syslog_-_AirWatch_MDM, Syslog_-_Airwave_Management_System_Log, Syslog_-_AIX_Host, Syslog_-_Alcatel-Lucent_Switch, Syslog_-_Alcatel-Lucent_Wireless_Controller, Syslog_-_AlertLogic, Syslog_-_AMX_AV_Controller, Syslog_-_Apache_Access_Log, Syslog_-_Apache_Error_Log, Syslog_-_Apache_Tomcat_Request_Parameters, Syslog_-_Apache_Tomcat_Service_Clients_Log, Syslog_-_APC_ATS, Syslog_-_APC_NetBotz_Environmental_Monitoring, Syslog_-_APC_PDU, Syslog_-_APC_UPS, Syslog_-_Apcon_Network_Monitor, Syslog_-_Apex_One, Syslog_-_Arbor_Networks_Peakflow, Syslog_-_Arbor_Networks_Spectrum, Syslog_-_Arbor_Pravail_APS, Syslog_-_Arista_Switch, Syslog_-_Array_TMX_Load_Balancer, Syslog_-_Arris_CMTS, Syslog_-_Aruba_Clear_Pass, Syslog_-_Aruba_Mobility_Controller, Syslog_-_Aruba_Wireless_Access_Point, Syslog_-_AS/400_via_Powertech_Interact, Syslog_-_Asus_WRT_Router, Syslog_-_Avatier_Identity_Management_Suite_(AIMS), Syslog_-_Avaya_Communications_Manager, Syslog_-_Avaya_Ethernet_Routing_Switch, Syslog_-_Avaya_G450_Media_Gateway, Syslog_-_Avaya_Router, Syslog_-_Aventail_SSL/VPN, Syslog_-_Avocent_Cyclades_Terminal_Server, Syslog_-_Azul_Java_Appliance, Syslog_-_Barracuda_Load_Balancer, Syslog_-_Barracuda_Mail_Archiver, Syslog_-_Barracuda_NG_Firewall, Syslog_-_Barracuda_NG_Firewall_6.x, Syslog_-_Barracuda_Spam_Firewall, Syslog_-_Barracuda_Web_Application_Firewall, Syslog_-_Barracuda_Webfilter, Syslog_-_BeyondTrust_BeyondInsight_LEEF, Syslog_-_Bind_DNS, Syslog_-_Bit9_Parity_Suite, Syslog_-_Bit9_Security_Platform_CEF, Syslog_-_Bit9+Carbon_Black_(Deprecated), Syslog_-_BitDefender, Syslog_-_Black_Diamond_Switch, Syslog_-_Blue_Coat_CAS, Syslog_-_Blue_Coat_Forward_Proxy, Syslog_-_Blue_Coat_PacketShaper, Syslog_-_Blue_Coat_ProxyAV_ISA_W3C_Format, Syslog_-_Blue_Coat_ProxyAV_MS_Proxy_2.0_Format, Syslog_-_Blue_Coat_ProxySG, Syslog_-_Blue_Socket_Wireless_Controller, Syslog_-_Bluecat_Adonis, Syslog_-_BlueCedar, Syslog_-_BluVector, Syslog_-_Bomgar, Syslog_-_Bradford_Networks_NAC, Syslog_-_Bradford_Remediation_&amp;_Registration_Svr, Syslog_-_Bro_IDS, Syslog_-_Brocade_Switch, Syslog_-_Bromium_vSentry_CEF, Syslog_-_BSD_Host, Syslog_-_CA_Privileged_Access_Manager, Syslog_-_Cb_Defense_CEF, Syslog_-_Cb_Protection_CEF, Syslog_-_Cb_Response_LEEF, Syslog_-_Cell_Relay, Syslog_-_Certes_Networks_CEP, Syslog_-_Check_Point_Log_Exporter, Syslog_-_Checkpoint_Site-to-Site_VPN, Syslog_-_Cisco_ACS, Syslog_-_Cisco_Aironet_WAP, Syslog_-_Cisco_APIC, Syslog_-_Cisco_Application_Control_Engine, Syslog_-_Cisco_ASA, Syslog_-_Cisco_Clean_Access_(CCA)_Appliance, Syslog_-_Cisco_CSS_Load_Balancer, Syslog_-_Cisco_Email_Security_Appliance, Syslog_-_Cisco_FirePOWER, Syslog_-_Cisco_Firepower_Threat_Defense, Syslog_-_Cisco_FireSIGHT, Syslog_-_Cisco_FWSM, Syslog_-_Cisco_Global_Site_Selector, Syslog_-_Cisco_ISE, Syslog_-_Cisco_Meraki, Syslog_-_Cisco_Nexus_Switch, Syslog_-_Cisco_PIX, Syslog_-_Cisco_Prime_Infrastructure, Syslog_-_Cisco_Router, Syslog_-_Cisco_Secure_ACS_5, Syslog_-_Cisco_Session_Border_Controller, Syslog_-_Cisco_Switch, Syslog_-_Cisco_Telepresence_Video_Communications_Server, Syslog_-_Cisco_UCS, Syslog_-_Cisco_Unified_Comm_Mgr_(Call_Mgr), Syslog_-_Cisco_VPN_Concentrator, Syslog_-_Cisco_WAAS, Syslog_-_Cisco_Web_Security, Syslog_-_Cisco_Wireless_Access_Point, Syslog_-_Cisco_Wireless_Control_System, Syslog_-_CiscoWorks, Syslog_-_Citrix_Access_Gateway_Server, Syslog_-_Citrix_Netscaler, Syslog_-_Citrix_XenServer, Syslog_-_Claroty_CTD_CEF, Syslog_-_Clearswift_Secure_Email_Gateway, Syslog_-_CloudLock, Syslog_-_CodeGreen_Data_Loss_Prevention, Syslog_-_Cofense_Triage_CEF, Syslog_-_Consentry_NAC, Syslog_-_Corero_IPS, Syslog_-_Corero_SmartWall_DDoS, Syslog_-_CoyotePoint_Equalizer, Syslog_-_Crowdstrike_Falconhost_CEF, Syslog_-_CyberArk, Syslog_-_CyberArk_Privileged_Threat_Analytics, Syslog_-_Cylance_CEF, Syslog_-_CylancePROTECT, Syslog_-_DarkTrace_CEF, Syslog_-_Dell_Force_10, Syslog_-_Dell_PowerConnect_Switch, Syslog_-_Dell_Remote_Access_Controller, Syslog_-_Dell_SecureWorks_iSensor_IPS, Syslog_-_Dialogic_Media_Gateway, Syslog_-_Digital_Guardian_CEF, Syslog_-_D-Link_Switch, Syslog_-_Don_not_use, Syslog_-_Dragos_Platform_CEF, Syslog_-_Ecessa_ShieldLink, Syslog_-_EfficientIP, Syslog_-_EMC_Avamar, Syslog_-_EMC_Centera, Syslog_-_EMC_Data_Domain, Syslog_-_EMC_Isilon, Syslog_-_EMC_Unity_Array, Syslog_-_EMC_VNX, Syslog_-_Ensilo_NGAV, Syslog_-_Enterasys_Dragon_IDS, Syslog_-_Enterasys_Router, Syslog_-_Enterasys_Switch, Syslog_-_Entrust_Entelligence_Messaging_Server, Syslog_-_Entrust_IdentityGuard, Syslog_-_Epic_Hyperspace_CEF, Syslog_-_EqualLogic_SAN, Syslog_-_eSafe_Email_Security, Syslog_-_ESET_Remote_Administrator_(ERA)_LEEF, Syslog_-_Event_Reporter_(Win_2000/XP/2003), Syslog_-_Exabeam, Syslog_-_Exchange_Message_Tracking, Syslog_-_ExtraHop, Syslog_-_Extreme_Wireless_LAN, Syslog_-_ExtremeWare, Syslog_-_ExtremeXOS, Syslog_-_F5_BIG-IP_Access_Policy_Manager, Syslog_-_F5_BIG-IP_AFM, Syslog_-_F5_BIG-IP_ASM, Syslog_-_F5_BIG-IP_ASM_Key-Value_Pairs, Syslog_-_F5_BIG-IP_ASM_v12, Syslog_-_F5_Big-IP_GTM_&amp;_DNS, Syslog_-_F5_Big-IP_LTM, Syslog_-_F5_FirePass_Firewall, Syslog_-_F5_Silverline_DDoS_Protection, Syslog_-_Fargo_HDP_Card_Printer_and_Encoder, Syslog_-_Fat_Pipe_Load_Balancer, Syslog_-_Fidelis_XPS, Syslog_-_FireEye_E-Mail_MPS, Syslog_-_FireEye_EX, Syslog_-_FireEye_Web_MPS/CMS/ETP/HX, Syslog_-_Forcepoint_DLP, Syslog_-_Forcepoint_Email_Security_Gateway, Syslog_-_Forcepoint_Stonesoft_NGFW, Syslog_-_Forcepoint_SureView_Insider_Threat, Syslog_-_Forcepoint_Web_Security, Syslog_-_Forcepoint_Web_Security_CEF_Format, Syslog_-_Forescout_CounterACT_NAC, Syslog_-_Fortinet_FortiAnalyzer, Syslog_-_Fortinet_FortiAuthenticator, Syslog_-_Fortinet_FortiDDoS, Syslog_-_Fortinet_FortiGate, Syslog_-_Fortinet_FortiGate_v4.0, Syslog_-_Fortinet_FortiGate_v5.0, Syslog_-_Fortinet_FortiGate_v5.2, Syslog_-_Fortinet_FortiGate_v5.4/v5.6, Syslog_-_Fortinet_FortiGate_v5.6_CEF, Syslog_-_Fortinet_Fortigate_v6.0, Syslog_-_Fortinet_FortiMail, Syslog_-_Fortinet_FortiWeb, Syslog_-_Foundry_Switch, Syslog_-_Gene6_FTP, Syslog_-_Generic_CEF, Syslog_-_Generic_ISC_DHCP, Syslog_-_Generic_LEEF, Syslog_-_Guardium_Database_Activity_Monitor, Syslog_-_H3C_Router, Syslog_-_Hitachi_Universal_Storage_Platform, Syslog_-_HP_BladeSystem, Syslog_-_HP_iLO, Syslog_-_HP_Procurve_Switch, Syslog_-_HP_Router, Syslog_-_HP_Switch, Syslog_-_HP_Unix_Tru64, Syslog_-_HP_Virtual_Connect_Switch, Syslog_-_HP-UX_Host, Syslog_-_Huawei_Access_Router, Syslog_-_IBM_Blade_Center, Syslog_-_IBM_Security_Network_Protection, Syslog_-_IBM_Virtual_Tape_Library_Server, Syslog_-_IBM_WebSphere_DataPower_Integration, Syslog_-_IBM_zSecure_Alert_for_ACF2_2.1.0, Syslog_-_IceWarp_Server, Syslog_-_Imperva_Incapsula_CEF, Syslog_-_Imperva_SecureSphere, Syslog_-_Imprivata_OneSign_SSO, Syslog_-_InfoBlox, Syslog_-_Invincea_(LEEF), Syslog_-_iPrism_Proxy_Log, Syslog_-_IPSWITCH_MOVEit_Server, Syslog_-_IPTables, Syslog_-_IRIX_Host, Syslog_-_iSeries_via_Powertech_Interact, Syslog_-_Ivanti_FileDirector, Syslog_-_JetNexus_Load_Balancer, Syslog_-_Juniper_DX_Application_Accelerator, Syslog_-_Juniper_Firewall, Syslog_-_Juniper_Firewall_3400, Syslog_-_Juniper_Host_Checker, Syslog_-_Juniper_IDP, Syslog_-_Juniper_NSM, Syslog_-_Juniper_Router, Syslog_-_Juniper_SSL_VPN, Syslog_-_Juniper_SSL_VPN_WELF_Format, Syslog_-_Juniper_Switch, Syslog_-_Juniper_Trapeze, Syslog_-_Juniper_vGW_Virtual_Gateway, Syslog_-_Kaspersky_Security_Center, Syslog_-_Kea_DHCP_Server, Syslog_-_Kemp_Load_Balancer, Syslog_-_KFSensor_Honeypot, Syslog_-_KFSensor_Honeypot_CEF, Syslog_-_Lancope_StealthWatch, Syslog_-_Lancope_StealthWatch_CEF, Syslog_-_Layer_7_SecureSpan_SOA_Gateway, Syslog_-_Legacy_Checkpoint_Firewall_(Not_Log_Exporter), Syslog_-_Legacy_Checkpoint_IPS_(Not_Log_Exporter), Syslog_-_Lieberman_Enterprise_Random_Password_Manager, Syslog_-_Linux_Audit, Syslog_-_Linux_Host, Syslog_-_Linux_TACACS_Plus, Syslog_-_LOGbinder_EX, Syslog_-_LOGbinder_SP, Syslog_-_LOGbinder_SQL, Syslog_-_LogRhythm_Data_Indexer_Monitor, Syslog_-_LogRhythm_Inter_Deployment_Data_Sharing, Syslog_-_LogRhythm_Log_Distribution_Services, Syslog_-_LogRhythm_Network_Monitor, Syslog_-_LogRhythm_Syslog_Generator, Syslog_-_Lumension, Syslog_-_MacOS_X, Syslog_-_Malwarebytes_Endpoint_Security_CEF, Syslog_-_Mandiant_MIR, Syslog_-_McAfee_Advanced_Threat_Defense, Syslog_-_McAfee_Email_And_Web_Security, Syslog_-_McAfee_ePO, Syslog_-_McAfee_Firewall_Enterprise, Syslog_-_McAfee_Network_Security_Manager, Syslog_-_McAfee_Secure_Internet_Gateway, Syslog_-_McAfee_SecureMail, Syslog_-_McAfee_Skyhigh_for_Shadow_IT_LEEF, Syslog_-_McAfee_Web_Gateway, Syslog_-_mGuard_Firewall, Syslog_-_Microsoft_Advanced_Threat_Analytics_(ATA)_CEF, Syslog_-_Microsoft_Azure_Log_Integration, Syslog_-_Microsoft_Azure_MFA, Syslog_-_Microsoft_Forefront_UAG, Syslog_-_Mirapoint, Syslog_-_MobileIron, Syslog_-_Motorola_Access_Point, Syslog_-_MS_IIS_Web_Log_W3C_Format_(Snare), Syslog_-_MS_Windows_Event_Logging_XML_-_Application, Syslog_-_MS_Windows_Event_Logging_XML_-_Security, Syslog_-_MS_Windows_Event_Logging_XML_-_System, Syslog_-_Nagios, Syslog_-_nCircle_Configuration_Compliance_Manager, Syslog_-_NetApp_Filer, Syslog_-_NETASQ_Firewall, Syslog_-_NetGate_Router, Syslog_-_NetMotion_VPN, Syslog_-_Netscout_nGenius_InfiniStream, Syslog_-_NetScreen_Firewall, Syslog_-_Netskope, Syslog_-_Netskope_CEF, Syslog_-_Network_Chemistry_RFprotect, Syslog_-_Nginx_Web_Log, Syslog_-_Nimble_Storage, Syslog_-_Nortel_8600_Switch, Syslog_-_Nortel_BayStack_Switch, Syslog_-_Nortel_Contivity, Syslog_-_Nortel_Firewall, Syslog_-_Nortel_IP_1220, Syslog_-_Nortel_Passport_Switch, Syslog_-_Nozomi_Networks_Guardian_CEF, Syslog_-_NuSecure_Gateway, Syslog_-_Nutanix, Syslog_-_Open_Collector, Syslog_-_Open_Collector_-_AWS_CloudTrail, Syslog_-_Open_Collector_-_AWS_CloudWatch, Syslog_-_Open_Collector_-_AWS_Config_Events, Syslog_-_Open_Collector_-_AWS_Guard_Duty, Syslog_-_Open_Collector_-_AWS_S3, Syslog_-_Open_Collector_-_Azure_Event_Hub, Syslog_-_Open_Collector_-_Carbon_Black_Cloud, Syslog_-_Open_Collector_-_CarbonBlackBeat_Heartbeat, Syslog_-_Open_Collector_-_Cisco_AMP, Syslog_-_Open_Collector_-_Cisco_Umbrella, Syslog_-_Open_Collector_-_CiscoAMPBeat_Heartbeat, Syslog_-_Open_Collector_-_Duo_Authentication_Security, Syslog_-_Open_Collector_-_DuoBeat_Heartbeat, Syslog_-_Open_Collector_-_EventHubBeat_Heartbeat, Syslog_-_Open_Collector_-_GCP_Audit, Syslog_-_Open_Collector_-_GCP_Cloud_Key_Management_Service, Syslog_-_Open_Collector_-_GCP_Http_Load_Balancer, Syslog_-_Open_Collector_-_GCP_Pub_Sub, Syslog_-_Open_Collector_-_GCP_Security_Command_Center, Syslog_-_Open_Collector_-_GCP_Virtual_Private_Cloud, Syslog_-_Open_Collector_-_Gmail_Message_Tracking, Syslog_-_Open_Collector_-_GMTBeat_Heartbeat, Syslog_-_Open_Collector_-_GSuite, Syslog_-_Open_Collector_-_GSuiteBeat_Heartbeat, Syslog_-_Open_Collector_-_Metricbeat, Syslog_-_Open_Collector_-_Okta_System_Log, Syslog_-_Open_Collector_-_OktaSystemLogBeat_Heartbeat, Syslog_-_Open_Collector_-_PubSubBeat_Heartbeat, Syslog_-_Open_Collector_-_S3Beat_Heartbeat, Syslog_-_Open_Collector_-_Sophos_Central, Syslog_-_Open_Collector_-_SophosCentralBeat_Heartbeat, Syslog_-_Open_Collector_-_Webhook, Syslog_-_Open_Collector_-_Webhook_OneLogin, Syslog_-_Open_Collector_-_Webhook_Zoom, Syslog_-_Open_Collector_-_WebhookBeat_Heartbeat, Syslog_-_Opengear_Console, Syslog_-_OpenLDAP, Syslog_-_Oracle_10g_Audit_Trail, Syslog_-_Oracle_11g_Audit_Trail, Syslog_-_OSSEC_Alerts, Syslog_-_Other, Syslog_-_Outpost24, Syslog_-_Palo_Alto_Cortex_XDR, Syslog_-_Palo_Alto_Custom_Pipe, Syslog_-_Palo_Alto_Firewall, Syslog_-_Palo_Alto_Traps_CEF, Syslog_-_Palo_Alto_Traps_Management_Service, Syslog_-_Password_Manager_Pro, Syslog_-_pfSense_Firewall, Syslog_-_PingFederate_7.2, Syslog_-_PingFederate_CEF, Syslog_-_Polycom, Syslog_-_Postfix, Syslog_-_Procera_PacketLogic, Syslog_-_Proofpoint_Spam_Firewall, Syslog_-_Protegrity_Defiance_DPS, Syslog_-_QLogic_Infiniband_Switch, Syslog_-_Quest_Defender, Syslog_-_Radiator_Radius, Syslog_-_RADiFlow_3180_Switch, Syslog_-_Radware_Alteon_Load_Balancer, Syslog_-_Radware_DefensePro, Syslog_-_Radware_Web_Server_Director_Audit_Log, Syslog_-_Raritan_KVM, Syslog_-_Raz-Lee, Syslog_-_RedSeal, Syslog_-_Riverbed, Syslog_-_RSA_ACE, Syslog_-_RSA_Authentication_Manager_v7.1, Syslog_-_RSA_Authentication_Manager_v8.x, Syslog_-_RSA_Web_Threat_Detection, Syslog_-_RSA_Web_Threat_Detection_5.1, Syslog_-_RuggedRouter, Syslog_-_Safenet, Syslog_-_Sailpoint, Syslog_-_Sauce_Labs, Syslog_-_SecureAuth_IdP, Syslog_-_SecureAuth_IdP_v9, Syslog_-_SecureLink, Syslog_-_SecureTrack, Syslog_-_SEL_3610_Port_Switch, Syslog_-_SEL_3620_Ethernet_Security_Gateway, Syslog_-_Sentinel_IPS, Syslog_-_SentinelOne_CEF, Syslog_-_Sguil, Syslog_-_Siemens_Scalance_X400, Syslog_-_Smoothwall_Firewall, Syslog_-_SnapGear_Firewall, Syslog_-_Snare_Windows_2003_Event_Log, Syslog_-_Snare_Windows_2008_Event_Log, Syslog_-_Snort_IDS, Syslog_-_Solaris_(Snare), Syslog_-_Solaris_Host, Syslog_-_SonicWALL, Syslog_-_SonicWALL_SSL-VPN, Syslog_-_Sophos_Email_Encryption_Appliance, Syslog_-_Sophos_UTM, Syslog_-_Sophos_Web_Proxy, Syslog_-_Sophos_XG_Firewall, Syslog_-_Sourcefire_IDS_3D, Syslog_-_Sourcefire_RNA, Syslog_-_Spectracom_Network_Time_Server, Syslog_-_Splunk_API_-_Checkpoint_Firewall, Syslog_-_Splunk_API_-_Cisco_Netflow_V9, Syslog_-_Splunk_API_-_Nessus_Vulnerability_Scanner, Syslog_-_Squid_Proxy, Syslog_-_StealthBits_Activity_Monitor, Syslog_-_STEALTHbits_StealthINTERCEPT, Syslog_-_StoneGate_Firewall, Syslog_-_Stonesoft_IPS, Syslog_-_Stormshield_Network_Security_Firewall, Syslog_-_Sycamore_Networks_DNX-88, Syslog_-_Sygate_Firewall, Syslog_-_Symantec_Advanced_Threat_Protection_(ATP)_CEF, Syslog_-_Symantec_DLP_CEF, Syslog_-_Symantec_Endpoint_Server, Syslog_-_Symantec_Messaging_Gateway, Syslog_-_Symantec_PGP_Gateway, Syslog_-_Symbol_Wireless_Access_Point, Syslog_-_Tanium, Syslog_-_Temporary_LST-2, Syslog_-_Tenable_SecurityCenter, Syslog_-_Thycotic_Secret_Server, Syslog_-_Tipping_Point_IPS, Syslog_-_Tipping_Point_SSL_Reverse_Proxy, Syslog_-_Top_Layer_IPS, Syslog_-_Townsend_Alliance_LogAgent, Syslog_-_Trend_Micro_Control_Manager_CEF, Syslog_-_Trend_Micro_Deep_Discovery_Inspector, Syslog_-_Trend_Micro_Deep_Security_CEF, Syslog_-_Trend_Micro_Deep_Security_LEEF, Syslog_-_Trend_Micro_IWSVA, Syslog_-_Trend_Micro_Vulnerability_Protection_Manager, Syslog_-_Tripwire, Syslog_-_Trustwave_NAC, Syslog_-_Trustwave_Secure_Web_Gateway, Syslog_-_Trustwave_Web_Application_Firewall, Syslog_-_Tufin, Syslog_-_Tumbleweed_Mailgate_Server, Syslog_-_Ubiquiti_UniFi_Security_Gateway, Syslog_-_Ubiquiti_UniFi_Switch, Syslog_-_Ubiquiti_UniFi_WAP, Syslog_-_Untangle, Syslog_-_Vamsoft_ORF, Syslog_-_Vanguard_Active_Alerts, Syslog_-_Varonis_DatAlert, Syslog_-_Vasco_Digipass_Identikey_Server, Syslog_-_Vectra_Networks, Syslog_-_Versa_Networks_SD-WAN, Syslog_-_VMWare_ESX/ESXi_Server, Syslog_-_VMware_Horizon_View, Syslog_-_VMWare_NSX/NSX-T, Syslog_-_VMWare_Unified_Access_Gateway, Syslog_-_VMWare_vCenter_Server, Syslog_-_VMWare_vShield, Syslog_-_Voltage_Securemail, Syslog_-_Vormetric_CoreGuard, Syslog_-_Vormetric_Data_Security_Manager, Syslog_-_WALLIX_Bastion, Syslog_-_Watchguard_FireBox, Syslog_-_WS2000_Wireless_Access_Point, Syslog_-_Wurldtech_SmartFirewall, Syslog_-_Xirrus_Wireless_Array, Syslog_-_Zimbra_System_Log, Syslog_-_Zix_E-mail_Encryption, Syslog_-_Zscaler_Nano_Streaming_Service, Syslog_-_ZXT_Load_Balancer, Syslog_-_ZyWALL_VPN_Firewall, Syslog_Avaya_G450_Media_Gateway, Syslog_File_-_AIX_Host, Syslog_File_-_BSD_Format, Syslog_File_-_HP-UX_Host, Syslog_File_-_IRIX_Host, Syslog_File_-_Linux_Host, Syslog_File_-_LogRhythm_Syslog_Generator, Syslog_File_-_MS_2003_Event_Log_(Snare), Syslog_File_-_Oracle_10g_Audit_Trail, Syslog_File_-_Oracle_11g_Audit_Trail, Syslog_File_-_Solaris_Host, UDLA_-_CA_Single_Sign-On, UDLA_-_Deepnet_DualShield, UDLA_-_Drupal, UDLA_-_Finacle_Core, UDLA_-_Finacle_Treasury_Logs, UDLA_-_Forcepoint, UDLA_-_Gallagher_Command_Centre, UDLA_-_iManage_Worksite, UDLA_-_ISS_Proventia_SiteProtector_-_IPS, UDLA_-_LogRhythm_Enterprise_Monitoring_Solution, UDLA_-_LREnhancedAudit, UDLA_-_McAfee_ePolicy_Orchestrator_-_Universal_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_3.6_-_Events, UDLA_-_McAfee_ePolicy_Orchestrator_4.0_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_4.5_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.0_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.1_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.3_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.9_-_ePOEvents, UDLA_-_McAfee_Network_Access_Control, UDLA_-_McAfee_Network_Security_Manager, UDLA_-_Microsoft_System_Center_2012_Endpoint_Protection, UDLA_-_ObserveIT, UDLA_-_Oracle_10g_Audit_Trail, UDLA_-_Oracle_11g_Audit_Trail, UDLA_-_Oracle_12C_Unified_Auditing, UDLA_-_Oracle_9i_Audit_Trail, UDLA_-_Other, UDLA_-_SEL_3530_RTAC, UDLA_-_SharePoint_2007_AuditData, UDLA_-_SharePoint_2010_EventData, UDLA_-_SharePoint_2013_EventData, UDLA_-_Siemens_Invision, UDLA_-_Sophos_Anti-Virus, UDLA_-_Sophos_Endpoint_Security_and_Control, UDLA_-_Symantec_CSP, UDLA_-_Symantec_SEP, UDLA_-_Symmetry_Access_Control, UDLA_-_VMWare_vCenter_Server, UDLA_-_VMWare_vCloud, VLS_-_Syslog_-_Infoblox_-_DNS_RPZ, VLS_-_Syslog_-_Infoblox_-_Threat_Protection. | Optional | 
-| host_name | Impacted host name. | Optional | 
-| username | Username. | Optional | 
-| subject | Email subject. | Optional | 
-| sender | Email sender. | Optional | 
-| recipient | Email recipient. | Optional | 
-| hash | Hash code of the event. | Optional | 
-| url | URL of the event. | Optional | 
-| process_name | Process name. | Optional | 
-| object | Log object. | Optional | 
-| ip_address | IP address of the endpoint. | Optional | 
-| max_message | Maximum number of log messages to query. Default is 100. | Optional | 
-| query_timeout | The query timeout in seconds. Default is 60. | Optional | 
-| entity_id | Entity ID. | Optional | 
-| interval_in_seconds | Interval in seconds between each poll. | Optional | 
-| page_size | Page size. | Optional | 
-
+| number_of_days | Number of days to search. | Required |
+| search_name | Name of the search. | Optional |
+| source_type | Log source type. Possible values are: all, API_-_AWS_CloudTrail, API_-_AWS_CloudWatch_Alarm, API_-_AWS_Config_Event, API_-_AWS_S3_Flat_File, API_-_AWS_S3_Server_Access_Event, API_-_BeyondTrust_Retina_Vulnerability_Management, API_-_Box_Event, API_-_Cisco_IDS/IPS, API_-_Cradlepoint_ECM, API_-_IP360_Vulnerability_Scanner, API_-_Metasploit_Penetration_Scanner, API_-_Nessus_Vulnerability_Scanner, API_-_NetApp_CIFS_Security_Audit_Event_Log, API_-_NeXpose_Vulnerability_Scanner, API_-_Office_365_Management_Activity, API_-_Office_365_Message_Tracking, API_-_Okta_Event, API_-_Qualys_Vulnerability_Scanner, API_-_Salesforce_EventLogFile, API_-_Sourcefire_eStreamer, API_-_Tenable_SecurityCenter, API_-_Tenable.io_Scanner, Flat_File_-_ActivIdentity_CMS, Flat_File_-_Airwatch_MDM, Flat_File_-_Alfresco, Flat_File_-_AllScripts, Flat_File_-_Apache_Access_Log, Flat_File_-_Apache_Error_Log, Flat_File_-_Apache_SSL_Access_Log, Flat_File_-_Apache_SSL_Error_Log, Flat_File_-_Apache_Tomcat_Access_Log, Flat_File_-_Apache_Tomcat_Console_Log, Flat_File_-_Avaya_Secure_Access_Link_Remote_Access_Log, Flat_File_-_Avaya_Voice_Mail_Log, Flat_File_-_Axway_SFTP, Flat_File_-_Beacon_Endpoint_Profiler, Flat_File_-_Bind_9, Flat_File_-_BlackBerry_Enterprise_Server, Flat_File_-_Blue_Coat_Proxy_BCREPORTERMAIN_Format, Flat_File_-_Blue_Coat_Proxy_CSV_Format, Flat_File_-_Blue_Coat_Proxy_SQUID-1_Format, Flat_File_-_Blue_Coat_Proxy_W3C_Format, Flat_File_-_Bro_IDS_Critical_Stack_Intel_Log, Flat_File_-_Broadcom_SiteMinder, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTDS, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTEL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTJL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTLL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTNV, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTOM, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTPW, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRL, Flat_File_-_CA_ACF2_for_z/OS_-_ACFRPTRV, Flat_File_-_CA_ControlMinder, Flat_File_-_Cerberus_FTP_Server, Flat_File_-_Cerner, Flat_File_-_Cisco_AMP_for_Endpoints, Flat_File_-_Cisco_Email_Security_Appliance, Flat_File_-_Cisco_LMS_(cwcli), Flat_File_-_Cisco_LMS_(Syslog), Flat_File_-_Cisco_NGFW, Flat_File_-_Cisco_Secure_ACS_CSV_File, Flat_File_-_Cisco_Security_Agent, Flat_File_-_Cisco_Umbrella_DNS, Flat_File_-_Cisco_Web_Security_aclog, Flat_File_-_Citrix_Access_Gateway_IIS_Format, Flat_File_-_Citrix_Access_Gateway_NCSA_Common_Format, Flat_File_-_Citrix_Access_Gateway_W3C_Format, Flat_File_-_Citrix_Presentation_Server, Flat_File_-_Citrix_Secure_Gateway, Flat_File_-_ClamAV_Anti-Virus, Flat_File_-_ColdFusion_Application_Log, Flat_File_-_ColdFusion_Exception_Log, Flat_File_-_ColdFusion_Mail_Log, Flat_File_-_ColdFusion_Mailsent_Log, Flat_File_-_ColdFusion_Server_Log, Flat_File_-_Cornerstone_Managed_File_Transfer, Flat_File_-_Coyote_Point_Equalizer, Flat_File_-_DB2_Audit_Log, Flat_File_-_DB2_via_BMC_Log_Master, Flat_File_-_Defender_Server, Flat_File_-_DocWorks, Flat_File_-_eClinicalWorks_Audit_Log, Flat_File_-_EMC_Isilon, Flat_File_-_Epicor_Coalition, Flat_File_-_FairWarning_Ready-For-Healthcare, Flat_File_-_FileZilla_System_Log, Flat_File_-_FireEye_Web_MPS, Flat_File_-_Forcepoint_Web_Security_CEF_Cloud_Format, Flat_File_-_Forescout_CounterACT, Flat_File_-_FoxT_BoKS_Server_Access_Control, Flat_File_-_FundsXpress, Flat_File_-_Gene6_FTP, Flat_File_-_GlobalSCAPE_EFT, Flat_File_-_Hadoop, Flat_File_-_HMC, Flat_File_-_HP-UX_Audit_Log, Flat_File_-_IBM_4690_POS, Flat_File_-_IBM_Informix_Application_Log, Flat_File_-_IBM_Informix_Audit_Log, Flat_File_-_IBM_Tivoli_Storage_Manager, Flat_File_-_IBM_WebSphere_App_Server_v7_Audit_Log, Flat_File_-_IBM_WebSphere_Cast_Iron_Cloud_Integration, Flat_File_-_IBM_ZOS_Batch_Decryption_Log, Flat_File_-_IBM_ZOS_CICS_Decryption_Log, Flat_File_-_IBM_ZOS_RACF_Access_Log, Flat_File_-_IBM_ZOS_RACF_SMF_Type_80, Flat_File_-_IPSwitch_WS_FTP, Flat_File_-_Irix_Audit_Logs, Flat_File_-_IT-CUBE_AgileSI, Flat_File_-_JBoss_Log_File, Flat_File_-_Juniper_Steel_Belted_Radius_Server, Flat_File_-_Kerio_Mail_Server, Flat_File_-_KERISYS_Doors_Event_Export_Format, Flat_File_-_Kippo_Honeypot, Flat_File_-_Linux_Audit_ASCII, Flat_File_-_Linux_Audit_Log, Flat_File_-_Linux_Host_Secure_Log, Flat_File_-_LOGbinder_EX, Flat_File_-_LogRhythm_Alarm_Reingest, Flat_File_-_LogRhythm_Data_Indexer_Monitor, Flat_File_-_LogRhythm_Oracle_Log, Flat_File_-_LogRhythm_System_Monitor, Flat_File_-_LogRhythm_System_Monitor_Log_File, Flat_File_-_LogRhythm_Trebek_Log, Flat_File_-_LogRhythm_Zeus_Log, Flat_File_-_Lotus_Domino_Client_Log, Flat_File_-_McAfee_Cloud_Proxy_do_not_use, Flat_File_-_McAfee_ePO_HIPS, Flat_File_-_McAfee_Foundstone, Flat_File_-_McAfee_Proxy_Cloud, Flat_File_-_McAfee_SaaS_Web_Protection, Flat_File_-_McAfee_Web_Gateway_Audit_Log, Flat_File_-_Merak, Flat_File_-_Meridian, Flat_File_-_Microsoft_ActiveSync_2010, Flat_File_-_Microsoft_CRM, Flat_File_-_Microsoft_DHCP_Server_Log, Flat_File_-_Microsoft_Forefront_TMG, Flat_File_-_Microsoft_Forefront_TMG_Web_Proxy, Flat_File_-_Microsoft_IIS_(IIS_Format)_File, Flat_File_-_Microsoft_IIS_7.x_W3C_Extended_Format, Flat_File_-_Microsoft_IIS_Error_Log_V6, Flat_File_-_Microsoft_IIS_FTP_IIS_Log_File_Format, Flat_File_-_Microsoft_IIS_FTP_W3C_Extended_Format, Flat_File_-_Microsoft_IIS_NCSA_Common_Format_File, Flat_File_-_Microsoft_IIS_SMTP_W3C_Format, Flat_File_-_Microsoft_IIS_URL_Scan_Log, Flat_File_-_Microsoft_IIS_W3C_File, Flat_File_-_Microsoft_ISA_Server_2004, Flat_File_-_Microsoft_ISA_Server_W3C_File, Flat_File_-_Microsoft_Netlogon, Flat_File_-_Microsoft_Port_Reporter_PR-PORTS_Log, Flat_File_-_Microsoft_Semantic_Logging, Flat_File_-_Microsoft_SQL_Server_2000_Error_Log, Flat_File_-_Microsoft_SQL_Server_2005_Error_Log, Flat_File_-_Microsoft_SQL_Server_2008_Error_Log, Flat_File_-_Microsoft_SQL_Server_2012_Error_Log, Flat_File_-_Microsoft_SQL_Server_2014_Error_Log, Flat_File_-_Microsoft_Windows_2003_DNS, Flat_File_-_Microsoft_Windows_2008_DNS, Flat_File_-_Microsoft_Windows_2012_DNS, Flat_File_-_Microsoft_Windows_Firewall, Flat_File_-_MicroStrategy, Flat_File_-_Mimecast_Audit, Flat_File_-_Mimecast_Email, Flat_File_-_Monetra, Flat_File_-_MongoDB, Flat_File_-_MS_Exchange_2003_Message_Tracking_Log, Flat_File_-_MS_Exchange_2007_Message_Tracking_Log, Flat_File_-_MS_Exchange_2010_Message_Tracking_Log, Flat_File_-_MS_Exchange_2013_Message_Tracking_Log, Flat_File_-_MS_Exchange_2016_Message_Tracking_Log, Flat_File_-_MS_Exchange_RPC_Client_Access, Flat_File_-_MS_IAS/RAS_Server_NPS_DB_Log_Format, Flat_File_-_MS_IAS/RAS_Server_Standard_Log_Format, Flat_File_-_MS_ISA_Server_2006_ISA_All_Fields, Flat_File_-_MS_ISA_Server_2006_W3C_All_Fields, Flat_File_-_MS_SQL_Server_Reporting_Services_2008, Flat_File_-_MySQL, Flat_File_-_MySQL_error.log, Flat_File_-_MySQL_mysql.log, Flat_File_-_MySQL_mysql-slow.log, Flat_File_-_Nessus_System_Log, Flat_File_-_NetApp_Cluster, Flat_File_-_Nginx_Log, Flat_File_-_Novell_Audit, Flat_File_-_Novell_GroupWise, Flat_File_-_Novell_LDAP, Flat_File_-_ObserveIT_Enterprise, Flat_File_-_Office_365_Message_Tracking, Flat_File_-_OpenDJ, Flat_File_-_OpenVMS, Flat_File_-_OpenVPN, Flat_File_-_Oracle_11g_Fine_Grained_Audit_Trail, Flat_File_-_Oracle_9i, Flat_File_-_Oracle_BRM_CM_Log, Flat_File_-_Oracle_BRM_DM_Log, Flat_File_-_Oracle_Listener_Audit_Trail, Flat_File_-_Oracle_SunOne_Directory_Server, Flat_File_-_Oracle_SunOne_Web_Server_Access_Log, Flat_File_-_Oracle_Virtual_Directory, Flat_File_-_Oracle_WebLogic_11g_Access_Log, Flat_File_-_Other, Flat_File_-_PeopleSoft, Flat_File_-_PhpMyAdmin_Honeypot, Flat_File_-_Postfix, Flat_File_-_PowerBroker_Servers, Flat_File_-_Princeton_Card_Secure, Flat_File_-_ProFTPD, Flat_File_-_PureMessage_For_Exchange_SMTP_Log, Flat_File_-_PureMessage_For_UNIX_Blocklist_Log, Flat_File_-_PureMessage_For_UNIX_Message_Log, Flat_File_-_RACF_(SMF), Flat_File_-_Radmin, Flat_File_-_Restic_Backup_Log, Flat_File_-_RL_Patient_Feedback, Flat_File_-_RSA_Adaptive_Authentication, Flat_File_-_RSA_Authentication_Manager_6.1, Flat_File_-_S2_Badge_Reader, Flat_File_-_Safenet, Flat_File_-_Sendmail_File, Flat_File_-_Sharepoint_ULS, Flat_File_-_ShoreTel_VOIP, Flat_File_-_Siemens_Radiology_Information_System, Flat_File_-_Snort_Fast_Alert_File, Flat_File_-_Solaris_-_Sulog, Flat_File_-_Solaris_Audit_Log, Flat_File_-_SpamAssassin, Flat_File_-_Squid_Proxy, Flat_File_-_Subversion, Flat_File_-_Sudo.Log, Flat_File_-_Swift_Alliance, Flat_File_-_Symantec_Antivirus_10.x_Corporate_Edtn, Flat_File_-_Symantec_Antivirus_12.x_Corporate_Edtn, Flat_File_-_Symitar_Episys_Console_Log, Flat_File_-_Symitar_Episys_Sysevent_Log, Flat_File_-_Tandem_EMSOUT_Log_File, Flat_File_-_Tandem_XYGATE, Flat_File_-_Tectia_SSH_Server, Flat_File_-_Trade_Innovations_CSCS, Flat_File_-_Trend_Micro_IMSS, Flat_File_-_Trend_Micro_Office_Scan, Flat_File_-_Tumbleweed_Mailgate_Server, Flat_File_-_Verint_Audit_Trail_File, Flat_File_-_VMWare_Virtual_Machine, Flat_File_-_Voltage_Securemail, Flat_File_-_Vormetric_Log_File, Flat_File_-_vsFTP_Daemon_Log, Flat_File_-_Vyatta_Firewall_Kernel_Log, Flat_File_-_WordPot_Honeypot, Flat_File_-_X-NetStat_Log, Flat_File_-_XPient_POS_CCA_Manager, Flat_File_-_XPIENT_POS_POSLOG, Flat_File_-_XPIENT_POS_Shell_Log, IPFIX_-_IP_Flow_Information_Export, J-Flow_-_Juniper_J-Flow_Version_5, J-Flow_-_Juniper_J-Flow_Version_9, LogRhythm_CloudAI, LogRhythm_Data_Loss_Defender, LogRhythm_Demo_File_-_Application_Server_Log, LogRhythm_Demo_File_-_Content_Inspection_Log, LogRhythm_Demo_File_-_Database_Audit_Log, LogRhythm_Demo_File_-_Ecom_Server_Log, LogRhythm_Demo_File_-_File_Server_Log, LogRhythm_Demo_File_-_Firewall_Log, LogRhythm_Demo_File_-_FTP_Log, LogRhythm_Demo_File_-_IDS_Alarms_Log, LogRhythm_Demo_File_-_Mail_Server_Log, LogRhythm_Demo_File_-_Netflow_Log, LogRhythm_Demo_File_-_Network_Device_Log, LogRhythm_Demo_File_-_Network_Server_Log, LogRhythm_Demo_File_-_VPN_Log, LogRhythm_Demo_File_-_Web_Access_Log, LogRhythm_File_Monitor_(AIX), LogRhythm_File_Monitor_(HP-UX), LogRhythm_File_Monitor_(Linux), LogRhythm_File_Monitor_(Solaris), LogRhythm_File_Monitor_(Windows), LogRhythm_Filter, LogRhythm_Network_Connection_Monitor_(AIX), LogRhythm_Network_Connection_Monitor_(HP-UX), LogRhythm_Network_Connection_Monitor_(Linux), LogRhythm_Network_Connection_Monitor_(Solaris), LogRhythm_Network_Connection_Monitor_(Windows), LogRhythm_Process_Monitor_(AIX), LogRhythm_Process_Monitor_(HP-UX), LogRhythm_Process_Monitor_(Linux), LogRhythm_Process_Monitor_(Solaris), LogRhythm_Process_Monitor_(Windows), LogRhythm_Registry_Integrity_Monitor, LogRhythm_SQL_Server_2000_C2_Audit_Log, LogRhythm_SQL_Server_2005_C2_Audit_Log, LogRhythm_SQL_Server_2008_C2_Audit_Log, LogRhythm_SQL_Server_2012+_C2_Audit_Log, LogRhythm_User_Activity_Monitor_(AIX), LogRhythm_User_Activity_Monitor_(HP-UX), LogRhythm_User_Activity_Monitor_(Linux), LogRhythm_User_Activity_Monitor_(Solaris), LogRhythm_User_Activity_Monitor_(Windows), MS_Event_Log_for_XP/2000/2003_-_Application, MS_Event_Log_for_XP/2000/2003_-_Application_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_BioPassword, MS_Event_Log_for_XP/2000/2003_-_DFS, MS_Event_Log_for_XP/2000/2003_-_Directory_Service, MS_Event_Log_for_XP/2000/2003_-_DNS, MS_Event_Log_for_XP/2000/2003_-_DotDefender, MS_Event_Log_for_XP/2000/2003_-_EMC_Celerra_NAS, MS_Event_Log_for_XP/2000/2003_-_File_Rep_Service, MS_Event_Log_for_XP/2000/2003_-_HA, MS_Event_Log_for_XP/2000/2003_-_Kaspersky, MS_Event_Log_for_XP/2000/2003_-_Micros_POS, MS_Event_Log_for_XP/2000/2003_-_PatchLink, MS_Event_Log_for_XP/2000/2003_-_SafeWord_2008, MS_Event_Log_for_XP/2000/2003_-_SCE, MS_Event_Log_for_XP/2000/2003_-_Security, MS_Event_Log_for_XP/2000/2003_-_Security_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_SMS_2003, MS_Event_Log_for_XP/2000/2003_-_System, MS_Event_Log_for_XP/2000/2003_-_System_-_Espaniol, MS_Event_Log_for_XP/2000/2003_-_Virtual_Server, MS_Windows_Event_Logging_-_ADFS_Admin, MS_Windows_Event_Logging_-_Application, MS_Windows_Event_Logging_-_AppLockerApp, MS_Windows_Event_Logging_-_Backup, MS_Windows_Event_Logging_-_Citrix_Delivery_Services, MS_Windows_Event_Logging_-_Citrix_XenApp, MS_Windows_Event_Logging_-_DFS, MS_Windows_Event_Logging_-_DHCP_Admin, MS_Windows_Event_Logging_-_DHCP_Operational, MS_Windows_Event_Logging_-_Diagnosis-PLA, MS_Windows_Event_Logging_-_Digital_Persona, MS_Windows_Event_Logging_-_Dir_Service, MS_Windows_Event_Logging_-_DNS, MS_Windows_Event_Logging_-_Dot_Defender, MS_Windows_Event_Logging_-_ESD_Data_Flow_Track, MS_Windows_Event_Logging_-_Exchange_Mailbox_DB_Failures, MS_Windows_Event_Logging_-_FailoverClustering/Operational, MS_Windows_Event_Logging_-_Firewall_With_Advanced_Security, MS_Windows_Event_Logging_-_Forefront_AV, MS_Windows_Event_Logging_-_Group_Policy_Operational, MS_Windows_Event_Logging_-_Hyper-V_Hvisor, MS_Windows_Event_Logging_-_Hyper-V_IMS, MS_Windows_Event_Logging_-_Hyper-V_Network, MS_Windows_Event_Logging_-_Hyper-V_SynthSt, MS_Windows_Event_Logging_-_Hyper-V_VMMS, MS_Windows_Event_Logging_-_Hyper-V_Worker, MS_Windows_Event_Logging_-_Kaspersky, MS_Windows_Event_Logging_-_Kernel_PnP_Configuration, MS_Windows_Event_Logging_-_Lync_Server, MS_Windows_Event_Logging_-_MSExchange_Management, MS_Windows_Event_Logging_-_Operations_Manager, MS_Windows_Event_Logging_-_PowerShell, MS_Windows_Event_Logging_-_Print_Services, MS_Windows_Event_Logging_-_Quest_ActiveRoles_EDM_Server, MS_Windows_Event_Logging_-_Replication, MS_Windows_Event_Logging_-_SafeWord_2008, MS_Windows_Event_Logging_-_Security, MS_Windows_Event_Logging_-_Setup, MS_Windows_Event_Logging_-_Sysmon, MS_Windows_Event_Logging_-_System, MS_Windows_Event_Logging_-_Task_Scheduler, MS_Windows_Event_Logging_-_TS_Gateway, MS_Windows_Event_Logging_-_TS_Licensing, MS_Windows_Event_Logging_-_TS_Local_Session_Manager, MS_Windows_Event_Logging_-_TS_Remote_Connection_Manager, MS_Windows_Event_Logging_-_TS_Session_Broker, MS_Windows_Event_Logging_-_TS_Session_Broker_Client, MS_Windows_Event_Logging_-_VisualSVN, MS_Windows_Event_Logging_:_Deutsch_-_Security, MS_Windows_Event_Logging_:_Espaniol_-_Application, MS_Windows_Event_Logging_:_Espaniol_-_Security, MS_Windows_Event_Logging_:_Espaniol_-_System, MS_Windows_Event_Logging_:_Francais_-_System, MS_Windows_Event_Logging_:_Francais_-_Security, MS_Windows_Event_Logging_XML_-_ADFS, MS_Windows_Event_Logging_XML_-_Application, MS_Windows_Event_Logging_XML_-_Forwarded_Events, MS_Windows_Event_Logging_XML_-_Generic, MS_Windows_Event_Logging_XML_-_Security, MS_Windows_Event_Logging_XML_-_Sysmon, MS_Windows_Event_Logging_XML_-_Sysmon_7.01, MS_Windows_Event_Logging_XML_-_Sysmon_8/9/10, MS_Windows_Event_Logging_XML_-_System, MS_Windows_Event_Logging_XML_-_Unisys_Stealth, MS_Windows_Event_Logging_XML_-_Windows_Defender, Netflow_-_Cisco_Netflow_Version_1, Netflow_-_Cisco_Netflow_Version_5, Netflow_-_Cisco_Netflow_Version_9, Netflow_-_Palo_Alto_Version_9, Netflow_-_SonicWALL_Version_5, Netflow_-_SonicWALL_Version_9, OPSEC_LEA_-_Checkpoint_Firewall, OPSEC_LEA_-_Checkpoint_Firewall_Audit_Log, OPSEC_LEA_-_Checkpoint_For_LR_7.4.1+, OPSEC_LEA_-_Checkpoint_Log_Server, sFlow_-_Version_5, SNMP_Trap_-_Audiolog, SNMP_Trap_-_Autoregistered, SNMP_Trap_-_Brocade_Switch, SNMP_Trap_-_Cisco_5508_Wireless_Controller, SNMP_Trap_-_Cisco_IP_SLA, SNMP_Trap_-_Cisco_Prime, SNMP_Trap_-_Cisco_Router-Switch, SNMP_Trap_-_CyberArk, SNMP_Trap_-_Dell_OpenManage, SNMP_Trap_-_HP_Network_Node_Manager, SNMP_Trap_-_IBM_TS3000_Series_Tape_Drive, SNMP_Trap_-_Riverbed_SteelCentral_NetShark, SNMP_Trap_-_RSA_Authentication_Manager, SNMP_Trap_-_Swift_Alliance, SNMP_Trap_-_Trend_Micro_Control_Manager, Syslog_-_3Com_Switch, Syslog_-_A10_Networks_AX1000_Load_Balancer, Syslog_-_A10_Networks_Web_Application_Firewall, Syslog_-_Accellion_Secure_File_Transfer_Application, Syslog_-_Active_Scout_IPS, Syslog_-_Adallom, Syslog_-_Adtran_Switch, Syslog_-_Aerohive_Access_Point, Syslog_-_Aerohive_Firewall, Syslog_-_AIMIA_Tomcat, Syslog_-_AirDefense_Enterprise, Syslog_-_Airmagnet_Wireless_IDS, Syslog_-_AirTight_IDS/IPS, Syslog_-_AirWatch_MDM, Syslog_-_Airwave_Management_System_Log, Syslog_-_AIX_Host, Syslog_-_Alcatel-Lucent_Switch, Syslog_-_Alcatel-Lucent_Wireless_Controller, Syslog_-_AlertLogic, Syslog_-_AMX_AV_Controller, Syslog_-_Apache_Access_Log, Syslog_-_Apache_Error_Log, Syslog_-_Apache_Tomcat_Request_Parameters, Syslog_-_Apache_Tomcat_Service_Clients_Log, Syslog_-_APC_ATS, Syslog_-_APC_NetBotz_Environmental_Monitoring, Syslog_-_APC_PDU, Syslog_-_APC_UPS, Syslog_-_Apcon_Network_Monitor, Syslog_-_Apex_One, Syslog_-_Arbor_Networks_Peakflow, Syslog_-_Arbor_Networks_Spectrum, Syslog_-_Arbor_Pravail_APS, Syslog_-_Arista_Switch, Syslog_-_Array_TMX_Load_Balancer, Syslog_-_Arris_CMTS, Syslog_-_Aruba_Clear_Pass, Syslog_-_Aruba_Mobility_Controller, Syslog_-_Aruba_Wireless_Access_Point, Syslog_-_AS/400_via_Powertech_Interact, Syslog_-_Asus_WRT_Router, Syslog_-_Avatier_Identity_Management_Suite_(AIMS), Syslog_-_Avaya_Communications_Manager, Syslog_-_Avaya_Ethernet_Routing_Switch, Syslog_-_Avaya_G450_Media_Gateway, Syslog_-_Avaya_Router, Syslog_-_Aventail_SSL/VPN, Syslog_-_Avocent_Cyclades_Terminal_Server, Syslog_-_Azul_Java_Appliance, Syslog_-_Barracuda_Load_Balancer, Syslog_-_Barracuda_Mail_Archiver, Syslog_-_Barracuda_NG_Firewall, Syslog_-_Barracuda_NG_Firewall_6.x, Syslog_-_Barracuda_Spam_Firewall, Syslog_-_Barracuda_Web_Application_Firewall, Syslog_-_Barracuda_Webfilter, Syslog_-_BeyondTrust_BeyondInsight_LEEF, Syslog_-_Bind_DNS, Syslog_-_Bit9_Parity_Suite, Syslog_-_Bit9_Security_Platform_CEF, Syslog_-_Bit9+Carbon_Black_(Deprecated), Syslog_-_BitDefender, Syslog_-_Black_Diamond_Switch, Syslog_-_Blue_Coat_CAS, Syslog_-_Blue_Coat_Forward_Proxy, Syslog_-_Blue_Coat_PacketShaper, Syslog_-_Blue_Coat_ProxyAV_ISA_W3C_Format, Syslog_-_Blue_Coat_ProxyAV_MS_Proxy_2.0_Format, Syslog_-_Blue_Coat_ProxySG, Syslog_-_Blue_Socket_Wireless_Controller, Syslog_-_Bluecat_Adonis, Syslog_-_BlueCedar, Syslog_-_BluVector, Syslog_-_Bomgar, Syslog_-_Bradford_Networks_NAC, Syslog_-_Bradford_Remediation_&amp;_Registration_Svr, Syslog_-_Bro_IDS, Syslog_-_Brocade_Switch, Syslog_-_Bromium_vSentry_CEF, Syslog_-_BSD_Host, Syslog_-_CA_Privileged_Access_Manager, Syslog_-_Cb_Defense_CEF, Syslog_-_Cb_Protection_CEF, Syslog_-_Cb_Response_LEEF, Syslog_-_Cell_Relay, Syslog_-_Certes_Networks_CEP, Syslog_-_Check_Point_Log_Exporter, Syslog_-_Checkpoint_Site-to-Site_VPN, Syslog_-_Cisco_ACS, Syslog_-_Cisco_Aironet_WAP, Syslog_-_Cisco_APIC, Syslog_-_Cisco_Application_Control_Engine, Syslog_-_Cisco_ASA, Syslog_-_Cisco_Clean_Access_(CCA)_Appliance, Syslog_-_Cisco_CSS_Load_Balancer, Syslog_-_Cisco_Email_Security_Appliance, Syslog_-_Cisco_FirePOWER, Syslog_-_Cisco_Firepower_Threat_Defense, Syslog_-_Cisco_FireSIGHT, Syslog_-_Cisco_FWSM, Syslog_-_Cisco_Global_Site_Selector, Syslog_-_Cisco_ISE, Syslog_-_Cisco_Meraki, Syslog_-_Cisco_Nexus_Switch, Syslog_-_Cisco_PIX, Syslog_-_Cisco_Prime_Infrastructure, Syslog_-_Cisco_Router, Syslog_-_Cisco_Secure_ACS_5, Syslog_-_Cisco_Session_Border_Controller, Syslog_-_Cisco_Switch, Syslog_-_Cisco_Telepresence_Video_Communications_Server, Syslog_-_Cisco_UCS, Syslog_-_Cisco_Unified_Comm_Mgr_(Call_Mgr), Syslog_-_Cisco_VPN_Concentrator, Syslog_-_Cisco_WAAS, Syslog_-_Cisco_Web_Security, Syslog_-_Cisco_Wireless_Access_Point, Syslog_-_Cisco_Wireless_Control_System, Syslog_-_CiscoWorks, Syslog_-_Citrix_Access_Gateway_Server, Syslog_-_Citrix_Netscaler, Syslog_-_Citrix_XenServer, Syslog_-_Claroty_CTD_CEF, Syslog_-_Clearswift_Secure_Email_Gateway, Syslog_-_CloudLock, Syslog_-_CodeGreen_Data_Loss_Prevention, Syslog_-_Cofense_Triage_CEF, Syslog_-_Consentry_NAC, Syslog_-_Corero_IPS, Syslog_-_Corero_SmartWall_DDoS, Syslog_-_CoyotePoint_Equalizer, Syslog_-_Crowdstrike_Falconhost_CEF, Syslog_-_CyberArk, Syslog_-_CyberArk_Privileged_Threat_Analytics, Syslog_-_Cylance_CEF, Syslog_-_CylancePROTECT, Syslog_-_DarkTrace_CEF, Syslog_-_Dell_Force_10, Syslog_-_Dell_PowerConnect_Switch, Syslog_-_Dell_Remote_Access_Controller, Syslog_-_Dell_SecureWorks_iSensor_IPS, Syslog_-_Dialogic_Media_Gateway, Syslog_-_Digital_Guardian_CEF, Syslog_-_D-Link_Switch, Syslog_-_Don_not_use, Syslog_-_Dragos_Platform_CEF, Syslog_-_Ecessa_ShieldLink, Syslog_-_EfficientIP, Syslog_-_EMC_Avamar, Syslog_-_EMC_Centera, Syslog_-_EMC_Data_Domain, Syslog_-_EMC_Isilon, Syslog_-_EMC_Unity_Array, Syslog_-_EMC_VNX, Syslog_-_Ensilo_NGAV, Syslog_-_Enterasys_Dragon_IDS, Syslog_-_Enterasys_Router, Syslog_-_Enterasys_Switch, Syslog_-_Entrust_Entelligence_Messaging_Server, Syslog_-_Entrust_IdentityGuard, Syslog_-_Epic_Hyperspace_CEF, Syslog_-_EqualLogic_SAN, Syslog_-_eSafe_Email_Security, Syslog_-_ESET_Remote_Administrator_(ERA)_LEEF, Syslog_-_Event_Reporter_(Win_2000/XP/2003), Syslog_-_Exabeam, Syslog_-_Exchange_Message_Tracking, Syslog_-_ExtraHop, Syslog_-_Extreme_Wireless_LAN, Syslog_-_ExtremeWare, Syslog_-_ExtremeXOS, Syslog_-_F5_BIG-IP_Access_Policy_Manager, Syslog_-_F5_BIG-IP_AFM, Syslog_-_F5_BIG-IP_ASM, Syslog_-_F5_BIG-IP_ASM_Key-Value_Pairs, Syslog_-_F5_BIG-IP_ASM_v12, Syslog_-_F5_Big-IP_GTM_&amp;_DNS, Syslog_-_F5_Big-IP_LTM, Syslog_-_F5_FirePass_Firewall, Syslog_-_F5_Silverline_DDoS_Protection, Syslog_-_Fargo_HDP_Card_Printer_and_Encoder, Syslog_-_Fat_Pipe_Load_Balancer, Syslog_-_Fidelis_XPS, Syslog_-_FireEye_E-Mail_MPS, Syslog_-_FireEye_EX, Syslog_-_FireEye_Web_MPS/CMS/ETP/HX, Syslog_-_Forcepoint_DLP, Syslog_-_Forcepoint_Email_Security_Gateway, Syslog_-_Forcepoint_Stonesoft_NGFW, Syslog_-_Forcepoint_SureView_Insider_Threat, Syslog_-_Forcepoint_Web_Security, Syslog_-_Forcepoint_Web_Security_CEF_Format, Syslog_-_Forescout_CounterACT_NAC, Syslog_-_Fortinet_FortiAnalyzer, Syslog_-_Fortinet_FortiAuthenticator, Syslog_-_Fortinet_FortiDDoS, Syslog_-_Fortinet_FortiGate, Syslog_-_Fortinet_FortiGate_v4.0, Syslog_-_Fortinet_FortiGate_v5.0, Syslog_-_Fortinet_FortiGate_v5.2, Syslog_-_Fortinet_FortiGate_v5.4/v5.6, Syslog_-_Fortinet_FortiGate_v5.6_CEF, Syslog_-_Fortinet_Fortigate_v6.0, Syslog_-_Fortinet_FortiMail, Syslog_-_Fortinet_FortiWeb, Syslog_-_Foundry_Switch, Syslog_-_Gene6_FTP, Syslog_-_Generic_CEF, Syslog_-_Generic_ISC_DHCP, Syslog_-_Generic_LEEF, Syslog_-_Guardium_Database_Activity_Monitor, Syslog_-_H3C_Router, Syslog_-_Hitachi_Universal_Storage_Platform, Syslog_-_HP_BladeSystem, Syslog_-_HP_iLO, Syslog_-_HP_Procurve_Switch, Syslog_-_HP_Router, Syslog_-_HP_Switch, Syslog_-_HP_Unix_Tru64, Syslog_-_HP_Virtual_Connect_Switch, Syslog_-_HP-UX_Host, Syslog_-_Huawei_Access_Router, Syslog_-_IBM_Blade_Center, Syslog_-_IBM_Security_Network_Protection, Syslog_-_IBM_Virtual_Tape_Library_Server, Syslog_-_IBM_WebSphere_DataPower_Integration, Syslog_-_IBM_zSecure_Alert_for_ACF2_2.1.0, Syslog_-_IceWarp_Server, Syslog_-_Imperva_Incapsula_CEF, Syslog_-_Imperva_SecureSphere, Syslog_-_Imprivata_OneSign_SSO, Syslog_-_InfoBlox, Syslog_-_Invincea_(LEEF), Syslog_-_iPrism_Proxy_Log, Syslog_-_IPSWITCH_MOVEit_Server, Syslog_-_IPTables, Syslog_-_IRIX_Host, Syslog_-_iSeries_via_Powertech_Interact, Syslog_-_Ivanti_FileDirector, Syslog_-_JetNexus_Load_Balancer, Syslog_-_Juniper_DX_Application_Accelerator, Syslog_-_Juniper_Firewall, Syslog_-_Juniper_Firewall_3400, Syslog_-_Juniper_Host_Checker, Syslog_-_Juniper_IDP, Syslog_-_Juniper_NSM, Syslog_-_Juniper_Router, Syslog_-_Juniper_SSL_VPN, Syslog_-_Juniper_SSL_VPN_WELF_Format, Syslog_-_Juniper_Switch, Syslog_-_Juniper_Trapeze, Syslog_-_Juniper_vGW_Virtual_Gateway, Syslog_-_Kaspersky_Security_Center, Syslog_-_Kea_DHCP_Server, Syslog_-_Kemp_Load_Balancer, Syslog_-_KFSensor_Honeypot, Syslog_-_KFSensor_Honeypot_CEF, Syslog_-_Lancope_StealthWatch, Syslog_-_Lancope_StealthWatch_CEF, Syslog_-_Layer_7_SecureSpan_SOA_Gateway, Syslog_-_Legacy_Checkpoint_Firewall_(Not_Log_Exporter), Syslog_-_Legacy_Checkpoint_IPS_(Not_Log_Exporter), Syslog_-_Lieberman_Enterprise_Random_Password_Manager, Syslog_-_Linux_Audit, Syslog_-_Linux_Host, Syslog_-_Linux_TACACS_Plus, Syslog_-_LOGbinder_EX, Syslog_-_LOGbinder_SP, Syslog_-_LOGbinder_SQL, Syslog_-_LogRhythm_Data_Indexer_Monitor, Syslog_-_LogRhythm_Inter_Deployment_Data_Sharing, Syslog_-_LogRhythm_Log_Distribution_Services, Syslog_-_LogRhythm_Network_Monitor, Syslog_-_LogRhythm_Syslog_Generator, Syslog_-_Lumension, Syslog_-_MacOS_X, Syslog_-_Malwarebytes_Endpoint_Security_CEF, Syslog_-_Mandiant_MIR, Syslog_-_McAfee_Advanced_Threat_Defense, Syslog_-_McAfee_Email_And_Web_Security, Syslog_-_McAfee_ePO, Syslog_-_McAfee_Firewall_Enterprise, Syslog_-_McAfee_Network_Security_Manager, Syslog_-_McAfee_Secure_Internet_Gateway, Syslog_-_McAfee_SecureMail, Syslog_-_McAfee_Skyhigh_for_Shadow_IT_LEEF, Syslog_-_McAfee_Web_Gateway, Syslog_-_mGuard_Firewall, Syslog_-_Microsoft_Advanced_Threat_Analytics_(ATA)_CEF, Syslog_-_Microsoft_Azure_Log_Integration, Syslog_-_Microsoft_Azure_MFA, Syslog_-_Microsoft_Forefront_UAG, Syslog_-_Mirapoint, Syslog_-_MobileIron, Syslog_-_Motorola_Access_Point, Syslog_-_MS_IIS_Web_Log_W3C_Format_(Snare), Syslog_-_MS_Windows_Event_Logging_XML_-_Application, Syslog_-_MS_Windows_Event_Logging_XML_-_Security, Syslog_-_MS_Windows_Event_Logging_XML_-_System, Syslog_-_Nagios, Syslog_-_nCircle_Configuration_Compliance_Manager, Syslog_-_NetApp_Filer, Syslog_-_NETASQ_Firewall, Syslog_-_NetGate_Router, Syslog_-_NetMotion_VPN, Syslog_-_Netscout_nGenius_InfiniStream, Syslog_-_NetScreen_Firewall, Syslog_-_Netskope, Syslog_-_Netskope_CEF, Syslog_-_Network_Chemistry_RFprotect, Syslog_-_Nginx_Web_Log, Syslog_-_Nimble_Storage, Syslog_-_Nortel_8600_Switch, Syslog_-_Nortel_BayStack_Switch, Syslog_-_Nortel_Contivity, Syslog_-_Nortel_Firewall, Syslog_-_Nortel_IP_1220, Syslog_-_Nortel_Passport_Switch, Syslog_-_Nozomi_Networks_Guardian_CEF, Syslog_-_NuSecure_Gateway, Syslog_-_Nutanix, Syslog_-_Open_Collector, Syslog_-_Open_Collector_-_AWS_CloudTrail, Syslog_-_Open_Collector_-_AWS_CloudWatch, Syslog_-_Open_Collector_-_AWS_Config_Events, Syslog_-_Open_Collector_-_AWS_Guard_Duty, Syslog_-_Open_Collector_-_AWS_S3, Syslog_-_Open_Collector_-_Azure_Event_Hub, Syslog_-_Open_Collector_-_Carbon_Black_Cloud, Syslog_-_Open_Collector_-_CarbonBlackBeat_Heartbeat, Syslog_-_Open_Collector_-_Cisco_AMP, Syslog_-_Open_Collector_-_Cisco_Umbrella, Syslog_-_Open_Collector_-_CiscoAMPBeat_Heartbeat, Syslog_-_Open_Collector_-_Duo_Authentication_Security, Syslog_-_Open_Collector_-_DuoBeat_Heartbeat, Syslog_-_Open_Collector_-_EventHubBeat_Heartbeat, Syslog_-_Open_Collector_-_GCP_Audit, Syslog_-_Open_Collector_-_GCP_Cloud_Key_Management_Service, Syslog_-_Open_Collector_-_GCP_Http_Load_Balancer, Syslog_-_Open_Collector_-_GCP_Pub_Sub, Syslog_-_Open_Collector_-_GCP_Security_Command_Center, Syslog_-_Open_Collector_-_GCP_Virtual_Private_Cloud, Syslog_-_Open_Collector_-_Gmail_Message_Tracking, Syslog_-_Open_Collector_-_GMTBeat_Heartbeat, Syslog_-_Open_Collector_-_GSuite, Syslog_-_Open_Collector_-_GSuiteBeat_Heartbeat, Syslog_-_Open_Collector_-_Metricbeat, Syslog_-_Open_Collector_-_Okta_System_Log, Syslog_-_Open_Collector_-_OktaSystemLogBeat_Heartbeat, Syslog_-_Open_Collector_-_PubSubBeat_Heartbeat, Syslog_-_Open_Collector_-_S3Beat_Heartbeat, Syslog_-_Open_Collector_-_Sophos_Central, Syslog_-_Open_Collector_-_SophosCentralBeat_Heartbeat, Syslog_-_Open_Collector_-_Webhook, Syslog_-_Open_Collector_-_Webhook_OneLogin, Syslog_-_Open_Collector_-_Webhook_Zoom, Syslog_-_Open_Collector_-_WebhookBeat_Heartbeat, Syslog_-_Opengear_Console, Syslog_-_OpenLDAP, Syslog_-_Oracle_10g_Audit_Trail, Syslog_-_Oracle_11g_Audit_Trail, Syslog_-_OSSEC_Alerts, Syslog_-_Other, Syslog_-_Outpost24, Syslog_-_Palo_Alto_Cortex_XDR, Syslog_-_Palo_Alto_Custom_Pipe, Syslog_-_Palo_Alto_Firewall, Syslog_-_Palo_Alto_Traps_CEF, Syslog_-_Palo_Alto_Traps_Management_Service, Syslog_-_Password_Manager_Pro, Syslog_-_pfSense_Firewall, Syslog_-_PingFederate_7.2, Syslog_-_PingFederate_CEF, Syslog_-_Polycom, Syslog_-_Postfix, Syslog_-_Procera_PacketLogic, Syslog_-_Proofpoint_Spam_Firewall, Syslog_-_Protegrity_Defiance_DPS, Syslog_-_QLogic_Infiniband_Switch, Syslog_-_Quest_Defender, Syslog_-_Radiator_Radius, Syslog_-_RADiFlow_3180_Switch, Syslog_-_Radware_Alteon_Load_Balancer, Syslog_-_Radware_DefensePro, Syslog_-_Radware_Web_Server_Director_Audit_Log, Syslog_-_Raritan_KVM, Syslog_-_Raz-Lee, Syslog_-_RedSeal, Syslog_-_Riverbed, Syslog_-_RSA_ACE, Syslog_-_RSA_Authentication_Manager_v7.1, Syslog_-_RSA_Authentication_Manager_v8.x, Syslog_-_RSA_Web_Threat_Detection, Syslog_-_RSA_Web_Threat_Detection_5.1, Syslog_-_RuggedRouter, Syslog_-_Safenet, Syslog_-_Sailpoint, Syslog_-_Sauce_Labs, Syslog_-_SecureAuth_IdP, Syslog_-_SecureAuth_IdP_v9, Syslog_-_SecureLink, Syslog_-_SecureTrack, Syslog_-_SEL_3610_Port_Switch, Syslog_-_SEL_3620_Ethernet_Security_Gateway, Syslog_-_Sentinel_IPS, Syslog_-_SentinelOne_CEF, Syslog_-_Sguil, Syslog_-_Siemens_Scalance_X400, Syslog_-_Smoothwall_Firewall, Syslog_-_SnapGear_Firewall, Syslog_-_Snare_Windows_2003_Event_Log, Syslog_-_Snare_Windows_2008_Event_Log, Syslog_-_Snort_IDS, Syslog_-_Solaris_(Snare), Syslog_-_Solaris_Host, Syslog_-_SonicWALL, Syslog_-_SonicWALL_SSL-VPN, Syslog_-_Sophos_Email_Encryption_Appliance, Syslog_-_Sophos_UTM, Syslog_-_Sophos_Web_Proxy, Syslog_-_Sophos_XG_Firewall, Syslog_-_Sourcefire_IDS_3D, Syslog_-_Sourcefire_RNA, Syslog_-_Spectracom_Network_Time_Server, Syslog_-_Splunk_API_-_Checkpoint_Firewall, Syslog_-_Splunk_API_-_Cisco_Netflow_V9, Syslog_-_Splunk_API_-_Nessus_Vulnerability_Scanner, Syslog_-_Squid_Proxy, Syslog_-_StealthBits_Activity_Monitor, Syslog_-_STEALTHbits_StealthINTERCEPT, Syslog_-_StoneGate_Firewall, Syslog_-_Stonesoft_IPS, Syslog_-_Stormshield_Network_Security_Firewall, Syslog_-_Sycamore_Networks_DNX-88, Syslog_-_Sygate_Firewall, Syslog_-_Symantec_Advanced_Threat_Protection_(ATP)_CEF, Syslog_-_Symantec_DLP_CEF, Syslog_-_Symantec_Endpoint_Server, Syslog_-_Symantec_Messaging_Gateway, Syslog_-_Symantec_PGP_Gateway, Syslog_-_Symbol_Wireless_Access_Point, Syslog_-_Tanium, Syslog_-_Temporary_LST-2, Syslog_-_Tenable_SecurityCenter, Syslog_-_Thycotic_Secret_Server, Syslog_-_Tipping_Point_IPS, Syslog_-_Tipping_Point_SSL_Reverse_Proxy, Syslog_-_Top_Layer_IPS, Syslog_-_Townsend_Alliance_LogAgent, Syslog_-_Trend_Micro_Control_Manager_CEF, Syslog_-_Trend_Micro_Deep_Discovery_Inspector, Syslog_-_Trend_Micro_Deep_Security_CEF, Syslog_-_Trend_Micro_Deep_Security_LEEF, Syslog_-_Trend_Micro_IWSVA, Syslog_-_Trend_Micro_Vulnerability_Protection_Manager, Syslog_-_Tripwire, Syslog_-_Trustwave_NAC, Syslog_-_Trustwave_Secure_Web_Gateway, Syslog_-_Trustwave_Web_Application_Firewall, Syslog_-_Tufin, Syslog_-_Tumbleweed_Mailgate_Server, Syslog_-_Ubiquiti_UniFi_Security_Gateway, Syslog_-_Ubiquiti_UniFi_Switch, Syslog_-_Ubiquiti_UniFi_WAP, Syslog_-_Untangle, Syslog_-_Vamsoft_ORF, Syslog_-_Vanguard_Active_Alerts, Syslog_-_Varonis_DatAlert, Syslog_-_Vasco_Digipass_Identikey_Server, Syslog_-_Vectra_Networks, Syslog_-_Versa_Networks_SD-WAN, Syslog_-_VMWare_ESX/ESXi_Server, Syslog_-_VMware_Horizon_View, Syslog_-_VMWare_NSX/NSX-T, Syslog_-_VMWare_Unified_Access_Gateway, Syslog_-_VMWare_vCenter_Server, Syslog_-_VMWare_vShield, Syslog_-_Voltage_Securemail, Syslog_-_Vormetric_CoreGuard, Syslog_-_Vormetric_Data_Security_Manager, Syslog_-_WALLIX_Bastion, Syslog_-_Watchguard_FireBox, Syslog_-_WS2000_Wireless_Access_Point, Syslog_-_Wurldtech_SmartFirewall, Syslog_-_Xirrus_Wireless_Array, Syslog_-_Zimbra_System_Log, Syslog_-_Zix_E-mail_Encryption, Syslog_-_Zscaler_Nano_Streaming_Service, Syslog_-_ZXT_Load_Balancer, Syslog_-_ZyWALL_VPN_Firewall, Syslog_Avaya_G450_Media_Gateway, Syslog_File_-_AIX_Host, Syslog_File_-_BSD_Format, Syslog_File_-_HP-UX_Host, Syslog_File_-_IRIX_Host, Syslog_File_-_Linux_Host, Syslog_File_-_LogRhythm_Syslog_Generator, Syslog_File_-_MS_2003_Event_Log_(Snare), Syslog_File_-_Oracle_10g_Audit_Trail, Syslog_File_-_Oracle_11g_Audit_Trail, Syslog_File_-_Solaris_Host, UDLA_-_CA_Single_Sign-On, UDLA_-_Deepnet_DualShield, UDLA_-_Drupal, UDLA_-_Finacle_Core, UDLA_-_Finacle_Treasury_Logs, UDLA_-_Forcepoint, UDLA_-_Gallagher_Command_Centre, UDLA_-_iManage_Worksite, UDLA_-_ISS_Proventia_SiteProtector_-_IPS, UDLA_-_LogRhythm_Enterprise_Monitoring_Solution, UDLA_-_LREnhancedAudit, UDLA_-_McAfee_ePolicy_Orchestrator_-_Universal_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_3.6_-_Events, UDLA_-_McAfee_ePolicy_Orchestrator_4.0_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_4.5_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.0_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.1_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.3_-_ePOEvents, UDLA_-_McAfee_ePolicy_Orchestrator_5.9_-_ePOEvents, UDLA_-_McAfee_Network_Access_Control, UDLA_-_McAfee_Network_Security_Manager, UDLA_-_Microsoft_System_Center_2012_Endpoint_Protection, UDLA_-_ObserveIT, UDLA_-_Oracle_10g_Audit_Trail, UDLA_-_Oracle_11g_Audit_Trail, UDLA_-_Oracle_12C_Unified_Auditing, UDLA_-_Oracle_9i_Audit_Trail, UDLA_-_Other, UDLA_-_SEL_3530_RTAC, UDLA_-_SharePoint_2007_AuditData, UDLA_-_SharePoint_2010_EventData, UDLA_-_SharePoint_2013_EventData, UDLA_-_Siemens_Invision, UDLA_-_Sophos_Anti-Virus, UDLA_-_Sophos_Endpoint_Security_and_Control, UDLA_-_Symantec_CSP, UDLA_-_Symantec_SEP, UDLA_-_Symmetry_Access_Control, UDLA_-_VMWare_vCenter_Server, UDLA_-_VMWare_vCloud, VLS_-_Syslog_-_Infoblox_-_DNS_RPZ, VLS_-_Syslog_-_Infoblox_-_Threat_Protection. | Optional |
+| host_name | Impacted host name. | Optional |
+| username | Username. | Optional |
+| subject | Email subject. | Optional |
+| sender | Email sender. | Optional |
+| recipient | Email recipient. | Optional |
+| hash | Hash code of the event. | Optional |
+| url | URL of the event. | Optional |
+| process_name | Process name. | Optional |
+| object | Log object. | Optional |
+| ip_address | IP address of the endpoint. | Optional |
+| max_message | Maximum number of log messages to query. Default is 100. | Optional |
+| query_timeout | The query timeout in seconds. Default is 60. | Optional |
+| entity_id | Entity ID. | Optional |
+| interval_in_seconds | Interval in seconds between each poll. | Optional |
+| page_size | Page size. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Search.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. | 
-| LogRhythm.Search.StatusMessage | String | The task status returned from the database for the current search. | 
-| LogRhythm.Search.SearchName | String | The name of the search query in Cortex XSOAR. | 
-| LogRhythm.Search.TaskStatus | String | Task status. | 
-| LogRhythm.Search.Results.originEntityId | Number | Entity ID. | 
-| LogRhythm.Search.Results.impactedIp | String | Impacted IP address. | 
-| LogRhythm.Search.Results.classificationTypeName | String | Classification name. | 
-| LogRhythm.Search.Results.logSourceName | String | Log source name. | 
-| LogRhythm.Search.Results.entityName | String | Entity name. | 
-| LogRhythm.Search.Results.normalDate | Date | Date. | 
-| LogRhythm.Search.Results.vendorMessageId | String | Vendor log message. | 
-| LogRhythm.Search.Results.priority | Number | Log priority. | 
-| LogRhythm.Search.Results.sequenceNumber | String | Sequence number. | 
-| LogRhythm.Search.Results.originHostId | Number | Origin host ID. | 
-| LogRhythm.Search.Results.mpeRuleId | Number | Logrhythm rule ID. | 
-| LogRhythm.Search.Results.originIp | String | Origin IP address. | 
-| LogRhythm.Search.Results.mpeRuleName | String | Logrhythm rule name. | 
-| LogRhythm.Search.Results.logSourceHostId | Number | Log source host ID. | 
-| LogRhythm.Search.Results.originHost | String | Origin host. | 
-| LogRhythm.Search.Results.logDate | Date | Log date. | 
-| LogRhythm.Search.Results.classificationName | String | Log classification name. | 
-
+| LogRhythm.Search.TaskId | String | The task ID returned from the database for the current search. This is actually the search GUID. |
+| LogRhythm.Search.StatusMessage | String | The task status returned from the database for the current search. |
+| LogRhythm.Search.SearchName | String | The name of the search query in Cortex XSOAR. |
+| LogRhythm.Search.TaskStatus | String | Task status. |
+| LogRhythm.Search.Results.originEntityId | Number | Entity ID. |
+| LogRhythm.Search.Results.impactedIp | String | Impacted IP address. |
+| LogRhythm.Search.Results.classificationTypeName | String | Classification name. |
+| LogRhythm.Search.Results.logSourceName | String | Log source name. |
+| LogRhythm.Search.Results.entityName | String | Entity name. |
+| LogRhythm.Search.Results.normalDate | Date | Date. |
+| LogRhythm.Search.Results.vendorMessageId | String | Vendor log message. |
+| LogRhythm.Search.Results.priority | Number | Log priority. |
+| LogRhythm.Search.Results.sequenceNumber | String | Sequence number. |
+| LogRhythm.Search.Results.originHostId | Number | Origin host ID. |
+| LogRhythm.Search.Results.mpeRuleId | Number | Logrhythm rule ID. |
+| LogRhythm.Search.Results.originIp | String | Origin IP address. |
+| LogRhythm.Search.Results.mpeRuleName | String | Logrhythm rule name. |
+| LogRhythm.Search.Results.logSourceHostId | Number | Log source host ID. |
+| LogRhythm.Search.Results.originHost | String | Origin host. |
+| LogRhythm.Search.Results.logDate | Date | Log date. |
+| LogRhythm.Search.Results.classificationName | String | Log classification name. |
 
 #### Command Example
+
 ```!lr-execute-search-query number_of_days=5 entity_id=1 host_name=HOSTNAME```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5438,50 +5474,51 @@ Execute a search query on the LogRhythm log database.
 >New search query created, Task ID=9a5533c6-dc18-46dc-9d9a-3e7461b5ca7a
 
 ### lr-get-query-result
+
 ***
 Get the search query result for the specified task ID. The task ID can be retrieved from the lr-execute-search-query command.
-
 
 #### Base Command
 
 `lr-get-query-result`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| task_id | The task ID. The task ID can be retrieved from the lr-execute-search-query command. | Required | 
-| page_size | Page size. Default is 50. | Optional | 
-
+| task_id | The task ID. The task ID can be retrieved from the lr-execute-search-query command. | Required |
+| page_size | Page size. Default is 50. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Search.TaskStatus | String | Task status. | 
-| LogRhythm.Search.TaskId | String | Task ID. | 
-| LogRhythm.Search.Results.originEntityId | Number | Entity ID. | 
-| LogRhythm.Search.Results.impactedIp | String | Impacted IP address. | 
-| LogRhythm.Search.Results.classificationTypeName | String | Classification name. | 
-| LogRhythm.Search.Results.logSourceName | String | Log source name. | 
-| LogRhythm.Search.Results.entityName | String | Entity name. | 
-| LogRhythm.Search.Results.normalDate | Date | Date. | 
-| LogRhythm.Search.Results.vendorMessageId | String | Vendor log message. | 
-| LogRhythm.Search.Results.priority | Number | Log priority. | 
-| LogRhythm.Search.Results.sequenceNumber | String | Sequence number. | 
-| LogRhythm.Search.Results.originHostId | Number | Origin host ID. | 
-| LogRhythm.Search.Results.mpeRuleId | Number | Logrhythm rule ID. | 
-| LogRhythm.Search.Results.originIp | String | Origin IP address. | 
-| LogRhythm.Search.Results.mpeRuleName | String | Logrhythm rule name. | 
-| LogRhythm.Search.Results.logSourceHostId | Number | Log source host ID. | 
-| LogRhythm.Search.Results.originHost | String | Origin host. | 
-| LogRhythm.Search.Results.logDate | Date | Log date. | 
-| LogRhythm.Search.Results.classificationName | String | Log classification name. | 
-
+| LogRhythm.Search.TaskStatus | String | Task status. |
+| LogRhythm.Search.TaskId | String | Task ID. |
+| LogRhythm.Search.Results.originEntityId | Number | Entity ID. |
+| LogRhythm.Search.Results.impactedIp | String | Impacted IP address. |
+| LogRhythm.Search.Results.classificationTypeName | String | Classification name. |
+| LogRhythm.Search.Results.logSourceName | String | Log source name. |
+| LogRhythm.Search.Results.entityName | String | Entity name. |
+| LogRhythm.Search.Results.normalDate | Date | Date. |
+| LogRhythm.Search.Results.vendorMessageId | String | Vendor log message. |
+| LogRhythm.Search.Results.priority | Number | Log priority. |
+| LogRhythm.Search.Results.sequenceNumber | String | Sequence number. |
+| LogRhythm.Search.Results.originHostId | Number | Origin host ID. |
+| LogRhythm.Search.Results.mpeRuleId | Number | Logrhythm rule ID. |
+| LogRhythm.Search.Results.originIp | String | Origin IP address. |
+| LogRhythm.Search.Results.mpeRuleName | String | Logrhythm rule name. |
+| LogRhythm.Search.Results.logSourceHostId | Number | Log source host ID. |
+| LogRhythm.Search.Results.originHost | String | Origin host. |
+| LogRhythm.Search.Results.logDate | Date | Log date. |
+| LogRhythm.Search.Results.classificationName | String | Log classification name. |
 
 #### Command Example
+
 ```!lr-get-query-result task_id=88e1a446-b49d-4197-b599-26d4b3d1d1ac```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -5913,6 +5950,7 @@ Get the search query result for the specified task ID. The task ID can be retrie
 #### Human Readable Output
 
 >### Search results for task 88e1a446-b49d-4197-b599-26d4b3d1d1ac
+>
 >|Action|Classification Id|Classification Name|Classification Type Name|Command|Common Event Id|Common Event Name|Count|Direction|Direction Name|Entity Id|Entity Name|Impacted Entity Id|Impacted Entity Name|Impacted Host|Impacted Host Id|Impacted Host Name|Impacted Zone Name|Indexed Date|Inserted Date|Key Field|Log Date|Log Message|Log Source Host|Log Source Host Id|Log Source Host Name|Log Source Id|Log Source Name|Log Source Type|Log Source Type Name|Message Id|Message Type Enum|Mpe Rule Id|Mpe Rule Name|Normal Date|Normal Date Hour|Normal Date Min|Normal Msg Date Max|Origin Entity Id|Origin Entity Name|Origin Host|Origin Host Id|Origin Host Name|Origin Name|Origin Zone|Origin Zone Name|Priority|Process|Protocol Id|Root Entity Id|Root Entity Name|Service Id|Service Name|Session|Severity|Subject|Vendor Message Id|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| none | 1020 | Authentication Success | Audit | authorizationsuccess | -1100516 | LogRhythm DX Authorization Success | 1 | 1 | Local | 1 | Primary Site | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | Internal | 1635624839736 | 1635624765372 | messageId | 1635624757414 | 2021-10-30 20:12:37.414 CODE=000030 MESSAGE=AuthorizationSuccess HOST=HOSTNAME SEVERITY=Low SERVICENAME=columbo TRIGGEREDWHEN=Data Indexer has granted access to a user or service SUGGESTEDACTION=None ADDITIONALINFO=[Name:[lr-soap-api]][Role:[globalAdmin]][PersonID:[1]][ID:[1af934a9-4a1e-46ac-9201-63d33f884347]][Action:[search]] | HOSTNAME | 1 | HOSTNAME | 16 | LogrhythmDXMonitor | 1000648 | Flat File - LogRhythm Data Indexer Monitor | 209782fc-e20e-4fb1-ae24-834e8aba893f | 1 | 1490984 | Authorization Success | 1635624757437 | 1635624000000 | 1635624757437 | 1635624757437 | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | HOSTNAME | 0 | Internal | 22 | data indexer has granted access to a user or service | -1 | 1 | Primary Site | -1000012 | LogRhythm Data Indexer | columbo | low | none | 000030 |
@@ -5923,58 +5961,58 @@ Get the search query result for the specified task ID. The task ID can be retrie
 >| none | 1020 | Authentication Success | Audit | authorizationsuccess | -1100516 | LogRhythm DX Authorization Success | 1 | 1 | Local | 1 | Primary Site | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | Internal | 1635624839736 | 1635624745374 | messageId | 1635624729847 | 2021-10-30 20:12:09.847 CODE=000030 MESSAGE=AuthorizationSuccess HOST=HOSTNAME SEVERITY=Low SERVICENAME=columbo TRIGGEREDWHEN=Data Indexer has granted access to a user or service SUGGESTEDACTION=None ADDITIONALINFO=[Name:[lr-soap-api]][Role:[globalAdmin]][PersonID:[1]][ID:[1af934a9-4a1e-46ac-9201-63d33f884347]][Action:[search]] | HOSTNAME | 1 | HOSTNAME | 16 | LogrhythmDXMonitor | 1000648 | Flat File - LogRhythm Data Indexer Monitor | 8641126b-db6a-437f-9e67-07b9f51ee3e9 | 1 | 1490984 | Authorization Success | 1635624729870 | 1635624000000 | 1635624729870 | 1635624729870 | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | HOSTNAME | 0 | Internal | 22 | data indexer has granted access to a user or service | -1 | 1 | Primary Site | -1000012 | LogRhythm Data Indexer | columbo | low | none | 000030 |
 >| none | 1400 | Startup and Shutdown | Audit | servicestarted | -1100491 | LogRhythm DX Started | 1 | 1 | Local | 1 | Primary Site | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | Internal | 1635624839736 | 1635206489338 | messageId | 1635206479386 | 2021-10-26 00:01:19.386 CODE=000002 MESSAGE=ServiceStarted HOST=HOSTNAME SEVERITY=Low SERVICENAME=carpenter TRIGGEREDWHEN=Any service completes startup SUGGESTEDACTION=None ADDITIONALINFO= | HOSTNAME | 1 | HOSTNAME | 16 | LogrhythmDXMonitor | 1000648 | Flat File - LogRhythm Data Indexer Monitor | 88997979-edf6-4b1f-82ed-7ebbd7bcce46 | 1 | 1349763 | Service Started | 1635206479415 | 1635206400000 | 1635206479415 | 1635206479415 | 1 | Primary Site | HOSTNAME * | 1 | HOSTNAME | HOSTNAME | 0 | Internal | 31 | any service completes startup | -1 | 1 | Primary Site | -1000012 | LogRhythm Data Indexer | carpenter | low | none | 000002 |
 
-
 ### lr-add-host
+
 ***
 Add a new host to an entity.
-
 
 #### Base Command
 
 `lr-add-host`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| entity-id | The entity ID for the host. | Optional | 
-| entity-name | The entity name for the host. | Required | 
-| name | The name of the host. | Required | 
-| short-description | A brief description of the component. | Optional | 
-| long-description | A full description of the component. | Optional | 
-| risk-level | The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High". Possible values are: None, Low-Low, Low-Medium, Low-High, Medium-Low, Medium-Medium, Medium-High, High-Low, High-Medium, High-High. | Required | 
-| threat-level | The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High". Possible values are: None, Low-Low, Low-Medium, Low-High, Medium-Low, Medium-Medium, Medium-High, High-Low, High-Medium, High-High. | Optional | 
-| threat-level-comments | Comments for the host threat level. | Optional | 
-| host-status | The host status. Possible values: "Retired" and "Active". Possible values are: Retired, Active. | Required | 
-| host-zone | The host zone. Possible values: "External", "DMZ", and "Internal". Possible values are: External, DMZ, Internal. | Required | 
-| use-eventlog-credentials | Whether to use the event log credentials. Possible values: "true" and "false". Possible values are: true, false. | Required | 
-| os-type | The Agent server type on which the operating system is installed. Possible values: "None", "Server", and "Desktop". Possible values are: None, Server, Desktop. | Optional | 
-| os | The operating system type supported by LogRhythm. Possible values: "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server", "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP", "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows". Possible values are: Unknown, Other, WindowsNT4, Windows2000Professional, Windows2000Server, Windows2003Standard, Windows2003Enterprise, Windows95, WindowsXP, WindowsVista, Linux, Solaris, AIX, HPUX, Windows. | Required | 
-
+| entity-id | The entity ID for the host. | Optional |
+| entity-name | The entity name for the host. | Required |
+| name | The name of the host. | Required |
+| short-description | A brief description of the component. | Optional |
+| long-description | A full description of the component. | Optional |
+| risk-level | The host risk level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High". Possible values are: None, Low-Low, Low-Medium, Low-High, Medium-Low, Medium-Medium, Medium-High, High-Low, High-Medium, High-High. | Required |
+| threat-level | The host threat level. Possible values: "None", "Low-Low", "Low-Medium", "Low-High", "Medium-Low", "Medium-Medium", "Medium-High", "High-Low", "High-Medium", and "High-High". Possible values are: None, Low-Low, Low-Medium, Low-High, Medium-Low, Medium-Medium, Medium-High, High-Low, High-Medium, High-High. | Optional |
+| threat-level-comments | Comments for the host threat level. | Optional |
+| host-status | The host status. Possible values: "Retired" and "Active". Possible values are: Retired, Active. | Required |
+| host-zone | The host zone. Possible values: "External", "DMZ", and "Internal". Possible values are: External, DMZ, Internal. | Required |
+| use-eventlog-credentials | Whether to use the event log credentials. Possible values: "true" and "false". Possible values are: true, false. | Required |
+| os-type | The Agent server type on which the operating system is installed. Possible values: "None", "Server", and "Desktop". Possible values are: None, Server, Desktop. | Optional |
+| os | The operating system type supported by LogRhythm. Possible values: "Unknown", "Other", "WindowsNT4","Windows2000Professional", "Windows2000Server", "Windows2003Standard", "Windows2003Enterprise", "Windows95", "WindowsXP", "WindowsVista", "Linux", "Solaris", "AIX", "HPUX", and "Windows". Possible values are: Unknown, Other, WindowsNT4, Windows2000Professional, Windows2000Server, Windows2003Standard, Windows2003Enterprise, Windows95, WindowsXP, WindowsVista, Linux, Solaris, AIX, HPUX, Windows. | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Host.id | Number | The host ID. | 
-| LogRhythm.Host.entity.id | Number | The host entity ID. | 
-| LogRhythm.Host.entity.name | String | The host entity name. | 
-| LogRhythm.Host.name | String | The host name. | 
-| LogRhythm.Host.riskLevel | String | The host risk level | 
-| LogRhythm.Host.threatLevel | String | The host threat level. | 
-| LogRhythm.Host.threatLevelComments | String | The threat level comments. | 
-| LogRhythm.Host.recordStatusName | String | The host record status name. | 
-| LogRhythm.Host.hostZone | String | The host zone. | 
-| LogRhythm.Host.location.id | Number | The host location ID. | 
-| LogRhythm.Host.os | String | The operating system type supported by LogRhythm. | 
-| LogRhythm.Host.useEventlogCredentials | Boolean | Whether to use the event log credentials. | 
-| LogRhythm.Host.osType | String | The agent server type on which the operating system is installed. | 
-| LogRhythm.Host.dateUpdated | Date | The date the host was updated. | 
-
+| LogRhythm.Host.id | Number | The host ID. |
+| LogRhythm.Host.entity.id | Number | The host entity ID. |
+| LogRhythm.Host.entity.name | String | The host entity name. |
+| LogRhythm.Host.name | String | The host name. |
+| LogRhythm.Host.riskLevel | String | The host risk level |
+| LogRhythm.Host.threatLevel | String | The host threat level. |
+| LogRhythm.Host.threatLevelComments | String | The threat level comments. |
+| LogRhythm.Host.recordStatusName | String | The host record status name. |
+| LogRhythm.Host.hostZone | String | The host zone. |
+| LogRhythm.Host.location.id | Number | The host location ID. |
+| LogRhythm.Host.os | String | The operating system type supported by LogRhythm. |
+| LogRhythm.Host.useEventlogCredentials | Boolean | Whether to use the event log credentials. |
+| LogRhythm.Host.osType | String | The agent server type on which the operating system is installed. |
+| LogRhythm.Host.dateUpdated | Date | The date the host was updated. |
 
 #### Command Example
+
 ```!lr-add-host entity-name=`Global Entity` host-status=Retired host-zone=DMZ name=test_host223322 os=AIX risk-level="High-High" use-eventlog-credentials=false```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -6005,39 +6043,41 @@ Add a new host to an entity.
 #### Human Readable Output
 
 >### Host added successfully
+>
 >|Date Updated|Entity|Host Zone|Id|Location|Name|Os|Os Type|Record Status Name|Risk Level|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-10-30T20:33:51.01Z | id: -100<br/>name: Global Entity | DMZ | 9 | id: -1 | test_host223322 | AIX | Server | Retired | High-High | None |  | false |
 
-
 ### endpoint
+
 ***
 Returns information about an endpoint.
-
 
 #### Base Command
 
 `endpoint`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | The endpoint ID. | Optional | 
-| hostname | The endpoint hostname. | Optional | 
-
+| id | The endpoint ID. | Optional |
+| hostname | The endpoint hostname. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Endpoint.Hostname | String | The endpoint's hostname. | 
-| Endpoint.IPAddress | String | The endpoint's IP address. | 
-| Endpoint.ID | String | The endpoint's ID. | 
+| Endpoint.Hostname | String | The endpoint's hostname. |
+| Endpoint.IPAddress | String | The endpoint's IP address. |
+| Endpoint.ID | String | The endpoint's ID. |
 
 #### Command Example
+
 ```!endpoint hostname=HOSTNAME```
 
 #### Context Example
+
 ```json
 {
     "Endpoint": {
@@ -6053,32 +6093,33 @@ Returns information about an endpoint.
 #### Human Readable Output
 
 >### Logrhythm endpoint
+>
 >|Date Updated|Entity|Host Identifiers|Host Roles|Host Zone|Id|Location|Name|Os|Os Type|Os Version|Record Status Name|Risk Level|Short Desc|Threat Level|Threat Level Comments|Use Eventlog Credentials|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 2021-07-29T14:55:16.427Z | id: 1<br/>name: Primary Site | {'type': 'WindowsName', 'value': 'HOSTNAME', 'dateAssigned': '2021-07-27T15:55:40.717Z'},<br/>{'type': 'IPAddress', 'value': '127.0.0.1', 'dateAssigned': '2021-07-27T15:55:40.717Z'} |  | Internal | 1 | id: -1 | HOSTNAME | Windows | Server | Microsoft Windows NT 10.0.17763.0 | Active | Medium-Medium | This is the LogRhythm Platform Manager host. | None |  | false |
 
-
 ### lr-hosts-status-update
+
 ***
 Updates the status of a host to retire or active.
-
 
 #### Base Command
 
 `lr-hosts-status-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| host_id | The host ID. | Required | 
-| host_status | The host status. Possible values: "Retired" and "Active". Possible values are: Retired, Active. | Required | 
-
+| host_id | The host ID. | Required |
+| host_status | The host status. Possible values: "Retired" and "Active". Possible values are: Retired, Active. | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!lr-hosts-status-update host_id=7 host_status=Active```
 
 #### Human Readable Output
@@ -6086,52 +6127,53 @@ There is no context output for this command.
 >Host status updated successfully to Active.
 
 ### lr-networks-list
+
 ***
 Returns all networks that match the specified criteria.
-
 
 #### Base Command
 
 `lr-networks-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| network_id | Filter by network ID. | Optional | 
-| name | Filter by name. | Optional | 
-| record_status | Filter by object record status. Possible values: "all", "retired", "active". Possible values are: all, retired, active. | Optional | 
-| bip | The starting IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1. | Optional | 
-| eip | The ending IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1. | Optional | 
-| count | The numbers of networks to return. Default is 50. | Optional | 
-| offset | The number of networks to skip before starting to collect the result set. Default is 0. | Optional | 
-
+| network_id | Filter by network ID. | Optional |
+| name | Filter by name. | Optional |
+| record_status | Filter by object record status. Possible values: "all", "retired", "active". Possible values are: all, retired, active. | Optional |
+| bip | The starting IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1. | Optional |
+| eip | The ending IP address to allow records to be filtered on a specified IP address, e.g., 127.0.0.1. | Optional |
+| count | The numbers of networks to return. Default is 50. | Optional |
+| offset | The number of networks to skip before starting to collect the result set. Default is 0. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| LogRhythm.Network.entity.id | Number | The network entity ID. | 
-| LogRhythm.Network.entity.name | String | The network entity name. | 
-| LogRhythm.Network.name | String | The network name. | 
-| LogRhythm.Network.shortDesc | String | The network short description. | 
-| LogRhythm.Network.longDesc | String | The network long description. | 
-| LogRhythm.Network.riskLevel | String | The network risk level. | 
-| LogRhythm.Network.threatLevel | String | The network threat level. | 
-| LogRhythm.Network.threatLevelComment | String | The threat level comments | 
-| LogRhythm.Network.recordStatusName | String | The network record status name. | 
-| LogRhythm.Network.hostZone | String | The network zone. | 
-| LogRhythm.Network.location.id | Number | The network location ID. | 
-| LogRhythm.Network.location.name | String | The network location name. | 
-| LogRhythm.Network.bip | String | Starting IP address. | 
-| LogRhythm.Network.eip | String | Ending IP address. | 
-| LogRhythm.Network.dateUpdated | Date | The date the network was last updated. | 
-| LogRhythm.Network.id | Number | The network ID. | 
-
+| LogRhythm.Network.entity.id | Number | The network entity ID. |
+| LogRhythm.Network.entity.name | String | The network entity name. |
+| LogRhythm.Network.name | String | The network name. |
+| LogRhythm.Network.shortDesc | String | The network short description. |
+| LogRhythm.Network.longDesc | String | The network long description. |
+| LogRhythm.Network.riskLevel | String | The network risk level. |
+| LogRhythm.Network.threatLevel | String | The network threat level. |
+| LogRhythm.Network.threatLevelComment | String | The threat level comments |
+| LogRhythm.Network.recordStatusName | String | The network record status name. |
+| LogRhythm.Network.hostZone | String | The network zone. |
+| LogRhythm.Network.location.id | Number | The network location ID. |
+| LogRhythm.Network.location.name | String | The network location name. |
+| LogRhythm.Network.bip | String | Starting IP address. |
+| LogRhythm.Network.eip | String | Ending IP address. |
+| LogRhythm.Network.dateUpdated | Date | The date the network was last updated. |
+| LogRhythm.Network.id | Number | The network ID. |
 
 #### Command Example
+
 ```!lr-networks-list count=2```
 
 #### Context Example
+
 ```json
 {
     "LogRhythm": {
@@ -6188,68 +6230,76 @@ Returns all networks that match the specified criteria.
 #### Human Readable Output
 
 >### Networks
+>
 >|Id|Name|Short Desc|Long Desc|Record Status Name|Bip|Eip|Entity|Risk Level|Date Updated|Threat Level|Threat Level Comment|Host Zone|Location|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| 1 | Test network | This is a test network | This is a test network | Active | 1.1.1.1 | 2.2.2.2 | id: -100<br/>name: Global Entity | None | 2021-10-12T13:48:43.133Z | None | string | Internal | id: 1<br/>name: Andorra |
 >| 2 | Test network2 | This is a test network | This is a test network | Active | 127.0.0.1 | 127.0.0.2 | id: -100<br/>name: Global Entity | None | 2021-10-12T14:01:21.54Z | None | string | Internal | id: 1<br/>name: Andorra |
 
-
 ## Breaking changes from the previous version of this integration - LogRhythmRest v2
+
 The following sections list the changes in this version.
 
 ### Commands
-#### The following commands were removed in this version:
-* *lr-execute-query*
-* *lr-get-persons*
-* *lr-get-logins*
-* *lr-get-privileges*
-* *lr-get-profiles*
-* *lr-add-login*
-* *lr-add-user*
-* *lr-get-hosts-by-entity* - this command was replaced by *lr-hosts-list*.
-* *lr-update-host-status* - this command was replaced by *lr-hosts-status-update*.
-* *lr-get-networks* - this command was replaced by *lr-networks-list*.
-* *lr-get-hosts* - this command was replaced by *lr-hosts-list*.
-* *lr-get-alarm-data* - this command was replaced by *lr-alarms-list*.
-* *lr-get-alarm-events* - this command was replaced by *lr-alarm-events-list*.
-* *lr-get-case-evidence* - this command was replaced by *lr-case-evidence-list*.
-* *lr-get-users* - this command was replaced by *lr-users-list*.
 
+#### The following commands were removed in this version
+
+* _lr-execute-query_
+* _lr-get-persons_
+* _lr-get-logins_
+* _lr-get-privileges_
+* _lr-get-profiles_
+* _lr-add-login_
+* _lr-add-user_
+* _lr-get-hosts-by-entity_ - this command was replaced by _lr-hosts-list_.
+* _lr-update-host-status_ - this command was replaced by _lr-hosts-status-update_.
+* _lr-get-networks_ - this command was replaced by _lr-networks-list_.
+* _lr-get-hosts_ - this command was replaced by _lr-hosts-list_.
+* _lr-get-alarm-data_ - this command was replaced by _lr-alarms-list_.
+* _lr-get-alarm-events_ - this command was replaced by _lr-alarm-events-list_.
+* _lr-get-case-evidence_ - this command was replaced by _lr-case-evidence-list_.
+* _lr-get-users_ - this command was replaced by _lr-users-list_.
 
 ### Arguments
-#### The following arguments were removed in this version:
 
-In the *lr-execute-search-query* command:
-* *max_massage* - this argument was replaced by *max_message*.
+#### The following arguments were removed in this version
+
+In the _lr-execute-search-query_ command:
+
+* _max_massage_ - this argument was replaced by _max_message_.
 
 ### Outputs
-#### The following outputs were removed in this version:
 
-In the *lr-add-host* command:
-* *Logrhythm.Host.EntityId* - this output was replaced by *LogRhythm.Host.entity.id*.
-* *Logrhythm.Host.EntityName* - this output was replaced by *LogRhythm.Host.entity.name*.
-* *Logrhythm.Host.Status* - this output was replaced by *LogRhythm.Host.recordStatusName*.
+#### The following outputs were removed in this version
 
-In the *lr-get-query-result* command:
-* *Logrhythm.Search.Results.TaskStatus* - this output was replaced by *LogRhythm.Search.TaskStatus*.
-* *Logrhythm.Search.Results.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
-* *Logrhythm.Search.Results.Items.originEntityId* - this output was replaced by *LogRhythm.Search.Results.originEntityId*.
-* *Logrhythm.Search.Results.Items.impactedIp* - this output was replaced by *LogRhythm.Search.Results.impactedIp*.
-* *Logrhythm.Search.Results.Items.classificationTypeName* - this output was replaced by *LogRhythm.Search.Results.classificationTypeName*.
-* *Logrhythm.Search.Results.Items.logSourceName* - this output was replaced by *LogRhythm.Search.Results.logSourceName*.
-* *Logrhythm.Search.Results.Items.entityName* - this output was replaced by *LogRhythm.Search.Results.entityName*.
-* *Logrhythm.Search.Results.Items.normalDate* - this output was replaced by *LogRhythm.Search.Results.normalDate*.
-* *Logrhythm.Search.Results.Items.vendorMessageId* - this output was replaced by *LogRhythm.Search.Results.vendorMessageId*.
-* *Logrhythm.Search.Results.Items.priority* - this output was replaced by *LogRhythm.Search.Results.priority*.
-* *Logrhythm.Search.Results.Items.sequenceNumber* - this output was replaced by *LogRhythm.Search.Results.sequenceNumber*.
-* *Logrhythm.Search.Results.Items.originHostId* - this output was replaced by *LogRhythm.Search.Results.originHostId*.
-* *Logrhythm.Search.Results.Items.mpeRuleId* - this output was replaced by *LogRhythm.Search.Results.mpeRuleId*.
-* *Logrhythm.Search.Results.Items.originIp* - this output was replaced by *LogRhythm.Search.Results.originIp*.
-* *Logrhythm.Search.Results.Items.mpeRuleName* - this output was replaced by *LogRhythm.Search.Results.mpeRuleName*.
-* *Logrhythm.Search.Results.Items.logSourceHostId* - this output was replaced by *LogRhythm.Search.Results.logSourceHostId*.
-* *Logrhythm.Search.Results.Items.originHost* - this output was replaced by *LogRhythm.Search.Results.originHost*.
-* *Logrhythm.Search.Results.Items.logDate* - this output was replaced by *LogRhythm.Search.Results.logDate*.
-* *Logrhythm.Search.Results.Items.classificationName* - this output was replaced by *LogRhythm.Search.Results.classificationName*.
+In the _lr-add-host_ command:
 
-In the *lr-execute-search-query* command:
-* *Logrhythm.Search.Task.TaskID* - this output was replaced by *LogRhythm.Search.TaskId*.
+* _Logrhythm.Host.EntityId_ - this output was replaced by _LogRhythm.Host.entity.id_.
+* _Logrhythm.Host.EntityName_ - this output was replaced by _LogRhythm.Host.entity.name_.
+* _Logrhythm.Host.Status_ - this output was replaced by _LogRhythm.Host.recordStatusName_.
+
+In the _lr-get-query-result_ command:
+
+* _Logrhythm.Search.Results.TaskStatus_ - this output was replaced by _LogRhythm.Search.TaskStatus_.
+* _Logrhythm.Search.Results.TaskID_ - this output was replaced by _LogRhythm.Search.TaskId_.
+* _Logrhythm.Search.Results.Items.originEntityId_ - this output was replaced by _LogRhythm.Search.Results.originEntityId_.
+* _Logrhythm.Search.Results.Items.impactedIp_ - this output was replaced by _LogRhythm.Search.Results.impactedIp_.
+* _Logrhythm.Search.Results.Items.classificationTypeName_ - this output was replaced by _LogRhythm.Search.Results.classificationTypeName_.
+* _Logrhythm.Search.Results.Items.logSourceName_ - this output was replaced by _LogRhythm.Search.Results.logSourceName_.
+* _Logrhythm.Search.Results.Items.entityName_ - this output was replaced by _LogRhythm.Search.Results.entityName_.
+* _Logrhythm.Search.Results.Items.normalDate_ - this output was replaced by _LogRhythm.Search.Results.normalDate_.
+* _Logrhythm.Search.Results.Items.vendorMessageId_ - this output was replaced by _LogRhythm.Search.Results.vendorMessageId_.
+* _Logrhythm.Search.Results.Items.priority_ - this output was replaced by _LogRhythm.Search.Results.priority_.
+* _Logrhythm.Search.Results.Items.sequenceNumber_ - this output was replaced by _LogRhythm.Search.Results.sequenceNumber_.
+* _Logrhythm.Search.Results.Items.originHostId_ - this output was replaced by _LogRhythm.Search.Results.originHostId_.
+* _Logrhythm.Search.Results.Items.mpeRuleId_ - this output was replaced by _LogRhythm.Search.Results.mpeRuleId_.
+* _Logrhythm.Search.Results.Items.originIp_ - this output was replaced by _LogRhythm.Search.Results.originIp_.
+* _Logrhythm.Search.Results.Items.mpeRuleName_ - this output was replaced by _LogRhythm.Search.Results.mpeRuleName_.
+* _Logrhythm.Search.Results.Items.logSourceHostId_ - this output was replaced by _LogRhythm.Search.Results.logSourceHostId_.
+* _Logrhythm.Search.Results.Items.originHost_ - this output was replaced by _LogRhythm.Search.Results.originHost_.
+* _Logrhythm.Search.Results.Items.logDate_ - this output was replaced by _LogRhythm.Search.Results.logDate_.
+* _Logrhythm.Search.Results.Items.classificationName_ - this output was replaced by _LogRhythm.Search.Results.classificationName_.
+
+In the _lr-execute-search-query_ command:
+
+* _Logrhythm.Search.Task.TaskID_ - this output was replaced by _LogRhythm.Search.TaskId_.

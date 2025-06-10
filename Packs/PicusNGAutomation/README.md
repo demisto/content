@@ -6,7 +6,7 @@ With the development of technology in the security world, there have been new ad
 
 ## Run Threats with SLA in Mind
 
-The integration between PICUS and XSOAR allows: 
+The integration between PICUS and XSOAR allows:
 
 - Create Playbooks to use specific threats in the Picus Threat Library which has thousands of threats to test your analyst capabilities.
 

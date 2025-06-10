@@ -1722,6 +1722,75 @@ def test_panorama_edit_address_group_command_main_flow_edit_description(mocker):
     assert res.call_args.args[0]["HumanReadable"] == "Address Group test was edited successfully."
 
 
+def test_panorama_edit_address_group_command_pre_11(mocker: MockerFixture):
+    """
+    Given
+     - PAN-OS version is lower than 11.
+
+    When
+     - Running the pan-os-edit-address-group command for a static group.
+
+    Then
+     - Make sure the group is edited correctly.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params["device_group"]
+
+    mocker.patch(
+        "Panorama.panorama_get_address_group",
+        return_value={"@name": "Name", "@loc": "Loc", "static": {"member": ["1", "2"]}},
+    )
+    mocker.patch("Panorama.return_results")
+    request_mock = mocker.patch("Panorama.http_request")
+    args = {"type": "static", "element_to_add": "3", "name": "Name"}
+
+    Panorama.panorama_edit_address_group_command(args)
+
+    assert "<member>1</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+    assert "<member>2</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+    assert "<member>3</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+
+
+def test_panorama_edit_address_group_command_v_11(mocker: MockerFixture):
+    """
+    Given
+     - PAN-OS version is greater than 11.
+
+    When
+     - Running the pan-os-edit-address-group command for a static group.
+
+    Then
+     - Make sure the group is edited correctly.
+    """
+    import Panorama
+
+    Panorama.DEVICE_GROUP = integration_panorama_params["device_group"]
+
+    mocker.patch(
+        "Panorama.panorama_get_address_group",
+        return_value={
+            "@name": "Name",
+            "@loc": "Loc",
+            "static": {
+                "member": [
+                    {"@admin": "admin", "@dirtyId": "1", "@time": "2025/01/01 00:00:00", "#text": "1"},
+                    {"@admin": "admin", "@dirtyId": "2", "@time": "2025/01/01 00:00:00", "#text": "2"},
+                ]
+            },
+        },
+    )
+    mocker.patch("Panorama.return_results")
+    request_mock = mocker.patch("Panorama.http_request")
+    args = {"type": "static", "element_to_add": "3", "name": "Name"}
+
+    Panorama.panorama_edit_address_group_command(args)
+
+    assert "<member>1</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+    assert "<member>2</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+    assert "<member>3</member>" in request_mock.call_args_list[0].kwargs["body"]["element"]
+
+
 def test_panorama_edit_address_group_command_remove_single_address(mocker):
     """
     Given
@@ -2754,6 +2823,51 @@ def test_get_url_category_multiple_categories_for_url(mocker):
 
     # category with highest dbot-score
     assert return_results_mock.call_args[0][0][1].indicator.dbot_score.score == 1
+
+
+def test_get_url_category_multiple_categories_for_url_missing_categories(mocker):
+    """
+    Given:
+        - response indicating the url has multiple categories.
+    When:
+        - Run panorama_get_url_category function
+    Then:
+        - Validate all the expected categories are present
+    """
+    # prepare
+    import Panorama
+    import requests
+    from Panorama import panorama_get_url_category
+
+    Panorama.DEVICE_GROUP = ""
+    mocked_res_dict = {
+        "response": {
+            "@cmd": "status",
+            "@status": "success",
+            "result": "https://someURL.com not-resolved (Base db) expires in 5 seconds\n"
+            "https://someURL.com shareware-and-freeware online-storage-and-backup low-risk (Cloud db) artificial-intelligence encrypted-dns",  # noqa: E501
+        }
+    }
+    mocked_res_obj = requests.Response()
+    mocked_res_obj.status_code = 200
+    mocked_res_obj._content = json.dumps(mocked_res_dict).encode("utf-8")
+    mocker.patch.object(Panorama, "xml2json", return_value=mocked_res_obj._content)
+    mocker.patch.object(requests, "request", return_value=mocked_res_obj)
+
+    # run
+    results = panorama_get_url_category(url_cmd="url", url="test_url")
+
+    expected_results = [
+        "shareware-and-freeware",
+        "online-storage-and-backup",
+        "low-risk",
+        "encrypted-dns",
+        "artificial-intelligence",
+    ]
+
+    # validate
+    for category in expected_results:
+        assert category in results
 
 
 class TestDevices:

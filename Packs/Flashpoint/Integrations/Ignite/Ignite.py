@@ -5,6 +5,7 @@ import ipaddress
 
 import requests
 import urllib3
+import re
 
 import demistomock as demisto
 from CommonServerPython import *  # noqa # pylint: disable=unused-wildcard-import
@@ -33,6 +34,9 @@ DEFAULT_FETCH_TYPE = "Compromised Credentials"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 READABLE_DATE_FORMAT = "%b %d, %Y  %H:%M"
 TOTAL_RETRIES = 4
+TOTAL_RETRIES_ON_ENRICHMENT = 0
+DEFAULT_TIMEOUT = 60
+TIMEOUT_ON_ENRICHMENT = 15
 STATUS_CODE_TO_RETRY = (429, *(status_code for status_code in requests.status_codes._codes if status_code >= 500))  # type: ignore
 OK_CODES = (
     400,
@@ -40,8 +44,13 @@ OK_CODES = (
     403,
     404,
     521,
-    *(status_code for status_code in requests.status_codes._codes if status_code    # type: ignore[attr-defined]
-      >= 200 and status_code < 300),  # type: ignore[attr-defined]
+    *(
+        status_code
+        for status_code in requests.status_codes._codes  # type: ignore
+        if status_code  # type: ignore[attr-defined]
+        >= 200
+        and status_code < 300
+    ),  # type: ignore[attr-defined]
 )  # type: ignore
 BACKOFF_FACTOR = 7.5  # Sleep for [0s, 15s, 30s, 60s] between retries.
 DEFAULT_END_TIME = "now"
@@ -62,6 +71,7 @@ HR_TITLE = "### Ignite {} reputation for "
 REPUTATION_MALICIOUS = "Reputation: Malicious\n\n"
 TABLE_TITLE = "Events in which this IOC observed"
 ALL_DETAILS_LINK = "\nAll events and details (ignite): [{}]({})\n"
+PLATFORM_LINK = "\nPlatform Link(ignite): [{}]({})\n"
 MALICIOUS_DESCRIPTION = "Found in malicious indicators dataset"
 SUSPICIOUS_DESCRIPTION = "Found in suspicious indicators dataset"
 UNKONWN_DESCRIPTION = "Reputation of this Indicator is Unknown"
@@ -80,8 +90,31 @@ VENDOR_NAME = "Ignite"
 PAGINATION_HR = "#### To retrieve the next set of result use,"
 MARKDOWN_CHARS = r"\*_{}[]()#+-!"
 X_FP_HIGHLIGHT_TEXT = r"</?x-fp-highlight>"
+DEFAULT_REPUTATION_VALUE = "unknown"
+CUSTOM_INDICATOR_DBOTSCORE = DBotScoreType.CUSTOM
+CUSTOM_OUTPUT_PREFIX = "Ignite.{}"
+
+REPUTATION_SCORE_MAPPING = {"unknown": 0, "no_score": 0, "informational": 1, "suspicious": 2, "malicious": 3}
+
+IOC_TYPE_MAPPING = {
+    "ip": FeedIndicatorType.IP,
+    "ipv4": FeedIndicatorType.IP,
+    "ipv6": FeedIndicatorType.IPv6,
+    "domain": FeedIndicatorType.Domain,
+    "url": FeedIndicatorType.URL,
+    "file": FeedIndicatorType.File,
+}
+
+DBOTSCORE_IOC_TYPE_MAPPING = {
+    "ipv4": DBotScoreType.IP,
+    "ipv6": DBotScoreType.IP,
+    "domain": DBotScoreType.DOMAIN,
+    "url": DBotScoreType.URL,
+    "file": DBotScoreType.FILE,
+}
 
 URL_SUFFIX = {
+    "LIST_INDICATORS": "/technical-intelligence/v2/indicators",
     "INDICATOR_SEARCH": "/technical-intelligence/v1/simple",
     "REPORT_SEARCH": "/finished-intelligence/v1/reports",
     "COMPROMISED_CREDENTIALS": "/sources/v1/noncommunities/search",
@@ -118,11 +151,13 @@ OUTPUT_PREFIX = {
     "REPORT": "Ignite.Report",
     "EMAIL": "Ignite.Email.Event",
     "FILENAME": "Ignite.Filename.Event",
-    "DOMAIN": "Ignite.Domain.Event",
-    "IP": "Ignite.IP.Event",
+    "DOMAIN": "Ignite.Domain",
+    "IP": "Ignite.IP",
     "IP_COMMUNITY_SEARCH": "Ignite.IP",
-    "URL": "Ignite.URL.Event",
-    "FILE": "Ignite.File.Event",
+    "IPV4": "Ignite.IP",
+    "IPV6": "Ignite.IP",
+    "URL": "Ignite.URL",
+    "FILE": "Ignite.File",
     "EVENT": "Ignite.Event",
     "ALERT": "Ignite.Alert",
     "TOKEN": "Ignite.PageToken.Alert",
@@ -189,6 +224,7 @@ MESSAGES = {
     "INVALID_IP_ADDRESS": "Invalid IP - {}",
     "INVALID_SINGLE_SELECT_PARAM": "{} is an invalid value for {}. Possible values are: {}.",
     "INVALID_TIME_INTERVAL": "{} parameter must be less than {} parameter.({} - {})",
+    "INVALID_PASSWORD_LENGTH": "Minimum length of password must be greater than zero.",
 }
 
 
@@ -240,18 +276,23 @@ class Client(BaseClient):
         :return: http response on json
         """
         demisto.debug(f"Requesting Ignite with method: {method}, url_suffix: {url_suffix} and params: {params}")
+        # For reputation commands which run during an enrichment we limit the timeout and the retries
+        retries = TOTAL_RETRIES_ON_ENRICHMENT if is_time_sensitive() else TOTAL_RETRIES
+        timeout = TIMEOUT_ON_ENRICHMENT if is_time_sensitive() else DEFAULT_TIMEOUT
+
         resp = self._http_request(
             method=method,
             url_suffix=url_suffix,
             params=params,
             json_data=json_data,
-            retries=TOTAL_RETRIES,
+            retries=retries,
             status_list_to_retry=STATUS_CODE_TO_RETRY,
             backoff_factor=BACKOFF_FACTOR,
             raise_on_redirect=False,
             raise_on_status=False,
             resp_type="response",
             ok_codes=OK_CODES,
+            timeout=timeout,
         )  # type: ignore
 
         status_code = resp.status_code
@@ -281,6 +322,32 @@ class Client(BaseClient):
             self.client_error_handler(resp)
 
         return resp_json
+
+    def get_indicator(self, indicator_value: str, indicator_type: str):
+        """
+        Get an indicator by its type and value.
+
+        :param indicator_type: The indicator type.
+        :param indicator_value: The indicator value.
+
+        :return: The indicator response.
+        """
+        params = {"ioc_types": indicator_type, "ioc_value": indicator_value, "embed": "all"}
+
+        return self.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
+
+    def get_indicator_by_id(self, indicator_id: str):
+        """
+        Get an indicator by its id.
+
+        :param indicator_id: ID of the indicator.
+
+        :return: The indicator response.
+        """
+
+        url = f'{URL_SUFFIX["LIST_INDICATORS"]}/{indicator_id}'
+
+        return self.http_request("GET", url)
 
 
 """ HELPER FUNCTIONS """
@@ -422,6 +489,28 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
 
     is_fresh = argToBoolean(params.get("is_fresh_compromised_credentials", "true"))
 
+    password_has_lowercase = params.get("password_has_lowercase", "")
+    if password_has_lowercase:
+        password_has_lowercase = argToBoolean(password_has_lowercase)
+
+    password_has_uppercase = params.get("password_has_uppercase", "")
+    if password_has_uppercase:
+        password_has_uppercase = argToBoolean(password_has_uppercase)
+
+    password_has_number = params.get("password_has_number", "")
+    if password_has_number:
+        password_has_number = argToBoolean(password_has_number)
+
+    password_has_symbol = params.get("password_has_symbol", "")
+    if password_has_symbol:
+        password_has_symbol = argToBoolean(password_has_symbol)
+
+    password_min_length = params.get("password_min_length", "")
+    if password_min_length:
+        password_min_length = arg_to_number(password_min_length)
+        if password_min_length <= 0:
+            raise ValueError(MESSAGES["INVALID_PASSWORD_LENGTH"])
+
     alert_status = params.get("status", "").lower()
     alert_origin = params.get("origin", "").lower()
     alert_sources = argToList(params.get("sources", ""))
@@ -429,11 +518,27 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
     max_fetch = arg_to_number(params.get("max_fetch", DEFAULT_FETCH))
 
     if fetch_type == DEFAULT_FETCH_TYPE:
-        fetch_params = prepare_args_for_fetch_compromised_credentials(max_fetch, start_time, is_fresh, last_run)  # type: ignore
+        fetch_params = prepare_args_for_fetch_compromised_credentials(
+            max_fetch,  # type: ignore
+            start_time,
+            is_fresh,  # type: ignore
+            password_has_lowercase,
+            password_has_uppercase,
+            password_has_number,
+            password_has_symbol,
+            password_min_length,
+            last_run,
+        )  # type: ignore
 
     elif fetch_type == "Alerts":
         fetch_params = prepare_args_for_fetch_alerts(
-            max_fetch, first_fetch, alert_origin, alert_status, alert_sources, last_run)  # type: ignore
+            max_fetch,  # type: ignore
+            first_fetch,  # type: ignore
+            alert_origin,
+            alert_status,
+            alert_sources,
+            last_run,
+        )
         start_time = fetch_params["created_after"]
 
     remove_nulls_from_dictionary(fetch_params)
@@ -441,13 +546,28 @@ def validate_fetch_incidents_params(params: dict, last_run: dict) -> dict:
     return {"fetch_type": fetch_type, "start_time": start_time, "fetch_params": fetch_params}
 
 
-def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: str, is_fresh: bool, last_run: dict) -> dict:
+def prepare_args_for_fetch_compromised_credentials(
+    max_fetch: int,
+    start_time: str,
+    is_fresh: bool,
+    password_has_lowercase: bool,
+    password_has_uppercase: bool,
+    password_has_number: bool,
+    password_has_symbol: bool,
+    password_min_length: int,
+    last_run: dict,
+) -> dict:
     """
     Prepare arguments for fetching compromised credentials.
 
     :param max_fetch: Maximum number of incidents per fetch
     :param start_time: Date time to start fetching incidents from
     :param is_fresh: Boolean value showing whether to fetch the fresh compromised credentials or not
+    :param password_has_lowercase: Value showing whether to fetch the compromised credentials with password containing lowercase
+    :param password_has_uppercase: Value showing whether to fetch the compromised credentials with password containing uppercase
+    :param password_has_number: Boolean value showing whether to fetch the compromised credentials with password containing number
+    :param password_has_symbol: Boolean value showing whether to fetch the compromised credentials with password containing symbol
+    :param password_min_length: Integer showing the minimum length of the password
     :param last_run: Dictionary containing last run objects
 
     :return: Dictionary of fetch arguments
@@ -501,6 +621,33 @@ def prepare_args_for_fetch_compromised_credentials(max_fetch: int, start_time: s
 
     if is_fresh:
         query += " +is_fresh:true"
+
+    if password_has_lowercase is not None:
+        if password_has_lowercase is True:
+            query += " +password_complexity.has_lowercase:(true)"
+        if password_has_lowercase is False:
+            query += " +password_complexity.has_lowercase:(false)"
+
+    if password_has_uppercase is not None:
+        if password_has_uppercase is True:
+            query += " +password_complexity.has_uppercase:(true)"
+        if password_has_uppercase is False:
+            query += " +password_complexity.has_uppercase:(false)"
+
+    if password_has_number is not None:
+        if password_has_number is True:
+            query += " +password_complexity.has_number:(true)"
+        if password_has_number is False:
+            query += " +password_complexity.has_number:(false)"
+
+    if password_has_symbol is not None:
+        if password_has_symbol is True:
+            query += " +password_complexity.has_symbol:(true)"
+        if password_has_symbol is False:
+            query += " +password_complexity.has_symbol:(false)"
+
+    if password_min_length is not None and password_min_length != "":
+        query += f" +password_complexity.length:(>={password_min_length})"  # noqa: E231
 
     fetch_params["query"] = query
     fetch_params["sort"] = "header_.indexed_at:asc"
@@ -603,7 +750,7 @@ def prepare_incidents_from_alerts_data(
     for alert in alerts:
         alert_id = alert.get("id")
         if alert_id in last_found_alert_ids:
-            demisto.debug(f"Found existing alert with alert id:{alert_id}")
+            demisto.debug(f"Found existing alert with alert id: {alert_id}")
             continue
 
         tags = alert.get("tags", {})
@@ -803,7 +950,7 @@ def validate_compromised_credentials_list_args(args: dict) -> dict:
     if is_fresh:
         if is_fresh not in IS_FRESH_VALUES:
             raise ValueError(MESSAGES["IS_FRESH_ERROR"].format(is_fresh, IS_FRESH_VALUES))
-        params["query"] += f" +is_fresh:{is_fresh}"
+        params["query"] += f" +is_fresh:{is_fresh}"  # noqa: E231
 
     remove_nulls_from_dictionary(params)
 
@@ -835,8 +982,10 @@ def validate_date_parameters_for_compromised_credentials(args: dict, params: dic
         if not (start_date or end_date):
             raise ValueError(MESSAGES["MISSING_DATE_ERROR"])
         # type: ignore
-        date_query = (f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"   # type: ignore[union-attr]
-                      f" {end_date.strftime(DATE_FORMAT)}]")    # type: ignore[union-attr]
+        date_query = (
+            f" +breach.{filter_date}.date-time: [{start_date.strftime(DATE_FORMAT)} TO"  # type: ignore[union-attr]
+            f" {end_date.strftime(DATE_FORMAT)}]"  # type: ignore
+        )  # type: ignore[union-attr]
         params["query"] += date_query
     elif start_date or end_date:
         raise ValueError(MESSAGES["MISSING_FILTER_DATE_ERROR"])
@@ -887,7 +1036,7 @@ def validate_sort_parameters_for_compromised_credentials(args: dict, params: dic
         if not sort_order:
             sort_order = DEFAULT_SORT_ORDER
 
-        params["sort"] = f"breach.{sort_date}.timestamp:{sort_order}"
+        params["sort"] = f"breach.{sort_date}.timestamp:{sort_order}"  # noqa: E231
     elif sort_order:
         raise ValueError(MESSAGES["MISSING_SORT_DATE_ERROR"])
 
@@ -1046,21 +1195,32 @@ def parse_indicator_response(indicators):
     return {"events": events, "href": hrefs, "attack_ids": attack_ids}
 
 
-def create_relationships_list(client, events_details, ip):
-    """Create relationships list from given data."""
+def create_relationships_list_v2(client, related_iocs, indicator_value, indicator_type):
+    """
+    Create relationships list from given data.
+
+    :param client: object of client class
+    :param related_iocs: list of related iocs
+    :param indicator_value: value of indicator
+    :param indicator_type: type of indicator
+
+    :return: list of relationships
+    """
+
     relationships = []
-    if client.create_relationships and events_details.get("attack_ids"):
-        for attack_id in events_details.get("attack_ids"):
-            relationships.append(
-                EntityRelationship(
-                    name="indicator-of",
-                    entity_a=ip,
-                    entity_a_type=FeedIndicatorType.IP,
-                    entity_b=attack_id,
-                    entity_b_type=FeedIndicatorType.indicator_type_by_server_version(STIX_ATTACK_PATTERN),
-                    brand=VENDOR_NAME,
+    if client.create_relationships and related_iocs:
+        for ioc in related_iocs:
+            if ioc.get("type", "") != "extracted_config":
+                relationships.append(
+                    EntityRelationship(
+                        name="related-to",
+                        entity_a=indicator_value,
+                        entity_a_type=IOC_TYPE_MAPPING.get(indicator_type, indicator_type),
+                        entity_b=ioc.get("value"),
+                        entity_b_type=IOC_TYPE_MAPPING.get(ioc.get("type"), ioc.get("type")),
+                        brand=VENDOR_NAME,
+                    )
                 )
-            )
     return relationships
 
 
@@ -1098,6 +1258,53 @@ def create_relationships_list_for_community_search(client, indicators, ip):
             )
 
     return relationships
+
+
+def create_indicator_object(item: dict, relationships: dict):
+    """
+    Create indicator object from given data.
+
+    :param item: item dictionary from  response
+    :param relationships: relationships dictionary
+
+    :return: Indicator object
+    """
+
+    indicator_value = item.get("value", "")
+    indicator_type = item.get("type", "")
+
+    dbot_score = Common.DBotScore(
+        indicator=indicator_value,
+        indicator_type=DBOTSCORE_IOC_TYPE_MAPPING.get(indicator_type, CUSTOM_INDICATOR_DBOTSCORE),
+        integration_name=VENDOR_NAME,
+        score=REPUTATION_SCORE_MAPPING.get(item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)),
+        malicious_description=MALICIOUS_DESCRIPTION,
+        reliability=demisto.params().get("integrationReliability"),
+    )
+    dbot_score.integration_name = VENDOR_NAME
+
+    if indicator_type == "domain":
+        return Common.Domain(domain=indicator_value, dbot_score=dbot_score, relationships=relationships)
+    elif indicator_type == "url":
+        return Common.URL(url=indicator_value, dbot_score=dbot_score, relationships=relationships)
+    elif indicator_type == "file":
+        hashes = {
+            "md5": item.get("hashes", {}).get("md5"),
+            "sha1": item.get("hashes", {}).get("sha1"),
+            "sha256": item.get("hashes", {}).get("sha256"),
+        }
+        return Common.File(dbot_score=dbot_score, relationships=relationships, **hashes)
+    elif indicator_type == "ipv4" or indicator_type == "ipv6":
+        return Common.IP(ip=indicator_value, dbot_score=dbot_score, relationships=relationships)
+    else:
+        return Common.CustomIndicator(
+            value=indicator_value,
+            indicator_type=indicator_type,
+            data=remove_empty_elements(item),
+            context_prefix=indicator_type,
+            dbot_score=dbot_score,
+            relationships=relationships,
+        )
 
 
 def get_resource_url(source: str, resource_id: str, platform_url: str):
@@ -1194,6 +1401,69 @@ def prepare_hr_for_alerts(alerts: List, platform_url: str) -> str:
     )
 
 
+def get_related_iocs_and_tags(item: dict) -> tuple[list, list]:
+    """
+    Get related IOCs and tags from the given item.
+
+    :param item: The item to get related IOCs and tags from.
+
+    :return: A tuple containing a list of related IOCs and a list of tags.
+    """
+
+    tags = deepcopy(item.get("latest_sighting", {}).get("tags", []))
+    related_iocs = []
+    related_iocs_data = []
+    latest_sighting_related_iocs = item.get("latest_sighting", {}).get("related_iocs", [])
+    related_iocs_data.append(latest_sighting_related_iocs)
+    sightings_data = item.get("sightings", [])
+
+    for sighting in sightings_data:
+        related_iocs_data.append(sighting.get("related_iocs", []))
+        for tag in sighting.get("tags", []):
+            if tag not in tags:
+                tags.append(tag)
+
+    for related_ioc in related_iocs_data:
+        for ioc in related_ioc:
+            if ioc.get("value") != item.get("value"):
+                if ioc.get("type", "") == "extracted_config":
+                    ioc_data = {
+                        "type": ioc.get("type"),
+                        "value": json.loads(ioc.get("value")),
+                    }
+                else:
+                    ioc_data = {
+                        "type": ioc.get("type"),
+                        "value": ioc.get("value"),
+                    }
+                if ioc_data not in related_iocs:
+                    related_iocs.append(ioc_data)
+
+    return related_iocs, tags
+
+
+def html_to_text(html) -> str:
+    """
+    Convert HTML to text.
+
+    param html: The HTML to convert.
+
+    return: The converted text.
+    """
+
+    # Remove HTML tags
+    text = re.sub(r"<.*?>", "", html)
+
+    # Replace HTML entities with their corresponding characters
+    text = re.sub(r"&amp;", "&", text)
+    text = re.sub(r"&lt;", "<", text)
+    text = re.sub(r"&gt;", ">", text)
+    text = re.sub(r"&quot;", '"', text)
+    text = re.sub(r"&#(\d+);", lambda m: chr(int(m.group(1))), text)
+
+    return text.strip()
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1209,7 +1479,7 @@ def test_module(client: Client) -> str:
     if is_fetch:
         fetch_incidents(client, {}, params, is_test=True)
     else:
-        client.http_request(method="GET", url_suffix=URL_SUFFIX["INDICATOR_SEARCH"], params={"limit": 1})
+        client.http_request(method="GET", url_suffix=URL_SUFFIX["LIST_INDICATORS"], params={"size": 1})
 
     return "ok"
 
@@ -1440,58 +1710,94 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
     if not is_ip_valid(ip, True):
         raise ValueError(MESSAGES["INVALID_IP_ADDRESS"].format(ip))
 
-    query = QUERY + urllib.parse.quote(ip.encode("utf-8")) + '"'
-    response = client.http_request("GET", url_suffix=get_url_suffix(query))
+    if is_ipv6_valid(ip):
+        response = client.get_indicator(ip, "ipv6")
+    else:
+        response = client.get_indicator(ip, "ipv4")
+    items = response.get("items", [])
 
-    indicators = []
-    if isinstance(response, list):
-        indicators = deepcopy(response)
+    if items:
+        item = items[0]
+        reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f'{HR_TITLE.format("IP Address")}{ip}\nReputation: {reputation.capitalize()}\n\n'
+        title = title[4:]
 
-    if len(indicators) > 0:
-        human_readable = HR_TITLE.format("IP Address") + ip + "\n"
-        human_readable += REPUTATION_MALICIOUS
+        related_iocs, tags = get_related_iocs_and_tags(item)
+        malware_description = item.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
 
-        events_details = parse_indicator_response(indicators)
+        ip_hr_data = {
+            "ID": item.get("id", ""),
+            "IP": item.get("value", ""),
+            "Type": item.get("type", ""),
+            "Malware Description": malware_description,
+            "Tags": tags,
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": item.get("mitre_attack_ids", []),
+            "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
+        }
+        headers = [
+            "ID",
+            "IP",
+            "Type",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable += tableToMarkdown(TABLE_TITLE, events_details["events"], [DATE_OBSERVED, "Name", "Tags"])
+        human_readable = tableToMarkdown(
+            title,
+            ip_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
-        # Constructing FP Deeplink
-        fp_link = urljoin(client.platform_url, HR_SUFFIX["IOC_IP"].format(ip))
-        human_readable += ALL_DETAILS_LINK.format(fp_link, fp_link)
+        platform_link = item.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
 
         dbot_score = Common.DBotScore(
             indicator=ip,
             indicator_type=DBotScoreType.IP,
             integration_name=VENDOR_NAME,
-            score=MALICIOUS_REPUTATION_SCORE,
+            score=REPUTATION_SCORE_MAPPING.get(reputation, DEFAULT_REPUTATION_VALUE),
             malicious_description=MALICIOUS_DESCRIPTION,
             reliability=demisto.params().get("integrationReliability"),
         )
         dbot_score.integration_name = VENDOR_NAME
 
-        relationships = create_relationships_list(client, events_details, ip)
+        relationships = create_relationships_list_v2(client, related_iocs, ip, "ip")
         ip_ioc = Common.IP(ip=ip, dbot_score=dbot_score, relationships=relationships)
-
-        ignite_ip_context = []
-        for indicator in response:
-            indicator = indicator.get("Attribute", {})
-            event = {
-                "Address": ip,
-                "EventDetails": indicator.get("Event"),
-                "Category": indicator.get("category", ""),
-                "Fpid": indicator.get("fpid", ""),
-                "Href": indicator.get("href", ""),
-                "Timestamp": indicator.get("timestamp", ""),
-                "Type": indicator.get("type", ""),
-                "Uuid": indicator.get("uuid", ""),
-                "Comment": indicator["value"].get("comment", ""),
-            }
-            ignite_ip_context.append(event)
 
         command_results = CommandResults(
             outputs_prefix=OUTPUT_PREFIX["IP"],
-            outputs_key_field="Fpid",
-            outputs=ignite_ip_context,
+            outputs_key_field="id",
+            outputs=remove_empty_elements(item),
             readable_output=human_readable,
             indicator=ip_ioc,
             raw_response=response,
@@ -1528,12 +1834,21 @@ def ip_lookup_command(client: Client, ip: str) -> CommandResults:
                 hr_indicator = {
                     "Author": indicator.get("author", EMPTY_DATA),
                     # type: ignore[union-attr]
-                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(READABLE_DATE_FORMAT),    # type: ignore
+                    "Date (UTC)": arg_to_datetime(indicator.get("date")).strftime(  # type: ignore
+                        READABLE_DATE_FORMAT
+                    )
+                    if indicator.get("date")
+                    else "",
                     "First Observed Date (UTC)": arg_to_datetime(indicator.get("first_observed_at")).strftime(  # type: ignore
                         READABLE_DATE_FORMAT
-                    ),
-                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(    # type: ignore
-                        READABLE_DATE_FORMAT),
+                    )
+                    if indicator.get("first_observed_at")
+                    else "",
+                    "Last Observed Date (UTC)": arg_to_datetime(indicator.get("last_observed_at")).strftime(  # type: ignore
+                        READABLE_DATE_FORMAT
+                    )
+                    if indicator.get("last_observed_at")
+                    else "",
                     "Title": indicator.get("title", EMPTY_DATA),
                     "Site": indicator.get("site", EMPTY_DATA),
                     "Enrichments": filter_enrichments,
@@ -1591,49 +1906,210 @@ def common_lookup_command(client: Client, indicator_value: str) -> CommandResult
 
     try:
         ipaddress.ip_address(indicator_value)
-        query = QUERY + indicator_value + '"'
+        if is_ipv6_valid(indicator_value):
+            response = client.get_indicator(indicator_value, "ipv6")
+        else:
+            response = client.get_indicator(indicator_value, "ipv4")
     except ValueError:
-        query = r'+value.\*.keyword:"' + indicator_value + '"'
+        params = {"ioc_value": indicator_value, "embed": "all"}
+        response = client.http_request("GET", URL_SUFFIX["LIST_INDICATORS"], params=params)
 
-    response = client.http_request("GET", url_suffix=get_url_suffix(query))
+    items = response.get("items", [])
 
-    if isinstance(response, list):
-        indicators = deepcopy(response)
-    else:
-        indicators = []
+    if items:
+        item = items[0]
+        indicator_type = item.get("type", "")
+        reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f"{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n"
+        title = title[4:]
 
-    if len(indicators) > 0:
-        indicator_type = indicators[0].get("Attribute", {}).get("type")
+        related_iocs, tags = get_related_iocs_and_tags(item)
+        malware_description = item.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
 
-        human_readable = "### Ignite reputation for " + indicator_value + "\n"
-        human_readable += REPUTATION_MALICIOUS
-
-        events_details = parse_indicator_response(indicators)
-
-        human_readable += tableToMarkdown(TABLE_TITLE, events_details["events"], [DATE_OBSERVED, "Name", "Tags"])
-
-        fp_link = urljoin(client.platform_url, HR_SUFFIX["IOC_SEARCH"].format(urllib.parse.quote(indicator_value)))
-        human_readable += ALL_DETAILS_LINK.format(fp_link, fp_link)
-
-        entry_context = {
-            "DBotScore": {
-                "Indicator": indicator_value,
-                "Type": indicator_type,
-                "Vendor": VENDOR_NAME,
-                "Score": MALICIOUS_REPUTATION_SCORE,
-                "Reliability": demisto.params().get("integrationReliability"),
-            }
+        indicator_hr_data = {
+            "ID": item.get("id", ""),
+            "Type": indicator_type,
+            "Hashes": remove_empty_elements(item.get("hashes", {})),
+            "Malware Description": malware_description,
+            "Tags": tags,
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": item.get("mitre_attack_ids", []),
+            "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
         }
+        headers = [
+            "ID",
+            "Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-    else:
-        human_readable = "### Ignite reputation for " + indicator_value + "\n"
-        human_readable += REPUTATION_UNKNOWN
-        entry_context = {}
+        human_readable = tableToMarkdown(
+            title,
+            indicator_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
+
+        platform_link = item.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
+
+        relationships = create_relationships_list_v2(client, related_iocs, indicator_value, indicator_type)
+
+        common_ioc = create_indicator_object(item=item, relationships=relationships)
+
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX.get(indicator_type.upper(), CUSTOM_OUTPUT_PREFIX.format(indicator_type)),
+            outputs_key_field="id",
+            outputs=remove_empty_elements(item),
+            readable_output=human_readable,
+            indicator=common_ioc,
+            raw_response=response,
+            relationships=relationships,
+        )
+
+    human_readable = "### Ignite reputation for " + indicator_value + "\n"
+    human_readable += REPUTATION_UNKNOWN
 
     return CommandResults(
-        outputs=remove_empty_elements(entry_context),
         readable_output=human_readable,
         raw_response=response,
+    )
+
+
+def indicator_get_command(client: Client, args: dict) -> CommandResults:
+    """
+    Lookup all types of the indicators.
+
+    :param client: object of client class
+    :param args: demisto args
+    :return: command output
+    """
+
+    indicator_id = args.get("indicator_id")
+    if not indicator_id:
+        raise DemistoException(MESSAGES["MISSING_REQUIRED_ARGS"].format("indicator_id"))
+
+    indicator = client.get_indicator_by_id(indicator_id)
+
+    if indicator:
+        indicator_value = indicator.get("value", "")
+        indicator_type = indicator.get("type", "")
+        reputation = indicator.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f"{HR_TITLE.format(indicator_type.capitalize())} {indicator_value}\nReputation: {reputation.capitalize()}\n\n"
+        title = title[4:]
+
+        related_iocs, tags = get_related_iocs_and_tags(indicator)
+        malware_description = indicator.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
+
+        indicator_hr_data = {
+            "ID": indicator.get("id", ""),
+            "Type": indicator_type,
+            "Hashes": remove_empty_elements(indicator.get("hashes", {})),
+            "Malware Description": malware_description,
+            "Tags": indicator.get("historical_tags", []),
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": indicator.get("mitre_attack_ids", []),
+            "Reports": indicator.get("reports", []),
+            "Created At": arg_to_datetime(indicator.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(indicator.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(indicator.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if indicator.get("last_seen_at")
+            else "",
+        }
+        headers = [
+            "ID",
+            "Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Reports",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
+
+        human_readable = tableToMarkdown(
+            title,
+            indicator_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+                "Reports": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
+
+        platform_link = indicator.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
+
+        relationships = create_relationships_list_v2(client, related_iocs, indicator_value, indicator_type)
+
+        common_ioc = create_indicator_object(item=indicator, relationships=relationships)
+
+        return CommandResults(
+            outputs_prefix=OUTPUT_PREFIX.get(indicator_type.upper(), CUSTOM_OUTPUT_PREFIX.format(indicator_type)),
+            outputs_key_field="id",
+            outputs=remove_empty_elements(indicator),
+            readable_output=human_readable,
+            indicator=common_ioc,
+            raw_response=indicator,
+            relationships=relationships,
+        )
+
+    human_readable = "No indicator found for the given ID."
+
+    return CommandResults(
+        readable_output=human_readable,
+        raw_response=indicator,
     )
 
 
@@ -1643,78 +2119,95 @@ def url_lookup_command(client: Client, url: str) -> CommandResults:
 
     :param client: object of client class
     :param url: url as indicator
+
     :return: command output
     """
-    encoded_url = urllib.parse.quote(url.encode("utf8"))
+    response = client.get_indicator(url, "url")
+    items = response.get("items", [])
 
-    query = r'+type:("url") +value.\*.keyword:"' + url + '"'
-    resp = client.http_request("GET", url_suffix=get_url_suffix(query))
+    if items:
+        item = items[0]
+        reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f'{HR_TITLE.format("URL")}{url}\nReputation: {reputation.capitalize()}\n\n'
+        title = title[4:]
 
-    if isinstance(resp, list):
-        indicators = deepcopy(resp)
-    else:
-        indicators = []
+        related_iocs, tags = get_related_iocs_and_tags(item)
+        malware_description = item.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
 
-    if len(indicators) > 0:
-        hr = HR_TITLE.format("URL") + url + "\n"
-        hr += REPUTATION_MALICIOUS
+        ip_hr_data = {
+            "ID": item.get("id", ""),
+            "URL": item.get("value", ""),
+            "Malware Description": malware_description,
+            "Tags": tags,
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": item.get("mitre_attack_ids", []),
+            "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
+        }
+        headers = [
+            "ID",
+            "URL",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        events_details = parse_indicator_response(indicators)
+        human_readable = tableToMarkdown(
+            title,
+            ip_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
-        hr += tableToMarkdown(TABLE_TITLE, events_details["events"], [DATE_OBSERVED, "Name", "Tags"])
-
-        fp_link = urljoin(client.platform_url, HR_SUFFIX["IOC_URL"].format(encoded_url))
-        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
+        platform_link = item.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
 
         dbot_score = Common.DBotScore(
             indicator=url,
             indicator_type=DBotScoreType.URL,
             integration_name=VENDOR_NAME,
-            score=MALICIOUS_REPUTATION_SCORE,
+            score=REPUTATION_SCORE_MAPPING.get(reputation, DEFAULT_REPUTATION_VALUE),
             malicious_description=MALICIOUS_DESCRIPTION,
             reliability=demisto.params().get("integrationReliability"),
         )
         dbot_score.integration_name = VENDOR_NAME
 
-        relationships = []
-        if client.create_relationships and events_details.get("attack_ids"):
-            for attack_id in events_details.get("attack_ids"):
-                relationships.append(
-                    EntityRelationship(
-                        name="indicator-of",
-                        entity_a=url,
-                        entity_a_type=FeedIndicatorType.URL,
-                        entity_b=attack_id,
-                        entity_b_type=FeedIndicatorType.indicator_type_by_server_version(STIX_ATTACK_PATTERN),
-                        brand=VENDOR_NAME,
-                    )
-                )
-
+        relationships = create_relationships_list_v2(client, related_iocs, url, "url")
         url_ioc = Common.URL(url=url, dbot_score=dbot_score, relationships=relationships)
-
-        ignite_url_context = []
-        for indicator in resp:
-            indicator = indicator.get("Attribute", {})
-            event = {
-                "Fpid": indicator.get("fpid", ""),
-                "EventDetails": indicator["Event"],
-                "Category": indicator.get("category", ""),
-                "Href": indicator.get("href", ""),
-                "Timestamp": indicator.get("timestamp", ""),
-                "Type": indicator.get("type", ""),
-                "Uuid": indicator.get("uuid", ""),
-                "Comment": indicator["value"].get("comment", ""),
-                "Url": indicator["value"]["url"],
-            }
-            ignite_url_context.append(event)
 
         command_results = CommandResults(
             outputs_prefix=OUTPUT_PREFIX["URL"],
-            outputs_key_field="Fpid",
-            outputs=remove_empty_elements(ignite_url_context),
-            readable_output=hr,
+            outputs_key_field="id",
+            outputs=remove_empty_elements(item),
+            readable_output=human_readable,
             indicator=url_ioc,
-            raw_response=resp,
+            raw_response=response,
             relationships=relationships,
         )
         return command_results
@@ -1734,7 +2227,7 @@ def url_lookup_command(client: Client, url: str) -> CommandResults:
     command_results = CommandResults(
         indicator=url_ioc,
         readable_output=hr,
-        raw_response=resp,
+        raw_response=response,
     )
 
     return command_results
@@ -1749,180 +2242,215 @@ def domain_lookup_command(client: Client, domain: str) -> CommandResults:
     :return: command output
     """
 
-    query = r'+type:("domain") +value.\*.keyword:"' + domain + '"'
-    response = client.http_request("GET", url_suffix=get_url_suffix(query))
+    response = client.get_indicator(domain, "domain")
+    items = response.get("items", [])
 
-    indicators = []
-    if isinstance(response, list):
-        indicators = deepcopy(response)
+    if items:
+        item = items[0]
+        reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f'{HR_TITLE.format("Domain")}{domain}\nReputation: {reputation.capitalize()}\n\n'
+        title = title[4:]
 
-    if len(indicators) > 0:
-        human_readable = HR_TITLE.format("Domain") + domain + "\n"
-        human_readable += REPUTATION_MALICIOUS
+        related_iocs, tags = get_related_iocs_and_tags(item)
+        malware_description = item.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
 
-        events_details = parse_indicator_response(indicators)
+        domain_hr_data = {
+            "ID": item.get("id", ""),
+            "Domain": item.get("value", ""),
+            "Malware Description": malware_description,
+            "Tags": tags,
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": item.get("mitre_attack_ids", []),
+            "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
+        }
+        headers = [
+            "ID",
+            "Domain",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        human_readable += tableToMarkdown(TABLE_TITLE, events_details["events"], [DATE_OBSERVED, "Name", "Tags"])
+        human_readable = tableToMarkdown(
+            title,
+            domain_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
 
-        fp_link = urljoin(client.platform_url, HR_SUFFIX["IOC_DOMAIN"].format(domain))
-        human_readable += ALL_DETAILS_LINK.format(fp_link, fp_link)
+        platform_link = item.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
 
         dbot_score = Common.DBotScore(
             indicator=domain,
             indicator_type=DBotScoreType.DOMAIN,
             integration_name=VENDOR_NAME,
-            score=MALICIOUS_REPUTATION_SCORE,
+            score=REPUTATION_SCORE_MAPPING.get(reputation, DEFAULT_REPUTATION_VALUE),
             malicious_description=MALICIOUS_DESCRIPTION,
             reliability=demisto.params().get("integrationReliability"),
         )
         dbot_score.integration_name = VENDOR_NAME
 
-        relationships = []
-        if client.create_relationships and events_details.get("attack_ids"):
-            for attack_id in events_details.get("attack_ids"):
-                relationships.append(
-                    EntityRelationship(
-                        name="indicator-of",
-                        entity_a=domain,
-                        entity_a_type=FeedIndicatorType.Domain,
-                        entity_b=attack_id,
-                        entity_b_type=FeedIndicatorType.indicator_type_by_server_version(STIX_ATTACK_PATTERN),
-                        brand=VENDOR_NAME,
-                    )
-                )
-
+        relationships = create_relationships_list_v2(client, related_iocs, domain, "domain")
         domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, relationships=relationships)
-        ignite_domain_context = []
-        for indicator in response:
-            indicator = indicator.get("Attribute", {})
-            event = {
-                "Domain": domain,
-                "Category": indicator.get("category", ""),
-                "Fpid": indicator.get("fpid", ""),
-                "Href": indicator.get("href", ""),
-                "Timestamp": indicator.get("timestamp", ""),
-                "Type": indicator.get("type"),
-                "Uuid": indicator.get("uuid", ""),
-                "EventDetails": indicator.get("Event", []),
-                "Comment": indicator["value"].get("comment", ""),
-            }
-            ignite_domain_context.append(event)
 
-        command_results = CommandResults(
+        return CommandResults(
             outputs_prefix=OUTPUT_PREFIX["DOMAIN"],
-            outputs_key_field="Fpid",
-            outputs=remove_empty_elements(ignite_domain_context),
+            outputs_key_field="id",
+            outputs=remove_empty_elements(item),
             readable_output=human_readable,
             indicator=domain_ioc,
             raw_response=response,
             relationships=relationships,
         )
 
-    else:
-        human_readable = HR_TITLE.format("Domain") + domain + "\n"
-        human_readable += REPUTATION_UNKNOWN
-        dbot_score = Common.DBotScore(
-            indicator=domain,
-            indicator_type=DBotScoreType.DOMAIN,
-            integration_name=VENDOR_NAME,
-            score=UNKNOWN_REPUTATION_SCORE,
-            reliability=demisto.params().get("integrationReliability"),
-        )
-        dbot_score.integration_name = VENDOR_NAME
+    human_readable = HR_TITLE.format("Domain") + domain + "\n"
+    human_readable += REPUTATION_UNKNOWN
+    dbot_score = Common.DBotScore(
+        indicator=domain,
+        indicator_type=DBotScoreType.DOMAIN,
+        integration_name=VENDOR_NAME,
+        score=UNKNOWN_REPUTATION_SCORE,
+        reliability=demisto.params().get("integrationReliability"),
+    )
+    dbot_score.integration_name = VENDOR_NAME
 
-        domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, description=UNKONWN_DESCRIPTION.strip())
+    domain_ioc = Common.Domain(domain=domain, dbot_score=dbot_score, description=UNKONWN_DESCRIPTION.strip())
 
-        command_results = CommandResults(indicator=domain_ioc, readable_output=human_readable, raw_response=response)
-
-    return command_results
+    return CommandResults(indicator=domain_ioc, readable_output=human_readable, raw_response=response)
 
 
 def file_lookup_command(client: Client, file: str) -> CommandResults:
     """
-    Lookup a particular file hash (md5, sha1, sha256, sha512, ssdeep).
+    Lookup a particular file hash.
 
     :param client: object of client class
     :param file: file as indicator
     :return: command output
     """
-    query = r'+type:("md5","sha1","sha256","sha512","ssdeep") +value.\*.keyword:"' + file + '"'
-    resp = client.http_request("GET", url_suffix=get_url_suffix(query))
 
-    indicators = []
-    if isinstance(resp, list):
-        indicators = deepcopy(resp)
+    response = client.get_indicator(file, "file")
+    items = response.get("items", [])
 
-    if len(indicators) > 0:
-        indicator_type = (indicators[0].get("Attribute", {}).get("type", "")).upper()
-        hr = HR_TITLE.format("File") + file + "\n"
-        hr += REPUTATION_MALICIOUS
+    if items:
+        item = items[0]
+        reputation = item.get("score", {}).get("value", DEFAULT_REPUTATION_VALUE)
+        reputation = DEFAULT_REPUTATION_VALUE if reputation == "no_score" else reputation
+        title = f'{HR_TITLE.format("File")}{file}\nReputation: {reputation.capitalize()}\n\n'
+        title = title[4:]
 
-        events_details = parse_indicator_response(indicators)
+        related_iocs, tags = get_related_iocs_and_tags(item)
+        hash_type = get_hash_type(file)
+        malware_description = item.get("malware_description", "")
+        if not malware_description or malware_description == "N/A":
+            malware_description = ""
+        else:
+            malware_description = html_to_text(malware_description)
 
-        hr += tableToMarkdown(TABLE_TITLE, events_details["events"], [DATE_OBSERVED, "Name", "Tags"])
+        file_hr_data = {
+            "ID": item.get("id", ""),
+            "Hash Type": hash_type,
+            "Hashes": remove_empty_elements(item.get("hashes", {})),
+            "Malware Description": malware_description,
+            "Tags": tags,
+            "Related IOCs": related_iocs,
+            "Mitre Attack IDs": item.get("mitre_attack_ids", []),
+            "Created At": arg_to_datetime(item.get("created_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("created_at")
+            else "",
+            "Modified At": arg_to_datetime(item.get("modified_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("modified_at")
+            else "",
+            "Last Seen At": arg_to_datetime(item.get("last_seen_at")).strftime(  # type: ignore
+                READABLE_DATE_FORMAT
+            )
+            if item.get("last_seen_at")
+            else "",
+        }
+        headers = [
+            "ID",
+            "Hash Type",
+            "Hashes",
+            "Malware Description",
+            "Tags",
+            "Related IOCs",
+            "Mitre Attack IDs",
+            "Created At",
+            "Modified At",
+            "Last Seen At",
+        ]
 
-        fp_link = urljoin(client.platform_url, HR_SUFFIX["IOC_FILE"].format(urllib.parse.quote(file.encode("utf-8"))))
-        hr += ALL_DETAILS_LINK.format(fp_link, fp_link)
+        human_readable = tableToMarkdown(
+            title,
+            file_hr_data,
+            headers=headers,
+            json_transform_mapping={
+                "Hashes": JsonTransformer(is_nested=True),
+                "Related IOCs": JsonTransformer(is_nested=True),
+                "Mitre Attack IDs": JsonTransformer(is_nested=True),
+            },
+            removeNull=True,
+        )
+
+        platform_link = item.get("platform_urls", {}).get("ignite", "")
+        human_readable += PLATFORM_LINK.format(platform_link, platform_link)
 
         dbot_score = Common.DBotScore(
             indicator=file,
             indicator_type=DBotScoreType.FILE,
             integration_name=VENDOR_NAME,
-            score=MALICIOUS_REPUTATION_SCORE,
+            score=REPUTATION_SCORE_MAPPING.get(reputation, DEFAULT_REPUTATION_VALUE),
             malicious_description=MALICIOUS_DESCRIPTION,
             reliability=demisto.params().get("integrationReliability"),
         )
         dbot_score.integration_name = VENDOR_NAME
 
-        relationships = []
-        if client.create_relationships and events_details.get("attack_ids"):
-            for attack_id in events_details.get("attack_ids"):
-                relationships.append(
-                    EntityRelationship(
-                        name="indicator-of",
-                        entity_a=file,
-                        entity_a_type=DBotScoreType.FILE,
-                        entity_b=attack_id,
-                        entity_b_type=FeedIndicatorType.indicator_type_by_server_version(STIX_ATTACK_PATTERN),
-                        brand=VENDOR_NAME,
-                    )
-                )
-
-        hash_type = get_hash_type(file)  # if file_hash found, has to be md5, sha1, sha256, sha512 or ssdeep
-        if hash_type == "md5":
-            file_ioc = Common.File(md5=file, dbot_score=dbot_score, relationships=relationships)
-        elif hash_type == "sha1":
-            file_ioc = Common.File(sha1=file, dbot_score=dbot_score, relationships=relationships)
-        elif hash_type == "sha256":
-            file_ioc = Common.File(sha256=file, dbot_score=dbot_score, relationships=relationships)
-        elif hash_type == "sha512":
-            file_ioc = Common.File(sha512=file, dbot_score=dbot_score, relationships=relationships)
-        else:
-            file_ioc = Common.File(ssdeep=file, dbot_score=dbot_score, relationships=relationships)
-
-        ignite_file_context = []
-        for indicator in resp:
-            indicator = indicator.get("Attribute", {})
-            event = {
-                str(indicator_type).upper(): file,
-                "EventDetails": indicator.get("Event"),
-                "Category": indicator.get("category", ""),
-                "Fpid": indicator.get("fpid", ""),
-                "Href": indicator.get("href", ""),
-                "Timestamp": indicator.get("timestamp", ""),
-                "Type": indicator.get("type", ""),
-                "Uuid": indicator.get("uuid", ""),
-                "Comment": indicator["value"].get("comment", ""),
-            }
-            ignite_file_context.append(event)
+        hashes = {
+            "md5": item.get("hashes", {}).get("md5"),
+            "sha1": item.get("hashes", {}).get("sha1"),
+            "sha256": item.get("hashes", {}).get("sha256"),
+        }
+        relationships = create_relationships_list_v2(client, related_iocs, file, "file")
+        file_ioc = Common.File(dbot_score=dbot_score, relationships=relationships, **hashes)
 
         return CommandResults(
             outputs_prefix=OUTPUT_PREFIX["FILE"],
-            outputs_key_field="Fpid",
-            outputs=remove_empty_elements(ignite_file_context),
-            readable_output=hr,
+            outputs_key_field="id",
+            outputs=remove_empty_elements(item),
+            readable_output=human_readable,
             indicator=file_ioc,
-            raw_response=resp,
+            raw_response=response,
             relationships=relationships,
         )
 
@@ -1940,12 +2468,7 @@ def file_lookup_command(client: Client, file: str) -> CommandResults:
 
     file_ioc = Common.File(name=file, dbot_score=dbot_score, description=UNKONWN_DESCRIPTION.strip())
 
-    command_results = CommandResults(
-        indicator=file_ioc,
-        readable_output=hr,
-        raw_response=resp,
-    )
-    return command_results
+    return CommandResults(indicator=file_ioc, readable_output=hr, raw_response=response)
 
 
 def get_reports_command(client, args) -> CommandResults:
@@ -2411,6 +2934,7 @@ def main():
             "flashpoint-ignite-event-list": event_list_command,
             "flashpoint-ignite-event-get": event_get_command,
             "flashpoint-ignite-alert-list": alert_list_command,
+            "flashpoint-ignite-indicator-get": indicator_get_command,
         }
 
         REPUTATION_COMMAND_TO_FUNCTION: dict = {
@@ -2469,7 +2993,7 @@ def main():
 
     # Log exceptions and return errors
     except Exception as e:
-        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError: \n{str(e)}")
 
 
 if __name__ in ["__main__", "builtin", "builtins"]:

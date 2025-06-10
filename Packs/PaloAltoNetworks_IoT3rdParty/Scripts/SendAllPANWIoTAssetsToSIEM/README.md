@@ -1,6 +1,7 @@
 Retrieves all specified assets from the PANW IoT cloud and sends them to the SIEM server.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -10,14 +11,17 @@ Retrieves all specified assets from the PANW IoT cloud and sends them to the SIE
 | Cortex XSOAR Version | 6.0.0 |
 
 ## Dependencies
+
 ---
 This script uses the following commands and scripts.
+
 * syslog-send
 * panw-iot-3rd-party-get-asset-list
 * panw-iot-3rd-party-report-status-to-panw
 * panw-iot-3rd-party-convert-assets-to-external-format
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -27,5 +31,6 @@ This script uses the following commands and scripts.
 | panw_iot_3rd_party_instance | Name of the configured PANW Iot 3rd Party integration instance. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

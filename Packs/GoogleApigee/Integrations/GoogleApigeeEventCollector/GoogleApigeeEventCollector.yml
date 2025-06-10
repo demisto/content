@@ -72,7 +72,7 @@ script:
       required: false
     description: Gets logs from Google Apigee.
     name: google-apigee-get-events
-  dockerimage: demisto/python3:3.12.8.1983910
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetchevents: true
   runonce: false
   script: '-'

@@ -136,11 +136,27 @@ class Client(CrowdStrikeClient):
         self.create_relationships = create_relationships
 
     def get_indicators(self, params):
-        response = super().http_request(method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30)
+        response = super().http_request(method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30,
+                                        ok_codes=(200, 401))
+
+        if response.get('errors') and response['errors'][0].get('code') == 401:
+            demisto.info(f'request failed with status code is 401, error: {str(response["errors"][0])}, regenerate token')
+            self._token = self._get_token()
+            self._headers = {'Authorization': 'bearer ' + self._token}
+            response = super().http_request(method="GET", params=params, url_suffix="intel/combined/indicators/v1", timeout=30)
+
         return response
 
     def get_actors_names_request(self, params_string):
-        response = self._http_request(method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30)
+        response = self._http_request(method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30,
+                                    ok_codes=(200,401))
+
+        if response.get('errors') and response['errors'][0].get('code') == 401:
+            demisto.info(f'request failed with status code is 401, error: {str(response["errors"][0])}, regenerate token')
+            self._token = self._get_token()
+            self._headers = {'Authorization': 'bearer ' + self._token}
+            response = self._http_request(method="GET", url_suffix=f"intel/entities/actors/v1?{params_string}", timeout=30)
+
         if "resources" not in response:
             raise DemistoException("Get actors request completed. Parse error: could not find resources in response.")
         return response["resources"]
