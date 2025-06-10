@@ -221,6 +221,7 @@ script:
       - description: Date string representing the local time. The incident is only returned if it was modified after the last update time.
         name: lastUpdate
         required: true
+    description: Checks for incidents modified since the last synchronization time to enable incremental data fetching.
     name: get-modified-remote-data
   - arguments:
       - description: The remote incident ID.
@@ -229,6 +230,7 @@ script:
       - defaultValue: '0'
         description: The UTC timestamp in seconds of the last update. The incident is only updated if it was modified after the last update time.
         name: lastUpdate
+    description: Retrieves the latest data for a specific remote incident by its ID, updating only if modified since the given timestamp.
     name: get-remote-data
   dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
