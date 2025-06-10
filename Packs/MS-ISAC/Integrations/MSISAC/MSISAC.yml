@@ -3,14 +3,16 @@ commonfields:
   id: MS-ISAC
   version: -1
 configuration:
-- additionalinfo: Key provided by MS-ISAC according to the detailed Instructions
-  display: API Key
+- displaypassword: API Key
+  display: ""
+  additionalinfo: Key provided by MS-ISAC according to the detailed Instructions
   name: apikey
   required: true
-  type: 4
-- additionalinfo: This is the URL provided by MS-ISAC for the base of all endpoints
+  type: 9
+  hiddenusername: true
+- display: Server URL
+  additionalinfo: This is the URL provided by MS-ISAC for the base of all endpoints
   defaultvalue: https://socapi.cisecurity.org
-  display: Server URL
   name: url
   required: true
   type: 0
@@ -22,6 +24,26 @@ configuration:
   name: proxy
   type: 8
   required: false
+- display: Fetch incidents
+  name: isFetch
+  section: Collect
+  type: 8
+  required: false
+- display: Incidents Fetch Interval
+  section: Collect
+  name: incidentFetchInterval
+  defaultvalue: "1"
+  type: 19
+  required: false
+  advanced: true
+- display: First Fetch Time
+  name: first_fetch
+  section: Collect
+  additionalinfo: When the integration intstance is configured to fetch for the first time, this parameter will determine how far back it will look to fetch.
+  defaultvalue: 1 day ago
+  type: 0
+  required: false
+  advanced: true
 description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
 display: MS-ISAC
 name: MS-ISAC
@@ -177,6 +199,8 @@ script:
       description: The severity assigned to the MS-ISAC alert
       type: string
   dockerimage: demisto/python3:3.11.10.115186
+  isfetch: true
+  isFetchSamples: true
   runonce: false
   script: ''
   subtype: python3

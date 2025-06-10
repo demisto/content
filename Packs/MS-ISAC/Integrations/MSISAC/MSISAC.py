@@ -1,12 +1,26 @@
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+
+
+""" IMPORTS """
+
 import json
-import traceback
+import math
 
 import urllib3
 
 # Disable insecure warnings
 urllib3.disable_warnings()
+
+
+""" CONSTANTS """
+
+API_ROUTE = "/api/v1"
+MAX_ALLOWED_FETCH_LIMIT = 80000
+MSISAC_FETCH_WINDOW_DEFAULT = 1
+XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
+MSISAC_S_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
+
 
 
 """ CLIENT CLASS """
@@ -72,7 +86,7 @@ def test_module(client: Client) -> str:
     return "ok"
 
 
-def get_event_command(client: Client, args: Dict[str, Any]):
+def get_event_command(client: Client, args: Dict[str, Any], internal=False):
     """msisac-get-event command: Returns an MS-ISAC event with detailed stream information
 
     :type client: ``Client``
@@ -101,13 +115,16 @@ def get_event_command(client: Client, args: Dict[str, Any]):
     # Have 404 as on 'ok' response in the base class, and use this JSON path to provide output
     if "error" in event and event["error"]["message"] == "Event does not exist":
         # If there are ever more errors to parse we can expand this conditional
-        return CommandResults(
-            readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
-            raw_response=event,
-            outputs_prefix="MSISAC.Event",
-            outputs_key_field="event_id",
-            outputs=output,
-        )
+        if internal:
+            return {}
+        else:
+            return CommandResults(
+                readable_output=f"There was no MS-ISAC event retrieved with Event ID {event_id}.\n",
+                raw_response=event,
+                outputs_prefix="MSISAC.Event",
+                outputs_key_field="event_id",
+                outputs=output
+            )
 
     # the json_data in the payload is the most verbose and should be our final output
     # However there are several keys that are not present in json_data we still want/need in the markdown and context
@@ -134,13 +151,17 @@ def get_event_command(client: Client, args: Dict[str, Any]):
 
     output["Stream"] = stream
 
-    return CommandResults(
-        readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
-        raw_response=event,
-        outputs_prefix="MSISAC.Event",
-        outputs_key_field="event_id",
-        outputs=output,
-    )
+
+    if internal:
+        return output
+    else:
+        return CommandResults(
+            readable_output=tableToMarkdown(f"MS-ISAC Event Details for {event_id}", stream),
+            raw_response=event,
+            outputs_prefix="MSISAC.Event",
+            outputs_key_field="event_id",
+            outputs=output,
+        )
 
 
 def retrieve_events_command(client: Client, args: Dict[str, Any]):
@@ -200,41 +221,128 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
         outputs=outputs,
     )
 
+@logger
+def fetch_incidents(
+        client: Client,
+        first_fetch: datetime,
+        last_run: Dict
+        ) -> tuple[List[dict[str, Any]], Dict]:
+    """Uses to fetch events into XSIAM
+    Args:
+        client: Client object with request
+        first_fetch: String from when to fetch if first time. "%Y-%m-%dT%H:%M:%SZ"
+        last_run: Last fetch object occurs.
+    Returns:
+        incidents, new last_run
+    """
+
+    fetch_time: datetime # fetch_time replaceslast_fetch_time_str
+
+    if not last_run.get('lastRun'):
+        fetch_time = first_fetch
+    else:
+        fetch_time = datetime.strptime(last_run.get('lastRun', ''), XSOAR_INCIDENT_DATE_FORMAT) # This comes in as a string
+
+    fetch_time_lookback_days: int = calculate_lookback_days(fetch_time, datetime.now())
+
+    retrieve_events_data: dict = client.retrieve_events(days=fetch_time_lookback_days).get('data', [])
+
+    events_to_fetch: list[dict] = []
+    latest_event_s_time: datetime = fetch_time
+
+    # API returns a list if there is albert event data. data key is a string if there is no data.
+    if isinstance(retrieve_events_data, list):
+        for event in retrieve_events_data:
+            event_s_time = datetime.strptime(event.get('stime'), MSISAC_S_TIME_FORMAT)
+            if event_s_time > fetch_time: # Make sure event happened after last fetch
+                events_to_fetch.append({
+                    'name': f"{event.get('event_id','')} - {event.get('description','')}",
+                    'occurred': event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
+                    'rawJSON': json.dumps(event)
+                })
+                if event_s_time > latest_event_s_time:
+                    latest_event_s_time = event_s_time
+        
+    else:
+        demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
+
+    next_run_dict = {'lastRun': latest_event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}
+
+    return events_to_fetch, next_run_dict
+    
+    
+@logger
+def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
+    """Calculates the lookback period in days between two datetimes.
+
+    Args:
+        start_time: The start datetime.
+        end_time: The end datetime.
+
+    Returns:
+        The number of days to look back, rounded according to round_down flag, with a minimum of 1.
+    """
+    
+    if not (start_time or end_time):
+         return MSISAC_FETCH_WINDOW_DEFAULT
+
+    time_diff = end_time - start_time
+    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60) # Calculate difference in days
+
+    # Apply rounding based on the flag
+    rounded_days = math.ceil(diff_in_days)
+
+    # Ensure minimum
+    days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
+    return days_param
 
 """ MAIN FUNCTION """
 
 
 def main():
-    api_key = demisto.params().get("apikey")
 
-    base_url = urljoin(demisto.params()["url"], "/api/v1")
+    params = demisto.params()
+    args = demisto.args()
+    command = demisto.command()
 
-    verify_certificate = not demisto.params().get("insecure", False)
+    api_key = params.get('apikey',{}).get("credentials", {}).get('sshkey', '')
 
-    proxy = demisto.params().get("proxy", False)
+    base_url = urljoin(params["url"], API_ROUTE)
 
-    demisto.debug(f"Command being called is {demisto.command()}")
+    verify_certificate = not params.get("insecure", False)
+    proxy = params.get("proxy", False)
+
+    demisto.debug(f"Command being called is {command}")
     try:
         headers = {"Authorization": f"Bearer {api_key}"}
         client = Client(base_url=base_url, verify=verify_certificate, headers=headers, proxy=proxy)
 
-        if demisto.command() == "test-module":
+        if command == "test-module":
             result = test_module(client)
             return_results(result)
 
-        elif demisto.command() == "msisac-get-event":
-            result = get_event_command(client, demisto.args())
+        elif command == "msisac-get-event":
+            result = get_event_command(client, args)
             return_results(result)
 
-        elif demisto.command() == "msisac-retrieve-events":
-            result = retrieve_events_command(client, demisto.args())
+        elif command == "msisac-retrieve-events":
+            result = retrieve_events_command(client, args)
             return_results(result)
+
+        elif command == 'fetch-incidents':
+            first_fetch = arg_to_datetime(params.get("first_fetch", "1 day ago"))
+            events, next_run = fetch_incidents(client=client,
+                                        first_fetch=first_fetch,
+                                        last_run=demisto.getLastRun()
+                                        )
+
+            demisto.incidents(events)
+            demisto.setLastRun(next_run)
 
     # Log exceptions and return errors
     except Exception as e:
-        demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
-
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
+        
 
 """ ENTRY POINT """
 
