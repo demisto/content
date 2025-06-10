@@ -252,7 +252,7 @@ def get_last_run_date():
     demisto.debug(f"[BigQuery Debug] last_date is: {last_date}")
 
     if last_date is None:
-        first_fetch_time = demisto.params().get("first_fetch_time", "1 days")
+        first_fetch_time = demisto.params().get("first_fetch", "1 days")
         first_fetch, _ = parse_date_range(first_fetch_time, date_format="%Y-%m-%d %H:%M:%S.%f")
         last_date = first_fetch
         demisto.debug(f"[BigQuery Debug] FIRST RUN - last_date is: {last_date}")
