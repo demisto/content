@@ -159,12 +159,13 @@ Update various fields of an alert including status, comment, assignee, severity,
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+| AnomaliSecurityAnalytics.UpdateAlert.message | String | Confirmation message returned after updating the alert status. | 
 | AnomaliSecurityAnalytics.UpdateAlert.uuid | String | The UUID of the updated alert. | 
 | AnomaliSecurityAnalytics.UpdateAlert.updated_fields | Dictionary | The fields that were updated in the alert. | 
 
 #### Human Readable Output
 
 **Update Alert**
-| uuid | updated_fields |
-| --- | --- |
-| 19e19eabd55e4b05a505fb64a803501d | {"comment": "test_update", "status": "test_update"} |
+| message | uuid | updated_fields |
+| --- | --- | --- |
+| Updated alert successfully | 19e19eabd55e4b05a505fb64a803501d | {"comment": "test_update", "status": "test_update"} |
