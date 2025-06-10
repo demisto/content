@@ -279,7 +279,7 @@ def command_update_alert(client: Client, args: dict) -> CommandResults:
     return CommandResults(
         outputs_prefix="AnomaliSecurityAnalytics.UpdateAlert",
         outputs_key_field="uuid",
-        outputs={"uuid": uuid_val, "updated_fields": columns},
+        outputs={"uuid": uuid_val, "updated_fields": columns, "message": "Alert Updated Successfully."},
         readable_output=readable,
         raw_response=response,
     )

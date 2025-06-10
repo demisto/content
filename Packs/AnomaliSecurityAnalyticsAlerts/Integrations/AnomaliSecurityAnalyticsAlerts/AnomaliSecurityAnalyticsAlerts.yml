@@ -214,6 +214,9 @@ script:
       required: false
     execution: false
     outputs:
+      - contextPath: AnomaliSecurityAnalytics.UpdateAlert.message
+        description: Confirmation message returned after updating the alert status.
+        type: String
       - contextPath: AnomaliSecurityAnalytics.UpdateAlert.uuid
         description: The UUID of the updated alert.
         type: String
