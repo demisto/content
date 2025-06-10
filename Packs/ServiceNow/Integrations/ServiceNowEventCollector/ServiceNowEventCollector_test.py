@@ -20,6 +20,8 @@ from ServiceNowEventCollector import (
     initialize_from_date,
     process_and_filter_events,
     update_last_run,
+    login_command,
+    module_of_testing,
 )
 
 
@@ -931,3 +933,103 @@ def test_handle_log_types_empty_list():
     """
     event_types_to_fetch = []
     assert handle_log_types(event_types_to_fetch) == []
+
+
+def test_login_command_oauth_not_enabled(mocker):
+    """
+    Test login_command when OAuth is not enabled in the client.
+
+    Given:
+        - The client has use_oauth set to False.
+    When:
+        - login_command is called.
+    Then:
+        - return_error is called with the appropriate message.
+    """
+    client = mocker.Mock()
+    client.sn_client.use_oauth = False
+
+    return_error_mock = mocker.patch("ServiceNowEventCollector.return_error")
+
+    login_command(client, "user", "pass")
+
+    return_error_mock.assert_called_once()
+    assert "can be used only when using OAuth 2.0" in return_error_mock.call_args[0][0]
+
+
+def test_login_command_success(mocker):
+    """
+    Test login_command when login is successful.
+
+    Given:
+        - OAuth is enabled.
+        - login does not raise an error.
+    When:
+        - login_command is called with correct username and password.
+    Then:
+        - login is called with the correct arguments.
+        - A success message is returned.
+    """
+    mock_login = mocker.Mock()
+    client = mocker.Mock()
+    client.sn_client.use_oauth = True
+    client.sn_client.login = mock_login
+
+    result = login_command(client, "user", "pass")
+
+    mock_login.assert_called_once_with("user", "pass")
+    assert "Logged in successfully" in result
+
+
+def test_module_of_testing_success_and_failure(mocker):
+    """
+    Test module_of_testing when login and fetch success.
+
+    Given:
+        - OAuth is enabled.
+        - login works.
+    When:
+        - module_of_testing is called.
+    Then:
+        - module_of_testing return "ok" message.
+    """
+    client = Client(
+        use_oauth=True,
+        credentials={"username": "test", "password": "test"},
+        client_id="id",
+        client_secret="secret",
+        url="https://example.com",
+        verify=False,
+        proxy=False,
+        api_server_url="https://example.com/api/now",
+        fetch_limit_audit=10,
+        fetch_limit_syslog=10,
+    )
+
+    mocker.patch("ServiceNowEventCollector.fetch_events_command", return_value=([], {}))
+    assert module_of_testing(client, [AUDIT]) == "ok"
+
+
+def test_login_command_failure(mocker):
+    """
+    Test login_command when login fails.
+
+    Given:
+        - OAuth is enabled.
+        - login raises an exception.
+    When:
+        - login_command is called.
+    Then:
+        - return_error is called with the appropriate failure message.
+    """
+    client = mocker.Mock()
+    client.sn_client.use_oauth = True
+    client.sn_client.login.side_effect = Exception("Invalid credentials")
+
+    return_error_mock = mocker.patch("ServiceNowEventCollector.return_error")
+
+    login_command(client, "user", "pass")
+
+    return_error_mock.assert_called_once()
+    assert "Failed to login" in return_error_mock.call_args[0][0]
+    assert "Invalid credentials" in return_error_mock.call_args[0][0]

@@ -43,8 +43,11 @@ This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, I
 | SilentPush.DensityLookup.records.nssrv | String | The name server \(NS\) for the query result. | 
 
 #### Command example
+
 ```!silentpush-density-lookup qtype="nssrv" query="vida.ns.cloudflare.com"```
+
 #### Context Example
+
 ```json
 {
 	"qtype": "nssrv",
@@ -57,9 +60,11 @@ This command queries granular DNS/IP parameters (e.g., NS servers, MX servers, I
 	]
 }
 ```
+
 #### Human Readable Output
 
 >### Results  
+
 >| Field   | Value                        |
 >|---------|------------------------------|
 >| Density | 100601                       |
@@ -113,9 +118,11 @@ This command performs a forward PADNS lookup using various filtering parameters.
 | SilentPush.PADNSLookup.records.type | String | The type of the DNS record \(e.g., NS\). | 
 
 ### **Command Example**  
+
 ```!silentpush-forward-padns-lookup qtype="ns" qname="silentpush.com"```
 
 ### **Context Example**  
+
 ```json
 {
 	"qtype": "ns",
@@ -136,6 +143,7 @@ This command performs a forward PADNS lookup using various filtering parameters.
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field        | Value                        |
 >|--------------|------------------------------|
 >| Answer       | henry.ns.cloudflare.com      |
@@ -178,9 +186,11 @@ This command retrieve the reputation information for an IPv4.
 
 
 ### **Command Example**  
+
 ```!silentpush-get-asn-reputation asn="12345"```
 
 ### **Context Example**  
+
 ```json
 {
 	"asn": "12345",
@@ -193,6 +203,7 @@ This command retrieve the reputation information for an IPv4.
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field        | Value                  |
 >|--------------|------------------------|
 >| ASN          | 12345                  |
@@ -233,9 +244,11 @@ This command retrieve the takedown reputation information for an Autonomous Syst
 | SilentPush.ASNTakedownReputation.takedown_reputation.asn_takedown_reputation_explain.listings_max_age | Number | The maximum age \(in hours\) of the listings, indicating how recent the flagged IPs/domains are. | 
 
 ### **Command Example**  
+
 ```!silentpush-get-asn-takedown-reputation asn="211298"```
 
 ### **Context Example**  
+
 ```json
 {
 	"asn": "211298",
@@ -249,6 +262,7 @@ This command retrieve the takedown reputation information for an Autonomous Syst
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field                        | Value                      |
 >|------------------------------|----------------------------|
 >| ASN                          | 211298                     |
@@ -282,9 +296,11 @@ This command retrieves Autonomous System Numbers (ASNs) associated with a domain
 | SilentPush.DomainASNs.asns | Unknown | Dictionary of Autonomous System Numbers \(ASNs\) associated with the domain. |
 
 ### **Command Example**  
+
 ```!silentpush-get-asns-for-domain domain="silentpush.com"```
 
 ### **Context Example**  
+
 ```json
 {
 	"domain": "silentpush.com",
@@ -320,6 +336,7 @@ This command retrieves Autonomous System Numbers (ASNs) associated with a domain
 ### **Human Readable Output**  
 
 >### Results  
+
 >| ASN     | Description                              |
 >|---------|------------------------------------------|
 >| 13335   | CLOUDFLARENET, US                        |
@@ -386,9 +403,11 @@ This command get certificate data collected from domain scanning.
 | SilentPush.Certificate.job_details.status | String | Status of the job. | 
 
 ### **Command Example**  
+
 ```!silentpush-get-domain-certificates domain="silentpush.com"```
 
 ### **Context Example**  
+
 ```json
 {
 	"domain": "silentpush.com",
@@ -409,6 +428,7 @@ This command get certificate data collected from domain scanning.
 ### **Human Readable Output**  
 
 >### Result  
+
 >| Field                        | Value                                        |
 >|------------------------------|----------------------------------------------|
 >| Common Name                  | silentpush.com                              |
@@ -603,11 +623,13 @@ This command retrieves comprehensive enrichment information for a given resource
 | SilentPush.Enrichment.ip2asn.subnet_reputation_score | Number | A numerical risk score \(typically 0-100, with higher values indicating higher risk\). | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-enrichment-data resource="ipv4" value="142.251.188.102"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"resource": "ipv4",
@@ -648,6 +670,7 @@ This command retrieves comprehensive enrichment information for a given resource
 ### **Human Readable Output**  
 
 >### Result
+
 >| Field                          | Value                    |
 >|--------------------------------|--------------------------|
 >| ASN                            | 15169                    |
@@ -782,11 +805,13 @@ This command fetch indicators of potential future attacks using a feed UUID.
 | SilentPush.FutureAttackIndicators.indicators.source_geographic_spread_explain | Unknown | Explanation of the geographic spread of the indicator as provided by the source. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-future-attack-indicators feed_uuid="99da9b6a-146b-4a4d-9929-5fd5c6e2c257"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"feed_uuid": "99da9b6a-146b-4a4d-9929-5fd5c6e2c257",
@@ -812,6 +837,7 @@ This command fetch indicators of potential future attacks using a feed UUID.
 ### **Human Readable Output**  
 
 >### Result 
+
 >| Field                         | Value                                      |
 >|-------------------------------|--------------------------------------------|
 >| Feed Name                     | capital-gainers.com                       |
@@ -859,11 +885,13 @@ This command retrieve the reputation information for an IPv4.
 | SilentPush.IPv4Reputation.ip_reputation_explain.names_num_listed | Number | The number of domain names linked to this IP that are flagged or listed in security threat databases. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-nameserver-reputation nameserver="a.dns-servers.net.ru" limit="5"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"nameserver": "a.dns-servers.net.ru",
@@ -879,6 +907,7 @@ This command retrieve the reputation information for an IPv4.
 ### **Human Readable Output**  
 
 >### Result  
+
 >| Field                   | Value                        |
 >|-------------------------|------------------------------|
 >| Nameserver              | a.dns-servers.net.ru        |
@@ -915,11 +944,13 @@ This command retrieve status of running job or results from completed job.
 | SilentPush.JobStatus.status | String | Current status of the job. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-job-status job_id="d4067541-eafb-424c-98d3-de12d7a91331"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"job_id": "d4067541-eafb-424c-98d3-de12d7a91331",
@@ -933,6 +964,7 @@ This command retrieve status of running job or results from completed job.
 ### **Human Readable Output**  
 
 >### Result 
+
 >| Field      | Value                                   |
 >|------------|-----------------------------------------|
 >| Job ID     | d4067541-eafb-424c-98d3-de12d7a91331    |
@@ -960,19 +992,21 @@ This command retrieve historical reputation data for a specified nameserver, inc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.SubnetReputation.nameserver | Number | The nameserver associated with the reputation history entry. | 
-| SilentPush.SubnetReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). | 
-| SilentPush.SubnetReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. | 
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. | 
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. | 
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
+| SilentPush.NameserverReputation.nameserver | Number | The nameserver associated with the reputation history entry. | 
+| SilentPush.NameserverReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). | 
+| SilentPush.NameserverReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. | 
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-nameserver-reputation nameserver="a.dns-servers.net.ru" limit="5"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"nameserver": "a.dns-servers.net.ru",
@@ -988,6 +1022,7 @@ This command retrieve historical reputation data for a specified nameserver, inc
 ### **Human Readable Output**  
 
 >### Result  
+
 >| Field                   | Value                        |
 >|-------------------------|------------------------------|
 >| Nameserver              | a.dns-servers.net.ru        |
@@ -1026,11 +1061,13 @@ This command retrieves the reputation history for a specific subnet.
 | SilentPush.SubnetReputation.reputation_history.subnet_reputation_explain.ips_num_listed | Number | Number of listed IPs in the subnet. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-get-subnet-reputation subnet="192.168.0.0/16"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"subnet": "192.168.0.0/16",
@@ -1045,6 +1082,7 @@ This command retrieves the reputation history for a specific subnet.
 ### **Human Readable Output**  
 
 >### Result 
+
 >| Field               | Value                    |
 >|---------------------|--------------------------|
 >| Subnet              | 192.168.0.0/16           |
@@ -1088,11 +1126,13 @@ This command get domain information along with Silent Push risk score and live w
 | SilentPush.Domain.age | Number | The age of the domain in days. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-list-domain-information domains="silentpush.com"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"domains": ["silentpush.com"],
@@ -1115,6 +1155,7 @@ This command get domain information along with Silent Push risk score and live w
 ### **Human Readable Output**  
 
 >### Results 
+
 >| Field                 | Value                        |
 >|-----------------------|------------------------------|
 >| Domain                | silentpush.com               |
@@ -1166,11 +1207,13 @@ This command get infratags for multiple domains with optional clustering.
 | SilentPush.InfraTags.tag_clusters.100.match | String | The match string associated with the domains in the tag cluster with score 100. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-list-domain-infratags domains="silentpush.com" mode="live" match="self" as_of="self"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"domains": ["silentpush.com"],
@@ -1188,6 +1231,7 @@ This command get infratags for multiple domains with optional clustering.
 ### **Human Readable Output**  
 
 >### Results 
+
 >| Field   | Value                                    |
 >|---------|------------------------------------------|
 >| Domain  | silentpush.com                           |
@@ -1274,11 +1318,13 @@ This command get IP information for multiple IPv4s and IPv6s.
 | SilentPush.IPInformation.ip_flags.vpn_tags | Unknown | List of VPN-related tags or null if not a VPN. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-list-ip-information ips="142.251.188.102"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"ips": ["142.251.188.102"],
@@ -1318,6 +1364,7 @@ This command get IP information for multiple IPv4s and IPv6s.
 ### **Human Readable Output**  
 
 >### Results 
+
 >| Field                                   | Value                                      |
 >|-----------------------------------------|--------------------------------------------|
 >| ASN                                     | 15169                                      |
@@ -1459,11 +1506,13 @@ This command scan a URL to retrieve hosting metadata..
 | SilentPush.URLScan.body_analysis.js_ssdeep | Unknown | List of ssdeep fuzzy hashes of JavaScript files. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-live-url-scan url="https://silentpush.com"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"url": "https://silentpush.com",
@@ -1477,9 +1526,10 @@ This command scan a URL to retrieve hosting metadata..
 ### **Human Readable Output**  
 
 >### Results
+
 >| Field          | Value                      |
 >|----------------|----------------------------|
->| URL            | https://silentpush.com     |
+>| URL            | <https://silentpush.com>     |
 >| Scan Status    | No scan results found      |
 
 
@@ -1530,11 +1580,13 @@ This command retrieve reverse Passive DNS data for specific DNS record types.
 | SilentPush.ReversePADNSLookup.records.type | String | The type of DNS record \(e.g., NS\). | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-reverse-padns-lookup qtype="ns" qname="vida.ns.cloudflare.com"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"qtype": "ns",
@@ -1553,6 +1605,7 @@ This command retrieve reverse Passive DNS data for specific DNS record types.
 ### **Human Readable Output**  
 
 >### Results
+
 >| Field             | Value                                |
 >|-------------------|--------------------------------------|
 >| Answer            | vida.ns.cloudflare.com               |
@@ -1590,11 +1643,13 @@ This commandGenerate screenshot of a URL.
 | SilentPush.Screenshot.url | String | The URL that was used to generate the screenshot. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-screenshot-url url="https://www.virustotal.com/gui/domain/tbibank-bg.com"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"url": "https://www.virustotal.com/gui/domain/tbibank-bg.com",
@@ -1609,9 +1664,10 @@ This commandGenerate screenshot of a URL.
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field             | Value                                                             |
 >|-------------------|-------------------------------------------------------------------|
->| URL               | https://www.virustotal.com/gui/domain/tbibank-bg.com              |
+>| URL               | <https://www.virustotal.com/gui/domain/tbibank-bg.com>              |
 >| Status            | Success                                                            |
 >| Screenshot URL    | [View Screenshot](https://fs.silentpush.com/screenshots/virustotal.com/f2fa9440ee769ad6f6702529c006522b.jpg) |
 >| File Name         | www.virustotal.com_screenshot.jpg                                 |
@@ -1653,11 +1709,13 @@ This command search for domains with optional filters.
 | SilentPush.Domain.ip_diversity_groups | Number | The number of unique IP groups associated with the domain. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-search-domains
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"domain_search_results": [
@@ -1674,6 +1732,7 @@ This command search for domains with optional filters.
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field                | Value                              |
 >|----------------------|------------------------------------|
 >| ASN Diversity        | 1                                  |
@@ -1772,11 +1831,13 @@ This command search Silent Push scan data repositories using SPQL queries.
 | SilentPush.ScanData.url | String | The URL scanned. | 
 
 ### **Command Example**  
+
 ```bash
 !silentpush-search-scan-data query="tld=cool" limit="5"
 ```
 
 ### **Context Example**  
+
 ```json
 {
 	"query": "tld=cool",
@@ -1803,9 +1864,11 @@ This command search Silent Push scan data repositories using SPQL queries.
 	]
 }
 ```
+
 ### **Human Readable Output**  
 
 >### Results  
+
 >| Field                   | Value                                      |
 >|-------------------------|--------------------------------------------|
 >| Domain                  | [volunteering.cool](http://volunteering.cool) |
