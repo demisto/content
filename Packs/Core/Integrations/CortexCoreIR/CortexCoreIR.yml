@@ -219,7 +219,7 @@ script:
       - 'false'
     description: Isolates the specified endpoint.
     execution: true
-    name: core-isolate-endpoint-q uick-action
+    name: core-isolate-endpoint-quick-action
     prettyname: Isolate Endpoint
     quickaction: true
     hidden: true
