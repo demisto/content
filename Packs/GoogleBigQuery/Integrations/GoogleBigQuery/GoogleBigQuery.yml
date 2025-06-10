@@ -101,6 +101,8 @@ script:
       - WRITE_TRUNCATE
       - WRITE_APPEND
       description: Specifies the action that occurs if the destination table already exists.
+    - name: project_id
+      description: ID of the project used to execute the current query.
     outputs:
     - contextPath: BigQuery.Query
       description: The query performed.
