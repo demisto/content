@@ -616,7 +616,7 @@ tasks:
     task:
       id: 55e74f8e-8708-486b-a9ae-70a6fb219281
       version: -1
-      name: Risky host & password never expired
+      name: Risky host & password never expires
       description: Checks if the local/domain user's password never expires, and if the risk level of the host where the alert occurred is HIGH.
       type: condition
       iscommand: false
@@ -823,6 +823,14 @@ tasks:
               right:
                 value:
                   simple: Password expires
+            - operator: containsGeneral
+              left:
+                value:
+                  simple: Core.ScriptResult.results.[0].command_output
+                iscontext: true
+              right:
+                value:
+                  simple: '%%1794'
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -847,7 +855,7 @@ tasks:
       id: 85e71fec-a160-4cfe-aa82-648feea810b3
       version: -1
       name: Analyst review - disable suspicious user?
-      description: "We found suspicious indicators in this investigation. However, the activity could not be verified with the user/s.\nPlease review the findings and decide on the next steps:\n\n### User who created the suspicious hidden user:\n`${Core.OriginalAlert.raw_abioc.event.evtlog_subject_username}`\n\n---\n\n### Involved Host:\n`${alert.hostname}`\n\n---\n\n### Hidden user was added to a privileged group:\n**Group name**: `${HiddenUserAddedToGroup}`\n\n---\n\n### The Suspicious hidden user that created:\n`${Core.OriginalAlert.raw_abioc.event.action_evtlog_data_fields.TargetUserName}`\n\n---\n\n### Related Alerts\nRelated Script Engine Activity alerts found in the incident: `${.=val.foundIncidents && val.foundIncidents.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n### Suspicious Command lines executed on the \n`${.=val.SuspiciousCommandLines || \"N/A\"}`\n\n---\n\n##Login events with the hidden user:\n**Login results number**: `${.=val.HiddenUserLogin || \"N/A\"}`\n\n---\n\n### Hidden user access to share folder/service install\n`${.=val.ShareAccessorServiceInstall || \"N/A\"}`\n\n---\n\n### RDP\n`${.=val.RDPSessionsOnHost || \"N/A\"}`\n\n\n"
+      description: "We found suspicious indicators in this investigation. However, the activity could not be verified with the user/s.\nPlease review the findings and decide on the next steps:\n\n### User who created the suspicious hidden user:\n`${Core.OriginalAlert.raw_abioc.event.evtlog_subject_username}`\n\n---\n\n### Involved Host:\n`${alert.hostname}`\n\n---\n\n### Hidden user was added to a privileged group:\n**Group name**: `${HiddenUserAddedToGroup}`\n\n---\n\n### The Suspicious hidden user that created:\n`${Core.OriginalAlert.raw_abioc.event.action_evtlog_data_fields.TargetUserName}`\n\n---\n\n### Related Alerts\nRelated Script Engine Activity alerts found in the incident: `${.=val.foundIncidents && val.foundIncidents.length > 0 ? \"True\" : \"False\"}`\n\n---\n\n### Suspicious Command lines executed on the \n`${.=val.SuspiciousCommandLines || \"N/A\"}`\n\n---\n\n### Login events with the hidden user:\n**Login results number**: `${.=val.HiddenUserLogin || \"N/A\"}`\n\n---\n\n### Hidden user access to share folder/service install\n`${.=val.ShareAccessorServiceInstall || \"N/A\"}`\n\n---\n\n### RDP\n`${.=val.RDPSessionsOnHost || \"N/A\"}`\n\n\n"
       type: condition
       iscommand: false
       brand: ""
@@ -1281,7 +1289,7 @@ tasks:
       {
         "position": {
           "x": -958,
-          "y": 1402
+          "y": 1513
         }
       }
     note: false
@@ -1371,7 +1379,7 @@ tasks:
           right:
             value:
               simple: "False"
-        - operator: isNotEmpty
+      - - operator: isNotEmpty
           left:
             value:
               simple: CIDToTerminate
@@ -1414,7 +1422,7 @@ tasks:
       - "58"
     scriptarguments:
       query:
-        simple: "dataset = xdr_data\n| filter event_type = ENUM.EVENT_LOG and action_evtlog_event_id = 4732\n| alter\n    Added_By = regextract(action_evtlog_message, \"Account Name:[\\\\t ]*(.+)\"),\n    Added_User = regextract(action_evtlog_message, \"Member:[\\\\s\\\\S]*?Account Name:[\\\\t ]*([^\\\\r\\\\n-]+)\"),\n    Group_Name = regextract(action_evtlog_message, \"Group Name:[\\\\t ]*([^\\r\\n]+)\"),\n    Host_Name = \"${alert.hostname}\"\n| filter Group_Name in (\n    \"\t\tAdministrators\", \n    \"\t\tDomain Admins\",\n    \"       Enterprise Admins\",\n    \"       Remote Desktop Users\", \n    \"       Backup Operators\", \n    \"       Remote Desktop Users\",\n    \"       Power Users\", \n    \"       Account Operators\", \n    \"       Server Operators\", \n    \"       Print Operators\",\n    \"\t\tDevice Owners\") \n| fields action_evtlog_message, Added_User, Group_Name, Added_By"
+        simple: "dataset = xdr_data\n| filter event_type = ENUM.EVENT_LOG and action_evtlog_event_id = 4732\n| alter\n    Added_User = regextract(action_evtlog_message, \"Account Name:[\\\\t ]*(.+)\"),\n    Group_Name = regextract(action_evtlog_message, \"Group Name:[\\\\t ]*([^\\r\\n]+)\"),\n    Host_Name = regextract(action_evtlog_message, \"(?i)Subject:\\\\r\\\\n\\\\tSecurity ID:\\\\t\\\\t[^\\\\r\\\\n]+\\\\r\\\\n\\\\tAccount Name:\\\\t\\\\t[^\\\\r\\\\n]+\\\\r\\\\n\\\\tAccount Domain:\\\\t\\\\t([^\\r\\n]+)\")\n| filter Group_Name in (\n    \"\t\tAdministrators\", \n    \"\t\tDomain Admins\",\n    \"       Enterprise Admins\",\n    \"       Remote Desktop Users\", \n    \"       Backup Operators\", \n    \"       Remote Desktop Users\",\n    \"       Power Users\", \n    \"       Account Operators\", \n    \"       Server Operators\", \n    \"       Print Operators\",\n    \"\t\tDevice Owners\") \n        and Added_User contains lowercase(\"${Core.OriginalAlert.raw_abioc.event.action_evtlog_data_fields.TargetUserName}\")\n| fields action_evtlog_message, Added_User, Group_Name, Host_Name"
       query_name:
         simple: 'User Added to Privileged Group '
       time_frame:
@@ -1516,7 +1524,7 @@ tasks:
             and action_evtlog_event_id in (5140, 7045)
           | alter Host_Name = lowercase(actor_process_image_name)
           | alter Source_Host = coalesce(agent_hostname, actor_process_image_name, action_process_image_name)
-          | filter Source_Host = "${alert.hostname}"
+          | filter Source_Host = lowercase("${alert.hostname}")
           | fields _time, Source_Host, agent_hostname, action_evtlog_event_id, action_evtlog_message
       query_name:
         simple: Share access or service install
@@ -1550,12 +1558,11 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
-      description: "Evaluate suspicious behavior"
     nexttasks:
       '#default#':
-      - "81"
+      - "89"
       "yes":
-      - "75"
+      - "79"
     separatecontext: false
     conditions:
     - label: "yes"
@@ -1591,8 +1598,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 487,
-          "y": 2120
+          "x": 594,
+          "y": 2122
         }
       }
     note: false
@@ -2385,7 +2392,7 @@ tasks:
       {
         "position": {
           "x": -958,
-          "y": 1284
+          "y": 1286
         }
       }
     note: false
@@ -2471,55 +2478,6 @@ tasks:
         "position": {
           "x": 1025,
           "y": 2758
-        }
-      }
-    note: false
-    timertriggers: []
-    ignoreworker: false
-    skipunavailable: false
-    quietmode: 0
-    isoversize: false
-    isautoswitchedtoquietmode: false
-  "75":
-    id: "75"
-    taskid: bd085bb7-1745-4c5b-8131-c8e086e9c31a
-    type: condition
-    task:
-      id: bd085bb7-1745-4c5b-8131-c8e086e9c31a
-      version: -1
-      name: Evaluate malicious behavior
-      type: condition
-      iscommand: false
-      brand: ""
-      description: "Evaluate malicious behavior"
-    nexttasks:
-      '#default#':
-      - "81"
-      "yes":
-      - "79"
-    separatecontext: false
-    conditions:
-    - label: "yes"
-      condition:
-      - - operator: isNotEmpty
-          left:
-            value:
-              simple: SuspiciousCommandLines
-            iscontext: true
-      - - operator: isEqualString
-          left:
-            value:
-              simple: HiddenUserAddedToGroup
-            iscontext: true
-          right:
-            value:
-              simple: HiddenUserAddedToGroup
-    continueonerrortype: ""
-    view: |-
-      {
-        "position": {
-          "x": 236,
-          "y": 2260
         }
       }
     note: false
@@ -2829,7 +2787,7 @@ tasks:
       '#none#':
       - "74"
     scriptarguments:
-      name:
+      username:
         simple: ${Core.OriginalAlert.raw_abioc.event.action_evtlog_data_fields.SubjectUserName}
     separatecontext: false
     continueonerrortype: ""
@@ -2991,7 +2949,7 @@ tasks:
       body:
         simple: We've detected suspicious hidden user creation activity involving your user. Your input is needed to verify the details of this alert.
       methods:
-      - SlackV3
+      - Microsoft Teams
       format: ""
       bcc:
       cc:
@@ -3042,6 +3000,40 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "89":
+    id: "89"
+    taskid: 3e661b86-bb84-428c-8278-cc4d8479a24e
+    type: regular
+    task:
+      id: 3e661b86-bb84-428c-8278-cc4d8479a24e
+      version: -1
+      name: Close Investigation
+      description: Close the current alert.
+      script: Builtin|||closeInvestigation
+      type: regular
+      iscommand: true
+      brand: Builtin
+    scriptarguments:
+      closeReason:
+        simple: Resolved - False Positive
+      id:
+        simple: ${alert.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 814,
+          "y": 2251
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3059,24 +3051,23 @@ view: |-
       "48_9_#error#": 0.13,
       "49_9_#error#": 0.1,
       "50_9_#error#": 0.17,
-      "51_75_yes": 0.49,
-      "51_81_#default#": 0.15,
+      "51_79_yes": 0.43,
+      "51_89_#default#": 0.71,
       "53_9_#error#": 0.17,
       "62_9_#error#": 0.11,
       "66_23_#default#": 0.44,
       "66_26_True positive": 0.32,
-      "66_67_False positive": 0.5,
+      "66_67_False positive": 0.51,
       "68_23_no": 0.31,
       "69_9_#default#": 0.33,
       "6_7_yes": 0.51,
       "6_9_#default#": 0.15,
-      "70_9_#default#": 0.12,
+      "70_44_yes": 0.61,
+      "70_9_#default#": 0.1,
       "71_23_#default#": 0.42,
       "74_23_#default#": 0.1,
       "74_68_yes": 0.43,
       "74_82_yes": 0.5,
-      "75_79_yes": 0.63,
-      "75_81_#default#": 0.4,
       "82_23_no": 0.19,
       "83_23_no": 0.16,
       "83_84_yes": 0.55,
