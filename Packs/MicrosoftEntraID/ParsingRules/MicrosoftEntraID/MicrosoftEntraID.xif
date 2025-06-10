@@ -1,6 +1,6 @@
 [INGEST:vendor="msft", product="azure", target_dataset="msft_azure_raw", no_hit=drop]
 //
-// Azure Services categories and  types that are excluded from this pack and are available in a dedicated pack.
+// Azure Services categories and types that are excluded from this pack and are available in a dedicated pack.
 //
 filter 
     category not in(
