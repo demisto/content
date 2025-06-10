@@ -322,6 +322,8 @@ def main():
             return_results(result)
 
         elif command == 'fetch-incidents':
+            # Since arg_to_datetime returns Optional[datetime], but we are forcing a datetime object to be returned.
+            # Because of this we need to use type hint casting to force the return.
             first_fetch: datetime =  cast(datetime, arg_to_datetime(params.get("first_fetch", "1 day ago"), required=True))
             events, next_run = fetch_incidents(client=client,
                                         first_fetch=first_fetch,
