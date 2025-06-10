@@ -1652,25 +1652,33 @@ function StartSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kw
     $entry_context = @{}
     $raw_response = @{}
     $human_readable = ""
+    $polling = ConvertTo-Boolean $command_arguments.polling
     $continue_polling = ConvertTo-Boolean $kwargs.continue_polling
     if ($continue_polling) {
         $raw_response = $client.GetSearch($kwargs.search_name)
         $Status = $raw_response.Status
         if ($Status -eq "Completed") {
             $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** completed !"
-            $kwargs.polling = $false
             return $human_readable, $entry_context, $raw_response
         }
-        $kwargs.polling = $true
-        $kwargs.continue_polling = $true
         $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** in progress !"
-        return $human_readable, $entry_context, $raw_response
+        $polling_args = @{
+            continue_polling = $true
+            search_name = $kwargs.search_name
+        }
+
+        return $human_readable, $entry_context, $raw_response, $polling_args
     } 
     $client.StartSearch($kwargs.search_name)
-    $kwargs.continue_polling = $true
     $human_readable = "$script:INTEGRATION_NAME - search **$($kwargs.search_name)** started !"
 
-    return $human_readable, $entry_context, $raw_response 
+    if ($polling) {
+        $polling_args = @{
+            continue_polling = $true
+            search_name = $kwargs.search_name
+        }
+    }
+    return $human_readable, $entry_context, $raw_response, $polling_args
 }
 
 function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -1687,6 +1695,40 @@ function StopSearchCommand([SecurityAndComplianceClient]$client, [hashtable]$kwa
 }
 
 function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
+    $Demisto.results("start NewSearchActionCommand")
+    $Demisto.results("continue_polling: " +($kwargs.continue_polling))
+    # $polling_args = @{}
+
+    $results = ConvertTo-Boolean $kwargs.results
+
+    if ($kwargs.continue_polling){
+        $raw_response = $client.GetSearchAction($kwargs.action_search_name)
+        $Status = $raw_response.Status
+        if ($Status -eq "Completed") {
+            $human_readable = "$script:INTEGRATION_NAME - search action **$($kwargs.search_name)** completed !"
+            
+            $entry_context = @{
+                $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response $kwargs.limit
+            }
+            # Human readable - Mail results
+            $parsed_results = $entry_context[$script:SEARCH_ACTION_ENTRY_CONTEXT].Results
+            if ($parsed_results -and $results) {
+                $human_readable += TableToMarkdown $parsed_results "Search action results"
+            }
+            
+            $kwargs.polling = $false
+
+            return $human_readable, $entry_context, $raw_response, $polling_args
+        }
+    }
+    else {
+        $polling_args = @{
+            polling = $true
+            continue_polling = $true
+        }
+        return $human_readable, $entry_context, $raw_response, $polling_args
+    }
+
     # Raw response
     $raw_response = $client.NewSearchAction($kwargs.search_name, $kwargs.action, $kwargs.purge_type,
                                             $kwargs.share_point_archive_format, $kwargs.format,
@@ -1703,18 +1745,24 @@ function NewSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable
             }
         }
         $raw_response = "Failed to retrieve search for the name: $($kwargs.search_name)"
-        return $human_readable, $entry_context, $raw_response
+        return $human_readable, $entry_context, $raw_response, $polling_args
     }
+    $action_search_name = $raw_response.Name
 
     # Human readable
     $md_columns = $raw_response | Select-Object -Property Name, SearchName, Action, LastModifiedTime, RunBy, Status
-    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($raw_response.Name)' created"
+    $human_readable = TableToMarkdown $md_columns "$script:INTEGRATION_NAME - search action '$($action_search_name)' created"
     # Entry context
     $entry_context = @{
         $script:SEARCH_ACTION_ENTRY_CONTEXT = ParseSearchActionToEntryContext $raw_response
     }
 
-    return $human_readable, $entry_context, $raw_response
+    $polling_args = @{
+        action_search_name = $action_search_name
+        continue_polling = $true
+    }
+
+    return $human_readable, $entry_context, $raw_response, $polling_args
 }
 
 function RemoveSearchActionCommand([SecurityAndComplianceClient]$client, [hashtable]$kwargs) {
@@ -2025,13 +2073,13 @@ function Main {
                 ($human_readable, $entry_context, $raw_response, $file_entry) = GetSearchCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-start-search" {
-                ($human_readable, $entry_context, $raw_response) = StartSearchCommand $cs_client $command_arguments
+                ($human_readable, $entry_context, $raw_response, $polling_args) = StartSearchCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-stop-search" {
                 ($human_readable, $entry_context, $raw_response) = StopSearchCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-new-search-action" {
-                ($human_readable, $entry_context, $raw_response) = NewSearchActionCommand $cs_client $command_arguments
+                ($human_readable, $entry_context, $raw_response, $polling_args) = NewSearchActionCommand $cs_client $command_arguments
             }
             "$script:COMMAND_PREFIX-remove-search-action" {
                 ($human_readable, $entry_context, $raw_response) = RemoveSearchActionCommand $cs_client $command_arguments
@@ -2084,18 +2132,12 @@ function Main {
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
-        $polling = ConvertTo-Boolean $command_arguments.polling
-        if ($polling) {
-            $command_name = $command
-            # command_arguments.polling = $false
-            $polling_args = $command_arguments
-
-
+        if ($polling_args) {
             ReturnPollingOutputs `
             -ReadableOutput $human_readable `
             -Outputs $entry_context `
             -RawResponse $raw_response `
-            -CommandName $command_name `
+            -CommandName $command `
             -PollingArgs $polling_args | Out-Null
         }
         else {
