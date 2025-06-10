@@ -316,7 +316,7 @@ tasks:
       id: 5dc51d1b-4c76-4068-89a2-5dfe99aca84f
       version: -1
       name: Check if the causality was blocked by the agent
-      description: Check the alert's alerts for an alert that blocked the causality using the agent.
+      description: Check if the agent blocked any suspicious activity associated with this alert.
       type: condition
       iscommand: false
       brand: ""
