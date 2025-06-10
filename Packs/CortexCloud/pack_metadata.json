@@ -1,5 +1,5 @@
 {
-    "name": "Cortex Cloud",
+    "name": "Cortex Cloud – Remediation and Response Playbooks",
     "description": "This pack provides the remediation playbooks for Cortex Cloud Issues and Cases.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
