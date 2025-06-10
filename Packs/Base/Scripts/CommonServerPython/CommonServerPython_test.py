@@ -10028,7 +10028,7 @@ class TestMirrorObjectInitialization:
 
     def test_initialization_with_all_fields(self, mocker) -> None:
         """
-        Given: Valid ticket_url and ticket_id.
+        Given: Valid object_url and ticket_id.
         When:  MirrorObject is initialized.
         Then:  The object is created with the correct attributes, and no debug message is logged.
         """
@@ -10038,34 +10038,34 @@ class TestMirrorObjectInitialization:
         ticket_id: Optional[str] = "JIRA-123"
 
         # When
-        mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_id)
+        mirror_obj = MirrorObject(object_url=ticket_url, ticket_id=ticket_id)
 
         # Then
-        assert mirror_obj.ticket_url == ticket_url, "ticket_url should be initialized correctly."
+        assert mirror_obj.object_url == ticket_url, "object_url should be initialized correctly."
         assert mirror_obj.ticket_id == ticket_id, "ticket_id should be initialized correctly."
         mock_demisto_debug.assert_not_called()
 
     def test_initialization_with_no_fields(self, mocker: MagicMock) -> None:
         """
-        Given: No ticket_url and no ticket_id (both None).
+        Given: No object_url and no ticket_id (both None).
         When:  MirrorObject is initialized.
         Then:  The object is created with None attributes, and a debug message is logged for both missing fields.
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
-        expected_log_message = "Missing fields: ticket_url, ticket_id"
+        expected_log_message = "Missing fields: object_url, ticket_id"
 
         # When
-        mirror_obj = MirrorObject(ticket_url=None, ticket_id=None)
+        mirror_obj = MirrorObject(object_url=None, ticket_id=None)
 
         # Then
-        assert mirror_obj.ticket_url is None, "ticket_url should be None."
+        assert mirror_obj.object_url is None, "object_url should be None."
         assert mirror_obj.ticket_id is None, "ticket_id should be None."
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_only_ticket_url(self, mocker: MagicMock) -> None:
         """
-        Given: Only ticket_url is provided (ticket_id is None).
+        Given: Only object_url is provided (ticket_id is None).
         When:  MirrorObject is initialized.
         Then:  The object is created, and a debug message is logged for the missing ticket_id.
         """
@@ -10075,29 +10075,29 @@ class TestMirrorObjectInitialization:
         expected_log_message = "Missing fields: ticket_id"
 
         # When
-        mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=None)
+        mirror_obj = MirrorObject(object_url=ticket_url, ticket_id=None)
 
         # Then
-        assert mirror_obj.ticket_url == ticket_url
+        assert mirror_obj.object_url == ticket_url
         assert mirror_obj.ticket_id is None
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
     def test_initialization_with_only_ticket_id(self, mocker: MagicMock) -> None:
         """
-        Given: Only ticket_id is provided (ticket_url is None).
+        Given: Only ticket_id is provided (object_url is None).
         When:  MirrorObject is initialized.
-        Then:  The object is created, and a debug message is logged for the missing ticket_url.
+        Then:  The object is created, and a debug message is logged for the missing object_url.
         """
         # Given
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
         ticket_id: Optional[str] = "JIRA-123"
-        expected_log_message = "Missing fields: ticket_url"
+        expected_log_message = "Missing fields: object_url"
 
         # When
-        mirror_obj = MirrorObject(ticket_url=None, ticket_id=ticket_id)
+        mirror_obj = MirrorObject(object_url=None, ticket_id=ticket_id)
 
         # Then
-        assert mirror_obj.ticket_url is None
+        assert mirror_obj.object_url is None
         assert mirror_obj.ticket_id == ticket_id
         mock_demisto_debug.assert_called_once_with(expected_log_message)
 
@@ -10105,9 +10105,9 @@ class TestMirrorObjectInitialization:
         "ticket_url_in, ticket_id_in, expected_missing_fields, should_log",
         [
             ("http://url.com", "ID-1", [], False),
-            (None, "ID-1", ["ticket_url"], True),
+            (None, "ID-1", ["object_url"], True),
             ("http://url.com", None, ["ticket_id"], True),
-            (None, None, ["ticket_url", "ticket_id"], True),
+            (None, None, ["object_url", "ticket_id"], True),
         ],
     )
     def test_post_init_logging_parametrized(
@@ -10119,7 +10119,7 @@ class TestMirrorObjectInitialization:
         should_log: bool,
     ) -> None:
         """
-        Given: Various combinations of ticket_url and ticket_id.
+        Given: Various combinations of object_url and ticket_id.
         When:  MirrorObject is initialized.
         Then:  demisto.debug is called (or not) with the expected message based on missing fields.
         """
@@ -10127,7 +10127,7 @@ class TestMirrorObjectInitialization:
         mock_demisto_debug = mocker.patch.object(demisto, 'debug')
 
         # When
-        MirrorObject(ticket_url=ticket_url_in, ticket_id=ticket_id_in)
+        MirrorObject(object_url=ticket_url_in, ticket_id=ticket_id_in)
 
         # Then
         if should_log:
@@ -10150,12 +10150,12 @@ class TestMirrorObjectToContext:
             (
                 "http://example.com/ticket/123",
                 "JIRA-123",
-                {"ticket_url": "http://example.com/ticket/123", "ticket_id": "JIRA-123"},
+                {"object_url": "http://example.com/ticket/123", "ticket_id": "JIRA-123"},
             ),
-            (None, "JIRA-123", {"ticket_url": None, "ticket_id": "JIRA-123"}),
-            ("http://example.com/ticket/123", None, {"ticket_url": "http://example.com/ticket/123", "ticket_id": None}),
-            (None, None, {"ticket_url": None, "ticket_id": None}),
-            ("", "", {"ticket_url": "", "ticket_id": ""}), # Testing with empty strings
+            (None, "JIRA-123", {"object_url": None, "ticket_id": "JIRA-123"}),
+            ("http://example.com/ticket/123", None, {"object_url": "http://example.com/ticket/123", "ticket_id": None}),
+            (None, None, {"object_url": None, "ticket_id": None}),
+            ("", "", {"object_url": "", "ticket_id": ""}), # Testing with empty strings
         ],
     )
     def test_to_context_various_inputs(
@@ -10166,12 +10166,12 @@ class TestMirrorObjectToContext:
         expected_dict: Dict[str, Any],
     ) -> None:
         """
-        Given: A MirrorObject initialized with various combinations of ticket_url and ticket_id.
+        Given: A MirrorObject initialized with various combinations of object_url and ticket_id.
         When:  The to_context() method is called.
         Then:  A dictionary representation of the object is returned with the correct key-value pairs.
         """
         # Given
-        mirror_obj = MirrorObject(ticket_url=ticket_url_in, ticket_id=ticket_id_in)
+        mirror_obj = MirrorObject(object_url=ticket_url_in, ticket_id=ticket_id_in)
 
         # When
         context_dict: Dict[str, Any] = mirror_obj.to_context()

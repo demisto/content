@@ -1545,7 +1545,7 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
     encoded_uri = quote(target_uri_path)
 
     ticket_url = f"{instance_url}nav_to.do?uri={encoded_uri}"
-    mirror_obj = MirrorObject(ticket_url=ticket_url, ticket_id=ticket_sys_id, ticket_name=ticket_name)
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_sys_id, object_name=ticket_name).to_context()
 
     created_ticket_context = get_ticket_context(ticket, additional_fields_keys)
     entry_context = {
@@ -1553,7 +1553,12 @@ def create_ticket_command(client: Client, args: dict, is_quick_action: bool = Fa
         "ServiceNow.Ticket(val.ID===obj.ID)": created_ticket_context,
     }
     if is_quick_action:
-        demisto.results(CommandResults(extended_payload={'MirrorObject': mirror_obj.to_context()}).to_context())
+        demisto.results(
+            CommandResults(
+                human_readable=human_readable,
+                extended_payload={'MirrorObject': mirror_obj}
+            ).to_context()
+        )
 
     return human_readable, entry_context, result, True
 

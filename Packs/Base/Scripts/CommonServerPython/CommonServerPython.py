@@ -395,32 +395,32 @@ class MirrorObject:
     and placed directly into the root context under `MirrorObject`.
 
     Attributes:
-        ticket_url (Optional[str]): Direct URL to the created ticket for preview/use.
-        ticket_id (Optional[str]): Unique identifier of the created ticket.
+        object_url (Optional[str]): Direct URL to the created ticket for preview/use.
+        object_id (Optional[str]): Unique identifier of the created ticket.
 
     :return: None
     :rtype: ``None``.
     """
-    ticket_url: Optional[str] = None
-    ticket_id: Optional[str] = None
-    ticket_name: Optional[str] = None
+    object_url: Optional[str] = None
+    object_id: Optional[str] = None
+    object_name: Optional[str] = None
 
     def __post_init__(self) -> None:
         """
         Performs post-initialization validation.
-        Checks for missing mandatory fields 'ticket_url' and 'ticket_id'
+        Checks for missing mandatory fields 'object_url' and 'ticket_id'
         and logs a debug message if they are not set.
 
         :return: None
         :rtype: ``None``
         """
         missing_fields_list = []
-        if self.ticket_url is None:
-            missing_fields_list.append('ticket_url')
-        if self.ticket_id is None:
-            missing_fields_list.append('ticket_id')
-        if self.ticket_name is None:
-            missing_fields_list.append('ticket_name')
+        if self.object_url is None:
+            missing_fields_list.append('object_url')
+        if self.object_id is None:
+            missing_fields_list.append('object_id')
+        if self.object_name is None:
+            missing_fields_list.append('object_name')
 
         if missing_fields_list:
             demisto.debug(f"MirrorObject: Initialized with missing mandatory fields: {', '.join(missing_fields_list)}")
