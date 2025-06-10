@@ -169,12 +169,13 @@ script:
     - name: customer
       type: String
       description: Customer name (ID of the customer)
+      defaultvalue: None
+      required: true
     - name: reason
       type: String
+      defaultvalue: None
+      required: true
       description: Reason for takedown request
-    - name: url
-      type: String
-      description: URL for takedown request
       options:
         - phishing
         - brand_abuse
@@ -187,6 +188,11 @@ script:
         - sensitive_file_on_antivirus_repository
         - instant_messaging_impersonation
         - other
+    - name: url
+      type: String
+      description: URL for takedown request
+      defaultvalue: None
+      required: true
     - name: brand
       type: String
       description: The brand the offending URL is targeting
