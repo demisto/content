@@ -4276,7 +4276,6 @@ tests:
 supportsquickactions: true
 fromversion: 6.2.0
 supportedModules:
-- C3
 - X0
 - X1
 - X3
