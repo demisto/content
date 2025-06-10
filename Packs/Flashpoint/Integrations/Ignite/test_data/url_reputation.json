@@ -1,35 +1,66 @@
-[
-    {
-        "Attribute": {
-            "Event": {
-                "RelatedEvent": [],
-                "Tags": [
-                  "sample_tags"
-                ],
-                "attack_ids": [
-                    "T1016",
-                    "T1027",
-                    "T1033",
-                    "T1047",
-                    "T1048"
-                ],
-                "event_uuid": "sample_uuid",
-                "fpid": "sample_fpid",
-                "href": "https://api.flashpoint.io/technical-intelligence/v1/event/sample_fpid",
-                "info": "Sample info",
-                "reports": [],
-                "timestamp": "1000000001"
-            },
-            "category": "Network activity",
-            "fpid": "sample_fpid",
-            "href": "https://api.flashpoint.io/technical-intelligence/v1/attribute/sample_fpid",
-            "timestamp": "1000000001",
+{
+    "items": [
+        {
+            "id": " dummy-id-123",
             "type": "url",
-            "uuid": "sample_uuid",
-            "value": {
-                "comment": "",
-                "url": "http://dummy.com"
-            }
+            "value": "http://dummy.com",
+            "href": "https://dummy-api.com/dummy-endpoint",
+            "entity_type": "indicator",
+            "score": {
+                "value": "suspicious",
+                "last_scored_at": "2025-04-01T00:00:00"
+            },
+            "modified_at": "2025-04-01T00:00:00",
+            "created_at": "2025-04-01T00:00:00",
+            "last_seen_at": "2025-04-01T00:00:00",
+            "sort_date": "2025-04-01T00:00:00",
+            "platform_urls": {
+                "ignite": "https://dummy-platform.com/dummy-url"
+            },
+            "apt_description": "Dummy APT description",
+            "external_references": [],
+            "malware_description": "Dummy malware description",
+            "mitre_attack_ids": [],
+            "sightings": [
+                {
+                    "source": "dummy-source",
+                    "sighted_at": "2025-04-01T00:00:00",
+                    "tags": [
+                        "dummy-tag-1",
+                        "dummy-tag-2"
+                    ],
+                    "related_iocs": [
+                        {
+                            "id": "dummy-id-1",
+                            "type": "ipv4",
+                            "value": "0.0.0.1",
+                            "href": "https://dummy-api.com/dummy-endpoint-1"
+                        }
+                    ]
+                }
+            ],
+            "latest_sighting": {
+                "source": "dummy-source",
+                "sighted_at": "2025-04-01T00:00:00",
+                "tags": [
+                    "dummy_latest_sighting_tag_1",
+                    "dummy_latest_sighting_tag_2"
+                ],
+                "related_iocs": [
+                    {
+                        "id": "dummy-id-1",
+                        "type": "url",
+                        "value": "http://dummyurl.com",
+                        "href": "https://dummy-api.com/dummy-endpoint-2"
+                    }
+                ]
+            },
+            "total_sightings": 1
         }
+    ],
+    "total": null,
+    "pagination": {
+        "next": null,
+        "prev": null
     }
-]
+}
