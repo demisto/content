@@ -3,12 +3,12 @@ from enum import Enum
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable
+from typing import Callable, List, Any, Optional, Dict, Union, cast
 
 
 class CloudTypes(Enum):
     AWS = "AWS"
-    AZURE = "Azure"
+    AZURE = "AZURE"
     GCP = "GCP"
     OCI = "OCI"
 
@@ -51,17 +51,82 @@ class HealthCheckResult:
         message: str,
         error: str,
         error_type: ErrorType,
+        region: str = None,
     ) -> CommandResults:
         # Determine classification based on error type
         classification = HealthStatus.WARNING if error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
+
         result = {
             "account_id": account_id,
             "connector_id": connector_id,
             "message": message,
             "error": error,
+            "error_type": error_type,
             "classification": classification,
+            "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
         }
-        return CommandResults(outputs=result)
+
+        if region:
+            result["region"] = region
+
+        return CommandResults(outputs=result, outputs_prefix="HealthCheck", outputs_key_field="account_id")
+
+    @staticmethod
+    def aggregate_results(results: List[CommandResults]) -> Union[str, CommandResults]:
+        """
+        Aggregates health check results by keeping only the most severe error for each account.
+
+        Args:
+            results: List of CommandResults from health checks
+
+        Returns:
+            Either "ok" string or CommandResults with appropriate EntryType
+        """
+        if not results:
+            return HealthCheckResult.ok()
+
+        # Group by account_id and keep only the most severe result for each account
+        accounts_results: Dict[str, Dict[str, Any]] = {}
+        overall_status = HealthStatus.OK
+
+        for result in results:
+            if not isinstance(result, CommandResults):
+                continue
+
+            # Handle outputs safely with type casting
+            outputs = cast(Dict[str, Any], result.outputs) if hasattr(result, "outputs") else None
+            if not outputs:
+                continue
+
+            # Extract values with type safety
+            account_id = str(outputs.get("account_id", ""))
+            if not account_id:
+                continue
+
+            classification = outputs.get("classification", HealthStatus.OK)
+            current = accounts_results.get(account_id)
+
+            # If we haven't seen this account or the new result is more severe, update it
+            if not current or (
+                (classification == HealthStatus.ERROR and current.get("classification") != HealthStatus.ERROR)
+                or (classification == HealthStatus.WARNING and current.get("classification") == HealthStatus.OK)
+            ):
+                accounts_results[account_id] = outputs
+
+                # Update overall status based on this result
+                if classification == HealthStatus.ERROR and overall_status != HealthStatus.ERROR:
+                    overall_status = HealthStatus.ERROR
+                elif classification == HealthStatus.WARNING and overall_status == HealthStatus.OK:
+                    overall_status = HealthStatus.WARNING
+
+        # If all accounts are OK, return OK
+        if not accounts_results or overall_status == HealthStatus.OK:
+            return HealthCheckResult.ok()
+
+        # Set appropriate EntryType and return final results
+        entry_type = EntryType.ERROR if overall_status == HealthStatus.ERROR else EntryType.WARNING
+
+        return CommandResults(outputs=list(accounts_results.values()), outputs_prefix="HealthCheck", entry_type=entry_type)
 
 
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
@@ -149,7 +214,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     all_accounts = []
     next_token = ""
     while True:
-        params = {"entity_type": "connector", "entity_id": {connector_id}}
+        params = {"entity_type": "connector", "entity_id": connector_id}
         if next_token:
             params["next_token"] = next_token
 
@@ -198,7 +263,7 @@ def _check_account_permissions(account: dict, connector_id: str, permission_chec
 
 def run_permissions_check_for_accounts(
     connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
-) -> List[Any]:
+) -> Union[str, CommandResults]:
     """
     Runs a permission check function for each account associated with a connector concurrently.
     Args:
@@ -208,7 +273,7 @@ def run_permissions_check_for_accounts(
                                          and return a HealthCheckResult.
         max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
     Returns:
-        list: List of permission check results for each account.
+        Either "ok" string or CommandResults with appropriate EntryType
     Raises:
         DemistoException: If the account retrieval fails.
     """
@@ -216,7 +281,7 @@ def run_permissions_check_for_accounts(
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return []
+        return HealthCheckResult.ok()
 
     results = []
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -230,4 +295,5 @@ def run_permissions_check_for_accounts(
             if result is not None:
                 results.append(result)
 
-    return results
+    # Process the results to get one entry per account with the most severe error
+    return HealthCheckResult.aggregate_results(results)
