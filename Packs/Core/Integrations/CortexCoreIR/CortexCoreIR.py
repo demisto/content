@@ -72,6 +72,15 @@ class Client(CoreClient):
         )
         return reply
 
+    def get_asset_details(self, asset_id):
+        reply = self._http_request(
+            method="POST",
+            json_data={"asset_id": asset_id},
+            headers=self._headers,
+            url_suffix="/unified-asset-inventory/get_asset/",
+        )
+        return reply
+
     def create_indicator_rule_request(self, request_data: Union[dict, str], suffix: str):
         reply = self._http_request(
             method="POST", json_data={"request_data": request_data, "validate": True}, headers=self._headers, url_suffix=suffix
@@ -151,6 +160,32 @@ def handle_prevalence_command(client: Client, command: str, args: dict):
         outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.AnalyticsPrevalence.{command_type.title()}",
         outputs=res,
         raw_response=res,
+    )
+
+
+def get_asset_details_command(client: Client, args: dict) -> CommandResults:
+    """
+    Retrieves details of a specific asset by its ID and formats the response.
+
+    Args:
+        client (Client): The client instance used to send the request.
+        args (dict): Dictionary containing the arguments for the command.
+                     Expected to include:
+                         - asset_id (str): The ID of the asset to retrieve.
+
+    Returns:
+        CommandResults: Object containing the formatted asset details,
+                        raw response, and outputs for integration context.
+    """
+    client._base_url = "/api/webapp/data-platform"
+    asset_id = args.get("asset_id")
+    response = client.get_asset_details(asset_id)
+    parsed = response.get("reply") if response else "An empty response was returned."
+    return CommandResults(
+        readable_output=tableToMarkdown("Asset Details", parsed, headerTransform=string_to_table_header),
+        outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.CoreAsset",
+        outputs=parsed,
+        raw_response=parsed,
     )
 
 
@@ -860,6 +895,9 @@ def main():  # pragma: no cover
                     values_raise_error=["FAILED", "TIMEOUT", "ABORTED", "CANCELED"],
                 )
             )
+
+        elif command == "core-get-asset-details":
+            return_results(get_asset_details_command(client, args))
 
         elif command == "core-execute-command":
             return_results(core_execute_command_command(client, args))
