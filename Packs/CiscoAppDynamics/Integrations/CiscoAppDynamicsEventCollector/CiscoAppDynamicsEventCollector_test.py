@@ -1,7 +1,7 @@
 import pytest
 import json
 import demistomock as demisto
-from datetime import datetime, timezone, UTC
+from datetime import datetime, timezone  # noqa: UP017
 import CiscoAppDynamicsEventCollector as appdynamics
 from CommonServerPython import timestamp_to_datestring
 from CiscoAppDynamicsEventCollector import (
@@ -214,7 +214,7 @@ def test_datetime_to_api_format_audit():
     Then:
         - Returns the correctly formatted ISO8601 string with milliseconds and timezone offset '-0000'.
     """
-    dt = datetime(2024, 6, 10, 12, 0, 0, 123000, tzinfo=UTC)
+    dt = datetime(2024, 6, 10, 12, 0, 0, 123000, tzinfo=timezone.utc)  # noqa: UP017
     expected = "2024-06-10T12:00:00.123-0000"
     result = datetime_to_api_format(dt, AUDIT)
     assert result == expected
@@ -229,7 +229,7 @@ def test_datetime_to_api_format_health_event():
     Then:
         - Returns the equivalent timestamp in milliseconds.
     """
-    dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=UTC)
+    dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
     expected = 1718010000000
     result = datetime_to_api_format(dt, HEALTH_EVENT)
     assert result == expected
