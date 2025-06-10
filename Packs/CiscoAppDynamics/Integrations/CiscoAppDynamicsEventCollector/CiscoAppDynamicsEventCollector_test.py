@@ -1,6 +1,7 @@
 import pytest
+import json
 import demistomock as demisto
-from datetime import datetime, timezone
+from datetime import datetime, timezone, UTC
 import CiscoAppDynamicsEventCollector as appdynamics
 from CommonServerPython import timestamp_to_datestring
 from CiscoAppDynamicsEventCollector import (
@@ -9,6 +10,8 @@ from CiscoAppDynamicsEventCollector import (
     get_last_run,
     set_event_type_fetch_limit,
     fetch_events,
+    datetime_to_api_format,
+    timestamp_to_api_format,
     AUDIT,
     HEALTH_EVENT,
     EVENT_TYPE,
@@ -23,6 +26,11 @@ from CiscoAppDynamicsEventCollector import (
 @pytest.fixture
 def client():
     return Client(base_url="", client_id="id", client_secret="secret", application_id="52", verify=True, proxy=False)
+
+
+def util_load_json(name: str):
+    with open(f"test_data/{name}.json", encoding="utf-8") as f:
+        return json.loads(f.read())
 
 
 # Dummy client used for test_module_command and get_events
@@ -52,7 +60,13 @@ class DummyClient:
 
 
 # --- Helper Functions --------------------------------------------------
-@pytest.mark.parametrize("event_type_name", [("Audit"), ("Healthrule Violations Events")])
+@pytest.mark.parametrize(
+    "event_type_name",
+    [
+        ("Audit"),
+        ("Healthrule Violations Events"),
+    ],
+)
 def test_add_fields_to_events_basic(event_type_name):
     """
     Given:
@@ -162,6 +176,65 @@ def test_set_event_type_fetch_limit_all_and_restore(mocker):
     HEALTH_EVENT.url_suffix = orig_health_url
 
 
+def test_timestamp_to_api_format_audit():
+    """
+    Given:
+        - A timestamp in milliseconds and event type AUDIT.
+    When:
+        - Calling timestamp_to_api_format.
+    Then:
+        - Returns a correctly formatted ISO8601 string with milliseconds and timezone offset '-0000'.
+    """
+    ts = 1718018400000
+    expected = "2024-06-10T11:20:00.000-0000"
+    result = timestamp_to_api_format(ts, AUDIT)
+    assert result == expected
+
+
+def test_timestamp_to_api_format_health_event():
+    """
+    Given:
+        - A timestamp in milliseconds and event type HEALTH_EVENT.
+    When:
+        - Calling timestamp_to_api_format.
+    Then:
+        - Returns the timestamp as-is (int).
+    """
+    ts = 1718018400000
+    result = timestamp_to_api_format(ts, HEALTH_EVENT)
+    assert result == ts
+
+
+def test_datetime_to_api_format_audit():
+    """
+    Given:
+        - A datetime object and event type AUDIT.
+    When:
+        - Calling datetime_to_api_format.
+    Then:
+        - Returns the correctly formatted ISO8601 string with milliseconds and timezone offset '-0000'.
+    """
+    dt = datetime(2024, 6, 10, 12, 0, 0, 123000, tzinfo=UTC)
+    expected = "2024-06-10T12:00:00.123-0000"
+    result = datetime_to_api_format(dt, AUDIT)
+    assert result == expected
+
+
+def test_datetime_to_api_format_health_event():
+    """
+    Given:
+        - A datetime object and event type HEALTH_EVENT.
+    When:
+        - Calling datetime_to_api_format.
+    Then:
+        - Returns the equivalent timestamp in milliseconds.
+    """
+    dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=UTC)
+    expected = 1718010000000
+    result = datetime_to_api_format(dt, HEALTH_EVENT)
+    assert result == expected
+
+
 # --- get command tests ----------------------------------------------
 def test_get_events_command_results(mocker):
     """
@@ -196,257 +269,219 @@ def test_get_events_command_results(mocker):
     )
 
 
-# --- client.get functions ------------------------------------------------
-def test_get_audit_logs_adds_fields_and_sorts(client, mocker):
-    """
-    Given:
-         - A Client whose _authorized_request returns 100 shuffled audit events with distinct timeStamp values.
-    When:
-        - Calling get_audit_logs.
-    Then:
-        - Each event has '_time' and 'SOURCE_LOG_TYPE', and events are sorted by '_time' ascending.
-    """
-    import random
-    from CiscoAppDynamicsEventCollector import timestamp_to_api_format
+# --- fetch_events ------------------------------------------------
+class TestRealResponse:
+    raw_data_health = util_load_json("health_response")
+    raw_data_audit = util_load_json("audit_response")
+    n_health = len(raw_data_health)
+    n_audit = len(raw_data_audit)
 
-    timestamps = list(range(100))
-    random.shuffle(timestamps)
-    events = [{"timeStamp": str(ts)} for ts in timestamps]
-    mocker.patch.object(client, "_authorized_request", return_value=events)
+    def test_get_audit_logs_adds_fields(self, client, mocker):
+        """
+        Given:
+            - The server return n_health events from the API.
+        When:
+            - Calling get_audit_logs.
+        Then:
+            - Each event has '_time' and 'SOURCE_LOG_TYPE'.
+        """
+        from CiscoAppDynamicsEventCollector import timestamp_to_api_format
 
-    end = 1748170800000
-    start = 1748170800000 - (60 * 10 * 1000)
-    result = client.get_audit_logs(timestamp_to_api_format(start, AUDIT), timestamp_to_api_format(end, AUDIT))
+        mocker.patch.object(client, "_authorized_request", return_value=self.raw_data_audit)
 
-    assert len(result) == 100
-    times = [ev["_time"] for ev in result]
-    assert times == sorted(times)
-    assert all(event["SOURCE_LOG_TYPE"] == AUDIT.source_log_type for event in result)
+        end = 1748170800000
+        start = 1748170800000 - (60 * 10 * 1000)
+        result = client.get_audit_logs(timestamp_to_api_format(start, AUDIT), timestamp_to_api_format(end, AUDIT))
 
+        assert len(result) == self.n_audit
+        times = [ev["_time"] for ev in result]
+        assert times == sorted(times)
+        assert all(event["SOURCE_LOG_TYPE"] == AUDIT.source_log_type for event in result)
 
-# --- Edge cases for get_health_events ------------------------------------------------
-def test_get_health_events_no_events(client, mocker):
-    """
-    Given:
-        - _authorized_request returns empty list on first call.
-    When:
-        - Calling get_health_events.
-    Then:
-        - Returns empty list without looping infinitely.
-    """
-    mocker.patch.object(client, "_authorized_request", return_value=[])
-    start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    result = client.get_health_events(start, end)
-    assert result == []
+    def test_fetch_events_respects_max_fetch(self, mocker):
+        """
+        Given:
+            - One event type with max_fetch < returned batch size.
+        When:
+            - Calling fetch_events.
+        Then:
+            - Returns only up to max_fetch events and last_run is last returned.
+        """
+        client = DummyClient()
+        mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 1})
+        DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: 1)})
+        mocker.patch.object(appdynamics, "time", DummyDateTime)
 
+        default_limit = AUDIT.max_fetch
+        AUDIT.max_fetch = 2
+        mocker.patch.object(client, "get_audit_logs", return_value=self.raw_data_audit)
 
-def test_get_health_events_single_batch_less_than_limit(client, mocker):
-    """
-    Given:
-        - _authorized_request returns a batch smaller than HEALTH_RULE_API_LIMIT.
-    When:
-        - Calling get_health_events.
-    Then:
-        - Returns one batch of events.
-    """
-    # create small batch
-    batch = [{HEALTH_EVENT.time_field: str(1000 + i)} for i in range(HEALTH_EVENT.max_fetch - 1)]
-    calls = []
+        events, next_run = fetch_events(client, [AUDIT])
+        assert len(events) == 2
+        assert events == self.raw_data_audit[:2]
+        assert next_run[AUDIT.name] == self.raw_data_audit[1][AUDIT.time_field] + 1
+        AUDIT.max_fetch = default_limit
 
-    def fake_request(url_suffix, params, **kwargs):
-        calls.append(params.copy())
-        return batch
+    def test_get_health_events_no_events(self, client, mocker):
+        """
+        Given:
+            - _authorized_request returns empty list on first call.
+        When:
+            - Calling get_health_events.
+        Then:
+            - Returns empty list without looping infinitely.
+        """
+        mocker.patch.object(client, "_authorized_request", return_value=[])
+        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        result = client.get_health_events(start, end)
+        assert result == []
 
-    mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
-    start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    result = client.get_health_events(start, end)
-    assert result == batch
-    # ensure only one API call
-    assert len(calls) == 1
+    def test_get_health_events_single_batch_less_than_limit(self, client, mocker):
+        """
+        Given:
+            - _authorized_request returns a batch smaller than HEALTH_EVENT.api_limit.
+        When:
+            - Calling get_health_events.
+        Then:
+            - Returns one batch of events.
+        """
+        # create small batch
+        default_health_rule_api_limit = HEALTH_EVENT.api_limit
+        batch = self.raw_data_health
+        HEALTH_EVENT.api_limit = len(batch) - 1
+        calls = []
 
+        def fake_request(url_suffix, params, **kwargs):
+            calls.append(params.copy())
+            return batch
 
-def test_get_health_events_multiple_batches_and_respect_api_limit(client, mocker):
-    """
-    Given:
-        - First _authorized_request returns exactly HEALTH_RULE_API_LIMIT events, second returns smaller batch.
-    When:
-        - Calling get_health_events.
-    Then:
-        - Returns concatenated batches and stops after smaller batch.
-    """
-    default_limit = HEALTH_EVENT.max_fetch
-    HEALTH_EVENT.max_fetch = 1000
+        mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
+        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        result = client.get_health_events(start, end)
+        assert result == batch
+        # ensure only one API call
+        assert len(calls) == 1
 
-    limit = HEALTH_EVENT.api_limit
-    batch1 = [{HEALTH_EVENT.time_field: str(2000 + i)} for i in range(limit)]
-    batch2 = [{HEALTH_EVENT.time_field: str(3000 + i)} for i in range(10)]
-    seq = [batch1, batch2, []]
+        HEALTH_EVENT.api_limit = default_health_rule_api_limit
 
-    def fake_request(url_suffix, params, **kwargs):
-        return seq.pop(0)
+    def test_get_health_events_multiple_batches_and_respect_api_limit(self, client, mocker):
+        """
+        Given:
+            - First _authorized_request returns exactly HEALTH_EVENT.api_limit events, second returns smaller batch.
+        When:
+            - Calling get_health_events.
+        Then:
+            - Returns concatenated batches and stops after smaller batch.
+        """
+        default_max_fetch = HEALTH_EVENT.max_fetch
+        default_api_limit = HEALTH_EVENT.api_limit
 
-    mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
-    start = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    end = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    result = client.get_health_events(start, end)
-    # result length should be len(batch1) + len(batch2)
-    assert len(result) == limit + 10
-    # first event time matches batch1, last matches batch2
-    assert result[0][HEALTH_EVENT.time_field] == batch1[0][HEALTH_EVENT.time_field]
-    assert result[-1][HEALTH_EVENT.time_field] == batch2[-1][HEALTH_EVENT.time_field]
+        HEALTH_EVENT.max_fetch = self.n_health + 1
+        HEALTH_EVENT.api_limit = self.n_health // 2
 
-    HEALTH_EVENT.max_fetch = default_limit
+        batch1 = self.raw_data_health[: self.n_health // 2]
+        batch2 = self.raw_data_health[self.n_health // 2 :]
+        seq = [batch1, batch2, []]
 
+        def fake_request(url_suffix, params, **kwargs):
+            return seq.pop(0)
 
-def test_get_health_events_respects_max_fetch(client, mocker):
-    """
-    Given:
-        - Max_healthrule_fetch smaller than number of events returned per batch.
-    When:
-        - Calling get_health_events.
-    Then:
-        - Loop stops when len(events) exceeds max_healthrule_fetch.
-    """
-    # override client's max to small value
-    default_max_fetch = HEALTH_EVENT.max_fetch
-    HEALTH_EVENT.max_fetch = 5
-    # create a large batch
-    batch = [{HEALTH_EVENT.time_field: str(4000 + i)} for i in range(10)]
-    mocker.patch.object(client, "_authorized_request", return_value=batch)
-    start = datetime(2025, 5, 25, 9, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    end = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    result = client.get_health_events(start, end)
-    # since first call returns 10 and max is 5, loop condition allows one call then stops
-    # but method does not truncate events; it returns full batch
-    assert result == batch
+        mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
+        start = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        end = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        result = client.get_health_events(start, end)
+        # result length should be len(batch1) + len(batch2)
+        assert len(result) == self.n_health
+        # first event time matches batch1, last matches batch2
+        assert result[0][HEALTH_EVENT.time_field] == batch1[0][HEALTH_EVENT.time_field]
+        assert result[-1][HEALTH_EVENT.time_field] == batch2[-1][HEALTH_EVENT.time_field]
 
-    HEALTH_EVENT.max_fetch = default_max_fetch
+        HEALTH_EVENT.max_fetch = default_max_fetch
+        HEALTH_EVENT.api_limit = default_api_limit
+
+    def test_get_health_events_respects_max_fetch(self, client, mocker):
+        """
+        Given:
+            - HEALTH_EVENT.max_fetch smaller than number of events returned per batch.
+        When:
+            - Calling get_health_events.
+        Then:
+            - Loop stops when len(events) exceeds max_healthrule_fetch.
+        """
+        # override client's max to small value
+        default_max_fetch = HEALTH_EVENT.max_fetch
+        HEALTH_EVENT.max_fetch = 5
+        # create a large batch
+        mocker.patch.object(client, "_authorized_request", return_value=self.raw_data_health)
+        start = datetime(2025, 5, 25, 9, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        end = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        result = client.get_health_events(start, end)
+        # since first call returns 10 and max is 5, loop condition allows one call then stops
+        # but method does not truncate events; it returns full batch
+        assert result == self.raw_data_health
+
+        HEALTH_EVENT.max_fetch = default_max_fetch
+
+    def test_fetch_events_multiple_types(self, client, mocker):
+        """
+        Given:
+            - Both event types each returning several events.
+        When:
+            - Calling fetch_events.
+        Then:
+            - Returns combined events in order of types and correct last_run for each type.
+        """
+
+        def mock_authorized_request(url_suffix, params):
+            if url_suffix == AUDIT.url_suffix:
+                return self.raw_data_audit
+            elif url_suffix == HEALTH_EVENT.url_suffix:
+                return self.raw_data_health
+            else:
+                return []
+
+        default_audit_max_fetch = AUDIT.max_fetch
+        default_health_max_fetch = HEALTH_EVENT.max_fetch
+        AUDIT.max_fetch = 3
+        HEALTH_EVENT.max_fetch = 3
+
+        mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 1, HEALTH_EVENT.name: 1})
+        mocker.patch("time.time", return_value=1748250000)
+        mocker.patch.object(client, "_authorized_request", side_effect=mock_authorized_request)
+
+        events, next_run = fetch_events(client, [AUDIT, HEALTH_EVENT])
+        # Expect 3 audit + 3 health events
+        assert len(events) == 6
+        # Check ordering: first audit then health
+        assert events[0]["_time"] == timestamp_to_datestring(self.raw_data_audit[0][AUDIT.time_field], DATE_FORMAT, is_utc=True)
+        assert events[3]["_time"] == timestamp_to_datestring(
+            self.raw_data_health[0][HEALTH_EVENT.time_field], DATE_FORMAT, is_utc=True
+        )
+        # last_run set to last event of each
+        assert next_run[AUDIT.name] == int(self.raw_data_audit[2][AUDIT.time_field]) + 1
+        assert next_run[HEALTH_EVENT.name] == int(self.raw_data_health[2][HEALTH_EVENT.time_field]) + 1
+
+        AUDIT.max_fetch = default_audit_max_fetch
+        HEALTH_EVENT.max_fetch = default_health_max_fetch
 
 
 # --- Tests for fetch_events function -----------------------------------------------------------------
-
-
-def test_fetch_events_no_types(mocker):
+def test_fetch_events_no_types(mocker, client):
     """
     Given:
         - No event types to fetch.
     When:
         - Calling fetch_events.
     Then:
-        - Returns empty events list and empty last_run dict.
+        - Returns empty events list and update last_run dict.
     """
-    client = DummyClient()
-    mocker.patch.object(appdynamics, "get_last_run", return_value={})
-    fixed_now = datetime(2025, 5, 26, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    DummyDateTime = type("DummyDateTime", (), {"now": classmethod(lambda cls, tz=None: fixed_now)})
-    mocker.patch.object(appdynamics, "datetime", DummyDateTime)
-
-    events, next_run = fetch_events(client, [])
-    assert events == []
-    assert next_run == {}
-
-
-def test_fetch_events_audit(mocker):
-    """
-    Given:
-        - No event types to fetch.
-    When:
-        - Calling fetch_events.
-    Then:
-        - Returns empty events list and empty last_run dict.
-    """
-    HEALTH_EVENT.max_fetch = 100
-    AUDIT.max_fetch = 100
-    client = DummyClient(num_of_audit=10, num_of_health=10)
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 11748170800000, HEALTH_EVENT.name: 1748170800000})
-    events, next_run = appdynamics.fetch_events(client, [AUDIT])
-    assert len(events) == 10
-    assert events[9]["_time"] == timestamp_to_datestring(1620000000000 + 9, DATE_FORMAT)
-    assert next_run[AUDIT.name] == (1620000000000 + 10)
-
-
-def test_fetch_events_no_events_update_last_run(mocker):
-    """
-    Given:
-        - One event type that returns no events.
-    When:
-        - Calling fetch_events.
-    Then:
-        - Returns empty events, last_run.
-    """
-    client = DummyClient()
-    last_ts = 1748246400000
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: last_ts})
     fixed_now = 1748250000
-    DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: fixed_now)})
-    mocker.patch.object(appdynamics, "time", DummyDateTime)
-    mocker.patch.object(client, "get_audit_logs", return_value=[])
+    mocker.patch("time.time", return_value=fixed_now)
+    mocker.patch.object(client, "_authorized_request", return_value=[])
 
-    events, next_run = fetch_events(client, [AUDIT])
+    events, next_run = fetch_events(client, [AUDIT, HEALTH_EVENT])
     assert events == []
     assert next_run[AUDIT.name] == fixed_now * 1000 + 1
-
-
-def test_fetch_events_respects_max_fetch(mocker):
-    """
-    Given:
-        - One event type with max_fetch < returned batch size.
-    When:
-        - Calling fetch_events.
-    Then:
-        - Returns only up to max_fetch events and last_run is last returned.
-    """
-    client = DummyClient()
-    start_dt = 1748246400000
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: start_dt})
-    fixed_now = 1748250000
-    DummyDateTime = type("DummyDateTime", (), {"time": classmethod(lambda cls, tz=None: fixed_now)})
-    mocker.patch.object(appdynamics, "time", DummyDateTime)
-    # prepare events larger than max_fetch
-    full_events = [
-        {
-            "_time": timestamp_to_datestring(1748246400000 + i * (60 * 1000), DATE_FORMAT),
-            AUDIT.time_field: 1748246400000 + i * (60 * 1000),
-        }
-        for i in range(5)
-    ]
-    default_limit = AUDIT.max_fetch
-    AUDIT.max_fetch = 2
-    mocker.patch.object(client, "get_audit_logs", return_value=full_events)
-
-    events, next_run = fetch_events(client, [AUDIT])
-    assert len(events) == 2
-    assert events == full_events[:2]
-    assert next_run[AUDIT.name] == full_events[1][AUDIT.time_field] + 1
-    AUDIT.max_fetch = default_limit
-
-
-def test_fetch_events_multiple_types(mocker):
-    """
-    Given:
-        - Both event types each returning several events.
-    When:
-        - Calling fetch_events.
-    Then:
-        - Returns combined events in order of types and correct last_run for each type.
-    """
-
-    AUDIT.max_fetch = 3
-    HEALTH_EVENT.max_fetch = 3
-    # DummyClient returning list per init counts
-    client = DummyClient(num_of_audit=5, num_of_health=4)
-    # get_last_run returns empty strings (treated as initial)
-    mocker.patch.object(appdynamics, "get_last_run", return_value={AUDIT.name: 1, HEALTH_EVENT.name: 1})
-    now_ts = 1748250000
-    mocker.patch("time.time", return_value=now_ts)
-    events, next_run = fetch_events(client, [AUDIT, HEALTH_EVENT])
-    # Expect 3 audit + 3 health events
-    assert len(events) == 6
-    # Check ordering: first audit then health
-    assert events[0]["_time"] == "2021-05-03T00:00:00.000000Z"
-    assert events[4]["_time"] == "2021-05-03T00:00:00.006000Z"
-    # last_run set to last event of each
-    assert next_run[AUDIT.name] == 1620000000003
-    assert next_run[HEALTH_EVENT.name] == 1620000000008
+    assert next_run[HEALTH_EVENT.name] == fixed_now * 1000 + 1

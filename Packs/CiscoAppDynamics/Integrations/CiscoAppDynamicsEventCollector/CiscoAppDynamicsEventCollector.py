@@ -60,7 +60,7 @@ AUDIT = EventType(
 HEALTH_EVENT = EventType(
     name="Healthrule Violations Events",
     url_suffix="/rest/applications/application_id/problems/healthrule-violations",
-    time_field="detectedTimeInMillis",
+    time_field="startTimeInMillis",
     source_log_type="Healthrule Violations Event",
     api_limit=600,
     default_params={
@@ -93,8 +93,6 @@ class Client(BaseClient):
         self.client_id = client_id
         self.client_secret = client_secret
         self.application_id = application_id
-        self.token: str | None = None
-        self.token_expiry: datetime | None = None
 
     def create_access_token(self) -> str:
         """
@@ -112,10 +110,10 @@ class Client(BaseClient):
         access_token = response.get("access_token")
         expires_in = response.get("expires_in")
         demisto.debug(f"Access token expire in: {expires_in}")
-        self.token = access_token
-        self.token_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(expires_in) - 10)
-        demisto.debug(f"Access token obtained, expires at {self.token_expiry.isoformat()}")
-        set_integration_context({"access_token": access_token, "token_expiry": self.token_expiry.isoformat()})
+        token_expiry = datetime.now(timezone.utc) + timedelta(seconds=int(expires_in) - 15)
+
+        demisto.debug(f"Access token obtained, expires at {token_expiry.isoformat()}")
+        set_integration_context({"access_token": access_token, "token_expiry": token_expiry.isoformat()})
         return access_token
 
     def _get_valid_token(self) -> str:
@@ -163,6 +161,7 @@ class Client(BaseClient):
         """
         Fetches audit-history events.
         API return all events from start_dt to end_dt include start and end.
+        API return in ascending order.
         Args:
             start_dt (datetime): start time in the right format: '2015-12-19T10:50:03.607-0000'.
             end_dt (datetime):   end time in the right format: '2015-12-19T10:50:03.607-0000'.
@@ -182,9 +181,6 @@ class Client(BaseClient):
         demisto.debug(f"Received {len(events)} audit logs from API.")
 
         add_fields_to_events(events, AUDIT)
-
-        events.sort(key=lambda ev: int(ev["timeStamp"]))
-
         return events
 
     def get_health_events(self, start_time: int, end_time: int) -> list[dict]:
@@ -211,13 +207,15 @@ class Client(BaseClient):
             batch = self._authorized_request(url_suffix=HEALTH_EVENT.url_suffix, params=params)
             demisto.debug(f"Fetched {len(batch)} events successfully.")
             if not batch:
+                demisto.debug("No events fetched from API")
                 break
             events.extend(batch)
             if len(batch) < HEALTH_EVENT.api_limit:
+                demisto.debug(f"Fetched {len(batch)} events from API < API Limit {HEALTH_EVENT.api_limit} on the last page.")
                 break
             start_time = events[-1][HEALTH_EVENT.time_field]
 
-        demisto.debug(f"Fetched {len(events)} Healthrule Violations Events from API.")
+        demisto.debug(f"Fetched total {len(events)} Healthrule Violations Events from API.")
         return add_fields_to_events(events, HEALTH_EVENT)
 
 
@@ -389,7 +387,7 @@ def get_last_run(now: int, events_type_to_fetch: list[EventType]) -> dict[str, i
         if last_time_iso and event_type in events_type_to_fetch:
             last_run[event_type.name] = last_time_iso
         else:
-            last_run[event_type.name] = now - (60 * 1000) * 60 * 24
+            last_run[event_type.name] = now - (60 * 1000)
 
     return last_run
 
@@ -437,8 +435,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     base_url = params.get("url", "")
-    client_id = params.get("client_id", "")
-    client_secret = params.get("client_secret", {}).get("password")
+    client_id = params.get("credentials", {}).get("identifier")
+    client_secret = params.get("credentials", {}).get("password")
     application_id = params.get("application_id", "")
     verify = argToBoolean(not params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))
