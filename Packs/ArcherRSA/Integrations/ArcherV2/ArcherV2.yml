@@ -12,6 +12,11 @@ configuration:
   required: true
   section: Connect
   type: 0
+  supportedModules:
+    - X1
+    - X3
+    - X5
+    - ENT_PLUS
 - additionalinfo: Change only if using another API endpoint.
   defaultvalue: api
   display: 'API Endpoint'
@@ -208,6 +213,11 @@ script:
       required: true
     description: Gets information about a content record in the given application.
     name: archer-get-record
+    supportedModules:
+      - X1
+      - X3
+      - X5
+      - ENT_PLUS
     outputs:
     - contextPath: Archer.Record.Id
       description: The unique ID of the record.
@@ -216,6 +226,11 @@ script:
     - description: The application ID.
       name: applicationId
       required: true
+      supportedModules:
+        - X1
+        - X3
+        - X5
+        - ENT_PLUS
     - description: 'Record fields in JSON format: { "Name1": Value1, "Name2": Value2 }. Field names are case sensitive.'
       name: fieldsToValues
       required: true
@@ -464,3 +479,8 @@ script:
 fromversion: 5.0.0
 tests:
 - Archer v2 - Test
+supportedModules:
+- X1
+- X3
+- X5
+- ENT_PLUS
