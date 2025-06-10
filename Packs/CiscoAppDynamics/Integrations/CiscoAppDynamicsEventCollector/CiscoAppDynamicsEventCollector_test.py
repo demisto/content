@@ -1,7 +1,7 @@
 import pytest
 import json
 import demistomock as demisto
-from datetime import datetime, timezone  # noqa: UP017
+from datetime import datetime, UTC
 import CiscoAppDynamicsEventCollector as appdynamics
 from CommonServerPython import timestamp_to_datestring
 from CiscoAppDynamicsEventCollector import (
@@ -214,7 +214,7 @@ def test_datetime_to_api_format_audit():
     Then:
         - Returns the correctly formatted ISO8601 string with milliseconds and timezone offset '-0000'.
     """
-    dt = datetime(2024, 6, 10, 12, 0, 0, 123000, tzinfo=timezone.utc)  # noqa: UP017
+    dt = datetime(2024, 6, 10, 12, 0, 0, 123000, tzinfo=UTC)
     expected = "2024-06-10T12:00:00.123-0000"
     result = datetime_to_api_format(dt, AUDIT)
     assert result == expected
@@ -229,7 +229,7 @@ def test_datetime_to_api_format_health_event():
     Then:
         - Returns the equivalent timestamp in milliseconds.
     """
-    dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+    dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=UTC)
     expected = 1718010000000
     result = datetime_to_api_format(dt, HEALTH_EVENT)
     assert result == expected
@@ -332,8 +332,8 @@ class TestRealResponse:
             - Returns empty list without looping infinitely.
         """
         mocker.patch.object(client, "_authorized_request", return_value=[])
-        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=UTC)
         result = client.get_health_events(start, end)
         assert result == []
 
@@ -357,8 +357,8 @@ class TestRealResponse:
             return batch
 
         mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
-        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        start = datetime(2025, 5, 25, 11, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 5, 25, 12, 0, 0, tzinfo=UTC)
         result = client.get_health_events(start, end)
         assert result == batch
         # ensure only one API call
@@ -389,8 +389,8 @@ class TestRealResponse:
             return seq.pop(0)
 
         mocker.patch.object(client, "_authorized_request", side_effect=fake_request)
-        start = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-        end = datetime(2025, 5, 25, 11, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        start = datetime(2025, 5, 25, 10, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 5, 25, 11, 0, 0, tzinfo=UTC)
         result = client.get_health_events(start, end)
         # result length should be len(batch1) + len(batch2)
         assert len(result) == self.n_health
@@ -415,8 +415,8 @@ class TestRealResponse:
         HEALTH_EVENT.max_fetch = 5
         # create a large batch
         mocker.patch.object(client, "_authorized_request", return_value=self.raw_data_health)
-        start = datetime(2025, 5, 25, 9, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-        end = datetime(2025, 5, 25, 10, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
+        start = datetime(2025, 5, 25, 9, 0, 0, tzinfo=UTC)
+        end = datetime(2025, 5, 25, 10, 0, 0, tzinfo=UTC)
         result = client.get_health_events(start, end)
         # since first call returns 10 and max is 5, loop condition allows one call then stops
         # but method does not truncate events; it returns full batch
