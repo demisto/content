@@ -211,8 +211,8 @@ def test_merge_context_outputs():
     "find_indicator_file_context, expected_verdict",
     [
         pytest.param({}, "Unknown", id="No score"),
-        pytest.param({"SHA256": SHA_256_HASH, "Score": 3}, "Bad", id="Bad score"),
-        pytest.param({"SHA256": SHA_256_HASH, "Score": 1}, "Good", id="Good score"),
+        pytest.param({"SHA256": SHA_256_HASH, "Score": 3}, "Malicious", id="Bad score"),
+        pytest.param({"SHA256": SHA_256_HASH, "Score": 1}, "Benign", id="Good score"),
     ],
 )
 def test_get_tim_file_verdict(find_indicator_file_context: dict[str, dict], expected_verdict: str):

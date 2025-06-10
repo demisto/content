@@ -67,9 +67,9 @@ INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING = {
 
 DBOT_SCORE_TO_VERDICT = {
     0: "Unknown",
-    1: "Good",
+    1: "Benign",
     2: "Suspicious",
-    3: "Bad",
+    3: "Malicious", 
 }
 
 
