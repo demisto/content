@@ -56,7 +56,7 @@ configuration:
   type: 0
   required: false
   advanced: true
-description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform
+description: This API queries alerts and alert data from the MS-ISAC API to enrich and query alerts from the platform.
 display: MS-ISAC
 name: MS-ISAC
 script:
@@ -64,7 +64,7 @@ script:
   - arguments:
     - description: The ID of the MS-ISAC event.
       name: event_id
-    description: Retrieve alert data by its ID
+    description: Retrieve alert data by its ID.
     name: msisac-get-event
     outputs:
     - contextPath: MSISAC.Event.EventID
@@ -165,7 +165,7 @@ script:
       required: true
     - description: If you want to search the list of events for a specific event, specify this optional command to return just those results.
       name: event_id
-    description: Retrieves a list of MS-ISAC events for a given number of days (one or greater)
+    description: Retrieves a list of MS-ISAC events for a given number of days (one or greater).
     name: msisac-retrieve-events
     outputs:
     - contextPath: MSISAC.RetrievedEvents.event_id
