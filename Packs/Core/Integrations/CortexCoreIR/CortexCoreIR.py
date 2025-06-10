@@ -496,7 +496,7 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     except DemistoException as error:
         raise DemistoException(f"Core Add Indicator Rule Command: During post, exception occurred {str(error)}")
 
-    is_success = response["reply"]["success"]
+    is_success = response.get("reply", {}).get("success")
 
     if not is_success:
         # Something went wrong in the creation of new IOC rule.
