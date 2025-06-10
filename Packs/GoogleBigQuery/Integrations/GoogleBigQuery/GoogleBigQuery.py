@@ -349,7 +349,7 @@ def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
 
 def verify_params():
     params = demisto.params()
-    if not params.get("first_fetch_time"):
+    if not params.get("first_fetch"):
         return_error("Error: fetch start time must be supplied.")
     if not params.get("fetch_query"):
         return_error("Error: fetch query must be supplied.")
