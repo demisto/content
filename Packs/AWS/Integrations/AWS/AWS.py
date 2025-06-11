@@ -96,6 +96,41 @@ class S3:
             entry_type=EntryType.ERROR, readable_output=f"Couldn't apply public access block to the {args.get('bucket')} bucket"
         )
 
+    @staticmethod
+    def put_bucket_versioning_command(client: BotoClient, args: Dict[str, Any]) -> CommandResults:
+        """
+            Set the versioning state of an Amazon S3 bucket.
+
+            Args:
+                args (Dict[str, Any]): Command arguments including:
+                    - bucket (str): The name of the bucket
+                    - status (str): The versioning state of the bucket (Enabled or Suspended)
+                    - mfa_delete (str): Specifies whether MFA delete is enabled (Enabled or Disabled)
+
+            Returns:
+                CommandResults: Results of the command execution
+        """
+        bucket: str = args.get("bucket", "")
+        status: str = args.get("status", "")
+        mfa_delete: str = args.get("mfa_delete", "")
+
+        versioning_configuration = {"Status": status, "MFADelete": mfa_delete}
+        remove_nulls_from_dictionary(versioning_configuration)
+        try:
+            response = client.put_bucket_versioning(Bucket=bucket, VersioningConfiguration=versioning_configuration)
+            if response["ResponseMetadata"]["HTTPStatusCode"] == HTTPStatus.OK:
+                return CommandResults(
+                    readable_output=f"Successfully {status.lower()} versioning configuration for bucket `{bucket}`"
+                )
+            return CommandResults(
+                entry_type=EntryType.WARNING,
+                readable_output=f"Request completed but received unexpected status code: {response['ResponseMetadata']['HTTPStatusCode']}",
+            )
+        except Exception as e:
+            return CommandResults(
+                entry_type=EntryType.ERROR,
+                readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
+            )
 
 class IAM:
     service = AWSServices.IAM
@@ -600,7 +635,6 @@ class RDS:
             )
 
 
-REQUIRED_PERMISSIONS = set()
 
 # CONCURRENCY_LIMIT = 25           # Rate limit by AWS
 # SEMAPHORE = asyncio.Semaphore(CONCURRENCY_LIMIT)
@@ -643,6 +677,7 @@ REQUIRED_PERMISSIONS = set()
 
 COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResults]] = {
     "aws-s3-public-access-block-put": S3.put_public_access_block_command,
+    "aws-s3-bucket-versioning-put": S3.put_bucket_versioning_command,
     "aws-iam-account-password-policy-get": IAM.get_account_password_policy_command,
     "aws-iam-account-password-policy-update": IAM.update_account_password_policy_command,
     "aws-ec2-instance-metadata-options-modify": EC2.modify_instance_metadata_options_command,
@@ -655,14 +690,72 @@ COMMANDS_MAPPING: dict[str, Callable[[BotoClient, Dict[str, Any]], CommandResult
     "aws-rds-db-snapshot-attribute-modify": RDS.modify_db_snapshot_attribute_command,
 }
 
+REQUIRED_ACTIONS: set[str] = {
+    "iam:PassRole",
+    "kms:CreateGrant",
+    "kms:Decrypt",
+    "kms:DescribeKey",
+    "kms:GenerateDataKey",
+    "rds:AddTagsToResource",
+    "rds:CreateTenantDatabase",
+    "secretsmanager:CreateSecret",
+    "secretsmanager:RotateSecret",
+    "secretsmanager:TagResource",
+    "rds:ModifyDBCluster",
+    "rds:ModifyDBClusterSnapshotAttribute",
+    "rds:ModifyDBInstance",
+    "rds:ModifyDBSnapshotAttribute",
+    "s3:PutBucketAcl",
+    "s3:PutBucketLogging",
+    "s3:PutBucketVersioning",
+    "s3:PutBucketPolicy",
+    "ec2:RevokeSecurityGroupEgress",
+    "ec2:ModifyImageAttribute",
+    "ec2:ModifyInstanceAttribute",
+    "ec2:ModifySnapshotAttribute",
+    "ec2:RevokeSecurityGroupIngress",
+    "eks:UpdateClusterConfig",
+    "iam:DeleteLoginProfile",
+    "iam:PutUserPolicy",
+    "iam:RemoveRoleFromInstanceProfile",
+    "iam:UpdateAccessKey",
+    "iam:GetAccountPasswordPolicy",
+    "iam:UpdateAccountPasswordPolicy",
+    "s3:PutBucketPublicAccessBlock",
+    "ec2:ModifyInstanceMetadataOptions",
+    "iam:GetAccountAuthorizationDetails",
+}
+def check_account_permissions(account_id: str):
+    """_summary_
+    """
+    
 
 def test_module():
     # TODO - Bring back what was here before
     return "ok"
 
 def health_check(connector_id: str):
-    pass
-    return "ok"
+    accounts: list[dict] = get_accounts_by_connector_id(connector_id)
+    account_ids: list[str] = [str(account.get('account_id')) for account in accounts if 'account_id' in account]
+    
+    # TODO - TEST ERROR - REPLACE
+    errors = [
+        HealthCheckResult.error(
+            account_id=account_id,
+            connector_id=connector_id,
+            message=f"Missing required permissions for {account_id}: {REQUIRED_ACTIONS}",
+            error="PATAPIM",
+            error_type=ErrorType.PERMISSION_ERROR
+        ) for account_id in account_ids
+    ]
+    
+    result = CommandResults(
+        entry_type=EntryType.ERROR, # TODO - Calculate according to errors 
+        raw_response=errors,
+        content_format=EntryFormat.JSON
+        ) if errors else HealthCheckResult.ok()
+    
+    return result
 
 def main():  # pragma: no cover
     params = demisto.params()
@@ -672,39 +765,32 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-
+  
+    skip_proxy()
+ 
+  
     try:
+        
         context = demisto.callingContext.get("context", {})
         cloud_info = context.get("CloudIntegrationInfo", {})
         if command == "test-module":
-            #
-            results: Union[str, list[CommandResults], CommandResults] = (
+            results = (
                 health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
             )
             return_results(results)
-            # errors = [
-            #         {
-            #             HealthCheckResult.error(
-            #                 account_id=account_id,
-            #                 connector_id=credentials.get('connector_id'),
-            #                 message=f"Failed to retrieve cloud credentials for account {account_id}",
-            #                 error="ErrCredentialsRetrieval",
-            #                 error_type=ErrorType.PERMISSION_ERROR
-            #             )
-            #         }
-            # ]
-            # return_results(CommandResults(entry_type=EntryType.ERROR,outputs=errors))
         elif command in COMMANDS_MAPPING:
             account_id = args.get("account_id")
-            credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id)
+            credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
+
             aws_session: Session = Session(
                 aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
                 aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key").get("password"),
                 aws_session_token=credentials.get("session_token"),
                 region_name=args.get("region") or params.get("region", ""),
             )
+            
             service = AWSServices(command.split("-")[1])
-            service_client: BotoClient = aws_session.client(service)
+            service_client: BotoClient = aws_session.client(service,  config=Config(read_timeout=10, connect_timeout=10))
             return_results(COMMANDS_MAPPING[command](service_client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
