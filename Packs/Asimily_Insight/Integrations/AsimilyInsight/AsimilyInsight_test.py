@@ -1,4 +1,5 @@
 import pytest
+import datetime
 
 
 @pytest.fixture(autouse=True)
@@ -89,7 +90,7 @@ def test_fetch_incidents_command(mocker, mock_params):
     mocker.patch("AsimilyInsight.demisto.getLastRun", return_value={})
     mocker.patch("AsimilyInsight.demisto.setLastRun")
     mocker.patch("AsimilyInsight.demisto.incidents")
-    mocker.patch("AsimilyInsight.datetime", wraps=__import__("datetime"))
+    mocker.patch("AsimilyInsight.datetime.datetime", mocker.Mock(wraps=datetime.datetime))
 
     mocker.patch(
         "AsimilyInsight.Client.force_get_asset_anomalies",

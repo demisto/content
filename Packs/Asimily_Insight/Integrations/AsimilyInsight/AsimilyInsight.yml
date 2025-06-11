@@ -119,11 +119,13 @@ configuration:
   required: false
 - display: Incident type
   name: incidentType
+  section: Collect
   required: false
   type: 13
 - display: Long running instance
   name: longRunning
   required: false
+  section: Collect
   type: 8
 description: Integrate Asimily Insight to ingest security anomalies, CVEs, and leverage detailed asset data for streamlined incident investigation.
 display: Asimily Insight
