@@ -253,9 +253,8 @@ def test_get_formatted_message_good_header():
     msg.set_payload(body)
     msg.add_header("Foo", "From: value==value=<= .palo.com =?utf-8?q?=3E?=")
     assert (
-        get_formatted_message(msg)
-        == "From: hello@example.com\nTo: world@example.com\nSubject: Test Email - subject\nFoo: "
-           "From: value==value=<= .palo.com =?utf-8?q?=3E?=\n\nThis is a randomly generated message body"
+        get_formatted_message(msg) == "From: hello@example.com\nTo: world@example.com\nSubject: Test Email - subject\nFoo: "
+        "From: value==value=<= .palo.com =?utf-8?q?=3E?=\n\nThis is a randomly generated message body"
     )
 
 
