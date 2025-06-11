@@ -20,7 +20,7 @@ warnings.simplefilter("ignore")
 warnings.filterwarnings("ignore", category=UserWarning)
 
 
-INCIDENT_ALIAS = "alert" if (is_xsiam() or is_platform) else "incident"
+INCIDENT_ALIAS = "alert" if (is_xsiam() or is_platform()) else "incident"
 
 FIELD_SKIP_REASON_DOESNT_EXIST = f"The '{{field}}' field does not exist in {INCIDENT_ALIAS}"
 FIELD_SKIP_REASON_FALSY_VALUE = f"The '{{field}}' field has a falsy value in current {INCIDENT_ALIAS}: '{{val}}'"
@@ -149,7 +149,7 @@ def preprocess_incidents_field(incidents_field: str, prefix_to_remove: list[str]
     incidents_field = incidents_field.strip()
     for prefix in prefix_to_remove:
         if incidents_field.startswith(prefix):
-            incidents_field = incidents_field[len(prefix):]
+            incidents_field = incidents_field[len(prefix) :]
     return incidents_field
 
 

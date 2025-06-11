@@ -209,7 +209,7 @@ class HTTPClient(BaseClient):
 
     def list_channels_for_user_request(self, team_id: str, user: str) -> list[dict[str, Any]]:
         """lists channels by user in a specific team"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/users/{user}/teams/{team_id}/channels')
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/users/{user}/teams/{team_id}/channels")
         return response
 
     def create_channel_request(self, params: dict) -> dict[str, str]:
@@ -228,7 +228,8 @@ class HTTPClient(BaseClient):
         """Set a channel role for channel member"""
         data = {"roles": roles}
         response = self._http_request(
-            method='PUT', url_suffix=f'/api/v4/channels/{channel_id}/members/{user_id}/roles', json_data=data)
+            method="PUT", url_suffix=f"/api/v4/channels/{channel_id}/members/{user_id}/roles", json_data=data
+        )
 
         return response
 
@@ -348,32 +349,32 @@ class HTTPClient(BaseClient):
     def create_direct_channel_request(self, user_id: list, bot_id: str) -> dict[str, Any]:
         "creates a direct channel"
         user_id.append(bot_id)
-        url_suffix = '/api/v4/channels/direct' if len(user_id) == 2 else '/api/v4/channels/group'
-        response = self._http_request(method='POST', url_suffix=url_suffix, json_data=user_id)
+        url_suffix = "/api/v4/channels/direct" if len(user_id) == 2 else "/api/v4/channels/group"
+        response = self._http_request(method="POST", url_suffix=url_suffix, json_data=user_id)
 
         return response
 
     def list_groups_request(self, params: dict) -> list[dict[str, Any]]:
         """lists groups in a specific team"""
-        response = self._http_request(method='GET', url_suffix='/api/v4/groups', params=params)
+        response = self._http_request(method="GET", url_suffix="/api/v4/groups", params=params)
 
         return response
 
     def list_group_members_request(self, group_id: str, params: dict[str, Any]) -> dict[str, Any]:
         """list group members based on group id"""
-        response = self._http_request(method='GET', url_suffix=f'/api/v4/groups/{group_id}/members', params=params)
+        response = self._http_request(method="GET", url_suffix=f"/api/v4/groups/{group_id}/members", params=params)
 
         return response
 
     def add_group_member_request(self, group_id: str, data: dict) -> dict[str, str]:
         """Adds a group member"""
-        response = self._http_request(method='POST', url_suffix=f'/api/v4/groups/{group_id}/members', json_data=data)
+        response = self._http_request(method="POST", url_suffix=f"/api/v4/groups/{group_id}/members", json_data=data)
 
         return response
 
     def remove_group_member_request(self, group_id: str, data: dict) -> dict[str, str]:
         """Removes a group member"""
-        response = self._http_request(method='DELETE', url_suffix=f'/api/v4/groups/{group_id}/members', json_data=data)
+        response = self._http_request(method="DELETE", url_suffix=f"/api/v4/groups/{group_id}/members", json_data=data)
 
         return response
 
@@ -728,8 +729,8 @@ def get_channel_id_to_send_notif(client: HTTPClient, to: list, channel_name: str
 
         bot_id = get_user_id_from_token(client, bot_user=True)
         channel_object = client.create_direct_channel_request(users, bot_id)
-        channel_id = channel_object.get('id', '')
-        demisto.debug(f'MM: Created a new direct channel to: {users} with channel_id: {channel_id}')
+        channel_id = channel_object.get("id", "")
+        demisto.debug(f"MM: Created a new direct channel to: {users} with channel_id: {channel_id}")
 
     elif channel_name:  # if channel name provided and the channel was mirrored
         channel_id = get_channel_id_from_context(channel_name, investigation_id)
@@ -1246,26 +1247,24 @@ def list_private_channels_for_user_command(client: HTTPClient, args: dict[str, A
     """
     Lists all private channels which belong to team_name and user is member
     """
-    team_name = args.get('team_name', client.team_name)
-    user_id = args.get('user_id', '')
+    team_name = args.get("team_name", client.team_name)
+    user_id = args.get("user_id", "")
 
     team_details = client.get_team_request(team_name)
 
-    channels = client.list_channels_for_user_request(team_details.get('id', ''), user_id)
+    channels = client.list_channels_for_user_request(team_details.get("id", ""), user_id)
     # filter for private channels only
-    channels = list(filter(lambda x: x.get("type", "O") == 'P', channels))
+    channels = list(filter(lambda x: x.get("type", "O") == "P", channels))
 
     user_details = client.get_user_request(user_id)
 
-    hr = tableToMarkdown(f'Channels for {user_details.get("username", user_id)}:',
-                         channels, headers=['name', 'display_name', 'type', 'id'])
+    hr = tableToMarkdown(
+        f'Channels for {user_details.get("username", user_id)}:', channels, headers=["name", "display_name", "type", "id"]
+    )
     return CommandResults(
-        outputs_prefix='Mattermost.User',
-        outputs_key_field='id',
-        outputs={
-            'id': user_id,
-            'channels': channels
-        },
+        outputs_prefix="Mattermost.User",
+        outputs_key_field="id",
+        outputs={"id": user_id, "channels": channels},
         raw_response=channels,
         readable_output=hr,
     )
@@ -1612,10 +1611,10 @@ def send_notification(client: HTTPClient, **args):
     """
     Sends notification for a MatterMost channel
     """
-    demisto.debug(f'MM: Sending notification with {args=}')
-    to = argToList(args.get('to', ''))
-    entry = args.get('entry')
-    channel_name = args.get('channel', '')
+    demisto.debug(f"MM: Sending notification with {args=}")
+    to = argToList(args.get("to", ""))
+    entry = args.get("entry")
+    channel_name = args.get("channel", "")
     message_to_send = args.get("message", "")
     ignore_add_url = argToBoolean(args.get("ignoreAddURL", False))
     mattermost_ask = argToBoolean(args.get("mattermost_ask", False))
@@ -1687,31 +1686,30 @@ def send_notification(client: HTTPClient, **args):
         demisto.debug(f"MM: Found entitlement, saving message to context: {entitlement}")
         save_entitlement(entitlement, message_id, reply, expiry, default_response, to if to else channel_id)
     return CommandResults(
-        readable_output=f'Message sent to MatterMost successfully. Message ID is: {message_id}',
-        raw_response=raw_data
+        readable_output=f"Message sent to MatterMost successfully. Message ID is: {message_id}", raw_response=raw_data
     )
 
 
 def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Lists groups """
-    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
-    limit = arg_to_number(args.get('limit', ''))
-    q = args.get('group', '')
+    """Lists groups"""
+    page = arg_to_number(args.get("page", DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get("limit", ""))
+    q = args.get("group", "")
     group_details: list[Any] = []
     if limit:
         page = DEFAULT_PAGE_NUMBER
         page_size = limit
 
-    params = {'page': page, 'per_page': page_size}
+    params = {"page": page, "per_page": page_size}
     if q:
-        params['q'] = q
+        params["q"] = q
     group_details = client.list_groups_request(params)
 
-    hr = tableToMarkdown('Groups:', group_details, headers=['name', 'display_name', 'description', 'id'])
+    hr = tableToMarkdown("Groups:", group_details, headers=["name", "display_name", "description", "id"])
     return CommandResults(
-        outputs_prefix='Mattermost.Groups',
-        outputs_key_field='id',
+        outputs_prefix="Mattermost.Groups",
+        outputs_key_field="id",
         outputs=group_details,
         raw_response=group_details,
         readable_output=hr,
@@ -1719,37 +1717,40 @@ def list_groups_command(client: HTTPClient, args: dict[str, Any]) -> CommandResu
 
 
 def list_group_members_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ List the members of a group """
-    group_id = args.get('group_id', '')
-    page = arg_to_number(args.get('page', DEFAULT_PAGE_NUMBER))
-    page_size = arg_to_number(args.get('page_size', DEFAULT_PAGE_SIZE))
-    limit = arg_to_number(args.get('limit', ''))
+    """List the members of a group"""
+    group_id = args.get("group_id", "")
+    page = arg_to_number(args.get("page", DEFAULT_PAGE_NUMBER))
+    page_size = arg_to_number(args.get("page_size", DEFAULT_PAGE_SIZE))
+    limit = arg_to_number(args.get("limit", ""))
     member_details = {}
     if limit:
         page = DEFAULT_PAGE_NUMBER
         page_size = limit
 
-    params = {'page': page, 'per_page': page_size}
+    params = {"page": page, "per_page": page_size}
     member_details = client.list_group_members_request(group_id, params)
 
-    hr = tableToMarkdown(f'Group {group_id} members ({len(member_details.get("members",[]))}/'
-                         f'{member_details.get("total_member_count", "Unknown")}):', member_details.get("members", []),
-                         headers=['username', 'email', 'id'])
+    hr = tableToMarkdown(
+        f'Group {group_id} members ({len(member_details.get("members",[]))}/'
+        f'{member_details.get("total_member_count", "Unknown")}):',
+        member_details.get("members", []),
+        headers=["username", "email", "id"],
+    )
     return CommandResults(
-        outputs_prefix='Mattermost.Members',
-        outputs_key_field='id',
+        outputs_prefix="Mattermost.Members",
+        outputs_key_field="id",
         outputs=member_details.get("members", []),
         readable_output=hr,
-        raw_response=member_details
+        raw_response=member_details,
     )
 
 
 def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Adds member(s) to a group """
-    group_id = args.get('group_id', '')
-    user_ids = argToList(args.get('user_ids', ''))
+    """Adds member(s) to a group"""
+    group_id = args.get("group_id", "")
+    user_ids = argToList(args.get("user_ids", ""))
 
-    data = {'user_ids': user_ids}
+    data = {"user_ids": user_ids}
     try:
         response = client.add_group_member_request(group_id, data)
     except DemistoException as ex:
@@ -1760,21 +1761,19 @@ def add_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Comman
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was added to the group successfully, with group ID: '
-                  f'{group_id}')
+        hr.append(
+            f'The member {user_details.get("username", user)} was added to the group successfully, with group ID: ' f'{group_id}'
+        )
 
-    return CommandResults(
-        readable_output="\n".join(hr),
-        raw_response=response
-    )
+    return CommandResults(readable_output="\n".join(hr), raw_response=response)
 
 
 def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Removes member(s) form a group """
-    group_id = args.get('group_id', '')
-    user_ids = argToList(args.get('user_ids', ''))
+    """Removes member(s) form a group"""
+    group_id = args.get("group_id", "")
+    user_ids = argToList(args.get("user_ids", ""))
 
-    data = {'user_ids': user_ids}
+    data = {"user_ids": user_ids}
     try:
         response = client.remove_group_member_request(group_id, data)
     except DemistoException as ex:
@@ -1787,31 +1786,29 @@ def remove_group_member_command(client: HTTPClient, args: dict[str, Any]) -> Com
     hr = []
     for user in user_ids:
         user_details = client.get_user_request(user)
-        hr.append(f'The member {user_details.get("username", user)} was removed from the group successfully, with group ID:'
-                  f' {group_id}')
+        hr.append(
+            f'The member {user_details.get("username", user)} was removed from the group successfully, with group ID:'
+            f' {group_id}'
+        )
 
-    return CommandResults(
-        readable_output="\n".join(hr),
-        raw_response=response
-    )
+    return CommandResults(readable_output="\n".join(hr), raw_response=response)
 
 
 def set_channel_role_command(client: HTTPClient, args: dict[str, Any]) -> CommandResults:
-    """ Set channel role for a channel member """
-    channel_id = args.get('channel_id', '')
-    user_id = args.get('user_id', '')
+    """Set channel role for a channel member"""
+    channel_id = args.get("channel_id", "")
+    user_id = args.get("user_id", "")
     channel_role = "channel_user" + (" channel_admin" if args.get("role", "member").lower() == "admin" else "")
 
     raw_response = client.set_channel_role_request(channel_id, user_id, channel_role)
 
     user_details = client.get_user_request(user_id)
-    hr = f'Set channel role for {user_details.get("username", user_id)} successfully to ' \
-         f'{"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'
-
-    return CommandResults(
-        readable_output=hr,
-        raw_response=raw_response
+    hr = (
+        f'Set channel role for {user_details.get("username", user_id)} successfully to '
+        f'{"Admin" if args.get("role", "admin").lower() == "admin" else "Member"}.'
     )
+
+    return CommandResults(readable_output=hr, raw_response=raw_response)
 
 
 """ MAIN FUNCTION """
@@ -1914,9 +1911,9 @@ def main():  # pragma: no cover
             return_results(get_team_command(client, args))
         elif command == "mattermost-list-channels":
             return_results(list_channels_command(client, args))
-        elif command == 'mattermost-list-private-channels-for-user':
+        elif command == "mattermost-list-private-channels-for-user":
             return_results(list_private_channels_for_user_command(client, args))
-        elif command == 'mattermost-create-channel':
+        elif command == "mattermost-create-channel":
             return_results(create_channel_command(client, args))
         elif command == "mattermost-add-channel-member":
             return_results(add_channel_member_command(client, args))
@@ -1930,15 +1927,15 @@ def main():  # pragma: no cover
             return_results(close_channel_command(client, args))
         elif command == "mattermost-send-file":
             return_results(send_file_command(client, args))
-        elif command == 'mattermost-list-groups':
+        elif command == "mattermost-list-groups":
             return_results(list_groups_command(client, args))
-        elif command == 'mattermost-list-group-members':
+        elif command == "mattermost-list-group-members":
             return_results(list_group_members_command(client, args))
-        elif command == 'mattermost-add-group-member':
+        elif command == "mattermost-add-group-member":
             return_results(add_group_member_command(client, args))
-        elif command == 'mattermost-remove-group-member':
+        elif command == "mattermost-remove-group-member":
             return_results(remove_group_member_command(client, args))
-        elif command == 'mattermost-set-channel-role':
+        elif command == "mattermost-set-channel-role":
             return_results(set_channel_role_command(client, args))
         else:
             raise DemistoException("Unrecognized command: " + demisto.command())

@@ -14,8 +14,9 @@ BUILD_VERSION = "1247804"
 # To use apiCall, the machine must have a version greater than 8.7.0-1247804,
 # and is_using_engine()=False.
 IS_CORE_AVAILABLE = (
-    (is_xsiam() or is_platform()) and is_demisto_version_ge(
-        version=SERVER_VERSION, build_number=BUILD_VERSION) and not is_using_engine()
+    (is_xsiam() or is_platform())
+    and is_demisto_version_ge(version=SERVER_VERSION, build_number=BUILD_VERSION)
+    and not is_using_engine()
 )
 
 
@@ -406,7 +407,7 @@ def convert_timeframe_string_to_json(time_to_convert: str) -> Dict[str, int]:
     try:
         time_to_convert_lower = time_to_convert.strip().lower()
         if time_to_convert_lower.startswith("between "):
-            tokens = time_to_convert_lower[len("between "):].split(" and ")
+            tokens = time_to_convert_lower[len("between ") :].split(" and ")
             if len(tokens) == 2:
                 time_from = dateparser.parse(tokens[0], settings={"TIMEZONE": "UTC"})
                 time_to = dateparser.parse(tokens[1], settings={"TIMEZONE": "UTC"})
