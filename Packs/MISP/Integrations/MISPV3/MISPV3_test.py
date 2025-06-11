@@ -963,7 +963,7 @@ def test_add_tag_error(mocker):
                     "name": "Could not attachTagToObject Tag",
                     "message": "Could not attachTagToObject Tag",
                     "url": "/tags/attachTagToObject",
-                    "errors": 'Failed to attach 1 tags. Reasons: {"0":"Local tags can only be added by users of the host organisation."}', # noqa: E501
+                    "errors": 'Failed to attach 1 tags. Reasons: {"0":"Local tags can only be added by users of the host organisation."}',  # noqa: E501
                 },
             )
         },
