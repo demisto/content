@@ -256,7 +256,8 @@ def classify_hashes_by_type(file_hashes: list[str]) -> dict[str, list[str]]:
 
     for file_hash in file_hashes:
         hash_type = get_hash_type(file_hash).upper()
-        hashes_by_type[hash_type].append(file_hash)
+        if file_hash not in hashes_by_type.get(hash_type, []):
+            hashes_by_type[hash_type].append(file_hash)
 
     return hashes_by_type
 
@@ -582,7 +583,7 @@ def search_file_indicator(
     """
     demisto.debug(f"Starting to search for File indicator with values: {file_hashes}.")
     try:
-        value_in_hashes = " or ".join([f"value: {file_hash}" for file_hash in file_hashes])
+        value_in_hashes = " or ".join({f"value: {file_hash}" for file_hash in file_hashes})
         search_results = IndicatorsSearcher(query=f"type:File and ({value_in_hashes})", size=len(file_hashes))
 
     except Exception as e:
@@ -750,8 +751,9 @@ def summarize_command_results(
             summary["TIM Verdict"] = DBOT_SCORE_TO_VERDICT.get(tim_score, "Unknown")
 
             if file_context_for_hash:
-                summary["Message"] = f"Found data on file from {len(file_context_for_hash)} sources."
-                summary["Sources"] = ", ".join(file_context.get("Source") for file_context in file_context_for_hash)
+                sources = {file_context.get("Source") for file_context in file_context_for_hash}
+                summary["Message"] = f"Found data on file from {len(sources)} sources."
+                summary["Sources"] = ", ".join(sorted(sources))
             else:
                 summary["Message"] = "Could not find data on file."
                 if external_enrichment is False:
@@ -765,6 +767,34 @@ def summarize_command_results(
         outputs=merged_context,
         readable_output=tableToMarkdown(name=f"File Enrichment result for {', '.join(file_hashes)}", t=summaries),
     )
+
+
+def warn_about_invalid_args(
+    invalid_hashes: list[str], enrichment_brands: list[str], executed_brands: list[str]
+) -> CommandResults | None:
+    """
+    Returns a warning war room entry about invalid `file_hash` and `enrichment_brands` argument values, if found.
+
+    Args:
+        invalid_hashes (list[str]): List of file hashes where the type was classified as "UNKNOWN".
+        enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
+        executed_brands (list[str]): List of brand names that returned execution results with context outputs.
+
+    Returns:
+        CommandResults | None: Warning command results if any invalid arguments, None otherwise.
+    """
+    warnings: dict[str, str] = {}
+    if invalid_hashes:
+        warnings["Skipped Hashes"] = ", ".join(invalid_hashes)
+
+    if skipped_brands := (set(enrichment_brands) - set(executed_brands)):
+        warnings["Skipped Source Brands"] = ", ".join(skipped_brands)
+
+    if not warnings:
+        return None
+
+    demisto.debug(f"Found {len(invalid_hashes)} invalid hashes and {len(skipped_brands)} invalid source brands.")
+    return CommandResults(readable_output=tableToMarkdown("Invalid inputs skipped", t=warnings), entry_type=EntryType.WARNING)
 
 
 """ SCRIPT FUNCTION """
@@ -794,8 +824,9 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     include_additional_fields: bool = argToBoolean(args.get("additional_fields", False))
 
     # Classify hashes by type to check validity and handle commands that only support specific types
-    hashes_by_type: dict[str, list[str]] = classify_hashes_by_type(file_hashes)
-    if len(hashes_by_type.get("UNKNOWN", [])) == len(file_hashes):  # If all hashes are of an unknown type, throw an error!
+    hashes_by_type: dict[str, list] = classify_hashes_by_type(file_hashes)
+    invalid_hashes = hashes_by_type.pop("UNKNOWN", [])
+    if len(invalid_hashes) == len(file_hashes):  # If all hashes are of an unknown type, throw an error!
         raise ValueError("None of the file hashes are valid. Supported types are: MD5, SHA1, SHA256, and SHA512.")
 
     per_command_context: dict[str, dict] = {}
@@ -846,18 +877,18 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         # If `verbose` argument is True, CommandResults are returned for every executed command in the script
         command_results.extend(verbose_command_results)
 
-        # Check if any brands were skipped (e.g. due to misspelling) and return a warning.
-        executed_brands = {
+        executed_brands = [
             file_context.get("Source")
             for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])  # type: ignore [attr-defined]
-        }
-        if skipped_brands := (set(enrichment_brands) - executed_brands):
-            command_results.append(
-                CommandResults(
-                    readable_output=f"Skipped brands: **{', '.join(skipped_brands)}**.",
-                    entry_type=EntryType.WARNING,
-                )
-            )
+        ]
+        # Warn about partially invalid `file_hash` and `enrichment_brands` argument values
+        warning_command_results = warn_about_invalid_args(
+            invalid_hashes=invalid_hashes,
+            enrichment_brands=enrichment_brands,
+            executed_brands=executed_brands,
+        )
+        if warning_command_results:
+            command_results.append(warning_command_results)
 
     return command_results
 
