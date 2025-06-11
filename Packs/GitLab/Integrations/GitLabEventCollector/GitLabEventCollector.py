@@ -201,17 +201,34 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
     """
 
     query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
-    audit_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
-    demisto.debug(f"Aggregated audits events: {len(audit_events)}")
+    try:
+        audit_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
+    except DemistoException as e:
+        if not e.res:
+            raise e
+        else:
+            demisto.debug(f"Encountered the following error when trying to get events with endpoint /audit_events: {e}")
+            demisto.debug("Moving to other event types")
+    else:
+        demisto.debug(f"Aggregated audits events: {len(audit_events)}")
 
     group_and_project_events = []
     for event_type in ["groups", "projects"]:
-        for obj_id in events_types_ids.get(f"{event_type}_ids", []):
-            query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
-            events = client.fetch_events(
-                query_params_url, last_run.get(event_type, {}), params, url_suffix=f"/{event_type}/{obj_id}/audit_events"
-            )
-            group_and_project_events.extend(events)
+        try:
+            for obj_id in events_types_ids.get(f"{event_type}_ids", []):
+                query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
+                events = client.fetch_events(
+                    query_params_url, last_run.get(event_type, {}), params, url_suffix=f"/{event_type}/{obj_id}/audit_events"
+                )
+                group_and_project_events.extend(events)
+        except DemistoException as e:
+            if not e.res:
+                raise e
+            else:
+                demisto.debug(f"Encountered the following error when trying to get events with endpoint /{event_type}/<obj_id>/audit_events: {e}")
+                demisto.debug("Moving to other event types")
+                continue
+
 
     demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
     return audit_events, group_and_project_events, last_run
