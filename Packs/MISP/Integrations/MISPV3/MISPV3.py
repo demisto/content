@@ -347,9 +347,7 @@ def replace_keys_from_misp_to_context_data(obj_to_build: dict | list | str) -> d
         return [replace_keys_from_misp_to_context_data(item) for item in obj_to_build]
     if isinstance(obj_to_build, dict):
         return {
-            (
-                MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)
-            ): replace_keys_from_misp_to_context_data(value)
+            (MISP_ENTITIES_TO_CONTEXT_DATA.get(key, key)): replace_keys_from_misp_to_context_data(value)
             for key, value in obj_to_build.items()
         }
     return obj_to_build
@@ -922,7 +920,7 @@ def get_events_related_to_scored_tag(all_attributes, found_tag):
 def remove_duplicated_related_events(related_events):
     related_events_no_duplicates = []
     for i in range(len(related_events)):
-        if related_events[i] not in related_events[i + 1:]:
+        if related_events[i] not in related_events[i + 1 :]:
             related_events_no_duplicates.append(related_events[i])
     return related_events_no_duplicates
 
@@ -1426,6 +1424,7 @@ def add_tag(demisto_args: dict, is_attribute=False):
         raw_response=response,
     )
 
+
 def validate_existing_tag(tag: str, response: dict[str, Any]) -> bool:
     """_summary_
 
@@ -1436,9 +1435,9 @@ def validate_existing_tag(tag: str, response: dict[str, Any]) -> bool:
     Returns:
         bool: _description_
     """
-    for attribute_tag in response.get('Attribute', [])[0].get('Tag', {}):
-        demisto.debug(f'Got tag {attribute_tag} in attribute')
-        if attribute_tag.get('name') == tag:
+    for attribute_tag in response.get("Attribute", [])[0].get("Tag", {}):
+        demisto.debug(f"Got tag {attribute_tag} in attribute")
+        if attribute_tag.get("name") == tag:
             return True
 
     return False
