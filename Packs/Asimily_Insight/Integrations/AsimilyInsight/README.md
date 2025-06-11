@@ -269,7 +269,7 @@ ${pending_device_count} devices matching search is not fetched. Fetch count is l
 
 #### Default Playbook
 
-To enrich incident with corresponding asset information. We published a default simple Playbook for the two custom incident types to call the `asimily-get-assetdetails` to retrieve asset information and store in Context Data (Under Asimily->Asset). 
+To enrich incident with corresponding asset information. We published a default simple Playbook for the two custom incident types to call the `asimily-get-assetdetails` to retrieve asset information and store in Context Data (Under  `Asimily`->`Asset`). 
 
 In the custom incident Layout, we also added a section to display such information.
 
