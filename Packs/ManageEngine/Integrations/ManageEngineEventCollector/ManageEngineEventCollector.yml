@@ -46,7 +46,7 @@ configuration:
   type: 8
   section: Collect
   required: false
-description: ManageEngine EndpointCentral event collector integration for Cortex XSIAM.
+description: ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console..
 display: ManageEngine
 name: ManageEngine
 script:

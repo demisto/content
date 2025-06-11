@@ -51,6 +51,26 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.client_code = client_code
 
+    def get_access_token_request(self, data: dict) -> dict:
+        """Token http_request wrapper.
+
+        Args:
+            data (dict): {"client_id":,
+                          "client_secret":
+                          "grant_type":"refresh_token"/"authorization_code"
+                          "refresh_token"/"code":}
+
+        Returns:
+            dict: The response
+        """
+        return self._http_request(
+            method="POST",
+            full_url=ENDPOINT_TO_ZOHO_ACCOUNTS[self._base_url] + "/oauth/v2/token",
+            data=data,
+            resp_type="json",
+            headers={"Content-Type": "application/x-www-form-urlencoded"},
+        )
+
     def get_access_token(self) -> str:
         """
         Obtain or refresh an access token, caching it in the integration context.
@@ -91,13 +111,7 @@ class Client(BaseClient):
 
         demisto.debug("Asking for new tokens")
 
-        response = self._http_request(
-            method="POST",
-            full_url=ENDPOINT_TO_ZOHO_ACCOUNTS[self._base_url] + "/oauth/v2/token",
-            data=data,
-            resp_type="json",
-            headers={"Content-Type": "application/x-www-form-urlencoded"},
-        )
+        response = self.get_access_token_request(data)
 
         if "error" in response:
             demisto.debug("Error creating token")
@@ -106,7 +120,7 @@ class Client(BaseClient):
         new_ctx = {
             "refresh_token": ctx.get("refresh_token") or response.get("refresh_token"),
             "access_token": response.get("access_token"),
-            "expire_date": (now + timedelta(seconds=int(response.get("expires_in")) - 60)).isoformat(),
+            "expire_date": (now + timedelta(seconds=int(response.get("expires_in")) - 60)).isoformat(),  # type:ignore
         }
 
         demisto.debug(f"New access token acquired and stored. Expires at {new_ctx['expire_date']}")

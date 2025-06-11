@@ -2,7 +2,7 @@ ManageEngine Endpoint Central is a Unified Endpoint Management solution that hel
 
 # Endpoint Central Cloud Domains
 
-Endpoint Central cloud is hosted at multiple data centers, and therefore available on different domains. There are 7 different domains for Endpoint central cloud APIs, so you can use the one that is applicable to you.
+Endpoint Central cloud is hosted at multiple data centers, and therefore available on different domains. There are several domains for Endpoint Central Cloud APIs, so you can use the one that is applicable to you.
 
 
 | Data Centre  | Domain | EndpointCentral Server URI                 |
