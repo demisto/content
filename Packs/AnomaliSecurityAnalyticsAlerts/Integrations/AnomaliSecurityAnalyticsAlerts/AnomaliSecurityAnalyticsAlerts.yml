@@ -38,7 +38,7 @@ configuration:
 - display: Incident type
   name: incidentType
   type: 13
-  section: Connect
+  section: Collect
   required: false
 - display: Fetch query
   additionalinfo: Search query for fetching alerts. The default fetch query is "alert".
