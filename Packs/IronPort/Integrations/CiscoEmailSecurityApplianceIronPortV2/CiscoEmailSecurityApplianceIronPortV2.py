@@ -1386,6 +1386,10 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     search_option = "messages"
     file_sha_256 = args.get("file_sha_256")
     custom_query = args.get("custom_query")
+    demisto.debug(
+        f"The updated arguments are {sender_filter_value=} {recipient_filter_value=} {subject_filter_value=} "
+        f"{attachment_name_value=}"
+    )
 
     validate_related_arguments(
         args=args,

@@ -527,16 +527,16 @@ def test_message_search_command(
 
 def test_message_search_command_verify_input(mocker, mock_client):
     """
-        Scenario: Tracking message search, and the subject filter value has spaces and special chars.
-        Given:
-         - User has provided valid credentials.
-         - User provided pagination args.
-         - User provided filtering arguments with spaces and special chars.
-        When:
-         - cisco-esa-message-search command called.
-        Then:
-         - Ensure that the wanted params, with the utf-8 values are as expected.
-        """
+    Scenario: Tracking message search, and the subject filter value has spaces and special chars.
+    Given:
+     - User has provided valid credentials.
+     - User provided pagination args.
+     - User provided filtering arguments with spaces and special chars.
+    When:
+     - cisco-esa-message-search command called.
+    Then:
+     - Ensure that the wanted params, with the utf-8 values are as expected.
+    """
     from CiscoEmailSecurityApplianceIronPortV2 import message_search_command
 
     http_request = mocker.patch.object(mock_client, "_http_request")
