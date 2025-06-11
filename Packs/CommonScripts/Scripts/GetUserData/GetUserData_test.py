@@ -4,25 +4,21 @@ from GetUserData import (
     Command,
     Modules,
     ad_get_user,
-    # ad_get_user_manager,
     aws_iam_get_user,
     create_user,
-    enrich_data_with_source,
     get_output_key,
     get_outputs,
-    iam_get_user_command,
-    identityiq_search_identities,
-    identitynow_get_accounts,
     is_valid_args,
     main,
-    merge_accounts,
     msgraph_user_get,
     msgraph_user_get_manager,
     okta_get_user,
-    pingone_get_user,
     prepare_human_readable,
     run_execute_command,
     xdr_list_risky_users,
+    get_data,
+    prisma_cloud_get_user,
+    azure_get_risky_user,
 )
 from pytest_mock import MockerFixture
 
@@ -326,6 +322,7 @@ def test_create_user_with_additional_fields():
         },
         'Email': 'full@test.com',
         'ID': '123',
+        'RiskLevel ': 'Low',
         'Source': 'FullTestSource',
         'Username': 'fulluser'
     }
@@ -360,31 +357,12 @@ def test_create_user_without_additional_fields():
     expected = {
         'Email': 'full@test.com',
         'ID': '123',
+        'RiskLevel ': 'Low',
         'Source': 'FullTestSource',
-        'Username': 'fulluser'
+        'Username': 'fulluser',
     }
 
     assert result == expected
-# def test_create_account_with_additional_fields():
-#     """
-#     Given:
-#         Account information with additional fields.
-#     When:
-#         The create_account function is called with extra kwargs.
-#     Then:
-#         It should include the additional fields in the result.
-#     """
-#     source = "ExtraSource"
-#     username = "extrauser"
-#     extra_field = "extra_value"
-#
-#     result = create_user(source=source, username=username, extra_field=extra_field)
-#
-#     assert result == {
-#         "username": {"Value": "extrauser", "Source": "ExtraSource"},
-#         "extra_field": {"Value": "extra_value", "Source": "ExtraSource"},
-#     }
-#
 
 def test_create_user_with_single_item_list():
     """
@@ -441,212 +419,8 @@ def test_create_user_with_empty_fields():
         additional_fields=True
     )
 
-    assert user == {}
+    assert user == {'Source': 'EmptyFieldsSource'}
 
-
-# def test_enrich_data_with_source_simple():
-#     """
-#     Given:
-#         A simple dictionary with string values and a source string.
-#     When:
-#         The enrich_data_with_source function is called with this data.
-#     Then:
-#         The function returns a dictionary with each value wrapped in a dictionary containing 'Value' and 'Source' keys.
-#     """
-#     data = {"name": "John", "age": "30"}
-#     source = "TestSource"
-#
-#     result = enrich_data_with_source(data, source)
-#
-#     expected = {
-#         "name": {"Value": "John", "Source": "TestSource"},
-#         "age": {"Value": "30", "Source": "TestSource"},
-#     }
-#     assert result == expected
-
-
-# def test_enrich_data_with_source_nested(mocker):
-#     """
-#     Given:
-#         A dictionary with nested structures and a source string.
-#     When:
-#         The enrich_data_with_source function is called with this data.
-#     Then:
-#         The function returns a dictionary with all values, including nested ones, enriched with source information.
-#     """
-#     data = {
-#         "user": {
-#             "name": "Alice",
-#             "contacts": {"email": "alice@example.com", "phone": ["123-456-7890"]},
-#         }
-#     }
-#     source = "UserDB"
-#
-#     result = enrich_data_with_source(data, source)
-#
-#     expected = {
-#         "user": {
-#             "name": {"Value": "Alice", "Source": "UserDB"},
-#             "contacts": {
-#                 "email": {"Value": "alice@example.com", "Source": "UserDB"},
-#                 "phone": {"Value": "123-456-7890", "Source": "UserDB"},
-#             },
-#         }
-#     }
-#     assert result == expected
-#
-
-# def test_enrich_data_with_source_empty_elements(mocker):
-#     """
-#     Given:
-#         A dictionary with empty elements and a source string.
-#     When:
-#         The enrich_data_with_source function is called with this data.
-#     Then:
-#         The function returns a dictionary with empty elements removed and remaining elements enriched with source information.
-#     """
-#     mock_remove_empty = mocker.patch("GetUserData.remove_empty_elements", return_value={"name": "John"})
-#
-#     data = {"name": "John", "age": "", "email": None}
-#     source = "CleanDB"
-#
-#     result = enrich_data_with_source(data, source)
-#
-#     mock_remove_empty.assert_called_once_with(data)
-#     expected = {"name": {"Value": "John", "Source": "CleanDB"}}
-#     assert result == expected
-#
-
-# def test_merge_accounts_with_multiple_accounts():
-#     """
-#     Given:
-#         A list of multiple account dictionaries with various fields.
-#     When:
-#         The merge_accounts function is called with this list.
-#     Then:
-#         It should return a merged account dictionary with combined information from all input accounts.
-#     """
-#     # users = [
-#     #     {
-#     #         'ID': {'Value': 'user1', 'Source': 'Source1'},
-#     #         'Username': {'Value': 'user one', 'Source': 'Source1'},
-#     #         'Email': {'Value': 'user1@test.com', 'Source': 'Source1'},
-#     #         'AdditionalFields': {
-#     #             'display_name': {'Value': 'User One', 'Source': 'Source1'},
-#     #             'manager_email': {'Value': 'manager@test.com', 'Source': 'Source1'},
-#     #             'manager_display_name': {'Value': 'Manager One', 'Source': 'Source1'}
-#     #         }
-#     #     },
-#     #     {
-#     #         'Username': {'Value': 'user one', 'Source': 'Source2'},
-#     #         'Email': {'Value': '123-456-7890', 'Source': 'Source2'},
-#     #         'AdditionalFields': {
-#     #             'manager_email': {'Value': 'manager@test.com', 'Source': 'Source1'},
-#     #         }
-#     #     }
-#     # ]
-#     users = [
-#         {
-#             "Source": "Source1",
-#             'ID': 'user1',
-#             'Username': 'user one',
-#             'Email': 'user1@test.com',
-#             'AdditionalFields': {
-#                 'display_name': 'User One',
-#                 'manager_email': 'manager@test.com',
-#                 'manager_display_name': 'Manager One'
-#             }
-#         },
-#         {
-#             "Source": "Source2",
-#             'Username': 'user one',
-#             'Email': '123-456-7890',
-#             'AdditionalFields': {
-#                 'manager_email': 'manager@test.com',
-#             }
-#         }
-#     ]
-#
-#     result = merge_accounts(users)
-#     expected_result = {
-#         'AdditionalFields': {
-#             'display_name': [
-#                 {'Source': 'Source1', 'Value': 'User One'}
-#             ],
-#             'manager_display_name': [
-#                 {'Source': 'Source1', 'Value': 'Manager One'}
-#             ],
-#             'manager_email': [
-#                 {'Source': 'Source1', 'Value': 'manager@test.com'},
-#                 {'Source': 'Source1', 'Value': 'manager@test.com'}
-#             ]
-#         },
-#         'Email': [
-#             {'Source': 'Source1', 'Value': 'user1@test.com'},
-#             {'Source': 'Source2', 'Value': '123-456-7890'}
-#         ],
-#         'ID': [
-#             {'Source': 'Source1', 'Value': 'user1'}
-#         ],
-#         'Username': [
-#             {'Source': 'Source1', 'Value': 'user one'},
-#             {'Source': 'Source2', 'Value': 'user one'}
-#         ]
-#     }
-#     assert result == expected_result
-
-
-# def test_merge_accounts_with_nested_dictionaries():
-#     """
-#     Given:
-#         A list of account dictionaries with nested structures.
-#     When:
-#         The merge_accounts function is called with this list.
-#     Then:
-#         It should return a merged account dictionary with properly combined nested structures.
-#     """
-#     accounts = [
-#         {
-#             "personal_info": {
-#                 "name": {"Value": "John Doe", "Source": "Source1"},
-#                 "age": {"Value": 30, "Source": "Source1"},
-#             }
-#         },
-#         {
-#             "personal_info": {
-#                 "name": {"Value": "John Doe", "Source": "Source2"},
-#                 "address": {"Value": "123 Main St", "Source": "Source2"},
-#             }
-#         },
-#     ]
-#
-#     result = merge_accounts(accounts)
-#
-#     assert result == {
-#         "personal_info": {
-#             "name": [
-#                 {"Value": "John Doe", "Source": "Source1"},
-#                 {"Value": "John Doe", "Source": "Source2"},
-#             ],
-#             "age": [{"Value": 30, "Source": "Source1"}],
-#             "address": [{"Value": "123 Main St", "Source": "Source2"}],
-#         }
-#     }
-#
-
-# def test_merge_accounts_with_empty_list():
-#     """
-#     Given:
-#         An empty list of account dictionaries.
-#     When:
-#         The merge_accounts function is called with this empty list.
-#     Then:
-#         It should return an empty dictionary.
-#     """
-#     result = merge_accounts([])
-#
-#     assert result == {}
-#
 
 def test_prepare_human_readable_success():
     """
@@ -1029,87 +803,6 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
 
 
 class TestGetUserData:
-    def test_identityiq_search_identities(self, mocker: MockerFixture):
-        """
-        Given:
-            A Command object for identityiq_search_identities.
-        When:
-            The function is called with the Command object.
-        Then:
-            It returns the expected tuple of readable outputs and account output.
-        """
-        command = Command("SailPointIdentityIQ", "identityiq-search-identities", {"id": "123"})
-        mock_outputs = {
-            "id": "123",
-            "userName": "test_user",
-            "displayName": "Test User",
-            "name": {"formatted": "Test User"},
-            "emails": {"value": "test@example.com"},
-            "active": True,
-        }
-        expected_user = {
-            'AdditionalFields': {
-                'active': True,
-                'displayName': 'Test User',
-                'name': {'formatted': 'Test User'}
-            },
-            'Email': 'test@example.com',
-            'ID': '123',
-            'Source': 'SailPointIdentityIQ',
-            'Username': 'test_user'
-        }
-
-        mocker.patch(
-            "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
-        )
-        mocker.patch("GetUserData.get_output_key", return_value="IdentityIQ.Identity")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
-
-        result = identityiq_search_identities(command, additional_fields=True)
-
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        assert isinstance(result[0], list)
-        assert isinstance(result[1], dict)
-        assert result[1] == expected_user
-
-    def test_identitynow_get_accounts(self, mocker: MockerFixture):
-        """
-        Given:
-            A Command object for identitynow_get_accounts.
-        When:
-            The function is called with the Command object.
-        Then:
-            It returns the expected tuple of readable outputs and account output.
-        """
-        command = Command("SailPointIdentityNow", "identitynow-get-accounts", {"id": "456"})
-        mock_outputs = {"id": "456", "name": "test_account", "disabled": False}
-        expected_user = {
-            'AdditionalFields': {
-                'disabled': False
-            },
-            'ID': '456',
-            'Source': 'SailPointIdentityNow',
-            'Username': 'test_account'
-        }
-
-        mocker.patch(
-            "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
-        )
-        mocker.patch("GetUserData.get_output_key", return_value="IdentityNow.Account")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
-
-        result = identitynow_get_accounts(command, additional_fields=True)
-
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        assert isinstance(result[0], list)
-        assert isinstance(result[1], dict)
-        assert result[1] == expected_user
 
     def test_ad_get_user(self, mocker: MockerFixture):
         """
@@ -1181,11 +874,11 @@ class TestGetUserData:
         expected_account = {
             'AdditionalFields': {
                 'displayName': 'AD User',
-                'manager': ['CN=Manager,OU=Users,DC=example,DC=com'],
-                'memberOf': ['Group1'],
+                'manager': 'CN=Manager,OU=Users,DC=example,DC=com',
+                'memberOf': 'Group1',
                 'sAMAccountName': 'ad_user',
                 'userAccountControlFields': {'ACCOUNTDISABLE': False},
-                'whenCreated': ['2024-11-05 09:11:18+00:00']},
+                'whenCreated': '2024-11-05 09:11:18+00:00'},
             'Email': 'ad_user@example.com',
             'Source': 'Active Directory Query v2'}
 
@@ -1207,91 +900,6 @@ class TestGetUserData:
         assert len(result[1])
         assert "whenCreated" in result[1]["AdditionalFields"]
 
-    # def test_ad_get_user_manager(self, mocker: MockerFixture):
-    #     """
-    #     Given:
-    #         A Command object for ad_get_user_manager.
-    #     When:
-    #         The function is called with the Command object.
-    #     Then:
-    #         It returns the expected tuple of readable outputs and account output.
-    #     """
-    #     command = Command(
-    #         "Active Directory Query v2",
-    #         "ad-get-user",
-    #         {"dn": "CN=Manager,OU=Users,DC=example,DC=com"},
-    #     )
-    #     mock_outputs = {"displayName": "Manager Name", "mail": "manager@example.com"}
-    #     expected_account = {
-    #         "manager_email": {
-    #             "Value": "manager@example.com",
-    #             "Source": "Active Directory Query v2",
-    #         },
-    #         "manager_display_name": {
-    #             "Value": "Manager Name",
-    #             "Source": "Active Directory Query v2",
-    #         },
-    #     }
-    #
-    #     mocker.patch(
-    #         "GetUserData.run_execute_command",
-    #         return_value=([mock_outputs], "Human readable output", []),
-    #     )
-    #     mocker.patch("GetUserData.get_output_key", return_value="ActiveDirectory.Users")
-    #     mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-    #     mocker.patch("GetUserData.prepare_human_readable", return_value=[])
-    #
-    #     result = ad_get_user_manager(command)
-    #
-    #     assert isinstance(result, tuple)
-    #     assert len(result) == 2
-    #     assert isinstance(result[0], list)
-    #     assert isinstance(result[1], dict)
-    #     assert result[1] == expected_account
-
-    def test_pingone_get_user(self, mocker: MockerFixture):
-        """
-        Given:
-            A Command object for pingone_get_user.
-        When:
-            The function is called with the Command object.
-        Then:
-            It returns the expected tuple of readable outputs and account output.
-        """
-        command = Command("PingOne", "pingone-get-user", {"userId": "789"})
-        mock_outputs = {
-            "ID": "789",
-            "Username": "pingone_user",
-            "DisplayName": "PingOne User",
-            "Email": "pingone@example.com",
-            "Enabled": True,
-        }
-        expected_account = {
-            'AdditionalFields': {
-                'DisplayName': 'PingOne User',
-                'Enabled': True
-            },
-            'Email': 'pingone@example.com',
-            'ID': '789',
-            'Source': 'PingOne',
-            'Username': 'pingone_user'
-        }
-
-        mocker.patch(
-            "GetUserData.run_execute_command",
-            return_value=([mock_outputs], "Human readable output", []),
-        )
-        mocker.patch("GetUserData.get_output_key", return_value="PingOne.Account")
-        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
-        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
-
-        result = pingone_get_user(command, additional_fields=True)
-
-        assert isinstance(result, tuple)
-        assert len(result) == 2
-        assert isinstance(result[0], list)
-        assert isinstance(result[1], dict)
-        assert result[1] == expected_account
 
     def test_okta_get_user(self, mocker: MockerFixture):
         """
@@ -1464,7 +1072,7 @@ class TestGetUserData:
         outputs_key_field = "PaloAltoNetworksXDR"
         command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-        expected_account = {'ID': 'xdr_user', 'Source': 'Cortex XDR - IR', 'Username': 'xdr_user'}
+        expected_account = {'ID': 'xdr_user', 'RiskLevel ': 'HIGH', 'Source': 'Cortex XDR - IR', 'Username': 'xdr_user'}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1474,65 +1082,77 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = xdr_list_risky_users(command, user_name, outputs_key_field, additional_fields=True)
+        result = xdr_list_risky_users(command, outputs_key_field, additional_fields=True)
 
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], list)
         assert result[1] == expected_account
 
-    def test_iam_get_user_command(self, mocker: MockerFixture):
+
+    def test_azure_list_risky_users(self, mocker: MockerFixture):
         """
         Given:
-            User identification data for iam_get_user_command.
+            A Command object for azure_list_risky_users.
         When:
-            The iam_get_user_command function is called with the user data.
+            The function is called with the Command object.
         Then:
-            It returns the expected tuple of readable outputs and account outputs.
+            It returns the expected tuple of readable outputs and account output.
         """
-        user_id = "789"
-        user_name = "test_user"
-        user_email = "test@example.com"
-        domain = "example.com"
-
-        mock_outputs = [
-            {
-                "success": True,
-                "id": "789",
-                "brand": "TestBrand",
-                "username": "test_user",
-                "email": "test@example.com",
-                "active": True,
-            }
-        ]
-        expected_accounts = [{
-            'AdditionalFields': {'active': True, 'success': True},
-            'Email': 'test@example.com',
-            'ID': '789',
-            'Source': 'TestBrand',
-            'Username': 'test_user'
-        }]
+        user_name = "azure_user"
+        outputs_key_field = "AzureRiskyUsers.RiskyUser"
+        command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
+        mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
+        expected_account = {'ID': 'azure_user', 'RiskLevel ': 'HIGH', 'Source': 'Azure Risky Users', 'Username': 'azure_user'}
 
         mocker.patch(
             "GetUserData.run_execute_command",
-            return_value=(
-                [{"IAM.Vendor": mock_output} for mock_output in mock_outputs],
-                "Human readable output",
-                [],
-            ),
+            return_value=([mock_outputs], "Human readable output", []),
         )
-        mocker.patch("GetUserData.get_output_key", return_value="IAM.Vendor")
-        mocker.patch("GetUserData.get_outputs", side_effect=mock_outputs)
+        mocker.patch("GetUserData.get_output_key", return_value="AzureRiskyUsers.RiskyUser")
+        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = iam_get_user_command(user_id, user_name, user_email, domain, additional_fields=True)
+        result = azure_get_risky_user(command, additional_fields=True)
 
         assert isinstance(result, tuple)
         assert len(result) == 2
         assert isinstance(result[0], list)
-        assert isinstance(result[1], list)
-        assert result[1] == expected_accounts
+        assert result[1] == expected_account
 
+
+    def test_prisma_cloud_get_user(self, mocker: MockerFixture):
+        """
+        Given:
+            A Command object for prisma_cloud_get_user.
+        When:
+            The function is called with the Command object.
+        Then:
+            It returns the expected tuple of readable outputs and account output.
+        """
+        command = Command("PrismaCloud v2", "prisma-cloud-users-list", {"usernames": "prisma_user"})
+        mock_outputs = {"email": "user_email.com", "username": "prisma_user"}
+        expected_account = {
+            'Email': 'user_email.com',
+            'Source': 'PrismaCloud v2',
+            'Username': 'prisma_user'
+        }
+
+        mocker.patch(
+            "GetUserData.run_execute_command",
+            return_value=([mock_outputs], "Human readable output", []),
+        )
+        mocker.patch("GetUserData.get_output_key", return_value="PrismaCloud.Users")
+        mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
+        mocker.patch("GetUserData.prepare_human_readable", return_value=[])
+
+        result = prisma_cloud_get_user(command, additional_fields=True)
+
+        assert isinstance(result, tuple)
+        assert len(result) == 2
+        assert isinstance(result[0], list)
+        assert isinstance(result[1], dict)
+        assert result[1] == expected_account
 
 def test_main_successful_execution(mocker: MockerFixture):
     """
@@ -1561,22 +1181,18 @@ def test_main_successful_execution(mocker: MockerFixture):
     mocker.patch.object(Modules, 'is_brand_available', return_value=True)
 
     # Mock other necessary functions
-    mocker.patch("GetUserData.identitynow_get_accounts", return_value=([], {}))
     mocker.patch("GetUserData.ad_get_user", return_value=(["test"], {"Source": "test"}))
-    mocker.patch("GetUserData.pingone_get_user", return_value=([], {}))
     mocker.patch("GetUserData.okta_get_user", return_value=([], {}))
     mocker.patch("GetUserData.aws_iam_get_user", return_value=([], {}))
     mocker.patch("GetUserData.msgraph_user_get", return_value=([], {}))
-    mocker.patch("GetUserData.identityiq_search_identities", return_value=([], {}))
     mocker.patch("GetUserData.xdr_list_risky_users", return_value=([], {}))
-    mocker.patch("GetUserData.iam_get_user_command", return_value=([], []))
     mocker.patch("GetUserData.azure_get_risky_user", return_value=([], {}))
+    mocker.patch("GetUserData.prisma_cloud_get_user", return_value=([], {}))
     # Mock return_results
     mock_return_results = mocker.patch("GetUserData.return_results")
 
     # Call the main function
     main()
-    m = ''
 
     # Assert that return_results was called
     assert mock_return_results.called
@@ -1645,54 +1261,31 @@ def test_main_domain_without_username(mocker: MockerFixture):
     )
 
 
-def test_main_user_not_found(mocker: MockerFixture):
-    """
-    Given:
-        Valid user identification information is provided, but no user data is found.
-    When:
-        The main function is called.
-    Then:
-        The function should add the user to the users_not_found_list and return appropriate results.
-    """
-    # Mock demisto.args()
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={
-            "user_id": "123",
-            "user_name": "johndoe",
-            "user_email": "john@example.com",
-        },
-    )
+def test_get_data_with_found_user(mocker: MockerFixture):
+    modules = Modules({}, ["Brand1"])
 
-    # Mock demisto.getModules()
-    mocker.patch.object(demisto, "getModules", return_value={})
+    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
+    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
 
-    # Mock all user data retrieval functions to return empty results
-    mocker.patch("GetUserData.identitynow_get_accounts", return_value=([], {}))
-    mocker.patch("GetUserData.ad_get_user", return_value=([], {}, None))
-    mocker.patch("GetUserData.pingone_get_user", return_value=([], {}))
-    mocker.patch("GetUserData.okta_get_user", return_value=([], {}))
-    mocker.patch("GetUserData.aws_iam_get_user", return_value=([], {}))
-    mocker.patch("GetUserData.msgraph_user_get", return_value=([], {}))
-    mocker.patch("GetUserData.identityiq_search_identities", return_value=([], {}))
-    mocker.patch("GetUserData.xdr_list_risky_users", return_value=([], {}))
-    mocker.patch("GetUserData.iam_get_user_command", return_value=([], []))
+    # Mock other necessary functions
+    mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=(["test"], {"Source": "test", "Username": "test user"}))
 
-    # Mock return_results
-    mock_return_results = mocker.patch("GetUserData.return_results")
+    result = get_data(modules=modules, brand_name="Brand1", command_name="test_command",arg_name="test_arg", arg_value="test_value", cmd=mock_get_user, additional_fields=True)
 
-    # Call the main function
-    main()
+    assert result[1]
+    assert result[1].get("Status") == "found."
 
-    # Assert that return_results was called with the correct arguments
-    mock_return_results.assert_called_once()
-    args, _ = mock_return_results.call_args
-    assert len(args[0]) == 1
-    assert isinstance(args[0][0], CommandResults)
-    assert "User(s) not found" in args[0][0].readable_output
-    assert (
-        "123" in args[0][0].readable_output
-        or "johndoe" in args[0][0].readable_output
-        or "john@example.com" in args[0][0].readable_output
-    )
+
+def test_get_data_without_found_user(mocker: MockerFixture):
+    modules = Modules({}, ["Brand1"])
+
+    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
+    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
+
+    # Mock other necessary functions
+    mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=([], {"Source": "test"}))
+
+    result = get_data(modules=modules, brand_name="Brand1", command_name="test_command",arg_name="test_arg", arg_value="test_value", cmd=mock_get_user, additional_fields=True)
+
+    assert result[1]
+    assert result[1].get("Status") == "User not found: test_arg test_value."

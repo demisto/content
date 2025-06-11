@@ -97,37 +97,6 @@ def is_valid_args(command: Command):
     return is_valid
 
 
-def enrich_data_with_source(data: dict, source: str):
-    """
-    Enrich the provided data with source information.
-
-    This function recursively processes the input data, adding source information to each value
-    and handling nested structures.
-
-    Args:
-        data (dict): The input data to be enriched.
-        source (str): The source information to be added to each value.
-
-    Returns:
-        dict: The enriched data with source information added to each value.
-
-    Note:
-        - Empty elements are removed from the input data before processing.
-        - Single-element lists are unwrapped to their contained value.
-        - Nested dictionaries are processed recursively.
-    """
-    data = remove_empty_elements(data)
-    result = {}
-    for key, value in data.items():
-        if isinstance(value, list) and len(value) == 1:
-            value = value[0]
-        if isinstance(value, dict):
-            result[key] = enrich_data_with_source(value, source)
-        else:
-            result[key] = {"Value": value, "Source": source}
-    return result
-
-
 def create_user(
     source: str,
     id: Optional[str] = None,
@@ -164,44 +133,6 @@ def create_user(
     user = remove_empty_elements(user)
 
     return user
-
-
-def merge_accounts(accounts: list[dict[str, Any]]) -> dict[str, Any]:
-    """
-    Merge multiple account dictionaries into a single account.
-
-    This function merges a list of account dictionaries into a single account dictionary.
-    It handles nested dictionaries and special cases where a value is a dictionary with 'Value' and 'Source' keys.
-    The merged account is then converted to a Common.Account object and its context is returned.
-
-    Args:
-        accounts (list[dict[str, str]]): A list of account dictionaries to merge.
-
-    Returns:
-        dict[str, Any]: A merged account dictionary in the Common.Account context format.
-                        Returns an empty dictionary if the input list is empty.
-    """
-
-    def recursive_merge(target: dict, source: dict):
-        for key, value in source.items():
-            # Check if the value is a dictionary and has specific keys 'Value' and 'Source'
-            if isinstance(value, dict) and "Value" in value and "Source" in value:
-                if key not in target:
-                    target[key] = []
-                target[key].append(value)
-            elif isinstance(value, dict):
-                if key not in target:
-                    target[key] = {}
-                recursive_merge(target[key], value)
-            else:
-                target[key] = value
-
-    merged_account: dict[str, Any] = {}
-    for account in accounts:
-        recursive_merge(merged_account, account)
-
-    return merged_account
-    # return Common.Account(**merged_account).to_context()[Common.Account.CONTEXT_PATH] if merged_account else {}
 
 
 def prepare_human_readable(
@@ -573,6 +504,8 @@ def get_data(modules: Modules, brand_name: str, command_name: str,  arg_name: st
             outputs["Status"] = "found."
         return readable_outputs, outputs
     return [], {}
+
+
 """ MAIN FUNCTION """
 
 
