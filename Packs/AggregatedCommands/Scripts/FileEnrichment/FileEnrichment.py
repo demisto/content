@@ -846,6 +846,19 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         # If `verbose` argument is True, CommandResults are returned for every executed command in the script
         command_results.extend(verbose_command_results)
 
+        # Check if any brands were skipped (e.g. due to misspelling) and return a warning.
+        executed_brands = {
+            file_context.get("Source")
+            for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])  # type: ignore [attr-defined]
+        }
+        if skipped_brands := (set(enrichment_brands) - executed_brands):
+            command_results.append(
+                CommandResults(
+                    readable_output=f"Skipped brands: **{', '.join(skipped_brands)}**.",
+                    entry_type=EntryType.WARNING,
+                )
+            )
+
     return command_results
 
 
