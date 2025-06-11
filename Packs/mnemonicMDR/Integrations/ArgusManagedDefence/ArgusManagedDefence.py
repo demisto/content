@@ -60,7 +60,7 @@ from argus_api.lib.events.v1.pcap import get_pcap
 from argus_api.lib.pdns.v3.search import search_records
 from argus_api.lib.reputation.v1.observation import (
     fetch_observations_for_domain,
-    fetch_observations_for_i_p,
+    fetch_observations_for_ip,
 )
 from argus_api.lib.sampledb.v2.sample import (
     download_raw_sample,
@@ -1479,7 +1479,7 @@ def fetch_observations_for_i_p_command(args: dict) -> CommandResults:
     if not ip:
         raise ValueError("ip not specified")
 
-    result = fetch_observations_for_i_p(ip=ip)
+    result = fetch_observations_for_ip(ip=ip)
     if context_output == "true":
         return CommandResults(
             readable_output=tableToMarkdown(f'IP observations for "{ip}"', result["data"]),
