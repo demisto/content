@@ -341,19 +341,19 @@ def test_summarize_incidents():
     assert summarize_incidents(
         {"add_fields_to_summarize_context": "test"}, [{"id": "test", "CustomFields": {}}], platform="xsoar"
     ) == [
-        {
-            "closed": "n/a",
-            "created": "n/a",
-            "id": "test",
-            "incidentLink": "n/a",
-            "name": "n/a",
-            "owner": "n/a",
-            "severity": "n/a",
-            "status": "n/a",
-            "test": "n/a",
-            "type": "n/a",
-        }
-    ]
+               {
+                   "closed": "n/a",
+                   "created": "n/a",
+                   "id": "test",
+                   "incidentLink": "n/a",
+                   "name": "n/a",
+                   "owner": "n/a",
+                   "severity": "n/a",
+                   "status": "n/a",
+                   "test": "n/a",
+                   "type": "n/a",
+               }
+           ]
 
 
 @pytest.mark.parametrize(
@@ -412,3 +412,32 @@ def test_main_flow_with_limit(mocker, amount_of_mocked_incidents, args, expected
 
     assert return_results_mocker.called
     assert len(return_results_mocker.call_args[0][0].outputs) == expected_incidents_length
+
+
+def test_search_with_duplicates(mocker):
+    """
+        Given: Duplicated incidents from executing getIncidents.
+        When: Running the command
+        Then: Return incidents without duplications.
+    """
+    import SearchIncidentsV2
+
+    incidents = [[{"Contents": {"data": [{'id': '1', "name": "n/a"},
+                                         {'id': '2', "name": "n/a"},
+                                         {'id': '3', "name": "n/a"}]}}],
+                 {"data": [{'id': '2', "name": "n/a"},
+                           {'id': '3', "name": "n/a"},
+                           {'id': '4', "name": "n/a"}]},
+                 {"data": [{'id': '3', "name": "n/a"},
+                           {'id': '4', "name": "n/a"},
+                           {'id': '5', "name": "n/a"}]}
+                 ]
+    mocker.patch.object(
+        SearchIncidentsV2, "execute_command", side_effect=incidents
+    )
+    mocker.patch.object(
+        SearchIncidentsV2, "check_if_found_incident", return_value=True
+    )
+
+    _, inc, _ = SearchIncidentsV2.search_incidents({'size': 3, 'limit': 5})
+    assert len(inc) == 5
