@@ -754,8 +754,7 @@ def get_alert_by_id(client, alert_id, token, url):
         return None
 
     except Exception as e:
-        demisto.error(f"[get_alert_by_id] Error during HTTP request: {e}")
-        return None
+        raise DemistoException(f"[get_alert_by_id] Error during HTTP request: {str(e)}")
 
 
 def get_fetch_service_list(client, incident_collections, service_url, token):
@@ -867,8 +866,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
             last_update = last_update.astimezone(pytz.UTC)
 
     except Exception as e:
-        demisto.error(f"[get-modified-remote-data] Error parsing last_update: {e}")
-        return GetModifiedRemoteDataResponse([])
+        return_error(f"[get-modified-remote-data] Error parsing last_update: {e}")
 
     services = get_fetch_service_list(client, incident_collections, url, token)
     severities = get_fetch_severities(incident_severity)
@@ -892,8 +890,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
     if isinstance(ids, list):
         return GetModifiedRemoteDataResponse(ids)
     else:
-        demisto.error("[get-modified-remote-data] Invalid response format")
-        return GetModifiedRemoteDataResponse([])
+        return_error("[get-modified-remote-data] Invalid response format: Expected list of IDs")
 
 
 def get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry):
@@ -904,7 +901,6 @@ def get_remote_data_command(client, url, token, args, incident_collections, inci
         alert_id = remote_args.remote_incident_id
         demisto.debug(f"[get-remote-data] Parsed alert_id: {alert_id}")
     except Exception as e:
-        demisto.error(f"[get-remote-data] Error parsing args: {e}")
         return_error(f"[get-remote-data] Invalid arguments: {e}")
         return None
 
