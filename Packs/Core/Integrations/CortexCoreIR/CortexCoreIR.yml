@@ -4265,7 +4265,18 @@ script:
     - contextPath: Core.Indicator.vendors
       description: List representing the vendors who reported this indicator.
       type: List
-
+  - arguments:
+    - description: ID of an agent that supports the operation.
+      name: endpoint_id
+      required: true
+    - description: List of IPv6 or IPv4 to blocklist.
+      name: ip_list
+      required: true
+    - description: Number of minutes to block (Max 518,400 ).
+      name: duration
+      required: true
+    name: core-block-ip
+    description: Command to quickly block malicious or suspicious IP addresses directly from the Cortex Core IR interface.
   runonce: false
   script: '-'
   subtype: python3

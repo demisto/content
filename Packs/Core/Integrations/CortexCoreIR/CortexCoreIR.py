@@ -87,6 +87,25 @@ class Client(CoreClient):
         )
         return reply
 
+    def block_ip_request(self, endpoint: str, ip_list: list[str], duration: int) -> dict[str, str]:
+        demisto.debug("Block ip function")
+        results = {}
+        params = {
+            "direction": "both",
+            "endpoint_id": endpoint,
+            "duration": duration,
+        }
+        for ip_address in ip_list:
+            params["addresses"] = [ip_address]
+            demisto.debug(f"Request params: {params}")
+            response = self._http_request(
+                method="POST", headers=self._headers, url_suffix="/endpoints/block_ip", json_data={"request_data": params}
+            )
+            demisto.debug(f"Response: {response}")
+            results[ip_address] = response.get("reply", {}).get("group_action_id", "")
+
+        return results
+
 
 def report_incorrect_wildfire_command(client: Client, args) -> CommandResults:
     file_hash = args.get("file_hash")
@@ -515,6 +534,38 @@ def core_add_indicator_rule_command(client: Client, args: dict) -> CommandResult
     )
 
 
+def core_block_ip_command(client: Client, args: dict) -> CommandResults:
+    ip_list = argToList(args.get("ip_list", []))
+    demisto.debug(f"Blocking {len(ip_list)} addresses: {ip_list}")
+    endpoint_id = args.get("endpoint_id", "")
+    duration = arg_to_number(args.get("duration", 300))
+    group_dict = client.block_ip_request(endpoint=endpoint_id, ip_list=ip_list, duration=duration)  # type:ignore
+
+    result = []
+    for ip_address, action_id in group_dict.items():
+        reply = client.action_status_get(str(action_id))
+        data = reply.get("data") or {}
+        error_reasons = reply.get("errorReasons", {})
+
+        for endpoint_id, status in data.items():
+            action_result = {
+                "ip_address": ip_address,
+                "endpoint_id": endpoint_id,
+                "status": status,
+            }
+            demisto.debug(f"Action resutls: {action_result}")
+            if error_reason := error_reasons.get(endpoint_id):
+                action_result["ErrorReasons"] = error_reason
+                action_result["error_description"] = (
+                    error_reason.get("errorDescription")
+                    or get_missing_files_description(error_reason.get("missing_files"))
+                    or "An error occurred while processing the request."
+                )
+            result.append(action_result)
+    hr = tableToMarkdown(name="Block IP Results", t=result)
+    return CommandResults(readable_output=hr)
+
+
 def main():  # pragma: no cover
     """
     Executes an integration command
@@ -904,6 +955,9 @@ def main():  # pragma: no cover
 
         elif command == "core-add-indicator-rule":
             return_results(core_add_indicator_rule_command(client, args))
+
+        elif command == "core-block-ip":
+            return_results(core_block_ip_command(client, args))
 
         elif command in PREVALENCE_COMMANDS:
             return_results(handle_prevalence_command(client, command, args))
