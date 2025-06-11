@@ -1,4 +1,7 @@
 category: Analytics & SIEM
+sectionOrder:
+- Connect
+- Collect
 commonfields:
   id: Securonix
   version: -1
@@ -7,18 +10,22 @@ configuration:
   name: host
   type: 0
   required: false
+  section: Connect
 - display: Tenant
   name: tenant
   required: true
   type: 0
+  section: Connect
 - display: Username
   name: username
   required: true
   type: 0
+  section: Connect
 - display: Password
   name: password
   required: true
   type: 4
+  section: Connect
 - additionalinfo: The type of Securonix entity to fetch. Supported entities are "Incident" and "Threat".
   defaultvalue: Incident
   display: Type of entity to fetch
@@ -28,15 +35,18 @@ configuration:
   - Threat
   type: 15
   required: false
+  section: Collect
 - additionalinfo: Name of the tenant to fetch threats from. This parameter is optional for Non MSSP users.
   display: Tenant Name
   name: tenant_name
   type: 0
   required: false
+  section: Collect
 - display: Fetch incidents
   name: isFetch
   type: 8
   required: false
+  section: Collect
 - additionalinfo: |-
     Selecting "all" will fetch incidents updated in the given time range.
     Selecting "opened" will fetch incidents opened in the given time range.
@@ -50,6 +60,7 @@ configuration:
   - closed
   type: 15
   required: false
+  section: Collect
 - display: Set default incident severity
   name: default_severity
   options:
@@ -58,10 +69,12 @@ configuration:
   - High
   type: 15
   required: false
+  section: Collect
 - display: Incident type
   name: incidentType
   type: 13
   required: false
+  section: Collect
 - additionalinfo: |-
     The date or relative timestamp from where to start fetching incidents.
 
@@ -71,12 +84,14 @@ configuration:
   name: fetch_time
   type: 0
   required: false
+  section: Collect
 - defaultvalue: '200'
   additionalinfo: If the value is greater than 200, it will be considered as 200. The maximum is 200.
   display: The maximum number of incidents to fetch each time.
   name: max_fetch
   type: 0
   required: false
+  section: Collect
 - additionalinfo: The mirroring direction in which to mirror the incidents. You can mirror "Incoming" (from Securonix to XSOAR), "Outgoing" (from XSOAR to Securonix), or in both directions.
   defaultvalue: None
   display: Incident Mirroring Direction
@@ -88,6 +103,7 @@ configuration:
   - Incoming And Outgoing
   type: 15
   required: false
+  section: Collect
 - additionalinfo: |-
     If enabled, the integration will close the respective Securonix
     incident after fetching it in XSOAR. Following fields will be required for 
@@ -101,37 +117,44 @@ configuration:
   name: close_incident
   type: 8
   required: false
+  section: Collect
 - additionalinfo: If the Securonix incident is in any one of the state mentioned here, then the incident will be Closed on XSOAR. Supports comma-separated values.
   display: Securonix workflow state(s) that can be considered as Close state in XSOAR for Incoming mirroring
   name: close_states_of_securonix
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Provide an action name to map with XSOAR's active state. E.g. IN PROGRESS
   display: Securonix action name to map with XSOAR's active state for Outgoing mirroring
   name: active_state_action_mapping
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Provide a workflow status to map with XSOAR's active state. E.g. In Progress
   display: Securonix status to map with XSOAR's active state for Outgoing mirroring
   name: active_state_status_mapping
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Provide an action name to map with XSOAR's Closed state. E.g. CLOSED
   display: Securonix action name to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_action_mapping
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Provide a workflow status to map with XSOAR's closed state. E.g. Completed
   display: Securonix status to map with XSOAR's closed state for Outgoing mirroring
   name: closed_state_status_mapping
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Choose the tag to add to an entry to mirror it as a comment in Securonix.
   defaultvalue: comment
   display: Comment Entry Tag
   name: comment_tag
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Numbers of retries to be performed. (Recommended is 3)
   defaultvalue: '3'
   display: Securonix Retry Count
@@ -145,12 +168,14 @@ configuration:
   - '5'
   type: 15
   required: false
+  section: Collect
 - additionalinfo: The delay between two retries. Range in 30 to 300 Seconds (5 minutes). Anything less than 30 seconds is considered 30 seconds, and anything more than 300 seconds is considered 300 seconds. (Recommended is 30 seconds)
   defaultvalue: '30'
   display: Securonix Retry Delay
   name: securonix_retry_delay
   type: 0
   required: false
+  section: Collect
 - additionalinfo: Delay type of retry mechanism. (Recommended is Exponential)
   defaultvalue: Exponential
   display: Securonix Retry Delay Type
@@ -160,14 +185,19 @@ configuration:
   - Fixed
   type: 15
   required: false
+  section: Collect
 - display: Trust any certificate (not secure)
   name: unsecure
   type: 8
   required: false
+  section: Connect
+  advanced: true
 - display: Use system proxy settings
   name: proxy
   type: 8
   required: false
+  section: Connect
+  advanced: true
 description: Use the Securonix integration to manage incidents, threats, lookup tables, whitelists and watchlists.
 display: Securonix
 name: Securonix
@@ -592,6 +622,9 @@ script:
       name: query_id
     - description: "Provide the policy type for retrying if the violations are not found in the initial attempt. The types of policies that can be retried are: \"Land Speed\", \"TIER2\", \"DIRECTIVE\", \"BEACONING\"."
       name: policy_type
+    - defaultValue: '50'
+      description: Maximum number of violations to retrieve.
+      name: max
     description: Gets a list activity data for an account name.
     name: securonix-list-violation-data
     polling: true
@@ -1734,7 +1767,7 @@ script:
       required: true
     description: Deletes the entries from the lookup table.
     name: securonix-lookup-table-entries-delete
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   isfetch: true
   runonce: false
   script: '-'
