@@ -88,8 +88,14 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
         "owner",
         "created",
         "closed",
-        "alertLink" if platform == "x2" else "incidentLink",
     ]
+    if platform == "x2":
+        summarized_fields.append("alertLink")
+    elif platform == "unified_platform":
+        summarized_fields.append("issueLink")
+    else:
+        summarized_fields.append("incidentLink")
+
     if args.get("add_fields_to_summarize_context"):
         summarized_fields += args.get("add_fields_to_summarize_context", "").split(",")
         summarized_fields = [x.strip() for x in summarized_fields]  # clear out whitespace
@@ -103,8 +109,8 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
 
 
 def add_incidents_link(data: List, platform: str):
-    # For XSIAM links
-    if platform == "x2":
+    # For XSIAM links or Platform links
+    if platform == "x2" or platform == "unified_platform":
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for incident in data:
             incident_link = urljoin(server_url, f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
@@ -180,6 +186,8 @@ def search_incidents(args: Dict):  # pragma: no cover
             hr_prefix = f"{hr_prefix}\n"
         if platform == "x2":
             return f"{hr_prefix}Alerts not found.", {}, {}
+        elif platform == "unified_platform":
+            return f"{hr_prefix}Issues not found.", {}, {}
         return f"{hr_prefix}Incidents not found.", {}, {}
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
     all_found_incidents = res[0]["Contents"]["data"]
@@ -215,7 +223,7 @@ def search_incidents(args: Dict):  # pragma: no cover
             additional_headers = args.get("add_fields_to_summarize_context", "").split(",")
 
     headers: List[str]
-    if platform == "x2":
+    if platform == "x2" or platform == "unified_platform":
         headers = [
             "id",
             "name",
@@ -227,17 +235,28 @@ def search_incidents(args: Dict):  # pragma: no cover
             "owner",
             "targetprocessname",
             "username",
-            "alertLink",
         ]
-
         all_found_incidents = transform_to_alert_data(all_found_incidents)
-        md = tableToMarkdown(
-            name="Alerts found",
-            t=all_found_incidents,
-            headers=headers + additional_headers,
-            removeNull=True,
-            url_keys=["alertLink"],
-        )
+        if platform == "x2":
+            headers.extend("alertLink")
+            md = tableToMarkdown(
+                name="Alerts found",
+                t=all_found_incidents,
+                headers=headers + additional_headers,
+                removeNull=True,
+                url_keys=["alertLink"],
+            )
+        elif platform == "unified_platform":
+            headers.extend("issueLink")
+            all_found_incidents = transform_to_alert_data(all_found_incidents)
+            md = tableToMarkdown(
+                name="Issues found",
+                t=all_found_incidents,
+                headers=headers + additional_headers,
+                removeNull=True,
+                url_keys=["issueLink"],
+            )
+
     else:
         headers = ["id", "name", "severity", "status", "owner", "created", "closed", "incidentLink"]
         md = tableToMarkdown(

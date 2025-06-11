@@ -317,6 +317,7 @@ def test_includeinformational_logic(mocker, args, expected_filtered_args, expect
     "platform, version, link_type, expected_result",
     [
         ("x2", "", "alertLink", "alerts?action:openAlertDetails="),
+        ("unified_platform", "", "alertLink", "alerts?action:openAlertDetails="),
         ("xsoar", "6.10.0", "incidentLink", "#/Details/"),
         ("xsoar", "8.4.0", "incidentLink", "/Details/"),
     ],
@@ -338,6 +339,7 @@ def test_transform_to_alert_data():
 
 
 def test_summarize_incidents():
+    # XSOAR
     assert summarize_incidents(
         {"add_fields_to_summarize_context": "test"}, [{"id": "test", "CustomFields": {}}], platform="xsoar"
     ) == [
@@ -346,6 +348,42 @@ def test_summarize_incidents():
             "created": "n/a",
             "id": "test",
             "incidentLink": "n/a",
+            "name": "n/a",
+            "owner": "n/a",
+            "severity": "n/a",
+            "status": "n/a",
+            "test": "n/a",
+            "type": "n/a",
+        }
+    ]
+
+    # XSIAM
+    assert summarize_incidents(
+        {"add_fields_to_summarize_context": "test"}, [{"id": "test", "CustomFields": {}}], platform="x2"
+    ) == [
+        {
+            "closed": "n/a",
+            "created": "n/a",
+            "id": "test",
+            "alertLink": "n/a",
+            "name": "n/a",
+            "owner": "n/a",
+            "severity": "n/a",
+            "status": "n/a",
+            "test": "n/a",
+            "type": "n/a",
+        }
+    ]
+
+    # Platform
+    assert summarize_incidents(
+        {"add_fields_to_summarize_context": "test"}, [{"id": "test", "CustomFields": {}}], platform="unified_platform"
+    ) == [
+        {
+            "closed": "n/a",
+            "created": "n/a",
+            "id": "test",
+            "issueLink": "n/a",
             "name": "n/a",
             "owner": "n/a",
             "severity": "n/a",
