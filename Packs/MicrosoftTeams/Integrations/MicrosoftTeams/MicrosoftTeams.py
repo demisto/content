@@ -3256,7 +3256,7 @@ def create_messaging_endpoint_command():
         messaging_endpoint = urljoin(urljoin(xsoar_url, "instance/execute"), instance_name)
 
     else:  # XSIAM or XSOAR SAAS
-        if is_xsiam():
+        if is_xsiam() or is_platform():
             # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
             # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
             xsoar_url = xsoar_url.replace("xdr", "crtx", 1)

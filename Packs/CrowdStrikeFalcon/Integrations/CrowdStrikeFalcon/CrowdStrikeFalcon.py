@@ -413,7 +413,7 @@ def disable_for_xsiam():
     Raises:
         DemistoException: If command is being run on XSIAM.
     """
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         raise DemistoException("This command is not supported on this Cortex platform.")
 
 

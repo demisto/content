@@ -916,7 +916,7 @@ def main():
         global SERVER
         scheme = "http"
         host_name = server_link_parts.hostname
-        if is_xsiam():
+        if is_xsiam() or is_platform():
             # Replace the 'xdr' with 'crtx' in the hostname of XSIAM tenants
             # This substitution is related to this platform ticket: https://jira-dc.paloaltonetworks.com/browse/CIAC-12256.
             host_name = str(server_link_parts.hostname).replace(".xdr", ".crtx", 1)

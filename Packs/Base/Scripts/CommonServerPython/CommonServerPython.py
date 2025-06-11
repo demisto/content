@@ -8694,6 +8694,15 @@ def is_xsiam():
     return demisto.demistoVersion().get("platform") == "x2"
 
 
+def is_platform():
+    """Determines whether or not the platform is platform.
+
+    :return: True iff the platform is unified_platform.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
+
+
 def is_using_engine():
     """Determines whether or not the platform is using engine.
     NOTE:
