@@ -1558,6 +1558,7 @@ tasks:
       type: condition
       iscommand: false
       brand: ""
+      description: "Evaluate suspicious behavior"
     nexttasks:
       '#default#':
       - "89"
