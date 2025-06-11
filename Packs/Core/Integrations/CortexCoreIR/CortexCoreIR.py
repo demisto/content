@@ -87,19 +87,22 @@ class Client(CoreClient):
         )
         return reply
 
-    def block_ip_request(self, endpoint: str, ip_list: list[str], duration: int) -> dict[str, str]:
+    def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> dict[str, str]:
         demisto.debug("Block ip function")
         results = {}
-        params = {
-            "direction": "both",
-            "endpoint_id": endpoint,
-            "duration": duration,
+        payload = {
+            "request_data": {
+                "endpoint_id": endpoint_id,
+                "direction": "both",
+                "duration": duration,
+                "addresses": ip_list,  # list of one or many IPs
+            }
         }
         for ip_address in ip_list:
-            params["addresses"] = [ip_address]
-            demisto.debug(f"Request params: {params}")
+            payload["request_data"]["addresses"] = [ip_address]
+            demisto.debug(f"Request params: {payload}")
             response = self._http_request(
-                method="POST", headers=self._headers, url_suffix="/endpoints/block_ip", json_data={"request_data": params}
+                method="POST", headers=self._headers, url_suffix="/endpoints/block_ip", json_data=payload
             )
             demisto.debug(f"Response: {response}")
             results[ip_address] = response.get("reply", {}).get("group_action_id", "")
@@ -538,8 +541,8 @@ def core_block_ip_command(client: Client, args: dict) -> CommandResults:
     ip_list = argToList(args.get("ip_list", []))
     demisto.debug(f"Blocking {len(ip_list)} addresses: {ip_list}")
     endpoint_id = args.get("endpoint_id", "")
-    duration = arg_to_number(args.get("duration", 300))
-    group_dict = client.block_ip_request(endpoint=endpoint_id, ip_list=ip_list, duration=duration)  # type:ignore
+    duration = arg_to_number(args.get("duration")) or 300
+    group_dict = client.block_ip_request(endpoint_id=endpoint_id, ip_list=ip_list, duration=duration)
 
     result = []
     for ip_address, action_id in group_dict.items():
@@ -549,8 +552,7 @@ def core_block_ip_command(client: Client, args: dict) -> CommandResults:
 
         for endpoint_id, status in data.items():
             action_result = {
-                "ip_address": ip_address,
-                "endpoint_id": endpoint_id,
+                "ip_block_results": ip_address,
                 "status": status,
             }
             demisto.debug(f"Action resutls: {action_result}")
