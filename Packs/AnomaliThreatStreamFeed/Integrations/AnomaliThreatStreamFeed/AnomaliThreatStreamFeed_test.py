@@ -680,7 +680,7 @@ def test_create_relationships_multiple_related_entities():
 
     Given:
         - create_relationships_param is True.
-        - An IP indicator with multiple RDNS entries and a malware type.
+        - An domain indicator.
     When:
         - Calling create_relationships.
     Then:
@@ -920,7 +920,7 @@ def test_fetch_indicators_command_scenarios(mocker, test_case):
         - Calling fetch_indicators_command with the test case's parameters.
     Then:
         - Verifies that the command returns the expected next run timestamp and parsed indicators.
-        - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch, demisto logs)
+        - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch)
           are called correctly based on the scenario.
         - Handles expected exceptions.
     """
@@ -955,19 +955,15 @@ def test_fetch_indicators_command_scenarios(mocker, test_case):
         assert next_run_timestamp == test_case["expected_next_run_timestamp"]
         assert parsed_indicators_list == test_case["expected_parsed_indicators"]
 
-        # Assert parse_indicator_for_fetch calls (check number of calls for simplicity)
         if test_case["expected_parsed_indicators"]:
             # If parsing errors can occur, the number of calls might not equal len(expected_parsed_indicators)
-            # It should equal the number of raw indicators in http responses that *don't* cause an error.
+            # It should equal the number of raw indicators in http responses.
             num_raw_indicators_to_parse = 0
             for http_resp in test_case["mock_http_responses"]:
                 if isinstance(http_resp, dict) and "objects" in http_resp:
                     num_raw_indicators_to_parse += len(http_resp["objects"])
 
             # If there was a parsing error side effect, reduce the count of expected successful parses
-            # This logic needs to be more robust if multiple parsing errors are possible.
-            # For now, it assumes side_effect is either a single return or a list matching raw indicator count,
-            # and an exception means that specific call sequence for parse_indicator_for_fetch stopped.
             if isinstance(test_case["mock_parse_indicator_for_fetch_side_effect"], list):
                 expected_parse_calls = 0
                 for item in test_case["mock_parse_indicator_for_fetch_side_effect"]:
