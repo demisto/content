@@ -410,6 +410,8 @@ class IncidentType(Enum):
     IOA_EVENTS = "ioa_events"
     ON_DEMAND = "ods"
     OFP = "ofp"
+    NGSIEM = ":ngsiem:"
+    THIRD_PARTY = ":thirdparty:"
 
 
 MIRROR_DIRECTION = MIRROR_DIRECTION_DICT.get(demisto.params().get("mirror_direction"))
@@ -2505,8 +2507,11 @@ def get_remote_data_command(args: dict[str, Any]):
                 set_xsoar_entries(
                     updated_object, entries, remote_incident_id, detection_type, reopen_statuses_list
                 )  # sets in place
-        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections
-        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION, IncidentType.ON_DEMAND):
+        # for endpoint (in the new version) ,idp/ods/ofp/mobile detections/ngsiem detection/third party detection
+        elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+                               IncidentType.ON_DEMAND,
+                               IncidentType.NGSIEM,
+                               IncidentType.THIRD_PARTY):
             mirrored_data, updated_object, detection_type = get_remote_detection_data_for_multiple_types(remote_incident_id)
             if updated_object:
                 demisto.debug(f"Update {detection_type} detection {remote_incident_id} with fields: {updated_object}")
@@ -2544,6 +2549,10 @@ def find_incident_type(remote_incident_id: str):
         return IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION
     if IncidentType.ON_DEMAND.value in remote_incident_id:
         return IncidentType.ON_DEMAND
+    if IncidentType.NGSIEM.value in remote_incident_id:
+        return IncidentType.NGSIEM
+    if IncidentType.THIRD_PARTY.value in remote_incident_id:
+        return IncidentType.THIRD_PARTY
     demisto.debug(f"Unable to determine incident type for remote incident id: {remote_incident_id}")
     return None
 
@@ -2594,6 +2603,8 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     - Detection (not legacy)
     - OFP (Other File Protection)
     - ODS (On-Demand Scans)
+    - NGSIEM (Next-Generation Security Information and Event Management)
+    - THIRD PARTY Detection
 
     :type remote_incident_id: ``str``
     :param remote_incident_id: The incident id to return its information.
@@ -2629,6 +2640,14 @@ def get_remote_detection_data_for_multiple_types(remote_incident_id):
     if "ods" in mirrored_data["type"]:
         updated_object = {"incident_type": ON_DEMAND_SCANS_DETECTION}
         detection_type = "ods"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if "ngsiem" in mirrored_data["product"]:
+        updated_object = {"incident_type": NGSIEM_DETECTION}
+        detection_type = "ngsiem"
+        mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
+    if "thirdparty" in mirrored_data["product"]:
+        updated_object = {"incident_type": THIRD_PARTY_DETECTION}
+        detection_type = "thirdparty"
         mirroring_fields = CS_FALCON_DETECTION_INCOMING_ARGS
     set_updated_object(updated_object, mirrored_data, mirroring_fields)
     demisto.debug(f"in get_remote_detection_data_for_multiple_types {mirrored_data=} { mirroring_fields=} {updated_object=}")
@@ -2757,6 +2776,15 @@ def get_modified_remote_data_command(args: dict[str, Any]):
         raw_ids += get_detections_ids(
             filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+type:'ofp'"
         ).get("resources", [])
+    if NGSIEM_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'ngsiem'"
+        ).get("resources", [])
+    if THIRD_PARTY_DETECTION_FETCH_TYPE in fetch_types:
+        raw_ids += get_detections_ids(
+            filter_arg=f"updated_timestamp:>'{last_update_utc.strftime(DETECTION_DATE_FORMAT)}'+product:'thirdparty'"
+        ).get("resources", [])
+  
 
     modified_ids_to_mirror = list(map(str, raw_ids))
     demisto.debug(f"All ids to mirror in are: {modified_ids_to_mirror}")
@@ -2798,7 +2826,9 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"IDP/Mobile Detection updated successfully. Result: {result}")
-
+            # todo: add these conditions - mirror out
+            # elif incident_type == IncidentType.NGSIEM:
+            # elif incident_type == IncidentType.THIRD_PARTY:
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 
@@ -3586,7 +3616,10 @@ def fetch_detections_by_product_type(
                 detections.append(detection_to_context)
         detections = (
             truncate_long_time_str(detections, "occurred")
-            if product_type in {IncidentType.ON_DEMAND.value, IncidentType.OFP.value}
+            if product_type in {IncidentType.ON_DEMAND.value,
+                                IncidentType.OFP.value,
+                                IncidentType.NGSIEM,
+                                IncidentType.THIRD_PARTY}
             else detections
         )
         detections = filter_incidents_by_duplicates_and_limit(
