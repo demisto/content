@@ -2352,7 +2352,12 @@ def create_issue_command(
     results.append(ticket_results)
 
     if is_quick_action:
-        ticket_results.extended_payload = {'MirrorObject': mirror_obj}
+        demisto.results({
+            'Type': entryTypes['note'],
+            'ContentsFormat': formats['text'],
+            'Contents': 'MirrorObject created successfully.',
+            'ExtendedPayload': {'MirrorObject': mirror_obj}
+        })
 
     return results
 
