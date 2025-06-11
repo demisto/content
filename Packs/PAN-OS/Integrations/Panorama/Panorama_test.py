@@ -3908,13 +3908,14 @@ class TestHygieneFunctions:
         result = HygieneLookups.check_vulnerability_profiles(mock_topology)
         # Should return one issue, as no Vulnerability profile matches.
         assert len(result.result_data) == 1
-        
+
         # When both a good and bad profile exist and return_nonconforming_profiles is True, check we get 3 sets of details
-        VulnerabilityProfile.refreshall = MagicMock(return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()])
-        
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
+        )
+
         result = HygieneLookups.check_vulnerability_profiles(mock_topology, return_nonconforming_profiles=True)
         assert len(result.result_data) == 3
-
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
@@ -3933,7 +3934,7 @@ class TestHygieneFunctions:
         # Check when at least one good profile exists - should return no results
         result = HygieneLookups.check_spyware_profiles(mock_topology)
         assert not result.result_data
-        
+
         # Check that when return_nonconforming_profiles is True we get back 3 sets of details
         result = HygieneLookups.check_spyware_profiles(mock_topology, return_nonconforming_profiles=True)
         assert len(result.result_data) == 3
@@ -3962,12 +3963,13 @@ class TestHygieneFunctions:
         # Check when a good profile exists - should return no results
         result = HygieneLookups.check_url_filtering_profiles(mock_topology)
         assert result.result_data
-        
+
         # When both a good and bad profile exist and return_nonconforming_profiles is True, check we get 3 sets of details
-        URLFilteringProfile.refreshall = MagicMock(return_value=[mock_good_url_filtering_profile(), mock_bad_url_filtering_profile()])
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_good_url_filtering_profile(), mock_bad_url_filtering_profile()]
+        )
         result = HygieneLookups.check_url_filtering_profiles(mock_topology, return_nonconforming_profiles=True)
         assert len(result.result_data) == 3
-
 
     @patch("Panorama.Template.refreshall", return_value=mock_templates())
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
