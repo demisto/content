@@ -3,19 +3,20 @@
 	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Mapper",
-	"incidentSamples": null,
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
-	"keyTypeMap": {},
-	"locked": false,
-	"logicalVersion": 1,
 	"mapping": {
 		"Reliaquest Takedown Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"DS Takedown Attachments": {
+					"simple": "attachments"
+				},
+				"DS Takedown Comments": {
+					"simple": "comments"
+				},
+				"DS Takedown Targets": {
+					"simple": "targets"
+				},
 				"Domain Name": {
 					"simple": "brand.name"
 				},
@@ -112,15 +113,6 @@
 		}
 	},
 	"name": "Reliaquest Takedown Mapper",
-	"nameRaw": "Reliaquest Takedown Mapper",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
-	"system": false,
-	"toServerVersion": "",
-	"transformer": {},
 	"type": "mapping-incoming",
-	"unclassifiedCases": null,
-	"fromVersion": "6.9.0",
 	"version": -1
 }

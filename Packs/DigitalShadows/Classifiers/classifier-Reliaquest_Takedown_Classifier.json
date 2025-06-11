@@ -1,13 +1,8 @@
 {
 	"defaultIncidentType": "",
-	"definitionId": "",
 	"description": "",
 	"feed": false,
-	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Classifier",
-	"indicatorSamples": null,
-	"instanceIds": null,
-	"itemVersion": "",
 	"keyTypeMap": {
 		"brand-abuse": "Reliaquest Takedown Incident",
 		"copyright": "Reliaquest Takedown Incident",
@@ -25,21 +20,11 @@
 		"trademark": "Reliaquest Takedown Incident",
 		"vishing": "Reliaquest Takedown Incident"
 	},
-	"locked": false,
-	"logicalVersion": 0,
-	"mapping": null,
 	"name": "Reliaquest Takedown Classifier",
-	"nameRaw": "Reliaquest Takedown Classifier",
-	"packID": "",
-	"packName": "",
-	"sourceClassifierId": "",
 	"fromVersion": "6.9.0",
-	"system": false,
-	"toServerVersion": "",
 	"transformer": {
 		"simple": "type"
 	},
 	"type": "classification",
-	"unclassifiedCases": null,
 	"version": -1
 }
