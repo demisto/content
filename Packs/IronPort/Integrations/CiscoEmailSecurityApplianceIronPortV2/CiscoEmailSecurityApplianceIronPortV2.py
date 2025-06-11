@@ -1,6 +1,7 @@
 import ast
 import uuid
 from collections.abc import Callable
+import urllib.parse
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -1374,13 +1375,13 @@ def message_search_command(client: Client, args: Dict[str, Any]) -> CommandResul
     start_date = format_datetime(args["start_date"])
     end_date = format_datetime(args["end_date"])
     sender_filter_operator = args.get("sender_filter_operator")
-    sender_filter_value = args.get("sender_filter_value")
+    sender_filter_value = urllib.parse.quote(args.get("sender_filter_value", "").strip())
     recipient_filter_operator = args.get("recipient_filter_operator")
-    recipient_filter_value = args.get("recipient_filter_value")
+    recipient_filter_value = urllib.parse.quote(args.get("recipient_filter_value", "").strip())
     subject_filter_operator = args.get("subject_filter_operator")
-    subject_filter_value = args.get("subject_filter_value")
+    subject_filter_value = urllib.parse.quote(args.get("subject_filter_value", "").strip())
     attachment_name_operator = args.get("attachment_name_operator")
-    attachment_name_value = args.get("attachment_name_value")
+    attachment_name_value = urllib.parse.quote(args.get("attachment_name_value", "").strip())
     cisco_host = "All_Hosts"
     search_option = "messages"
     file_sha_256 = args.get("file_sha_256")
