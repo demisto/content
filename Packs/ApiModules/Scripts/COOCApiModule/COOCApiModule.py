@@ -4,7 +4,7 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
-from typing import Any, Optional, cast
+from typing import Any, Optional
 
 
 class CloudTypes(Enum):
@@ -40,94 +40,100 @@ class ErrorType(str, Enum):
     INTERNAL_ERROR = "InternalError"
 
 
-class HealthCheckResult:
-    @staticmethod
-    def ok() -> str:
-        return HealthStatus.OK
+class HealthCheckError:
+    def __init__(self, account_id: str, connector_id: str, message: str, error_type: ErrorType):
+        self.account_id = account_id
+        self.connector_id = connector_id
+        self.message = message
+        self.error_type = error_type
+        self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
-    @staticmethod
-    def error(
-        account_id: str,
-        connector_id: str,
-        message: str,
-        error: str,
-        error_type: ErrorType,
-        region: str = None,
-    ) -> CommandResults:
+    def to_dict(self) -> dict:
         # Determine classification based on error type
-        classification = HealthStatus.WARNING if error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
-        result = {
-            "account_id": account_id,
-            "connector_id": connector_id,
-            "message": message,
-            "error": error,
-            "error_type": error_type,
-            "classification": classification,
-            "timestamp": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
+        return {
+            "account_id": self.account_id,
+            "connector_id": self.connector_id,
+            "message": self.message,
+            "error": self.error_type,
+            "classification": self.classification,
         }
 
-        if region:
-            result["region"] = region
 
-        return CommandResults(outputs=result, outputs_prefix="HealthCheck", outputs_key_field="account_id")
+class HealthCheck:
+    """Health check results container for cloud connector."""
 
-    @staticmethod
-    def aggregate_results(results: list[CommandResults]) -> str | CommandResults:
+    def __init__(self, connector_id: str):
+        self.errors: list[HealthCheckError] = []
+        self.connector_id = connector_id
+
+    def error(self, error: HealthCheckError) -> None:
         """
-        Aggregates health check results by keeping only the most severe error for each account.
+        Adds a health check error to the results.
 
         Args:
-            results: List of CommandResults from health checks
+            error (HealthCheckError): The error to add to the results.
+        """
+        self.errors.append(error)
+
+    def summarize(self) -> CommandResults | str:
+        """Summarizes the health check results by calculating severity based on error classifications.
 
         Returns:
-            Either "ok" string or CommandResults with appropriate EntryType
+            CommandResults | str:
+                - If errors exist: CommandResults object with severity level and error details, otherwise "ok".
         """
-        if not results:
-            return HealthCheckResult.ok()
 
-        # Group by account_id and keep only the most severe result for each account
-        accounts_results: dict[str, dict[str, Any]] = {}
-        overall_status = HealthStatus.OK
+        def _calculate_severity() -> int:
+            """
+            Calculates the severity level based on error classifications.
+            """
+            return EntryType.ERROR if HealthStatus.ERROR in [error.classification for error in self.errors] else EntryType.WARNING
 
-        for result in results:
-            if not isinstance(result, CommandResults):
-                continue
+        def _aggregate_error_messages(errors: list[HealthCheckError]) -> str:
+            """
+            Combines multiple error messages into a single string with line breaks.
+            """
+            return "\n".join([error.message for error in errors])
 
-            # Handle outputs safely with type casting
-            outputs = cast(dict[str, Any], result.outputs) if hasattr(result, "outputs") else None
-            if not outputs:
-                continue
+        def _aggregate_errors() -> list[dict]:
+            """
+            Aggregates errors by account and error type.
+            """
+            # Structure: {account_id: {error_type: [errors]}}
+            aggregated_by_account_and_type: dict[str, dict[ErrorType, list[HealthCheckError]]] = {}
 
-            # Extract values with type safety
-            account_id = str(outputs.get("account_id", ""))
-            if not account_id:
-                continue
+            for error in self.errors:
+                account_id = error.account_id
+                error_type = error.error_type
 
-            classification = outputs.get("classification", HealthStatus.OK)
-            current = accounts_results.get(account_id)
+                # Initialize nested dictionaries if they don't exist
+                if account_id not in aggregated_by_account_and_type:
+                    aggregated_by_account_and_type[account_id] = {}
 
-            # If we haven't seen this account or the new result is more severe, update it
-            if not current or (
-                (classification == HealthStatus.ERROR and current.get("classification") != HealthStatus.ERROR)
-                or (classification == HealthStatus.WARNING and current.get("classification") == HealthStatus.OK)
-            ):
-                accounts_results[account_id] = outputs
+                if error_type not in aggregated_by_account_and_type[account_id]:
+                    aggregated_by_account_and_type[account_id][error_type] = []
 
-                # Update overall status based on this result
-                if classification == HealthStatus.ERROR and overall_status != HealthStatus.ERROR:
-                    overall_status = HealthStatus.ERROR
-                elif classification == HealthStatus.WARNING and overall_status == HealthStatus.OK:
-                    overall_status = HealthStatus.WARNING
+                aggregated_by_account_and_type[account_id][error_type].append(error)
 
-        # If all accounts are OK, return OK
-        if not accounts_results or overall_status == HealthStatus.OK:
-            return HealthCheckResult.ok()
+            aggregated_errors = []
+            for account_id, error_types in aggregated_by_account_and_type.items():
+                for error_type, errors in error_types.items():
+                    combined_error = HealthCheckError(
+                        account_id=account_id,
+                        connector_id=self.connector_id,
+                        message=_aggregate_error_messages(errors),
+                        error_type=error_type,
+                    )
+                    aggregated_errors.append(combined_error.to_dict())
 
-        # Set appropriate EntryType and return final results
-        entry_type = EntryType.ERROR if overall_status == HealthStatus.ERROR else EntryType.WARNING
+            return aggregated_errors
 
-        return CommandResults(outputs=list(accounts_results.values()), outputs_prefix="HealthCheck", entry_type=entry_type)
+        return (
+            CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=_aggregate_errors())
+            if self.errors
+            else HealthStatus.OK
+        )
 
 
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
@@ -234,7 +240,9 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
     return all_accounts
 
 
-def _check_account_permissions(account: dict, connector_id: str, permission_check_func: Callable[[str, str], Any]) -> Any:
+def _check_account_permissions(
+    account: dict, connector_id: str, permission_check_func: Callable[[str, str], HealthCheckError]
+) -> HealthCheckError | None:
     """
     Helper function to check permissions for a single account.
     Args:
@@ -253,11 +261,10 @@ def _check_account_permissions(account: dict, connector_id: str, permission_chec
         return permission_check_func(account_id, connector_id)
     except Exception as e:
         demisto.error(f"Error checking permissions for account {account_id}: {str(e)}")
-        return HealthCheckResult.error(
+        return HealthCheckError(
             account_id=account_id,
             connector_id=connector_id,
             message=f"Failed to check permissions: {str(e)}",
-            error=str(e),
             error_type=ErrorType.INTERNAL_ERROR,
         )
 
@@ -271,7 +278,7 @@ def run_permissions_check_for_accounts(
         connector_id (str): The ID of the connector to fetch accounts for.
         permission_check_func (callable): Function that implements the permission check.
                                          Should accept account_id and connector_id parameters
-                                         and return a HealthCheckResult.
+                                         and return a HealthCheck.
         max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
     Returns:
         Either "ok" string or CommandResults with appropriate EntryType
@@ -282,9 +289,9 @@ def run_permissions_check_for_accounts(
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthCheckResult.ok()
+        return HealthStatus.OK
 
-    results = []
+    health_check_result = HealthCheck(connector_id)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_account = {
             executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
@@ -294,7 +301,7 @@ def run_permissions_check_for_accounts(
         for future in as_completed(future_to_account):
             result = future.result()
             if result is not None:
-                results.append(result)
+                health_check_result.error(result)
 
     # Process the results to get one entry per account with the most severe error
-    return HealthCheckResult.aggregate_results(results)
+    return health_check_result.summarize()

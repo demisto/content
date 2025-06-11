@@ -62,10 +62,10 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     "gcp-container-cluster-security-update": ["container.clusters.update", "container.clusters.get", "container.clusters.list"],
     # IAM commands
     "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
-    "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
+    # "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
     "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
     # Admin Directory commands
-    "gcp-iam-group-membership-delete": ["cloudidentity.groups.memberships.delete"],
+    # "gcp-iam-group-membership-delete": ["cloudidentity.groups.memberships.delete"],
     # "gcp-admin-user-update": ["admin.directory.user.update"],
     # "gcp-admin-user-password-reset": ["admin.directory.user.security"],
     # "gcp-admin-user-signout": ["admin.directory.user.security"],
@@ -812,7 +812,7 @@ def compute_instance_stop(creds: Credentials, args: dict[str, Any]) -> CommandRe
 
 def check_required_permissions(
     creds: Credentials, project_id: str, connector_id: str = None, command: str = ""
-) -> str | CommandResults:
+) -> HealthCheckError | None:
     """
     Verifies the credentials have all required permissions, using testIamPermissions to check access.
 
@@ -826,10 +826,12 @@ def check_required_permissions(
         command (str, optional): Specific command to check permissions for. If empty, checks all permissions.
 
     Returns:
-        str: Health check result string ("ok" if permissions are sufficient).
+        HealthCheckError | None:
+            - HealthCheckError if there are permission issues when using connector_id
+            - None if permissions are sufficient
 
     Raises:
-        DemistoException: If required permissions are missing.
+        DemistoException: If required permissions are missing and not using connector_id.
     """
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
     missing = set()
@@ -857,11 +859,10 @@ def check_required_permissions(
         except Exception as e:
             error_message = f"Failed to test IAM permissions: {str(e)}"
             if connector_id:
-                return HealthCheckResult.error(
+                return HealthCheckError(
                     account_id=project_id,
                     connector_id=connector_id,
                     message="Failed to test permissions for GCP integration",
-                    error=error_message,
                     error_type=ErrorType.PERMISSION_ERROR,
                 )
 
@@ -873,20 +874,19 @@ def check_required_permissions(
         error_message = "Missing permissions:\n" + "\n".join(error_lines)
 
         if connector_id:
-            return HealthCheckResult.error(
+            return HealthCheckError(
                 account_id=project_id,
                 connector_id=connector_id,
-                message="Missing required permissions for GCP integration",
-                error=error_message,
+                message="Missing required permissions for GCP integration: " + error_message,
                 error_type=ErrorType.PERMISSION_ERROR,
             )
 
         raise DemistoException(error_message)
 
-    return "ok" if not connector_id else HealthCheckResult.ok()
+    return None
 
 
-def health_check(project_id: str, connector_id: str) -> str | CommandResults:
+def health_check(project_id: str, connector_id: str) -> HealthCheckError | None:
     """
     Tests connectivity to GCP and checks for required permissions.
 
@@ -898,30 +898,24 @@ def health_check(project_id: str, connector_id: str) -> str | CommandResults:
         connector_id (str): The connector ID for the Cloud integration.
 
     Returns:
-        str: Health check result string ("ok" if successful).
-
-    Raises:
-        DemistoException: If the health check fails for any reason.
+        HealthCheckError or None: HealthCheckError if there's an issue, None if successful.
     """
     if not project_id:
-        error_message = "Missing required parameter 'project_id'"
-        return HealthCheckResult.error(
+        return HealthCheckError(
             account_id=project_id,
             connector_id=connector_id,
             message="Missing project ID for GCP integration",
-            error=error_message,
             error_type=ErrorType.INTERNAL_ERROR,
         )
+
     try:
         credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
         token = credential_data.get("access_token")
         if not token:
-            error_message = "Failed to retrieve GCP access token - token is missing from credentials"
-            return HealthCheckResult.error(
+            return HealthCheckError(
                 account_id=project_id,
                 connector_id=connector_id,
-                message="Failed to authenticate with GCP",
-                error=error_message,
+                message="Failed to authenticate with GCP - token is missing from credentials",
                 error_type=ErrorType.CONNECTIVITY_ERROR,
             )
 
@@ -930,15 +924,12 @@ def health_check(project_id: str, connector_id: str) -> str | CommandResults:
         return check_required_permissions(creds, project_id, connector_id)
     except Exception as e:
         error_message = str(e)
-        return HealthCheckResult.error(
+        return HealthCheckError(
             account_id=project_id,
             connector_id=connector_id,
-            message="Failed to connect to GCP",
-            error=error_message,
+            message=f"Failed to connect to GCP: {error_message}",
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
-
-        raise
 
 
 def test_module(creds: Credentials, args: dict[str, Any]) -> str:
