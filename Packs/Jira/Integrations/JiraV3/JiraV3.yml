@@ -724,7 +724,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-    - description: Deprecated. Please use expand_links.
+    - description: Deprecated. Please use expand_links. 
       name: expandLinks
       predefined:
       - 'true'
