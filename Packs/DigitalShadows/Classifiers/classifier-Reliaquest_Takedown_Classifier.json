@@ -1,13 +1,10 @@
 {
-	"brands": null,
-	"cacheVersn": 0,
 	"defaultIncidentType": "",
 	"definitionId": "",
 	"description": "",
 	"feed": false,
 	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Classifier",
-	"incidentSamples": null,
 	"indicatorSamples": null,
 	"instanceIds": null,
 	"itemVersion": "",

@@ -1,5 +1,5 @@
 This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns.
-This integration was integrated and tested with version xx of ReliaquestTakedown.
+This integration was integrated and tested with version 6.9.0 of ReliaquestTakedown.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -120,7 +120,7 @@ Downloads attachment for takedown.
 There is no context output for this command.
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown corresponding events (available from Cortex XSOAR version 6.0.0).
+You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown corresponding events (available from Cortex XSOAR version 6.9.0).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 

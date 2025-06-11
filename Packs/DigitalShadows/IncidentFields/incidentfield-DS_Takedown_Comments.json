@@ -4,9 +4,7 @@
 	"associatedTypes": [
 		"Reliaquest Takedown Incident"
 	],
-	"autoCompleteTags": null,
 	"breachScript": "",
-	"cacheVersn": 0,
 	"caseInsensitive": true,
 	"cliName": "dstakedowncomments",
 	"closeForm": false,
