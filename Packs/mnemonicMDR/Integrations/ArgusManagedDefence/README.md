@@ -1902,8 +1902,6 @@ List aggregated events.
 | Argus.Events.data.id | String | Event ID. | 
 
 
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
 ### argus-find-aggregated-events
 
 ***
@@ -2047,7 +2045,6 @@ Search for aggregated events (OSB! advanced method: look in API doc).
 | Argus.Events.data.id | String | Event ID. | 
 
 
-#### Context Output
 ### argus-get-payload
 
 ***

@@ -69,3 +69,6 @@ ignore=BA101,BA124
 
 [file:classifier-Argus_Case_5_9_9.json]
 ignore=BA106,BA101
+
+[file:playbook-Pull_Case_Metadata_-_Argus_Managed_Defence.yml]
+ignore=RM116
