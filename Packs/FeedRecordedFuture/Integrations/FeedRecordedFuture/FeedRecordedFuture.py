@@ -500,7 +500,7 @@ def fetch_indicators_command(client, indicator_type, risk_rule: str | None = Non
                         "tags": client.tags,
                         "recordedfutureriskscore": risk,
                         "recordedfutureriskrulecount": raw_json["RiskString"],
-                        "recordedfuturethreatassesment": raw_json["Criticality Label"]
+                        "recordedfuturethreatassessment": raw_json["Criticality Label"]
                     },
                     "score": score,
                 }
