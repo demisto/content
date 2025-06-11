@@ -531,9 +531,6 @@ Returns cases matching the defined case search criteria.
 | Argus.Cases.data.closedTime | String | Case Closed Time. | 
 | Argus.Cases.data.publishedTime | String | Case Published Time. | 
 
-| --- | --- | --- |
-| case_id | Case ID of Argus case. | Required |
-| comment | Attach a closing comment. | Optional |
 ### argus-close-case
 
 ***
@@ -687,9 +684,6 @@ Close an Argus case.
 | Argus.Case.data.closedTime | String | Case Closed Time. | 
 | Argus.Case.data.publishedTime | String | Case Published Time. | 
 
-| category | If set, assign given category to new case (by category shortname). . Possible values are: network-testing, unauthorized-access, dos, data-leakage, exposed-malicious, malicious-infection, poor-practice, reconnaissance, misconfigured, vpn-down, sensor-malfunctioning, not-receiving-traffic, false-positive, suspected-targeted-attack, duplicate, problem-managed, problem-customer, adware, network-connection-lost, failed-authentication, missing-log-sources, no-threat, phishing, argus-improvement, argus-bug. | Optional |
-| type | Type of case to create . Possible values are: operationalIncident, change, securityIncident, informational. | Required |
-| status | Status of case to create. If not set, system will select automatically. Creating a new case with status closed is not permitted. . Possible values are: pendingCustomer, pendingSoc, pendingVendor, pendingClose, workingSoc, workingCustomer. | Optional |
 ### argus-create-case
 
 ***
@@ -855,7 +849,6 @@ Create Argus case.
 | Argus.Case.data.closedTime | String | Case Closed Time. | 
 | Argus.Case.data.publishedTime | String | Case Published Time. | 
 
-| --- | --- | --- |
 ### argus-delete-case
 
 ***
@@ -1008,9 +1001,6 @@ Mark existing case as deleted.
 | Argus.Case.data.closedTime | String | Case Closed Time. | 
 | Argus.Case.data.publishedTime | String | Case Published Time. | 
 
-| --- | --- | --- |
-| Argus.Comment.responseCode | Number | API response metadata, response code of this request |
-| Argus.Comment.limit | Number | API response metadata, limit of results this request ran with |
 ### argus-delete-comment
 
 ***
@@ -1069,9 +1059,6 @@ Mark existing comment as deleted.
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time. | 
 | Argus.Comment.data.addedTime | String | Comment Added Time. | 
 
-| Argus.Comment.limit | Number | API response metadata, limit of results this request ran with |
-| Argus.Comment.offset | Number | API response metadata, the offset into the result-set of this query |
-| Argus.Comment.count | Number | API response metadata, total number of results this query has |
 ### argus-edit-comment
 
 ***
@@ -1131,9 +1118,6 @@ Edit existing comment.
 | Argus.Comment.data.lastUpdatedTime | String | Comment Last Updated Time. | 
 | Argus.Comment.data.addedTime | String | Comment Added Time. | 
 
-| Argus.Case.messages.message | String | Case Messages Message |
-| Argus.Case.messages.messageTemplate | String | Case Messages Message Template |
-| Argus.Case.messages.type | String | Case Messages Type |
 ### argus-get-case-metadata-by-id
 
 ***
@@ -1287,9 +1271,6 @@ Returns the basic case descriptor for the case identified by ID.
 | Argus.Case.data.closedTime | String | Case Closed Time. | 
 | Argus.Case.data.publishedTime | String | Case Published Time. | 
 
-| Argus.Attachments.messages.type | String | Attachment Messages Type |
-| Argus.Attachments.messages.field | String | Attachment Messages Field |
-| Argus.Attachments.messages.timestamp | Number | Attachment Messages Timestamp |
 ### argus-list-case-attachments
 
 ***
@@ -1343,9 +1324,6 @@ List attachments for an existing case.
 | Argus.Attachments.data.originEmailAddress | String | Attachment Origin Email Address. | 
 | Argus.Attachments.data.addedTime | String | Attachment Added Time. | 
 
-| Argus.Tags.data.key | String | Tag Key |
-| Argus.Tags.data.value | String | Tag Value |
-| Argus.Tags.data.addedTimestamp | Number | Tag Added Timestamp |
 ### argus-remove-case-tag-by-id
 
 ***
@@ -1396,9 +1374,7 @@ Remove existing tag by tag ID.
 | Argus.Tags.data.flags | String | Tag Flags. | 
 | Argus.Tags.data.addedTime | String | Tag Added Time. | 
 
-| Argus.Tags.data.addedTimestamp | Number | Tag Added Timestamp |
-| Argus.Tags.data.addedByUser.id | Number | Tag Added By User ID |
-| Argus.Tags.data.addedByUser.customerID | Number | Tag Added By User Customer ID |
+
 ### argus-remove-case-tag-by-key-value
 
 ***
@@ -1450,9 +1426,7 @@ Remove existing tag with key, value matching.
 | Argus.Tags.data.flags | String | Tag Flags. | 
 | Argus.Tags.data.addedTime | String | Tag Added Time. | 
 
-| Argus.Case.messages.message | String | Case Messages Message |
-| Argus.Case.messages.messageTemplate | String | Case Messages Message Template |
-| Argus.Case.messages.type | String | Case Messages Type |
+
 ### argus-update-case
 
 ***
@@ -1708,10 +1682,6 @@ Download specific attachment contents.
 | File.MD5 | String | The MD5 hash of the file. | 
 | File.Extension | String | The file extension. | 
 
-| Argus.Events.data.comments.user.customer.domain.name | String | Event Comments User Customer Domain Name |
-| Argus.Events.data.comments.user.domain.id | Number | Event Comments User Domain ID |
-| Argus.Events.data.comments.user.domain.name | String | Event Comments User Domain Name |
-| Argus.Events.data.comments.user.userName | String | Event Comments User User Name |
 ### argus-get-events-for-case
 
 ***
@@ -1819,9 +1789,7 @@ Fetch events associated with specified case.
 | Argus.Events.data.severity | String | Event Severity. | 
 | Argus.Events.data.id | String | Event ID. | 
 
-| Argus.Events.data.comments.user.customer.domain.name | String | Event Comments User Customer Domain Name |
-| Argus.Events.data.comments.user.domain.id | Number | Event Comments User Domain ID |
-| Argus.Events.data.comments.user.domain.name | String | Event Comments User Domain Name |
+
 ### argus-list-aggregated-events
 
 ***
@@ -2078,7 +2046,6 @@ Search for aggregated events (OSB! advanced method: look in API doc).
 | Argus.Events.data.severity | String | Event Severity. | 
 | Argus.Events.data.id | String | Event ID. | 
 
-| event_id | ID of related event. | Required |
 
 #### Context Output
 ### argus-get-payload
@@ -2118,9 +2085,7 @@ Fetch specified event payload.
 | Argus.Payload.data.type | String | Payload Type. | 
 | Argus.Payload.data.payload | String | Payload Payload. | 
 
-| Argus.Event.data.flags | Number | Event Flags |
-| Argus.Event.data.customerID | Number | Event Customer ID |
-| Argus.Event.data.aggregationKey | String | Event Aggregation Key |
+
 ### argus-get-pcap
 
 ***
@@ -2142,11 +2107,7 @@ Fetch specified event payload as PCAP.
 #### Context Output
 
 There is no context output for this command.
-| --- | --- | --- |
-| customer_id | Limit to customerID. | Optional |
-| signature | Limit to signature. | Optional |
-| ip | Limit to ip/network. | Optional |
-| start_timestamp | Limit to events after this timestamp (default is last 24 hours). | Optional |
+
 ### argus-get-event
 
 ***
@@ -2194,9 +2155,6 @@ Fetch specified event.
 | Argus.Event.data.aggregated | Boolean | Event Aggregated. | 
 | Argus.Event.data.encodedFlags | String | Event Encoded Flags. | 
 
-| Argus.NIDS.data.location.name | String | NIDS Location Name |
-| Argus.NIDS.data.location.timeZone | String | NIDS Location Time Zone |
-| Argus.NIDS.data.location.id | Number | NIDS Location ID |
 ### argus-list-nids-events
 
 ***
@@ -2307,9 +2265,7 @@ Simple search for NIDS events.
 | Argus.NIDS.data.flags | String | NIDS Flags. | 
 | Argus.NIDS.data.id | String | NIDS ID. | 
 
-| Argus.NIDS.data.properties.additionalProp3 | String | NIDS Properties Additional Prop 3 |
-| Argus.NIDS.data.comments.timestamp | Number | NIDS Comments Timestamp |
-| Argus.NIDS.data.comments.user.id | Number | NIDS Comments User ID |
+
 ### argus-find-nids-events
 
 ***
@@ -2507,9 +2463,7 @@ Search against PassiveDNS with criteria and return matching records.
 | Argus.PDNS.data.rrclass | String | PDNS Rrclass. | 
 | Argus.PDNS.data.rrtype | String | PDNS Rrtype. | 
 
-| Argus.ObservationsIP.data.lastSeen | Number | Observations IP Last Seen |
-| Argus.ObservationsIP.data.numObservations | Number | Observations IP Num Observations |
-| Argus.ObservationsIP.data.state | Number | Observations IP State |
+
 ### argus-fetch-observations-for-domain
 
 ***
