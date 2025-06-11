@@ -1,15 +1,61 @@
 {
+	"brands": null,
+	"cacheVersn": 0,
 	"defaultIncidentType": "",
+	"definitionId": "",
 	"description": "",
 	"feed": false,
+	"fromServerVersion": "",
 	"id": "Reliaquest Takedown Mapper",
-	"fromVersion": "6.10.0",
+	"incidentSamples": null,
+	"indicatorSamples": null,
+	"instanceIds": null,
+	"itemVersion": "",
+	"keyTypeMap": {},
+	"locked": false,
+	"logicalVersion": 1,
 	"mapping": {
-		"Reliaquest Takedown Type": {
+		"Reliaquest Takedown Incident": {
 			"dontMapEventToLabels": false,
 			"internalMapping": {
+				"Domain Name": {
+					"simple": "brand.name"
+				},
+				"Event Type": {
+					"simple": "type"
+				},
 				"External Last Updated Time": {
 					"simple": "updated"
+				},
+				"Source Create time": {
+					"simple": "created"
+				},
+				"Source Created By": {
+					"simple": "brand.created"
+				},
+				"Source Id": {
+					"simple": "id"
+				},
+				"Source Status": {
+					"simple": "status"
+				},
+				"Source Updated by": {
+					"simple": "brand.updated"
+				},
+				"dbotMirrorDirection": {
+					"simple": "dbotMirrorDirection"
+				},
+				"dbotMirrorId": {
+					"simple": "id"
+				},
+				"dbotMirrorInstance": {
+					"simple": "dbotMirrorInstance"
+				},
+				"dbotMirrorLastSync": {
+					"simple": "updated"
+				},
+				"name": {
+					"simple": "brand.name"
 				}
 			}
 		},
@@ -22,7 +68,7 @@
 				"DS Takedown Comments": {
 					"simple": "comments"
 				},
-				"DS Targets": {
+				"DS Takedown Targets": {
 					"simple": "targets"
 				},
 				"Domain Name": {
@@ -70,9 +116,12 @@
 	"name": "Reliaquest Takedown Mapper",
 	"nameRaw": "Reliaquest Takedown Mapper",
 	"packID": "",
+	"packName": "",
 	"sourceClassifierId": "",
 	"system": false,
+	"toServerVersion": "",
 	"transformer": {},
 	"type": "mapping-incoming",
+	"unclassifiedCases": null,
 	"version": -1
 }

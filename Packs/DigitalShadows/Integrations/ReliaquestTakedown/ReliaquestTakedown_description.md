@@ -1,7 +1,7 @@
 #### Integration Author: ReliaQuest
 Support and maintenance for this integration are provided by the author. Please use the following contact details:
 - **Email**: [drpsupport@reliaquest.com](mailto:drpsupport@reliaquest.com)
-- **URL**: [https:// www.reliaquest.com/](https:// www.reliaquest.com/)
+- **URL**: [https://www.reliaquest.com/](https://www.reliaquest.com/)
 ***
 This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns.
 

@@ -1,9 +1,11 @@
 {
+	"cacheVersn": 0,
 	"close": null,
 	"definitionId": "",
 	"description": "",
 	"detached": false,
 	"details": null,
+    "fromversion": "6.10.0",
 	"detailsV2": {
 		"TypeName": "",
 		"tabs": [
@@ -50,22 +52,11 @@
 								"startCol": 0
 							},
 							{
-								"dropEffect": "move",
-								"endCol": 2,
-								"fieldId": "sourcebrand",
-								"height": 22,
-								"id": "1eccb240-b21a-11ef-9345-09338a45df9d",
-								"index": 3,
-								"listId": "caseinfoid-fce71720-98b0-11e9-97d7-ed26ef9e46c8",
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
 								"endCol": 2,
 								"fieldId": "sourcecreatetime",
 								"height": 22,
 								"id": "2d885d20-b21a-11ef-9345-09338a45df9d",
-								"index": 4,
+								"index": 3,
 								"sectionItemType": "field",
 								"startCol": 0
 							},
@@ -74,7 +65,7 @@
 								"fieldId": "externallastupdatedtime",
 								"height": 22,
 								"id": "168bcb80-b61a-11ef-8f73-8143e97888eb",
-								"index": 5,
+								"index": 4,
 								"sectionItemType": "field",
 								"startCol": 0
 							}
@@ -174,6 +165,15 @@
 								"index": 0,
 								"sectionItemType": "field",
 								"startCol": 0
+							},
+							{
+								"endCol": 2,
+								"fieldId": "dstakedowntargets",
+								"height": 106,
+								"id": "d684d080-46a2-11f0-98c9-fba69b033cdd",
+								"index": 1,
+								"sectionItemType": "field",
+								"startCol": 0
 							}
 						],
 						"maxW": 3,
@@ -270,11 +270,22 @@
 						"items": [
 							{
 								"dropEffect": "move",
+								"endCol": 6,
+								"fieldId": "dstakedownattachments",
+								"height": 106,
+								"id": "dba67190-46a2-11f0-98c9-fba69b033cdd",
+								"index": 0,
+								"listId": "caseinfoid-field-changed-caseinfoid-b10a52f0-ee21-11ef-bafb-73929a1750c7",
+								"sectionItemType": "field",
+								"startCol": 0
+							},
+							{
+								"dropEffect": "move",
 								"endCol": 4,
 								"fieldId": "takedownattachments",
-								"height": 106,
+								"height": 22,
 								"id": "c78db8a0-ee21-11ef-bafb-73929a1750c7",
-								"index": 0,
+								"index": 1,
 								"listId": "caseinfoid-b10a52f0-ee21-11ef-bafb-73929a1750c7",
 								"sectionItemType": "field",
 								"startCol": 0
@@ -1359,22 +1370,18 @@
 			}
 		]
 	},
-	"fromServerVersion": "",
 	"group": "incident",
-	"id": "842a43c1-3d38-4cc3-892a-220456b90c94",
+	"id": "Reliaquest Takedown Layout",
 	"indicatorsDetails": null,
 	"indicatorsQuickView": null,
 	"itemVersion": "",
+	"locked": false,
 	"mobile": null,
 	"name": "Reliaquest Takedown Layout",
 	"packID": "",
 	"packName": "",
-	"propagationLabels": [
-		"all"
-	],
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
-	"toServerVersion": "",
 	"version": -1
 }
