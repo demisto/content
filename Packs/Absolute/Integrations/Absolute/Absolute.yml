@@ -169,7 +169,7 @@ script:
       description: The reference key for the error message.
       type: String
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of the unique identifiers of devices included in the request. The recommendation is to use up to 10,000 devices per request.
       isArray: true

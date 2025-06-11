@@ -1044,7 +1044,7 @@ script:
       description: Input agents' IDs.
       type: String
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: The message to broadcast to agents.
       name: message

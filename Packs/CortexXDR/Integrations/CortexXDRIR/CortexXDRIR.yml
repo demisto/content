@@ -711,7 +711,7 @@ script:
     - auto: PREDEFINED
       defaultValue: Medium
       description: |-
-        The alert severity. 
+        The alert severity.
       name: severity
       predefined:
       - Informational
@@ -765,7 +765,7 @@ script:
       type: String
     polling: true
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: The incident ID. Allows linking the response action to the incident that triggered it.
       name: incident_id

@@ -395,7 +395,7 @@ script:
     execution: true
     polling: true
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -448,7 +448,7 @@ script:
       type: String
     polling: true
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of computer DNS name.
       isArray: true

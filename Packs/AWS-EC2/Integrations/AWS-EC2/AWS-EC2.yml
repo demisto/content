@@ -2691,7 +2691,7 @@ script:
     execution: true
     name: aws-ec2-reboot-instances
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: The ID of the Windows instance.
       name: instanceId

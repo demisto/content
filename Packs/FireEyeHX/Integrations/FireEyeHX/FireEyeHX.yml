@@ -200,7 +200,7 @@ script:
       type: Unknown
     deprecated: true
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - auto: PREDEFINED
       description: Identifies which alerts result from indicators with the specified share mode.

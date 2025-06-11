@@ -1127,7 +1127,7 @@ script:
       description: The computer ID.
       type: String
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: A 6-digit passcode that locks the computer after being erased.
       name: passcode

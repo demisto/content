@@ -565,7 +565,7 @@ script:
     description: Contains containment for a specified host. When contained, a host can only communicate with the CrowdStrike cloud and any IPs specified in your containment policy.
     name: cs-falcon-contain-host
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of host agent IDs (AIDs) of the hosts to contain. Get an agent ID from a detection.
       isArray: true
@@ -574,7 +574,7 @@ script:
     description: Lifts containment on the host, which returns its network communications to normal.
     name: cs-falcon-lift-host-containment
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: Any commands run against an offline-queued session will be queued up and executed when the host comes online.
       name: queue_offline

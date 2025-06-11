@@ -199,7 +199,7 @@ script:
       description: 'The task status of isolate endpoint.'
       type: string
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: '"hostname", "macaddr" or "ip" of the endpoint to restore.'
       name: endpoint

@@ -222,7 +222,7 @@ script:
       description: 'Task ID generated after isolating endpoint(s).'
       type: string
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: 'List of object(s) containing `endpoint` (hostname) and `description` or `agent_guid` and `description`. e.g. [{"endpoint":"test-endpoint","description":"restore endpoint"}].'
       name: endpoint_identifiers

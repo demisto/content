@@ -193,7 +193,7 @@ script:
       description: The endpoint ID.
       type: String
     compliantpolicies:
-    - Endpoint Isolation
+    - EndPoint Isolation
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
