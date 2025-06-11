@@ -354,11 +354,11 @@ def timestamp_to_api_format(time: int, eventType: EventType) -> str | int:
     return ""
 
 
-def datetime_to_api_format(time: datetime, eventType: EventType) -> str | int:
+def datetime_to_api_format(dt: datetime, eventType: EventType) -> str | int:
     if eventType.name == AUDIT.name:
-        return time.strftime("%Y-%m-%dT%H:%M:%S.Z")[:-1] + f"{time.microsecond // 1000:03d}-0000"
+        return dt.strftime("%Y-%m-%dT%H:%M:%S.") + f"{dt.microsecond // 1000:03d}-0000"
     elif eventType.name == HEALTH_EVENT.name:
-        return date_to_timestamp(time, DATE_FORMAT)
+        return int(dt.timestamp() * 1000)
     return ""
 
 

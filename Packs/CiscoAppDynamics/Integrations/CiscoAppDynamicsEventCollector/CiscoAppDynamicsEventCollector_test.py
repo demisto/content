@@ -230,7 +230,7 @@ def test_datetime_to_api_format_health_event():
         - Returns the equivalent timestamp in milliseconds.
     """
     dt = datetime(2024, 6, 10, 12, 0, 0, tzinfo=timezone.utc)  # noqa: UP017
-    expected = 1718010000000
+    expected = 1718020800000
     result = datetime_to_api_format(dt, HEALTH_EVENT)
     assert result == expected
 
