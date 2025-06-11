@@ -51,7 +51,7 @@ class Client(BaseClient):
         self.client_secret = client_secret
         self.client_code = client_code
 
-    def get_access_token_request(self, data: dict) -> dict:
+    def get_access_token_request(self, data: dict) -> dict[str, str]:
         """Token http_request wrapper.
 
         Args:
@@ -116,16 +116,16 @@ class Client(BaseClient):
         if "error" in response:
             demisto.debug("Error creating token")
             raise DemistoException(response.get("error"))
-
+        access_token = response["access_token"]
         new_ctx = {
             "refresh_token": ctx.get("refresh_token") or response.get("refresh_token"),
-            "access_token": response.get("access_token"),
-            "expire_date": (now + timedelta(seconds=int(response.get("expires_in")) - 60)).isoformat(),  # type:ignore
+            "access_token": access_token,
+            "expire_date": (now + timedelta(seconds=int(response.get("expires_in", 0)) - 60)).isoformat(),
         }
 
         demisto.debug(f"New access token acquired and stored. Expires at {new_ctx['expire_date']}")
         set_integration_context(new_ctx)
-        return new_ctx["access_token"]
+        return access_token
 
     def search_events(self, start_time: str, end_time: str, limit: int) -> List[Dict]:  # noqa: E501
         """
