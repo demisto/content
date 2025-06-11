@@ -7708,6 +7708,7 @@ script:
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
       description: The GlobalProtect client package version.
+      type: String
     - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
       description: Advanced routing feature.
       type: String
