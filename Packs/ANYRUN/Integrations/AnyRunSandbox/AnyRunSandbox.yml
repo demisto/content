@@ -1,0 +1,1262 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ANY.RUN Sandbox
+  version: -1
+configuration:
+- display: ANY.RUN Sandbox API-KEY
+  name: anyrun_api_key
+  required: true
+  type: 4
+- display: Server's FQDN
+  additionalinfo: Go to Settings & Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard.
+  name: soar_fqdn
+  required: true
+  type: 0
+- display: XSOAR API-KEY ID
+  additionalinfo: In the API Keys table, locate the ID field. Note your corresponding ID number
+  name: soar_api_key_id
+  required: true
+  type: 0
+- display: XSOAR API-KEY
+  name: soar_api_key
+  required: true
+  type: 4
+description: ANY.RUN Sandbox is an online interactive sandbox for malware analysis, a tool for detection, monitoring, and research of cyber threats in real time.
+display: ANY.RUN Sandbox
+name: ANY.RUN Sandbox
+script:
+  commands:
+    - arguments:
+        - description: 'XSOAR Incident file data'
+          name: file
+          required: true
+          type: Unknown
+        - auto: PREDEFINED
+          description: 'Version of OS.'
+          name: env_version
+          defaultValue: '10'
+          required: false
+          type: String
+          predefined:
+            - '7'
+            - '10'
+            - '11'
+        - auto: PREDEFINED
+          description: 'Bitness of Operation System.'
+          name: env_bitness
+          defaultValue: '64'
+          required: false
+          type: String
+          predefined:
+            - '32'
+            - '64'
+        - auto: PREDEFINED
+          description: 'Environment preset type. You can select **development** env for OS Windows 10 x64. For all
+            other cases, **complete** env is required'
+          name: env_type
+          defaultValue: 'complete'
+          required: false
+          type: String
+          predefined:
+            - 'development'
+            - 'complete'
+        - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+          name: env_locale
+          defaultValue: 'en-US'
+          required: false
+          type: String
+        - description: 'Network connection state.'
+          name: opt_network_connect
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'FakeNet feature status.'
+          name: opt_network_fakenet
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'TOR using.'
+          name: opt_network_tor
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Tor geo location option. Example: US, AU.'
+          name: opt_network_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - description: 'HTTPS MITM proxy option.'
+          name: opt_network_mitm
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy using.'
+          name: opt_network_residential_proxy
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy geo location option. Example: US, AU.'
+          name: opt_network_residential_proxy_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Privacy settings.'
+          name: opt_privacy_type
+          defaultValue: 'bylink'
+          required: false
+          type: String
+          predefined:
+            - 'public'
+            - 'bylink'
+            - 'owner'
+            - 'byteam'
+        - description: 'Timeout option. Size range: 10-660.'
+          name: opt_timeout
+          defaultValue: '240'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Start file analysis from the specified directory.'
+          name: obj_ext_startfolder
+          defaultValue: 'temp'
+          required: false
+          type: String
+          predefined:
+            - 'desktop'
+            - 'home'
+            - 'downloads'
+            - 'appdata'
+            - 'temp'
+            - 'windows'
+            - 'root'
+        - description: 'Optional command line.'
+          name: obj_ext_cmd
+          required: false
+          type: String
+        - description: 'Forces the file to execute with elevated privileges and an elevated token
+            (for PE32, PE32+, PE64 files only).'
+          name: obj_force_elevation
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Change extension to valid'
+          name: obj_ext_extension
+          defaultValue: 'True'
+          required: false
+          type: String
+      name: anyrun-detonate-file-windows
+      description: 'Perform File analysis using Windows VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+        - description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
+          name: obj_url
+          required: true
+          type: String
+        - auto: PREDEFINED
+          description: 'Version of OS.'
+          name: env_version
+          defaultValue: '10'
+          required: false
+          type: String
+          predefined:
+            - '7'
+            - '10'
+            - '11'
+        - auto: PREDEFINED
+          description: 'Bitness of Operation System.'
+          name: env_bitness
+          defaultValue: '64'
+          required: false
+          type: String
+          predefined:
+            - '32'
+            - '64'
+        - auto: PREDEFINED
+          description: 'Environment preset type. You can select **development** env for OS Windows 10 x64. For all
+            other cases, **complete** env is required'
+          name: env_type
+          defaultValue: 'complete'
+          required: false
+          type: String
+          predefined:
+            - 'development'
+            - 'complete'
+        - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+          name: env_locale
+          defaultValue: 'en-US'
+          required: false
+          type: String
+        - description: 'Network connection state.'
+          name: opt_network_connect
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'FakeNet feature status.'
+          name: opt_network_fakenet
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'TOR using.'
+          name: opt_network_tor
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Tor geo location option. Example: US, AU.'
+          name: opt_network_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - description: 'HTTPS MITM proxy option.'
+          name: opt_network_mitm
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy using.'
+          name: opt_network_residential_proxy
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy geo location option. Example: US, AU.'
+          name: opt_network_residential_proxy_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Privacy settings.'
+          name: opt_privacy_type
+          defaultValue: 'bylink'
+          required: false
+          type: String
+          predefined:
+            - 'public'
+            - 'bylink'
+            - 'owner'
+            - 'byteam'
+        - description: 'Timeout option. Size range: 10-660.'
+          name: opt_timeout
+          defaultValue: '240'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Browser name.'
+          name: obj_ext_browser
+          defaultValue: 'Google Chrome'
+          required: false
+          type: String
+          predefined:
+            - 'Google Chrome'
+            - 'Mozilla Firefox'
+            - 'Internet Explorer'
+            - 'Microsoft Edge'
+        - description: 'Change extension to valid'
+          name: obj_ext_extension
+          defaultValue: 'True'
+          required: false
+          type: String
+      name: anyrun-detonate-url-windows
+      description: 'Perform URL analysis using Windows VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+        - description: 'XSOAR Incident file data'
+          name: file
+          required: true
+          type: Unknown
+        - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+          name: env_locale
+          defaultValue: 'en-US'
+          required: false
+          type: String
+        - description: 'Operation system.'
+          name: env_os
+          defaultValue: 'ubuntu'
+          required: false
+          type: String
+        - description: 'Network connection state.'
+          name: opt_network_connect
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'FakeNet feature status.'
+          name: opt_network_fakenet
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'TOR using.'
+          name: opt_network_tor
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Tor geo location option. Example: US, AU.'
+          name: opt_network_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - description: 'HTTPS MITM proxy option.'
+          name: opt_network_mitm
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy using.'
+          name: opt_network_residential_proxy
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy geo location option. Example: US, AU.'
+          name: opt_network_residential_proxy_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Privacy settings.'
+          name: opt_privacy_type
+          defaultValue: 'bylink'
+          required: false
+          type: String
+          predefined:
+            - 'public'
+            - 'bylink'
+            - 'owner'
+            - 'byteam'
+        - description: 'Timeout option. Size range: 10-660.'
+          name: opt_timeout
+          defaultValue: '240'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Start file analysis from the specified directory.'
+          name: obj_ext_startfolder
+          defaultValue: 'temp'
+          required: false
+          type: String
+          predefined:
+            - 'desktop'
+            - 'home'
+            - 'downloads'
+            - 'appdata'
+            - 'temp'
+            - 'windows'
+            - 'root'
+        - description: 'Optional command line.'
+          name: obj_ext_cmd
+          required: false
+          type: String
+        - description: 'Run file with superuser privileges.'
+          name: run_as_root
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'Change extension to valid'
+          name: obj_ext_extension
+          defaultValue: 'True'
+          required: false
+          type: String
+      name: anyrun-detonate-file-linux
+      description: 'Perform File analysis using Ubuntu VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+        - description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
+          name: obj_url
+          required: true
+          type: String
+        - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+          name: env_locale
+          defaultValue: 'en-US'
+          required: false
+          type: String
+        - description: 'Operation system.'
+          name: env_os
+          defaultValue: 'ubuntu'
+          required: false
+          type: String
+        - description: 'Network connection state.'
+          name: opt_network_connect
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'FakeNet feature status.'
+          name: opt_network_fakenet
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'TOR using.'
+          name: opt_network_tor
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Tor geo location option. Example: US, AU.'
+          name: opt_network_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - description: 'HTTPS MITM proxy option.'
+          name: opt_network_mitm
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy using.'
+          name: opt_network_residential_proxy
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy geo location option. Example: US, AU.'
+          name: opt_network_residential_proxy_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Privacy settings.'
+          name: opt_privacy_type
+          defaultValue: 'bylink'
+          required: false
+          type: String
+          predefined:
+            - 'public'
+            - 'bylink'
+            - 'owner'
+            - 'byteam'
+        - description: 'Timeout option. Size range: 10-660.'
+          name: opt_timeout
+          defaultValue: '120'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Browser name.'
+          name: obj_ext_browser
+          defaultValue: 'Google Chrome'
+          required: false
+          type: String
+          predefined:
+            - 'Google Chrome'
+            - 'Mozilla Firefox'
+        - description: 'Change extension to valid'
+          name: obj_ext_extension
+          defaultValue: 'True'
+          required: false
+          type: String
+      name: anyrun-detonate-url-linux
+      description: 'Perform URL analysis using Ubuntu VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+        - description: 'XSOAR Entry ID'
+          name: file
+          required: true
+          type: String
+        - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+          name: env_locale
+          defaultValue: 'en-US'
+          required: false
+          type: String
+        - description: 'Network connection state.'
+          name: opt_network_connect
+          defaultValue: 'True'
+          required: false
+          type: String
+        - description: 'FakeNet feature status.'
+          name: opt_network_fakenet
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'TOR using.'
+          name: opt_network_tor
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Tor geo location option. Example: US, AU.'
+          name: opt_network_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - description: 'HTTPS MITM proxy option.'
+          name: opt_network_mitm
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy using.'
+          name: opt_network_residential_proxy
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Residential proxy geo location option. Example: US, AU.'
+          name: opt_network_residential_proxy_geo
+          defaultValue: 'fastest'
+          required: false
+          type: String
+        - auto: PREDEFINED
+          description: 'Privacy settings.'
+          name: opt_privacy_type
+          defaultValue: 'bylink'
+          required: false
+          type: String
+          predefined:
+            - 'public'
+            - 'bylink'
+            - 'owner'
+            - 'byteam'
+        - description: 'Timeout option. Size range: 10-660.'
+          name: opt_timeout
+          defaultValue: '120'
+          required: false
+          type: String
+        - description: 'Optional command line.'
+          name: obj_ext_cmd
+          required: false
+          type: String
+      name: anyrun-detonate-file-android
+      description: 'Perform File analysis using Android VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+      - description: 'Target URL. Size range 5-512. Example: (http/https)://(your-link).'
+        name: obj_url
+        required: true
+        type: String
+      - description: 'Operation system language. Use locale identifier or country name (Ex: "en-US" or "Brazil").
+                Case insensitive.'
+        name: env_locale
+        defaultValue: 'en-US'
+        required: false
+        type: String
+      - description: 'Network connection state.'
+        name: opt_network_connect
+        defaultValue: 'True'
+        required: false
+        type: String
+      - description: 'FakeNet feature status.'
+        name: opt_network_fakenet
+        defaultValue: 'False'
+        required: false
+        type: String
+      - description: 'TOR using.'
+        name: opt_network_tor
+        defaultValue: 'False'
+        required: false
+        type: String
+      - description: 'Tor geo location option. Example: US, AU.'
+        name: opt_network_geo
+        defaultValue: 'fastest'
+        required: false
+        type: String
+      - description: 'HTTPS MITM proxy option.'
+        name: opt_network_mitm
+        defaultValue: 'False'
+        required: false
+        type: String
+      - description: 'Residential proxy using.'
+        name: opt_network_residential_proxy
+        defaultValue: 'False'
+        required: false
+        type: String
+      - description: 'Residential proxy geo location option. Example: US, AU.'
+        name: opt_network_residential_proxy_geo
+        defaultValue: 'fastest'
+        required: false
+        type: String
+      - auto: PREDEFINED
+        description: 'Privacy settings.'
+        name: opt_privacy_type
+        defaultValue: 'bylink'
+        required: false
+        type: String
+        predefined:
+          - 'public'
+          - 'bylink'
+          - 'owner'
+          - 'byteam'
+      - description: 'Timeout option. Size range: 10-660.'
+        name: opt_timeout
+        defaultValue: '120'
+        required: false
+        type: String
+      - auto: PREDEFINED
+        description: 'Browser name.'
+        name: obj_ext_browser
+        defaultValue: 'Google Chrome'
+        required: false
+        type: String
+        predefined:
+          - 'Google Chrome'
+          - 'Mozilla Firefox'
+      name: anyrun-detonate-url-android
+      description: 'Perform URL analysis using Android VM.'
+      outputs:
+        - contextPath: ANYRUN.TaskID
+          description: 'Task UUID.'
+          type: String
+    - arguments:
+      name: anyrun-get-user-limits
+      description: 'Get user available limits to perform the Sandbox analysis.'
+      outputs:
+        - contextPath: ANYRUN.SandboxLimits.web.minute
+          description: 'Defines limits for interactive usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.web.hour
+          description: 'Defines limits for interactive usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.web.day
+          description: 'Defines limits for interactive usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.web.month
+          description: 'Defines limits for interactive usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.api.minute
+          description: 'Defines limits for API usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.api.hour
+          description: 'Defines limits for API usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.api.day
+          description: 'Defines limits for API usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.api.month
+          description: 'Defines limits for API usage. Value of -1 indicates unlimited usage.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.parallels.total
+          description: 'Defines limits for parallel runs.'
+          type: String
+        - contextPath: ANYRUN.SandboxLimits.parallels.available
+          description: 'Defines limits for parallel runs.'
+          type: String
+    - arguments:
+      - description: 'Leave this field blank to get your history or specify to get team history'
+        name: team
+        defaultValue: 'False'
+        required: false
+        type: String
+      - description: 'Skip the specified number of tasks'
+        name: skip
+        defaultValue: '0'
+        required: false
+        type: String
+      - description: 'Specify the number of tasks in the result set (not more than 100)'
+        name: limit
+        defaultValue: '25'
+        required: false
+        type: String
+      name: anyrun-get-analysis-history
+      description: 'Get analysis history'
+      outputs:
+        - contextPath: ANYRUN.SandboxHistory.tasks.uuid
+          description: 'Task UUID.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.verdict
+          description: 'ANY.RUN verdict for the submitted file status.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.name
+          description: 'Task name.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.related
+          description: 'ANY.RUN link to a related file.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.pcap
+          description: 'ANY.RUN link to the network traffic dump.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.file
+          description: 'ANY.RUN link to the file sample.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.json
+          description: 'ANY.RUN link to json summary.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.misp
+          description: 'ANY.RUN link to misp report.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.tags
+          description: 'ANY.RUN related tags array.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.date
+          description: 'The date that the file was submitted for analysis.'
+          type: Date
+        - contextPath: ANYRUN.SandboxHistory.tasks.hashes.md5
+          description: 'MD5 hash of the submitted file.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.hashes.sha1
+          description: 'SHA1 hash of the submitted file.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.hashes.sha256
+          description: 'SHA256 hash of the submitted file.'
+          type: String
+        - contextPath: ANYRUN.SandboxHistory.tasks.hashes.ssdeep
+          description: 'SSDeep hash of the submitted file.'
+          type: String
+    - arguments:
+        - description: 'Sandbox task uuid.'
+          name: task_uuid
+          required: true
+          type: String
+      name: anyrun-delete-task
+      description: 'Deletes analysis task according to specified task uuid.'
+    - arguments:
+        - description: 'Sandbox task uuid.'
+          name: task_uuid
+          required: true
+          type: String
+        - auto: PREDEFINED
+          description: 'Report format.'
+          name: report_format
+          defaultValue: 'summary'
+          required: false
+          type: String
+          predefined:
+            - 'summary'
+            - 'html'
+            - 'ioc'
+        - description: 'XSOAR Related icnident info'
+          name: incident_info
+          required: true
+          type: Unknown
+      name: anyrun-get-analysis-report
+      description: 'Returns the analysis report summary.'
+      outputs:
+        - contextPath: ANYRUN.SandboxAnalysis.mitre.name
+          description: 'MITRE Technic text description'
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.mitre.phases
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.mitre.id
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.debugStrings
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.process
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdline
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.image
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.v
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.sid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.mitre.tid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.count
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.firstSeen
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.source
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.desc
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.title
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.threatLevel
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.typeValue
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.key
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.value
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.name
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.operation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdParent
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.incidents.events.cmdChild
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.process
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.operation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.value
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.name
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.registry.key
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.process
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.size
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.filename
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.mime
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.info.file
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.permanentUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.ssdeep
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha256
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.sha1
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.hashes.md5
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.threatLevel
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.modified.files.type
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.threats
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.reputation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3SFullstring
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3S
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3Fullstring
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.ja3
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.asn
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.country
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.protocol
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.port
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.ip
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.process
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.connections.tlsFingerprint.jarm
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.country
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.reputation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.process
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.httpCode
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.status
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.user-agent
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.proxyDetected
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.port
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.ip
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.url
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.host
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.method
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.httpRequests.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputationNumber
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.reputation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.ips
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.domain
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.network.dnsRequests.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.malconf
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.modules
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.hasMalwareConfig
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.parentUUID
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.status
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.malwareConfig
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.privEscalation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.stealing
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.networkLoader
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.network
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.lowAccess
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.knownThreat
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.injects
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.exploitable
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.executableDropped
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.debugOutput
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.crashedApps
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.specs.autoStart
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.loadsSusp
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.injected
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.dropped
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevelText
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.threatLevel
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.verdict.score
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.userName
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.integrityLevel
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.context.rebootNumber
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.version
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.description
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.versionInfo.company
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.mainProcess
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.fileType
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.fileName
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.commandLine
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.image
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.uuid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.ppid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.important
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.pid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.exitCode
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.times.terminate
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.times.start
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.resolvedCOM.title
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.operation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.type
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.name
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.synchronization.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.modules.image
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.modules.time
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.processes.scores.monitoringReason
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.processes.times.monitoringSince
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.event
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.type.mutex
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.create
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.operation.open
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.synchronization.total
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.delete
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.write
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.read
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.registry.total
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.malicious
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.suspicious
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.text
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.files.unknown
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.threats
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.dns
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.connections
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.network.http
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.malicious
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.suspicious
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.monitored
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.counters.processes.total
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.hotfixes.title
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.software.version
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.software.title
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.kbnum
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.internetExplorer.version
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.bitness
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.softSet
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.servicePack
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.major
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.productType
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.variant
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.product
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.build
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.environments.os.title
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.dumps
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.thumbnailUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.permanentUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.time
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.screenshots.uuid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.sslkeys.present
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.permanentUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.pcap.present
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.permanentUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.video.present
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.ssdeep
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha256
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.sha1
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.hashes.md5
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.url
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.content.mainObject.type
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.knownThreat
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.malwareConfig
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.notStarted
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.privEscalation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.torUsed
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.suspStruct
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.stealing
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.staticDetections
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.spam
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.serviceLauncher
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.rebooted
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkThreats
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.networkLoader
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.multiprocessing
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.memOverrun
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.lowAccess
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.exploitable
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.executableDropped
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.debugOutput
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedTask
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.crashedApps
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.cpuOverrun
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.autoStart
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.specs.injects
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevelText
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.threatLevel
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.scores.verdict.score
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.automatization.uac
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privateSample
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.privacy
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.network
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.hideSource
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.video
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.presentation
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.tor.used
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.mitm
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.heavyEvasion
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.fakeNet
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.additionalTime
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.options.timeout
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.tags
+          type: Unknown
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.stopExecText
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.stopExec
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.creationText
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.creation
+          type: Date
+          description: ''
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.duration
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.plan.name
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.sandbox.name
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.graph
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.STIX
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.HTML
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.MISP
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.reports.IOC
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.permanentUrl
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.analysis.uuid
+          type: String
+        - contextPath: ANYRUN.SandboxAnalysis.status
+          type: String
+    - arguments:
+        - description: 'Sandbox task uuid.'
+          name: task_uuid
+          required: true
+          type: String
+      name: anyrun-download-analysis-pcap
+      description: 'Returns the analysis network traffic dump.'
+      outputs:
+        - contextPath: ANYRUN.SandboxAnalysisReportPcap
+          description: 'The analysis network traffic dump .pcap file.'
+          type: File
+    - arguments:
+        - description: 'Sandbox task uuid.'
+          name: task_uuid
+          required: true
+          type: String
+      name: anyrun-download-analysis-sample
+      description: 'Returns the analysis file in zip archive. Archive password: infected'
+      outputs:
+        - contextPath: ANYRUN.SandboxAnalysisReportSample
+          description: 'The analysis sample.'
+          type: File
+    - arguments:
+        - description: 'Sandbox task uuid.'
+          name: task_uuid
+          required: true
+          type: String
+      name: anyrun-get-analysis-verdict
+      description: 'Returns a threat level text. Possible values: No threats detected, Suspicious activity, Malicious activity'
+      outputs:
+        - contextPath: ANYRUN.SandboxAnalysisReportVerdict
+          description: 'The analysis verdict.'
+          type: String
+  dockerimage: demisto/anyrun-sdk:1.0.0.3622801
+  subtype: python3
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- No tests
+fromversion:
+  8.0.0

@@ -1,0 +1,87 @@
+category: Forensics & Malware Analysis
+commonfields:
+  id: ANY.RUN Feeds
+  version: -1
+configuration:
+- display: Username
+  additionalinfo: ANY.RUN username
+  name: username
+  required: true
+  type: 0
+- display: Password
+  additionalinfo: ANY.RUN password
+  name: password
+  required: true
+  type: 4
+- display: Server's FQDN
+  additionalinfo: Go to Settings & Info → Settings → Integrations → API Keys. Click Copy API URL. Your FQDN is saved in the clipboard.
+  name: soar_fqdn
+  required: true
+  type: 0
+- display: XSOAR API-KEY ID
+  additionalinfo: In the API Keys table, locate the ID field. Note your corresponding ID number
+  name: soar_api_key_id
+  required: true
+  type: 0
+- display: XSOAR API-KEY
+  name: soar_api_key
+  required: true
+  type: 4
+description: Threat Intelligence Feeds provide data on the known indicators of compromise such as malicious IPs, URLs, Domains
+display: ANY.RUN Feeds
+name: ANY.RUN Feeds
+script:
+  commands:
+    - arguments:
+        - auto: PREDEFINED
+          description: 'ANY.RUN indicator collection type. Supports: full, ip, url, domain.'
+          name: collection
+          required: false
+          type: String
+          predefined:
+            - 'full'
+            - 'ip'
+            - 'url'
+            - 'domain'
+        - description: 'Filter results based on the STIX object types.'
+          name: match_type
+          required: false
+          type: String
+        - description: 'IOC identifier.'
+          name: match_id
+          required: false
+          type: String
+        - description: 'Enable or disable receiving revoked feeds in report.'
+          name: match_revoked
+          defaultValue: 'False'
+          required: false
+          type: String
+        - description: 'Filter STIX objects by their object version.'
+          name: match_version
+          defaultValue: 'last'
+          required: false
+          type: String
+        - description: 'Receive IOCs after specified date. Format: YYYY-MM-DD'
+          name: added_after
+          required: false
+          type: Date
+        - description: 'Receive IOCs after specified date. Format: YYYY-MM-DD'
+          name: modified_after
+          required: true
+          type: Date
+        - description: 'Number of tasks on a page. Default, all IOCs are included.'
+          name: limit
+          defaultValue: '100'
+          required: false
+          type: String
+      description: 'Receive ANY.RUN Indicators'
+      name: anyrun-get-indicators
+  dockerimage: demisto/anyrun-sdk:1.0.0.3622801
+  subtype: python3
+  runonce: false
+  script: '-'
+  type: python
+tests:
+- No tests
+fromversion:
+  8.0.0
