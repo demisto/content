@@ -98,29 +98,23 @@ class Client(BaseClient):  # pragma: no cover
         demisto.debug("Test-IronScales: time format to ISO success")
         time_encoded = quote(time, safe="")  # Percent-encode (e.g., encode '+' to '%2B')
         demisto.debug("Test-IronScales: quote func success")
-        return str(time_encoded)
+        return time_encoded
 
     def convert_time_iso_format(self, time):
         demisto.debug("Test-IronScales: Going in convert_time_iso_format")
         time = time.isoformat()  # convert to iso format
         demisto.debug("Test-IronScales: time format to ISO success")
-        return str(time)
-
-    def convert_time_iso_format_v2(self, time):
-        demisto.debug("Test-IronScales: Going in convert_time_iso_format_v2")
-        time = time.isoformat()  # convert to iso format
-        demisto.debug("Test-IronScales: time format to ISO v2 success")
-        return str(time)
+        return time
 
     def convert_time_iso_format_with_z(self, time):
         demisto.debug("Test-IronScales: Going in convert_time_iso_format_with_z")
         time = time.isoformat().replace("+00:00", "Z")  # convert to iso format
         demisto.debug("Test-IronScales: time format to ISO with z success")
-        return str(time)
+        return time
 
     def do_not_change(self, time):
         demisto.debug("Test-IronScales: Going in do_not_change")
-        return str(time)
+        return time.strftime("%Y-%m-%dT%H:%M:%SZ")
 
     ############ End Debugging Area #################
 
@@ -139,7 +133,6 @@ class Client(BaseClient):  # pragma: no cover
         conversion_dict = {
             "convert_time_percent_format": self.convert_time_percent_format,
             "convert_time_iso_format": self.convert_time_iso_format,
-            "convert_time_iso_format_v2": self.convert_time_iso_format_v2,
             "convert_time_iso_format_with_z": self.convert_time_iso_format_with_z,
             "do_not_change": self.do_not_change,
         }
