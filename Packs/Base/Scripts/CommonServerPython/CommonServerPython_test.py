@@ -9153,6 +9153,22 @@ class TestSendEventsToXSIAMTest:
             ),
             (
                 [
+                    (502, None), (502, None), (502, None)
+                ],
+                3,
+                1,
+                False
+            ),
+                        (
+                [
+                    (504, None), (504, None), (504, None)
+                ],
+                3,
+                1,
+                False
+            ),
+            (
+                [
                     (401, None)
                 ],
                 1,
