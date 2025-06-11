@@ -968,7 +968,7 @@ def url_handler(indicator: str, url_protocol_stripping: bool, url_port_stripping
         indicator = _PORT_REMOVAL.sub(_URL_WITHOUT_PORT, indicator)
 
     if url_truncate and len(indicator) >= PAN_OS_MAX_URL_LEN:
-        indicator = indicator[0 : PAN_OS_MAX_URL_LEN - 1]
+        indicator = indicator[0: PAN_OS_MAX_URL_LEN - 1]
 
     return indicator
 
