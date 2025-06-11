@@ -91,12 +91,11 @@ class AzureClient:
     @logger
     def __init__(
         self,
-        app_id: str,
-        subscription_id: str,
-        resource_group_name: str,
-        verify: bool,
-        proxy: bool,
-        connection_type: str,
+        app_id: str = '',
+        subscription_id: str = '',
+        resource_group_name: str = '',
+        verify: bool = False,
+        proxy: bool = False,
         tenant_id: str = None,
         enc_key: str = None,
         scope: str = None,
@@ -113,7 +112,7 @@ class AzureClient:
                 self_deployed=True,
                 auth_id=app_id,
                 token_retrieval_url=None,
-                grant_type=GRANT_BY_CONNECTION.get(connection_type),
+                grant_type=GRANT_BY_CONNECTION.get("Client Credentials"),
                 base_url=f"{PREFIX_URL_AZURE}",
                 verify=verify,
                 proxy=proxy,
@@ -125,7 +124,7 @@ class AzureClient:
             self.ms_client = MicrosoftClient(**ms_client_args)
         else:
             base_client_args = assign_params(
-                base_url=f"{PREFIX_URL_AZURE}{subscription_id}",
+                base_url=f"{PREFIX_URL_AZURE}",
                 verify=verify,
                 proxy=proxy,
                 headers=headers
@@ -134,10 +133,6 @@ class AzureClient:
             
         self.subscription_id = subscription_id
         self.resource_group_name = resource_group_name
-        self.connection_type = connection_type
-        self.tenant_id = tenant_id
-        self.enc_key = enc_key
-        self.app_id = app_id
         self.headers = headers
         
     @logger
@@ -1240,33 +1235,6 @@ def update_webapp_auth_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
-
-# def resource_update_command(client: AzureClient, params: dict, args: dict):
-#     resource_id = args.get("resource_id")
-#     allow_blob_public_access = args.get("allow_blob_public_access")
-#     location = args.get("location")
-#     account_type = args.get("account_type")
-#     response = client.resource_update(resource_id, allow_blob_public_access, location, account_type)
-#     outputs = [
-#         {
-#             "Name": response.get("name"),
-#             "Properties": response.get("properties", {}),
-#             "ID": response.get("id")
-#         }
-#     ]
-#     md = tableToMarkdown(
-#         f"Resource {resource_id} updated successfully.",
-#         outputs,
-#         ["Name", "Properties", "ID"],
-#         removeNull=True,
-#     )
-#     return CommandResults(
-#         outputs_prefix="Azure.Resource",
-#         outputs_key_field="id",
-#         outputs=response,
-#         readable_output=md,
-#         raw_response=outputs,
-#     )
     
     
 def mysql_flexible_server_param_set_command(client: AzureClient, params: dict, args: dict):
@@ -1422,33 +1390,7 @@ def webapp_update_command(client: AzureClient, params: dict, args: dict):
         readable_output=md,
         raw_response=outputs,
     )
-    
-# def logicapp_update_command(client: AzureClient, params: dict, args: dict):
-#     subscription_id = get_from_args_or_params(params=params, args=args, key="subscription_id")
-#     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
-#     name = args.get("name")
-#     https_only = args.get("https_only")
-#     response = client.logicapp_update(subscription_id, resource_group_name, name, https_only)
-#     outputs = [
-#         {
-#             "Name": response.get("name"),
-#             "ID": response.get("id"),
-#             "Https Only": response.get("properties", {}).get("httpsOnly") if https_only else None,
-#         }
-#     ]
-#     md = tableToMarkdown(
-#         f"Updated the logic App {name}.",
-#         outputs,
-#         ["Name", "ID", "Identity", "Https Only","Client Cert Enabled"],
-#         removeNull=True,
-#     )
-#     return CommandResults(
-#         outputs_prefix="Azure.Logicapp",
-#         outputs_key_field="id",
-#         outputs=response,
-#         readable_output=md,
-#         raw_response=outputs,
-#     )
+
 
 def acr_update_command(client: AzureClient, params: dict, args: dict):
     """
@@ -1776,7 +1718,7 @@ def check_all_permissions(role_permissions: list, api_permissions: list) -> list
     return missing_permissions
     
 
-def test_module(client: AzureClient, token: str) -> str:
+def test_module(client: AzureClient, token: str = None) -> str:
     """Tests API connectivity and authentication'
     Returning 'ok' indicates that the integration works like it is supposed to.
     Connection to the service is successful.
@@ -1786,25 +1728,98 @@ def test_module(client: AzureClient, token: str) -> str:
     :return: 'ok' if test passed.
     :rtype: ``str``
     """
-    # access_token = token if token else client.ms_client.get_access_token()
-    # decoded_token = get_token(access_token)
-    # object_id = decoded_token.get("oid", "")
-    # list_api_permissions = decoded_token.get("roles", [])
-    # list_role_assignments = get_role_assignments(client, object_id)
-    # print(list_api_permissions, list_role_assignments)
-    return "ok"
-    # list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+    access_token = token if token else client.ms_client.get_access_token()
+    decoded_token = get_token(access_token)
+    object_id = decoded_token.get("oid", "")
+    list_api_permissions = decoded_token.get("roles", [])
+    list_role_assignments = get_role_assignments(client, object_id)
+    list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
     
-    # missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
-    # if not missing_permissions:
-    #     return "ok"
+    missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
+    if not missing_permissions:
+        return "ok"
     
-    # else:
-    #     raise Exception(
-    #         f"Missing the following permissions: {missing_permissions}."
-    #     )
-        
+    else:
+        raise Exception(
+            f"Missing the following permissions: {missing_permissions}."
+        )
 
+def check_required_permissions(token, subscription_id, connector_id) -> str | HealthCheckResult:
+    decoded_token = get_token(token)
+    object_id = decoded_token.get("oid", "")
+    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+    client = AzureClient(subscription_id=subscription_id, headers=headers)
+    try:
+        list_role_assignments = get_role_assignments(client, object_id)
+        list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+        missing_permissions = check_all_permissions(list_role_permissions, [])
+    except Exception as e:
+            error_message = f"Failed to test permissions: {str(e)}"
+            if connector_id:
+                return HealthCheckResult.error(
+                    account_id=project_id,
+                    connector_id=connector_id,
+                    message="Failed to test permissions for Azure integration",
+                    error=error_message,
+                    error_type=ErrorType.PERMISSION_ERROR,
+                )
+
+            raise DemistoException(error_message)
+    
+    if missing_permissions:
+        error_message = "Missing permissions:\n" + "\n".join(missing_permissions)
+        
+        if connector_id:
+            return HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Missing required permissions for GCP integration",
+                error=error_message,
+                error_type=ErrorType.PERMISSION_ERROR,
+            )
+
+        raise DemistoException(error_message)
+
+    return "ok" if not connector_id else HealthCheckResult.ok()
+    
+
+def health_check(subscription_id: str, connector_id: str) -> str | HealthCheckResult:
+    if not subscription_id:
+        error_message = "Missing required parameter 'subscription_id'"
+        return HealthCheckResult.error(
+            account_id=project_id,
+            connector_id=connector_id,
+            message="Missing Subscription ID for Azure integration",
+            error=error_message,
+            error_type=ErrorType.INTERNAL_ERROR,
+        )
+    try:
+        credential_data = get_cloud_credentials(CloudTypes.AZURE.value, subscription_id)
+        token = credential_data.get("access_token")
+        if not token:
+            error_message = "Failed to retrieve Azure access token - token is missing from credentials"
+            return HealthCheckResult.error(
+                account_id=project_id,
+                connector_id=connector_id,
+                message="Failed to authenticate with Azure",
+                error=error_message,
+                error_type=ErrorType.CONNECTIVITY_ERROR,
+            )
+        return check_required_permissions(token, subscription_id, connector_id)
+    
+    except Exception as e:
+        error_message = str(e)
+        return HealthCheckResult.error(
+            account_id=project_id,
+            connector_id=connector_id,
+            message="Failed to connect to Azure",
+            error=error_message,
+            error_type=ErrorType.CONNECTIVITY_ERROR,
+        )
+
+        raise DemistoException(error_message)
+            
+            
 
 def is_azure(command) -> bool:
     """
@@ -1826,21 +1841,19 @@ def main():
     command = demisto.command()
     args = demisto.args()
     demisto.debug(f"Command being called is {command}")
-    connection_type = params.get("auth_type", "Device Code")
+    context = demisto.callingContext.get("context", {})
+    cloud_info = context.get("CloudIntegrationInfo", {})
+    connector_id = cloud_info.get("connectorID")
     is_azure_command = is_azure(command)
+    skip_proxy()
     try:
         headers = {}
         token = ""
         if not params.get("credentials", {}).get("password"):
-            token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id")).get("access_token")
-            print(token)
+            token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT","GRAPH"]).get("access_token")
             if not token:
                 raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
-            headers = {
-                'Authorization': f'Bearer {token}',
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            }
+            headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
             demisto.debug("Using CTS.")
             
         client = AzureClient(
@@ -1849,10 +1862,9 @@ def main():
             resource_group_name=params.get("resource_group_name", ""),
             verify=not params.get("insecure", False),
             proxy=params.get("proxy", False),
-            connection_type=connection_type,
             tenant_id=params.get("tenant_id"),
             enc_key=params.get("credentials", {}).get("password"),
-            scope=SCOPE_BY_CONNECTION.get(connection_type) if is_azure_command else None, # the issue!
+            scope=SCOPE_BY_CONNECTION.get("Client Credentials") if is_azure_command else None, # the issue!
             headers=headers
         )
 
@@ -1864,7 +1876,6 @@ def main():
             "azure-postgres-config-set": set_postgres_config_command,
             "azure-webapp-config-set": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
-            # "azure-resource-update": resource_update_command, ### we use storage_account_create_update for this
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
             "azure-monitor-log-profile-update": monitor_log_profile_update_command,
             "azure-disk-update": disk_update_command,
@@ -1873,7 +1884,6 @@ def main():
             "azure-postgres-server-update": postgres_server_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
-            # "azure-logicapp-update": logicapp_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
             "azure-cosmos-db-update": cosmosdb_update_command,
         }
@@ -1881,7 +1891,9 @@ def main():
             "azure-remove-member-from-role": remove_member_from_role,
             "azure-remove-member-from-group": remove_member_from_group_command,
         }
-        if command == "test-module":
+        if command == "test-module" and connector_id:
+            return_results(run_permissions_check_for_accounts(connector_id, health_check))
+        elif command == "test-module":
             return_results(test_module(client, token))
         elif command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))

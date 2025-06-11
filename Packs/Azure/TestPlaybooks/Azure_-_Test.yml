@@ -6,14 +6,15 @@ starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 22c516d0-2965-43b1-87cc-16784613d6f0
+    taskid: 1808a847-97bf-402d-8d79-fef3218aa24f
     type: start
     task:
-      id: 22c516d0-2965-43b1-87cc-16784613d6f0
+      id: 1808a847-97bf-402d-8d79-fef3218aa24f
       version: -1
       name: ""
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "1"
@@ -35,18 +36,24 @@ tasks:
     isautoswitchedtoquietmode: false
   "1":
     id: "1"
-    taskid: a1958337-82b0-44ff-aaeb-af91ccdb28c1
+    taskid: 951461ac-389f-46eb-a2ef-df8942e44655
     type: regular
     task:
-      id: a1958337-82b0-44ff-aaeb-af91ccdb28c1
+      id: 951461ac-389f-46eb-a2ef-df8942e44655
       version: -1
       name: 'Get Storage Account asset '
+      description: Get asset information.
+      script: '|||core-get-asset-details'
       type: regular
-      iscommand: false
+      iscommand: true
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "2"
+    scriptarguments:
+      asset_id:
+        simple: 63a2139e03b4d5f0ab3966716487177ef20681f16d7440d1d11aa8d77c659625
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -65,17 +72,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 5bbc0525-af30-4ba6-a538-2065ee1dac0a
+    taskid: 5358d52b-8e82-4aea-8e2d-17cc62bc4586
     type: regular
     task:
-      id: 5bbc0525-af30-4ba6-a538-2065ee1dac0a
+      id: 5358d52b-8e82-4aea-8e2d-17cc62bc4586
       version: -1
       name: az storage account update
       description: Updates a specific account storage.
-      script: AZURE|||azure-storage-account-update
+      script: Azure|||azure-storage-account-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "3"
@@ -106,17 +114,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 993ed806-c034-410a-93d7-bed24c3710f8
+    taskid: 579d5aad-4c5e-4baf-82ce-e2a24f6acdd7
     type: regular
     task:
-      id: 993ed806-c034-410a-93d7-bed24c3710f8
+      id: 579d5aad-4c5e-4baf-82ce-e2a24f6acdd7
       version: -1
       name: az storage account blob-service-properties update
       description: Sets properties for the blob service in a specific account storage.
-      script: AZURE|||azure-storage-blob-service-properties-set
+      script: Azure|||azure-storage-blob-service-properties-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "22"
@@ -143,16 +152,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: 6ca7d915-6c8d-460e-937a-3f88688bcb72
+    taskid: f874ff0c-aff3-4890-87aa-248b57efcf89
     type: regular
     task:
-      id: 6ca7d915-6c8d-460e-937a-3f88688bcb72
+      id: f874ff0c-aff3-4890-87aa-248b57efcf89
       version: -1
       name: Get PostgreSQL server asset details
       description: Updates an existing server.
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "5"
@@ -174,17 +184,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 913d07f0-6f70-4364-b039-5a144a5d356b
+    taskid: 03517298-13ab-4b85-8d88-69200102444e
     type: regular
     task:
-      id: 913d07f0-6f70-4364-b039-5a144a5d356b
+      id: 03517298-13ab-4b85-8d88-69200102444e
       version: -1
       name: az postgres server configuration set
       description: Updates a configuration of a server.
-      script: AZURE|||azure-postgres-config-set
+      script: Azure|||azure-postgres-config-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "6"
@@ -211,17 +222,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: b22faf7f-59e3-4c0f-baff-a61d54f81f4c
+    taskid: 08f60117-cff2-43a0-8e60-d27730d5b3b3
     type: regular
     task:
-      id: b22faf7f-59e3-4c0f-baff-a61d54f81f4c
+      id: 08f60117-cff2-43a0-8e60-d27730d5b3b3
       version: -1
       name: az postgres server update
       description: Updates an existing server.
-      script: AZURE|||azure-postgres-server-update
+      script: Azure|||azure-postgres-server-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "7"
@@ -246,15 +258,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 14a39592-64a2-4e28-97c6-15cb10d26e7b
+    taskid: 07ad099d-d2e9-4559-8e2f-bbdf027cdca6
     type: regular
     task:
-      id: 14a39592-64a2-4e28-97c6-15cb10d26e7b
+      id: 07ad099d-d2e9-4559-8e2f-bbdf027cdca6
       version: -1
       name: Get Disk asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "8"
@@ -276,17 +289,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: abc4b000-2aa2-487d-867a-e9efaaf6b643
+    taskid: 3eb0acfb-ad3a-460a-801c-8792935c59a9
     type: regular
     task:
-      id: abc4b000-2aa2-487d-867a-e9efaaf6b643
+      id: 3eb0acfb-ad3a-460a-801c-8792935c59a9
       version: -1
       name: az disk update
       description: Updates a disk.
-      script: AZURE|||azure-disk-update
+      script: Azure|||azure-disk-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "9"
@@ -315,15 +329,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 0f94181b-a820-4f3a-ae06-1b90f9b7e066
+    taskid: f11f998c-21c4-4b4f-81c0-c5eaf38fc601
     type: regular
     task:
-      id: 0f94181b-a820-4f3a-ae06-1b90f9b7e066
+      id: f11f998c-21c4-4b4f-81c0-c5eaf38fc601
       version: -1
       name: Get NSG asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "10"
@@ -345,17 +360,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 96200013-75ed-4369-9f61-0ece9a7f0f62
+    taskid: 43369adf-3071-4d80-8885-04610155e456
     type: regular
     task:
-      id: 96200013-75ed-4369-9f61-0ece9a7f0f62
+      id: 43369adf-3071-4d80-8885-04610155e456
       version: -1
       name: az network nsg rule update
       description: Update a security rule. If one does not exist, it will be created.
-      script: AZURE|||azure-nsg-security-rule-update
+      script: Azure|||azure-nsg-security-rule-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "11"
@@ -380,15 +396,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "11":
     id: "11"
-    taskid: e9432825-2d50-4af9-a4ee-236b9477dc75
+    taskid: ed349ccd-327d-47f4-81f0-41f59a1494c7
     type: regular
     task:
-      id: e9432825-2d50-4af9-a4ee-236b9477dc75
+      id: ed349ccd-327d-47f4-81f0-41f59a1494c7
       version: -1
       name: Get Webapp asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "12"
@@ -410,17 +427,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 3fc12928-841a-4034-a024-08475429533d
+    taskid: 10e72375-c871-43db-8e39-93653bd9fa3f
     type: regular
     task:
-      id: 3fc12928-841a-4034-a024-08475429533d
+      id: 10e72375-c871-43db-8e39-93653bd9fa3f
       version: -1
       name: az webapp config set
       description: Updates the configuration settings of an existing Azure Web App.
-      script: AZURE|||azure-webapp-config-set
+      script: Azure|||azure-webapp-config-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "13"
@@ -449,18 +467,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "13":
     id: "13"
-    taskid: 057c4138-6fbb-462b-8f87-1c9aae7c0e30
+    taskid: 2f76d6ce-c9f6-42bf-8ec4-a003de8599b4
     type: regular
     task:
-      id: 057c4138-6fbb-462b-8f87-1c9aae7c0e30
+      id: 2f76d6ce-c9f6-42bf-8ec4-a003de8599b4
       version: -1
       name: az webapp auth update
       description: Updates the authentication and authorization settings of an existing
         Azure Web App.
-      script: AZURE|||azure-webapp-auth-update
+      script: Azure|||azure-webapp-auth-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "14"
@@ -485,17 +504,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "14":
     id: "14"
-    taskid: 413b4a58-37ee-44d0-9b6e-ca9580113a63
+    taskid: b5f00535-670b-421d-8ad7-ac6d15f539ab
     type: regular
     task:
-      id: 413b4a58-37ee-44d0-9b6e-ca9580113a63
+      id: b5f00535-670b-421d-8ad7-ac6d15f539ab
       version: -1
       name: az webapp identity assign
       description: Updates an Azure Web App.
-      script: AZURE|||azure-webapp-update
+      script: Azure|||azure-webapp-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -520,17 +540,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 5e7d7ba0-351d-4a90-bbc4-0c21f2e11ae4
+    taskid: 2cb23737-defb-4531-8712-8b02a8c5fc9e
     type: regular
     task:
-      id: 5e7d7ba0-351d-4a90-bbc4-0c21f2e11ae4
+      id: 2cb23737-defb-4531-8712-8b02a8c5fc9e
       version: -1
       name: az webapp update
       description: Updates an Azure Web App.
-      script: AZURE|||azure-webapp-update
+      script: Azure|||azure-webapp-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "16"
@@ -557,15 +578,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: 08569bf0-c3f6-433c-b671-9c33be0d36c7
+    taskid: 36e69c6f-bbb5-4a1b-830b-b096a48cdb8f
     type: regular
     task:
-      id: 08569bf0-c3f6-433c-b671-9c33be0d36c7
+      id: 36e69c6f-bbb5-4a1b-830b-b096a48cdb8f
       version: -1
       name: Get FunctionApp asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "19"
@@ -587,17 +609,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "17":
     id: "17"
-    taskid: 4f422685-c548-4230-af2e-3c25f8533b0a
+    taskid: 5e2f07b7-ed12-455a-803c-fd3fc78581ca
     type: regular
     task:
-      id: 4f422685-c548-4230-af2e-3c25f8533b0a
+      id: 5e2f07b7-ed12-455a-803c-fd3fc78581ca
       version: -1
       name: az functionapp identity assign
       description: Updates an Azure Web App.
-      script: AZURE|||azure-webapp-update
+      script: Azure|||azure-webapp-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "18"
@@ -622,17 +645,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "18":
     id: "18"
-    taskid: 59bf1884-e826-4250-827b-c987a9daf05e
+    taskid: e3217168-bec3-401f-8c98-8bf37752df8f
     type: regular
     task:
-      id: 59bf1884-e826-4250-827b-c987a9daf05e
+      id: e3217168-bec3-401f-8c98-8bf37752df8f
       version: -1
       name: az functionapp update
       description: Updates an Azure Web App.
-      script: AZURE|||azure-webapp-update
+      script: Azure|||azure-webapp-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "20"
@@ -659,17 +683,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "19":
     id: "19"
-    taskid: 68fc36db-eb6c-407b-99ff-a26d110514b0
+    taskid: caebab54-af4d-4083-846f-62c8168b8ce2
     type: regular
     task:
-      id: 68fc36db-eb6c-407b-99ff-a26d110514b0
+      id: caebab54-af4d-4083-846f-62c8168b8ce2
       version: -1
       name: az functionapp config set
       description: Updates the configuration settings of an existing Azure Web App.
-      script: AZURE|||azure-webapp-config-set
+      script: Azure|||azure-webapp-config-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "17"
@@ -696,15 +721,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "20":
     id: "20"
-    taskid: dc84966a-37cd-456e-963c-93183c9e95e7
+    taskid: 51152e18-0a1a-4c23-83da-9e90d9359067
     type: regular
     task:
-      id: dc84966a-37cd-456e-963c-93183c9e95e7
+      id: 51152e18-0a1a-4c23-83da-9e90d9359067
       version: -1
       name: Get LogicApp asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "21"
@@ -726,17 +752,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 43dab6cc-d2e5-43c3-b380-25df1f56d27e
+    taskid: febb5f46-ec44-4339-889a-3507177e1fe0
     type: regular
     task:
-      id: 43dab6cc-d2e5-43c3-b380-25df1f56d27e
+      id: febb5f46-ec44-4339-889a-3507177e1fe0
       version: -1
       name: az logicapp update
       description: Updates an Azure Web App.
-      script: AZURE|||azure-webapp-update
+      script: Azure|||azure-webapp-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "23"
@@ -761,17 +788,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "22":
     id: "22"
-    taskid: a7e572a5-a528-4baa-b543-012cf03e441a
+    taskid: 6172cc6c-c309-48b7-8ba2-91d8da5cfc3e
     type: regular
     task:
-      id: a7e572a5-a528-4baa-b543-012cf03e441a
+      id: 6172cc6c-c309-48b7-8ba2-91d8da5cfc3e
       version: -1
       name: az resource update
       description: Updates a specific account storage.
-      script: AZURE|||azure-storage-account-update
+      script: Azure|||azure-storage-account-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "4"
@@ -796,15 +824,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "23":
     id: "23"
-    taskid: 5cf19d3a-f546-4906-b2cd-e4c48252b63e
+    taskid: 203b3b4d-fc03-44b4-8b4b-f3e601ef7498
     type: regular
     task:
-      id: 5cf19d3a-f546-4906-b2cd-e4c48252b63e
+      id: 203b3b4d-fc03-44b4-8b4b-f3e601ef7498
       version: -1
       name: Get MySQL flexible server asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "24"
@@ -826,17 +855,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: c885017e-f143-4749-9756-c591a5e76382
+    taskid: 95a8b2cc-3ba6-4e86-8172-041256b4ee97
     type: regular
     task:
-      id: c885017e-f143-4749-9756-c591a5e76382
+      id: 95a8b2cc-3ba6-4e86-8172-041256b4ee97
       version: -1
       name: az mysql flexible-server parameter set
       description: Updates a configuration of a server.
-      script: AZURE|||azure-mysql-flexible-server-param-set
+      script: Azure|||azure-mysql-flexible-server-param-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "25"
@@ -865,15 +895,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: 48c60541-3fd7-4700-b226-0e1847f1c58f
+    taskid: 37664aa0-9a1d-46f1-85fb-66574d8bb10d
     type: regular
     task:
-      id: 48c60541-3fd7-4700-b226-0e1847f1c58f
+      id: 37664aa0-9a1d-46f1-85fb-66574d8bb10d
       version: -1
       name: Get Log Profile asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "26"
@@ -895,17 +926,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "26":
     id: "26"
-    taskid: 60e1ada0-7e24-4eaa-80ec-e33c429211bd
+    taskid: 2e36f9d1-17f1-4762-89bb-5b353abc32aa
     type: regular
     task:
-      id: 60e1ada0-7e24-4eaa-80ec-e33c429211bd
+      id: 2e36f9d1-17f1-4762-89bb-5b353abc32aa
       version: -1
       name: az monitor log-profiles update
       description: Updates a log profile in Azure Monitoring REST API.
-      script: AZURE|||azure-monitor-log-profile-update
+      script: Azure|||azure-monitor-log-profile-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "27"
@@ -934,15 +966,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "27":
     id: "27"
-    taskid: d0022d0f-f7a4-49c9-8130-7ffcb05de056
+    taskid: 35435ee8-dd94-4fa3-84e5-5aac93cf49cd
     type: regular
     task:
-      id: d0022d0f-f7a4-49c9-8130-7ffcb05de056
+      id: 35435ee8-dd94-4fa3-84e5-5aac93cf49cd
       version: -1
       name: Get Container Registry asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "28"
@@ -964,17 +997,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "28":
     id: "28"
-    taskid: bbf22b4a-b64d-4e2e-909a-04cbcac7775f
+    taskid: 10b217df-9368-4b85-8960-ad15c0b89707
     type: regular
     task:
-      id: bbf22b4a-b64d-4e2e-909a-04cbcac7775f
+      id: 10b217df-9368-4b85-8960-ad15c0b89707
       version: -1
       name: az acr update
       description: Updates a container registry.
-      script: AZURE|||azure-acr-update
+      script: Azure|||azure-acr-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "29"
@@ -1003,17 +1037,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "29":
     id: "29"
-    taskid: 75acbd91-a34f-47f9-81f0-8c1c97ca8046
+    taskid: 8386fd46-6fac-4e4d-8c58-1e15a7b1df09
     type: regular
     task:
-      id: 75acbd91-a34f-47f9-81f0-8c1c97ca8046
+      id: 8386fd46-6fac-4e4d-8c58-1e15a7b1df09
       version: -1
       name: az acr config authentication-as-arm update
       description: Updates a container registry.
-      script: AZURE|||azure-acr-update
+      script: Azure|||azure-acr-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "30"
@@ -1038,15 +1073,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: 3de9dccc-8cb1-4231-920d-526e4ae0ae1a
+    taskid: 5da28261-4514-4bc3-8bd0-efd6e74ed582
     type: regular
     task:
-      id: 3de9dccc-8cb1-4231-920d-526e4ae0ae1a
+      id: 5da28261-4514-4bc3-8bd0-efd6e74ed582
       version: -1
       name: Get Key Vault asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -1068,17 +1104,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: eae43fa5-d01c-4473-90f4-ccdbe011e285
+    taskid: 7fd5c3a5-c024-4068-8792-c0e59eda8ce0
     type: regular
     task:
-      id: eae43fa5-d01c-4473-90f4-ccdbe011e285
+      id: 7fd5c3a5-c024-4068-8792-c0e59eda8ce0
       version: -1
       name: az keyvault update
       description: Updates a key vault in the specified subscription.
-      script: AZURE|||azure-key-vault-update
+      script: Azure|||azure-key-vault-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -1105,15 +1142,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 2d8a5199-1a8f-4b36-aa57-913fc152aa18
+    taskid: f762587e-5553-4da2-883c-eb8b98d53306
     type: regular
     task:
-      id: 2d8a5199-1a8f-4b36-aa57-913fc152aa18
+      id: f762587e-5553-4da2-883c-eb8b98d53306
       version: -1
       name: Get SQL DB asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "33"
@@ -1135,17 +1173,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 1ab6f227-0092-459d-9c6c-9eef5e2bffdb
+    taskid: bd7c6a8e-8b76-4150-80b2-718cb5c9fb78
     type: regular
     task:
-      id: 1ab6f227-0092-459d-9c6c-9eef5e2bffdb
+      id: bd7c6a8e-8b76-4150-80b2-718cb5c9fb78
       version: -1
       name: az sql db threat-policy update
       description: Updates the database's threat detection policy.
-      script: AZURE|||azure-sql-db-threat-policy-update
+      script: Azure|||azure-sql-db-threat-policy-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -1170,17 +1209,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 9b7fabe3-f97e-4b62-8727-6945ad2c7eeb
+    taskid: 99ab5541-2b32-489f-88b3-9a3236d0091d
     type: regular
     task:
-      id: 9b7fabe3-f97e-4b62-8727-6945ad2c7eeb
+      id: 99ab5541-2b32-489f-88b3-9a3236d0091d
       version: -1
       name: az sql db tde set
       description: Updates a logical database's transparent data encryption configuration.
-      script: AZURE|||azure-sql-db-transparent-data-encryption-set
+      script: Azure|||azure-sql-db-transparent-data-encryption-set
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "35"
@@ -1205,15 +1245,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "35":
     id: "35"
-    taskid: 8f2d682e-ccc4-4176-86c9-23cfcc075e2e
+    taskid: 0e4c26c0-c2cf-4657-8dc4-281e09923eae
     type: regular
     task:
-      id: 8f2d682e-ccc4-4176-86c9-23cfcc075e2e
+      id: 0e4c26c0-c2cf-4657-8dc4-281e09923eae
       version: -1
       name: Get CosmosDB asset details
       type: regular
       iscommand: false
       brand: ""
+      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "36"
@@ -1235,18 +1276,19 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a48b0c8e-8fab-4eda-bc61-41debed70ba5
+    taskid: 46dec440-0e72-470d-86fa-21850ff12db6
     type: regular
     task:
-      id: a48b0c8e-8fab-4eda-bc61-41debed70ba5
+      id: 46dec440-0e72-470d-86fa-21850ff12db6
       version: -1
       name: az cosmosdb update
       description: Updates the properties of an existing Azure Cosmos DB database
         account.
-      script: AZURE|||azure-cosmos-db-update
+      script: Azure|||azure-cosmos-db-update
       type: regular
       iscommand: true
-      brand: AZURE
+      brand: Azure
+      playbooktaskmissingcomponent: null
     scriptarguments:
       disable_key_based_metadata_write_access:
         simple: "true"
@@ -1272,7 +1314,7 @@ view: |-
     "paper": {
       "dimensions": {
         "height": 7328,
-        "width": 382,
+        "width": 381,
         "x": 450,
         "y": 50
       }
@@ -1281,3 +1323,5 @@ view: |-
 inputs: []
 outputs: []
 quiet: true
+dirtyInputs: true
+adopted: true
