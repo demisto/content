@@ -37,7 +37,7 @@ This integration utilizes the Asimily Insight RESTful APIs to provide seamless a
 
 > When modifying fetch-incident filters (Device Family, Device Tags, Anomaly Criticality, CVE Score), it's highly recommended to **reset the "last run" timestamp** (In Advanced Settings) in the Configuration Page. This action guarantees that events for any newly included devices are properly fetched.
 
-![Reset Fetch Incident Last Run Timestamp](./doc_files/Reset_last_run_timestamp.png)
+![Reset Fetch Incident Last Run Timestamp](../../doc_files/Reset_last_run_timestamp.png)
 
 ## Configure Pre-Process Rules
 
@@ -56,7 +56,7 @@ Follow the guidelines below to configure the preprocessing rule.
 
 > The configuration of the preprocessing rule is optional, but highly recommended to avoid duplication.
 
-![Pre-process Rule](./doc_files/AsimilyIncidentDedup_Preprocess_Rule.png)
+![Pre-process Rule](../../doc_files/AsimilyIncidentDedup_Preprocess_Rule.png)
 
 The integration includes a preprocessing script (**PreProcessAsimilyDedup**) that will drop incoming incident if it's a duplicate. It will search all past incidents with all status.
 
