@@ -535,9 +535,7 @@ def test_message_search_command_verify_input(mocker, mock_client):
         When:
          - cisco-esa-message-search command called.
         Then:
-         - Ensure outputs prefix is correct.
-         - Ensure number of items is correct.
-         - Validate outputs' fields.
+         - Ensure that the wanted params, with the utf-8 values are as expected.
         """
     from CiscoEmailSecurityApplianceIronPortV2 import message_search_command
 
