@@ -20,7 +20,6 @@
 		"trademark": "Reliaquest Takedown Type",
 		"vishing": "Reliaquest Takedown Type"
 	},
-	"logicalVersion": 2,
 	"mapping": null,
 	"name": "Reliaquest Takedown Classifier",
 	"nameRaw": "Reliaquest Takedown Classifier",

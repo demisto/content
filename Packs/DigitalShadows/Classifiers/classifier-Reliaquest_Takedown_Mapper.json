@@ -4,7 +4,6 @@
 	"feed": false,
 	"id": "Reliaquest Takedown Mapper",
 	"fromVersion": "6.10.0",
-	"logicalVersion": 9,
 	"mapping": {
 		"Reliaquest Takedown Type": {
 			"dontMapEventToLabels": false,
