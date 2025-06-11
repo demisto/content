@@ -385,7 +385,7 @@ CLIENT: HTTPClient
 
 def get_war_room_url(url: str, incident_id: str = "") -> str:
     # a workaround until this bug is resolved: https://jira-dc.paloaltonetworks.com/browse/CRTX-107526
-    if is_xsiam():
+    if is_xsiam() or is_platform():
         if not incident_id:
             incident_id = demisto.callingContext.get("context", {}).get("Inv", {}).get("id")
         incident_url = urlparse(url)
