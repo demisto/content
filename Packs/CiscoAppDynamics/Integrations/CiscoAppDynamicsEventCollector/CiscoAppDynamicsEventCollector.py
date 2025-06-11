@@ -3,7 +3,6 @@ from CommonServerPython import *
 import urllib3
 from dateutil import parser
 
-
 # Disable insecure warnings
 urllib3.disable_warnings()
 
@@ -357,9 +356,9 @@ def timestamp_to_api_format(time: int, eventType: EventType) -> str | int:
 
 def datetime_to_api_format(time: datetime, eventType: EventType) -> str | int:
     if eventType.name == AUDIT.name:
-        return time.strftime("%Y-%m-%dT%H:%M:%S.") + f"{time.microsecond // 1000:03d}-0000"
+        return time.strftime("%Y-%m-%dT%H:%M:%S.Z")[:-1] + f"{time.microsecond // 1000:03d}-0000"
     elif eventType.name == HEALTH_EVENT.name:
-        return date_to_timestamp(time)
+        return date_to_timestamp(time, DATE_FORMAT)
     return ""
 
 
@@ -435,8 +434,8 @@ def main() -> None:  # pragma: no cover
     args = demisto.args()
 
     base_url = params.get("url", "")
-    client_id = params.get("credentials", {}).get("identifier")
-    client_secret = params.get("credentials", {}).get("password")
+    client_id = params.get("client_id", "")
+    client_secret = params.get("client_secret", {}).get("password")
     application_id = params.get("application_id", "")
     verify = argToBoolean(not params.get("insecure", False))
     proxy = argToBoolean(params.get("proxy", False))

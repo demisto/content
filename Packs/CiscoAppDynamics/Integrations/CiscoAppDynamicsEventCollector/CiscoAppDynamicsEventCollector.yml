@@ -14,11 +14,17 @@ configuration:
   section: Connect
   additionalinfo: The Sever url is the controller API Address
 - display: Client ID
+  name: client_id
+  required: true
+  type: 0
+  section: Connect
+- display: Client ID
   displaypassword: Client Secret
-  name: credentials
+  name: client_secret
   required: true
   type: 9
   section: Connect
+  hiddenusername: true
 - display: Application ID
   name: application_id
   type: 0
