@@ -8472,3 +8472,39 @@ def test_download_latest_dynamic_update_content(update_type_str, expected_api_ca
     )
     request_call_args = mock_request.call_args[1]
     assert request_call_args["body"]["cmd"] == expected_api_call
+
+
+def test_panorama_check_latest_dynamic_update_command(mocker):
+    from Panorama import panorama_check_latest_dynamic_update_command
+
+    # Side-effect function to return the proper NGFW API response for the requested dynamic update type
+    def side_effect_function(update_type, target):
+        if update_type.name == "APP_THREAT":
+            return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_app-threat.json")
+
+        elif update_type.name == "ANTIVIRUS":
+            return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_antivirus.json")
+
+        elif update_type.name == "WILDFIRE":
+            return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_wildfire.json")
+
+        elif update_type.name == "GP":
+            return load_json("test_data/pan-os-check-latest-dynamic-update-status_apiresponse_gp.json")
+
+        else:
+            return None
+
+    mock_api_call = mocker.patch("Panorama.panorama_check_latest_dynamic_update_content")
+    mock_api_call.side_effect = side_effect_function
+
+    mock_return_results = mocker.patch("Panorama.return_results")
+
+    panorama_check_latest_dynamic_update_command({"args": {"target": "1337"}})
+
+    # Prepare results for comparison
+    returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
+    expected_returned_output = load_json("test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs.json")
+    expected_returned_readable = "### Dynamic Update Status Summary\n|Update Type|Status|Latest Available Version|Currently Installed Version|\n|---|---|---|---|\n| Content |  | 8987-9481 | 8987-9481 |\n| AntiVirus |  | 5212-5732 | 5211-5731 |\n| WildFire |  | 986250-990242 | 986026-990018 |\n| GP |  | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+
+    assert returned_commandresults.outputs == expected_returned_output
+    assert returned_commandresults.readable_output == expected_returned_readable

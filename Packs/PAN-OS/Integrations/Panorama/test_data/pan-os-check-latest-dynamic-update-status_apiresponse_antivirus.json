@@ -1,0 +1,97 @@
+{
+    "response": {
+        "@status": "success",
+        "result": {
+            "content-updates": {
+                "@last-updated-at": "2025/06/11 13:40:16 PDT",
+                "entry": [
+                    {
+                        "version": "5211-5731",
+                        "app-version": "5211-5731",
+                        "filename": "panup-all-antivirus-5211-5731",
+                        "size": "102",
+                        "size-kb": "104547",
+                        "released-on": "2025/06/10 04:01:55 PDT",
+                        "release-notes": "https://proditpdownloads.paloaltonetworks.com/virus/AntiVirusExternal-5211.html?__token__=exp=1750279216~acl=/virus/AntiVirusExternal-5211.html*~hmac=675c7f5cc40178dc57a3f556c55ca7f79398f96c1afdf2673764dc6f69d9b10a",
+                        "downloaded": "yes",
+                        "current": "yes",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "abfd7d0db4b4143e91afab219377d09b59337d1af521cd45ad13e4483a366a89"
+                    },
+                    {
+                        "version": "5210-5730",
+                        "app-version": "5210-5730",
+                        "filename": "panup-all-antivirus-5210-5730",
+                        "size": "102",
+                        "size-kb": "104586",
+                        "released-on": "2025/06/09 04:01:58 PDT",
+                        "release-notes": "https://proditpdownloads.paloaltonetworks.com/virus/AntiVirusExternal-5210.html?__token__=exp=1750279216~acl=/virus/AntiVirusExternal-5210.html*~hmac=b5a97bdc3607274cd884a0c12969a9698ad1fbdf2ecc3881f09bfbf43a241602",
+                        "downloaded": "yes",
+                        "current": "no",
+                        "previous": "yes",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "15fac833220812c1f5fbfaf6f3d1989f36b9494f6ab49d52ce75267bb1a6c448"
+                    },
+                    {
+                        "version": "5212-5732",
+                        "app-version": "5212-5732",
+                        "filename": "panup-all-antivirus-5212-5732",
+                        "size": "102",
+                        "size-kb": "104745",
+                        "released-on": "2025/06/11 04:00:51 PDT",
+                        "release-notes": "https://proditpdownloads.paloaltonetworks.com/virus/AntiVirusExternal-5212.html?__token__=exp=1750279216~acl=/virus/AntiVirusExternal-5212.html*~hmac=4ab136f025fcceb57324021dc230baecaa082d79b22ae278f6184c1519526891",
+                        "downloaded": "no",
+                        "current": "no",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "46769dbb32b9296729784f093168e264e51231ad7feb40c5b196be08c4d8d356"
+                    },
+                    {
+                        "version": "5208-5728",
+                        "app-version": "5208-5728",
+                        "filename": "panup-all-antivirus-5208-5728",
+                        "size": "102",
+                        "size-kb": "104636",
+                        "released-on": "2025/06/07 04:02:47 PDT",
+                        "release-notes": "https://proditpdownloads.paloaltonetworks.com/virus/AntiVirusExternal-5208.html?__token__=exp=1750279216~acl=/virus/AntiVirusExternal-5208.html*~hmac=6e6af3e875bf029a6b6c5f1c140ebed05235dcde883a96562b6f0049e1de7a07",
+                        "downloaded": "no",
+                        "current": "no",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "2fa0bda46e7477a85a7c4df25c737f7cfd9230b3a5fbcb7ec1b329ebf43445c4"
+                    },
+                    {
+                        "version": "5209-5729",
+                        "app-version": "5209-5729",
+                        "filename": "panup-all-antivirus-5209-5729",
+                        "size": "102",
+                        "size-kb": "104622",
+                        "released-on": "2025/06/08 04:01:26 PDT",
+                        "release-notes": "https://proditpdownloads.paloaltonetworks.com/virus/AntiVirusExternal-5209.html?__token__=exp=1750279216~acl=/virus/AntiVirusExternal-5209.html*~hmac=c2537bab90a2f619c6b833ecae6773f777fc915f8438fad4d586e9e16c29fbb0",
+                        "downloaded": "no",
+                        "current": "no",
+                        "previous": "no",
+                        "installing": "no",
+                        "features": "virus",
+                        "update-type": "Full",
+                        "feature-desc": "Unknown",
+                        "sha256": "e6d7b41395468b960cc3a903d08edbde2359a0b7db6dfe8fd324221bf5bb3f3c"
+                    }
+                ]
+            }
+        }
+    }
+}

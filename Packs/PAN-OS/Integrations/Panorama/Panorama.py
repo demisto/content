@@ -6549,6 +6549,116 @@ def panorama_show_device_version_command(target: Optional[str] = None):
 
 
 @logger
+def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
+    params = {
+        "type": "op",
+        "cmd": f"<request><{update_type.value}><upgrade><check/></upgrade></{update_type.value}></request>",
+        "key": API_KEY,
+    }
+    if target:
+        params["target"] = target
+        
+    result = http_request(URL, "POST", body=params)
+    
+    return result
+
+
+def panorama_check_latest_dynamic_update_command(args: dict):
+    """
+    Check latest available versions of dynamic updates for App/Threat, Antivirus, WildFire, and GP Clientless VPN
+    """
+    target = args.get("target")
+    outdated_item_count = 0
+    outputs = {}
+    
+    for update_type in DynamicUpdateType:
+        # Call firewall API to check for the latest available update of each type
+        result = panorama_check_latest_dynamic_update_content(update_type, target)
+
+        if "result" in result["response"] and result["response"]["@status"] == "success":
+            versions = result["response"]["result"]["content-updates"]["entry"]
+            
+            # Ensure versions is a list even if there's only one entry
+            if not isinstance(versions, list):
+                versions = [versions]
+            
+            latest_version = {}
+            current_version = {}
+            latest_version_parts = (0, 0)
+            
+            # Identify the latest available version and what is currently installed
+            for entry in versions:
+                # Find current version
+                if entry.get('current') == 'yes' or entry.get('installing') == 'yes':
+                    current_version = entry
+                
+                # Parse version parts as integers for proper comparison
+                version_str = entry.get('version', '')
+                if '-' in version_str:
+                    major, minor = version_str.split('-')
+                    version_parts = (int(major), int(minor))
+                    
+                    # Check if this is the latest version
+                    if version_parts > latest_version_parts:
+                        latest_version_parts = version_parts
+                        latest_version = entry
+            
+            # Check if currently installed is the most recent available
+            is_up_to_date = (current_version["version"] == latest_version["version"])
+            
+            context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
+
+            if not is_up_to_date:
+                outdated_item_count += 1
+                
+            # Add both latest and current versions to the output
+            outputs[context_prefix] = {
+                "LatestAvailable": latest_version,
+                "CurrentlyInstalled": current_version,
+                "IsUpToDate": is_up_to_date,
+            }
+        else:
+            # Raise error if API call failed
+            raise DemistoException(
+                f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
+                f"{result['response']['msg']}"
+            )
+            
+    outputs["ContentTypesOutOfDate"] = outdated_item_count
+
+    # Create summary table for human-readable output
+    summary_table = []
+    for update_type, data in outputs.items():
+        # Skip the ContentTypesOutOfDate counter
+        if update_type == "ContentTypesOutOfDate":
+            continue
+            
+        summary_table.append({
+            "Update Type": update_type,
+            "Is Up To Date": "True" if data["IsUpToDate"] else "False",
+            "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),
+            "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),
+        })
+    
+    # Add the outdated count as a footer in the table markdown
+    summary_markdown = tableToMarkdown(
+        "Dynamic Update Status Summary", 
+        summary_table,
+        headers=["Update Type", "Status", "Latest Available Version", "Currently Installed Version"]
+    )
+    
+    summary_markdown += f"\n\n**Total Content Types Outdated: {outdated_item_count}**"
+    
+    command_results = CommandResults(
+        outputs_prefix="Panorama.DynamicUpdates",
+        outputs=outputs,
+        readable_output=summary_markdown,
+    )
+        
+    return_results(command_results)
+
+
+@logger
 def panorama_download_latest_dynamic_update_content(update_type: DynamicUpdateType, target: Optional[str] = None):
     params = {
         "type": "op",
@@ -15626,6 +15736,10 @@ def main():  # pragma: no cover
         elif command == "panorama-show-device-version" or command == "pan-os-show-device-version":
             panorama_show_device_version_command(args.get("target"))
 
+        # Check latest available versions of Dynamic Updates
+        elif command == "pan-os-check-dynamic-updates-status":
+            panorama_check_latest_dynamic_update_command(args)
+        
         # Download the latest app/threat content update
         elif command == "panorama-download-latest-content-update" or command == "pan-os-download-latest-content-update":
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)

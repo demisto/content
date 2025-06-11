@@ -1,0 +1,27 @@
+{
+    "response": {
+        "@status": "success",
+        "result": {
+            "content-updates": {
+                "@last-updated-at": "2025/06/11 13:40:52 PDT",
+                "entry": {
+                    "version": "98-260",
+                    "app-version": "98-260",
+                    "filename": "panup-all-gp-98-260",
+                    "size": "0",
+                    "size-kb": "77",
+                    "released-on": "2023/05/22 15:41:22 PDT",
+                    "release-notes": "https://proditpdownloads.paloaltonetworks.com/gpcontent/gpcontent-98-260.html?__token__=exp=1749246361~acl=/gpcontent/gpcontent-98-260.html*~hmac=462b669eae1929aa9c7d2fa65ad64b406083f03daf6ef7d3f1c2a22afb95f854",
+                    "downloaded": "yes",
+                    "current": "yes",
+                    "previous": "no",
+                    "installing": "no",
+                    "features": "GlobalProtectClientlessVPN",
+                    "update-type": "Full",
+                    "feature-desc": "Unknown",
+                    "sha256": "52ef80beb11d00bffbff7fd13b46ce02224d45cf8a3346d27991e7ad553aaeab"
+                }
+            }
+        }
+    }
+}
