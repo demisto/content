@@ -36,6 +36,7 @@
 	"packID": "",
 	"packName": "",
 	"sourceClassifierId": "",
+	"fromVersion": "6.9.0",
 	"system": false,
 	"toServerVersion": "",
 	"transformer": {

@@ -30,6 +30,7 @@
 	"system": false,
 	"toServerVersion": "",
 	"version": -1,
+    "fromVersion": "6.9.0",
 	"weeks": 0,
 	"weeksR": 0
 }

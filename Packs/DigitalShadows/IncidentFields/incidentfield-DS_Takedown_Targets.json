@@ -1,6 +1,5 @@
 {
 	"aliasTo": "",
-	"aliases": null,
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Reliaquest Takedown Incident"
@@ -52,7 +51,7 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
@@ -90,10 +89,11 @@
 	"toServerVersion": "",
 	"type": "grid",
 	"unmapped": false,
-	"unsearchable": false,
+	"unsearchable": true,
 	"useAsKpi": false,
 	"validatedError": "",
 	"validationRegex": "",
 	"version": -1,
-	"x2_fields": ""
+	"x2_fields": "",
+	"fromVersion": "6.9.0"
 }

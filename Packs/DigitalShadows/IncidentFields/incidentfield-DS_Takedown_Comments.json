@@ -1,6 +1,5 @@
 {
 	"aliasTo": "",
-	"aliases": null,
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Reliaquest Takedown Incident"
@@ -11,6 +10,7 @@
 	"caseInsensitive": true,
 	"cliName": "dstakedowncomments",
 	"closeForm": false,
+	"fromVersion": "6.9.0",
 	"columns": [
 		{
 			"displayName": "content",
@@ -65,7 +65,7 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},

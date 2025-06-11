@@ -1383,5 +1383,6 @@
 	"quickView": null,
 	"quickViewV2": null,
 	"system": false,
+	"fromVersion": "6.9.0",
 	"version": -1
 }

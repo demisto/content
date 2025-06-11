@@ -1,6 +1,5 @@
 {
 	"aliasTo": "",
-	"aliases": null,
 	"associatedToAll": false,
 	"associatedTypes": [
 		"Reliaquest Takedown Incident"
@@ -52,13 +51,14 @@
 			"width": 150
 		}
 	],
-	"content": false,
+	"content": true,
 	"defaultRows": [
 		{},
 		{},
 		{}
 	],
 	"definitionId": "",
+	"fromVersion": "6.9.0",
 	"description": "",
 	"editForm": true,
 	"fieldCalcScript": "",
