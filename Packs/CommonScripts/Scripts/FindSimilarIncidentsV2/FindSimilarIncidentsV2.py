@@ -20,6 +20,7 @@ STATUS_MAP = {
     '3': 'Closed'
 }
 
+
 def get_incident_alias():
     if is_xsiam():
         return 'alert'
@@ -28,7 +29,9 @@ def get_incident_alias():
     else:
         return 'incident'
 
+
 INCIDENT_ALIAS = get_incident_alias()
+
 
 def parse_input(csv):
     if not csv:

@@ -859,7 +859,7 @@ def get_refresh_token_from_auth_code_param() -> str:
     refresh_prefix = "refresh_token:"
     if AUTH_CODE.startswith(refresh_prefix):  # for testing we allow setting the refresh token directly
         demisto.debug("Using refresh token set as auth_code")
-        return AUTH_CODE[len(refresh_prefix) :]
+        return AUTH_CODE[len(refresh_prefix):]
     return ""
 
 

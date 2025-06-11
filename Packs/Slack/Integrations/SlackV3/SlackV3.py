@@ -1378,7 +1378,8 @@ def search_text_for_entitlement(text: str, user: AsyncSlackResponse) -> str:
     entitlement_match = re.search(ENTITLEMENT_REGEX, text)
     if entitlement_match:
         content, guid, incident_id, task_id = extract_entitlement(entitlement_match.group(), text)
-        demisto.handleEntitlementForUser(incident_id, guid, user.get("profile", {}).get("email"), content, task_id)  # type: ignore
+        demisto.handleEntitlementForUser(incident_id, guid, user.get(
+            "profile", {}).get("email"), content, task_id)  # type: ignore
 
         return "Thank you for your response."
     else:

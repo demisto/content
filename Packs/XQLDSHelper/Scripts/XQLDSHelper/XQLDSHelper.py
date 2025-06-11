@@ -36,6 +36,7 @@ def to_float(val: Any) -> float | int:
     except (ValueError, TypeError):
         return 0
 
+
 def get_target_type():
     if is_xsiam():
         return "alerts"
@@ -43,6 +44,7 @@ def get_target_type():
         return "issues"
     else:
         return "incidents"
+
 
 def to_str(val: Any) -> str:
     """Ensure the value is of type string.
@@ -94,7 +96,7 @@ class ContextData:
             key = key[1:]
         else:
             for prefix in self.__specials:
-                k = key[len(prefix) :]
+                k = key[len(prefix):]
                 if key.startswith(prefix) and k[:1] in ("", ".", "(", "="):
                     if prefix == "lists":
                         if list_name := re.split("[.(=]", k[1:], maxsplit=1)[0]:
@@ -135,7 +137,7 @@ class Formatter:
     @staticmethod
     def __is_closure(source: str, ci: int, closure_marker: str) -> bool:
         if closure_marker:
-            return source[ci : ci + len(closure_marker)] == closure_marker
+            return source[ci: ci + len(closure_marker)] == closure_marker
         else:
             c = source[ci]
             if c.isspace():
@@ -192,7 +194,7 @@ class Formatter:
                 else:
                     xval = markers[0] + key + markers[1]
                 return xval, ci + len(markers[1])
-            elif source[ci : ci + len(self.__var_opening)] == self.__var_opening:
+            elif source[ci: ci + len(self.__var_opening)] == self.__var_opening:
                 xval, ei = self.__extract(
                     source=source,
                     dx=dx,
