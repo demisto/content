@@ -207,8 +207,9 @@ def search_incidents(args: Dict):  # pragma: no cover
 
         # dedup incidents
         demisto.debug(f"before dedup process with {len(current_page_found_incidents)=}")
-        current_page_found_incidents = [incident for incident in current_page_found_incidents
-                                        if incident.get("id") not in incidents_ids]
+        current_page_found_incidents = [
+            incident for incident in current_page_found_incidents if incident.get("id") not in incidents_ids
+        ]
 
         # Adding all new incident ids for dedup process
         incidents_ids.update([incident.get("id") for incident in current_page_found_incidents])
