@@ -16,7 +16,6 @@ urllib3.disable_warnings()
 """ CONSTANTS """
 
 API_ROUTE = "/api/v1"
-MAX_ALLOWED_FETCH_LIMIT = 80000
 MSISAC_FETCH_WINDOW_DEFAULT = 1
 XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MSISAC_S_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
@@ -59,6 +58,35 @@ class Client(BaseClient):
         """
 
         return self._http_request(method="GET", url_suffix=f"/albert/{days}", timeout=100)
+
+
+""" HELPER FUNCTIONS """
+
+
+@logger
+def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
+    """Calculates the lookback period in days between two datetimes.
+
+    Args:
+        start_time: The start datetime.
+        end_time: The end datetime.
+
+    Returns:
+        The number of days to look back, rounded according to round_down flag, with a minimum of 1.
+    """
+    
+    if not (start_time or end_time):
+         return MSISAC_FETCH_WINDOW_DEFAULT
+
+    time_diff = end_time - start_time
+    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60) # Calculate difference in days
+
+    # Apply rounding based on the flag
+    rounded_days = math.ceil(diff_in_days)
+
+    # Ensure minimum
+    days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
+    return days_param
 
 
 """ COMMAND FUNCTIONS """
@@ -263,30 +291,6 @@ def fetch_incidents(
 
     return events_to_fetch, next_run_dict
     
-@logger
-def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
-    """Calculates the lookback period in days between two datetimes.
-
-    Args:
-        start_time: The start datetime.
-        end_time: The end datetime.
-
-    Returns:
-        The number of days to look back, rounded according to round_down flag, with a minimum of 1.
-    """
-    
-    if not (start_time or end_time):
-         return MSISAC_FETCH_WINDOW_DEFAULT
-
-    time_diff = end_time - start_time
-    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60) # Calculate difference in days
-
-    # Apply rounding based on the flag
-    rounded_days = math.ceil(diff_in_days)
-
-    # Ensure minimum
-    days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
-    return days_param
 
 """ MAIN FUNCTION """
 
