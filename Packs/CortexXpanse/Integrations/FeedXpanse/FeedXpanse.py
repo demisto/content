@@ -245,13 +245,12 @@ def fetch_indicators(client: Client, limit: Optional[int] = None, asset_type: li
         List: raw response from API.
     """
     asset_list, asset_response = [], []
-    for entry in asset_type:
-        if "Domain" in asset_type:
-            asset_list.append("DOMAIN")
-        if "Certificate" in asset_type:
-            asset_list.append("CERTIFICATE")
-        if "IP" in asset_type:
-            asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
+    if "Domain" in asset_type:
+        asset_list.append("DOMAIN")
+    if "Certificate" in asset_type:
+        asset_list.append("CERTIFICATE")
+    if "IP" in asset_type:
+        asset_list.append("UNASSOCIATED_RESPONSIVE_IP")
     if limit:
         # Had to add 1 to the limit to get the right return.
         asset_response = client.list_asset_internet_exposure_request(
