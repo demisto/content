@@ -526,25 +526,41 @@ def test_message_search_command(
 
 
 def test_message_search_command_verify_input(mocker, mock_client):
-   from CiscoEmailSecurityApplianceIronPortV2 import message_search_command
-   http_request = mocker.patch.object(mock_client, "_http_request")
-   args = {
-       "subject_filter_operator": "contains",
-       "subject_filter_value": "some value & another value",
-       "start_date": "2025-05-25T19:34:00.000Z",
-       "end_date": "2025-05-29T19:34:00.000Z",
-       "limit": "1"
-   }
-   message_search_command(mock_client, args)
-   expected_params = {
-       'ciscoHost': 'All_Hosts',
-       'limit': 1,
-       'offset': 0,
-       'searchOption': 'messages',
-       'subjectfilterOperator': 'contains',
-       'subjectfilterValue': 'some%20value%20%26%20another%20value'
-   }
-   http_request.assert_called_with("GET", f"message-tracking/messages?startDate={args['start_date']}&endDate={args['end_date']}", params=expected_params)
+    """
+        Scenario: Tracking message search, and the subject filter value has spaces and special chars.
+        Given:
+         - User has provided valid credentials.
+         - User provided pagination args.
+         - User provided filtering arguments with spaces and special chars.
+        When:
+         - cisco-esa-message-search command called.
+        Then:
+         - Ensure outputs prefix is correct.
+         - Ensure number of items is correct.
+         - Validate outputs' fields.
+        """
+    from CiscoEmailSecurityApplianceIronPortV2 import message_search_command
+
+    http_request = mocker.patch.object(mock_client, "_http_request")
+    args = {
+        "subject_filter_operator": "contains",
+        "subject_filter_value": "some value & another value",
+        "start_date": "2025-05-25T19:34:00.000Z",
+        "end_date": "2025-05-29T19:34:00.000Z",
+        "limit": "1",
+    }
+    message_search_command(mock_client, args)
+    expected_params = {
+        "ciscoHost": "All_Hosts",
+        "limit": 1,
+        "offset": 0,
+        "searchOption": "messages",
+        "subjectfilterOperator": "contains",
+        "subjectfilterValue": "some%20value%20%26%20another%20value",
+    }
+    http_request.assert_called_with(
+        "GET", f"message-tracking/messages?startDate={args['start_date']}&endDate={args['end_date']}", params=expected_params
+    )
 
 
 @pytest.mark.parametrize(
