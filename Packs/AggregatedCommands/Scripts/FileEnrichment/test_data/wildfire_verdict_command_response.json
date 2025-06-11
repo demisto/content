@@ -15,6 +15,7 @@
             "WildFire.Verdicts(val.SHA256 && val.SHA256 == obj.SHA256 || val.MD5 && val.MD5 == obj.MD5)": {
                     "MD5": "md5md5md5md5md5md5md5md5md5md5md5md5md5m",
                     "SHA1": "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1",
+                    "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                     "Verdict": 1,
                     "VerdictDescription": "malware",
                     "Type": "JAVA JAR"

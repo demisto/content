@@ -5,6 +5,7 @@ args:
 - name: file_hash
   description: 'Hash of the file. Supported types are: MD5, SHA1, SHA256, and SHA512.'
   required: true
+  isArray: true
 - name: enrichment_brands
   description: |-
     Integrations brands to use for running external enrichment. If not provided, the command will run for all available integrations that implement the file reputation command.

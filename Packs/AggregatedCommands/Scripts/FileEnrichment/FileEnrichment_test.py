@@ -6,6 +6,8 @@ from FileEnrichment import Brands, Command, CommandResults, ContextPaths, EntryT
 
 """ TEST CONSTANTS """
 
+MD5_HASH = "md5md5md5md5md5md5md5md5md5md5md"
+SHA_1_HASH = "sha1sha1sha1sha1sha1sha1sha1sha1sha1sha1"
 SHA_256_HASH = "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2"
 
 
@@ -164,6 +166,23 @@ def test_get_file_from_ioc_custom_fields():
     }
 
 
+def test_classify_hashes_by_type():
+    """
+    Given:
+        - A list of file hashes of different types.
+
+    When:
+        - Calling `classify_hashes_by_type`
+
+    Assert:
+        - Classified hashes dictionary is as expected.
+    """
+    from FileEnrichment import classify_hashes_by_type
+
+    hashes = [MD5_HASH, SHA_1_HASH, SHA_256_HASH]
+    assert classify_hashes_by_type(hashes) == {"MD5": [MD5_HASH], "SHA1": [SHA_1_HASH], "SHA256": [SHA_256_HASH]}
+
+
 def test_flatten_list():
     """
     Given:
@@ -205,32 +224,6 @@ def test_merge_context_outputs():
     expected_merged_context = util_load_json("test_data/merged_context_expected.json")
 
     assert merge_context_outputs(per_command_context, include_additional_fields=True) == expected_merged_context
-
-
-@pytest.mark.parametrize(
-    "find_indicator_file_context, expected_verdict",
-    [
-        pytest.param({}, "Unknown", id="No score"),
-        pytest.param({"SHA256": SHA_256_HASH, "Score": 3}, "Malicious", id="Bad score"),
-        pytest.param({"SHA256": SHA_256_HASH, "Score": 1}, "Benign", id="Good score"),
-    ],
-)
-def test_get_tim_file_verdict(find_indicator_file_context: dict[str, dict], expected_verdict: str):
-    """
-    Given:
-        - The per-command entry context from containing the "FileEnrichment" context from the "findIndicators" command.
-
-    When:
-        - Calling `get_tim_file_verdict`.
-
-    Assert:
-        - Ensure TIM verdict is as expected.
-    """
-    from FileEnrichment import get_tim_file_verdict
-
-    per_command_context = {"findIndicators": {"FileEnrichment": [find_indicator_file_context]}}
-
-    assert get_tim_file_verdict(per_command_context) == expected_verdict
 
 
 def test_execute_file_reputation(mocker: MockerFixture):
@@ -463,8 +456,7 @@ def test_run_external_enrichment(mocker: MockerFixture):
     mock_enrich_with_command = mocker.patch("FileEnrichment.enrich_with_command")
 
     run_external_enrichment(
-        file_hash=SHA_256_HASH,
-        hash_type="sha256",
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
         enabled_brands=enabled_brands,
         enrichment_brands=enrichment_brands,
         per_command_context={},
@@ -517,7 +509,7 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
     }
 
     summary_command_results = summarize_command_results(
-        file_hash=SHA_256_HASH,
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
         per_command_context=per_command_context,
         verbose_command_results=[CommandResults(readable_output="This is hash scan result", entry_type=EntryType.NOTE)],
         external_enrichment=True,
@@ -526,13 +518,16 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
     assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
-    assert table_to_markdown_kwargs["t"] == {
-        "File": SHA_256_HASH,
-        "Status": "Done",  # Got "File" context from two commands
-        "Result": "Success",  # No error entries in command results
-        "Message": "Found data on file from 2 sources.",
-        "TIM Verdict": "Unknown",
-    }
+    assert table_to_markdown_kwargs["t"] == [
+        {
+            "File": SHA_256_HASH,
+            "Status": "Done",  # Got "File" context from two commands
+            "Result": "Success",  # No error entries in command results
+            "Message": "Found data on file from 2 sources.",
+            "Sources": f"VirusTotal (API v3), {Brands.WILDFIRE_V2}",
+            "TIM Verdict": "Unknown",
+        }
+    ]
 
     assert summary_command_results.outputs == {
         ContextPaths.FILE_ENRICHMENT.value: [file_reputation_context, wildfire_report_context]
@@ -556,7 +551,7 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
     mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
 
     summary_command_results = summarize_command_results(
-        file_hash=SHA_256_HASH,
+        hashes_by_type={"SHA256": [SHA_256_HASH]},
         per_command_context={},
         verbose_command_results=[CommandResults(readable_output="This is an error message!", entry_type=EntryType.ERROR)],
         external_enrichment=False,
@@ -565,21 +560,23 @@ def test_summarize_command_results_failed_commands(mocker: MockerFixture):
 
     table_to_markdown_kwargs = mock_table_to_markdown.call_args.kwargs
     assert table_to_markdown_kwargs["name"] == f"File Enrichment result for {SHA_256_HASH}"
-    assert table_to_markdown_kwargs["t"] == {
-        "File": SHA_256_HASH,
-        "Status": "Not Found",  # No "File" context from any command
-        "Result": "Failed",  # Error entry in command results
-        "Message": "Could not find data on file. Consider setting external_enrichment=true.",
-        "TIM Verdict": "Unknown",
-    }
+    assert table_to_markdown_kwargs["t"] == [
+        {
+            "File": SHA_256_HASH,
+            "Status": "Not Found",  # No "File" context from any command
+            "Result": "Failed",  # Error entry in command results
+            "Message": "Could not find data on file. Consider setting external_enrichment=true.",
+            "TIM Verdict": "Unknown",
+        }
+    ]
 
     assert summary_command_results.outputs == {}
 
 
-def test_main_invalid_hash(mocker: MockerFixture):
+def test_main_invalid_hashes(mocker: MockerFixture):
     """
     Given:
-        - An invalid file hash.
+        - Invalid file hashes.
 
     When:
         - Calling `main`
@@ -589,13 +586,13 @@ def test_main_invalid_hash(mocker: MockerFixture):
     """
     from FileEnrichment import main
 
-    mocker.patch("FileEnrichment.demisto.args", return_value={"file_hash": "123"})
+    mocker.patch("FileEnrichment.demisto.args", return_value={"file_hash": "123,345"})
     mocker.patch("FileEnrichment.demisto.error")  # mocked to avoid logging to STDERR when running unit test
     mock_return_error = mocker.patch("FileEnrichment.return_error")
 
     expected_error_message = (
         "Failed to execute file-enrichment script. "
-        "Error: A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512."
+        "Error: None of the file hashes are valid. Supported types are: MD5, SHA1, SHA256, and SHA512."
     )
 
     main()

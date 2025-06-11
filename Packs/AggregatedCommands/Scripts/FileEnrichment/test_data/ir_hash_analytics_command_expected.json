@@ -38,7 +38,9 @@
                             "description": "The prevalence of the file according to process_sha256 profile.",
                             "value": 0.058823529411764705
                         }
-                    }
+                    },
+                    "sha256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
+                    "value": false
                 }
             }
         ]

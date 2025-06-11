@@ -20,6 +20,9 @@ class Brands(Enum):
         return self.value
 
 
+HASH_TYPES = ["MD5", "SHA1", "SHA256", "SHA512"]
+
+
 # All File indicator context fields in CommonServerPython
 INDICATOR_FIELD_CLI_NAME_TO_CONTEXT_PATH_MAPPING = {
     "name": "Name",
@@ -69,7 +72,7 @@ DBOT_SCORE_TO_VERDICT = {
     0: "Unknown",
     1: "Benign",
     2: "Suspicious",
-    3: "Malicious", 
+    3: "Malicious",
 }
 
 
@@ -240,6 +243,24 @@ class Command:
 """ HELPER FUNCTIONS """
 
 
+def classify_hashes_by_type(file_hashes: list[str]) -> dict[str, list[str]]:
+    """Creates a dictionary of hash type (key) and hashes list (value)
+
+    Args:
+        file_hashes (list[str]): A list of file hashes.
+
+    Returns:
+        dict[str, list[str]]: Classified file hashes.
+    """
+    hashes_by_type: dict[str, list] = defaultdict(list)
+
+    for file_hash in file_hashes:
+        hash_type = get_hash_type(file_hash).upper()
+        hashes_by_type[hash_type].append(file_hash)
+
+    return hashes_by_type
+
+
 def set_dict_value(d: dict[str, Any], path: str, value: Any):
     """
     Sets a value in a nested dictionary given a dot-separated path.
@@ -297,7 +318,7 @@ def get_file_from_ioc_custom_fields(ioc_custom_fields: dict[str, Any]) -> dict[s
     return assign_params(**output)
 
 
-def get_from_context(entry_context_item: dict, context_path: ContextPaths) -> dict:
+def get_from_context(entry_context_item: dict, context_path: ContextPaths) -> list:
     """
     Gets an item from the entry context by key. If the value is not a list, it is converted into a list of one item.
 
@@ -310,7 +331,7 @@ def get_from_context(entry_context_item: dict, context_path: ContextPaths) -> di
     """
     value = entry_context_item.get(context_path.value) or {}
 
-    return value[0] if value and isinstance(value, list) else value
+    return value if value and isinstance(value, list) else [value]
 
 
 def flatten_list(nested_list: list[Any]) -> list[Any]:
@@ -359,23 +380,27 @@ def merge_context_outputs(per_command_context: dict[str, dict], include_addition
     return assign_params(**merged_context_output)
 
 
-def get_tim_file_verdict(per_command_context: dict[str, dict]) -> str:
+def find_matching_dbot_score(dbot_scores: list[dict], file_context: dict[str, Any]) -> dict:
     """
-    Gets the file indicator verdict using the score in the Threat Intelligence Module (TIM).
+    Finds the associated "DBotScore" object whose indicator value matches any of the hashes if the "File" Context.
+    This is needed since multiple "DBotScore" and "File" objects can be returned if more than one file hash is specified.
 
     Args:
-        per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
+        dbot_scores (list[dict]): List of "DBotScore" objects.
+        file_context (dict[str, Any]): Context output from a single war room result entry.
 
     Returns:
-        str: Verdict from TIM, if known.
+        dict: The matching "DBotScore" object if found, otherwise an empty dictionary.
     """
-    if find_indicators_file_context := per_command_context.get("findIndicators", {}).get("FileEnrichment"):
-        demisto.debug(f"Getting Score from find indicators file context: {find_indicators_file_context}.")
-        score = find_indicators_file_context[0].get("Score")
-        return DBOT_SCORE_TO_VERDICT.get(score, "Unknown")
+    hashes_in_context = {file_context.get(hash_type, "").casefold() for hash_type in HASH_TYPES if hash_type in file_context}
 
-    demisto.debug("No file indicator found. Retuning unknown verdict.")
-    return "Unknown"
+    for dbot_score in dbot_scores:
+        indicator = dbot_score.get("Indicator")
+        if indicator and indicator.casefold() in hashes_in_context:
+            return dbot_score
+
+    demisto.debug(f"Could not find matching DBotScore for hashes: {hashes_in_context}.")
+    return {}
 
 
 """ COMMAND EXECUTION FUNCTIONS """
@@ -402,13 +427,15 @@ def execute_file_reputation(command: Command) -> tuple[dict[str, list], list[Com
     context_output: dict[str, list] = defaultdict(list)
 
     for context_item in entry_context:
-        if dbot_score := get_from_context(context_item, ContextPaths.DBOT_SCORE):
-            context_output["DBotScore"].append(dbot_score)
+        if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
+            context_output["DBotScore"].extend(dbot_scores)
 
-        if file_context := get_from_context(context_item, ContextPaths.FILE):
-            file_context["Source"] = dbot_score.get("Vendor", "Unknown")
-            file_context["Score"] = dbot_score.get("Score", Common.DBotScore.NONE)
-            context_output["FileEnrichment"].append(file_context)
+        if files_context := get_from_context(context_item, ContextPaths.FILE):
+            for file_context in files_context:
+                dbot_score = find_matching_dbot_score(dbot_scores, file_context)
+                file_context["Source"] = dbot_score.get("Vendor", "Unknown")
+                file_context["Score"] = dbot_score.get("Score", Common.DBotScore.NONE)
+                context_output["FileEnrichment"].append(file_context)
 
     return context_output, readable_command_results
 
@@ -434,22 +461,24 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict[str, list], list[Co
     context_output: dict[str, list] = defaultdict(list)
 
     for context_item in entry_context:
-        if dbot_score := get_from_context(context_item, ContextPaths.DBOT_SCORE):
-            context_output["DBotScore"].append(dbot_score)
+        if dbot_scores := get_from_context(context_item, ContextPaths.DBOT_SCORE):
+            context_output["DBotScore"].extend(dbot_scores)
 
-        if wild_fire_verdict_context := get_from_context(context_item, ContextPaths.WILDFIRE_V2_VERDICT):
-            file_context = assign_params(
-                Source=Brands.WILDFIRE_V2.value,
-                Score=dbot_score.get("Score", Common.DBotScore.NONE),
-                Verdict=wild_fire_verdict_context.pop("Verdict", None),
-                VerdictDescription=wild_fire_verdict_context.pop("VerdictDescription", None),
-                MD5=wild_fire_verdict_context.pop("MD5", None),
-                SHA1=wild_fire_verdict_context.pop("SHA1", None),
-                SHA256=wild_fire_verdict_context.pop("SHA256", None),
-                SHA512=wild_fire_verdict_context.pop("SHA512", None),
-                AdditionalFields=wild_fire_verdict_context,  # remaining fields after "popping" mapped fields
-            )
-            context_output["FileEnrichment"].append(file_context)
+        if wild_fire_verdicts_context := get_from_context(context_item, ContextPaths.WILDFIRE_V2_VERDICT):
+            for wild_fire_verdict_context in wild_fire_verdicts_context:
+                dbot_score = find_matching_dbot_score(dbot_scores, wild_fire_verdict_context)
+                file_context = assign_params(
+                    Source=Brands.WILDFIRE_V2.value,
+                    Score=dbot_score.get("Score", Common.DBotScore.NONE),
+                    Verdict=wild_fire_verdict_context.pop("Verdict", None),
+                    VerdictDescription=wild_fire_verdict_context.pop("VerdictDescription", None),
+                    MD5=wild_fire_verdict_context.pop("MD5", None),
+                    SHA1=wild_fire_verdict_context.pop("SHA1", None),
+                    SHA256=wild_fire_verdict_context.pop("SHA256", None),
+                    SHA512=wild_fire_verdict_context.pop("SHA512", None),
+                    AdditionalFields=wild_fire_verdict_context,  # remaining fields after "popping" mapped fields
+                )
+                context_output["FileEnrichment"].append(file_context)
 
     return context_output, readable_command_results
 
@@ -475,15 +504,16 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict[str, list], list[C
     context_output: dict[str, list] = defaultdict(list)
 
     for context_item in entry_context:
-        if hash_analytics_context := get_from_context(context_item, ContextPaths.CORE_IR_HASH_ANALYTICS):
-            file_context = assign_params(
-                Source=Brands.CORE_IR.value,
-                SHA256=command.args.get("sha256"),  # Hash not returned in context, so take from command args
-                GlobalPrevalence=demisto.get(hash_analytics_context, "data.global_prevalence.value"),
-                LocalPrevalence=demisto.get(hash_analytics_context, "data.local_prevalence.value"),
-                AdditionalFields=hash_analytics_context,
-            )
-            context_output["FileEnrichment"].append(file_context)
+        if hashes_analytics_context := get_from_context(context_item, ContextPaths.CORE_IR_HASH_ANALYTICS):
+            for hash_analytics_context in hashes_analytics_context:
+                file_context = assign_params(
+                    Source=Brands.CORE_IR.value,
+                    SHA256=hash_analytics_context.get("sha256"),
+                    GlobalPrevalence=demisto.get(hash_analytics_context, "data.global_prevalence.value"),
+                    LocalPrevalence=demisto.get(hash_analytics_context, "data.local_prevalence.value"),
+                    AdditionalFields=hash_analytics_context,
+                )
+                context_output["FileEnrichment"].append(file_context)
 
     return context_output, readable_command_results
 
@@ -536,7 +566,7 @@ def enrich_with_command(
 
 
 def search_file_indicator(
-    file_hash: str,
+    file_hashes: list[str],
     per_command_context: dict[str, dict],
     verbose_command_results: list,
 ) -> None:
@@ -546,16 +576,19 @@ def search_file_indicator(
     brand fields to additional context items.
 
     Args:
-        file_hash (str): The hash of the file.
+        file_hashes (list[str]): List of file hashes.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
-    demisto.debug(f"Starting to search for File indicator with value: {file_hash}.")
+    demisto.debug(f"Starting to search for File indicator with values: {file_hashes}.")
     try:
-        search_results = IndicatorsSearcher(query=f"type:File and {file_hash}", size=1)
+        value_in_hashes = " or ".join([f"value: {file_hash}" for file_hash in file_hashes])
+        search_results = IndicatorsSearcher(query=f"type:File and ({value_in_hashes})", size=len(file_hashes))
 
     except Exception as e:
-        demisto.debug(f"Error searching for File indicator with value: {file_hash}. Error: {str(e)}.\n{traceback.format_exc()}")
+        demisto.debug(
+            f"Error searching for File indicator with values: {file_hashes}. Error: {str(e)}.\n{traceback.format_exc()}"
+        )
         readable_command_results = CommandResults(
             readable_output=f"#### Error for Search Indicators\n{str(e)}", entry_type=EntryType.ERROR
         )
@@ -564,31 +597,33 @@ def search_file_indicator(
 
     iocs = flatten_list([result.get("iocs") or [] for result in search_results])
     if not iocs:
-        demisto.debug(f"Could not find File indicator with value: {file_hash}.")
+        demisto.debug(f"Could not find File indicator with values: {file_hashes}.")
         readable_command_results = CommandResults(readable_output="#### Result for Search Indicators\nNo Indicators found.")
         verbose_command_results.append(readable_command_results)
         return
 
-    demisto.debug(f"Found {len(iocs)} File indicators with value: {file_hash}.")
-    ioc_custom_fields = iocs[0].get("CustomFields", {})
     context_output: dict[str, list] = defaultdict(list)
 
-    # Prepare context output
-    if file_context := get_file_from_ioc_custom_fields(ioc_custom_fields):
-        file_context["Source"] = Brands.TIM.value
-        file_context["Score"] = iocs[0].get("score", Common.DBotScore.NONE)
-        context_output["FileEnrichment"].append(file_context)
-    per_command_context["findIndicators"] = context_output
+    demisto.debug(f"Found {len(iocs)} File indicators with values: {file_hashes}.")
+    for ioc in iocs:
+        ioc_custom_fields = ioc.get("CustomFields", {})
 
-    # Prepare human-readable output
-    table = tableToMarkdown(name="Found Indicators", t=ioc_custom_fields)
-    readable_command_results = CommandResults(readable_output=f"#### Result for Search Indicators\n{table}")
-    verbose_command_results.append(readable_command_results)
+        # Prepare context output
+        if file_context := get_file_from_ioc_custom_fields(ioc_custom_fields):
+            file_context["Source"] = Brands.TIM.value
+            file_context["Score"] = ioc.get("score", Common.DBotScore.NONE)
+            context_output["FileEnrichment"].append(file_context)
+
+            # Prepare human-readable output
+            table = tableToMarkdown(name="Found Indicators", t=ioc_custom_fields)
+            readable_command_results = CommandResults(readable_output=f"#### Result for Search Indicators\n{table}")
+            verbose_command_results.append(readable_command_results)
+
+    per_command_context["findIndicators"] = context_output
 
 
 def run_external_enrichment(
-    file_hash: str,
-    hash_type: str,
+    hashes_by_type: dict[str, list],
     enabled_brands: list[str],
     enrichment_brands: list[str],
     per_command_context: dict[str, dict],
@@ -598,19 +633,19 @@ def run_external_enrichment(
     Runs the external file enrichment flow by executing the relevant commands from multiple source brands.
 
     Args:
-        file_hash (str): The hash of the file.
-        hash_type (str): The type of file hash normalized to lower case; can be 'md5', 'sha1', 'sha256', or 'sha512'.
-        enabled_brands (list[str]): Set of enabled integration brands.
+        hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
         enrichment_brands (list[str]): List of brand names to run, as given in the `enrichment_brands` argument.
         per_command_context (dict[str, dict]): Dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): : List of CommandResults with human-readable output.
     """
-    demisto.debug(f"Starting to run external enrichment flow on file hash: {file_hash}.")
+    file_hashes = flatten_list(list(hashes_by_type.values()))
+
+    demisto.debug(f"Starting to run external enrichment flow on file hashes: {file_hashes}.")
 
     # A. Run file reputation command - using all relevant brands or according to `enrichment_brands` argument
     file_reputation_command = Command(
         name="file",
-        args=assign_params(**{"file": file_hash, "using-brand": ",".join(enrichment_brands)}),
+        args=assign_params(**{"file": ",".join(file_hashes), "using-brand": ",".join(enrichment_brands)}),
     )
     enrich_with_command(
         command=file_reputation_command,
@@ -620,25 +655,28 @@ def run_external_enrichment(
         verbose_command_results=verbose_command_results,
     )
 
-    # B. Run Wildfire Verdict command
-    wildfire_verdict_command = Command(
-        name="wildfire-get-verdict",
-        args={"hash": file_hash},
-        brand=Brands.WILDFIRE_V2,
-    )
-    enrich_with_command(
-        command=wildfire_verdict_command,
-        enabled_brands=enabled_brands,
-        enrichment_brands=enrichment_brands,
-        per_command_context=per_command_context,
-        verbose_command_results=verbose_command_results,
-    )
+    # B. Run Wildfire Verdict command -  only works with SHA256 and MD5 hashes
+    if wildfire_hashes := (hashes_by_type.get("SHA256", []) + hashes_by_type.get("MD5", [])):
+        wildfire_verdict_command = Command(
+            name="wildfire-get-verdict",
+            args={"hash": ",".join(wildfire_hashes)},
+            brand=Brands.WILDFIRE_V2,
+        )
+        enrich_with_command(
+            command=wildfire_verdict_command,
+            enabled_brands=enabled_brands,
+            enrichment_brands=enrichment_brands,
+            per_command_context=per_command_context,
+            verbose_command_results=verbose_command_results,
+        )
+    else:
+        demisto.debug("Skipping running command 'wildfire-get-verdict'. Found no SHA256 and MD5 hashes.")
 
-    # C. Run Core IR Hash Analytics command - only works with SHA256 hashes
-    if hash_type == "sha256":
+    # C. Run Core IR Hash Analytics command - only works with SHA56 hashes
+    if analytics_hashes := hashes_by_type.get("SHA256", []):
         hash_analytics_command = Command(
             name="core-get-hash-analytics-prevalence",
-            args={"sha256": file_hash},
+            args={"sha256": ",".join(analytics_hashes)},
             brand=Brands.CORE_IR,
         )
         enrich_with_command(
@@ -650,13 +688,13 @@ def run_external_enrichment(
         )
 
     else:
-        demisto.debug(f"Skipping running command 'core-get-hash-analytics-prevalence'. Unsupported file hash type: {hash_type}.")
+        demisto.debug("Skipping running command 'core-get-hash-analytics-prevalence'. Found no SHA256 hashes.")
 
-    demisto.debug(f"Finished running external enrichment flow on file hash: {file_hash}.")
+    demisto.debug(f"Finished running external enrichment flow on file hashes: {file_hashes}.")
 
 
 def summarize_command_results(
-    file_hash: str,
+    hashes_by_type: dict[str, list],
     per_command_context: dict[str, dict],
     verbose_command_results: list[CommandResults],
     external_enrichment: bool,
@@ -666,7 +704,7 @@ def summarize_command_results(
     Summarizes the results from all the executed commands.
 
     Args:
-        file_hash (str): The hash of the file.
+        hashes_by_type (dict[str, list]): Dictionary of file hashes (value) classified by the hash type (key).
         per_command_context (dict[str, dict]): A dictionary of the entry context (value) of each command name (key).
         verbose_command_results (list[CommandResults]): List of CommandResults with human-readable output.
         external_enrichment (bool): Whether to enrich the file indicator from external source brands.
@@ -677,38 +715,55 @@ def summarize_command_results(
     """
     demisto.debug("Starting to summarize results from all executed commands.")
 
-    summary = {"File": file_hash}
-
     # Write summary Result
     errors_count = len([result for result in verbose_command_results if result.entry_type == EntryType.ERROR])
     demisto.debug(f"Found {errors_count} errors in command results.")
     if errors_count:
         if errors_count == len(verbose_command_results):
-            summary["Result"] = "Failed"  # All results are errors
+            result = "Failed"  # All results are errors
         else:
-            summary["Result"] = "Partial Success"  # Some results are errors
+            result = "Partial Success"  # Some results are errors
     else:
-        summary["Result"] = "Success"  # No errors
+        result = "Success"  # No errors
 
     # Write summary Status
-    file_found_count = len([value for value in per_command_context.values() if value])
-    demisto.debug(f"Found information on file {file_hash} from {file_found_count} sources.")
-    summary["Status"] = "Done" if file_found_count > 0 else "Not Found"
-    summary["TIM Verdict"] = get_tim_file_verdict(per_command_context)
+    merged_context = merge_context_outputs(per_command_context, include_additional_fields)
+    merged_file_context = merged_context.get(ContextPaths.FILE_ENRICHMENT.value, [])
 
+    demisto.debug(f"Found information on hashes from {len(merged_file_context)} sources.")
+
+    summaries: list[dict] = []
     # Write summary Message
-    if file_found_count > 0:
-        summary["Message"] = f"Found data on file from {file_found_count} sources."
-    else:
-        summary["Message"] = "Could not find data on file."
-        if external_enrichment is False:
-            summary["Message"] += " Consider setting external_enrichment=true."
+    for hash_type, file_hashes in hashes_by_type.items():
+        for file_hash in file_hashes:
+            file_context_for_hash = [
+                d for d in merged_file_context if hash_type in d and d[hash_type].casefold() == file_hash.casefold()
+            ]
 
-    demisto.debug(f"Summarized results from all executed commands: {summary}.")
+            summary = {"File": file_hash}
+            summary["Status"] = "Done" if file_context_for_hash else "Not Found"
+            summary["Result"] = result
+            tim_score = next(
+                iter(context.get("Score") for context in file_context_for_hash if context.get("Source") == Brands.TIM.value),
+                Common.DBotScore.NONE,
+            )
+            summary["TIM Verdict"] = DBOT_SCORE_TO_VERDICT.get(tim_score, "Unknown")
+
+            if file_context_for_hash:
+                summary["Message"] = f"Found data on file from {len(file_context_for_hash)} sources."
+                summary["Sources"] = ", ".join(file_context.get("Source") for file_context in file_context_for_hash)
+            else:
+                summary["Message"] = "Could not find data on file."
+                if external_enrichment is False:
+                    summary["Message"] += " Consider setting external_enrichment=true."
+
+            summaries.append(summary)
+
+    demisto.debug(f"Summarized results from all executed commands: {summaries}.")
 
     return CommandResults(
-        readable_output=tableToMarkdown(name=f"File Enrichment result for {file_hash}", t=summary),
-        outputs=merge_context_outputs(per_command_context, include_additional_fields),
+        outputs=merged_context,
+        readable_output=tableToMarkdown(name=f"File Enrichment result for {', '.join(file_hashes)}", t=summaries),
     )
 
 
@@ -732,23 +787,23 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     """
     demisto.debug(f"Parsing and validating script args: {args}.")
 
+    file_hashes: list = argToList(args.get("file_hash", ""))
     external_enrichment: bool = argToBoolean(args.get("external_enrichment", False))
     enrichment_brands: list = argToList(args.get("enrichment_brands"))  # brands to use for external enrichment
     verbose: bool = argToBoolean(args.get("verbose", False))
     include_additional_fields: bool = argToBoolean(args.get("additional_fields", False))
 
-    file_hash: str = args.get("file_hash", "")
-    hash_type: str = get_hash_type(file_hash).casefold()
-
-    if not file_hash or hash_type == "unknown":
-        raise ValueError("A valid file hash must be provided. Supported types are: MD5, SHA1, SHA256, and SHA512.")
+    # Classify hashes by type to check validity and handle commands that only support specific types
+    hashes_by_type: dict[str, list[str]] = classify_hashes_by_type(file_hashes)
+    if len(hashes_by_type.get("UNKNOWN", [])) == len(file_hashes):  # If all hashes are of an unknown type, throw an error!
+        raise ValueError("None of the file hashes are valid. Supported types are: MD5, SHA1, SHA256, and SHA512.")
 
     per_command_context: dict[str, dict] = {}
     verbose_command_results: list[CommandResults] = []
 
-    demisto.debug(f"Running Step 1: Search File indicator in TIM with value {file_hash}.")
+    demisto.debug(f"Running Step 1: Search File indicator in TIM with value {file_hashes}.")
     search_file_indicator(
-        file_hash=file_hash,
+        file_hashes=file_hashes,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
     )
@@ -767,19 +822,18 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
                 f"Ensure valid integration IDs are specified. For example: '{Brands.CORE_IR},{Brands.WILDFIRE_V2.value}'"
             )
 
-        demisto.debug(f"Running Step 2: External enrichment commands on {file_hash} using brands: {enrichment_brands}.")
+        demisto.debug(f"Running Step 2: External enrichment commands on {file_hashes} using brands: {enrichment_brands}.")
         run_external_enrichment(
-            file_hash=file_hash,
-            hash_type=hash_type,
+            hashes_by_type=hashes_by_type,
             enabled_brands=enabled_brands,
             enrichment_brands=enrichment_brands,
             per_command_context=per_command_context,
             verbose_command_results=verbose_command_results,
         )
 
-    demisto.debug(f"Running Step 3: Summarizing command results on {file_hash} and consolidating context output.")
+    demisto.debug(f"Running Step 3: Summarizing command results on {file_hashes} and consolidating context output.")
     summary_command_results = summarize_command_results(
-        file_hash=file_hash,
+        hashes_by_type=hashes_by_type,
         per_command_context=per_command_context,
         verbose_command_results=verbose_command_results,
         external_enrichment=external_enrichment,
