@@ -326,8 +326,7 @@ class TestManualFetch:
     @patch("CybleEventsV2.get_fetch_severities")
     @patch("CybleEventsV2.fetch_few_alerts")
     def test_manual_fetch_default_values(
-        self, mock_fetch_alerts, mock_get_severities, mock_get_se
-        rvices, mock_debug, mock_client
+        self, mock_fetch_alerts, mock_get_severities, mock_get_services, mock_debug, mock_client
     ):
         """Test manual_fetch with default values"""
         args = {"start_date": "2023-04-18 00:00:00"}
