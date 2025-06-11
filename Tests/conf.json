@@ -5851,6 +5851,10 @@
         {
             "integrations": "CybelAngel Event Collector",
             "playbookID": "CybelAngel Test Playbook"
+        },
+        {
+            "integrations": "GoogleGemini",
+            "playbookID": "GoogleGemini_Test"
         }
     ],
     "skipped_tests": {

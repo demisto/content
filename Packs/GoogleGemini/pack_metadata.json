@@ -1,16 +1,27 @@
 {
     "name": "Google Gemini",
-    "description": "Google Gemini Large Language Model Integration for AI-powered analysis and chat capabilities in XSOAR",
+    "description": "Leverage Google's advanced AI models for intelligent analysis, content generation, and conversational capabilities in your workflows.",
     "support": "developer",
     "currentVersion": "1.0.0",
     "author": "Mu Wang",
     "url": "https://github.com/warm200/content/issues",
     "email": "",
     "categories": [
-        "Cloud Services"
+        "Data Enrichment & Threat Intelligence"
     ],
-    "tags": [],
-    "useCases": [],
+    "tags": [
+        "AI",
+        "LLM",
+        "Chat",
+        "Content Generation",
+        "Analysis",
+        "Google",
+        "Artificial Intelligence",
+        "NLP"
+    ],
+    "useCases": [
+        "Threat Intelligence Management"
+    ],
     "keywords": [
         "gemini",
         "llm",
@@ -20,7 +31,9 @@
         "language",
         "artificial intelligence",
         "machine learning",
-        "nlp"
+        "nlp",
+        "analysis",
+        "content generation"
     ],
     "marketplaces": [],
     "githubUser": ["warm200"]

@@ -21,21 +21,58 @@ configuration:
   display: Default Model
   name: model
   options:
+  # Stable models
   - gemini-2.0-flash
   - gemini-2.0-flash-lite
   - gemini-1.5-flash
   - gemini-1.5-flash-8b
   - gemini-1.5-pro
+  # Preview models
   - gemini-2.5-flash-preview-05-20
-  - gemini-2.5-pro-preview-05-06
+  - gemini-2.5-pro-preview-06-05
   - gemini-2.0-flash-preview-image-generation
-  - gemini-2.5-flash-preview-native-audio-dialog
-  - gemini-2.5-flash-exp-native-audio-thinking-dialog
+  # Embedding models
   - text-embedding-004
+  - models/embedding-001
+  # Other specialized models
   - models/aqa
   required: false
   section: Connect
   type: 15
+- additionalinfo: The model that will process the inputs and generate the response.
+  display: Model (Optional - overrides selected choice)
+  name: model-freetext
+  required: false
+  section: Connect
+  type: 0
+- additionalinfo: The maximum number of tokens that can be generated for the response (1-10000). Defaults to 1024.
+  defaultvalue: '1024'
+  display: Max tokens
+  name: max_tokens
+  required: true
+  section: Collect
+  type: 0
+- additionalinfo: Controls the degree of randomness in token selection. Lower values (closer to 0) produce more deterministic outputs, while higher values (up to 2.0) increase randomness and creativity.
+  advanced: true
+  display: Temperature
+  name: temperature
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Changes how the model selects tokens for output. Tokens are selected from most to least probable until their cumulative probability equals the topP value (0.0-1.0). Lower values for less random responses, higher values for more random responses.
+  advanced: true
+  display: Top P
+  name: top_p
+  required: false
+  section: Collect
+  type: 0
+- additionalinfo: Consider only the top K most probable tokens when generating text. Affects the diversity of the generated content.
+  advanced: true
+  display: Top K
+  name: top_k
+  required: false
+  section: Collect
+  type: 0
 - display: Trust any certificate (not secure)
   name: insecure
   required: false
@@ -48,12 +85,12 @@ configuration:
   type: 8
 description: |-
   Google Gemini LLM Integration for AI-powered analysis and chat capabilities.
-  
+
   This integration provides access to Google's Gemini large language models for:
   - AI-powered chat conversations
   - Text analysis and generation
   - Natural language processing tasks
-  
+
   Supported models include Gemini 2.0 Flash, Gemini 1.5 Pro, and various preview models.
 display: Google Gemini
 name: GoogleGemini
@@ -66,21 +103,13 @@ script:
     - description: The Gemini model to use for this request. If not specified, uses the default model from configuration.
       name: model
       required: false
-    - defaultValue: 10000
-      description: Maximum number of tokens in the response (1-10000).
-      name: max_tokens
-      required: false
-    - defaultValue: 0.7
-      description: Temperature for response generation (0.0 to 1.0). Higher values make output more random.
-      name: temperature
-      required: false
     - description: |-
         Optional conversation history in JSON format. Array of message objects with 'role' (user/model) and 'parts' containing text.
         Example: [{"role": "user", "parts": [{"text": "Hello"}]}, {"role": "model", "parts": [{"text": "Hi there!"}]}].
       name: history
       required: false
-    description: Send a chat message to the Gemini AI model
-    name: googlegemini-chat
+    description: Send a chat message to the Gemini AI model.
+    name: google-gemini-send-message
     outputs:
     - contextPath: GoogleGemini.Chat.prompt
       description: The original prompt sent to the model.
@@ -100,5 +129,5 @@ script:
   subtype: python3
   type: python
 tests:
-- GoogleGemini_test
+- playbook-GoogleGemini_Test
 fromversion: 6.10.0
