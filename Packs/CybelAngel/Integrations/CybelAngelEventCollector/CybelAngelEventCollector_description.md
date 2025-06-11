@@ -12,9 +12,9 @@ To request a token, the system will request your API credentials (client_id and 
 Your API credentials are accessible in the Platform > Settings > API.
 
 ## CybelAngel Required Scopes
-- To fetch reports the api role required should be `reports.read`
+- To fetch reports, the api role required should be `reports.read`.
 
-- To fetch Credential watchlist the api role required should be `credentials.read`
+- To fetch the Credential watchlist, the api role required should be `credentials.read`
 
 <~XSIAM>
 
@@ -32,6 +32,4 @@ This limitation should not affect fetching, as the integration uses an average o
 
 **Note:**
 
-**If you use bearer tokens to interact with the CybelAngel API for other purposes outside of this integration, you could potentially run out of bearer tokens before the end of the month. In that case, the integration will not continue to fetch.**
-
-
+**If you use bearer tokens to interact with the CybelAngel API for other purposes outside of this integration, you could run out of bearer tokens before the end of the month. In that case, the integration will not continue to fetch.**

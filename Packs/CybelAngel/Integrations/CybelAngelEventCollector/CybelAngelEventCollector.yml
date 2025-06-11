@@ -93,10 +93,10 @@ script:
       - 'True'
       - 'False'
       required: false
-    - description: 'Get events from a specific start date formatted with ISO 8601.'
+    - description: 'Get events from a specific start date formatted with ISO 8601. Example: "2025-01-01T00:00:00.000Z"'
       name: start_date
       required: false
-    - description: 'Get events until a specific end date formatted with ISO 8601.'
+    - description: 'Get events until a specific end date formatted with ISO 8601. Example: "2025-01-01T00:00:00.000Z"'
       name: end_date
       required: false
     - description: 'The maximum number of events to return.'

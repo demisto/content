@@ -269,8 +269,8 @@ class Client(BaseClient):
 
         response = self.http_request(method="GET", url_suffix=DOMAIN.url_suffix, params=params) or {}
 
-        events = response["results"]  # type: ignore
-        total = response.get("total", 0)  # type: ignore
+        events = response.get("results", {})  # type:ignore
+        total = response.get("total", 0)  # type:ignore
         demisto.debug(f"Fetched {len(events)} / {total} domain events on first call")
 
         if total > len(events):
@@ -528,7 +528,7 @@ def test_module(client: Client, events_type_to_fetch: list[EventType]) -> str:
         REPORT.name: client.get_reports,
     }
     for event_type in events_type_to_fetch:
-        event_fetch_function[event_type.name](start_date=start_time, end_date=end_time, limit=10)
+        event_fetch_function[event_type.name](start_date=start_time, end_date=end_time, limit=1)
 
     return "ok"
 
@@ -1000,25 +1000,18 @@ def set_event_type_fetch_limit(params: dict[str, Any]) -> list[EventType]:
     Returns:
         list[EventType]: List of event type to fetch from the api call.
     """
-    event_types_to_fetch = argToList(params.get("event_types_to_fetch", [REPORT.name]))
-    event_types_to_fetch = [event_type.strip(" ") for event_type in event_types_to_fetch]
-    demisto.debug(f"List:{event_types_to_fetch}, list length:{len(event_types_to_fetch)}")
-    max_fetch_reports = arg_to_number(params.get("max_fetch")) or REPORT.default_max_fetch
-    max_fetch_creds = arg_to_number(params.get("max_fetch_creds")) or CREDENTIALS.default_max_fetch
-    max_fetch_domain = arg_to_number(params.get("max_fetch_domain")) or DOMAIN.default_max_fetch
-
+    event_type_names = [et.strip() for et in argToList(params.get("event_types_to_fetch", [REPORT.name]))]
+    demisto.debug(f"List:{event_type_names}, list length:{len(event_type_names)}")
+    fetch_limits = {
+        REPORT.name: arg_to_number(params.get("max_fetch")) or REPORT.default_max_fetch,
+        CREDENTIALS.name: arg_to_number(params.get("max_fetch_creds")) or CREDENTIALS.default_max_fetch,
+        DOMAIN.name: arg_to_number(params.get("max_fetch_domain")) or DOMAIN.default_max_fetch,
+    }
     event_types = []
-    if REPORT.name in event_types_to_fetch:
-        REPORT.max_fetch = max_fetch_reports
-        event_types.append(REPORT)
-
-    if DOMAIN.name in event_types_to_fetch:
-        DOMAIN.max_fetch = max_fetch_domain
-        event_types.append(DOMAIN)
-
-    if CREDENTIALS.name in event_types_to_fetch:
-        CREDENTIALS.max_fetch = max_fetch_creds
-        event_types.append(CREDENTIALS)
+    for event_type in EVENT_TYPE.values():
+        if event_type.name in event_type_names:
+            event_type.max_fetch = fetch_limits[event_type.name]
+            event_types.append(event_type)
 
     return event_types
 
