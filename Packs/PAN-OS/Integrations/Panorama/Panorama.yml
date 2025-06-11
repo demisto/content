@@ -7708,9 +7708,14 @@ script:
       type: String
     - contextPath: PANOS.ShowSystemInfo.Result.global_protect_client_package_version
       description: The GlobalProtect client package version.
+    - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
+      description: Advanced routing feature.
+      type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.multi_vsys
+      description: Virtual system feature.
       type: String
   - arguments:
-    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    - description: The string to filter the results by to only show specific hostnames or serial numbers.
       name: device_filter_string
     description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups

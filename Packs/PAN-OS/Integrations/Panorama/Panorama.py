@@ -9575,6 +9575,8 @@ class ShowSystemInfoResultData(ResultData):
     :param wildfire_release_date: Wildfire release date
     :param url_filtering_version: URL Filtering content version
     :param global_protect_client_package_version: GlobalProtect content version
+    :param advanced_routing: Advanced Routing engine feature
+    :param multi_vsys: Virtual System feature
     """
 
     ip_address: str
@@ -9590,6 +9592,8 @@ class ShowSystemInfoResultData(ResultData):
     default_gateway: str = ""
     public_ip_address: str = ""
     hostname: str = ""
+    advanced_routing: str = ""
+    multi_vsys: str = ""
     av_version: str = "not_installed"
     av_release_date: str = "not_installed"
     app_version: str = "not_installed"

@@ -5750,6 +5750,8 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. |
 | PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. |
 | PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. |
+| PANOS.ShowSystemInfo.Result.advanced_routing | string | Advanced routing engine feature. |
+| PANOS.ShowSystemInfo.Result.multi_vsys | string | Virtual system feature. |
 
 #### Command example
 
@@ -5785,7 +5787,9 @@ Gets information from all PAN-OS systems in the topology.
                     "url_filtering_version": "20220218.20012",
                     "wildfire_release_date": "",
                     "wildfire_version": "0",
-                    "global_protect_client_package_version": "0.0.0"
+                    "global_protect_client_package_version": "0.0.0",
+                    "advanced_routing": "on",
+                    "multi_vsys": "on"
                 },
                 {
                     "app_release_date": "2021/12/06 18:49:44 PST",
@@ -5809,7 +5813,9 @@ Gets information from all PAN-OS systems in the topology.
                     "uptime": "3 days, 13:56:06",
                     "url_filtering_version": "",
                     "wildfire_release_date": "",
-                    "wildfire_version": "0"
+                    "wildfire_version": "0",
+                    "advanced_routing": "off",
+                    "multi_vsys": "on"
                 }
             ],
             "Summary": [
