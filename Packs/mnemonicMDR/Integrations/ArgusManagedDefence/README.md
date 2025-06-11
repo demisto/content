@@ -2598,6 +2598,17 @@ Download all attachments related to Argus Case.
 #### Base Command
 
 `argus-download-case-attachments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| case_id | Case ID. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
+
 ### argus-download-attachment-by-filename
 
 ***
