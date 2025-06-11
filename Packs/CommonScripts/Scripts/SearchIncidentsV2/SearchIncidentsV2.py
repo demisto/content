@@ -106,7 +106,7 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
 
 
 def add_incidents_link(data: List, platform: str):
-    # For XSIAM or Platform links 
+    # For XSIAM or Platform links
     if platform == "x2" or platform == "unified_platform":
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for incident in data:
