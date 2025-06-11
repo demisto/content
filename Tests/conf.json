@@ -152,6 +152,10 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
+            "playbookID": "CrowdStrike Falcon Basic Test"
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test Playbook - CrowdStrike Falcon Malware - Verify Containment Actions"
         },
         {
@@ -2383,6 +2387,10 @@
             "integrations": "PrismaCloud v2",
             "playbookID": "Prisma Cloud V2 Test",
             "memory_threshold": 250
+        },
+         {
+            "integrations": "PrismaCloud v2",
+            "playbookID": "Prisma Cloud V2 Basic Test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
