@@ -1395,9 +1395,11 @@ def add_tag(demisto_args: dict, is_attribute=False):
     is_local_tag = argToBoolean(demisto_args.get("is_local", False))
     disable_output = argToBoolean(demisto_args.get("disable_output", False))
     try:
-        PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
+        res = PYMISP.tag(uuid, tag, local=is_local_tag)  # add the tag
     except PyMISPError:
         raise DemistoException("Adding the required tag was failed. Please make sure the UUID exists.")
+    if "errors" in res:
+        raise DemistoException(f"Got error from MISP API: {res}")
     if is_attribute:
         response = None
         success_msg = f"Tag {tag} has been successfully added to attribute {uuid}"
@@ -1423,6 +1425,23 @@ def add_tag(demisto_args: dict, is_attribute=False):
         outputs=build_events_search_response(response),  # type: ignore[arg-type]
         raw_response=response,
     )
+
+def validate_existing_tag(tag: str, response: dict[str, Any]) -> bool:
+    """_summary_
+
+    Args:
+        tag (str): _description_
+        response (dict): _description_
+
+    Returns:
+        bool: _description_
+    """
+    for attribute_tag in response.get('Attribute', [])[0].get('Tag', {}):
+        demisto.debug(f'Got tag {attribute_tag} in attribute')
+        if attribute_tag.get('name') == tag:
+            return True
+
+    return False
 
 
 def remove_tag(demisto_args: dict, is_attribute=False):
