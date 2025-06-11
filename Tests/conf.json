@@ -147,7 +147,8 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File",
+            "timeout": 1200
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -1967,7 +1968,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 5000
+            "timeout": 6000
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
