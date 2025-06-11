@@ -132,6 +132,7 @@ class S3:
                 readable_output=f"Failed to update versioning configuration for bucket {bucket}. Error: {str(e)}",
             )
 
+
 class IAM:
     service = AWSServices.IAM
 
@@ -213,7 +214,6 @@ class IAM:
             return CommandResults(
                 readable_output=f"Couldn't updated account password policy for account: {args.get('account_id')}"
             )
-
 
 class EC2:
     service = AWSServices.EC2
@@ -357,7 +357,6 @@ class EC2:
             raise DemistoException(f"Unexpected response from AWS - EC2:\n{response}")
         return CommandResults(readable_output="The Security Group ingress rule was created")
 
-
 class EKS:
     service = AWSServices.EKS
 
@@ -439,7 +438,6 @@ class EKS:
                 return CommandResults(readable_output="No changes needed for the required update.")
             else:
                 raise e
-
 
 class RDS:
     service = AWSServices.RDS
@@ -737,25 +735,21 @@ def test_module():
 def health_check(connector_id: str):
     accounts: list[dict] = get_accounts_by_connector_id(connector_id)
     account_ids: list[str] = [str(account.get('account_id')) for account in accounts if 'account_id' in account]
+
+    health_check = HealthCheckResult(connector_id)
     
-    # TODO - TEST ERROR - REPLACE
-    errors = [
-        HealthCheckResult.error(
-            account_id=account_id,
-            connector_id=connector_id,
-            message=f"Missing required permissions for {account_id}: {REQUIRED_ACTIONS}",
-            error="PATAPIM",
-            error_type=ErrorType.PERMISSION_ERROR
-        ) for account_id in account_ids
-    ]
-    
-    result = CommandResults(
-        entry_type=EntryType.ERROR, # TODO - Calculate according to errors 
-        raw_response=errors,
-        content_format=EntryFormat.JSON
-        ) if errors else HealthCheckResult.ok()
-    
-    return result
+    for account_id in account_ids:
+        # TODO - TEST ERROR - REPLACE
+        health_check.error(
+            HealthCheckError(
+                account_id=account_id,
+                connector_id=connector_id,
+                message=f"[BYOSI] Missing 'S3:GetObject' permission for {account_id}",
+                error_type=ErrorType.PERMISSION_ERROR,
+            )
+        )
+        
+    return health_check.summarize()
 
 def main():  # pragma: no cover
     params = demisto.params()
@@ -765,23 +759,23 @@ def main():  # pragma: no cover
     demisto.debug(f"Params: {params}")
     demisto.debug(f"Command: {command}")
     demisto.debug(f"Args: {args}")
-  
     skip_proxy()
  
-  
     try:
         
         context = demisto.callingContext.get("context", {})
         cloud_info = context.get("CloudIntegrationInfo", {})
+        
         if command == "test-module":
             results = (
                 health_check(connector_id) if (connector_id := cloud_info.get("connectorID")) else test_module()
             )
             return_results(results)
+            
         elif command in COMMANDS_MAPPING:
             account_id = args.get("account_id")
             credentials = get_cloud_credentials(CloudTypes.AWS.value, account_id) if True else {}
-
+            
             aws_session: Session = Session(
                 aws_access_key_id=credentials.get("key") or params.get("access_key_id"),
                 aws_secret_access_key=credentials.get("access_token") or params.get("secret_access_key").get("password"),
@@ -790,7 +784,7 @@ def main():  # pragma: no cover
             )
             
             service = AWSServices(command.split("-")[1])
-            service_client: BotoClient = aws_session.client(service,  config=Config(read_timeout=10, connect_timeout=10))
+            service_client: BotoClient = aws_session.client(service)
             return_results(COMMANDS_MAPPING[command](service_client, args))
         else:
             raise NotImplementedError(f"Command {command} is not implemented")
