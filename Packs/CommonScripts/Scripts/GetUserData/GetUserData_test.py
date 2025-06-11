@@ -285,8 +285,7 @@ def test_create_user_with_minimal_info():
     result = create_user(source=source, username=username)
 
     # Assert
-    assert result == {"Source": "TestSource",
-                      "Username": "testuser"}
+    assert result == {"Source": "TestSource", "Username": "testuser"}
 
 
 def test_create_user_with_additional_fields():
@@ -314,17 +313,17 @@ def test_create_user_with_additional_fields():
 
     result = create_user(**user_info, additional_fields=True)
     expected = {
-        'AdditionalFields': {
-            'display_name': 'Full User',
-            'job_title': 'Manager',
-            'manager_display_name': 'Manager Name',
-            'manager_email': 'manager@test.com'
+        "AdditionalFields": {
+            "display_name": "Full User",
+            "job_title": "Manager",
+            "manager_display_name": "Manager Name",
+            "manager_email": "manager@test.com",
         },
-        'Email': 'full@test.com',
-        'ID': '123',
-        'RiskLevel ': 'Low',
-        'Source': 'FullTestSource',
-        'Username': 'fulluser'
+        "Email": "full@test.com",
+        "ID": "123",
+        "RiskLevel ": "Low",
+        "Source": "FullTestSource",
+        "Username": "fulluser",
     }
 
     assert result == expected
@@ -355,14 +354,15 @@ def test_create_user_without_additional_fields():
 
     result = create_user(**user_info, additional_fields=False)
     expected = {
-        'Email': 'full@test.com',
-        'ID': '123',
-        'RiskLevel ': 'Low',
-        'Source': 'FullTestSource',
-        'Username': 'fulluser',
+        "Email": "full@test.com",
+        "ID": "123",
+        "RiskLevel ": "Low",
+        "Source": "FullTestSource",
+        "Username": "fulluser",
     }
 
     assert result == expected
+
 
 def test_create_user_with_single_item_list():
     """
@@ -381,13 +381,7 @@ def test_create_user_with_single_item_list():
 
     result = create_user(source=source, username=username, groups=groups, additional_fields=True)
 
-    assert result == {
-        'AdditionalFields': {
-            'groups': ['singlegroup']
-        },
-        'Source': 'SingleListSource',
-        'Username': 'listuser'
-    }
+    assert result == {"AdditionalFields": {"groups": ["singlegroup"]}, "Source": "SingleListSource", "Username": "listuser"}
 
 
 def test_create_user_with_empty_fields():
@@ -416,10 +410,10 @@ def test_create_user_with_empty_fields():
         manager_email=None,
         manager_display_name=None,
         risk_level=None,
-        additional_fields=True
+        additional_fields=True,
     )
 
-    assert user == {'Source': 'EmptyFieldsSource'}
+    assert user == {"Source": "EmptyFieldsSource"}
 
 
 def test_prepare_human_readable_success():
@@ -803,7 +797,6 @@ def test_run_execute_command_multiple_entries(mocker: MockerFixture):
 
 
 class TestGetUserData:
-
     def test_ad_get_user(self, mocker: MockerFixture):
         """
         Given:
@@ -824,16 +817,16 @@ class TestGetUserData:
             "manager": ["CN=Manager,OU=Users,DC=example,DC=com"],
         }
         expected_user = {
-            'AdditionalFields': {
-                'displayName': 'AD User',
-                'manager': 'CN=Manager,OU=Users,DC=example,DC=com',
-                'memberOf': ["Group1", "Group2"],
-                'sAMAccountName': 'ad_user',
-                'userAccountControlFields': {'ACCOUNTDISABLE': False}
+            "AdditionalFields": {
+                "displayName": "AD User",
+                "manager": "CN=Manager,OU=Users,DC=example,DC=com",
+                "memberOf": ["Group1", "Group2"],
+                "sAMAccountName": "ad_user",
+                "userAccountControlFields": {"ACCOUNTDISABLE": False},
             },
-            'Email': 'ad_user@example.com',
-            'Source': 'Active Directory Query v2',
-            "Username": "ad_user"
+            "Email": "ad_user@example.com",
+            "Source": "Active Directory Query v2",
+            "Username": "ad_user",
         }
 
         mocker.patch(
@@ -872,15 +865,17 @@ class TestGetUserData:
             "whenCreated": ["2024-11-05 09:11:18+00:00"],
         }
         expected_account = {
-            'AdditionalFields': {
-                'displayName': 'AD User',
-                'manager': 'CN=Manager,OU=Users,DC=example,DC=com',
-                'memberOf': 'Group1',
-                'sAMAccountName': 'ad_user',
-                'userAccountControlFields': {'ACCOUNTDISABLE': False},
-                'whenCreated': '2024-11-05 09:11:18+00:00'},
-            'Email': 'ad_user@example.com',
-            'Source': 'Active Directory Query v2'}
+            "AdditionalFields": {
+                "displayName": "AD User",
+                "manager": "CN=Manager,OU=Users,DC=example,DC=com",
+                "memberOf": "Group1",
+                "sAMAccountName": "ad_user",
+                "userAccountControlFields": {"ACCOUNTDISABLE": False},
+                "whenCreated": "2024-11-05 09:11:18+00:00",
+            },
+            "Email": "ad_user@example.com",
+            "Source": "Active Directory Query v2",
+        }
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -899,7 +894,6 @@ class TestGetUserData:
         assert result[1] == expected_account
         assert len(result[1])
         assert "whenCreated" in result[1]["AdditionalFields"]
-
 
     def test_okta_get_user(self, mocker: MockerFixture):
         """
@@ -920,15 +914,11 @@ class TestGetUserData:
             "Manager": "Okta Manager",
         }
         expected_account = {
-            'AdditionalFields': {
-                'DisplayName': 'Okta User',
-                'Manager': 'Okta Manager',
-                'Status': 'ACTIVE'
-            },
-            'Email': 'okta@example.com',
-            'ID': '101112',
-            'Source': 'Okta v2',
-            'Username': 'okta_user'
+            "AdditionalFields": {"DisplayName": "Okta User", "Manager": "Okta Manager", "Status": "ACTIVE"},
+            "Email": "okta@example.com",
+            "ID": "101112",
+            "Source": "Okta v2",
+            "Username": "okta_user",
         }
 
         mocker.patch(
@@ -958,11 +948,7 @@ class TestGetUserData:
         """
         command = Command("AWS - IAM", "aws-iam-get-user", {"userName": "aws_user"})
         mock_outputs = {"UserId": "AIDAXXXXXXXXXXXXXXXX", "UserName": "aws_user"}
-        expected_account = {
-            'ID': 'AIDAXXXXXXXXXXXXXXXX',
-            'Source': 'AWS - IAM',
-            'Username': 'aws_user'
-        }
+        expected_account = {"ID": "AIDAXXXXXXXXXXXXXXXX", "Source": "AWS - IAM", "Username": "aws_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1001,17 +987,17 @@ class TestGetUserData:
             "Type": "Member",
         }
         expected_account = {
-            'AdditionalFields': {
-                'DisplayName': 'Graph User',
-                'JobTitle': 'Developer',
-                'Office': 'HQ',
-                'TelephoneNumber': '123-456-7890',
-                'Type': 'Member'
+            "AdditionalFields": {
+                "DisplayName": "Graph User",
+                "JobTitle": "Developer",
+                "Office": "HQ",
+                "TelephoneNumber": "123-456-7890",
+                "Type": "Member",
             },
-            'Email': 'graph@example.com',
-            'ID': '131415',
-            'Source': 'Microsoft Graph User',
-            'Username': 'graph_user'
+            "Email": "graph@example.com",
+            "ID": "131415",
+            "Source": "Microsoft Graph User",
+            "Username": "graph_user",
         }
 
         mocker.patch(
@@ -1022,7 +1008,7 @@ class TestGetUserData:
         mocker.patch("GetUserData.get_outputs", return_value=mock_outputs)
         mocker.patch("GetUserData.prepare_human_readable", return_value=[])
 
-        result = msgraph_user_get(command,additional_fields=True)
+        result = msgraph_user_get(command, additional_fields=True)
 
         assert isinstance(result, tuple)
         assert len(result) == 2
@@ -1041,10 +1027,7 @@ class TestGetUserData:
         """
         command = Command("Microsoft Graph User", "msgraph-user-get-manager", {"user": "graph_user"})
         mock_outputs = {"Manager": {"DisplayName": "Graph Manager", "Mail": "manager@example.com"}}
-        expected_account = {
-            'manager_display_name': 'Graph Manager',
-            'manager_email': 'manager@example.com'
-        }
+        expected_account = {"manager_display_name": "Graph Manager", "manager_email": "manager@example.com"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1072,7 +1055,7 @@ class TestGetUserData:
         outputs_key_field = "PaloAltoNetworksXDR"
         command = Command("Cortex XDR - IR", "xdr-list-risky-users", {"user_id": user_name})
         mock_outputs = {"id": "xdr_user", "risk_level": "HIGH"}
-        expected_account = {'ID': 'xdr_user', 'RiskLevel ': 'HIGH', 'Source': 'Cortex XDR - IR', 'Username': 'xdr_user'}
+        expected_account = {"ID": "xdr_user", "RiskLevel ": "HIGH", "Source": "Cortex XDR - IR", "Username": "xdr_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1089,7 +1072,6 @@ class TestGetUserData:
         assert isinstance(result[0], list)
         assert result[1] == expected_account
 
-
     def test_azure_list_risky_users(self, mocker: MockerFixture):
         """
         Given:
@@ -1100,10 +1082,9 @@ class TestGetUserData:
             It returns the expected tuple of readable outputs and account output.
         """
         user_name = "azure_user"
-        outputs_key_field = "AzureRiskyUsers.RiskyUser"
         command = Command("Azure Risky Users", "azure-risky-user-get", {"user_id": user_name})
         mock_outputs = {"id": "azure_user", "riskLevel": "HIGH"}
-        expected_account = {'ID': 'azure_user', 'RiskLevel ': 'HIGH', 'Source': 'Azure Risky Users', 'Username': 'azure_user'}
+        expected_account = {"ID": "azure_user", "RiskLevel ": "HIGH", "Source": "Azure Risky Users", "Username": "azure_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1120,7 +1101,6 @@ class TestGetUserData:
         assert isinstance(result[0], list)
         assert result[1] == expected_account
 
-
     def test_prisma_cloud_get_user(self, mocker: MockerFixture):
         """
         Given:
@@ -1132,11 +1112,7 @@ class TestGetUserData:
         """
         command = Command("PrismaCloud v2", "prisma-cloud-users-list", {"usernames": "prisma_user"})
         mock_outputs = {"email": "user_email.com", "username": "prisma_user"}
-        expected_account = {
-            'Email': 'user_email.com',
-            'Source': 'PrismaCloud v2',
-            'Username': 'prisma_user'
-        }
+        expected_account = {"Email": "user_email.com", "Source": "PrismaCloud v2", "Username": "prisma_user"}
 
         mocker.patch(
             "GetUserData.run_execute_command",
@@ -1153,6 +1129,7 @@ class TestGetUserData:
         assert isinstance(result[0], list)
         assert isinstance(result[1], dict)
         assert result[1] == expected_account
+
 
 def test_main_successful_execution(mocker: MockerFixture):
     """
@@ -1177,8 +1154,8 @@ def test_main_successful_execution(mocker: MockerFixture):
     # Mock demisto.getModules()
     mocker.patch.object(demisto, "getModules", return_value={})
 
-    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
-    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
 
     # Mock other necessary functions
     mocker.patch("GetUserData.ad_get_user", return_value=(["test"], {"Source": "test"}))
@@ -1264,13 +1241,21 @@ def test_main_domain_without_username(mocker: MockerFixture):
 def test_get_data_with_found_user(mocker: MockerFixture):
     modules = Modules({}, ["Brand1"])
 
-    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
-    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
 
     # Mock other necessary functions
     mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=(["test"], {"Source": "test", "Username": "test user"}))
 
-    result = get_data(modules=modules, brand_name="Brand1", command_name="test_command",arg_name="test_arg", arg_value="test_value", cmd=mock_get_user, additional_fields=True)
+    result = get_data(
+        modules=modules,
+        brand_name="Brand1",
+        command_name="test_command",
+        arg_name="test_arg",
+        arg_value="test_value",
+        cmd=mock_get_user,
+        additional_fields=True,
+    )
 
     assert result[1]
     assert result[1].get("Status") == "found."
@@ -1279,13 +1264,21 @@ def test_get_data_with_found_user(mocker: MockerFixture):
 def test_get_data_without_found_user(mocker: MockerFixture):
     modules = Modules({}, ["Brand1"])
 
-    mocker.patch.object(Modules, 'is_brand_in_brands_to_run', return_value=True)
-    mocker.patch.object(Modules, 'is_brand_available', return_value=True)
+    mocker.patch.object(Modules, "is_brand_in_brands_to_run", return_value=True)
+    mocker.patch.object(Modules, "is_brand_available", return_value=True)
 
     # Mock other necessary functions
     mock_get_user = mocker.patch("GetUserData.ad_get_user", return_value=([], {"Source": "test"}))
 
-    result = get_data(modules=modules, brand_name="Brand1", command_name="test_command",arg_name="test_arg", arg_value="test_value", cmd=mock_get_user, additional_fields=True)
+    result = get_data(
+        modules=modules,
+        brand_name="Brand1",
+        command_name="test_command",
+        arg_name="test_arg",
+        arg_value="test_value",
+        cmd=mock_get_user,
+        additional_fields=True,
+    )
 
     assert result[1]
     assert result[1].get("Status") == "User not found: test_arg test_value."

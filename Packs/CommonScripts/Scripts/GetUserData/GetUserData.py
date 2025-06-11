@@ -1,5 +1,5 @@
-import itertools
-from typing import Any, Callable
+from typing import Any
+from collections.abc import Callable
 
 import demistomock as demisto
 from CommonServerPython import *
@@ -129,7 +129,7 @@ def create_user(
         "RiskLevel ": risk_level,
     }
     if additional_fields:
-        user["AdditionalFields"] = kwargs
+        user["AdditionalFields"] = kwargs  # type: ignore
     user = remove_empty_elements(user)
 
     return user
@@ -362,6 +362,7 @@ def aws_iam_get_user(command: Command, additional_fields: bool) -> tuple[list[Co
 
     return readable_outputs_list, user_output
 
+
 def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
@@ -380,7 +381,8 @@ def prisma_cloud_get_user(command: Command, additional_fields: bool) -> tuple[li
 
     return readable_outputs_list, user_output
 
-def msgraph_user_get(command: Command, additional_fields:bool) -> tuple[list[CommandResults], dict[str, Any]]:
+
+def msgraph_user_get(command: Command, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -400,10 +402,7 @@ def msgraph_user_get(command: Command, additional_fields:bool) -> tuple[list[Com
     return readable_outputs_list, user_output
 
 
-def msgraph_user_get_manager(
-    command: Command,
-    additional_fields: bool
-) -> dict[str, Any]:
+def msgraph_user_get_manager(command: Command, additional_fields: bool) -> dict[str, Any]:
     readable_outputs_list = []
 
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
@@ -413,7 +412,7 @@ def msgraph_user_get_manager(
     outputs = get_outputs(output_key, entry_context[0])
     manager_output = {
         "manager_display_name": outputs.get("Manager", {}).get("DisplayName"),
-        "manager_email": outputs.get("Manager", {}).get("Mail")
+        "manager_email": outputs.get("Manager", {}).get("Mail"),
     }
 
     return manager_output
@@ -438,7 +437,7 @@ def xdr_list_risky_users(
         risk_level=outputs.pop("risk_level", None),
         username=outputs.pop("id", None),
         **outputs,
-        additional_fields=additional_fields
+        additional_fields=additional_fields,
     )
 
     return readable_outputs_list, account_output
@@ -448,18 +447,14 @@ def xdr_get_risky_user(
     command: Command,
     additional_fields: bool,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
-    return xdr_list_risky_users(command,
-                    outputs_key_field="PaloAltoNetworksXDR",
-                    additional_fields=additional_fields)
+    return xdr_list_risky_users(command, outputs_key_field="PaloAltoNetworksXDR", additional_fields=additional_fields)
 
 
 def core_get_risky_user(
     command: Command,
     additional_fields: bool,
 ) -> tuple[list[CommandResults], dict[str, Any]]:
-    return xdr_list_risky_users(command,
-                    outputs_key_field="Core",
-                    additional_fields=additional_fields)
+    return xdr_list_risky_users(command, outputs_key_field="Core", additional_fields=additional_fields)
 
 
 def azure_get_risky_user(
@@ -470,7 +465,7 @@ def azure_get_risky_user(
     entry_context, human_readable, readable_errors = run_execute_command(command.name, command.args)
     readable_outputs_list.extend(readable_errors)
     readable_outputs_list.extend(prepare_human_readable(command.name, command.args, human_readable))
-    output_key = get_output_key(f"AzureRiskyUsers.RiskyUser", entry_context[0])
+    output_key = get_output_key("AzureRiskyUsers.RiskyUser", entry_context[0])
     outputs = get_outputs(output_key, entry_context[0])
 
     account_output = create_user(
@@ -479,26 +474,31 @@ def azure_get_risky_user(
         risk_level=outputs.pop("riskLevel", None),
         username=outputs.pop("id", None),
         **outputs,
-        additional_fields=additional_fields
+        additional_fields=additional_fields,
     )
 
     return readable_outputs_list, account_output
 
 
-def get_command_results(command: Command, cmd_to_run: Callable, modules: Modules, additional_fields: bool) -> tuple[list[CommandResults], dict[str, Any]] | None:
+def get_command_results(
+    command: Command, cmd_to_run: Callable, modules: Modules, additional_fields: bool
+) -> tuple[list[CommandResults], dict[str, Any]] | None:
     if modules.is_brand_available(command) and is_valid_args(command):
         return cmd_to_run(command, additional_fields)
     return None
 
-def get_data(modules: Modules, brand_name: str, command_name: str,  arg_name: str, arg_value: str, cmd: Callable, additional_fields: bool):
+
+def get_data(
+    modules: Modules, brand_name: str, command_name: str, arg_name: str, arg_value: str, cmd: Callable, additional_fields: bool
+):
     get_user_command = Command(
         brand=brand_name,
         name=command_name,
         args={arg_name: arg_value},
     )
     if modules.is_brand_available(get_user_command) and is_valid_args(get_user_command):
-        readable_outputs, outputs =  cmd(get_user_command, additional_fields)
-        if len(outputs) == 1: # contains only the source key
+        readable_outputs, outputs = cmd(get_user_command, additional_fields)
+        if len(outputs) == 1:  # contains only the source key
             outputs["Status"] = f"User not found: {arg_name} {arg_value}."
         else:
             outputs["Status"] = "found."
@@ -518,7 +518,7 @@ def main():
         domain = args.get("domain", "")
         verbose = argToBoolean(args.get("verbose", False))
         brands_to_run = argToList(args.get("brands", []))
-        additional_fields = argToBoolean(args.get('additional_fields') or False)
+        additional_fields = argToBoolean(args.get("additional_fields") or False)
         modules = Modules(demisto.getModules(), brands_to_run)
 
         if domain and not users_names:
@@ -531,14 +531,12 @@ def main():
         users_outputs: list[dict] = []
         users_readables: list = []
 
-
         #################################
         ### Running for Usernames ###
         #################################
         for user_name in users_names:
             demisto.debug(f"Start getting user data for {user_name=}")
             if "\\" not in (user_name or ""):
-
                 #################################
                 ### Running for Active Directory Query v2 ###
                 #################################
@@ -549,11 +547,11 @@ def main():
                     arg_name="name",
                     arg_value=user_name,
                     cmd=ad_get_user,
-                    additional_fields=additional_fields)
+                    additional_fields=additional_fields,
+                )
                 if readable_output and outputs:
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
-
 
                 #################################
                 ### Running for Okta v2 ###
@@ -565,11 +563,11 @@ def main():
                     arg_name="username",
                     arg_value=user_name,
                     cmd=okta_get_user,
-                    additional_fields=additional_fields)
+                    additional_fields=additional_fields,
+                )
                 if readable_output and outputs:
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
-
 
                 #################################
                 ### Running for AWS - IAM ###
@@ -581,11 +579,11 @@ def main():
                     arg_name="userName",
                     arg_value=user_name,
                     cmd=aws_iam_get_user,
-                    additional_fields=additional_fields)
+                    additional_fields=additional_fields,
+                )
                 if readable_output and outputs:
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
-
 
                 #################################
                 ### Running for Microsoft Graph User ###
@@ -597,7 +595,8 @@ def main():
                     arg_name="user",
                     arg_value=user_name,
                     cmd=msgraph_user_get,
-                    additional_fields=additional_fields)
+                    additional_fields=additional_fields,
+                )
                 if readable_output and outputs:
                     users_readables.extend(readable_output)
                     if outputs.get("id") and additional_fields:
@@ -610,7 +609,6 @@ def main():
                         outputs["AdditionalFields"].extend(manager_output)
                     users_outputs.append(outputs)
 
-
                 #################################
                 ### Running for Prismacloud v2 ###
                 #################################
@@ -621,14 +619,14 @@ def main():
                     arg_name="usernames",
                     arg_value=user_name,
                     cmd=prisma_cloud_get_user,
-                    additional_fields=additional_fields)
+                    additional_fields=additional_fields,
+                )
                 if readable_output and outputs:
                     users_outputs.append(outputs)
                     users_readables.extend(readable_output)
 
             else:
                 demisto.debug(f"Skipping commands that do not support domain in user_name: {user_name}")
-
 
         #################################
         ### Running for Users IDs ###
@@ -646,11 +644,11 @@ def main():
                 arg_name="userId",
                 arg_value=user_id,
                 cmd=okta_get_user,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
-
 
             #################################
             ### Running for Microsoft Graph User ###
@@ -662,7 +660,8 @@ def main():
                 arg_name="user",
                 arg_value=user_id,
                 cmd=msgraph_user_get,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_readables.extend(readable_output)
                 if outputs.get("id") and additional_fields:
@@ -675,7 +674,6 @@ def main():
                     outputs["AdditionalFields"].extend(manager_output)
                 users_outputs.append(outputs)
 
-
             #################################
             ### Running for Cortex XDR - IR (XDR) ###
             #################################
@@ -686,11 +684,11 @@ def main():
                 arg_name="user_id",
                 arg_value=user_id,
                 cmd=xdr_get_risky_user,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
-
 
             #################################
             ### Running for Cortex XDR - IR (Core) ###
@@ -702,11 +700,11 @@ def main():
                 arg_name="user_id",
                 arg_value=user_id,
                 cmd=core_get_risky_user,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
-
 
             #################################
             ### Running for Azure Risky Users	 ###
@@ -718,11 +716,11 @@ def main():
                 arg_name="id",
                 arg_value=user_id,
                 cmd=azure_get_risky_user,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
-
 
         #################################
         ### Running for Users Emails ###
@@ -740,7 +738,8 @@ def main():
                 arg_name="email",
                 arg_value=user_email,
                 cmd=ad_get_user,
-                additional_fields=additional_fields)
+                additional_fields=additional_fields,
+            )
             if readable_output and outputs:
                 users_outputs.append(outputs)
                 users_readables.extend(readable_output)
@@ -764,7 +763,6 @@ def main():
             )
         )
         return_results(command_results_list)
-
 
     except Exception as e:
         return_error(f"Failed to execute get-user-data. Error: {e!s}")
