@@ -1219,8 +1219,8 @@ script:
       name: ran_once_flag
     description: Sends an email using Microsoft Graph.
     name: send-email-to-recipients-office-365-quick-action
-    # quickaction: true
-    # hidden: true
+    quickaction: true
+    hidden: true
     prettyname: Send Email to Recipients - Office 365
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
