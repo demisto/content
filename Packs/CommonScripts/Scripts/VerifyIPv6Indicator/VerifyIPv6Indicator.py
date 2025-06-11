@@ -19,9 +19,15 @@ def main():
 
     for item in the_input:
         demisto.info(f"Got IPv6 {item}")
-        item = re.sub("[^a-f0-9:%th.]+", "", item)
 
-        demisto.info(f"Changed item to {item!s}")
+        if re.match(r"(?i)^[g-z]", item):
+            # Can't be an actual IPv6, invalid chars, dropping
+            entries_list.append("")
+            continue
+
+        else:
+            item = re.sub("[^a-f0-9:%th.]+", "", item)  # Remove leading char caught as part of the regex
+            demisto.info(f"Changed item to {item!s}")
 
         if is_valid_ipv6_address(item):
             entries_list.append(item)
