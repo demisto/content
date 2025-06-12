@@ -18,12 +18,12 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Commands
 
-* vmray-get-sample
 * vmray-get-analysis-by-sample
-* vmray-get-threat-indicators
 * vmray-get-iocs
-* vmray-upload-url
+* vmray-get-sample
 * vmray-get-submission
+* vmray-get-threat-indicators
+* vmray-upload-url
 
 ## Playbook Inputs
 
