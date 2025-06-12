@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
 from typing import Any, Optional
-
+import requests
 
 class CloudTypes(Enum):
     AWS = "AWS"
@@ -60,7 +60,7 @@ class HealthCheckError:
         }
 
 
-class HealthCheckResult:
+class HealthCheck:
     """Health check results container for cloud connector."""
 
     def __init__(self, connector_id: str):
@@ -101,7 +101,7 @@ class HealthCheckResult:
             Aggregates errors by account and error type.
             """
             # Structure: {account_id: {error_type: [errors]}}
-            aggregated_by_account_and_type = {}
+            aggregated_by_account_and_type: dict[str, dict[ErrorType, list[HealthCheckError]]] = {}
 
             for error in self.errors:
                 account_id = error.account_id
@@ -278,7 +278,7 @@ def run_permissions_check_for_accounts(
         connector_id (str): The ID of the connector to fetch accounts for.
         permission_check_func (callable): Function that implements the permission check.
                                          Should accept account_id and connector_id parameters
-                                         and return a HealthCheckResult.
+                                         and return a HealthCheck.
         max_workers (int, optional): Maximum number of worker threads. Defaults to 10.
     Returns:
         Either "ok" string or CommandResults with appropriate EntryType
@@ -291,7 +291,7 @@ def run_permissions_check_for_accounts(
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
         return HealthStatus.OK
 
-    health_check_result = HealthCheckResult(connector_id)
+    health_check_result = HealthCheck(connector_id)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_account = {
             executor.submit(_check_account_permissions, account, connector_id, permission_check_func): account
@@ -305,3 +305,12 @@ def run_permissions_check_for_accounts(
 
     # Process the results to get one entry per account with the most severe error
     return health_check_result.summarize()
+
+
+def get_proxydome_token():
+    url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
+    params = {"audience": "cortex.platform.local"}
+    headers = {"Metadata-Flavor": "Google"}
+    proxies = {"http": None, "https": None}
+    response = requests.get(url, headers=headers, params=params, proxies=proxies)
+    return response.text
