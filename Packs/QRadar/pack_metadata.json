@@ -50,6 +50,11 @@
     "defaultDataSource": "QRadar v3",
     "supportedModules": [
         "C1",
-        "C3"
+        "C3",
+        "X0",
+        "X1",
+        "X3",
+        "X5",
+        "ENT_PLUS"
     ]
 }
