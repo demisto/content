@@ -1037,8 +1037,6 @@ class TestGetFetchSeverities:
 
 import pytest
 from unittest.mock import patch, Mock
-from datetime import datetime
-from pytz import UTC
 from CybleEventsV2 import get_modified_remote_data_command
 from CommonServerPython import GetModifiedRemoteDataResponse
 
