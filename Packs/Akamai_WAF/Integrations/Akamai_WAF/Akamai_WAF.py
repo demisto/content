@@ -6,8 +6,6 @@ import time
 import re
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
-CONSTANT_PACK_VERSION = '2.1.2'
-demisto.debug('pack id = Akamai_WAF, pack version = 2.1.2')
 
 
 """ IMPORTS """
