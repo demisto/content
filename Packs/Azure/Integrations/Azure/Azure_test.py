@@ -47,7 +47,6 @@ def client(mocker, mock_params):
         resource_group_name=mock_params.get("resource_group_name", ""),
         verify=not mock_params.get("insecure", False),
         proxy=mock_params.get("proxy", False),
-        connection_type=mock_params.get("auth_type", "Device Code"),
         tenant_id=mock_params.get("tenant_id"),
         enc_key=mock_params.get("credentials", {}).get("password"),
     )
@@ -739,35 +738,6 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
     assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
 
 
-def test_test_module_with_device_code(mocker, mock_params):
-    """
-    Given: A configuration using Device Code authentication method.
-    When: The test_module function is called.
-    Then: The function should raise an exception with instructions for authentication.
-    """
-    
-    # Create client with Device Code connection type
-    device_code_params = mock_params.copy()
-    device_code_params["auth_type"] = "Device Code"
-    
-    client = AzureClient(
-        app_id=device_code_params.get("app_id", ""),
-        subscription_id=device_code_params.get("subscription_id", ""),
-        resource_group_name=device_code_params.get("resource_group_name", ""),
-        verify=not device_code_params.get("insecure", False),
-        proxy=device_code_params.get("proxy", False),
-        connection_type=device_code_params.get("auth_type", "Device Code"),
-        tenant_id=device_code_params.get("tenant_id"),
-        enc_key=device_code_params.get("credentials", {}).get("password"),
-    )
-    
-    # Test that it raises the expected exception
-    with pytest.raises(Exception) as e:
-        test_module(client)
-    
-    assert "Please enable the integration and run `!azure-nsg-auth-start`" in str(e.value)
-
-
 def test_test_module_with_client_credentials(mocker, mock_params):
     """
     Given: A configuration using Client Credentials authentication method.
@@ -785,7 +755,6 @@ def test_test_module_with_client_credentials(mocker, mock_params):
         resource_group_name=client_credentials_params.get("resource_group_name", ""),
         verify=not client_credentials_params.get("insecure", False),
         proxy=client_credentials_params.get("proxy", False),
-        connection_type=client_credentials_params.get("auth_type", "Device Code"),
         tenant_id=client_credentials_params.get("tenant_id"),
         enc_key=client_credentials_params.get("credentials", {}).get("password"),
     )
@@ -796,35 +765,6 @@ def test_test_module_with_client_credentials(mocker, mock_params):
     # Test that it returns 'ok'
     result = test_module(client)
     assert result == "ok"
-
-
-def test_test_module_with_unknown_auth_type(mocker, mock_params):
-    """
-    Given: A configuration using an unknown authentication method.
-    When: The test_module function is called.
-    Then: The function should raise an exception with appropriate message.
-    """
-    
-    # Create client with an unknown connection type
-    unknown_auth_params = mock_params.copy()
-    unknown_auth_params["auth_type"] = "Unknown Auth Type"
-    
-    client = AzureClient(
-        app_id=unknown_auth_params.get("app_id", ""),
-        subscription_id=unknown_auth_params.get("subscription_id", ""),
-        resource_group_name=unknown_auth_params.get("resource_group_name", ""),
-        verify=not unknown_auth_params.get("insecure", False),
-        proxy=unknown_auth_params.get("proxy", False),
-        connection_type=unknown_auth_params.get("auth_type"),
-        tenant_id=unknown_auth_params.get("tenant_id"),
-        enc_key=unknown_auth_params.get("credentials", {}).get("password"),
-    )
-    
-    # Test that it raises the expected exception
-    with pytest.raises(Exception) as e:
-        test_module(client)
-    
-    assert "When using user auth flow configuration" in str(e.value)
 
 
 def test_storage_account_update_command_empty_response(mocker, client, mock_params):

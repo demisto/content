@@ -125,7 +125,7 @@ class AzureClient:
         else:
             base_client_args = assign_params(
                 base_url=f"{PREFIX_URL_AZURE}",
-                verify=verify,
+                verify="/etc/certs/egress.crt",
                 proxy=proxy,
                 headers=headers
             )
@@ -150,10 +150,23 @@ class AzureClient:
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
             
+        # proxies = {'https': }
+        proxies = {
+            "http": "10.181.0.100:11117",
+            "https": "10.181.0.100:11117"
+        }
+        # session = requests.session()
+        # session.proxies.update(proxies)
+        # res = session.get("https://jsonplaceholder.typicode.com/comments", proxies=proxies, verify="/etc/certs/egress.crt")
+        # response = requests.get("https://jsonplaceholder.typicode.com/comments", proxies=proxies, verify="/etc/certs/egress.crt")
+        # print(response)
+       
         if self.headers:
+            self.headers |= x_caller_id
+            print(self.headers)
             return self.base_client._http_request(  # type: ignore[misc]
                 method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
-                headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404)
+                headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404), proxies=proxies
             )
 
         
@@ -722,10 +735,13 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The threat policy of the SQL database.
         """
-        params = {"api-version": SQL_DB_API_VERSION}
+        # params = {"api-version": SQL_DB_API_VERSION}
+        # full_url=(
+        #     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+        #     f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
+        # )
         full_url=(
-            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-            f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
+            "https://management.azure.com/subscriptions?api-version=2020-01-01"
         )
 
         return self.http_request("GET", full_url=full_url, params=params)
@@ -1752,7 +1768,7 @@ def check_required_permissions(token, subscription_id, connector_id) -> str | He
     try:
         list_role_assignments = get_role_assignments(client, object_id)
         list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
-        missing_permissions = check_all_permissions(list_role_permissions, [])
+        missing_permissions = check_all_permissions(list_roles_permissions, [])
     except Exception as e:
             error_message = f"Failed to test permissions: {str(e)}"
             if connector_id:
@@ -1851,6 +1867,7 @@ def main():
         token = ""
         if not params.get("credentials", {}).get("password"):
             token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT","GRAPH"]).get("access_token")
+            print(token)
             if not token:
                 raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
             headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
