@@ -313,5 +313,4 @@ def get_x_caller_id():
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": None, "https": None}
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
-    x_caller_id = {"x-caller-id": response.text}
-    return x_caller_id
+    return response.text
