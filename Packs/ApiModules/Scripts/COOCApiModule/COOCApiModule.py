@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
 from typing import Any, Optional
-
+import requests
 
 class CloudTypes(Enum):
     AWS = "AWS"
@@ -305,3 +305,13 @@ def run_permissions_check_for_accounts(
 
     # Process the results to get one entry per account with the most severe error
     return health_check_result.summarize()
+
+
+def get_x_caller_id():
+    url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
+    params = {"audience": "cortex.platform.local"}
+    headers = {"Metadata-Flavor": "Google"}
+    proxies = {"http": None, "https": None}
+    response = requests.get(url, headers=headers, params=params, proxies=proxies)
+    x_caller_id = {"x-caller-id": response.text}
+    return x_caller_id
