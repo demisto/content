@@ -199,7 +199,6 @@ class DemistoCommands:
     WIZ_DEFEND_SET_THREAT_IN_PROGRESS = "wiz-defend-set-threat-in-progress"
     WIZ_DEFEND_SET_THREAT_COMMENT = "wiz-defend-set-threat-comment"
     WIZ_DEFEND_CLEAR_THREAT_COMMENTS = "wiz-defend-clear-threat-comments"
-    # WIZ_DEFEND_COPY_TO_FORENSICS_ACCOUNT = "wiz-defend-copy-to-forensics-account"
 
 
 class AuthParams:
@@ -1073,8 +1072,9 @@ def get_entries(query, variables, wiz_type):
             raise Exception(f"{error_message}\nCheck 'server.log' instance file to get additional information")
 
         if WizApiResponse.NODES in response_json[WizApiResponse.DATA][wiz_type]:
-            return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], \
-                   response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.PAGE_INFO]
+            return response_json[WizApiResponse.DATA][wiz_type][WizApiResponse.NODES], response_json[WizApiResponse.DATA][
+                wiz_type
+            ][WizApiResponse.PAGE_INFO]
         else:
             return response_json[WizApiResponse.DATA][wiz_type], None
 
@@ -1193,7 +1193,6 @@ def get_last_run_time():
                 f"Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as the fetch time."
             )
 
-            # Format max_days_ago to match DEMISTO_OCCURRED_FORMAT
             last_run = max_days_ago.strftime(DEMISTO_OCCURRED_FORMAT)
     except Exception as e:
         demisto.error(f"Error parsing last run time: {str(e)}. Using {MAX_DAYS_FIRST_FETCH_DETECTIONS} days ago as fetch time.")
@@ -1440,8 +1439,10 @@ def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
     invalid_values = [v for v in values if v not in valid_values]
 
     if invalid_values:
-        error_msg = f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: " \
-                    f"{', '.join(valid_values)}"
+        error_msg = (
+            f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: "
+            f"{', '.join(valid_values)}"
+        )
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
@@ -2312,14 +2313,20 @@ def apply_detection_type_filter(variables, detection_type):
     return apply_wiz_filter(variables, detection_type, WizApiVariables.TYPE, equals_wrapper=True, is_detection=True)
 
 
-
 def apply_platform_filter(variables, platforms, is_detection=True):
     """Adds the platform filter to the query variables"""
     if is_detection:
         return apply_wiz_filter(variables, platforms, WizApiVariables.CLOUD_PLATFORM, equals_wrapper=True, is_detection=True)
     else:
         # For threats, platform goes under relatedEntity
-        return apply_wiz_filter(variables, platforms, WizApiVariables.CLOUD_PLATFORM, equals_wrapper=False, is_detection=False, nested_path=WizApiVariables.RELATED_ENTITY)
+        return apply_wiz_filter(
+            variables,
+            platforms,
+            WizApiVariables.CLOUD_PLATFORM,
+            equals_wrapper=False,
+            is_detection=False,
+            nested_path=WizApiVariables.RELATED_ENTITY,
+        )
 
 
 def apply_origin_filter(variables, origins, is_detection=True):
@@ -2359,20 +2366,25 @@ def apply_resource_id_filter(variables, resource_id, is_detection=True):
 
 def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_ids, is_detection=True):
     """Adds the cloud account/organization filter to the query variables"""
-    return apply_wiz_filter(variables, cloud_account_ids, WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID, equals_wrapper=is_detection, is_detection=is_detection)
-
+    return apply_wiz_filter(
+        variables,
+        cloud_account_ids,
+        WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID,
+        equals_wrapper=is_detection,
+        is_detection=is_detection,
+    )
 
 
 def apply_severity_filter(variables, severity_list, is_detection=True):
     """Adds the severity filter to the query variables"""
-    return apply_wiz_filter(variables, severity_list, WizApiVariables.SEVERITY, equals_wrapper=is_detection, is_detection=is_detection)
-
+    return apply_wiz_filter(
+        variables, severity_list, WizApiVariables.SEVERITY, equals_wrapper=is_detection, is_detection=is_detection
+    )
 
 
 def apply_status_filter(variables, status_list):
     """Adds the status filter to the query variables"""
     return apply_wiz_filter(variables, status_list, WizApiVariables.STATUS, equals_wrapper=False, is_detection=True)
-
 
 
 def apply_project_id_filter(variables, project_id, is_detection=True):
@@ -2713,21 +2725,16 @@ def get_detections():
             rule_match_id=matched_rule,
             rule_match_name=matched_rule_name,
             project_id=project_id,
-            issue_id=issue_id
+            issue_id=issue_id,
         )
 
         if isinstance(detections, str):
-            log_and_return_error(f"Error retrieving detections: {detections}")
-            return
+            return log_and_return_error(f"Error retrieving detections: {detections}")
         else:
-            return_results(CommandResults(
-                outputs_prefix=OutputPrefix.DETECTIONS,
-                outputs=detections,
-                raw_response=detections
-            ))
+            return_results(CommandResults(outputs_prefix=OutputPrefix.DETECTIONS, outputs=detections, raw_response=detections))
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
-        log_and_return_error(f"An error occurred while retrieving detections: {str(err)}")
+        return log_and_return_error(f"An error occurred while retrieving detections: {str(err)}")
 
 
 def get_single_detection():
@@ -2736,24 +2743,21 @@ def get_single_detection():
         demisto_args = demisto.args()
         detection_id = demisto_args.get(WizInputParam.DETECTION_ID)
         if not detection_id:
-            log_and_return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
-            return
+            return log_and_return_error(f"Missing required argument: {WizInputParam.DETECTION_ID}")
 
         detection = get_filtered_detections(detection_id=detection_id)
 
         if isinstance(detection, str):
-            log_and_return_error(f"Error retrieving detection: {detection}")
-            return
+            return log_and_return_error(f"Error retrieving detection: {detection}")
         else:
-            return_results(CommandResults(
-                outputs_prefix=OutputPrefix.DETECTION,
-                outputs=detection,
-                readable_output=detection,
-                raw_response=detection
-            ))
+            return_results(
+                CommandResults(
+                    outputs_prefix=OutputPrefix.DETECTION, outputs=detection, readable_output=detection, raw_response=detection
+                )
+            )
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
-        log_and_return_error(f"An error occurred while retrieving detection: {str(err)}")
+        return log_and_return_error(f"An error occurred while retrieving detection: {str(err)}")
 
 
 def is_valid_issue_id(issue_id):
@@ -2777,24 +2781,19 @@ def get_single_threat():
         issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
         is_valid_id, message = is_valid_issue_id(issue_id)
         if not is_valid_id:
-            log_and_return_error(message)
-            return
+            return log_and_return_error(message)
 
         threat = get_filtered_threats(issue_id=issue_id)
 
         if isinstance(threat, str):
-            log_and_return_error(f"Error retrieving threat: {threat}")
-            return
+            return log_and_return_error(f"Error retrieving threat: {threat}")
         else:
-            return_results(CommandResults(
-                outputs_prefix=OutputPrefix.THREAT,
-                outputs=threat,
-                readable_output=threat,
-                raw_response=threat
-            ))
+            return_results(
+                CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=threat, readable_output=threat, raw_response=threat)
+            )
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
-        log_and_return_error(f"An error occurred while retrieving threat: {str(err)}")
+        return log_and_return_error(f"An error occurred while retrieving threat: {str(err)}")
 
 
 def get_threats():
@@ -2818,21 +2817,16 @@ def get_threats():
             cloud_account_or_cloud_organization=cloud_account_or_cloud_organization,
             resource_id=resource_id,
             creation_days_back=creation_days_back,
-            project_id=project_id
+            project_id=project_id,
         )
 
         if isinstance(threats, str):
-            log_and_return_error(f"Error retrieving threats: {threats}")
-            return
+            return log_and_return_error(f"Error retrieving threats: {threats}")
         else:
-            return_results(CommandResults(
-                outputs_prefix=OutputPrefix.THREATS,
-                outputs=threats,
-                raw_response=threats
-            ))
+            return_results(CommandResults(outputs_prefix=OutputPrefix.THREATS, outputs=threats, raw_response=threats))
     except Exception as err:
         demisto.error(str(traceback.format_exc()))
-        log_and_return_error(f"An error occurred while retrieving threats: {str(err)}")
+        return log_and_return_error(f"An error occurred while retrieving threats: {str(err)}")
 
 
 def set_status(issue_id, status):
@@ -2860,10 +2854,7 @@ def set_status(issue_id, status):
         demisto.error(error_msg)
         return error_msg
 
-    variables = {
-        WizApiVariables.ISSUE_ID: issue_id,
-        WizApiVariables.PATCH: {WizApiVariables.STATUS: status}
-    }
+    variables = {WizApiVariables.ISSUE_ID: issue_id, WizApiVariables.PATCH: {WizApiVariables.STATUS: status}}
     query = UPDATE_ISSUE_QUERY
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
@@ -2889,21 +2880,22 @@ def reject_or_resolve_issue(issue_id, reject_or_resolve_reason, reject_or_resolv
 
     variables = {
         WizApiVariables.ISSUE_ID: issue_id,
-        WizApiVariables.PATCH: {WizApiVariables.STATUS: status,
-                                WizApiVariables.NOTE: reject_or_resolve_comment,
-                                WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason},
+        WizApiVariables.PATCH: {
+            WizApiVariables.STATUS: status,
+            WizApiVariables.NOTE: reject_or_resolve_comment,
+            WizApiVariables.RESOLUTION_REASON: reject_or_resolve_reason,
+        },
     }
     query = UPDATE_ISSUE_QUERY
 
     response = get_entries(query, variables, WizApiResponse.UPDATE_ISSUE)
     if response:
-        return_results(CommandResults(
-            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}."
-        ))
+        return_results(
+            CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully modified the threat status to {status}.")
+        )
+        return None
     else:
-        error_message = f"Failed to {operation} issue with ID {issue_id}. Please check the input parameters."
-        demisto.error(error_message)
-        return_error(f"Error: {error_message}")
+        return log_and_return_error(f"Failed to {operation} issue with ID {issue_id}. Please check the input parameters.")
 
 
 def validate_threat_detections_issue(issue_id):
@@ -2927,8 +2919,10 @@ def resolve_threat():
     issue_id = demisto_args.get(WizInputParam.ISSUE_ID)
     resolution_reason = demisto_args.get(WizInputParam.RESOLUTION_REASON)
     resolution_note = demisto_args.get(WizInputParam.RESOLUTION_NOTE)
-    demisto.debug(f"resolve_threat called with issue_id: {issue_id}, "
-                  f"resolution_reason: {resolution_reason}, resolution_note: {resolution_note}")
+    demisto.debug(
+        f"resolve_threat called with issue_id: {issue_id}, "
+        f"resolution_reason: {resolution_reason}, resolution_note: {resolution_note}"
+    )
 
     is_threat_issue, message = validate_threat_detections_issue(issue_id)
     if not is_threat_issue:
@@ -2951,8 +2945,7 @@ def set_issue_note(issue_id, comment):
 
     response = get_entries(query, variables, WizApiResponse.CREATE_ISSUE_NOTE)
     if not response:
-        return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n"
-                     f"Please check the input parameters.")
+        return_error(f"Error: Failed to set note on issue with ID {issue_id}.\n" f"Please check the input parameters.")
     return response
 
 
@@ -2990,11 +2983,13 @@ def reopen_threat():
     demisto.debug(f"reopen_threat called with issue_id: {issue_id}, reopen_note: {reopen_note}")
 
     if _reopen_issue(issue_id, reopen_note):
-        return_results(CommandResults(
-            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}."))
+        return_results(
+            CommandResults(outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully reopened the threat with ID {issue_id}.")
+        )
     else:
-        return_error(f"Error: Failed to reopen the threat with ID {issue_id}. "
-                     f"Please check the input parameters and try again.")
+        return_error(
+            f"Error: Failed to reopen the threat with ID {issue_id}. " f"Please check the input parameters and try again."
+        )
 
 
 def set_threat_in_progress():
@@ -3003,11 +2998,16 @@ def set_threat_in_progress():
     demisto.debug(f"set_threat_in_progress called with issue_id: {issue_id}")
 
     if set_status(issue_id, WizStatus.IN_PROGRESS):
-        return_results(CommandResults(
-            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set the threat with ID {issue_id} to In Progress."))
+        return_results(
+            CommandResults(
+                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set the threat with ID {issue_id} to In Progress."
+            )
+        )
     else:
-        return_error(f"Error: Failed to set the threat with ID {issue_id} to In Progress. "
-                     f"Please check the input parameters and try again.")
+        return_error(
+            f"Error: Failed to set the threat with ID {issue_id} to In Progress. "
+            f"Please check the input parameters and try again."
+        )
 
 
 def set_threat_comment():
@@ -3017,11 +3017,16 @@ def set_threat_comment():
     demisto.debug(f"set_threat_note called with issue_id: {issue_id} and note {note}")
 
     if set_issue_note(issue_id, note):
-        return_results(CommandResults(
-            outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set {note} as comment to the threat with ID {issue_id}"))
+        return_results(
+            CommandResults(
+                outputs_prefix=OutputPrefix.THREAT, outputs=f"Successfully set {note} as comment to the threat with ID {issue_id}"
+            )
+        )
     else:
-        return_error(f"Error: Failed to set the comment {note} to the threat with ID {issue_id}. "
-                     f"Please check the input parameters and try again.")
+        return_error(
+            f"Error: Failed to set the comment {note} to the threat with ID {issue_id}. "
+            f"Please check the input parameters and try again."
+        )
 
 
 def clear_threat_comments():
@@ -3035,12 +3040,18 @@ def clear_threat_comments():
     for note in threat_notes:
         variables = {"input": {"id": note["id"]}}
         if not get_entries(DELETE_NOTE_QUERY, variables, "deleteIssueNote"):
-            log_and_return_error(f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
-                                 f"Please check the input parameters and try again.")
-            return
+            return log_and_return_error(
+                f"Error: Failed to delete the comment {note['text']} from the threat with ID {issue_id}. "
+                f"Please check the input parameters and try again."
+            )
 
-    return_results(CommandResults(outputs_prefix=OutputPrefix.THREAT,
-                                  outputs=f"Successfully cleared all the comments from the threat with ID {issue_id}."))
+    return_results(
+        CommandResults(
+            outputs_prefix=OutputPrefix.THREAT,
+            outputs=f"Successfully cleared all the comments from the threat with ID {issue_id}.",
+        )
+    )
+    return None
 
 
 def main():
@@ -3050,8 +3061,7 @@ def main():
     try:
         command = demisto.command()
         demisto.info(f"=== Starting {WIZ_DEFEND} integration version {WIZ_VERSION}. Command being called is '{command}' ===")
-        demisto.debug(f"Extracting parameters from integration settings: {params}\n"
-                      f"Command arguments: {demisto.args()}\n")
+        demisto.debug(f"Extracting parameters from integration settings: {params}\n" f"Command arguments: {demisto.args()}\n")
 
         if command == "test-module":
             test_module()

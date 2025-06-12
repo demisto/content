@@ -1261,9 +1261,7 @@ fragment CloudEventAdmissionReviewTriggerDetails on CloudEventAdmissionReview {
   }
 }
 """
-PULL_ISSUES_DEFAULT_VARIABLES = {
-    "orderBy": {"field": "SEVERITY", "direction": "DESC"}
-}
+PULL_ISSUES_DEFAULT_VARIABLES = {"orderBy": {"field": "SEVERITY", "direction": "DESC"}}
 PULL_ISSUES_TEST_VARIABLES = test_variables = {
     "first": 1,
     "filterBy": {"status": ["OPEN", "IN_PROGRESS"]},
@@ -1559,7 +1557,6 @@ class WizStatus:
         return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
 
 
-
 class WizSeverity:
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
@@ -1571,7 +1568,6 @@ class WizSeverity:
     def values(cls):
         """Get all available detection origins"""
         return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
-
 
 
 class WizIssueType:
@@ -1706,7 +1702,7 @@ def build_incidents(issue):
         return {}
 
     try:
-        issue_id = issue.get('id', 'unknown')
+        issue_id = issue.get("id", "unknown")
 
         source_rule = issue.get("sourceRule")
 
@@ -1728,15 +1724,15 @@ def build_incidents(issue):
             "severity": severity,
         }
 
-        demisto.debug(f"build_incidents: Successfully created incident for {issue_id} "
-                      f"using {incident}")
+        demisto.debug(f"build_incidents: Successfully created incident for {issue_id} " f"using {incident}")
         return incident
 
     except Exception as e:
-        issue_id = issue.get('id', 'unknown') if issue else 'unknown'
+        issue_id = issue.get("id", "unknown") if issue else "unknown"
         demisto.error(f"build_incidents: Error processing issue {issue_id}: {str(e)}")
 
         import traceback
+
         demisto.error(f"build_incidents: Traceback: {traceback.format_exc()}")
 
         issue_str = str(issue)[:500] + "..." if len(str(issue)) > 500 else str(issue)
@@ -1774,11 +1770,14 @@ def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
     invalid_values = [v for v in values if v not in valid_values]
 
     if invalid_values:
-        error_msg = f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: {', '.join(valid_values)}"
+        error_msg = (
+            f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: {', '.join(valid_values)}"
+        )
         demisto.error(error_msg)
         return ValidationResponse.create_error(error_msg)
 
     return ValidationResponse.create_success(values)
+
 
 def validate_issue_type(issue_type):
     """
@@ -1940,12 +1939,15 @@ def get_fetch_issues_variables(max_fetch, last_run):
     parameters_dict = {
         WizInputParam.ISSUE_TYPE: demisto_args.get(WizInputParam.ISSUE_TYPE),
         WizInputParam.STATUS: demisto_args.get(WizInputParam.STATUS),
-        WizInputParam.SEVERITY: demisto_args.get(WizInputParam.SEVERITY)
+        WizInputParam.SEVERITY: demisto_args.get(WizInputParam.SEVERITY),
     }
 
     # Using default fetch parameters
-    if not parameters_dict[WizInputParam.ISSUE_TYPE] and not parameters_dict[WizInputParam.STATUS] \
-        and not parameters_dict[WizInputParam.SEVERITY]:
+    if (
+        not parameters_dict[WizInputParam.ISSUE_TYPE]
+        and not parameters_dict[WizInputParam.STATUS]
+        and not parameters_dict[WizInputParam.SEVERITY]
+    ):
         demisto.info("No issue type, status or severity provided, fetching default issues")
         parameters_dict = {
             WizInputParam.STATUS: DEFAULT_FETCH_ISSUE_STATUS,
@@ -1954,11 +1956,11 @@ def get_fetch_issues_variables(max_fetch, last_run):
     validation_success, error_message, validated_values = validate_all_issues_parameters(parameters_dict)
     if not validation_success or error_message:
         return_error(error_message)
-        return
+        return None
 
-    issue_variables = PULL_ISSUES_DEFAULT_VARIABLES.copy()
+    issue_variables: Dict[str, Any] = PULL_ISSUES_DEFAULT_VARIABLES.copy()
     issue_variables["first"] = max_fetch
-    issue_variables["statusChangedAt"] = {"after": last_run, "relatedEntity": {}}
+    issue_variables["filterBy"] = {"createdAt": {"after": last_run}, "relatedEntity": {}}
 
     return apply_all_issue_filters(issue_variables, validated_values)
 

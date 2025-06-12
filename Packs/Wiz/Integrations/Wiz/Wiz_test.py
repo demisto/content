@@ -7,10 +7,26 @@ from unittest.mock import patch, MagicMock
 import demistomock as demisto
 
 from CommonServerPython import DemistoException
-from Packs.Wiz.Integrations.Wiz.Wiz import ValidationResponse, WizStatus, WizSeverity, WizIssueType, get_fetch_issues_variables, \
-    PULL_ISSUES_DEFAULT_VARIABLES, DEFAULT_FETCH_ISSUE_STATUS, apply_all_issue_filters, apply_status_filter, \
-    apply_severity_filter, apply_wiz_filter, validate_status, validate_severity, validate_issue_type, validate_wiz_enum_parameter, \
-    build_incidents, apply_issue_type_filter, validate_all_issues_parameters
+from Packs.Wiz.Integrations.Wiz.Wiz import (
+    ValidationResponse,
+    WizStatus,
+    WizSeverity,
+    WizIssueType,
+    get_fetch_issues_variables,
+    PULL_ISSUES_DEFAULT_VARIABLES,
+    DEFAULT_FETCH_ISSUE_STATUS,
+    apply_all_issue_filters,
+    apply_status_filter,
+    apply_severity_filter,
+    apply_wiz_filter,
+    validate_status,
+    validate_severity,
+    validate_issue_type,
+    validate_wiz_enum_parameter,
+    build_incidents,
+    apply_issue_type_filter,
+    validate_all_issues_parameters,
+)
 
 integration_params = {
     "url": "http://test.io",
@@ -1154,29 +1170,7 @@ def test_copy_to_forensics_account_invalid_id(mocker, capfd):
 
 
 import pytest
-import json
-from unittest.mock import patch, MagicMock
-from Packs.Wiz.Integrations.Wiz.Wiz import (
-    build_incidents,
-    validate_wiz_enum_parameter,
-    validate_issue_type,
-    validate_severity,
-    validate_status,
-    validate_all_issues_parameters,
-    apply_wiz_filter,
-    apply_severity_filter,
-    apply_status_filter,
-    apply_issue_type_filter,
-    apply_all_issue_filters,
-    get_fetch_issues_variables,
-    WizIssueType,
-    WizSeverity,
-    WizStatus,
-    WizInputParam,
-    ValidationResponse,
-    DEFAULT_FETCH_ISSUE_STATUS,
-    PULL_ISSUES_DEFAULT_VARIABLES
-)
+from unittest.mock import patch
 
 
 # ===== BUILD INCIDENTS TESTS =====
@@ -1191,10 +1185,10 @@ from Packs.Wiz.Integrations.Wiz.Wiz import (
         ({"id": "test-id", "sourceRule": {"name": "Test Rule"}}, True),
         ({"id": "test-id", "sourceRule": None}, True),
         ({"id": "test-id", "createdAt": "2025-01-01T00:00:00Z"}, True),
-    ]
+    ],
 )
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.translate_severity')
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.demisto')
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.translate_severity")
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_build_incidents(mock_demisto, mock_translate_severity, issue, expected_has_incident):
     """Test build_incidents with various issue inputs"""
     mock_translate_severity.return_value = "Medium"
@@ -1206,20 +1200,20 @@ def test_build_incidents(mock_demisto, mock_translate_severity, issue, expected_
         assert "occurred" in result
         assert "rawJSON" in result
         assert "severity" in result
-        if issue and issue.get('id'):
-            assert issue['id'] in result["name"]
+        if issue and issue.get("id"):
+            assert issue["id"] in result["name"]
         assert result["rawJSON"] == json.dumps(issue)
         assert result["severity"] == "Medium"
     else:
         assert result == {}
 
 
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.demisto')
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_build_incidents_exception(mock_demisto):
     """Test build_incidents with exception handling"""
     issue = {"id": "test-id"}
 
-    with patch('Packs.Wiz.Integrations.Wiz.Wiz.translate_severity', side_effect=Exception("Test error")):
+    with patch("Packs.Wiz.Integrations.Wiz.Wiz.translate_severity", side_effect=Exception("Test error")):
         result = build_incidents(issue)
         assert result == {}
         mock_demisto.error.assert_called()
@@ -1238,9 +1232,9 @@ def test_build_incidents_exception(mock_demisto):
         ("CRITICAL,INVALID", ["CRITICAL", "HIGH", "MEDIUM"], False, None),
         ("", ["CRITICAL", "HIGH", "MEDIUM"], True, None),
         (None, ["CRITICAL", "HIGH", "MEDIUM"], True, None),
-    ]
+    ],
 )
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.demisto')
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_validate_wiz_enum_parameter(mock_demisto, parameter_value, enum_values, expected_valid, expected_values, capfd):
     """Test validate_wiz_enum_parameter with various inputs"""
     mock_enum_class = MagicMock()
@@ -1265,7 +1259,7 @@ def test_validate_wiz_enum_parameter(mock_demisto, parameter_value, enum_values,
         (["CLOUD_EVENT", "CLOUD_CONFIGURATION"], True),
         (None, True),
         ("", True),
-    ]
+    ],
 )
 def test_validate_issue_type(issue_type, expected_valid, capfd):
     """Test validate_issue_type with various inputs"""
@@ -1287,7 +1281,7 @@ def test_validate_issue_type(issue_type, expected_valid, capfd):
         (["CRITICAL", "HIGH"], True),
         (None, True),
         ("", True),
-    ]
+    ],
 )
 def test_validate_severity(severity, expected_valid, capfd):
     """Test validate_severity with various inputs"""
@@ -1308,7 +1302,7 @@ def test_validate_severity(severity, expected_valid, capfd):
         (["OPEN", "RESOLVED"], True),
         (None, True),
         ("", True),
-    ]
+    ],
 )
 def test_validate_status(status, expected_valid, capfd):
     """Test validate_status with various inputs"""
@@ -1326,7 +1320,7 @@ def test_validate_status(status, expected_valid, capfd):
         ({"issue_type": "CLOUD_EVENT", "status": "OPEN", "severity": "INVALID_SEVERITY"}, False),
         ({}, True),
         ({"issue_type": None, "status": None, "severity": None}, True),
-    ]
+    ],
 )
 def test_validate_all_issues_parameters(parameters, expected_success, capfd):
     """Test validate_all_issues_parameters with various parameter combinations"""
@@ -1352,7 +1346,7 @@ def test_validate_all_issues_parameters(parameters, expected_success, capfd):
         ("OPEN", "status", True, {"filterBy": {"status": {"equals": ["OPEN"]}}}),
         (None, "severity", False, {}),
         ("", "severity", False, {}),
-    ]
+    ],
 )
 def test_apply_wiz_filter(filter_value, api_field, equals_wrapper, expected_result):
     """Test apply_wiz_filter with various inputs"""
@@ -1370,13 +1364,7 @@ def test_apply_wiz_filter_nested_path():
     variables = {}
     result = apply_wiz_filter(variables, "AWS", "cloudPlatform", True, "relatedEntity")
 
-    expected = {
-        "filterBy": {
-            "relatedEntity": {
-                "cloudPlatform": {"equals": ["AWS"]}
-            }
-        }
-    }
+    expected = {"filterBy": {"relatedEntity": {"cloudPlatform": {"equals": ["AWS"]}}}}
     assert result == expected
 
 
@@ -1395,7 +1383,7 @@ def test_apply_wiz_filter_existing_filterby():
         (["CRITICAL"], {"filterBy": {"severity": ["CRITICAL"]}}),
         (["CRITICAL", "HIGH"], {"filterBy": {"severity": ["CRITICAL", "HIGH"]}}),
         (None, {}),
-    ]
+    ],
 )
 def test_apply_severity_filter(severity_list, expected_filter):
     """Test apply_severity_filter with various inputs"""
@@ -1414,7 +1402,7 @@ def test_apply_severity_filter(severity_list, expected_filter):
         (["OPEN"], {"filterBy": {"status": ["OPEN"]}}),
         (["OPEN", "IN_PROGRESS"], {"filterBy": {"status": ["OPEN", "IN_PROGRESS"]}}),
         (None, {}),
-    ]
+    ],
 )
 def test_apply_status_filter(status_list, expected_filter):
     """Test apply_status_filter with various inputs"""
@@ -1433,7 +1421,7 @@ def test_apply_status_filter(status_list, expected_filter):
         (["CLOUD_EVENT"], {"filterBy": {"issue_type": ["CLOUD_EVENT"]}}),
         (["CLOUD_EVENT", "THREAT_DETECTION"], {"filterBy": {"issue_type": ["CLOUD_EVENT", "THREAT_DETECTION"]}}),
         (None, {}),
-    ]
+    ],
 )
 def test_apply_issue_type_filter(issue_type_list, expected_filter):
     """Test apply_issue_type_filter with various inputs"""
@@ -1449,11 +1437,7 @@ def test_apply_issue_type_filter(issue_type_list, expected_filter):
 def test_apply_all_issue_filters():
     """Test apply_all_issue_filters with all filter types"""
     variables = {}
-    validated_values = {
-        "severity": ["CRITICAL", "HIGH"],
-        "status": ["OPEN"],
-        "issue_type": ["CLOUD_EVENT"]
-    }
+    validated_values = {"severity": ["CRITICAL", "HIGH"], "status": ["OPEN"], "issue_type": ["CLOUD_EVENT"]}
 
     result = apply_all_issue_filters(variables, validated_values)
 
@@ -1484,9 +1468,9 @@ def test_apply_all_issue_filters_empty():
         ({"status": "OPEN"}, False),
         ({"severity": "CRITICAL"}, False),
         ({"issue_type": "CLOUD_EVENT", "status": "OPEN"}, False),
-    ]
+    ],
 )
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.demisto')
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_default):
     """Test get_fetch_issues_variables with various argument combinations"""
     mock_demisto.args.return_value = demisto_args
@@ -1498,8 +1482,8 @@ def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_de
     result = get_fetch_issues_variables(max_fetch, last_run)
 
     assert result["first"] == max_fetch
-    assert result["statusChangedAt"]["after"] == last_run
-    assert "relatedEntity" in result["statusChangedAt"]
+    assert result["filterBy"]["createdAt"]["after"] == last_run
+    assert "relatedEntity" in result["filterBy"]
 
     if expected_uses_default:
         mock_demisto.info.assert_called_with("No issue type, status or severity provided, fetching default issues")
@@ -1513,8 +1497,8 @@ def test_get_fetch_issues_variables(mock_demisto, demisto_args, expected_uses_de
         assert "severity" in result["filterBy"]
 
 
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.return_error')
-@patch('Packs.Wiz.Integrations.Wiz.Wiz.demisto')
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.return_error")
+@patch("Packs.Wiz.Integrations.Wiz.Wiz.demisto")
 def test_get_fetch_issues_variables_validation_error(mock_demisto, mock_return_error):
     """Test get_fetch_issues_variables with validation error"""
     mock_demisto.args.return_value = {"issue_type": "INVALID_TYPE"}
@@ -1524,7 +1508,7 @@ def test_get_fetch_issues_variables_validation_error(mock_demisto, mock_return_e
     mock_return_error.assert_called_once()
 
 
-@patch('Packs.Wiz.Integrations.WizDefend.WizDefend.demisto')
+@patch("Packs.Wiz.Integrations.WizDefend.WizDefend.demisto")
 def test_get_fetch_issues_variables_copies_default_variables(mock_demisto):
     """Test that get_fetch_issues_variables properly copies default variables"""
     mock_demisto.args.return_value = {}
