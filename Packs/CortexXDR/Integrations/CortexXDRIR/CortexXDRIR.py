@@ -1302,7 +1302,7 @@ def get_contributing_event_command(client: Client, args: Dict) -> CommandResults
             outputs_prefix=f"{INTEGRATION_CONTEXT_BRAND}.ContributingEvent",
             outputs_key_field="alertID",
             outputs=alerts,
-            raw_response=alerts,
+            raw_response=alerts, 
         )
 
     else:
