@@ -81,10 +81,8 @@ def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
     time_diff = end_time - start_time
     diff_in_days = time_diff.total_seconds() / (24 * 60 * 60) # Calculate difference in days
 
-    # Apply rounding based on the flag
     rounded_days = math.ceil(diff_in_days)
 
-    # Ensure minimum
     days_param = max(MSISAC_FETCH_WINDOW_DEFAULT, rounded_days)
     return days_param
 
@@ -257,12 +255,12 @@ def fetch_incidents(
         incidents, new last_run
     """
 
-    fetch_time: datetime # fetch_time replaceslast_fetch_time_str
+    fetch_time: datetime
 
     if not last_run.get('lastRun'):
         fetch_time = first_fetch
     else:
-        fetch_time = datetime.strptime(last_run.get('lastRun', ''), XSOAR_INCIDENT_DATE_FORMAT) # This comes in as a string
+        fetch_time = datetime.strptime(last_run.get('lastRun', ''), XSOAR_INCIDENT_DATE_FORMAT)
 
     fetch_time_lookback_days: int = calculate_lookback_days(fetch_time, datetime.now())
 
