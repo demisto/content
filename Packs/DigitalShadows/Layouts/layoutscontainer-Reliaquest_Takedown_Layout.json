@@ -154,15 +154,6 @@
 						"items": [
 							{
 								"endCol": 2,
-								"fieldId": "dstargets",
-								"height": 22,
-								"id": "90636d10-4692-11f0-a139-ebdfc12e3771",
-								"index": 0,
-								"sectionItemType": "field",
-								"startCol": 0
-							},
-							{
-								"endCol": 2,
 								"fieldId": "dstakedowntargets",
 								"height": 106,
 								"id": "d684d080-46a2-11f0-98c9-fba69b033cdd",
