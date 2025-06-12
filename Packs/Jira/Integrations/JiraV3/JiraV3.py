@@ -2330,15 +2330,14 @@ def create_issue_command(
 
     ticket_id = res.get("id") or res.get("ticket_id")
     ticket_key = res.get("key", "")
-    formatted_ticket_id = f"{ticket_key}-{ticket_id}"
 
     if isinstance(client, JiraCloudClient):
         ui_base_url = client.get_jira_base_url()
     else:
         ui_base_url = server_url
-    ticket_url = f"{ui_base_url}/browse/{formatted_ticket_id}"
+    ticket_url = f"{ui_base_url}/browse/{ticket_key}"
 
-    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_key, object_name=ticket_key).to_context()
+    mirror_obj = MirrorObject(object_url=ticket_url, object_id=ticket_id, object_name=ticket_key).to_context()
 
     outputs = {"Id": res.get("id", ""), "Key": ticket_key}
     markdown_dict = outputs | {"Ticket Link": res.get("self", ""), "Project Key": ticket_key.split("-")[0]}
