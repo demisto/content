@@ -833,7 +833,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "Example Company",
                     "swift": null,
                     "clabe": null
                 },
@@ -904,7 +904,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "Example Company",
                     "swift": null,
                     "clabe": null
                 },
@@ -980,7 +980,7 @@
                     "bicRu": null,
                     "bsb": null,
                     "iban": null,
-                    "name": "ОАО АКБ \"УРАЛ ФД\"",
+                    "name": "Example Company",
                     "swift": null,
                     "clabe": null
                 },
@@ -3120,7 +3120,7 @@
                         "description": null,
                         "id": "6ecb34d68b26c7bc369dd209f0db9cc3a9c6a8c7",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3151,7 +3151,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3220,7 +3220,7 @@
                         "description": null,
                         "id": "375efaa5e042b289579c147dd1c95d9b8ccdbee4",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3251,7 +3251,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3320,7 +3320,7 @@
                         "description": null,
                         "id": "0a3f9339b944b7976bbbccf6a695592ce97b7523",
                         "langs": [
-                            "ru"
+                            "uz"
                         ],
                         "malwareIdList": null,
                         "malwareList": [],
@@ -3349,7 +3349,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -3435,7 +3435,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [
@@ -3615,7 +3615,7 @@
                 "labels": [],
                 "langs": [
                     "en",
-                    "ru"
+                    "uz"
                 ],
                 "malwareList": [],
                 "mitreMatrix": [],
@@ -13604,7 +13604,7 @@
                 "type": "network",
                 "dateFirstSeen": "2024-09-26T00:00:00+03:00",
                 "dateLastSeen": "2024-09-26T00:00:00+03:00",
-                "domain": "1857685.ru",
+                "domain": "1857685.uz",
                 "seqUpdate": 17273370246485,
                 "malwareList": null,
                 "threatList": [
@@ -13619,7 +13619,7 @@
                 "type": "network",
                 "dateFirstSeen": "2024-09-26T00:00:00+03:00",
                 "dateLastSeen": "2024-09-26T00:00:00+03:00",
-                "domain": "accouts-verification.ru",
+                "domain": "accouts-verification.uz",
                 "seqUpdate": 17273370247355,
                 "malwareList": null,
                 "threatList": [
@@ -13634,7 +13634,7 @@
                 "type": "network",
                 "dateFirstSeen": "2024-09-26T00:00:00+03:00",
                 "dateLastSeen": "2024-09-26T00:00:00+03:00",
-                "domain": "296785671.ru",
+                "domain": "296785671.uz",
                 "seqUpdate": 17273370248063,
                 "malwareList": null,
                 "threatList": [
@@ -13649,7 +13649,7 @@
                 "type": "network",
                 "dateFirstSeen": "2024-09-26T00:00:00+03:00",
                 "dateLastSeen": "2024-09-26T00:00:00+03:00",
-                "domain": "users-mail.ru",
+                "domain": "users-mail.uz",
                 "seqUpdate": 17273370248715,
                 "malwareList": null,
                 "threatList": [
@@ -15484,7 +15484,7 @@
                 "type": "network",
                 "dateFirstSeen": "2024-09-27T00:00:00+03:00",
                 "dateLastSeen": "2024-09-27T00:00:00+03:00",
-                "domain": "www.toorisugita.ru",
+                "domain": "www.toorisugita.uz",
                 "seqUpdate": 17274384205284,
                 "malwareList": null,
                 "threatList": [
