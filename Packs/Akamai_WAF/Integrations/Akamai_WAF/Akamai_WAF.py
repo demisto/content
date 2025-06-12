@@ -6615,7 +6615,7 @@ def patch_datastream_command(client: Client,
 
 
 @logger
-def activate_datastream_command(client: Client,
+def toggle_datastream_command(client: Client,
                                 stream_id: int,
                                 option: str = 'activate',
                                 ) -> tuple[str, dict, Union[list, dict]]:
@@ -6946,7 +6946,7 @@ def main():
         f'{INTEGRATION_COMMAND_NAME}-list-datastream-properties-bygroup': list_datastream_properties_bygroup_command,
         f'{INTEGRATION_COMMAND_NAME}-delete-datastream': delete_datastream_command,
         f'{INTEGRATION_COMMAND_NAME}-patch-datastream': patch_datastream_command,
-        f'{INTEGRATION_COMMAND_NAME}-activate-datastream': activate_datastream_command,
+        f'{INTEGRATION_COMMAND_NAME}-toggle-datastream': toggle_datastream_command,
         f'{INTEGRATION_COMMAND_NAME}-get-client_lists': get_client_lists_command,
         f'{INTEGRATION_COMMAND_NAME}-list-edgehostname': list_edgehostname_command,
         f'{INTEGRATION_COMMAND_NAME}-generic-api-call-command': generic_api_call_command,
