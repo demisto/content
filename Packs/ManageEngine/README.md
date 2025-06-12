@@ -1,1 +1,1 @@
-ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console.
+ManageEngine Endpoint Central is a unified endpoint management (UEM) platform that allows businesses to manage and secure their IT infrastructure from a single console. It offers a comprehensive suite of features for managing servers, desktops, laptops, and mobile devices, including automated patching, security management, and remote troubleshooting. 
