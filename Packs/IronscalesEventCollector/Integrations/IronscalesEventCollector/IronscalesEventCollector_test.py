@@ -328,3 +328,33 @@ def test_all_incidents_last_id_complex(mocker):
     assert len(res) == 10
     assert res[0] == 3
     assert last_run == 12
+
+
+def test_last_run_from_context(mocker):
+    import IronscalesEventCollector
+
+    mocker.patch.object(IronscalesEventCollector, "send_events_to_xsiam")
+    mocker.patch.object(demisto, "setLastRun")
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_id": 5, "last_incident_time": "2019-08-24T14:15:22Z"})
+    mocker.patch.object(Client, "get_jwt_token", return_value="mock_token")
+    mocker.patch.object(Client, "get_incident_ids", return_value=[])
+    mocker.patch.object(Client, "get_incident")
+
+    mocker.patch.object(demisto, "command", return_value="fetch-events")
+    mocker.patch.object(
+        demisto,
+        "params",
+        return_value={"max_fetch": "10", "first_fetch": "3 days", "url": "", "collect_all_incidents": True},
+    )
+
+    def ids_generator():
+        i = 1
+        while i < 100:
+            yield {"total_pages": 100, "incidents": [{"incidentID": i}, {"incidentID": i + 1}]}
+            i += 2
+
+    mocker.patch.object(Client, "_http_request", side_effect=ids_generator())
+    mocker.patch.object(Client, "get_incident", side_effect=lambda x: x)
+    mocker.patch("IronscalesEventCollector.incident_to_events", side_effect=lambda x: [{x: 1}])
+    main()

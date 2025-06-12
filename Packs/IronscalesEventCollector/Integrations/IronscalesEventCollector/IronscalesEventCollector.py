@@ -3,7 +3,6 @@ import copy
 import demistomock as demisto  # noqa: F401
 import urllib3
 from CommonServerPython import *  # noqa: F401
-from urllib.parse import quote
 
 
 # Disable insecure warnings
@@ -72,6 +71,7 @@ class Client(BaseClient):  # pragma: no cover
         """
         Navigate to the correct endpoint
         """
+
         demisto.debug("Test-IronScales: going in get_incident_ids")
         if self.all_incident:
             demisto.debug("Test-IronScales: all_incidents is marked as True. going in get_all_incident_ids")
@@ -96,7 +96,7 @@ class Client(BaseClient):  # pragma: no cover
         demisto.debug("Test-IronScales: Going in convert_time_percent_format")
         time = time.isoformat()  # convert to iso format
         demisto.debug("Test-IronScales: time format to ISO success")
-        time_encoded = quote(time, safe="")  # Percent-encode (e.g., encode '+' to '%2B')
+        time_encoded = time.replace("+", "%2B")  # Percent-encode (e.g., encode '+' to '%2B')
         demisto.debug("Test-IronScales: quote func success")
         return time_encoded
 
@@ -262,7 +262,6 @@ def get_incident_ids_to_fetch(
     demisto.debug(f"Test-IronScales: going in get_incident_ids_to_fetch with param: first_fetch = {str(first_fetch)},\
                   last_id = {str(last_id)},\
                   max_fetch = max_fetch")
-
     incident_ids: List[int] = client.get_incident_ids(first_fetch, max_fetch, last_id)
     if not incident_ids:
         demisto.debug("Test-IronScales: no new incident! returning empty list")
@@ -342,7 +341,9 @@ def fetch_events_command(
         last_id = max(i, last_id)
         if len(events) >= max_fetch:
             break
-
+    if not incident_ids and last_id > -1:
+        incident = client.get_incident(last_id)
+        events.extend(incident_to_events(incident))
     return events, last_id
 
 
@@ -395,7 +396,9 @@ def main():
             )
             demisto.debug("Test-IronScales: returned from fetch_event")
             demisto.debug(f"Test-IronScales: returned data = {str(events)}, {str(last_id)}")
+
             send_events_to_xsiam(events, VENDOR, PRODUCT)
+
             demisto.setLastRun(
                 {"last_id": last_id, "last_incident_time": events[-1].get("first_reported_date") if events else None}
             )
