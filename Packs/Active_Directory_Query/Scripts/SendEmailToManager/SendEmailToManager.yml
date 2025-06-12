@@ -44,4 +44,4 @@ tests:
 - No test
 dockerimage: demisto/python3:3.12.8.3296088
 supportedModules:
-- agentix
+- agentic
