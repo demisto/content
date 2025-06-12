@@ -6840,10 +6840,7 @@ def generic_api_call_command(client: Client, method, url_suffix='', headers=None
     if raise_on_status is not None:
         raise_on_status = argToBoolean(raise_on_status)
     if empty_valid_codes is not None:
-        if "," in empty_valid_codes:
-            empty_valid_codes = [int(x) for x in empty_valid_codes.split(",")]
-        else:
-            empty_valid_codes = [int(empty_valid_codes)]
+        empty_valid_codes = [int(x) for x in empty_valid_codes.split(",")]
     if with_metrics is not None:
         with_metrics = argToBoolean(with_metrics)
 
