@@ -162,7 +162,7 @@ class AzureClient:
         # print(response)
        
         if self.headers:
-            self.headers |= {"x-caller-id": get_x_caller_id()}
+            self.headers |= {"x-caller-id": get_proxydome_token()}
             return self.base_client._http_request(  # type: ignore[misc]
                 method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
                 headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404), proxies=proxies
