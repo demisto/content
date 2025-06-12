@@ -114,5 +114,6 @@
 	},
 	"name": "Reliaquest Takedown Mapper",
 	"type": "mapping-incoming",
+	"fromVersion": "6.9.0",
 	"version": -1
 }

@@ -69,7 +69,7 @@ script:
   commands:
   - arguments:
     - description: Brand Id.
-      name: brandId
+      name: brand_id
       required: true
     - description: Takedown Type.
       name: type
@@ -78,12 +78,12 @@ script:
       name: target
       required: true
     - description: Portal shortcode.
-      name: portalId
+      name: portal_id
     description: Create takedown command takes brand id, type, target and portal shortcode (optional) and returns the created takedown in response.
-    name: create-takedown
+    name: rq-takedown-create
   - arguments: []
     description: Returns list of allowed brand details for takedown.
-    name: list-brand
+    name: rq-takedown-list-brand
   - arguments:
     - defaultValue: Investigate the tekedown
       description: Comment for takedown.
@@ -91,22 +91,22 @@ script:
       required: true
     - defaultValue: UUID
       description: Takedown id.
-      name: takedownId
+      name: takedown_id
       required: true
     description: Create comment for a takedown.
-    name: create-comment
+    name: rq-takedown-create-comment
   - arguments:
-    - name: fileId
+    - name: file_id
       required: true
-    - name: takedownId
+    - name: takedown_id
       required: true
     description: Uploads attachment for takedown.
-    name: upload-attachment
+    name: rq-takedown-upload-attachment
   - arguments:
-    - name: attachmentId
+    - name: attachment_id
       required: true
     description: Downloads attachment for takedown.
-    name: download-attachment
+    name: rq-takedown-download-attachment
   dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: ''

@@ -119,7 +119,7 @@ class Client(BaseClient):
         headers = {"Accept": "application/json", "searchlight-account-id": account_id, "User-Agent": user_agent}
         super().__init__(base_url, auth=(access_key, secret_key), verify=verify, proxy=proxy, headers=headers, **kwargs)
         self.ratelimiter = RateLimiter(**kwargs)
-        demisto.info(f"hdeaders -------> {headers}")
+        demisto.debug(f"hdeaders -------> {headers}")
 
     def get(self, url, headers={}, params={}, **kwargs):
         """
@@ -163,16 +163,16 @@ class Client(BaseClient):
         return self.ratelimiter.handle_response(response)
 
     def test_client(self):
-        demisto.info("making test call------->")
+        demisto.debug("making test call------->")
         try:
             r = self.get("/v1/test")
         except DemistoException as e:
             return 400, e.message
         except Exception:
-            demisto.info("Exception : {ex}")
+            demisto.debug("Exception : {ex}")
             return 400, "Something went wrong"
         r_data = r.json()
-        demisto.info(f"response------->{json.dumps(r_data)}")
+        demisto.debug(f"response------->{json.dumps(r_data)}")
         if r_data.get("message") and "'accountId' is invalid" in r_data.get("message"):
             return 400, "Account Id invalid"
         if not r_data.get("api-key-valid"):
@@ -200,9 +200,7 @@ def get_takedowns(request_handler: Client, event_num_start, limit, takedown_list
         **kwargs: dict
     Returns: response json
     """
-    demisto.info(f"Fetching takedown ids: {takedown_list}")
-    # if not takedown_list:
-    #     return []
+    demisto.debug(f"Fetching takedown ids: {takedown_list}")
     params = {"offset": event_num_start, "limit": limit}
     r = request_handler.get("/v1/takedowns", params=params, **kwargs)
     r.raise_for_status()
@@ -220,7 +218,7 @@ def get_takedown_comments(request_handler: Client, takedown_ids=[], **kwargs) ->
     Returns: response json
 
     """
-    demisto.info(f"Fetching takedown comments for ids: {takedown_ids}")
+    demisto.debug(f"Fetching takedown comments for ids: {takedown_ids}")
     if not takedown_ids:
         return []
     data = []
@@ -242,7 +240,7 @@ def get_takedown_attachments(request_handler: Client, takedown_ids=[], **kwargs)
     Returns: response json
 
     """
-    demisto.info(f"Fetching takedown attachments for ids: {takedown_ids}")
+    demisto.debug(f"Fetching takedown attachments for ids: {takedown_ids}")
     if not takedown_ids:
         return []
     data = []
@@ -250,10 +248,8 @@ def get_takedown_attachments(request_handler: Client, takedown_ids=[], **kwargs)
         r = request_handler.get(f"/v1/takedowns/{takedown_id}/attachments", params={}, **kwargs)
         r.raise_for_status()
         attachments = r.json()
-        demisto.info(f"attachments: {attachments}")
         for attachment in attachments:
             attachment.update({"takedown-id": takedown_id})
-        demisto.info(f"attachments after: {attachments}")
         data.extend(attachments)
     return data
 
@@ -288,7 +284,7 @@ class SearchLightTakedownPoller:
 
         Returns the largest event-num from the triage item events that were processed.
         """
-        demisto.info(f"Polling takedown. Event num start: {event_num_start}, Limit: {limit}")
+        demisto.debug(f"Polling takedown. Event num start: {event_num_start}, Limit: {limit}")
 
         takedowns = get_takedowns(self.request_handler, event_num_start=event_num_start, limit=limit)
         takedown_ids = [x["id"] for x in takedowns]
@@ -300,12 +296,12 @@ class SearchLightTakedownPoller:
         # Get attachments
         attachments = get_takedown_attachments(self.request_handler, takedown_ids)
         if not takedowns:
-            demisto.info(f"No takedown were fetched. Event num start: {event_num_start}, Limit: {limit}")
+            demisto.debug(f"No takedown were fetched. Event num start: {event_num_start}, Limit: {limit}")
             return RQPollResult(True, [])
 
         takedown_data = self.merge_data(takedowns, updated_comments, attachments)
         if len(takedowns) < limit:
-            RQPollResult(True, takedown_data)
+            return RQPollResult(True, takedown_data)
         return RQPollResult(False, takedown_data)
 
     def merge_data(self, takedowns, comments, attachments):
@@ -337,10 +333,10 @@ def create_takedown(request_handler: Client, args):
       request_handler (HttpRequestHandler): the request handler to use to make HTTP requests
       args: arguments sent in the command as input
     """
-    brand_id = args.get("brandId")
+    brand_id = args.get("brand_id")
     target = args.get("target")
     type = args.get("type")
-    portal_id = args.get("portalId")
+    portal_id = args.get("portal_id")
 
     url = "/v1/takedowns"
     payload = {
@@ -352,7 +348,7 @@ def create_takedown(request_handler: Client, args):
     }
     if portal_id:
         payload["target"].update({"alert": {"portal-id": portal_id}})
-    demisto.info(f"creating takedown with payload: {payload}")
+    demisto.debug(f"creating takedown with payload: {payload}")
     r = request_handler.post(url, data=payload)
     r.raise_for_status()
     json_data = r.json()
@@ -380,11 +376,11 @@ def create_comment(request_handler: Client, args, **kwargs) -> list:
       request_handler (HttpRequestHandler): the request handler to use to make HTTP requests
       args: arguments sent in the command as input
     """
-    takedown_id = args.get("takedownId")
+    takedown_id = args.get("takedown_id")
     comment = args.get("comment")
     payload = {"content": comment}
     url = f"/v1/takedowns/{takedown_id}/comments"
-    demisto.info(f"creating takedown comment with payload: {payload}")
+    demisto.debug(f"creating takedown comment with payload: {payload}")
     r = request_handler.post(url, data=payload)
     r.raise_for_status()
     json_data = r.json()
@@ -399,8 +395,8 @@ def upload_attachment(request_handler: Client, args, **kwargs) -> list:
       args: arguments sent in the command as input
     """
 
-    file_id = demisto.args().get("fileId")
-    takedown_id = args.get("takedownId")
+    file_id = demisto.args().get("file_id")
+    takedown_id = args.get("takedown_id")
 
     result = demisto.getFilePath(file_id)
 
@@ -425,10 +421,10 @@ def download_attachment(request_handler: Client, args, **kwargs) -> list:
       request_handler (HttpRequestHandler): the request handler to use to make HTTP requests
       args: arguments sent in the command as input
     """
-    attachment_id = args.get("attachmentId")
+    attachment_id = args.get("attachment_id")
 
     url = f"/v1/takedowns/attachments/{attachment_id}/download"
-    demisto.info(f"downloading file for attachment: {attachment_id}")
+    demisto.debug(f"downloading file for attachment: {attachment_id}")
     r = request_handler.get(url, data={})
     r.raise_for_status()
 
@@ -453,52 +449,52 @@ def fetch_takedowns(fetch_limit, last_run, search_light_client):
         search_light_client: Search light client
     """
     last_event_num = last_run.get("takedown", {}).get("last_fetch", 0)
-    demisto.info(f"fetch_incidents last run: {last_event_num}")
+    demisto.debug(f"fetch_incidents last run: {last_event_num}")
     seachlight_takwdown_poller = SearchLightTakedownPoller(search_light_client)
     poll_result = seachlight_takwdown_poller.poll_takedowns(event_num_start=last_event_num, limit=fetch_limit)
     data = poll_result.takedown_data
 
     if poll_result.does_all_fetched:
-        demisto.info(f"Polling done. last_event_num: {last_event_num}")
+        demisto.debug(f"Polling done. last_event_num: {last_event_num}")
         return {"takedown": {"last_fetch": last_event_num}}, []
 
     if data:
         takedowns = [{"name": item["type"], "occurred": item["created"], "rawJSON": json.dumps(item)} for item in data]
-        demisto.info(f"data found for iteration last_polled_number:{last_event_num}")
+        demisto.debug(f"data found for iteration last_polled_number:{last_event_num}")
     else:
         takedowns = []
-        demisto.info(f"No data found for iteration last_polled_number:{last_event_num}")
+        demisto.debug(f"No data found for iteration last_polled_number:{last_event_num}")
 
     return {"takedown": {"last_fetch": last_event_num + len(data)}}, takedowns
 
 
 def get_remote_data_command(client, args):
     parsed_args = GetRemoteDataArgs(args)
-    demisto.info(f"Running get_remote_data_command for takedown {parsed_args.remote_incident_id}")
+    demisto.debug(f"Running get_remote_data_command for takedown {parsed_args.remote_incident_id}")
 
     takedown_response = client.get(f"/v1/takedowns/{parsed_args.remote_incident_id}")
     takedown_response.raise_for_status()
     takedown_res = takedown_response.json()
-    demisto.info(f"get_remote_data takedown response: {takedown_response.json()}")
 
-    comment = client.get(f"/v1/takedowns/{parsed_args.remote_incident_id}/comments")
-    demisto.info(f"mirror comment response: {comment.json()}")
+    comments = client.get(f"/v1/takedowns/{parsed_args.remote_incident_id}/comments")
+    demisto.debug(f"mirror comment response: {len(comments.json())}")
+    updated_comments = flatten_comments(comments.json())
 
     attachments = client.get(f"/v1/takedowns/{parsed_args.remote_incident_id}/attachments")
 
-    latest_takedown_data = {"status": takedown_res["status"], "comments": comment.json(), "attachments": attachments.json()}
-    demisto.info(f"result to get latest takedown data: {latest_takedown_data}")
+    latest_takedown_data = {"status": takedown_res["status"], "comments": updated_comments, "attachments": attachments.json()}
+    demisto.debug(f"result to get latest takedown data: {latest_takedown_data}")
     return GetRemoteDataResponse(mirrored_object=latest_takedown_data, entries=[])
 
 
 def get_modified_remote_data_command(client, mirroring_last_update):
     NO_OF_EVENT_TO_FETCH = 10
-    demisto.info("inside get_modified_remote_data_command")
+    demisto.debug("inside get_modified_remote_data_command")
     takedown_events = client.get(f"/v1/takedown-events?limit={NO_OF_EVENT_TO_FETCH}&event-num-after={mirroring_last_update}")
     takedown_events.raise_for_status()
     takedown_events = takedown_events.json()
     takedown_ids = []
-    demisto.info(f"after api call response: {takedown_events}")
+    demisto.debug(f"after api call response: {takedown_events}")
     max_event_num = mirroring_last_update
     if isinstance(mirroring_last_update, str):
         mirroring_last_update = int(mirroring_last_update)
@@ -526,7 +522,6 @@ def main() -> None:
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    demisto.info(f"input config------: {demisto.params()}")
     secretKey = demisto.params()["apiSecret"]["password"]
     accessKey = demisto.params()["apiKey"]["password"]
     accountId = demisto.params()["accountId"]
@@ -541,12 +536,13 @@ def main() -> None:
     first_fetch_datetime = arg_to_datetime(arg=demisto.params()["first_fetch"], arg_name="First fetch time", required=True)
     if not isinstance(first_fetch_datetime, datetime):
         raise ValueError("Failed to get first fetch time.")
-
+    params = demisto.args()
+    command = demisto.command()
     if first_fetch_datetime > datetime.now():
         raise DemistoException("Since date should not be greate than current date")
-    demisto.info(f"Command being called is {demisto.command()}")
+    demisto.debug(f"Command being called is {command}")
     try:
-        base_url = get_base_url(demisto.command())
+        base_url = get_base_url(command)
         rq_client = Client(
             base_url=base_url,
             account_id=accountId,
@@ -555,26 +551,27 @@ def main() -> None:
             verify=verify_certificate,
             proxy=proxy,
         )
-        if demisto.command() == "test-module":
+
+        if command == "test-module":
             # This is the call made when pressing the integration Test button.
             return_results(test_module(rq_client))
-        elif demisto.command() == "fetch-incidents":
+        elif command == "fetch-incidents":
             next_run, incidents = fetch_takedowns(fetchLimit, demisto.getLastRun(), rq_client)
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
-        elif demisto.command() == "create-takedown":
-            return_results(create_takedown(rq_client, demisto.args()))
-        elif demisto.command() == "list-brand":
-            return_results(list_brands(rq_client, demisto.args()))
-        elif demisto.command() == "create-comment":
-            return_results(create_comment(rq_client, demisto.args()))
-        elif demisto.command() == "upload-attachment":
-            return_results(upload_attachment(rq_client, demisto.args()))
-        elif demisto.command() == "download-attachment":
-            return_results(download_attachment(rq_client, demisto.args()))
-        elif demisto.command() == "get-remote-data":
-            return_results(get_remote_data_command(rq_client, demisto.args()))
-        elif demisto.command() == "get-modified-remote-data":
+        elif command == "rq-takedown-create":
+            return_results(create_takedown(rq_client, params))
+        elif command == "rq-takedown-list-brand":
+            return_results(list_brands(rq_client, params))
+        elif command == "rq-takedown-create-comment":
+            return_results(create_comment(rq_client, params))
+        elif command == "rq-takedown-upload-attachment":
+            return_results(upload_attachment(rq_client, params))
+        elif command == "rq-takedown-download-attachment":
+            return_results(download_attachment(rq_client, params))
+        elif command == "get-remote-data":
+            return_results(get_remote_data_command(rq_client, params))
+        elif command == "get-modified-remote-data":
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
             modified_incidents, next_mirroring_event_num = get_modified_remote_data_command(
                 rq_client, mirroring_last_update=last_run_mirroring.get("lastEventNum", 0)
@@ -589,12 +586,12 @@ def main() -> None:
                 demisto.debug("Payload is not JSON serializable:", str(e))
             return_results(modified_incidents)
         else:
-            raise NotImplementedError(f"ReliaquestTakedown error: " f"command {demisto.command()} is not implemented")
+            raise NotImplementedError(f"ReliaquestTakedown error: " f"command {command} is not implemented")
 
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f"Failed to execute {demisto.command()} command.\nError:\n{str(e)}")
+        return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
 
 
 """ ENTRY POINT """
