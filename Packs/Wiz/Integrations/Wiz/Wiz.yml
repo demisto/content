@@ -29,6 +29,12 @@ configuration:
   type: 0
   defaultvalue: https://api.us1.app.wiz.io/graphql
   section: Connect
+- name: incidentFetchInterval
+  display: Incidents Fetch Interval
+  defaultvalue: 60
+  type: 19
+  required: false
+  advanced: true
 - defaultvalue: 7 days
   display: First fetch timestamp (<number> <time unit>, e.g., 12 hours, 7 days)
   name: first_fetch
@@ -51,6 +57,38 @@ configuration:
   type: 8
   required: false
   section: Collect
+- name: severity
+  display: Issue severity to fetch
+  additionalinfo: 'Select the severity levels of issues to fetch from Wiz. Multiple selections are allowed. Leave empty to fetch all severities.'
+  options:
+  - INFORMATIONAL
+  - LOW
+  - MEDIUM
+  - HIGH
+  - CRITICAL
+  type: 16
+  required: false
+- name: status
+  display: Issue status to fetch
+  additionalinfo: 'Select the status of issues to fetch from Wiz. Multiple selections are allowed.'
+  options:
+  - OPEN
+  - IN_PROGRESS
+  - RESOLVED
+  - REJECTED
+  defaultvalue: OPEN,IN_PROGRESS
+  type: 16
+  required: false
+- name: issue_type
+  display: Issue type to fetch
+  additionalinfo: 'Select the type of issues to fetch from Wiz. Multiple selections are allowed.'
+  options:
+  - TOXIC_COMBINATION
+  - THREAT_DETECTION
+  - CLOUD_CONFIGURATION
+  defaultvalue: TOXIC_COMBINATION,CLOUD_CONFIGURATION,THREAT_DETECTION
+  type: 16
+  required: false
 description: Agentless cloud security.
 display: Wiz
 name: Wiz

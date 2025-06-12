@@ -14,6 +14,55 @@ WIZ_VERSION = "1.4.0"
 INTEGRATION_GUID = "8864e131-72db-4928-1293-e292f0ed699f"
 NOT_DEFINED = "Not Defined"
 
+DEFAULT_FETCH_ISSUE_STATUS = ["OPEN", "IN_PROGRESS"]
+
+
+class ValidationType:
+    """Class representing field names for validation results"""
+
+    IS_VALID = "is_valid"
+    ERROR_MESSAGE = "error_message"
+    VALUE = "value"
+    SEVERITY_LIST = "severity_list"
+    MINUTES_VALUE = "minutes_value"
+    DAYS_VALUE = "days_value"
+    STATUS_LIST = "status_list"
+
+
+class ValidationResponse:
+    """Class for standardized validation responses"""
+
+    def __init__(self, is_valid=True, error_message=None, value=None):
+        self.is_valid = is_valid
+        self.error_message = error_message
+        self.value = value
+        self.days_value = None
+        self.minutes_value = None
+        self.severity_list = None
+        self.status_list = None
+
+    def to_dict(self):
+        """Convert the response to a dictionary"""
+        return {
+            ValidationType.IS_VALID: self.is_valid,
+            ValidationType.ERROR_MESSAGE: self.error_message,
+            ValidationType.VALUE: self.value,
+            ValidationType.DAYS_VALUE: self.days_value,
+            ValidationType.MINUTES_VALUE: self.minutes_value,
+            ValidationType.SEVERITY_LIST: self.severity_list,
+            ValidationType.STATUS_LIST: self.status_list,
+        }
+
+    @classmethod
+    def create_success(cls, value=None):
+        """Create a successful validation response"""
+        return cls(is_valid=True, error_message=None, value=value)
+
+    @classmethod
+    def create_error(cls, error_message):
+        """Create a failed validation response"""
+        return cls(is_valid=False, error_message=error_message, value=None)
+
 
 def get_integration_user_agent():
     integration_user_agent = f"{INTEGRATION_GUID}/xsoar/{WIZ_VERSION}"
@@ -1212,6 +1261,9 @@ fragment CloudEventAdmissionReviewTriggerDetails on CloudEventAdmissionReview {
   }
 }
 """
+PULL_ISSUES_DEFAULT_VARIABLES = {
+    "orderBy": {"field": "SEVERITY", "direction": "DESC"}
+}
 PULL_ISSUES_TEST_VARIABLES = test_variables = {
     "first": 1,
     "filterBy": {"status": ["OPEN", "IN_PROGRESS"]},
@@ -1492,12 +1544,45 @@ class WizInputParam:
     SEARCH = "search"
     SUBSCRIPTION_EXTERNAL_IDS = "subscription_external_ids"
     PROVIDER_UNIQUE_IDS = "provider_unique_ids"
+    STATUS = "status"
 
 
 class WizStatus:
     OPEN = "OPEN"
-    IN_PROGRESS = "IN PROGRESS"
+    IN_PROGRESS = "IN_PROGRESS"
     REJECTED = "REJECTED"
+    RESOLVED = "RESOLVED"
+
+    @classmethod
+    def values(cls):
+        """Get all available detection origins"""
+        return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
+
+
+
+class WizSeverity:
+    CRITICAL = "CRITICAL"
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+    LOW = "LOW"
+    INFORMATIONAL = "INFORMATIONAL"
+
+    @classmethod
+    def values(cls):
+        """Get all available detection origins"""
+        return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
+
+
+
+class WizIssueType:
+    CLOUD_EVENT = "CLOUD_EVENT"
+    CLOUD_CONFIGURATION = "CLOUD_CONFIGURATION"
+    THREAT_DETECTION = "THREAT_DETECTION"
+
+    @classmethod
+    def values(cls):
+        """Get all available detection origins"""
+        return [getattr(cls, attr) for attr in dir(cls) if not attr.startswith("_") and not callable(getattr(cls, attr))]
 
 
 def set_authentication_endpoint(auth_endpoint):
@@ -1575,7 +1660,7 @@ def checkAPIerrors(query, variables):
 
     data = {"variables": variables, "query": query}
 
-    demisto.info(f"Invoking the API with is {json.dumps(data)}")
+    demisto.info(f"Invoking the API with {json.dumps(data)}")
 
     result = requests.post(url=URL, json=data, headers=HEADERS)
 
@@ -1617,14 +1702,265 @@ def translate_severity(issue):
 
 def build_incidents(issue):
     if issue is None:
+        demisto.debug("build_incidents: Received None issue")
         return {}
 
-    return {
-        "name": issue.get("sourceRule", {}).get("name", "No sourceRule") + " - " + issue.get("id"),
-        "occurred": issue["createdAt"],
-        "rawJSON": json.dumps(issue),
-        "severity": translate_severity(issue),
+    try:
+        issue_id = issue.get('id', 'unknown')
+
+        source_rule = issue.get("sourceRule")
+
+        if source_rule is None:
+            demisto.debug("build_incidents: sourceRule is None")
+            rule_name = "No sourceRule"
+        else:
+            rule_name = source_rule.get("name", "No sourceRule")
+            demisto.debug(f"build_incidents: rule_name: {rule_name}")
+
+        incident_name = f"{rule_name or 'Unknown Rule'} - {issue_id}"
+        created_at = issue.get("createdAt", "")
+        severity = translate_severity(issue)
+
+        incident = {
+            "name": incident_name,
+            "occurred": created_at,
+            "rawJSON": json.dumps(issue),
+            "severity": severity,
+        }
+
+        demisto.debug(f"build_incidents: Successfully created incident for {issue_id} "
+                      f"using {incident}")
+        return incident
+
+    except Exception as e:
+        issue_id = issue.get('id', 'unknown') if issue else 'unknown'
+        demisto.error(f"build_incidents: Error processing issue {issue_id}: {str(e)}")
+
+        import traceback
+        demisto.error(f"build_incidents: Traceback: {traceback.format_exc()}")
+
+        issue_str = str(issue)[:500] + "..." if len(str(issue)) > 500 else str(issue)
+        demisto.debug(f"build_incidents: Problematic issue data: {issue_str}")
+
+        return {}
+
+
+def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
+    """
+    Generic validation function for Wiz enum parameters
+
+    Args:
+        parameter_value (str or list): The parameter value(s) to validate
+        enum_class: The enum class that contains valid values (e.g., WizIssueType)
+        parameter_name (str): The human-readable parameter name for error messages (e.g., "issue type")
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    if not parameter_value:
+        return ValidationResponse.create_success()
+
+    # Handle case where parameter_value is a comma-separated string
+    if isinstance(parameter_value, str) and "," in parameter_value:
+        values = [v.strip() for v in parameter_value.split(",")]
+    elif isinstance(parameter_value, str):
+        values = [parameter_value]
+    elif isinstance(parameter_value, list):
+        values = parameter_value
+    else:
+        values = [parameter_value]
+
+    valid_values = enum_class.values()
+    invalid_values = [v for v in values if v not in valid_values]
+
+    if invalid_values:
+        error_msg = f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: {', '.join(valid_values)}"
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+    return ValidationResponse.create_success(values)
+
+def validate_issue_type(issue_type):
+    """
+    Validates if the issue type is supported
+
+    Args:
+        issue_type (str or list): The issue_type(s) to validate
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    return validate_wiz_enum_parameter(issue_type, WizIssueType, "issue type")
+
+
+def validate_severity(severity):
+    """
+    Validates if the severity is supported
+
+    Args:
+        severity (str or list): The severity(s) to validate
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    return validate_wiz_enum_parameter(severity, WizSeverity, "severity")
+
+
+def validate_status(status):
+    """
+    Validates if the status is supported
+
+    Args:
+        status (str or list): The status(es) to validate
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    return validate_wiz_enum_parameter(status, WizStatus, "status")
+
+
+def validate_all_issues_parameters(parameters_dict):
+    """
+    Validates all parameters in a centralized function
+
+    Args:
+        parameters_dict (dict): Dictionary containing all parameters to validate
+
+    Returns:
+        tuple: (success, error_message, validated_values)
+            - success (bool): True if all validations pass
+            - error_message (str): Error message if validation fails
+            - validated_values (dict): Dictionary of validated values
+    """
+    validated_values = {}
+
+    # Extract parameters from dictionary
+    issue_type = parameters_dict.get(WizInputParam.ISSUE_TYPE)
+    status = parameters_dict.get(WizInputParam.STATUS)
+    severity = parameters_dict.get(WizInputParam.SEVERITY)
+
+    issue_type_validation = validate_issue_type(issue_type)
+    if not issue_type_validation.is_valid:
+        return False, issue_type_validation.error_message, None
+    validated_values[WizInputParam.ISSUE_TYPE] = issue_type_validation.value
+
+    status_validation = validate_status(status)
+    if not status_validation.is_valid:
+        return False, status_validation.error_message, None
+    validated_values[WizInputParam.STATUS] = status_validation.value
+
+    severity_validation = validate_severity(severity)
+    if not severity_validation.is_valid:
+        return False, severity_validation.error_message, None
+    validated_values[WizInputParam.SEVERITY] = severity_validation.value
+
+    return True, None, validated_values
+
+
+def apply_wiz_filter(variables, filter_value, api_field, equals_wrapper=True, nested_path=None):
+    """
+    Generic function to apply filters to Wiz API query variables
+
+    Args:
+        variables (dict): The query variables to modify
+        filter_value (str or list): The filter value(s) to apply
+        api_field (str): The API field name (e.g., WizApiVariables.ORIGIN)
+        equals_wrapper (bool): Whether to wrap the value in {"equals": [values]} structure
+        nested_path (str): Additional nested path for complex filters (e.g., "relatedEntity")
+
+    Returns:
+        dict: Updated variables with the filter applied
+    """
+    if not filter_value:
+        return variables
+
+    # Initialize filterBy if it doesn't exist
+    if "filterBy" not in variables:
+        variables["filterBy"] = {}
+
+    # Convert single values to list for consistency
+    if isinstance(filter_value, str):
+        value_list = [filter_value]
+    elif isinstance(filter_value, list):
+        value_list = filter_value
+    else:
+        value_list = [filter_value]
+
+    # Handle nested paths (e.g., for threats that use relatedEntity.cloudPlatform)
+    filter_target = variables["filterBy"]
+    if nested_path:
+        if nested_path not in filter_target:
+            filter_target[nested_path] = {}
+        filter_target = filter_target[nested_path]
+
+    # Apply the filter with or without equals wrapper
+    if equals_wrapper:
+        filter_target[api_field] = {"equals": value_list}
+    else:
+        filter_target[api_field] = value_list
+
+    return variables
+
+
+def apply_severity_filter(variables, severity_list, is_detection=True):
+    """Adds the severity filter to the query variables"""
+    return apply_wiz_filter(variables, severity_list, "severity", equals_wrapper=False)
+
+
+def apply_status_filter(variables, status_list):
+    """Adds the status filter to the query variables"""
+    return apply_wiz_filter(variables, status_list, "status", equals_wrapper=False)
+
+
+def apply_issue_type_filter(variables, status_list):
+    """Adds the status filter to the query variables"""
+    return apply_wiz_filter(variables, status_list, "issue_type", equals_wrapper=False)
+
+
+def apply_all_issue_filters(variables, validated_values):
+    """
+    Applies all filters to the query variables in a centralized function
+
+    Args:
+        variables (dict): Base query variables
+        validated_values (dict): Dictionary of validated values
+
+    Returns:
+        dict: Updated query variables with all filters applied
+    """
+    variables = apply_severity_filter(variables, validated_values.get(WizInputParam.SEVERITY))
+    variables = apply_status_filter(variables, validated_values.get(WizInputParam.STATUS))
+    variables = apply_issue_type_filter(variables, validated_values.get(WizInputParam.ISSUE_TYPE))
+
+    return variables
+
+
+def get_fetch_issues_variables(max_fetch, last_run):
+    demisto_args = demisto.args()
+    parameters_dict = {
+        WizInputParam.ISSUE_TYPE: demisto_args.get(WizInputParam.ISSUE_TYPE),
+        WizInputParam.STATUS: demisto_args.get(WizInputParam.STATUS),
+        WizInputParam.SEVERITY: demisto_args.get(WizInputParam.SEVERITY)
     }
+
+    # Using default fetch parameters
+    if not parameters_dict[WizInputParam.ISSUE_TYPE] and not parameters_dict[WizInputParam.STATUS] \
+        and not parameters_dict[WizInputParam.SEVERITY]:
+        demisto.info("No issue type, status or severity provided, fetching default issues")
+        parameters_dict = {
+            WizInputParam.STATUS: DEFAULT_FETCH_ISSUE_STATUS,
+        }
+
+    validation_success, error_message, validated_values = validate_all_issues_parameters(parameters_dict)
+    if not validation_success or error_message:
+        return_error(error_message)
+        return
+
+    issue_variables = PULL_ISSUES_DEFAULT_VARIABLES.copy()
+    issue_variables["first"] = max_fetch
+    issue_variables["statusChangedAt"] = {"after": last_run, "relatedEntity": {}}
+
+    return apply_all_issue_filters(issue_variables, validated_values)
 
 
 def fetch_issues(max_fetch):
@@ -1641,12 +1977,9 @@ def fetch_issues(max_fetch):
         last_run = last_run.isoformat()[:-3] + "Z"
 
     query = PULL_ISSUES_QUERY
-    variables = {
-        "first": max_fetch,
-        "filterBy": {"status": ["OPEN", "IN_PROGRESS"], "statusChangedAt": {"after": last_run}, "relatedEntity": {}},
-        "orderBy": {"field": "SEVERITY", "direction": "DESC"},
-    }
+    variables = get_fetch_issues_variables(max_fetch, last_run)
 
+    api_start_run_time = datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)
     response_json = checkAPIerrors(query, variables)
 
     issues = response_json["data"]["issues"]["nodes"]
@@ -1659,10 +1992,16 @@ def fetch_issues(max_fetch):
     incidents = []
     for issue in issues:
         incident = build_incidents(issue=issue)
+        demisto.debug(f"Preparing to add incident: {incident}")
         incidents.append(incident)
 
     demisto.incidents(incidents)
-    demisto.setLastRun({"time": datetime.now().strftime(DEMISTO_OCCURRED_FORMAT)})
+    demisto.setLastRun({"time": api_start_run_time})
+
+    if incidents:
+        demisto.info(f"Successfully fetched and created {len(incidents)} incidents - Set last run time to {api_start_run_time}.")
+    else:
+        demisto.info(f"No new incidents to fetch - Set last run time to {api_start_run_time}.")
 
 
 def get_issue(issue_id):

@@ -1411,6 +1411,43 @@ def get_threat_url(threat):
     return detection_url
 
 
+def validate_wiz_enum_parameter(parameter_value, enum_class, parameter_name):
+    """
+    Generic validation function for Wiz enum parameters
+
+    Args:
+        parameter_value (str or list): The parameter value(s) to validate
+        enum_class: The enum class that contains valid values (e.g., WizIssueType)
+        parameter_name (str): The human-readable parameter name for error messages (e.g., "issue type")
+
+    Returns:
+        ValidationResponse: Response with validation results
+    """
+    if not parameter_value:
+        return ValidationResponse.create_success()
+
+    # Handle case where parameter_value is a comma-separated string
+    if isinstance(parameter_value, str) and "," in parameter_value:
+        values = [v.strip() for v in parameter_value.split(",")]
+    elif isinstance(parameter_value, str):
+        values = [parameter_value]
+    elif isinstance(parameter_value, list):
+        values = parameter_value
+    else:
+        values = [parameter_value]
+
+    valid_values = enum_class.values()
+    invalid_values = [v for v in values if v not in valid_values]
+
+    if invalid_values:
+        error_msg = f"Invalid {parameter_name}(s): {', '.join(invalid_values)}. Valid {parameter_name}s are: " \
+                    f"{', '.join(valid_values)}"
+        demisto.error(error_msg)
+        return ValidationResponse.create_error(error_msg)
+
+    return ValidationResponse.create_success(values)
+
+
 def validate_first_fetch_timestamp(first_fetch_param):
     """
     Validates if the first fetch timestamp is within the limit
@@ -1493,37 +1530,7 @@ def validate_matched_rule_id(matched_rule_id):
 
 
 def validate_detection_platform(platform):
-    """
-    Validates if the detection platform is supported
-
-    Args:
-        platform (str or list): The platform(s) to validate
-
-    Returns:
-        ValidationResponse: Response with validation results
-    """
-    if not platform:
-        return ValidationResponse.create_success()
-
-    # Handle case where platform is a comma-separated string
-    if isinstance(platform, str) and "," in platform:
-        platforms = [p.strip() for p in platform.split(",")]
-    elif isinstance(platform, str):
-        platforms = [platform]
-    elif isinstance(platform, list):
-        platforms = platform
-    else:
-        platforms = [platform]
-
-    valid_platforms = CloudPlatform.values()
-    invalid_platforms = [p for p in platforms if p not in valid_platforms]
-
-    if invalid_platforms:
-        error_msg = f"Invalid platform(s): {', '.join(invalid_platforms)}. Valid platforms are: {', '.join(valid_platforms)}"
-        demisto.error(error_msg)
-        return ValidationResponse.create_error(error_msg)
-
-    return ValidationResponse.create_success(platforms)
+    return validate_wiz_enum_parameter(platform, CloudPlatform, "platform")
 
 
 def validate_detection_cloud_account_or_cloud_organization(cloud_account_or_cloud_organization):
@@ -1566,37 +1573,7 @@ def validate_detection_cloud_account_or_cloud_organization(cloud_account_or_clou
 
 
 def validate_detection_origin(origin):
-    """
-    Validates if the detection origin is supported
-
-    Args:
-        origin (str or list): The origin(s) to validate
-
-    Returns:
-        ValidationResponse: Response with validation results
-    """
-    if not origin:
-        return ValidationResponse.create_success()
-
-    # Handle case where origin is a comma-separated string
-    if isinstance(origin, str) and "," in origin:
-        origins = [o.strip() for o in origin.split(",")]
-    elif isinstance(origin, str):
-        origins = [origin]
-    elif isinstance(origin, list):
-        origins = origin
-    else:
-        origins = [origin]
-
-    valid_origins = DetectionOrigin.values()
-    invalid_origins = [o for o in origins if o not in valid_origins]
-
-    if invalid_origins:
-        error_msg = f"Invalid origin(s): {', '.join(invalid_origins)}. Valid origins are: {', '.join(valid_origins)}"
-        demisto.error(error_msg)
-        return ValidationResponse.create_error(error_msg)
-
-    return ValidationResponse.create_success(origins)
+    return validate_wiz_enum_parameter(origin, DetectionOrigin, "origin")
 
 
 def validate_creation_time_back(time_value, time_unit="minutes"):
@@ -2147,6 +2124,50 @@ def validate_all_threat_parameters(parameters_dict):
     return True, None, validated_values
 
 
+def apply_wiz_filter(variables, filter_value, api_field, equals_wrapper=True, is_detection=True, nested_path=None):
+    """
+    Generic function to apply filters to Wiz API query variables
+
+    Args:
+        variables (dict): The query variables to modify
+        filter_value (str or list): The filter value(s) to apply
+        api_field (str): The API field name (e.g., WizApiVariables.ORIGIN)
+        equals_wrapper (bool): Whether to wrap the value in {"equals": [values]} structure
+        is_detection (bool): Whether this is for detections (True) or threats (False)
+        nested_path (str): Additional nested path for complex filters (e.g., "relatedEntity")
+
+    Returns:
+        dict: Updated variables with the filter applied
+    """
+    if not filter_value:
+        return variables
+
+    # Initialize filterBy if it doesn't exist
+    if WizApiVariables.FILTER_BY not in variables:
+        variables[WizApiVariables.FILTER_BY] = {}
+
+    # Convert single values to list for consistency
+    if isinstance(filter_value, str):
+        value_list = [filter_value]
+    elif isinstance(filter_value, list):
+        value_list = filter_value
+    else:
+        value_list = [filter_value]
+
+    filter_target = variables[WizApiVariables.FILTER_BY]
+    if nested_path and not is_detection:
+        if nested_path not in filter_target:
+            filter_target[nested_path] = {}
+        filter_target = filter_target[nested_path]
+
+    if equals_wrapper:
+        filter_target[api_field] = {WizApiVariables.EQUALS: value_list}
+    else:
+        filter_target[api_field] = value_list
+
+    return variables
+
+
 def apply_rule_match_id_filter(variables, matched_rule_id):
     """
     Adds the matched rule ID filter to the query variables
@@ -2287,90 +2308,24 @@ def apply_issue_id_filter(variables, issue_id, is_detection=True):
 
 
 def apply_detection_type_filter(variables, detection_type):
-    """
-    Adds the detection type filter to the query variables
+    """Adds the detection type filter to the query variables"""
+    return apply_wiz_filter(variables, detection_type, WizApiVariables.TYPE, equals_wrapper=True, is_detection=True)
 
-    Args:
-        variables (dict): The query variables
-        detection_type (str): The detection type
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not detection_type:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.TYPE] = {WizApiVariables.EQUALS: [detection_type]}
-
-    return variables
 
 
 def apply_platform_filter(variables, platforms, is_detection=True):
-    """
-    Adds the platform filter to the query variables
-
-    Args:
-        variables (dict): The query variables
-        platforms (list or str): The cloud platform(s)
-        is_detection (bool): If True, apply filter for detections. If False, apply filter for threats.
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not platforms:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    # Handle both single platform (str) and multiple platforms (list)
-    if isinstance(platforms, str):
-        platform_list = [platforms]
-    else:
-        platform_list = platforms
-
-    # Apply filter based on whether it's for detections or threats
+    """Adds the platform filter to the query variables"""
     if is_detection:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_PLATFORM] = {WizApiVariables.EQUALS: platform_list}
+        return apply_wiz_filter(variables, platforms, WizApiVariables.CLOUD_PLATFORM, equals_wrapper=True, is_detection=True)
     else:
-        if WizApiVariables.RELATED_ENTITY not in variables[WizApiVariables.FILTER_BY]:
-            variables[WizApiVariables.FILTER_BY][WizApiVariables.RELATED_ENTITY] = {}
-
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.RELATED_ENTITY][WizApiVariables.CLOUD_PLATFORM] = platform_list
-
-    return variables
+        # For threats, platform goes under relatedEntity
+        return apply_wiz_filter(variables, platforms, WizApiVariables.CLOUD_PLATFORM, equals_wrapper=False, is_detection=False, nested_path=WizApiVariables.RELATED_ENTITY)
 
 
-def apply_origin_filter(variables, platforms, is_detection=True):
-    """
-    Adds the platform origin to the query variables
-
-    Args:
-        variables (dict): The query variables
-        platforms (list or str): The cloud event origin(s)
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not platforms:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    # Handle both single origin (str) and multiple origins (list)
-    if isinstance(platforms, str):
-        platform_list = [platforms]
-    else:
-        platform_list = platforms
-
-    origin_var = WizApiVariables.ORIGIN if is_detection else WizApiVariables.EVENT_ORIGIN
-    variables[WizApiVariables.FILTER_BY][origin_var] = {WizApiVariables.EQUALS: platform_list}
-
-    return variables
+def apply_origin_filter(variables, origins, is_detection=True):
+    """Adds the origin filter to the query variables"""
+    api_field = WizApiVariables.ORIGIN if is_detection else WizApiVariables.EVENT_ORIGIN
+    return apply_wiz_filter(variables, origins, api_field, equals_wrapper=True, is_detection=is_detection)
 
 
 def apply_resource_id_filter(variables, resource_id, is_detection=True):
@@ -2402,87 +2357,22 @@ def apply_resource_id_filter(variables, resource_id, is_detection=True):
     return variables
 
 
-def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_or_cloud_organization_id_list, is_detection=True):
-    """
-    Adds the cloud_account_or_cloud_organization filter to the query variables
+def apply_cloud_account_or_cloud_organization_filter(variables, cloud_account_ids, is_detection=True):
+    """Adds the cloud account/organization filter to the query variables"""
+    return apply_wiz_filter(variables, cloud_account_ids, WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID, equals_wrapper=is_detection, is_detection=is_detection)
 
-    Args:
-        variables (dict): The query variables
-        cloud_account_or_cloud_organization_id_list (str or list): The cloud_account_or_cloud_organization ID(s)
-        is_detection (bool): Whether this is for a detection query (True) or other query (False)
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not cloud_account_or_cloud_organization_id_list:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    # Handle both single cloud_account_or_cloud_organization (str) and multiple cloud_account_or_cloud_organization (list)
-    if isinstance(cloud_account_or_cloud_organization_id_list, str):
-        cloud_account_or_cloud_organization_list = [cloud_account_or_cloud_organization_id_list]
-    else:
-        cloud_account_or_cloud_organization_list = cloud_account_or_cloud_organization_id_list
-
-    if is_detection:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = {
-            WizApiVariables.EQUALS: cloud_account_or_cloud_organization_list
-        }
-    else:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.CLOUD_ACCOUNT_OR_CLOUD_ORGANIZATION_ID] = (
-            cloud_account_or_cloud_organization_list
-        )
-
-    return variables
 
 
 def apply_severity_filter(variables, severity_list, is_detection=True):
-    """
-    Adds the severity filter to the query variables
+    """Adds the severity filter to the query variables"""
+    return apply_wiz_filter(variables, severity_list, WizApiVariables.SEVERITY, equals_wrapper=is_detection, is_detection=is_detection)
 
-    Args:
-        variables (dict): The query variables
-        severity_list (list): List of severities to filter by
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not severity_list:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    if is_detection:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.SEVERITY] = {WizApiVariables.EQUALS: severity_list}
-    else:
-        variables[WizApiVariables.FILTER_BY][WizApiVariables.SEVERITY] = severity_list
-
-    return variables
 
 
 def apply_status_filter(variables, status_list):
-    """
-    Adds the status filter to the query variables
+    """Adds the status filter to the query variables"""
+    return apply_wiz_filter(variables, status_list, WizApiVariables.STATUS, equals_wrapper=False, is_detection=True)
 
-    Args:
-        variables (dict): The query variables
-        status_list (list): List of statuses to filter by
-
-    Returns:
-        dict: Updated variables with the filter
-    """
-    if not status_list:
-        return variables
-
-    if WizApiVariables.FILTER_BY not in variables:
-        variables[WizApiVariables.FILTER_BY] = {}
-
-    variables[WizApiVariables.FILTER_BY][WizApiVariables.STATUS] = status_list
-
-    return variables
 
 
 def apply_project_id_filter(variables, project_id, is_detection=True):
