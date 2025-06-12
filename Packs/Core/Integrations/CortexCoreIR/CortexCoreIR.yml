@@ -3963,6 +3963,7 @@ script:
       name: asset_id
       required: true
     name: core-get-asset-details
+    deprecated: true
     description: Get asset information.
     outputs:
     - contextPath: Core.CoreAsset
@@ -4274,3 +4275,10 @@ tests:
 - No tests
 supportsquickactions: true
 fromversion: 6.2.0
+supportedModules:
+- C3
+- X0
+- X1
+- X3
+- X5
+- ENT_PLUS
