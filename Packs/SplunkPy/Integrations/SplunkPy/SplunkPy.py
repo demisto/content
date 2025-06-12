@@ -1784,30 +1784,40 @@ def handle_enriching_notables(modified_notables: dict[str, dict]):
 
 
 def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_statuses, entries):
-    if notable.get("status_label"):
-        status_label = notable["status_label"]
+    demisto.debug("Starting handling closing the notable")
+    status_label = notable.get("status_label", "")
+    status_end = argToBoolean(notable.get("status_end", "false"))
 
-        if (
-            status_label == "Closed"
-            or (status_label in close_extra_labels)
-            or (close_end_statuses and argToBoolean(notable.get("status_end", "false")))
-        ):
-            demisto.info(f"mirror-in: closing incident related to notable {notable_id} with status_label: {status_label}")
-            entries.append(
-                {
-                    "EntryContext": {"mirrorRemoteId": notable_id},
-                    "Type": EntryType.NOTE,
-                    "Contents": {
-                        "dbotIncidentClose": True,
-                        "closeReason": f'Notable event was closed on Splunk with status "{status_label}".',
-                    },
-                    "ContentsFormat": EntryFormat.JSON,
-                }
-            )
+    should_close = (
+        (status_label == "Closed")
+        or (status_label in close_extra_labels)
+        or (close_end_statuses and status_end)
+    )
 
+    if should_close:
+        reason = (
+            f'Notable event was closed on Splunk with status "{status_label}".'
+            if status_label
+            else "Notable event was closed on Splunk based on end status."
+        )
+
+        demisto.info(f"mirror-in: closing incident for {notable_id} (status_label={status_label}, status_end={status_end})")
+
+        entries.append(
+            {
+                "EntryContext": {"mirrorRemoteId": notable_id},
+                "Type": EntryType.NOTE,
+                "Contents": {
+                    "dbotIncidentClose": True,
+                    "closeReason": reason,
+                },
+                "ContentsFormat": EntryFormat.JSON,
+            }
+        )
     else:
         demisto.debug(
-            f'"status_label" key could not be found on the returned data, skipping closure mirror for notable {notable_id}.'
+            f"mirror-in: Not closing incident {notable_id}. status_label={status_label}, "
+            f"status_end={status_end}, close_extra_labels={close_extra_labels}, close_end_statuses={close_end_statuses}"
         )
 
 
@@ -1829,14 +1839,13 @@ def get_modified_remote_data_command(
             has been closed on Splunk's end.
         close_end_statuses (bool): Specifies whether "End Status" statuses on Splunk should be closed when mirroring.
         close_extra_labels (list[str]): A list of additional Splunk status labels to close during mirroring.
-        mapper (UserMappingObject): mapper to map the Splunk User name to the correct XSOAR user name.
+        mapper (UserMappingObject): mapper to map the Splunk Username to the correct XSOAR username.
         comment_tag_from_splunk (str): the name of the tag that represented a comment which comes from Splunk.
 
     Returns:
         SplunkGetModifiedRemoteDataResponse: The response containing the list of notables changed
     """
     modified_notables_map = {}
-    already_processed_ids = set()
     entries: list[dict] = []
     remote_args = GetModifiedRemoteDataArgs(args)
     demisto.debug(f"Original last_update before 1 minute reduction: {get_last_update_in_splunk_time(remote_args.last_update)}")
@@ -1857,11 +1866,6 @@ def get_modified_remote_data_command(
             continue
         updated_notable = parse_notable(item, to_dict=True)
         notable_id = updated_notable["rule_id"]  # in the `incident_review` macro - the ID are in the rule_id key
-        if notable_id in already_processed_ids:
-            demisto.debug(f"Skipping already processed notable_id: {notable_id}")
-            continue
-
-        already_processed_ids.add(notable_id)
 
         modified_notables_map[notable_id] = updated_notable
 
@@ -1878,8 +1882,6 @@ def get_modified_remote_data_command(
                     "Note": True,
                 }
             )
-        # if close_incident:
-        #     handle_closed_notable(updated_notable, notable_id, close_extra_labels, close_end_statuses, entries)
 
     if modified_notables_map:
         notable_ids_with_quotes = [f'"{notable_id}"' for notable_id in modified_notables_map]
@@ -1895,7 +1897,6 @@ def get_modified_remote_data_command(
                 demisto.debug(f"Skipping notable_id from notable macro not in incident_review results: {notable_id}")
                 continue
 
-            already_processed_ids.add(notable_id)
             if modified_notables_map.get(notable_id):
                 modified_notables_map[notable_id] |= updated_notable
                 # comment in the `notable` macro, hold all the comments for a notable
@@ -1918,6 +1919,12 @@ def get_modified_remote_data_command(
 
     if close_incident:
         for notable_id, notable in modified_notables_map.items():
+            status_label = notable.get("status_label")
+            status_end = notable.get("status_end")
+            demisto.debug(
+                f"Evaluating closure for {notable_id}: status_label={status_label}, status_end={status_end}, "
+                f"close_extra_labels={close_extra_labels}, close_end_statuses={close_end_statuses}"
+            )
             handle_closed_notable(notable, notable_id, close_extra_labels, close_end_statuses, entries)
 
     res = SplunkGetModifiedRemoteDataResponse(modified_notables_data=list(modified_notables_map.values()), entries=entries)
