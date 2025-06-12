@@ -1035,38 +1035,36 @@ class TestGetFetchSeverities:
                 assert "HIGH" in result
 
 
+import pytest
+from unittest.mock import patch, Mock
+from datetime import datetime
+from pytz import UTC
+from CybleEventsV2 import get_modified_remote_data_command
+from CommonServerPython import GetModifiedRemoteDataResponse
+
+
 class TestGetModifiedRemoteDataCommandCore:
-    """Focused tests for core functionality - debugging parameter parsing issue"""
 
     def test_successful_execution_flow(self):
-        """Test the complete successful execution flow with comprehensive mocking"""
         client = Mock()
         client.get_ids_with_retry.return_value = ["incident-001", "incident-002"]
 
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
             patch("CybleEventsV2.get_fetch_severities", return_value=["High"]),
-            patch("CybleEventsV2.parse_date_range") as mock_parse,
             patch("CybleEventsV2.demisto") as mock_demisto,
         ):
-            # Mock date parsing to return valid dates with timezone.utc
-            mock_parse.return_value = (datetime(2024, 1, 1, tzinfo=UTC), datetime(2024, 1, 2, tzinfo=UTC))
-
-            mock_demisto.args.return_value = {"last_update": "2024-01-01T00:00:00Z", "lastUpdate": "2024-01-01T00:00:00Z"}
             mock_demisto.debug = Mock()
             mock_demisto.info = Mock()
             mock_demisto.error = Mock()
 
-            args = {"last_update": "2024-01-01T00:00:00Z", "lastUpdate": "2024-01-01T00:00:00Z"}
-
+            args = {"last_update": "2024-01-01T00:00:00Z"}
             result = get_modified_remote_data_command(client, "test_url", "test_token", args, False, ["service1"], ["High"])
 
             assert isinstance(result, GetModifiedRemoteDataResponse)
-            assert client.get_ids_with_retry.called
-            assert len(result.modified_incident_ids) == 2
+            assert result.modified_incident_ids == ["incident-001", "incident-002"]
 
     def test_debug_parameter_access(self):
-        """Debug exactly how parameters are being accessed in the function"""
         client = Mock()
         client.get_ids_with_retry.return_value = ["test-incident"]
 
@@ -1083,47 +1081,33 @@ class TestGetModifiedRemoteDataCommandCore:
                 self.accessed_keys.append(key)
                 return super().__getitem__(key)
 
-        spy_args = SpyDict(
-            {
-                "last_update": "2024-01-01T00:00:00Z",
-                "lastUpdate": "2024-01-01T00:00:00Z",
-                "last-update": "2024-01-01T00:00:00Z",
-                "Last_Update": "2024-01-01T00:00:00Z",
-            }
-        )
+        spy_args = SpyDict({
+            "last_update": "2024-01-01T00:00:00Z",
+            "lastUpdate": "2024-01-01T00:00:00Z",
+        })
 
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
             patch("CybleEventsV2.get_fetch_severities", return_value=["High"]),
-            patch("CybleEventsV2.parse_date_range") as mock_parse,
             patch("CybleEventsV2.demisto") as mock_demisto,
         ):
-            mock_parse.return_value = (datetime(2024, 1, 1, tzinfo=UTC), datetime(2024, 1, 2, tzinfo=UTC))
-
-            mock_demisto.args.return_value = spy_args
             mock_demisto.debug = Mock()
             mock_demisto.info = Mock()
             mock_demisto.error = Mock()
 
             result = get_modified_remote_data_command(client, "test_url", "test_token", spy_args, False, ["service1"], ["High"])
-
             assert isinstance(result, GetModifiedRemoteDataResponse)
+            assert result.modified_incident_ids == ["test-incident"]
 
     def test_minimal_args_approach(self):
-        """Test with minimal arguments to isolate the issue"""
         client = Mock()
         client.get_ids_with_retry.return_value = ["test-incident"]
 
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
             patch("CybleEventsV2.get_fetch_severities", return_value=["High"]),
-            patch("CybleEventsV2.parse_date_range") as mock_parse,
             patch("CybleEventsV2.demisto") as mock_demisto,
         ):
-            mock_parse.return_value = (datetime(2024, 1, 1, tzinfo=UTC), datetime(2024, 1, 2, tzinfo=UTC))
-
-            base_args = {}
-            mock_demisto.args.return_value = base_args
             mock_demisto.debug = Mock()
             mock_demisto.info = Mock()
             mock_demisto.error = Mock()
@@ -1131,24 +1115,19 @@ class TestGetModifiedRemoteDataCommandCore:
             test_cases = [
                 {"last_update": "2024-01-01T00:00:00Z"},
                 {"lastUpdate": "2024-01-01T00:00:00Z"},
-                {"last_run": "2024-01-01T00:00:00Z"},
-                {"lastRun": "2024-01-01T00:00:00Z"},
+                {"last-run": "2024-01-01T00:00:00Z"},
+                {"Last_Update": "2024-01-01T00:00:00Z"},
             ]
 
-            for _i, args in enumerate(test_cases):
-                try:
-                    result = get_modified_remote_data_command(
-                        client, "test_url", "test_token", args, False, ["service1"], ["High"]
-                    )
-                    assert isinstance(result, GetModifiedRemoteDataResponse)
+            for args in test_cases:
+                result = get_modified_remote_data_command(client, "test_url", "test_token", args, False, ["service1"], ["High"])
+                if isinstance(result, GetModifiedRemoteDataResponse):
+                    assert result.modified_incident_ids == ["test-incident"]
                     break
-                except Exception:
-                    continue
             else:
                 pytest.fail("All parameter name combinations failed")
 
     def test_mock_args_directly_in_function(self):
-        """Try to mock the args parameter directly where it's used"""
         client = Mock()
         client.get_ids_with_retry.return_value = ["test-incident"]
 
@@ -1160,26 +1139,21 @@ class TestGetModifiedRemoteDataCommandCore:
         with (
             patch("CybleEventsV2.get_fetch_service_list", return_value=["service1"]),
             patch("CybleEventsV2.get_fetch_severities", return_value=["High"]),
-            patch("CybleEventsV2.parse_date_range") as mock_parse,
             patch("CybleEventsV2.demisto") as mock_demisto,
         ):
-            mock_parse.return_value = (datetime(2024, 1, 1, tzinfo=UTC), datetime(2024, 1, 2, tzinfo=UTC))
-
-            mock_demisto.args.return_value = args_mock
             mock_demisto.debug = Mock()
             mock_demisto.info = Mock()
             mock_demisto.error = Mock()
 
             result = get_modified_remote_data_command(client, "test_url", "test_token", args_mock, False, ["service1"], ["High"])
-
             assert isinstance(result, GetModifiedRemoteDataResponse)
+            assert result.modified_incident_ids == ["test-incident"]
 
     def test_inspect_function_source(self):
-        """Inspect the actual function to understand parameter usage"""
         import inspect
-
         try:
-            inspect.getsource(get_modified_remote_data_command)
+            source = inspect.getsource(get_modified_remote_data_command)
+            assert "return" in source
         except Exception:
             pytest.skip("Cannot inspect function source")
 

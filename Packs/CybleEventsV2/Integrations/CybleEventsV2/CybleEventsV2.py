@@ -891,6 +891,7 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
         return GetModifiedRemoteDataResponse(ids)
     else:
         return_error("[get-modified-remote-data] Invalid response format: Expected list of IDs")
+    return GetModifiedRemoteDataResponse([])
 
 
 def get_remote_data_command(client, url, token, args, incident_collections, incident_severity, hide_cvv_expiry):
