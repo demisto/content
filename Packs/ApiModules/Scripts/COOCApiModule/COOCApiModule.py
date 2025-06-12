@@ -307,11 +307,10 @@ def run_permissions_check_for_accounts(
     return health_check_result.summarize()
 
 
-def get_x_caller_id():
+def get_proxydome_token():
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
     params = {"audience": "cortex.platform.local"}
     headers = {"Metadata-Flavor": "Google"}
     proxies = {"http": None, "https": None}
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
-    x_caller_id = {"x-caller-id": response.text}
-    return x_caller_id
+    return response.text
