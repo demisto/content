@@ -155,11 +155,6 @@ class AzureClient:
             "http": "10.181.0.100:11117",
             "https": "10.181.0.100:11117"
         }
-        # session = requests.session()
-        # session.proxies.update(proxies)
-        # res = session.get("https://jsonplaceholder.typicode.com/comments", proxies=proxies, verify="/etc/certs/egress.crt")
-        # response = requests.get("https://jsonplaceholder.typicode.com/comments", proxies=proxies, verify="/etc/certs/egress.crt")
-        # print(response)
        
         if self.headers:
             self.headers |= {"x-caller-id": get_proxydome_token()}
