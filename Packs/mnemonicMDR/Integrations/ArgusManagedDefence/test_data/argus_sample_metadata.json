@@ -1,0 +1,113 @@
+{
+  "responseCode": 1073741824,
+  "limit": 9007199254740991,
+  "offset": 9007199254740991,
+  "count": 9007199254740991,
+  "size": 9007199254740991,
+  "metaData": {},
+  "messages": [
+    {
+      "message": "string",
+      "messageTemplate": "string",
+      "type": "FIELD_ERROR",
+      "field": "string",
+      "parameter": "string"
+    }
+  ],
+  "data": {
+    "sha256": "string",
+    "sha512": "string",
+    "sha1": "string",
+    "md5": "string",
+    "size": 9007199254740991,
+    "createdTimestamp": 1073741824,
+    "latestClassification": {
+      "version": "string",
+      "type": "string",
+      "superType": "string",
+      "arch": "string",
+      "platform": "string",
+      "metaData": {
+        "additionalProp1": {},
+        "additionalProp2": {},
+        "additionalProp3": {}
+      }
+    },
+    "flags": [
+      "exceededMaxSearchableSubmissions"
+    ],
+    "latestVerdict": {
+      "sampleSha256": "string",
+      "job": {
+        "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+        "state": "enqueued"
+      },
+      "analysis": [
+        {
+          "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+          "userAgent": {
+            "name": "string",
+            "version": "string"
+          },
+          "analysisScore": 1073741824,
+          "impact": 1073741824,
+          "difference": 1073741824,
+          "triggeredDetections": [
+            {
+              "name": "string",
+              "assessment": "benign"
+            }
+          ],
+          "possibleDetections": 1073741824,
+          "tags": [
+            {
+              "type": "family",
+              "value": "string"
+            }
+          ]
+        }
+      ],
+      "createdByUser": {
+        "id": 9007199254740991,
+        "shortName": "string",
+        "name": "string",
+        "domain": {
+          "id": 1073741824,
+          "name": "string"
+        },
+        "customer": {
+          "id": 9007199254740991,
+          "name": "string",
+          "shortName": "string",
+          "domain": {
+            "id": 1073741824,
+            "name": "string"
+          }
+        },
+        "flags": [
+          "deleted"
+        ],
+        "tpe": "user"
+      },
+      "createdTimestamp": 1073741824,
+      "flags": [
+        "manual"
+      ],
+      "comment": "string",
+      "tags": [
+        {
+          "type": "family",
+          "value": "string",
+          "count": 1073741824
+        }
+      ],
+      "statusOverride": "malicious",
+      "score": 1073741824
+    },
+    "firstSubmittedTimestamp": 1073741824,
+    "lastSubmittedTimestamp": 1073741824,
+    "firstObservedTimestamp": 1073741824,
+    "lastObservedTimestamp": 1073741824,
+    "deletedTimestamp": 1073741824
+  }
+}
