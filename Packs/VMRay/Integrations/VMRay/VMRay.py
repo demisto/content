@@ -636,6 +636,7 @@ def create_sample_entry(data):
     entry["Classification"] = data.get("sample_classifications")
     entry["ChildSampleIDs"] = data.get("sample_child_sample_ids")
     entry["ParentSampleIDs"] = data.get("sample_parent_sample_ids")
+    entry["URL"] = data.get("sample_url")
 
     return entry
 
@@ -656,10 +657,39 @@ def get_sample_command():
         outputPaths.get("dbotscore"): scores,
     }
 
+    header_type_name = "FileName"
+    score = DBOTSCORE.get(entry.get("Verdict", "Not Available"), 0)
+    if (url := entry.get("URL")) is not None:
+        dbot_score = Common.DBotScore(
+            indicator=url,
+            indicator_type="url",
+            integration_name="VMRay",
+            score=score,
+        )
+        url_ctx = Common.URL(url=url, dbot_score=dbot_score)
+        entry_context.update(url_ctx.to_context())
+        header_type_name = "URL"
+    else:
+        dbot_score = Common.DBotScore(
+            indicator=entry["SHA256"],
+            indicator_type="file",
+            integration_name="VMRay",
+            score=score,
+        )
+        file_ctx = Common.File(
+            dbot_score=dbot_score,
+            md5=entry["MD5"],
+            sha1=entry["SHA1"],
+            sha256=entry["SHA256"],
+            ssdeep=entry["SSDeep"],
+            name=entry["FileName"],
+        )
+        entry_context.update(file_ctx.to_context())
+
     human_readable = tableToMarkdown(
         "Results for sample id: {} with verdict {}".format(entry.get("SampleID"), entry.get("Verdict", "Unknown")),
         entry,
-        headers=["FileName", "Type", "MD5", "SHA1", "SHA256", "SSDeep", "SampleURL"],
+        headers=[header_type_name, "Type", "MD5", "SHA1", "SHA256", "SSDeep", "SampleURL"],
     )
     return_outputs(human_readable, entry_context, raw_response=raw_response)
 

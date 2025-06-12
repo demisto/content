@@ -373,6 +373,9 @@ script:
     - contextPath: VMRay.Sample.ParentSampleIDs
       description: List of parent sample IDs.
       type: Number
+    - contextPath: VMRay.Sample.URL
+      description: The sample URL.
+      type: String
   - arguments:
     - description: MD5, SHA1 or SHA256 hash of the sample.
       name: hash

@@ -471,6 +471,7 @@ Retrieves a sample using the sample ID.
 | VMRay.Sample.Classifications | String | Classifications of the sample. |
 | VMRay.Sample.ChildSampleIDs | Number | List of child sample IDs. |
 | VMRay.Sample.ParentSampleIDs | Number | List of parent sample IDs. |
+| VMRay.Sample.URL | String | The sample URL. | 
 
 #### Command Example
 
@@ -523,7 +524,8 @@ Retrieves a sample using the sample ID.
         "Severity": "Malicious",
         "MD5": "2e0499dc90c2d715a53e05b1890e0442",
         "ChildSampleIDs": [20, 21, 22],
-        "ParentSampleIDs": [18]
+        "ParentSampleIDs": [18],
+        "URL": null
     }
 }
 ```
