@@ -1,14 +1,14 @@
-import json
-import urllib.parse
-from collections.abc import Callable
-from typing import Final
-
-import demistomock as demisto  # noqa: F401
-import requests
 import urllib3
+import requests
+from typing import Final
+from collections.abc import Callable
+import urllib.parse
+import json
+import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
+ATLASSIANCONFLUENCECLOUD_PACK_VERSION = '1.1.2'
+demisto.debug(f'pack id = AtlassianConfluenceCloud, pack version = {ATLASSIANCONFLUENCECLOUD_PACK_VERSION}')
 
-from CommonServerUserPython import *  # noqa
 
 # Disable insecure warnings
 urllib3.disable_warnings()  # pylint: disable=no-member
@@ -965,6 +965,20 @@ def validate_update_content_args(args: dict[str, str]):
         raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("version"))
 
 
+def validate_get_content_args(args: dict[str, str]):
+    """
+    Validate arguments for confluence-cloud-content-get command, raise ValueError on invalid arguments.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: None
+    """
+    content_id = args["content_id"]
+    if not content_id:
+        raise ValueError(MESSAGES["REQUIRED_ARGUMENT"].format("content_id"))
+
+
 """ COMMAND FUNCTIONS """
 
 
@@ -1366,6 +1380,41 @@ def get_events(client: Client, args: dict) -> tuple[list[dict], CommandResults]:
     )
 
 
+def confluence_cloud_content_get_command(client: Client, args: dict[str, str]) -> CommandResults:
+    """
+    Execute the confluence-cloud-content-get command. Fetches content details from Confluence Cloud by content ID.
+
+    :type client: ``Client``
+    :param client: The client used to send HTTP requests to the Confluence Cloud API.
+
+    :type args: ``Dict[str, str]``
+    :param args: The command arguments provided by the user.
+
+    :return: ``CommandResults`` containing the content details.
+    :rtype: ``CommandResults``
+    """
+    validate_get_content_args(args)
+
+    content_id = args["content_id"]
+    params = {"body-format": "raw"}
+    request_url = URL_SUFFIX["CONTENT"] + f"/{content_id}"
+    params = {"expand": "body.storage"}
+
+    response = client.http_request(method="GET", url_suffix=request_url, params=params)
+    response_json = response.json()
+
+    context = remove_empty_elements_for_context(response_json)
+    readable_hr = prepare_hr_for_content_create(response_json, "Content")
+
+    return CommandResults(
+        outputs_prefix=OUTPUT_PREFIX["CONTENT"],
+        outputs_key_field="id",
+        outputs=context,
+        readable_output=readable_hr,
+        raw_response=response_json,
+    )
+
+
 """ MAIN FUNCTION """
 
 
@@ -1380,7 +1429,6 @@ def main() -> None:  # pragma: no cover
     base_url = f"https://{url}.atlassian.net"
     verify_certificate = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-
     credentials = params.get("username", {})
     username = credentials.get("identifier").strip()
     password = credentials.get("password")
@@ -1404,6 +1452,7 @@ def main() -> None:  # pragma: no cover
             "confluence-cloud-comment-create": confluence_cloud_comment_create_command,
             "confluence-cloud-content-create": confluence_cloud_content_create_command,
             "confluence-cloud-space-create": confluence_cloud_space_create_command,
+            "confluence-cloud-content-get": confluence_cloud_content_get_command,
         }
         command = demisto.command()
         args = demisto.args()

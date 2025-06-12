@@ -3,6 +3,7 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 
 ## Configure Atlassian Confluence Cloud in Cortex
 
+
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Site Name (e.g., https://${site-name}.atlassian.net) | Site name of the Confluence cloud the user wants to connect to. | True |
@@ -10,9 +11,7 @@ This integration was integrated and tested with version 1000.0.0-847bdcbfcd00 of
 | API Token |  | True |
 | Use system proxy settings |  | False |
 | Trust any certificate (not secure) |  | False |
-| Events Fetch Interval |  | False |
-| Max number of events per fetch |  | False |
-| Fetch Events |  | False |
+
 
 ## Commands
 
@@ -3661,7 +3660,9 @@ Note: Updating draft content is currently not supported.
 ### confluence-cloud-content-search
 
 ***
-Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
+Retrieves a list of content using the Confluence Query Language (CQL).
+
+For more information on CQL, see: https://developer.atlassian.com/cloud/confluence/advanced-searching-using-cql/.
 
 #### Base Command
 
@@ -3671,431 +3672,87 @@ Retrieves a list of content using the Confluence Query Language (CQL).<br/><br/>
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required |
-| limit | Number of records to retrieve in the response. <br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. <br/><br/>Default is 50. | Optional |
-| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. | Optional |
-| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional |
-| expand | Indicates which properties to expand. <br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional |
+| query | The CQL (Confluence Query Language) string that is used to find the requested content. | Required | 
+| limit | Number of records to retrieve in the response.<br/><br/>Note: The minimum value supported is 0 and the maximum value supported is int32. Default is 50. | Optional | 
+| content_status | Filter the result based on the content status.<br/>Possible values: current, draft, archived.<br/><br/>Note: Supports multiple comma-separated values. Possible values are: . | Optional | 
+| next_page_token | Retrieves the next page records for the given query (next_page_token retrieved in previous content response). | Optional | 
+| expand | Indicates which properties to expand.<br/>For reference, visit https://developer.atlassian.com/cloud/confluence/rest/api-group-content/#api-wiki-rest-api-content-search-get.<br/><br/>Note: To separate multiple values, use commas. Expanded properties will be populated in context data only. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| ConfluenceCloud.Content.id | String | The ID of the content. |
-| ConfluenceCloud.Content.type | String | Type of the content. |
-| ConfluenceCloud.Content.status | String | Status of the content. |
-| ConfluenceCloud.Content.title | String | Title of the content. |
-| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. |
-| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. |
-| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. |
-| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. |
-| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. |
-| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with given content. |
-| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. |
-| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. |
-| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. |
-| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. |
-| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. |
-| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. |
-| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. |
-| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
-| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. |
-| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
-| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. |
-| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. |
-| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. |
-| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. |
-| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. |
-| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. |
-| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. |
-| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. |
-| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. |
-| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. |
-| ConfluenceCloud.Content.version.message | String | Message of the updated content. |
-| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. |
-| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. |
-| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. |
-| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\) |
-| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. |
-| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. |
-| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. |
-| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. |
-| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. |
-| ConfluenceCloud.Content.container.key | String | Key of the container of the content. |
-| ConfluenceCloud.Content.container.name | String | Name of the container of the content. |
-| ConfluenceCloud.Content.container.type | String | Type of the container of the content. |
-| ConfluenceCloud.Content.container.status | String | Status of the container of the content. |
-| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. |
-| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. |
-| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. |
-| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. |
-| ConfluenceCloud.Content.extensions.position | Number | The content extension position. |
-| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. |
-| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. |
-| ConfluenceCloud.Content._links.self | String | Link to the content. |
-| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. |
-| ConfluenceCloud.PageToken.name | String | The command name. |
-| ConfluenceCloud.PageToken.next_token | String | The next page token. |
-
-#### Command Example
-
-```!confluence-cloud-content-search query="type=page" limit=2```
-
-#### Context Example
-
-```json
-{
-    "ConfluenceCloud": {
-        "Content": [
-            {
-                "_expandable": {
-                    "children": "/rest/api/content/8912897/child",
-                    "descendants": "/rest/api/content/8912897/descendant",
-                    "restrictions": "/rest/api/content/8912897/restriction/byOperation"
-                },
-                "_links": {
-                    "editui": "/pages/resumedraft.action?draftId=8912897",
-                    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897",
-                    "tinyui": "/x/AQCI",
-                    "webui": "/spaces/TRIAL/pages/8912897/Trial_1"
-                },
-                "ancestors": [
-                    {
-                        "_expandable": {
-                            "children": "/rest/api/content/7798799/child",
-                            "container": "/rest/api/space/TRIAL",
-                            "descendants": "/rest/api/content/7798799/descendant",
-                            "history": "/rest/api/content/7798799/history",
-                            "restrictions": "/rest/api/content/7798799/restriction/byOperation",
-                            "space": "/rest/api/space/TRIAL"
-                        },
-                        "_links": {
-                            "editui": "/pages/resumedraft.action?draftId=7798799",
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/7798799",
-                            "tinyui": "/x/DwB3",
-                            "webui": "/spaces/TRIAL/pages/7798799/Trial1212"
-                        },
-                        "extensions": {
-                            "position": 4059
-                        },
-                        "id": "7798799",
-                        "status": "current",
-                        "title": "Trial1212",
-                        "type": "page"
-                    }
-                ],
-                "childTypes": {
-                    "attachment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/attachment"
-                        },
-                        "value": false
-                    },
-                    "comment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/comment"
-                        },
-                        "value": false
-                    },
-                    "page": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/child/page"
-                        },
-                        "value": false
-                    }
-                },
-                "container": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "extensions": {
-                    "position": 96200139
-                },
-                "history": {
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/history"
-                    },
-                    "createdBy": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "createdDate": "2021-08-19T09:11:19.755Z",
-                    "latest": true
-                },
-                "id": "8912897",
-                "space": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "status": "current",
-                "title": "Trial_1",
-                "type": "page",
-                "version": {
-                    "_expandable": {
-                        "content": "/rest/api/content/8912897"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8912897/version/1"
-                    },
-                    "by": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "confRev": "confluence$content$8912897.4",
-                    "contentTypeModified": false,
-                    "friendlyWhen": "Aug 19, 2021",
-                    "minorEdit": false,
-                    "number": 1,
-                    "syncRev": "0.confluence$content$8912897.2",
-                    "syncRevSource": "synchrony-ack",
-                    "when": "2021-08-19T09:11:19.755Z"
-                }
-            },
-            {
-                "_expandable": {
-                    "children": "/rest/api/content/8847372/child",
-                    "descendants": "/rest/api/content/8847372/descendant",
-                    "restrictions": "/rest/api/content/8847372/restriction/byOperation"
-                },
-                "_links": {
-                    "editui": "/pages/resumedraft.action?draftId=8847372",
-                    "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372",
-                    "tinyui": "/x/DACH",
-                    "webui": "/spaces/TRIAL/pages/8847372/Testing_XSOAR"
-                },
-                "ancestors": [
-                    {
-                        "_expandable": {
-                            "children": "/rest/api/content/7798799/child",
-                            "container": "/rest/api/space/TRIAL",
-                            "descendants": "/rest/api/content/7798799/descendant",
-                            "history": "/rest/api/content/7798799/history",
-                            "restrictions": "/rest/api/content/7798799/restriction/byOperation",
-                            "space": "/rest/api/space/TRIAL"
-                        },
-                        "_links": {
-                            "editui": "/pages/resumedraft.action?draftId=7798799",
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/7798799",
-                            "tinyui": "/x/DwB3",
-                            "webui": "/spaces/TRIAL/pages/7798799/Trial1212"
-                        },
-                        "extensions": {
-                            "position": 4059
-                        },
-                        "id": "7798799",
-                        "status": "current",
-                        "title": "Trial1212",
-                        "type": "page"
-                    }
-                ],
-                "childTypes": {
-                    "attachment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/attachment"
-                        },
-                        "value": false
-                    },
-                    "comment": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/comment"
-                        },
-                        "value": false
-                    },
-                    "page": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/child/page"
-                        },
-                        "value": false
-                    }
-                },
-                "container": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "extensions": {
-                    "position": 633071049
-                },
-                "history": {
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/history"
-                    },
-                    "createdBy": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "createdDate": "2021-08-19T10:09:37.066Z",
-                    "latest": true
-                },
-                "id": "8847372",
-                "space": {
-                    "_expandable": {
-                        "lookAndFeel": "/rest/api/settings/lookandfeel?spaceKey=TRIAL",
-                        "settings": "/rest/api/space/TRIAL/settings",
-                        "theme": "/rest/api/space/TRIAL/theme"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/space/TRIAL",
-                        "webui": "/spaces/TRIAL"
-                    },
-                    "id": 33012,
-                    "key": "TRIAL",
-                    "name": "Trial",
-                    "status": "current",
-                    "type": "global"
-                },
-                "status": "current",
-                "title": "Testing_XSOAR",
-                "type": "page",
-                "version": {
-                    "_expandable": {
-                        "content": "/rest/api/content/8847372"
-                    },
-                    "_links": {
-                        "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/content/8847372/version/1"
-                    },
-                    "by": {
-                        "_links": {
-                            "self": "https://xsoar-bd.atlassian.net/wiki/rest/api/user?accountId=5ff2e30b4d2179006ea18449"
-                        },
-                        "accountId": "5ff2e30b4d2179006ea18449",
-                        "accountType": "atlassian",
-                        "displayName": "John Doe",
-                        "email": "dummy.dummy@dummy.com",
-                        "isExternalCollaborator": false,
-                        "profilePicture": {
-                            "height": 48,
-                            "isDefault": false,
-                            "path": "/wiki/aa-avatar/5ff2e30b4d2179006ea18449",
-                            "width": 48
-                        },
-                        "publicName": "John Doe",
-                        "type": "known"
-                    },
-                    "confRev": "confluence$content$8847372.4",
-                    "contentTypeModified": false,
-                    "friendlyWhen": "Aug 19, 2021",
-                    "minorEdit": false,
-                    "number": 1,
-                    "syncRev": "0.confluence$content$8847372.2",
-                    "syncRevSource": "synchrony-ack",
-                    "when": "2021-08-19T10:09:37.066Z"
-                }
-            }
-        ],
-        "PageToken": {
-            "Content": {
-                "name": "confluence-cloud-content-search",
-                "next_token": "_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ=="
-            }
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### Content(s)
->
->|ID|Title|Type|Status|Space Name|Created By|Created At|Version|
->|---|---|---|---|---|---|---|---|
->| 8912897 | [Trial_1](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8912897/Trial_1) | page | current | Trial | John Doe | 2021-08-19T09:11:19.755Z | 3 |
->| 8847372 | [Testing_XSOAR](https://xsoar-bd.atlassian.net/wiki/spaces/TRIAL/pages/8847372/Testing_XSOAR) | page | current | Trial | John Doe | 2021-08-19T10:09:37.066Z | 3 |
->
-Run the command with argument next_page_token=_sa_WyJcdDg4NDczNzIgUU5aRTlIVzxbclZnSitSZXBSTU4gY3AiXQ== to see the next set of contents.
+| ConfluenceCloud.Content.id | String | The ID of the content. | 
+| ConfluenceCloud.Content.type | String | Type of the content. | 
+| ConfluenceCloud.Content.status | String | Status of the content. | 
+| ConfluenceCloud.Content.title | String | Title of the content. | 
+| ConfluenceCloud.Content.childTypes.attachment.value | Boolean | Whether the attachment has the given content. | 
+| ConfluenceCloud.Content.childTypes.attachment._links.self | String | Link to the attachment with the given content. | 
+| ConfluenceCloud.Content.childTypes.comment.value | Boolean | Whether a comment is associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.comment._links.self | String | Link to the comment associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.page.value | Boolean | Whether the page is associated with the given content. | 
+| ConfluenceCloud.Content.childTypes.page._links.self | String | Link to the page associated with the given content. | 
+| ConfluenceCloud.Content.space.id | Number | ID of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.key | String | Key of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.name | String | Name of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.type | String | Type of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space.status | String | Status of the space that the content is being created in. | 
+| ConfluenceCloud.Content.space._links.webui | String | Web user interface link to the space that the content is being created in. | 
+| ConfluenceCloud.Content.space._links.self | String | Link to the space that the content is being created in. | 
+| ConfluenceCloud.Content.history.latest | Boolean | Whether the content is the latest content. | 
+| ConfluenceCloud.Content.history.createdBy.type | String | Type of the user who created the content. | 
+| ConfluenceCloud.Content.history.createdBy.accountId | String | Account ID of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.accountType | String | Account type of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.email | String | Email of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.publicName | String | Public name of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.path | String | Profile picture path of the user creating the content. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.width | Number | Width in pixels of the profile picture of the user. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.height | Number | Height in pixels of the profile picture of the user. | 
+| ConfluenceCloud.Content.history.createdBy.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
+| ConfluenceCloud.Content.history.createdBy.displayName | String | Display name of the user who created the content. | 
+| ConfluenceCloud.Content.history.createdBy.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
+| ConfluenceCloud.Content.history.createdBy._links.self | String | Link to the creator of the content. | 
+| ConfluenceCloud.Content.history.createdDate | Date | Date and time, in ISO 8601 format, when the content was created. | 
+| ConfluenceCloud.Content.history._links.self | String | Link to the history of the content. | 
+| ConfluenceCloud.Content.version.by.type | String | Type of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.accountId | String | Account ID of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.accountType | String | Account type of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.email | String | Email of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.publicName | String | Public name of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.path | String | Profile picture path of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.width | Number | Width in pixels of the profile picture of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.height | Number | Height in pixels of the profile picture of the user who last updated the content. | 
+| ConfluenceCloud.Content.version.by.profilePicture.isDefault | Boolean | Whether the profile picture is the default profile picture. | 
+| ConfluenceCloud.Content.version.by.displayName | String | Display name of the user  who last updated the content. | 
+| ConfluenceCloud.Content.version.by.isExternalCollaborator | Boolean | Whether the user is an external collaborator. | 
+| ConfluenceCloud.Content.version.by._links.self | String | Link to the user who last updated the content. | 
+| ConfluenceCloud.Content.version.when | Date | Date and time, in ISO 8601 format, when the content was updated. | 
+| ConfluenceCloud.Content.version.friendlyWhen | String | Displays when the content was created. | 
+| ConfluenceCloud.Content.version.message | String | Message of the updated content. | 
+| ConfluenceCloud.Content.version.number | Number | Version number of the updated content. | 
+| ConfluenceCloud.Content.version.minorEdit | Boolean | Whether the edit was minor. | 
+| ConfluenceCloud.Content.version.confRev | String | The revision ID provided by Confluence to be used as a revision in Synchrony. | 
+| ConfluenceCloud.Content.version.contentTypeModified | Boolean | True if the content type is modified in the version. \(e.g., page to blog\). | 
+| ConfluenceCloud.Content.version._links.self | String | Link to the new version of the content. | 
+| ConfluenceCloud.Content.ancestors.id | String | ID of the parent page of the content. | 
+| ConfluenceCloud.Content.ancestors.type | String | Type of the parent page of the content. | 
+| ConfluenceCloud.Content.ancestors.status | String | Status of the parent page of the content. | 
+| ConfluenceCloud.Content.container.id | Number | ID of the container of the content. | 
+| ConfluenceCloud.Content.container.key | String | Key of the container of the content. | 
+| ConfluenceCloud.Content.container.name | String | Name of the container of the content. | 
+| ConfluenceCloud.Content.container.type | String | Type of the container of the content. | 
+| ConfluenceCloud.Content.container.status | String | Status of the container of the content. | 
+| ConfluenceCloud.Content.container._links.webui | String | Web user interface link to the container of the content. | 
+| ConfluenceCloud.Content.container._links.self | String | Link to the container of the content. | 
+| ConfluenceCloud.Content.body.storage.value | String | The body of the new content. | 
+| ConfluenceCloud.Content.body.storage.representation | String | Representation format of the content. | 
+| ConfluenceCloud.Content.extensions.position | Number | The content extension position. | 
+| ConfluenceCloud.Content._links.editui | String | Edit the user interface link of the content. | 
+| ConfluenceCloud.Content._links.webui | String | Web user interface link of the content. | 
+| ConfluenceCloud.Content._links.self | String | Link to the content. | 
+| ConfluenceCloud.Content._links.tinyui | String | Tiny link of the content. | 
+| ConfluenceCloud.PageToken.name | String | The command name. | 
+| ConfluenceCloud.PageToken.next_token | String | The next page token. | 
 
 ### confluence-cloud-user-list
 
@@ -4353,3 +4010,21 @@ Retrieves a list of events from the Atlassian Confluence Cloud instance.
     }
 }
 ```
+### confluence-cloud-content-get
+
+***
+Retrieves a Content Item by Content ID
+
+#### Base Command
+
+`confluence-cloud-content-get`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| content_id | The ID of the Content that should be retrived. | Required | 
+
+#### Context Output
+
+There is no context output for this command.
