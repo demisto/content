@@ -1,15 +1,17 @@
+import json
 import random
+import re
 import uuid
 
 import pytest
+import requests
 
-from CommonServerPython import *
 from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown import (
     create_comment,
     list_brands,
     create_takedown,
     download_attachment,
-    test_module,
+    connection_test_module,
     upload_attachment,
     get_modified_remote_data_command,
 )
@@ -22,7 +24,8 @@ TEST_URL = "https://test.com/api"
 @pytest.fixture
 def client() -> Client:
     return Client(
-        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False, proxy=False
+        base_url=TEST_URL, account_id="1234", access_key="HHHQW", secret_key="saddsadsajhhjksa", verify=False,
+        proxy=False
     )
 
 
@@ -121,7 +124,7 @@ def create_takedown_post(kwags):
 class ClientMock:
     def http_request_side_effect(self, method, url_suffix, params=None, **kwargs):
         if url_suffix == "/v1/test":
-            response = test_response()
+            response = get_response()
         elif re.match(f"/v1/takedowns/attachments/{UUID_REGEX}/download", url_suffix) and method == "GET":
             return download_attachment_get()
         elif re.match(f"/v1/takedowns/{UUID_REGEX}/attachments", url_suffix) and method == "POST":
@@ -159,7 +162,7 @@ def create_takedown_rate_limit():
     return response
 
 
-def test_response():
+def get_response():
     data = [
         {"message": "'accountId' is invalid"},
         {"api-key-valid": "accountId is invalid"},
@@ -202,7 +205,7 @@ def create_mocked_response(response, status_code: int = 200) -> requests.Respons
     return mocked_response
 
 
-def create_triage_item_events(num_of_events: int, start_event_num: int = 1) -> List[Dict]:
+def create_triage_item_events(num_of_events: int, start_event_num: int = 1):
     return [
         {
             "event-num": event_num,
@@ -243,7 +246,7 @@ def test_create_comment_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     takedown_id = "e796945e-943c-4b44-a5d2-4f897d04f81f"
-    res = create_comment(client, {"takedownId": takedown_id, "comment": "test comment"})
+    res = create_comment(client, {"takedown_id": takedown_id, "comment": "test comment"})
     assert len(res) is not None
     assert res["takedown-id"] == takedown_id
 
@@ -261,8 +264,9 @@ def test_create_takedown_command(mocker, client: Client):
     res = create_takedown(
         client,
         {
-            "brandId": "14718933-7fdf-484b-bd45-a873c8ac2fba",
+            "brand_id": "14718933-7fdf-484b-bd45-a873c8ac2fba",
             "type": "impersonation",
+            "portal_id": "bhdfs",
             "target": "https://www.digitalshadowsresearch13.com/adobe",
         },
     )
@@ -281,14 +285,15 @@ def test_download_attachment_command(mocker, client: Client):
 def test_upload_download_attachment_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
-    upload_attachment(client, {"fileId": "test_data/file-sample.pdf", "takedownId": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
+    upload_attachment(client,
+                      {"fileId": "test_data/file-sample.pdf", "takedownId": "14718933-7fdf-484b-bd45-a873c8ac2fba"})
 
 
 def test_test_module_command(mocker, client: Client):
     http_mocker = ClientMock()
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     for _ in range(20):
-        test_module(client)
+        connection_test_module(client)
 
 
 def load_test_data(json_path):
@@ -320,7 +325,8 @@ def test_create_takedown_command_ratelimit(mocker, client: Client):
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     try:
         create_takedown(
-            client, {"brandId": "rate_limit", "type": "impersonation", "target": "https://www.digitalshadowsresearch13.com/adobe"}
+            client, {"brandId": "rate_limit", "type": "impersonation",
+                     "target": "https://www.digitalshadowsresearch13.com/adobe"}
         )
     except Exception:
         pass

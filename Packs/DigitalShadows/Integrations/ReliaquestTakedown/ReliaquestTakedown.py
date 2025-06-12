@@ -27,7 +27,7 @@ class RQPollResult:
     takedown_data: Any
 
 
-def test_module(client):
+def connection_test_module(client):
     status, message = client.test_client()
     if status == 200:
         return "ok"
@@ -554,7 +554,7 @@ def main() -> None:
 
         if command == "test-module":
             # This is the call made when pressing the integration Test button.
-            return_results(test_module(rq_client))
+            return_results(connection_test_module(rq_client))
         elif command == "fetch-incidents":
             next_run, incidents = fetch_takedowns(fetchLimit, demisto.getLastRun(), rq_client)
             demisto.setLastRun(next_run)
