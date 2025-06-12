@@ -6829,10 +6829,7 @@ def generic_api_call_command(client: Client, method, url_suffix='', headers=None
     if retries is not None:
         retries = int(retries)
     if status_list_to_retry is not None:
-        if "," in status_list_to_retry:
-            status_list_to_retry = [int(x) for x in status_list_to_retry.split(",")]
-        else:
-            status_list_to_retry = [int(status_list_to_retry)]
+        status_list_to_retry = [int(x) for x in status_list_to_retry.split(",")]
     if backoff_factor is not None:
         backoff_factor = float(backoff_factor)
     if raise_on_redirect is not None:
