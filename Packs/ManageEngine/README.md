@@ -1,2 +1,1 @@
 ManageEngine Endpoint Central is a Unified Endpoint Management solution that helps in managing thousands of servers, desktops, laptops and mobile devices from a single console.
-This integration collects events from the ManageEngine API.

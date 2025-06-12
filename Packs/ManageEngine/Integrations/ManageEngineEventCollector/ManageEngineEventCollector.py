@@ -261,7 +261,6 @@ def fetch_events(
     add_time_to_events(events)
     demisto.debug(f"Fetched {len(events)} events.")
     max_timestamp = int(events[-1]["eventTime"] if events else now_ts) + 1
-    demisto.debug(f"Max timestamp {max_timestamp - 1}")
     last_run = {"last_time": f"{max_timestamp}"}
     return last_run, events
 
@@ -298,7 +297,7 @@ def main() -> None:  # pragma: no cover
     client_code = params.get("client_code", {}).get("password")
     verify = not params.get("insecure", False)
     proxy = params.get("proxy", False)
-    max_events = int(params.get("max_audit_events", 25000))
+    max_events = int(params.get("max_audit_events", DEFAULT_MAX_FETCH))
 
     demisto.debug(f"Command being called is {command}")
     try:
