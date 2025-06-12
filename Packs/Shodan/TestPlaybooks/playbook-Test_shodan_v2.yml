@@ -1,6 +1,6 @@
-id: Test-Shodan_v2
+id: Test-Shodan_v21
 version: -1
-name: Test-Shodan_v2
+name: Test-Shodan_v21
 starttaskid: "0"
 tasks:
   "0":
@@ -87,6 +87,10 @@ tasks:
       expires: {}
       ip:
         simple: 1.1.1.1
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -115,6 +119,11 @@ tasks:
     nexttasks:
       '#none#':
       - "27"
+    scriptarguments:
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -146,6 +155,10 @@ tasks:
     scriptarguments:
       alertID:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -204,6 +217,10 @@ tasks:
         simple: any
       alertID:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -237,6 +254,10 @@ tasks:
         simple: ${Shodan.Alert.ID}
       alertId:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
       service:
         simple: 1.1.1.1:80
       trigger:
@@ -274,6 +295,10 @@ tasks:
         simple: ${Shodan.Alert.ID}
       alertId:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
       service:
         simple: 1.1.1.1:80
       trigger:
@@ -311,6 +336,10 @@ tasks:
         simple: any
       alertID:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -342,6 +371,10 @@ tasks:
     scriptarguments:
       alertID:
         simple: ${Shodan.Alert.ID}
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -374,6 +407,10 @@ tasks:
     scriptarguments:
       ip:
         simple: 8.8.8.8
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -446,6 +483,10 @@ tasks:
       page: {}
       query:
         simple: country:HK product:Apache
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -477,6 +518,10 @@ tasks:
     scriptarguments:
       query:
         simple: country:HK product:Apache
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
@@ -975,6 +1020,10 @@ tasks:
     scriptarguments:
       ip:
         simple: 63.128.21.124
+      retry-count:
+        simple: "3"
+      retry-interval:
+        simple: "60"
     separatecontext: false
     view: |-
       {
