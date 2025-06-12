@@ -1713,7 +1713,7 @@ script:
       - activate
       - deactivate
     description: Activate/Deactivate the latest version of a DataStream.
-    name: akamai-activate-datastream
+    name: akamai-toggle-datastream
     outputs:
     - contextPath: Akamai.DataStream.Activation
       description: Akamai DataStream Activation.
