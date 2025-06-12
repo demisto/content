@@ -162,8 +162,7 @@ class AzureClient:
         # print(response)
        
         if self.headers:
-            self.headers |= x_caller_id
-            print(self.headers)
+            self.headers |= {"x-caller-id": get_x_caller_id()}
             return self.base_client._http_request(  # type: ignore[misc]
                 method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
                 headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404), proxies=proxies
@@ -1734,106 +1733,106 @@ def check_all_permissions(role_permissions: list, api_permissions: list) -> list
     return missing_permissions
     
 
-def test_module(client: AzureClient, token: str = None) -> str:
-    """Tests API connectivity and authentication'
-    Returning 'ok' indicates that the integration works like it is supposed to.
-    Connection to the service is successful.
-    Raises exceptions if something goes wrong.
-    :type AzureClient: ``Client``
-    :param Client: client to use
-    :return: 'ok' if test passed.
-    :rtype: ``str``
-    """
-    access_token = token if token else client.ms_client.get_access_token()
-    decoded_token = get_token(access_token)
-    object_id = decoded_token.get("oid", "")
-    list_api_permissions = decoded_token.get("roles", [])
-    list_role_assignments = get_role_assignments(client, object_id)
-    list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+# def test_module(client: AzureClient, token: str = None) -> str:
+#     """Tests API connectivity and authentication'
+#     Returning 'ok' indicates that the integration works like it is supposed to.
+#     Connection to the service is successful.
+#     Raises exceptions if something goes wrong.
+#     :type AzureClient: ``Client``
+#     :param Client: client to use
+#     :return: 'ok' if test passed.
+#     :rtype: ``str``
+#     """
+#     access_token = token if token else client.ms_client.get_access_token()
+#     decoded_token = get_token(access_token)
+#     object_id = decoded_token.get("oid", "")
+#     list_api_permissions = decoded_token.get("roles", [])
+#     list_role_assignments = get_role_assignments(client, object_id)
+#     list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
     
-    missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
-    if not missing_permissions:
-        return "ok"
+#     missing_permissions = check_all_permissions(list_roles_permissions, list_api_permissions)
+#     if not missing_permissions:
+#         return "ok"
     
-    else:
-        raise Exception(
-            f"Missing the following permissions: {missing_permissions}."
-        )
+#     else:
+#         raise Exception(
+#             f"Missing the following permissions: {missing_permissions}."
+#         )
 
-def check_required_permissions(token, subscription_id, connector_id) -> str | HealthCheckResult:
-    decoded_token = get_token(token)
-    object_id = decoded_token.get("oid", "")
-    headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
-    client = AzureClient(subscription_id=subscription_id, headers=headers)
-    try:
-        list_role_assignments = get_role_assignments(client, object_id)
-        list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
-        missing_permissions = check_all_permissions(list_roles_permissions, [])
-    except Exception as e:
-            error_message = f"Failed to test permissions: {str(e)}"
-            if connector_id:
-                return HealthCheckResult.error(
-                    account_id=project_id,
-                    connector_id=connector_id,
-                    message="Failed to test permissions for Azure integration",
-                    error=error_message,
-                    error_type=ErrorType.PERMISSION_ERROR,
-                )
+# def check_required_permissions(token, subscription_id, connector_id) -> str:
+#     decoded_token = get_token(token)
+#     object_id = decoded_token.get("oid", "")
+#     headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
+#     client = AzureClient(subscription_id=subscription_id, headers=headers)
+#     try:
+#         list_role_assignments = get_role_assignments(client, object_id)
+#         list_roles_permissions = get_role_definitions_permissions(client, list_role_assignments)
+#         missing_permissions = check_all_permissions(list_roles_permissions, [])
+#     except Exception as e:
+#             error_message = f"Failed to test permissions: {str(e)}"
+#             if connector_id:
+#                 # return HealthCheckResult.error(
+#                 #     account_id=project_id,
+#                 #     connector_id=connector_id,
+#                 #     message="Failed to test permissions for Azure integration",
+#                 #     error=error_message,
+#                 #     error_type=ErrorType.PERMISSION_ERROR,
+#                 # )
 
-            raise DemistoException(error_message)
+#             raise DemistoException(error_message)
     
-    if missing_permissions:
-        error_message = "Missing permissions:\n" + "\n".join(missing_permissions)
+#     if missing_permissions:
+#         error_message = "Missing permissions:\n" + "\n".join(missing_permissions)
         
-        if connector_id:
-            return HealthCheckResult.error(
-                account_id=project_id,
-                connector_id=connector_id,
-                message="Missing required permissions for GCP integration",
-                error=error_message,
-                error_type=ErrorType.PERMISSION_ERROR,
-            )
+#         if connector_id:
+#             # return HealthCheckResult.error(
+#             #     account_id=project_id,
+#             #     connector_id=connector_id,
+#             #     message="Missing required permissions for GCP integration",
+#             #     error=error_message,
+#             #     error_type=ErrorType.PERMISSION_ERROR,
+#             # )
 
-        raise DemistoException(error_message)
+#         raise DemistoException(error_message)
 
-    return "ok" if not connector_id else HealthCheckResult.ok()
+#     # return "ok" if not connector_id else HealthCheckResult.ok()
     
 
-def health_check(subscription_id: str, connector_id: str) -> str | HealthCheckResult:
-    if not subscription_id:
-        error_message = "Missing required parameter 'subscription_id'"
-        return HealthCheckResult.error(
-            account_id=project_id,
-            connector_id=connector_id,
-            message="Missing Subscription ID for Azure integration",
-            error=error_message,
-            error_type=ErrorType.INTERNAL_ERROR,
-        )
-    try:
-        credential_data = get_cloud_credentials(CloudTypes.AZURE.value, subscription_id)
-        token = credential_data.get("access_token")
-        if not token:
-            error_message = "Failed to retrieve Azure access token - token is missing from credentials"
-            return HealthCheckResult.error(
-                account_id=project_id,
-                connector_id=connector_id,
-                message="Failed to authenticate with Azure",
-                error=error_message,
-                error_type=ErrorType.CONNECTIVITY_ERROR,
-            )
-        return check_required_permissions(token, subscription_id, connector_id)
+# def health_check(subscription_id: str, connector_id: str) -> str:
+#     if not subscription_id:
+#         error_message = "Missing required parameter 'subscription_id'"
+#         # return HealthCheckResult.error(
+#         #     account_id=project_id,
+#         #     connector_id=connector_id,
+#         #     message="Missing Subscription ID for Azure integration",
+#         #     error=error_message,
+#         #     error_type=ErrorType.INTERNAL_ERROR,
+#         # )
+#     try:
+#         credential_data = get_cloud_credentials(CloudTypes.AZURE.value, subscription_id)
+#         token = credential_data.get("access_token")
+#         if not token:
+#             error_message = "Failed to retrieve Azure access token - token is missing from credentials"
+#             # return HealthCheckResult.error(
+#             #     account_id=project_id,
+#             #     connector_id=connector_id,
+#             #     message="Failed to authenticate with Azure",
+#             #     error=error_message,
+#             #     error_type=ErrorType.CONNECTIVITY_ERROR,
+#             # )
+#         return check_required_permissions(token, subscription_id, connector_id)
     
-    except Exception as e:
-        error_message = str(e)
-        return HealthCheckResult.error(
-            account_id=project_id,
-            connector_id=connector_id,
-            message="Failed to connect to Azure",
-            error=error_message,
-            error_type=ErrorType.CONNECTIVITY_ERROR,
-        )
+#     except Exception as e:
+#         error_message = str(e)
+#         # return HealthCheckResult.error(
+#         #     account_id=project_id,
+#         #     connector_id=connector_id,
+#         #     message="Failed to connect to Azure",
+#         #     error=error_message,
+#         #     error_type=ErrorType.CONNECTIVITY_ERROR,
+#         # )
 
-        raise DemistoException(error_message)
+#         raise DemistoException(error_message)
             
             
 
@@ -1908,11 +1907,11 @@ def main():
             "azure-remove-member-from-role": remove_member_from_role,
             "azure-remove-member-from-group": remove_member_from_group_command,
         }
-        if command == "test-module" and connector_id:
-            return_results(run_permissions_check_for_accounts(connector_id, health_check))
-        elif command == "test-module":
-            return_results(test_module(client, token))
-        elif command in commands_with_params_and_args:
+        # if command == "test-module" and connector_id:
+        #     return_results(run_permissions_check_for_accounts(connector_id, health_check))
+        # elif command == "test-module":
+        #     return_results(test_module(client, token))
+        if command in commands_with_params_and_args:
             return_results(commands_with_params_and_args[command](client=client, params=params, args=args))
         elif command in commands_with_args:
             return_results(commands_with_args[command](client=client, args=args))
