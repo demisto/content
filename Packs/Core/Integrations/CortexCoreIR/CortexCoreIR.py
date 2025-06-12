@@ -90,19 +90,17 @@ class Client(CoreClient):
     def block_ip_request(self, endpoint_id: str, ip_list: list[str], duration: int) -> dict[str, str]:
         demisto.debug("Block ip function")
         results = {}
-        payload = {
-            "request_data": {
-                "endpoint_id": endpoint_id,
-                "direction": "both",
-                "duration": duration,
-                "addresses": ip_list,  # list of one or many IPs
-            }
-        }
         for ip_address in ip_list:
-            payload["request_data"]["addresses"] = [ip_address]
-            demisto.debug(f"Request params: {payload}")
             response = self._http_request(
-                method="POST", headers=self._headers, url_suffix="/endpoints/block_ip", json_data=payload
+                method="POST",
+                headers=self._headers,
+                url_suffix="/endpoints/block_ip",
+                json_data={
+                    "addresses": [ip_address],
+                    "endpoint_id": endpoint_id,
+                    "direction": "both",
+                    "duration": duration,
+                },
             )
             demisto.debug(f"Response: {response}")
             results[ip_address] = response.get("reply", {}).get("group_action_id", "")
