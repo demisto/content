@@ -11,7 +11,7 @@
         ],
         "FileEnrichment": [
             {
-                "Source": "WildFire-v2",
+                "Brand": "WildFire-v2",
                 "Score": 3,
                 "Verdict": 1,
                 "VerdictDescription": "malware",

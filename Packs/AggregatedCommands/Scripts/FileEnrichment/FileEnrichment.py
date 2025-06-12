@@ -79,7 +79,7 @@ DBOT_SCORE_TO_VERDICT = {
 class ContextPaths(Enum):
     FILE_ENRICHMENT = (
         "FileEnrichment("
-        "val.Source && val.Source == obj.Source && ("
+        "val.Brand && val.Brand == obj.Brand && ("
         "val.MD5 && val.MD5 == obj.MD5 || "
         "val.SHA1 && val.SHA1 == obj.SHA1 || "
         "val.SHA256 && val.SHA256 == obj.SHA256 || "
@@ -434,7 +434,7 @@ def execute_file_reputation(command: Command) -> tuple[dict[str, list], list[Com
         if files_context := get_from_context(context_item, ContextPaths.FILE):
             for file_context in files_context:
                 dbot_score = find_matching_dbot_score(dbot_scores, file_context)
-                file_context["Source"] = dbot_score.get("Vendor", "Unknown")
+                file_context["Brand"] = dbot_score.get("Vendor", "Unknown")
                 file_context["Score"] = dbot_score.get("Score", Common.DBotScore.NONE)
                 context_output["FileEnrichment"].append(file_context)
 
@@ -469,7 +469,7 @@ def execute_wildfire_verdict(command: Command) -> tuple[dict[str, list], list[Co
             for wild_fire_verdict_context in wild_fire_verdicts_context:
                 dbot_score = find_matching_dbot_score(dbot_scores, wild_fire_verdict_context)
                 file_context = assign_params(
-                    Source=Brands.WILDFIRE_V2.value,
+                    Brand=Brands.WILDFIRE_V2.value,
                     Score=dbot_score.get("Score", Common.DBotScore.NONE),
                     Verdict=wild_fire_verdict_context.pop("Verdict", None),
                     VerdictDescription=wild_fire_verdict_context.pop("VerdictDescription", None),
@@ -508,7 +508,7 @@ def execute_ir_hash_analytics(command: Command) -> tuple[dict[str, list], list[C
         if hashes_analytics_context := get_from_context(context_item, ContextPaths.CORE_IR_HASH_ANALYTICS):
             for hash_analytics_context in hashes_analytics_context:
                 file_context = assign_params(
-                    Source=Brands.CORE_IR.value,
+                    Brand=Brands.CORE_IR.value,
                     SHA256=hash_analytics_context.get("sha256"),
                     GlobalPrevalence=demisto.get(hash_analytics_context, "data.global_prevalence.value"),
                     LocalPrevalence=demisto.get(hash_analytics_context, "data.local_prevalence.value"),
@@ -611,7 +611,7 @@ def search_file_indicator(
 
         # Prepare context output
         if file_context := get_file_from_ioc_custom_fields(ioc_custom_fields):
-            file_context["Source"] = Brands.TIM.value
+            file_context["Brand"] = Brands.TIM.value
             file_context["Score"] = ioc.get("score", Common.DBotScore.NONE)
             context_output["FileEnrichment"].append(file_context)
 
@@ -745,15 +745,15 @@ def summarize_command_results(
             summary["Status"] = "Done" if file_context_for_hash else "Not Found"
             summary["Result"] = result
             tim_score = next(
-                iter(context.get("Score") for context in file_context_for_hash if context.get("Source") == Brands.TIM.value),
+                iter(context.get("Score") for context in file_context_for_hash if context.get("Brand") == Brands.TIM.value),
                 Common.DBotScore.NONE,
             )
             summary["TIM Verdict"] = DBOT_SCORE_TO_VERDICT.get(tim_score, "Unknown")
 
             if file_context_for_hash:
-                sources = {file_context.get("Source") for file_context in file_context_for_hash}
-                summary["Message"] = f"Found data on file from {len(sources)} sources."
-                summary["Sources"] = ", ".join(sorted(sources))
+                brands = {file_context.get("Brand") for file_context in file_context_for_hash}
+                summary["Message"] = f"Found data on file from {len(brands)} brands."
+                summary["Brands"] = ", ".join(sorted(brands))
             else:
                 summary["Message"] = "Could not find data on file."
                 if external_enrichment is False:
@@ -788,7 +788,7 @@ def warn_about_invalid_args(
         warnings["Skipped Hashes"] = ", ".join(invalid_hashes)
 
     if skipped_brands := (set(enrichment_brands) - set(executed_brands)):
-        warnings["Skipped Source Brands"] = ", ".join(skipped_brands)
+        warnings["Skipped Brands"] = ", ".join(skipped_brands)
 
     if not warnings:
         return None
@@ -878,7 +878,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
         command_results.extend(verbose_command_results)
 
         executed_brands = [
-            file_context.get("Source")
+            file_context.get("Brand")
             for file_context in summary_command_results.outputs.get(ContextPaths.FILE_ENRICHMENT.value, [])  # type: ignore [attr-defined]
         ]
         # Warn about partially invalid `file_hash` and `enrichment_brands` argument values

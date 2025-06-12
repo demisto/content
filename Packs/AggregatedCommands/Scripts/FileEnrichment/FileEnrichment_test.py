@@ -500,8 +500,8 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
 
     mock_table_to_markdown = mocker.patch("FileEnrichment.tableToMarkdown")
 
-    file_reputation_context = {"SHA256": SHA_256_HASH, "VTVendors": [], "Source": "VirusTotal (API v3)"}
-    wildfire_report_context = {"SHA256": SHA_256_HASH, "WFReport": "Success", "Source": str(Brands.WILDFIRE_V2)}
+    file_reputation_context = {"SHA256": SHA_256_HASH, "VTVendors": [], "Brand": "VirusTotal (API v3)"}
+    wildfire_report_context = {"SHA256": SHA_256_HASH, "WFReport": "Success", "Brand": str(Brands.WILDFIRE_V2)}
 
     per_command_context = {
         "file": {"FileEnrichment": [file_reputation_context]},
@@ -523,8 +523,8 @@ def test_summarize_command_results_successful_commands(mocker: MockerFixture):
             "File": SHA_256_HASH,
             "Status": "Done",  # Got "File" context from two commands
             "Result": "Success",  # No error entries in command results
-            "Message": "Found data on file from 2 sources.",
-            "Sources": f"VirusTotal (API v3), {Brands.WILDFIRE_V2}",
+            "Message": "Found data on file from 2 brands.",
+            "Brands": f"VirusTotal (API v3), {Brands.WILDFIRE_V2}",
             "TIM Verdict": "Unknown",
         }
     ]

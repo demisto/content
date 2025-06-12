@@ -32,7 +32,7 @@ This script gathers file reputation data from multiple integrations and returns 
 | DBotScore.Reliability | The reliability level of the score, for example, "C - Fairly Reliable". | String |
 | DBotScore.Type | The type of the indicator. | String |
 | DBotScore.Vendor | The vendor \(source brand\) that provided the score. | String |
-| FileEnrichment.Source | The enrichment vendor \(source brand\). | String |
+| FileEnrichment.Brand | The enrichment vendor \(source brand\). | String |
 | FileEnrichment.Score | The risk score associated with the file. | Number |
 | FileEnrichment.Name | The name of the file including its extension. | String |
 | FileEnrichment.EntryID | The identifier used to locate the file in the Incident War Room. | String |

@@ -15,7 +15,7 @@
             "Vendor": "WildFire-v2"
         }
     ],
-    "FileEnrichment(val.Source && val.Source == obj.Source && (val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512))": [
+    "FileEnrichment(val.Brand && val.Brand == obj.Brand && (val.MD5 && val.MD5 == obj.MD5 || val.SHA1 && val.SHA1 == obj.SHA1 || val.SHA256 && val.SHA256 == obj.SHA256 || val.SHA512 && val.SHA512 == obj.SHA512))": [
         {
             "Extension": "ZIP",
             "Type": "application/zip",
@@ -31,7 +31,7 @@
                 "detect-debug-environment",
                 "checks-hostname"
             ],
-            "Source": "TIM",
+            "Brand": "TIM",
             "Score": 3
         },
         {
@@ -87,11 +87,11 @@
                     "AVG"
                 ]
             },
-            "Source": "VirusTotal (API v3)",
+            "Brand": "VirusTotal (API v3)",
             "Score": 3
         },
         {
-            "Source": "WildFire-v2",
+            "Brand": "WildFire-v2",
             "Score": 3,
             "Verdict": 1,
             "VerdictDescription": "malware",
@@ -103,7 +103,7 @@
             }
         },
         {
-            "Source": "Cortex Core - IR",
+            "Brand": "Cortex Core - IR",
             "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
             "GlobalPrevalence": 0,
             "LocalPrevalence": 0.058823529411764705,

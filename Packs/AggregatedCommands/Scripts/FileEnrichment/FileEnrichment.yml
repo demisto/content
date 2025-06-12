@@ -50,7 +50,7 @@ outputs:
   - contextPath: DBotScore.Vendor
     description: The vendor (source brand) that provided the score.
     type: String
-  - contextPath: FileEnrichment.Source
+  - contextPath: FileEnrichment.Brand
     description: The enrichment vendor (source brand).
     type: String
   - contextPath: FileEnrichment.Score

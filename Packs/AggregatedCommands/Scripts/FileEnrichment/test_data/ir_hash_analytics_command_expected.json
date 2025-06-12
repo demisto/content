@@ -2,7 +2,7 @@
     "Context": {
         "FileEnrichment": [
             {
-                "Source": "Cortex Core - IR",
+                "Brand": "Cortex Core - IR",
                 "SHA256": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                 "GlobalPrevalence": 0,
                 "LocalPrevalence": 0.058823529411764705,
