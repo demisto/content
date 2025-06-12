@@ -149,8 +149,7 @@ class AzureClient:
         params = params or {}
         if not params.get("api-version"):
             params["api-version"] = API_VERSION
-            
-        # proxies = {'https': }
+ 
         proxies = {
             "http": "10.181.0.100:11117",
             "https": "10.181.0.100:11117"
