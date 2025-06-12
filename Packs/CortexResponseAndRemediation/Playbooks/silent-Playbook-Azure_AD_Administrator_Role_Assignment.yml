@@ -1,7 +1,7 @@
 id: silent-Azure AD Administrator Role Assignment
 version: -1
 name: silent-Azure AD Administrator Role Assignment
-description: "### This playbook addresses the following alert:\n- Suspicious Azure AD Administrator Role assignment\n- Identity assigned an Azure AD Administrator Role by an Application\n\n### Playbook Stages:\n\n#### Triage:\n- Gather additional information about the **assignor and assignee identities** involved in the admin role assignment, as well as **any anomalies** related to the alert.\n\n#### Investigation:\n- Assignor/Assignee Identities Analysis:\n  - Assess the **risk level** of the user in Cortex. \n  - Search for medium/high risk level **Azure Risk Detections and Defender Alerts** from the past day.\n  - Mark if the user is **new**.\n- Analyze the reputation of the assigning **IP address**.\n- Check for anomalies in **User Agent, ASN, and country**.\n\n#### Verdict:\n- If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.\n- If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.\n\n#### Remediation:\n- *Immediately* revoke the assignor's user sessions.\n- Remove the admin role assignment (*approval needed*).\n- Disable the assignor user and/or the assignee user (*approval needed*).\n\n### Requirements:\n- *For Investigation Steps:*\n  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.\n  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.\n  - `Microsoft Graph User` for retrieving user properties.\n- *For Remediation Steps:*\n  - `Microsoft Graph Identity and Access` for removing the admin role assignment.\n  - `Microsoft Graph User` for revoking user sessions and for disabling users."
+description: "### This playbook addresses the following alerts:\n- Suspicious Azure AD Administrator Role assignment\n- Identity assigned an Azure AD Administrator Role by an Application\n\n### Playbook Stages:\n\n#### Triage:\n- Gather additional information about the **assignor and assignee identities** involved in the admin role assignment, as well as **any anomalies** related to the alert.\n\n#### Investigation:\n- Assignor/Assignee Identities Analysis:\n  - Assess the **risk level** of the user in Cortex. \n  - Search for medium/high risk level **Azure Risk Detections and Defender Alerts** from the past day.\n  - Mark if the user is **new**.\n- Analyze the reputation of the assigning **IP address**.\n- Check for anomalies in **User Agent, ASN, and country**.\n\n#### Verdict:\n- If **either** the assignor and assignee identities are identical *OR* an application assigned the admin role for the first time from a rare IP, **AND** at least two evidence items were found.\n- If at least three evidence items include a mix of *global evidence with assignor-related evidence*, **OR** a mix of *global evidence with assignee-related evidence*.\n\n#### Remediation:\n- *Immediately* revoke the assignor's user sessions.\n- Remove the admin role assignment (*approval needed*).\n- Disable the assignor user and/or the assignee user (*approval needed*).\n\n### Requirements:\n- *For Investigation Steps:*\n  - `Azure Risky Users` or `MSGraph Identity and Access` for retrieving **Azure Risk Detections**.\n  - `Microsoft 365 Defender` for retrieving **Defender Alerts**.\n  - `Microsoft Graph User` for retrieving user properties.\n- *For Remediation Steps:*\n  - `Microsoft Graph Identity and Access` for removing the admin role assignment.\n  - `Microsoft Graph User` for revoking user sessions and for disabling users."
 tags:
 - T1098 - Account Manipulation
 - TA0003 - Persistence
@@ -421,7 +421,7 @@ tasks:
       id: 20669ea5-a807-4c54-b2f1-8567216f310b
       version: -1
       name: Check Assignor Type
-      description: If the **assignor's identity** is a *USER*, we can check all investigation steps for them. However, for *APPLICATION*, we are currently unable to retrieve their ID, so for *APPLICATION and other types*, we only check the **assignee's identity** (which is always a *USER*)
+      description: If the **assignor's identity** is a *USER*, check all investigation steps. However, for *APPLICATION*, you are unable to retrieve their IDs, so for *APPLICATION and other types*, you can only check the **assignee's identity** (which is always a *USER*)
       type: condition
       iscommand: false
       brand: ""
@@ -537,7 +537,7 @@ tasks:
       id: 2b46833e-c0b1-427e-aa50-a0a182819a01
       version: -1
       name: Save Assignee-Triggered Detections
-      description: where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
+      description: Where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -815,7 +815,7 @@ tasks:
       version: -1
       name: Get Defender Alerts
       description: |
-        The query retrieves alerts from **the past day** for **Investigation Users**, excluding those with **Info** severity
+        The query retrieves alerts from **the past day** for **Investigation Users**, excluding those with **Info** severity status.
       script: '|||microsoft-365-defender-advanced-hunting'
       type: regular
       iscommand: true
@@ -1169,7 +1169,7 @@ tasks:
       version: -1
       name: UA | ASN | Country
       description: |+
-        Check for anomalies in **User Agent, ASN, and country**. If two of these indicators are identified as new, they will be marked as **Evidence**
+        Check for anomalies in **User Agent, ASN, and country**. If two indicators are identified as new, they will be marked as **Evidence**.
         Note that **ASN and country** are more common indicators, while **User Agent** is relatively rare
 
       type: title
@@ -2085,7 +2085,7 @@ tasks:
       id: 6acab5cf-776d-44d1-8d6c-e7c2cd299f11
       version: -1
       name: Save Assignor-Triggered Detections
-      description: where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
+      description: Where the **risk state** is either *atRisk* or *confirmedCompromised* and the **risk level** is *medium* or *high*
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2510,7 +2510,7 @@ tasks:
       id: 80026f48-de41-4066-a2de-95c0182df4ad
       version: -1
       name: Check Assignor Type
-      description: If the **assignor's identity** is a *USER*, we can revoke their session and disable the user if necessary. However, for an *APPLICATION* identity, we cannot currently perform dedicated remediation steps
+      description: If the **assignor's identity** is a *USER*, you can revoke their session and disable the user if necessary. However, for an *APPLICATION* identity, you cannot perform dedicated remediation steps.
       type: condition
       iscommand: false
       brand: ""
