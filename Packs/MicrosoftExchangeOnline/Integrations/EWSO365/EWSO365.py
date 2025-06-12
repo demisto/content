@@ -1597,7 +1597,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
     """
     log_memory()
     last_run = get_last_run(client, last_run)
-    demisto.debug(f"get_last_run: {last_run=}")
+    demisto.debug(f"[test] get_last_run: {last_run=}")
     excluded_ids = set(last_run.get(LAST_RUN_IDS, []))
     try:
         last_emails = fetch_last_emails(
@@ -1611,7 +1611,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         incidents = []
         incident: dict[str, str] = {}
         emails_ids = []  # Used for mark emails as read
-        demisto.debug(f"{APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}")
+        demisto.debug(f"[test] {APP_NAME} - Started fetch with {len(last_emails)} at {last_run.get(LAST_RUN_TIME)}")
         current_fetch_ids = set()
 
         last_fetch_time = last_run.get(LAST_RUN_TIME)
@@ -1620,13 +1620,14 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.debug(f"[test] {last_fetch_time=}, {last_modification_time=}")
         if isinstance(last_modification_time, EWSDateTime):
             last_modification_time = last_modification_time.ewsformat()
-        demisto.debug(f"[test] {last_modification_time=}")
+            demisto.debug(f"[test] formatting {last_modification_time=}")
+
         for item in last_emails:
             try:
                 if item.message_id:
                     current_fetch_ids.add(item.message_id)
                     incident = parse_incident_from_item(item)
-                    demisto.debug("[test] appended incident")
+                    demisto.debug(f"[test] appended {incident=}")
                     incidents.append(incident)
 
                     if incident_filter == MODIFIED_FILTER:
@@ -1634,7 +1635,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         demisto.debug(f"[test] {item_modified_time=}")
                         if last_modification_time is None or last_modification_time < item_modified_time:
                             last_modification_time = item_modified_time
-                            demisto.debug(f"[test] #2 {last_modification_time=}")
+                            demisto.debug(f"[test] updating last modification time to be item modified time {last_modification_time=}")
 
                     if item.id and item.is_read is False:
                         emails_ids.append(item.id)
@@ -1644,7 +1645,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                         demisto.debug("[test] breaking, len of incidents >= max fetch")
                         break
                 else:
-                    demisto.debug("item with no message id")
+                    demisto.debug("[test] item with no message id")
             except Exception as e:
                 if not skip_unparsable_emails:  # default is to raise and exception and fail the command
                     raise
@@ -1654,10 +1655,10 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
                     "Encountered email parsing issue while fetching. "
                     f"Skipping item with message id: {item.message_id or '<error parsing message_id>'}"
                 )
-                demisto.debug(f"{error_msg}, Error: {e!s} {traceback.format_exc()}")
+                demisto.debug(f"[test] {error_msg}, Error: {e!s} {traceback.format_exc()}")
                 demisto.updateModuleHealth(error_msg, is_error=False)
 
-        demisto.debug(f"{APP_NAME} - ending fetch - got {len(incidents)} incidents.")
+        demisto.debug(f"[test] {APP_NAME} - ending fetch - got {len(incidents)} incidents.")
         demisto.debug(f"[test] {current_fetch_ids=}, {incidents=}")
         if incident_filter == MODIFIED_FILTER:
             last_incident_run_time = last_modification_time
@@ -1675,7 +1676,7 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             demisto.debug(f"[test] format time {last_fetch_time=}")
 
         demisto.debug(
-            f"#### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)})."
+            f"[test] #### last_incident_time: {last_incident_run_time}({type(last_incident_run_time)})."
             f"last_fetch_time: {last_fetch_time}({type(last_fetch_time)}) ####"
         )
 
@@ -1697,11 +1698,11 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
             ERROR_COUNTER: 0,
         }
 
-        demisto.debug(f"Set last run to: {new_last_run=}")
+        demisto.debug(f"[test] Set last run to: {new_last_run=}")
         demisto.setLastRun(new_last_run)
 
         if client.mark_as_read:
-            demisto.debug("[test] calling mark item as read")
+            demisto.debug(f"[test] calling mark item as read with {emails_ids=}")
             mark_item_as_read(client, emails_ids)
 
         return incidents
@@ -1731,8 +1732,7 @@ def fetch_last_emails(
     :return: list of exchangelib.Items
     """
     qs = client.get_folder_by_path(folder_name, is_public=client.is_public_folder)
-    demisto.debug(f"Finished getting the folder named {folder_name} by path")
-    demisto.debug(f"[test] {qs=}")
+    demisto.debug(f"[test] Finished getting the folder named {folder_name} by path")
     log_memory()
     if since_datetime:
         if incident_filter == MODIFIED_FILTER:
@@ -1747,26 +1747,34 @@ def fetch_last_emails(
         assert first_fetch_datetime is not None
         first_fetch_ews_datetime = EWSDateTime.from_datetime(first_fetch_datetime.replace(tzinfo=tz))
         qs = qs.filter(last_modified_time__gte=first_fetch_ews_datetime)
-        demisto.debug(f"{first_fetch_ews_datetime=}")
+        demisto.debug(f"[test] {first_fetch_ews_datetime=}")
+
+    for index, item in enumerate(qs):
+        demisto.debug(f"[test] {index} {item=}")
+
     qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
     qs = qs.filter().order_by("datetime_received")
-    demisto.debug(f"[test] second time {qs=}")
+
+    for index, item in enumerate(qs):
+        demisto.debug(f"[test] #2 {index} {item=}")
+
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
-    demisto.debug(f"{APP_NAME} - Exclude ID list: {exclude_ids}")
+    demisto.debug(f"[test] {APP_NAME} - Exclude ID list: {exclude_ids}")
     qs.chunk_size = min(client.max_fetch, 100)
     qs.page_size = min(client.max_fetch, 100)
-    demisto.debug("Before iterating on queryset")
-    demisto.debug(f"Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
+    demisto.debug("[test] Before iterating on queryset")
+    demisto.debug(f"[test] Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
     for item in qs:
-        demisto.debug("next iteration of the queryset in fetch-incidents")
+        demisto.debug(f"[test] next iteration of the queryset in fetch-incidents {item=}")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
+                demisto.debug("[test] breaking, len of result >= max fetch")
                 break
         else:
-            demisto.debug(f"message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}")
-    demisto.debug(f"{APP_NAME} - Got total of {len(result)} from ews query.")
+            demisto.debug(f"[test] message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}")
+    demisto.debug(f"[test] {APP_NAME} - Got total of {len(result)} from ews query.")
     demisto.debug(f"[test] {result=}")
     log_memory()
     return result
@@ -1811,7 +1819,7 @@ def sub_main():  # pragma: no cover
     is_test_module = False
     params = demisto.params()
     args = prepare_args(demisto.args())
-    demisto.debug(f"{params=}, {args=}")
+    demisto.debug(f"[test] {params=}, {args=}")
     # client's default_target_mailbox is the authorization source for the instance
     params["default_target_mailbox"] = args.get(
         "target_mailbox", args.get("source_mailbox", params.get("default_target_mailbox", ""))
@@ -1865,14 +1873,14 @@ def sub_main():  # pragma: no cover
             demisto.results(test_module(client, params.get("max_fetch")))
         elif command == "fetch-incidents":
             last_run = demisto.getLastRun()
-            demisto.debug(f"last run from demisto.getLastRun: {last_run}")
+            demisto.debug(f"[test] last run from demisto.getLastRun: {last_run}")
             incident_filter = params.get("incidentFilter", RECEIVED_FILTER)
             if incident_filter not in [RECEIVED_FILTER, MODIFIED_FILTER]:  # Ensure it's one of the allowed filter values
                 incident_filter = RECEIVED_FILTER  # or if not, force it to the default, RECEIVED_FILTER
             skip_unparsable_emails: bool = argToBoolean(params.get("skip_unparsable_emails", False))
-            demisto.debug(f"{incident_filter=}, {skip_unparsable_emails=}")
+            demisto.debug(f"[test] {incident_filter=}, {skip_unparsable_emails=}")
             incidents = fetch_emails_as_incidents(client, last_run, incident_filter, skip_unparsable_emails)
-            demisto.debug(f"Saving incidents with size {sys.getsizeof(incidents)}")
+            demisto.debug(f"[test] Saving incidents with size {sys.getsizeof(incidents)}, len:{len(incidents)}")
             demisto.incidents(incidents)
 
         elif command == "send-mail":
