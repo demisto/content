@@ -275,11 +275,16 @@ def fetch_incidents(
     if isinstance(retrieve_events_data, list):
         for event in retrieve_events_data:
             event_s_time = datetime.strptime(event.get('stime'), MSISAC_S_TIME_FORMAT)
+            event_id = event.get('event_id','')
+            event_description = event.get('description','')
             if event_s_time > fetch_time: # Make sure event happened after last fetch
                 events_to_fetch.append({
-                    'name': f"{event.get('event_id','')} - {event.get('description','')}",
+                    'name': f"{event_id} - {event_description}",
                     'occurred': event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
-                    'rawJSON': json.dumps(event)
+                    'rawJSON': json.dumps(event),
+                    # We are not using mirroring.
+                    # This will show ingested event numbers in fetch history modal.
+                    'dbotMirrorId': f'{event_id}'
                 })
                 if event_s_time > latest_event_s_time:
                     latest_event_s_time = event_s_time
