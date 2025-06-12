@@ -13,7 +13,7 @@ from Packs.DigitalShadows.Integrations.ReliaquestTakedown.ReliaquestTakedown imp
     download_attachment,
     connection_test_module,
     upload_attachment,
-    get_modified_remote_data_command,
+    get_modified_remote_data_command, get_remote_data_command,
 )
 from ReliaquestTakedown import Client
 
@@ -80,26 +80,30 @@ def create_brand_list():
     ]
 
 
-def create_takedown_get(limit):
-    return [
-        {
-            "id": str(uuid.uuid4()),
-            "created": "2025-03-11T14:38:07.450Z",
-            "updated": "2025-03-11T14:38:07.530Z",
-            "type": "malware",
-            "status": "submitted",
-            "brand": {
-                "id": "d5e868ec-bfc9-4744-8c0e-1d0c991c5085",
-                "name": "Reliaquest",
-                "domain-name": "www.rq.com",
-                "created": "2024-08-09T12:40:51.888Z",
-                "updated": "2024-08-09T12:40:51.888Z",
-                "status": "pending",
-            },
-            "targets": [{"id": "1b30e52a-f7f0-4cab-aeb5-ec3bfca270ae", "url": "hellotech.com"}],
-        }
-        for _ in range(limit)
-    ]
+def create_takedown_get(limit=None):
+    takedown_json = {
+        "id": str(uuid.uuid4()),
+        "created": "2025-03-11T14:38:07.450Z",
+        "updated": "2025-03-11T14:38:07.530Z",
+        "type": "malware",
+        "status": "submitted",
+        "brand": {
+            "id": "d5e868ec-bfc9-4744-8c0e-1d0c991c5085",
+            "name": "Reliaquest",
+            "domain-name": "www.rq.com",
+            "created": "2024-08-09T12:40:51.888Z",
+            "updated": "2024-08-09T12:40:51.888Z",
+            "status": "pending",
+        },
+        "targets": [{"id": "1b30e52a-f7f0-4cab-aeb5-ec3bfca270ae", "url": "hellotech.com"}],
+    }
+    if limit:
+        return [
+            takedown_json
+            for _ in range(limit)
+        ]
+    else:
+        return takedown_json
 
 
 def create_takedown_post(kwags):
@@ -128,6 +132,8 @@ class ClientMock:
         elif re.match(f"/v1/takedowns/attachments/{UUID_REGEX}/download", url_suffix) and method == "GET":
             return download_attachment_get()
         elif re.match(f"/v1/takedowns/{UUID_REGEX}/attachments", url_suffix) and method == "POST":
+            response = get_attachment()
+        elif re.match(f"/v1/takedowns/{UUID_REGEX}/attachments", url_suffix) and method == "GET":
             response = {}
         elif url_suffix == "/api/search/find":
             response = create_comments_post()
@@ -149,10 +155,22 @@ class ClientMock:
             return create_takedown_rate_limit()
         elif url_suffix == "/v1/takedowns" and method == "POST":
             response = create_takedown_post(kwargs["json_data"])
+        elif re.match(f"/v1/takedowns/{UUID_REGEX}", url_suffix) and method == "GET":
+            response = create_takedown_get()
         else:
             response = []
 
         return create_mocked_response(response)
+
+
+def get_attachment():
+    return {
+        "id": "ea0146a9-47f4-41a4-b81e-7eca557c727a",
+        "name": "constellation-brand.eml.msg",
+        "length": 738816,
+        "contentType": "application/octet-stream",
+        "created": "2024-10-04T20:48:23.620Z"
+    }
 
 
 def create_takedown_rate_limit():
@@ -318,6 +336,14 @@ def test_get_modified_remote_data(mocker, client: Client):
         "93a41e46-185b-4ed1-a9a2-1999234a6fb8",
         "1f1fe26c-b310-415d-9c02-6212a692cbd7",
     ]
+
+
+def test_get_remote_data_command(mocker, client: Client):
+    http_mocker = ClientMock()
+    mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
+    response = get_remote_data_command(client,
+                                       {"id": "1f1fe26c-b310-415d-9c02-6212a692cbd7", "lastUpdate": "2020-09-22"})
+    assert response.mirrored_object is not None
 
 
 def test_create_takedown_command_ratelimit(mocker, client: Client):

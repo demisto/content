@@ -1330,7 +1330,6 @@
 	},
 	"group": "incident",
 	"id": "Reliaquest Takedown Layout",
-	"fromVersion": "6.9.0",
 	"name": "Reliaquest Takedown Layout",
 	"system": false,
 	"version": -1
