@@ -252,7 +252,7 @@ def get_last_run_date():
     demisto.debug(f"[BigQuery Debug] last_date is: {last_date}")
 
     if last_date is None:
-        first_fetch_time = demisto.params().get("first_fetch", "1 days")
+        first_fetch_time = demisto.params().get("first_fetch_time", "1 days")
         first_fetch, _ = parse_date_range(first_fetch_time, date_format="%Y-%m-%d %H:%M:%S.%f")
         last_date = first_fetch
         demisto.debug(f"[BigQuery Debug] FIRST RUN - last_date is: {last_date}")
@@ -349,7 +349,7 @@ def remove_outdated_incident_ids(found_incidents_ids, latest_incident_time_str):
 
 def verify_params():
     params = demisto.params()
-    if not params.get("first_fetch"):
+    if not params.get("first_fetch_time"):
         return_error("Error: fetch start time must be supplied.")
     if not params.get("fetch_query"):
         return_error("Error: fetch query must be supplied.")
