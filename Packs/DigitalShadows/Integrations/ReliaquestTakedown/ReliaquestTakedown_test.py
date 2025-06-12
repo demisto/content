@@ -325,7 +325,7 @@ def test_create_takedown_command_ratelimit(mocker, client: Client):
     mocker.patch.object(client, "_http_request", side_effect=http_mocker.http_request_side_effect)
     try:
         create_takedown(
-            client, {"brandId": "rate_limit", "type": "impersonation",
+            client, {"brand_id": "rate_limit", "type": "impersonation",
                      "target": "https://www.digitalshadowsresearch13.com/adobe"}
         )
     except Exception:

@@ -1,5 +1,5 @@
 This is Reliaquest DRP Takedown integration. It enables xsoar user to create and manage takedowns.
-This integration was integrated and tested with version 6.9.0 of ReliaquestTakedown.
+This integration was integrated and tested with version xx of ReliaquestTakedown.
 
 This is the default integration for this content pack when configured by the Data Onboarder in Cortex XSIAM.
 
@@ -24,35 +24,35 @@ This is the default integration for this content pack when configured by the Dat
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### create-takedown
+### rq-takedown-create
 
 ***
 Create takedown command takes brand id, type, target and portal shortcode (optional) and returns the created takedown in response.
 
 #### Base Command
 
-`create-takedown`
+`rq-takedown-create`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| brandId | Brand Id. | Required | 
+| brand_id | Brand Id. | Required | 
 | type | Takedown Type. | Required | 
 | target | Target URL. | Required | 
-| portalId | Portal shortcode. | Optional | 
+| portal_id | Portal shortcode. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-### list-brand
+### rq-takedown-list-brand
 
 ***
 Returns list of allowed brand details for takedown.
 
 #### Base Command
 
-`list-brand`
+`rq-takedown-list-brand`
 
 #### Input
 
@@ -62,65 +62,65 @@ Returns list of allowed brand details for takedown.
 #### Context Output
 
 There is no context output for this command.
-### create-comment
+### rq-takedown-create-comment
 
 ***
 Create comment for a takedown.
 
 #### Base Command
 
-`create-comment`
+`rq-takedown-create-comment`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | comment | Comment for takedown. Default is Investigate the tekedown. | Required | 
-| takedownId | Takedown id. Default is UUID. | Required | 
+| takedown_id | Takedown id. Default is UUID. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-### upload-attachment
+### rq-takedown-upload-attachment
 
 ***
 Uploads attachment for takedown.
 
 #### Base Command
 
-`upload-attachment`
+`rq-takedown-upload-attachment`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| fileId | No description provided. | Required | 
-| takedownId | No description provided. | Required | 
+| file_id | No description provided. | Required | 
+| takedown_id | No description provided. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
-### download-attachment
+### rq-takedown-download-attachment
 
 ***
 Downloads attachment for takedown.
 
 #### Base Command
 
-`download-attachment`
+`rq-takedown-download-attachment`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| attachmentId | No description provided. | Required | 
+| attachment_id | No description provided. | Required | 
 
 #### Context Output
 
 There is no context output for this command.
 ## Incident Mirroring
 
-You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown corresponding events (available from Cortex XSOAR version 6.9.0).
+You can enable incident mirroring between Cortex XSOAR incidents and ReliaquestTakedown corresponding events (available from Cortex XSOAR version 6.0.0).
 To set up the mirroring:
 1. Enable *Fetching incidents* in your instance configuration.
 
