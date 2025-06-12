@@ -1,6 +1,6 @@
-id: Test-Shodan_v21
+id: Test-Shodan_v2
 version: -1
-name: Test-Shodan_v21
+name: Test-Shodan_v2
 starttaskid: "0"
 tasks:
   "0":
