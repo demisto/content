@@ -13,4 +13,3 @@ The playbooks in the pack are based on LogPoint SIEM data and help automate repe
 - Full incident control with the ability to update, resolve, and close incidents.
 - Automates coordinated actions and responses to save time on incident resolution.
 - Provides search commands to get logs from LogPoint devices and repos.
-

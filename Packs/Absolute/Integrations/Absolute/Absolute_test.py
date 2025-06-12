@@ -162,7 +162,7 @@ def test_prepare_request(mocker, absolute_client_v3):
     jwt_encode = mocker.patch.object(jwt, "encode", return_value="")
     absolute_client_v3.prepare_request("method", "url_suffix", "query_string", {})
 
-    assert jwt_encode.call_args.args == ({'data': {}}, "secret")
+    assert jwt_encode.call_args.args == ({"data": {}}, "secret")
     absolute_client_v3.prepare_request("method", "url_suffix", "query_string", {"test": "test"})
 
     assert jwt_encode.call_args.args == ({"data": {"test": "test"}}, "secret")

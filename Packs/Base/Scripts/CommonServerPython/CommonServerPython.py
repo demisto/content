@@ -1580,6 +1580,17 @@ def stringUnEscape(st):
     return st.replace('\\r', '\r').replace('\\n', '\n').replace('\\t', '\t')
 
 
+def doubleBackslashes(st):
+    """
+       Double any backslashes in the given string if it contains two backslashes.
+       :type st: ``str``
+       :param st: The string to be modified (required).
+       :return: A modified string with doubled backslashes.
+       :rtype: ``str``
+    """
+    return st.replace('\\', '\\\\')
+
+
 class IntegrationLogger(object):
     """
       a logger for python integrations:
@@ -1660,6 +1671,7 @@ class IntegrationLogger(object):
                 a = self.encode(a)
                 to_add.append(stringEscape(a))
                 to_add.append(stringUnEscape(a))
+                to_add.append(doubleBackslashes(a))
                 js = json.dumps(a)
                 if js.startswith('"'):
                     js = js[1:]
@@ -1988,7 +2000,8 @@ def argToBoolean(value):
 
 def appendContext(key, data, dedup=False):
     """
-       Append data to the investigation context
+       Append data to the investigation context.
+       Usable by scripts not integrations, since it uses setContext
 
        :type key: ``str``
        :param key: The context path (required)
@@ -8807,8 +8820,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT", "Basic" or "LOG" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic", "log"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -10704,7 +10717,7 @@ def set_last_mirror_run(last_mirror_run):  # type: (Dict[Any, Any]) -> None
                 raise TypeError("non-dictionary passed to set_last_mirror_run")
             demisto.debug(
                 "encountered JSONDecodeError from server during setLastMirrorRun. As long as the value passed can be converted to json, this error can be ignored.")
-            demisto.debug(e)
+            demisto.debug(str(e))
     else:
         raise DemistoException("You cannot use setLastMirrorRun as your version is below 6.6.0")
 
@@ -11189,7 +11202,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     :param name: The name of the command
 
     :type interval: ``int``
-    :param interval: How many seconds until the next run
+    :param interval: How many seconds until the next run. Recommended range: 30-60 seconds.
 
     :type timeout: ``int``
     :param timeout: How long
@@ -12604,6 +12617,43 @@ def content_profiler(func):
         return results.get("function_results")
 
     return profiler_wrapper
+
+
+def find_and_remove_sensitive_text(text, pattern):
+    r"""
+    Finds all appearances of sensitive information in a string using regex and adds the sensitive
+    information to the list of strings that should not appear in any logs.
+    The regex pattern can be used to search for a specific word, or a pattern such as a word after a given word.
+        Examples:
+    >>> text = "first secret is ID123 and the second secret is id321 and the token: ABC"
+    >>> pattern = r'(token:\s*)(\S+)'  # Capturing groups: (token:\s*) and (\S+)
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ABC
+    >>> pattern = r'\bid\w*\b'  # Match words starting with "id", case insensitive
+    >>> find_and_remove_sensitive_text(text, pattern)
+    Sensitive text added to be masked in the logs: ID123 and id321
+    :param text: The input text containing the sensitive information.
+    :type text: str
+    :param pattern: The regex pattern to match the sensitive information.
+    :type pattern: str
+    :return: None
+    :rtype: ``None``
+    """
+
+    sensitive_pattern = re.compile(pattern)
+    matches = sensitive_pattern.findall(text)
+    if not matches:
+        return
+
+    for match in matches:
+        # in case the regex serches for a group pattern
+        if isinstance(match, tuple):
+            sensitive_text = match[1]
+        else:
+            # in case the regex serches for a specific word
+            sensitive_text = match
+        add_sensitive_log_strs(sensitive_text)
+    return
 
 
 from DemistoClassApiModule import *  # type:ignore [no-redef]  # noqa:E402

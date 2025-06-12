@@ -6,7 +6,7 @@ from CommonServerPython import *  # noqa: F401
 
 def build_ews_query(demisto_args):
     # Regex for removing forward/replay prefixes
-    p = re.compile("([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$", re.IGNORECASE)
+    p = re.compile(r"([\[\(] *)?(RE|FWD?) *([-:;)\]][ :;\])-]*|$)|\]+ *$", re.IGNORECASE)
 
     args = {}
 

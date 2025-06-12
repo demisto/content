@@ -1,6 +1,7 @@
 This pack enables you to gain complete device visibility in-depth device visibility for your computing systems that are used to manage industrial operations.
 
 ## What does this pack do?
+
 - Retrieve information about the hosts, links, and alerts in the eyeInspect CC database.
 - Retrieve information about a specific vulnerability stored in the eyeInspect CC database.
 - Retrieve the PCAP file associated to a given alert.
