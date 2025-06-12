@@ -1425,24 +1425,6 @@ def add_tag(demisto_args: dict, is_attribute=False):
     )
 
 
-def validate_existing_tag(tag: str, response: dict[str, Any]) -> bool:
-    """_summary_
-
-    Args:
-        tag (str): _description_
-        response (dict): _description_
-
-    Returns:
-        bool: _description_
-    """
-    for attribute_tag in response.get("Attribute", [])[0].get("Tag", {}):
-        demisto.debug(f"Got tag {attribute_tag} in attribute")
-        if attribute_tag.get("name") == tag:
-            return True
-
-    return False
-
-
 def remove_tag(demisto_args: dict, is_attribute=False):
     """
     Function will remove tag to given UUID of event or attribute.
