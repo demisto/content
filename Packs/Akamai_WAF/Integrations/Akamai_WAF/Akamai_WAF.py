@@ -6792,16 +6792,16 @@ def generic_api_call_command(client: Client, method, url_suffix='', headers=None
         human readable (markdown format), entry context and raw response
     """
 
-    if headers is not None and not isinstance(headers, dict):
-        headers = json.loads(headers)
-    if params is not None and not isinstance(params, dict):
-        params = json.loads(params)
-    if data is not None and not isinstance(data, dict):
-        data = json.loads(data)
-    if json_data is not None and not isinstance(json_data, dict):
-        json_data = json.loads(json_data)
-    if files is not None and not isinstance(files, dict):
-        files = json.loads(files)
+    if headers is not None:
+        headers = safe_load_json(headers)
+    if params is not None:
+        params = safe_load_json(params)
+    if data is not None:
+        data = safe_load_json(data)
+    if json_data is not None:
+        json_data = safe_load_json(json_data)
+    if files is not None:
+        files = safe_load_json(files)
     if timeout is not None:
         if "," in timeout:
             timeout = tuple([float(x) for x in timeout.split(",")])
