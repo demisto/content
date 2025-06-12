@@ -116,6 +116,9 @@ script:
     outputs:
     - contextPath: ProofpointThreatProtection.Blocklist
       description: Standard HTTP response with status code 200.
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - auto: PREDEFINED
       predefined:
@@ -161,6 +164,9 @@ script:
     outputs:
     - contextPath: ProofpointThreatProtection.Safelist
       description: Standard HTTP response with status code 200.
+    compliantpolicies:
+    - Domain Blockage
+    - IP Blockage
   - arguments:
     - auto: PREDEFINED
       name: attribute

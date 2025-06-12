@@ -349,6 +349,8 @@ script:
     - contextPath: Code42.UsersAddedToWatchlists.Success
       description: If the user was added successfully.
       type: boolean
+    compliantpolicies:
+    - User Soft Remediation
   - name: code42-watchlists-remove-user
     description: Remove a user from a watchlist.
     arguments:
@@ -431,6 +433,8 @@ script:
     - contextPath: Code42.UpdatedUserRiskProfiles.Success
       description: If the risk profile update was successful.
       type: boolean
+    compliantpolicies:
+    - User Soft Remediation
   - name: code42-file-events-table
     description: Render Code42 file events from the context as a markdown table.
     arguments:

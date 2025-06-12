@@ -531,6 +531,8 @@ script:
     - contextPath: NetscoutAED.InboundBlacklistHostupdate_time
       description: The time that the host address was added to the list.
       type: Date
+    compliantpolicies:
+    - IP Blockage
   - arguments:
     - description: A single IPv4 or IPv6 host address or CIDR or a comma-separated list of host addresses or CIDRs.
       isArray: true
@@ -798,7 +800,7 @@ script:
       required: true
     description: Removes one or more hosts or CIDRs from the outbound allow list.
     name: na-ed-outbound-whitelisted-hosts-remove
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

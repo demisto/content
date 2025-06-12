@@ -394,6 +394,8 @@ script:
       type: String
     execution: true
     polling: true
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of machine IDs to be used to stop the isolation. e.g., 0a3250e0693a109f1affc9217be9459028aa8426,0a3250e0693a109f1affc9217be9459028aa8424.
       isArray: true
@@ -445,6 +447,8 @@ script:
       description: 'The type of the file identifier. Possible values: "SHA1" ,"SHA256", and "MD5".'
       type: String
     polling: true
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: A comma-separated list of computer DNS name.
       isArray: true
@@ -5743,7 +5747,7 @@ script:
     - description: The machine ID. Can be retrieved by running the 'microsoft-atp-get-machines' command.
       name: machine_id
       required: true
-    description: Get the specific machine's vulnerabilities
+    description: Get the specific machine's vulnerabilities.
     name: microsoft-atp-get-machine-vulnerabilities
     polling: true
     outputs:
@@ -5801,7 +5805,7 @@ script:
     - contextPath: MicrosoftATP.PublicVulnerability.UpdatedOn
       description: The date and time when this vulnerability was last updated.
       type: String
-  dockerimage: demisto/crypto:1.0.0.117163
+  dockerimage: demisto/crypto:1.0.0.3539024
   isfetch: true
   runonce: false
   script: '-'

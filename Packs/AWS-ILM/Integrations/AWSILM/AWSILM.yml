@@ -160,6 +160,8 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: A User Profile indicator.
       name: user-profile
@@ -235,6 +237,8 @@ script:
     - contextPath: IAM.Vendor.username
       description: The employee's username in the app.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - description: Retrieves a User Profile schema, which holds all of the user fields within the application. Used for outgoing-mapping through the Get Schema option.
     name: get-mapping-fields
   - name: iam-get-group
@@ -347,7 +351,7 @@ script:
       type: Unknown
     description: Permanently removes a group.
     execution: true
-  dockerimage: demisto/python3:3.11.10.116949
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3
