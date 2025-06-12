@@ -2296,7 +2296,7 @@ def update_detection_request(ids: list[str], status: str) -> dict:
     return resolve_detection(ids=ids, status=status, assigned_to_uuid=None, show_in_ui=None, comment=None, tag=None)
 
 
-def update_idp_or_mobile_detection_request(ids: list[str], status: str) -> dict:
+def update_request_for_multiple_detection_types(ids: list[str], status: str) -> dict:
     """
     Manage the status to send to update to for IDP/Mobile detections.
     :type ids: ``list``
@@ -2821,14 +2821,14 @@ def update_remote_system_command(args: dict[str, Any]) -> str:
                 result = update_remote_detection(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
                     demisto.debug(f"Detection updated successfully. Result: {result}")
-
-            elif incident_type == IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION:
-                result = update_remote_idp_or_mobile_detection(delta, parsed_args.inc_status, remote_incident_id)
+            
+            elif incident_type in (IncidentType.ENDPOINT_OR_IDP_OR_MOBILE_OR_OFP_DETECTION,
+                                   IncidentType.NGSIEM,
+                                   IncidentType.THIRD_PARTY):
+                # todo: check if this flow match to THIRD_PARTY and NGSIEM
+                result = update_remote_for_multiple_detection_types(delta, parsed_args.inc_status, remote_incident_id)
                 if result:
-                    demisto.debug(f"IDP/Mobile Detection updated successfully. Result: {result}")
-            # todo: add these conditions - mirror out
-            # elif incident_type == IncidentType.NGSIEM:
-            # elif incident_type == IncidentType.THIRD_PARTY:
+                    demisto.debug(f"IDP/Mobile/NGSIEM/Thirs Party Detection updated successfully. Result: {result}")
             else:
                 raise Exception(f"Executed update-remote-system command with undefined id: {remote_incident_id}")
 
@@ -2870,25 +2870,25 @@ def update_remote_detection(delta, inc_status: IncidentStatus, detection_id: str
     return ""
 
 
-def update_remote_idp_or_mobile_detection(delta, inc_status: IncidentStatus, detection_id: str) -> str:
+def update_remote_for_multiple_detection_types(delta, inc_status: IncidentStatus, detection_id: str) -> str:
     """
-    Sends the request the request to update the relevant IDP/Mobile detection entity.
+    Sends the request to update the relevant IDP/Mobile/NGSIEM/Third Party detection entity.
 
     :type delta: ``dict``
     :param delta: The modified fields.
     :type inc_status: ``IncidentStatus``
-    :param inc_status: The IDP/Mobile detection status.
+    :param inc_status: The IDP/Mobile/NGSIEM/Third Party detection status.
     :type detection_id: ``str``
-    :param detection_id: The IDP/Mobile detection ID to update.
+    :param detection_id: The IDP/Mobile/NGSIEM/Third Party detection ID to update.
     """
     if inc_status == IncidentStatus.DONE and close_in_cs_falcon(delta):
-        demisto.debug(f"Closing IDP/Mobile detection with remote ID {detection_id} in remote system.")
-        return str(update_idp_or_mobile_detection_request([detection_id], "closed"))
+        demisto.debug(f"Closing IDP/Mobile/NGSIEM/Third Party detection with remote ID {detection_id} in remote system.")
+        return str(update_request_for_multiple_detection_types([detection_id], "closed"))
 
     # status field in CS Falcon is mapped to State field in XSOAR
     elif "status" in delta:
         demisto.debug(f'Detection with remote ID {detection_id} status will change to "{delta.get("status")}" in remote system.')
-        return str(update_idp_or_mobile_detection_request([detection_id], delta.get("status")))
+        return str(update_request_for_multiple_detection_types([detection_id], delta.get("status")))
 
     return ""
 
@@ -2967,6 +2967,7 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         return mapping_response
 
     # Supported only in the new version (Raptor) and not in the legacy version
+    # todo: check if third-party and ngsiem should be here too
     detection_types = [
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon OFP Detection",
