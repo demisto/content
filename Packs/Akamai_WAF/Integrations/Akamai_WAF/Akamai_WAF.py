@@ -3217,22 +3217,6 @@ def try_parsing_date(date: str, arr_fmt: list):
     raise ValueError(f"The date you provided does not match the wanted format {arr_fmt}")
 
 
-def filter_empty_values(d):
-    """
-    Use a recursive function to filter out keys with empty values at all levels.
-    Args:
-        d: dictionary to be filtered
-    Returns:
-        A dictionary without empty list.
-    """
-    if isinstance(d, dict):
-        return {k: filter_empty_values(v) for k, v in d.items() if v not in ([], "", {})}
-    elif isinstance(d, list):
-        return [filter_empty_values(i) for i in d]
-    else:
-        return d
-
-
 """ COMMANDS """
 # Created by C.L.
 
