@@ -31,7 +31,7 @@ class Client(CoreClient):
 
 # COMMAND CONSTANTS
 
-BUILT_IN_QUERY_COMMANDS = {
+BUILT_IN_QUERY_COMMANDS = { 
     "xdr-xql-file-event-query": {
         "func": get_file_event_query,
         "name": "FileEvent",
