@@ -1,0 +1,21 @@
+{
+    "name": "SOCRadarTakedown",
+    "description": "",
+    "support": "community",
+    "currentVersion": "1.0.0",
+    "author": "Radargoger",
+    "url": "",
+    "email": "",
+    "created": "2025-06-09T19:19:21Z",
+    "categories": [],
+    "tags": [],
+    "useCases": [],
+    "keywords": [],
+    "marketplaces": [
+        "xsoar",
+        "marketplacev2"
+    ],
+    "githubUser": [
+        "Radargoger"
+    ]
+}
