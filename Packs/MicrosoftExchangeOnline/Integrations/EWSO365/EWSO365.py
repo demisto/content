@@ -1766,14 +1766,14 @@ def fetch_last_emails(
     demisto.debug("[test] Before iterating on queryset")
     demisto.debug(f"[test] Size of the queryset object in fetch-incidents: {sys.getsizeof(qs)}")
     for item in qs:
-        demisto.debug(f"[test] next iteration of the queryset in fetch-incidents {item=}")
+        demisto.debug(f"[test] next iteration of the queryset in fetch-incidents {item=}, {item.subject=}")
         if isinstance(item, Message) and item.message_id not in exclude_ids:
             result.append(item)
             if len(result) >= client.max_fetch:
                 demisto.debug("[test] breaking, len of result >= max fetch")
                 break
         else:
-            demisto.debug(f"[test] message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}")
+            demisto.debug(f"[test] message_id {item.message_id} was excluded. IsMessage: {isinstance(item, Message)}, {item.subject=}")
     demisto.debug(f"[test] {APP_NAME} - Got total of {len(result)} from ews query.")
     demisto.debug(f"[test] {result=}")
     log_memory()
