@@ -12159,7 +12159,7 @@ def parse_list_templates_response(entries):
         parse_pan_os_un_committed_data(entry, ["@admin", "@dirtyId", "@time"])
         name = entry.get("@name")
         description = entry.get("description")
-        variables = entry.get("variable", {}).get("entry", [])
+        variables = entry.get("variable" or {}).get("entry", [])
         context.append({"Name": name, "Description": description, "Variable": parse_template_variables(variables)})
         table.append({"Name": name, "Description": description, "Variable": extract_objects_info_by_key(variables, "@name")})
 
