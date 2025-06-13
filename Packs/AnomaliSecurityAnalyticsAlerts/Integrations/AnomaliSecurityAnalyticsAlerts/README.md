@@ -4,13 +4,21 @@ This integration was integrated and tested with version 1.0 of AnomaliSecurityAn
 ## Configure Anomali Security Analytics Alerts in Cortex
 
 
-| **Parameter** | **Required** |
-| --- | --- |
-| Server URL | True |
-| Username | True |
-| API Key | True |
-| Trust any certificate (not secure) | False |
-| Use system proxy settings | False |
+
+| **Parameter** | **Description** | **Required** |
+| --- | --- | --- |
+| Server URL |  | True |
+| Username |  | True |
+| API Key |  | True |
+| Trust any certificate (not secure) |  | False |
+| Use system proxy settings |  | False |
+| Fetch incidents |  | False |
+| Incident type |  | False |
+| Fetch query | Search query for fetching alerts. The default fetch query is "alert". | False |
+| Maximum incidents to fetch. | Maximum number of incidents per fetch. The default value is 200. | False |
+| First fetch time | First alert created date to fetch. e.g., "1 min ago","2 weeks ago","3 months ago" | False |
+| Incidents Fetch Interval |  | False |
+
 
 ## Commands
 
@@ -48,6 +56,44 @@ Create a new search job.
 |job_id|status|
 |---|---|
 | 7af7bc62c807446fa4bf7ad12dfbe64b | in progress |
+
+### anomali-security-analytics-search-job-status
+
+***
+Get the status of one or more search jobs.
+
+#### Base Command
+
+`anomali-security-analytics-search-job-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| job_id | Unique identifier assigned to a background process or job. | Required | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| AnomaliSecurityAnalytics.SearchJobStatus.job_id | String | Job ID of the search job. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.status | String | Current status of the search job. e.g. RUNNING, DONE. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.progress | Number | Indicates the search progress. Numeric float value between 0 and 1. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.scanned | Number | Number of records scanned by the search query. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.total | Number | Total number of records matched by the search query. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.start_time | Number | Start timestamp of the time interval of the search query, in UNIX timestamp milliseconds. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.end_time | Number | End timestamp of the time interval of the search query, in UNIX timestamp milliseconds. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.bucket_length | Number | Width of each histogram bin depending on the search duration. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.num_of_bucket | Number | Number of buckets in which you receive all the search results. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.is_aggregated | Boolean | Whether the search results are aggregated. | 
+| AnomaliSecurityAnalytics.SearchJobStatus.histogram_buckets | Array | Number of histogram buckets used to bucket the search result. | 
+
+#### Human Readable Output
+
+**Search Job Status**
+|job_id|status|progress|scanned|total|start_time|end_time|
+|---|---|---|---|---|---|---|
+| 7af7bc62c807446fa4bf7ad12dfbe64b | in progress | 0.5 | 100 | 100 | 1741867250299 | 1741867250299 |
 
 ### anomali-security-analytics-search-job-results
 
@@ -92,7 +138,7 @@ Get search job results.
 ### anomali-security-analytics-alert-update
 
 ***
-Update alert's comment or status.
+Update various fields of an alert including status, comment, assignee, severity, and owner.
 
 #### Base Command
 
@@ -103,17 +149,23 @@ Update alert's comment or status.
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | uuid | Universally unique identifier assigned to uniquely identify objects such as Jobs, Alerts, Observables, Threat model entities. You can find it in search job results command. | Required | 
-| comment | Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide either 'status' or 'comment' parameter. | Optional | 
-| status | Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide either 'status' or 'comment' parameter. | Optional | 
+| comment | Field for adding analyst notes or remarks to Match events, IOC submissions and Alert triage decisions. Please provide at least one field. | Optional | 
+| status | Current state of the observable in ThreatStream, e.g., active, inactive, falsepos. Please provide at least one field. | Optional | 
+| assignee | Assignee of the alert. Please provide at least one field. | Optional | 
+| owner | Owner of the alert. Please provide at least one field. | Optional | 
+| severity | Severity of the alert. Please provide at least one field. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | AnomaliSecurityAnalytics.UpdateAlert.message | String | Confirmation message returned after updating the alert status. | 
+| AnomaliSecurityAnalytics.UpdateAlert.uuid | String | The UUID of the updated alert. | 
+| AnomaliSecurityAnalytics.UpdateAlert.updated_fields | Dictionary | The fields that were updated in the alert. | 
 
 #### Human Readable Output
-**Update Alert Status**
-|message|
-|---|
-| Table (alert) was successfully updated. |
+
+**Update Alert**
+| message | uuid | updated_fields |
+| --- | --- | --- |
+| Updated alert successfully | 19e19eabd55e4b05a505fb64a803501d | {"comment": "test_update", "status": "test_update"} |
