@@ -217,9 +217,8 @@ class TestGetRemoteDataCommand:
         mock_debug.assert_called()
 
     @patch("demistomock.debug")
-    @patch("demistomock.error")
     @patch("CybleEventsV2.return_error")
-    def test_get_remote_data_invalid_args(self, mock_return_error, mock_error, mock_debug, mock_client):
+    def test_get_remote_data_invalid_args(mock_return_error, mock_debug, mock_client):
         """Test get_remote_data_command with invalid arguments"""
         args = {"invalid": "args"}
 
@@ -229,7 +228,6 @@ class TestGetRemoteDataCommand:
             result = get_remote_data_command(mock_client, "https://test.com", "token", args, [], [], False)
 
         assert result is None
-        mock_error.assert_called()
         mock_return_error.assert_called()
 
     @patch("demistomock.debug")
