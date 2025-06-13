@@ -11991,7 +11991,7 @@ def xsiam_api_call_with_retries(
         demisto.debug('Sending {data_type} into xsiam, attempt number {attempt_num}'.format(
             data_type=data_type, attempt_num=attempt_num))
         # in the last try we should raise an exception if any error occurred, including 429
-        ok_codes = (200, 429) if attempt_num < num_of_attempts else None
+        ok_codes = (200, 429, 502, 504) if attempt_num < num_of_attempts else None
         response = client._http_request(
             method='POST',
             full_url=urljoin(xsiam_url, '/logs/v1/xsiam'),
@@ -12003,7 +12003,7 @@ def xsiam_api_call_with_retries(
         )
         status_code = response.status_code
         demisto.debug('received status code: {status_code}'.format(status_code=status_code))
-        if status_code == 429:
+        if status_code in [429, 502, 504]:
             time.sleep(1)
         attempt_num += 1
     if is_json_response and response:
