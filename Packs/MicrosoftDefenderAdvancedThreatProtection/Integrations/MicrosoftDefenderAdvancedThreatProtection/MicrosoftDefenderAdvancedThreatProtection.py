@@ -3362,7 +3362,7 @@ def generate_login_url_command(client: MsClient):
     return generate_login_url(client.ms_client, MICROSOFT_DEFENDER_FOR_ENDPOINT_TOKEN_RETRIVAL_ENDPOINTS[client.endpoint_type])
 
 
-def download_file_after_successful_status(client, res):
+def download_file_after_successful_status(client, res, args):
     demisto.debug("post polling - download file")
     machine_action_id = res["id"]
 
@@ -5882,7 +5882,7 @@ def run_polling_command(
 
     # action was completed
     else:
-        return post_polling_process(client, command_result.outputs)
+        return post_polling_process(client, command_result.outputs, args)
 
 
 def get_live_response_result_command(client, args):
@@ -5964,7 +5964,7 @@ def run_live_response_script_action(client, args):
     return CommandResults(outputs_prefix="MicrosoftATP.LiveResponseAction", outputs={"action_id": res["id"]}, readable_output=md)
 
 
-def get_successfull_action_results_as_info(client, res):
+def get_successfull_action_results_as_info(client, res, args):
     machine_action_id = res["id"]
     file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)["value"]
 
@@ -5997,6 +5997,33 @@ def get_live_response_file_with_polling(client, args):
         get_file_get_successfull_action_results,
     )
 
+def sanitize_path_to_filename(path):
+    """
+    Converts a file path into a safe, flattened filename.
+    Replaces unsafe characters and separators to produce a portable filename.
+    """
+    # Replace path separators (both Windows '\' and Unix '/') with underscores
+    filename = path.replace("\\", "_").replace("/", "_")
+
+    # Remove control characters (ASCII < 32)
+    filename = ''.join(ch for ch in filename if ord(ch) >= 32)
+
+    # Replace characters generally invalid or problematic
+    filename = re.sub(r'[:*?"<>|]', '_', filename)
+
+    # Remove trailing spaces or periods
+    filename = filename.rstrip(' .')
+
+    # Prevent dangerous names
+    if filename in ('.', '..'):
+        filename = filename.replace('.', '_')
+
+    #Trim to a max length (e.g., 255 characters)
+    max_length = 255
+    filename = filename[:max_length]
+
+    return filename
+
 
 def get_live_response_file_action(client, args):
     machine_id = args["machine_id"]
@@ -6017,8 +6044,20 @@ def get_live_response_file_action(client, args):
     return CommandResults(outputs_prefix="MicrosoftATP.LiveResponseAction", outputs={"action_id": res["id"]}, readable_output=md)
 
 
-def get_file_get_successfull_action_results(client, res):
+def get_file_get_successfull_action_results(client, res, args):
     machine_action_id = res["id"]
+    result_filename = "Response Result"
+    preserve_filename = argToBoolean(args.pop("preserve_filename", False))
+
+    if preserve_filename:
+        try:
+            for command in res["commands"]:
+                if command.get('command').get('type') == "GetFile":
+                    for params in command.get('command').get('params'):
+                        if params.get('key') == "Path":
+                            result_filename = sanitize_path_to_filename(params.get('value'))
+        except Exception:
+            demisto.debug("Could not generate descriptive name for collected file")
 
     # get file link from action:
     file_link = client.get_live_response_result(machine_action_id, 0, overwrite_rate_limit_retry=True)["value"]
@@ -6035,7 +6074,7 @@ def get_file_get_successfull_action_results(client, res):
         "Commands": res.get("commands"),
     }
     return [
-        fileResult("Response Result.gz", f_data.content),
+        fileResult(f"{result_filename}.gz", f_data.content),
         CommandResults(
             outputs_prefix="MicrosoftATP.LiveResponseAction",
             outputs=res,
@@ -6075,7 +6114,7 @@ def put_live_response_file_action(client, args):
     return CommandResults(outputs_prefix="MicrosoftATP.LiveResponseAction", outputs={"action_id": res["id"]}, readable_output=md)
 
 
-def put_file_get_successful_action_results(client, res):
+def put_file_get_successful_action_results(client, res, args):
     md_results = {
         "Machine Action Id": res.get("id"),
         "MachineId": res.get("machineId"),

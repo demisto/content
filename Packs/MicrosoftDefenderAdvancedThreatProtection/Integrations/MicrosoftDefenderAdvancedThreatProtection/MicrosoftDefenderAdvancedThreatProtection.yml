@@ -4697,6 +4697,9 @@ script:
     - name: path
       description: File path to get from the device.
       required: true
+    - name: preserve_filename
+      description: Retain the original file path as the downloaded file's name when set to true.
+      defaultValue: 'false'
     - name: machine_action_id
       description: Action ID to retrieve status and data for.
       deprecated: true
