@@ -1,0 +1,76 @@
+{
+    "associatedToAll": false,
+    "associatedTypes": [
+        "Reliaquest Takedown Incident"
+    ],
+    "caseInsensitive": true,
+    "cliName": "dstakedownattachments",
+    "closeForm": false,
+    "columns": [
+        {
+            "displayName": "id",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "id",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "name",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "name",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        },
+        {
+            "displayName": "created",
+            "fieldCalcScript": "",
+            "isDefault": true,
+            "isReadOnly": false,
+            "key": "created",
+            "orgType": "shortText",
+            "required": false,
+            "script": "",
+            "selectValues": null,
+            "type": "shortText",
+            "width": 150
+        }
+    ],
+    "content": true,
+    "defaultRows": [
+        {},
+        {},
+        {}
+    ],
+    "fromVersion": "6.10.0",
+    "editForm": true,
+    "group": 0,
+    "hidden": false,
+    "id": "incident_dstakedownattachments",
+    "isReadOnly": false,
+    "locked": false,
+    "name": "DS Takedown Attachments",
+    "neverSetAsRequired": false,
+    "openEnded": false,
+    "ownerOnly": false,
+    "required": false,
+    "sla": 0,
+    "system": false,
+    "threshold": 72,
+    "type": "grid",
+    "unmapped": false,
+    "unsearchable": true,
+    "useAsKpi": false,
+    "version": -1
+}
