@@ -3899,13 +3899,13 @@ class TestHygieneFunctions:
             return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
         )
 
-        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="vulnerability")
         # Should return no results, as at least one vulnerability profile matches.
         assert len(result.result_data) == 0
 
         VulnerabilityProfile.refreshall = MagicMock(return_value=[mock_bad_vulnerability_profile()])
 
-        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="vulnerability")
         # Should return one issue, as no Vulnerability profile matches.
         assert len(result.result_data) == 1
 
@@ -3914,7 +3914,9 @@ class TestHygieneFunctions:
             return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
         )
 
-        result = HygieneLookups.check_vulnerability_profiles(mock_topology, return_nonconforming_profiles=True)
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="vulnerability", return_nonconforming_profiles=True
+        )
         assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=[])
@@ -3932,11 +3934,13 @@ class TestHygieneFunctions:
         AntiSpywareProfile.refreshall = MagicMock(return_value=[mock_good_spyware_profile(), mock_bad_spyware_profile()])
 
         # Check when at least one good profile exists - should return no results
-        result = HygieneLookups.check_spyware_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="spyware")
         assert not result.result_data
 
         # Check that when return_nonconforming_profiles is True we get back 3 sets of details
-        result = HygieneLookups.check_spyware_profiles(mock_topology, return_nonconforming_profiles=True)
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="spyware", return_nonconforming_profiles=True
+        )
         assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=[])
@@ -3954,21 +3958,23 @@ class TestHygieneFunctions:
         URLFilteringProfile.refreshall = MagicMock(return_value=[mock_good_url_filtering_profile()])
 
         # Check when a good profile exists - should return no results
-        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="url")
         assert not result.result_data
 
         # When there's only bad, should return a result
         URLFilteringProfile.refreshall = MagicMock(return_value=[mock_bad_url_filtering_profile()])
 
         # Check when a good profile exists - should return no results
-        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="url")
         assert result.result_data
 
         # When both a good and bad profile exist and return_nonconforming_profiles is True, check we get 3 sets of details
         URLFilteringProfile.refreshall = MagicMock(
             return_value=[mock_good_url_filtering_profile(), mock_bad_url_filtering_profile()]
         )
-        result = HygieneLookups.check_url_filtering_profiles(mock_topology, return_nonconforming_profiles=True)
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="url", return_nonconforming_profiles=True
+        )
         assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=mock_templates())
