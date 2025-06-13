@@ -3259,3 +3259,60 @@ Get all details for a Security issue from Cyberwatch.
 >|id|sid|title|description|servers_count|cve_announcements_count|
 >|---|---|---|---|---|---|
 >| 47 | WSTG-INPV-05 | SQL Injection | An SQL injection attack... |  |  |
+
+### Fetch Incidents
+
+Fetches new CVE incidents from Cyberwatch and creates Cortex XSOAR
+incidents.
+This is **not** an interactive command – it runs automatically on
+the integration’s **Fetch incidents** interval once the integration is
+configured as an Incident Fetcher.
+
+> **What is fetched?**
+> For every asset returned by *Asset filters*, the integration inspects
+> its active CVE announcements.
+> Each CVE that passes the *CVE filters* (see below) is turned into a
+> separate Cortex XSOAR incident.
+
+#### Fetch Parameters (configured in the integration instance)
+
+| **Parameter** | **Description**                                                                                                                                                                                                          | **Required / Default**                                                           |
+| ------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------------------------------------------------------------------------- |
+| First fetch   | The date/time to start fetching from. Accepts absolute dates (e.g. `2024-01-01 00:00:00`) **or** relative durations (`3 days`, `12 hours`).                                                                              | *Optional* / **3 days**                                                          |
+| Max fetch     | Maximum number of incidents to fetch on one run.                                                                                                                                                        | *Optional* / **200**                                                             |
+| Asset filters | JSON object that will be passed verbatim to Cyberwatch’s *List assets* API (same fields as the **cyberwatch-list-assets** command).                                    | *Optional* / `{}` *(no filtering)*                                               |
+| CVE filters   | JSON object with the same fields accepted by **cyberwatch-list-cves** (e.g. `ignored`, `prioritized`, `min_cvss`, `min_epss`, `active`). Example: `{"ignored": false, "prioritized": true, "min_cvss": 7}` | *Optional* / `{"active": true, "ignored": false, "prioritized": true}` *(ignore CVEs marked “ignored” in Cyberwatch, only pushes prioritized and active ones)* |
+
+#### Incident JSON structure
+
+| **Field**         | **Type** | **Description**                                                                   |
+| ----------------- | -------- | --------------------------------------------------------------------------------- |
+| name              | string   | **CVE_CODE on Hostname**                                                          |
+| occurred          | date     | Time the CVE was **detected on the asset** ( `detected_at` ).                     |
+| rawJSON.**cve**   | object   | The CVE announcement as returned by Cyberwatch (`cve_code`, `score`, `epss`, …).  |
+
+#### Example incident (abridged)
+
+```json
+{
+  "name": "CVE-2025-0001 on srv1",
+  "occurred": "2025-06-01T00:00:00Z",
+  "rawJSON": {
+      "cve_code": "CVE-2025-0001",
+      "score": 7.8,
+      "epss": 0.9716,
+      "ignored": false,
+      "prioritized": true,
+      "detected_at": "2025-06-01T00:00:00Z"
+    }
+}
+
+```
+
+#### Notes & Best Practices
+
+* **Deduplication** – each incident ID is `"<CVE_CODE>-<ASSET_ID>"`, so the same CVE detected on two servers produces two separate incidents, while re-fetching the same CVE/asset pair will not create duplicates.
+* **Last run tracking** – the integration stores the UNIX timestamp of the most recent CVE it created. At every cycle it only considers announcements whose `detected_at` value is newer than that timestamp.
+* **Tuning the volume** – if you receive too many incidents, tighten *CVE filters* (for example `{"prioritized": true, "min_cvss": 9}`)
+
+Once the parameters are saved and **Fetch incidents** is enabled, new Cyberwatch vulnerabilities will start appearing as Cortex XSOAR incidents automatically.
