@@ -13,7 +13,7 @@ from freezegun import freeze_time
 from panos.device import Vsys
 from panos.firewall import Firewall
 from panos.objects import LogForwardingProfile, LogForwardingProfileMatchList
-from panos.panorama import DeviceGroup, Panorama, Template
+from panos.panorama import DeviceGroup, Panorama, Template, TemplateStack
 from pytest_mock import MockerFixture
 from requests_mock.mocker import Mocker as RequestsMock
 from test_data import fetch_incidents_input, mock_rules
@@ -2971,6 +2971,12 @@ def mock_templates():
     return [mock_template]
 
 
+def mock_template_stack():
+    mock_template_stack = MagicMock(spec=TemplateStack)
+    mock_template_stack.name = "test-template-stack"
+    return [mock_template_stack]
+
+
 def mock_vsys():
     mock_vsys = MagicMock(spec=Vsys)
     mock_vsys.name = "vsys1"
@@ -3012,6 +3018,7 @@ def mock_good_vulnerability_profile():
     from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
 
     vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.name = "good-vuln-profile"
     vulnerability_profile.children = [
         VulnerabilityProfileRule(severity=["critical"], is_reset_both=True),
         VulnerabilityProfileRule(severity=["high"], is_reset_both=True),
@@ -3026,6 +3033,7 @@ def mock_bad_vulnerability_profile():
     from Panorama import VulnerabilityProfile, VulnerabilityProfileRule
 
     vulnerability_profile = VulnerabilityProfile()
+    vulnerability_profile.name = "bad-vuln-profile"
     vulnerability_profile.children = [
         VulnerabilityProfileRule(severity=["critical"], is_reset_both=True),
         VulnerabilityProfileRule(severity=["high"], is_reset_both=True),
@@ -3039,6 +3047,7 @@ def mock_good_spyware_profile():
     from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
 
     antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.name = "good-spyware-profile"
     antispyware_profile.children = [
         AntiSpywareProfileRule(severity=["critical"], is_reset_both=True),
         AntiSpywareProfileRule(severity=["high"], is_reset_both=True),
@@ -3053,6 +3062,7 @@ def mock_bad_spyware_profile():
     from Panorama import AntiSpywareProfile, AntiSpywareProfileRule
 
     antispyware_profile = AntiSpywareProfile()
+    antispyware_profile.name = "bad-spyware-profile"
     antispyware_profile.children = [
         AntiSpywareProfileRule(severity=["critical"], is_reset_both=True),
         AntiSpywareProfileRule(severity=["high"], is_reset_both=True),
@@ -3105,6 +3115,7 @@ def mock_good_url_filtering_profile():
     from Panorama import BestPractices, URLFilteringProfile
 
     url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.name = "good-url-filtering-profile"
     url_filtering_profile.block = BestPractices.URL_BLOCK_CATEGORIES
     return url_filtering_profile
 
@@ -3113,6 +3124,7 @@ def mock_bad_url_filtering_profile():
     from Panorama import URLFilteringProfile
 
     url_filtering_profile = URLFilteringProfile()
+    url_filtering_profile.name = "bad-url-filtering-profile"
     url_filtering_profile.block = ["hacking"]
     return url_filtering_profile
 
@@ -3887,15 +3899,25 @@ class TestHygieneFunctions:
             return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
         )
 
-        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="vulnerability")
         # Should return no results, as at least one vulnerability profile matches.
         assert len(result.result_data) == 0
 
         VulnerabilityProfile.refreshall = MagicMock(return_value=[mock_bad_vulnerability_profile()])
 
-        result = HygieneLookups.check_vulnerability_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="vulnerability")
         # Should return one issue, as no Vulnerability profile matches.
         assert len(result.result_data) == 1
+
+        # When both a good and bad profile exist and return_nonconforming_profiles is True, check we get 3 sets of details
+        VulnerabilityProfile.refreshall = MagicMock(
+            return_value=[mock_good_vulnerability_profile(), mock_bad_vulnerability_profile()]
+        )
+
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="vulnerability", return_nonconforming_profiles=True
+        )
+        assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
@@ -3912,8 +3934,14 @@ class TestHygieneFunctions:
         AntiSpywareProfile.refreshall = MagicMock(return_value=[mock_good_spyware_profile(), mock_bad_spyware_profile()])
 
         # Check when at least one good profile exists - should return no results
-        result = HygieneLookups.check_spyware_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="spyware")
         assert not result.result_data
+
+        # Check that when return_nonconforming_profiles is True we get back 3 sets of details
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="spyware", return_nonconforming_profiles=True
+        )
+        assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=[])
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
@@ -3930,20 +3958,29 @@ class TestHygieneFunctions:
         URLFilteringProfile.refreshall = MagicMock(return_value=[mock_good_url_filtering_profile()])
 
         # Check when a good profile exists - should return no results
-        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="url")
         assert not result.result_data
 
         # When there's only bad, should return a result
         URLFilteringProfile.refreshall = MagicMock(return_value=[mock_bad_url_filtering_profile()])
 
         # Check when a good profile exists - should return no results
-        result = HygieneLookups.check_url_filtering_profiles(mock_topology)
+        result = HygieneLookups.check_security_profiles(topology=mock_topology, profile_type="url")
         assert result.result_data
+
+        # When both a good and bad profile exist and return_nonconforming_profiles is True, check we get 3 sets of details
+        URLFilteringProfile.refreshall = MagicMock(
+            return_value=[mock_good_url_filtering_profile(), mock_bad_url_filtering_profile()]
+        )
+        result = HygieneLookups.check_security_profiles(
+            topology=mock_topology, profile_type="url", return_nonconforming_profiles=True
+        )
+        assert len(result.result_data) == 3
 
     @patch("Panorama.Template.refreshall", return_value=mock_templates())
     @patch("Panorama.TemplateStack.refreshall", return_value=[])
     @patch("Panorama.Vsys.refreshall", return_value=[])
-    @patch("Panorama.DeviceGroup.refreshall", return_value=[])
+    @patch("Panorama.DeviceGroup.refreshall", return_value=mock_template_stack())
     def test_check_security_zones(self, _, __, ___, ____, mock_topology):
         """
         Test the Hygiene Configuration lookups can validate security zones given a comination of good and bad zones.
@@ -4274,6 +4311,8 @@ class TestPanOSListTemplatesCommand:
         Then:
          - make sure the context output is parsed correctly.
          - make sure the xpath and the request is correct.
+         - make sure "Variable=None' is parsed successfully.
+
         """
         from Panorama import main
 
@@ -4307,6 +4346,11 @@ class TestPanOSListTemplatesCommand:
                         "Description": "description for $variable-1",
                     }
                 ],
+            },
+            {
+                "Name": "test-3",
+                "Description": None,
+                "Variable": [],
             },
         ]
 

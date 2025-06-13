@@ -2529,7 +2529,7 @@ Edits a policy rule.
 | **Argument Name** | **Description** | **Required** |
 |-------------------| --- | --- |
 | rulename          | Name of the rule to edit. | Required |
-| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service' or 'profile-setting'. | Required |
+| element_to_change | Parameter in the security rule to change. Can be 'source', 'destination', 'application', 'action', 'category', 'description', 'disabled', 'target', 'log-forwarding', 'tag', 'source-user', 'service', 'profile-setting' or 'audit-comment'. | Required |
 | element_value     | The new value for the parameter. | Required |
 | pre_post          | Pre-rule or post-rule (Panorama instances). | Optional |
 | behaviour         | Whether to replace, add, or remove the element_value from the current rule object value. | Optional |
@@ -5749,6 +5749,9 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version. |
 | PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. |
 | PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. |
+| PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. |
+| PANOS.ShowSystemInfo.Result.advanced_routing | string | Advanced routing engine feature. |
+| PANOS.ShowSystemInfo.Result.multi_vsys | string | Virtual system feature. |
 
 #### Command example
 
@@ -5783,7 +5786,10 @@ Gets information from all PAN-OS systems in the topology.
                     "uptime": "22 days, 0:20:49",
                     "url_filtering_version": "20220218.20012",
                     "wildfire_release_date": "",
-                    "wildfire_version": "0"
+                    "wildfire_version": "0",
+                    "global_protect_client_package_version": "0.0.0",
+                    "advanced_routing": "on",
+                    "multi_vsys": "on"
                 },
                 {
                     "app_release_date": "2021/12/06 18:49:44 PST",
@@ -5807,7 +5813,9 @@ Gets information from all PAN-OS systems in the topology.
                     "uptime": "3 days, 13:56:06",
                     "url_filtering_version": "",
                     "wildfire_release_date": "",
-                    "wildfire_version": "0"
+                    "wildfire_version": "0",
+                    "advanced_routing": "off",
+                    "multi_vsys": "on"
                 }
             ],
             "Summary": [
