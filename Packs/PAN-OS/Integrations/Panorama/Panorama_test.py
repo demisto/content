@@ -4311,6 +4311,8 @@ class TestPanOSListTemplatesCommand:
         Then:
          - make sure the context output is parsed correctly.
          - make sure the xpath and the request is correct.
+         - make sure "Variable=None' is parsed successfully.
+
         """
         from Panorama import main
 
@@ -4344,6 +4346,11 @@ class TestPanOSListTemplatesCommand:
                         "Description": "description for $variable-1",
                     }
                 ],
+            },
+            {
+                "Name": "test-3",
+                "Description": None,
+                "Variable": [],
             },
         ]
 
