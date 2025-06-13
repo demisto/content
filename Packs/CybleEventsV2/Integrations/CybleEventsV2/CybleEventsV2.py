@@ -871,6 +871,9 @@ def get_modified_remote_data_command(client, url, token, args, hide_cvv_expiry, 
     services = get_fetch_service_list(client, incident_collections, url, token)
     severities = get_fetch_severities(incident_severity)
 
+    if last_update is None:
+        raise ValueError("Missing required parameter: 'last_update' must not be None")
+
     input_params = {
         "order_by": args.get("order_by", "asc"),
         "skip": 0,
