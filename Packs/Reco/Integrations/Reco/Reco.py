@@ -1007,6 +1007,41 @@ class RecoClient(BaseClient):
 
         return params
 
+    def set_app_authorization_status(self, app_id: str, authorization_status: str) -> Any:
+        """
+        Set authorization status for an application in Reco
+        :param app_id: The application ID to update
+        :param authorization_status: The authorization status to set
+        :return: dict
+        """
+        demisto.info(f"Setting app authorization status for {app_id} to {authorization_status}")
+
+        params = {"appAuth": [{"appId": app_id, "authorizationStatus": authorization_status}]}
+
+        try:
+            response = self._http_request(
+                method="PUT",
+                url_suffix="/app-risk-management/insert-risk-management-app",
+                data=json.dumps(params),
+                timeout=RECO_API_TIMEOUT_IN_SECONDS,
+            )
+
+            # Validate response format
+            if not isinstance(response, dict) or "rows" not in response:
+                demisto.error(f"Unexpected response format: {response}")
+                raise Exception(f"Unexpected response format: {response}")
+
+            rows_updated = response.get("rows", 0)
+            if rows_updated != 1:
+                demisto.info(f"Expected 1 row to be updated, but got {rows_updated}")
+
+        except Exception as e:
+            demisto.error(f"Set app authorization status error: {str(e)}")
+            raise e
+
+        demisto.info(f"App {app_id} authorization status updated to {authorization_status}. Rows updated: {rows_updated}")
+        return response
+
 
 def parse_table_row_to_dict(alert: list[dict[str, Any]]) -> dict[str, Any]:
     if alert is None:
@@ -1590,6 +1625,31 @@ def get_apps_command(
     )
 
 
+def set_app_authorization_status_command(reco_client: RecoClient, app_id: str, authorization_status: str) -> CommandResults:
+    """Set app authorization status in Reco."""
+    response = reco_client.set_app_authorization_status(app_id, authorization_status)
+
+    rows_updated = response.get("rows", 0)
+    success = rows_updated == 1
+
+    if success:
+        readable_message = f"App {app_id} authorization status updated successfully to {authorization_status}"
+    else:
+        readable_message = f"App {app_id} authorization status update completed with {rows_updated} rows affected"
+
+    return CommandResults(
+        raw_response=response,
+        readable_output=readable_message,
+        outputs_prefix="Reco.AppAuthorization",
+        outputs={
+            "app_id": app_id,
+            "authorization_status": authorization_status,
+            "updated": success,
+            "rows_affected": rows_updated,
+        },
+    )
+
+
 def main() -> None:
     """main function, parses params and runs command functions
 
@@ -1750,6 +1810,11 @@ def main() -> None:
                 after = dateparser.parse(after_str)
             limit = int(demisto.args().get("limit", "1000"))
             result = get_apps_command(reco_client, before=before, after=after, limit=limit)
+            return_results(result)
+        elif command == "reco-set-app-authorization-status":
+            app_id = demisto.args()["app_id"]
+            authorization_status = demisto.args()["authorization_status"]
+            result = set_app_authorization_status_command(reco_client, app_id, authorization_status)
             return_results(result)
         else:
             raise NotImplementedError(f"{command} is not an existing reco command")

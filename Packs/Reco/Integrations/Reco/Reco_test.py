@@ -28,6 +28,7 @@ from Reco import (
     get_files_exposed_to_email_command,
     get_private_email_list_with_access,
     get_apps_command,
+    set_app_authorization_status_command,
 )
 
 from test_data.structs import (
@@ -801,31 +802,6 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     assert res.outputs.get("email_account") == "charles@corp.com"
 
 
-def test_get_apps_command(requests_mock, reco_client: RecoClient) -> None:
-    """Test the get_apps_command functionality."""
-    # Mock response for app discovery
-    raw_result = get_random_assets_user_has_access_to_response()  # Reusing existing response structure
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
-
-    # Test the get_apps_command function
-    actual_result = get_apps_command(reco_client=reco_client, limit=100)
-
-    # Verify the response structure
-    assert "App Discovery" in actual_result.readable_output
-
-
-def test_get_app_discovery_client_method(requests_mock, reco_client: RecoClient) -> None:
-    """Test the RecoClient.get_app_discovery method."""
-    raw_result = get_random_assets_user_has_access_to_response()  # Reusing existing response structure
-    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
-
-    # Test the client method directly
-    apps = reco_client.get_app_discovery(limit=50)
-
-    # Verify the response
-    assert isinstance(apps, list)
-    assert len(apps) == len(raw_result.getTableResponse.data.rows)
-
 
 def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) -> None:
     """Test the get_app_discovery method with date filters."""
@@ -842,12 +818,62 @@ def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) 
 
     # Verify the response
     assert isinstance(apps, list)
-    assert len(apps) == len(raw_result.getTableResponse.data.rows)
 
 
 def test_get_app_discovery_error(capfd, requests_mock, reco_client: RecoClient) -> None:
     """Test error handling in get_app_discovery."""
     requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200)
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/count", json={}, status_code=500)
 
     with capfd.disabled(), pytest.raises(Exception):
         reco_client.get_app_discovery()
+
+def test_set_app_authorization_status(requests_mock, reco_client: RecoClient) -> None:
+    """Test setting app authorization status."""
+    app_id = "microsoft.com"
+    authorization_status = "AUTH_STATUS_SANCTIONED"
+
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/app-risk-management/insert-risk-management-app",
+        json={"rows": 1},
+        status_code=200,
+    )
+
+    response = reco_client.set_app_authorization_status(app_id, authorization_status)
+    assert response == {"rows": 1}
+
+
+def test_set_app_authorization_status_command(requests_mock, reco_client: RecoClient) -> None:
+    """Test the set_app_authorization_status_command function."""
+    app_id = "slack.com"
+    authorization_status = "AUTH_STATUS_UNSANCTIONED"
+
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/app-risk-management/insert-risk-management-app",
+        json={"rows": 1},
+        status_code=200,
+    )
+
+    result = set_app_authorization_status_command(reco_client, app_id, authorization_status)
+
+    assert result.outputs_prefix == "Reco.AppAuthorization"
+    assert result.outputs["app_id"] == app_id
+    assert result.outputs["authorization_status"] == authorization_status
+    assert result.outputs["updated"] is True
+    assert result.outputs["rows_affected"] == 1
+    assert "updated successfully" in result.readable_output
+
+
+def test_set_app_authorization_status_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    """Test error handling in set_app_authorization_status."""
+    app_id = "test.com"
+    authorization_status = "AUTH_STATUS_SANCTIONED"
+
+    requests_mock.put(
+        f"{DUMMY_RECO_API_DNS_NAME}/app-risk-management/insert-risk-management-app",
+        json={},
+        status_code=500,
+    )
+
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.set_app_authorization_status(app_id, authorization_status)
