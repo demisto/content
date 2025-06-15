@@ -403,7 +403,7 @@ def get_indicators_to_format(indicator_searcher: IndicatorsSearcher, request_arg
         if "[429] Failed with error" in str(e):
             version = demisto.demistoVersion()
             # NG + XSIAM can recover from a shutdown
-            if version.get("platform") == "x2" or is_demisto_version_ge("8"):
+            if version.get("platform") == "x2" or is_demisto_version_ge("8") or version.get("platform") == "unified_platform":
                 raise SystemExit("Encountered issue in Elastic Search query. Restarting container and trying again.")
     demisto.debug(f"Completed IOC search & format, found {ioc_counter} IOCs.")
     if request_args.out_format == FORMAT_JSON:
