@@ -1,0 +1,22 @@
+commonfields:
+  id: test
+  version: -1
+name: test
+tags:
+ - test
+category: Data Enrichment & Threat Intelligence
+description: test
+args:
+  - name: ip
+    required: true
+    description: The IP address to search. E.g. 1.1.1.1
+    type: string
+    underlyingargname: ip
+agentid: '?'
+underlyingcontentitemid: 'test'
+underlyingcontentitemname: 'test'
+underlyingcontentitemtype: command
+underlyingcontentitemversion: -1
+requiresuserapproval: false
+marketplaces:
+- platform
