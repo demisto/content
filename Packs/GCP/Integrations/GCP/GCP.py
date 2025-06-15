@@ -63,7 +63,7 @@ REQUIRED_PERMISSIONS: dict[str, list[str]] = {
     # IAM commands
     "gcp-iam-project-policy-binding-remove": ["resourcemanager.projects.getIamPolicy", "resourcemanager.projects.setIamPolicy"],
     # "gcp-iam-project-deny-policy-create": ["iam.denypolicies.create"],
-    "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
+    # "gcp-iam-service-account-delete": ["iam.serviceAccounts.delete"],
     # Admin Directory commands
     # "gcp-iam-group-membership-delete": ["cloudidentity.groups.memberships.delete"],
     # "gcp-admin-user-update": ["admin.directory.user.update"],
@@ -834,16 +834,15 @@ def check_required_permissions(
         DemistoException: If required permissions are missing and not using connector_id.
     """
     permissions = REQUIRED_PERMISSIONS.get(command, list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms}))
-    missing = set()
-
     # Filter out permissions that can't be tested with testIamPermissions
     # Currently, cloudidentity permissions can't be checked this way
-    testable_permissions = [p for p in permissions if not p.startswith("cloudidentity.")]
     untestable_permissions = [p for p in permissions if p.startswith("cloudidentity.")]
+    testable_permissions = list(set(permissions) - set(untestable_permissions))
 
     if untestable_permissions:
         demisto.info(f"The following permissions cannot be verified and will be assumed granted: {untestable_permissions}")
 
+    missing = set()
     if testable_permissions:
         try:
             resource_manager = GCPServices.RESOURCE_MANAGER.build(creds)
