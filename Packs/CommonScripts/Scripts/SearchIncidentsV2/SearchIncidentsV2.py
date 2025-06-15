@@ -88,8 +88,11 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
         "owner",
         "created",
         "closed",
-        "alertLink" if platform == "x2" else "incidentLink",
     ]
+    if platform == "x2" or platform == "unified_platform":
+        summarized_fields.append("alertLink")
+    else:
+        summarized_fields.append("incidentLink")
     if args.get("add_fields_to_summarize_context"):
         summarized_fields += args.get("add_fields_to_summarize_context", "").split(",")
         summarized_fields = [x.strip() for x in summarized_fields]  # clear out whitespace
@@ -103,8 +106,8 @@ def summarize_incidents(args: dict, incidents: List[dict], platform: str):
 
 
 def add_incidents_link(data: List, platform: str):
-    # For XSIAM links
-    if platform == "x2":
+    # For XSIAM or Platform links
+    if platform == "x2" or platform == "unified_platform":
         server_url = "https://" + demisto.getLicenseCustomField("Http_Connector.url")
         for incident in data:
             incident_link = urljoin(server_url, f'alerts?action:openAlertDetails={incident.get("id")}-investigation')
@@ -178,7 +181,7 @@ def search_incidents(args: Dict):  # pragma: no cover
     if not incident_found:
         if hr_prefix:
             hr_prefix = f"{hr_prefix}\n"
-        if platform == "x2":
+        if platform == "x2" or platform == "unified_platform":
             return f"{hr_prefix}Alerts not found.", {}, {}
         return f"{hr_prefix}Incidents not found.", {}, {}
     limit = arg_to_number(args.get("limit")) or DEFAULT_LIMIT
@@ -215,7 +218,7 @@ def search_incidents(args: Dict):  # pragma: no cover
             additional_headers = args.get("add_fields_to_summarize_context", "").split(",")
 
     headers: List[str]
-    if platform == "x2":
+    if platform == "x2" or platform == "unified_platform":
         headers = [
             "id",
             "name",
