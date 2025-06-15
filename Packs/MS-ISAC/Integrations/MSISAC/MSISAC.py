@@ -21,7 +21,6 @@ XSOAR_INCIDENT_DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"
 MSISAC_S_TIME_FORMAT = "%Y-%m-%d %H:%M:%S"
 
 
-
 """ CLIENT CLASS """
 
 
@@ -74,12 +73,12 @@ def calculate_lookback_days(start_time: datetime, end_time: datetime) -> int:
     Returns:
         The number of days to look back, rounded according to round_down flag, with a minimum of 1.
     """
-    
+
     if not (start_time or end_time):
-         return MSISAC_FETCH_WINDOW_DEFAULT
+        return MSISAC_FETCH_WINDOW_DEFAULT
 
     time_diff = end_time - start_time
-    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60) # Calculate difference in days
+    diff_in_days = time_diff.total_seconds() / (24 * 60 * 60)  # Calculate difference in days
 
     rounded_days = math.ceil(diff_in_days)
 
@@ -146,7 +145,7 @@ def get_event_command(client: Client, args: Dict[str, Any]):
             raw_response=event,
             outputs_prefix="MSISAC.Event",
             outputs_key_field="event_id",
-            outputs=output
+            outputs=output,
         )
 
     # the json_data in the payload is the most verbose and should be our final output
@@ -240,12 +239,9 @@ def retrieve_events_command(client: Client, args: Dict[str, Any]):
         outputs=outputs,
     )
 
+
 @logger
-def fetch_incidents(
-        client: Client,
-        first_fetch: datetime,
-        last_run: Dict
-        ) -> tuple[List[dict[str, Any]], Dict]:
+def fetch_incidents(client: Client, first_fetch: datetime, last_run: Dict) -> tuple[List[dict[str, Any]], Dict]:
     """Uses to fetch events into XSIAM
     Args:
         client: Client object with request
@@ -257,14 +253,14 @@ def fetch_incidents(
 
     fetch_time: datetime
 
-    if not last_run.get('lastRun'):
+    if not last_run.get("lastRun"):
         fetch_time = first_fetch
     else:
-        fetch_time = datetime.strptime(last_run.get('lastRun', ''), XSOAR_INCIDENT_DATE_FORMAT)
+        fetch_time = datetime.strptime(last_run.get("lastRun", ""), XSOAR_INCIDENT_DATE_FORMAT)
 
     fetch_time_lookback_days: int = calculate_lookback_days(fetch_time, datetime.now())
 
-    retrieve_events_data: dict = client.retrieve_events(days=fetch_time_lookback_days).get('data', [])
+    retrieve_events_data: dict = client.retrieve_events(days=fetch_time_lookback_days).get("data", [])
 
     events_to_fetch: list[dict] = []
     latest_event_s_time: datetime = fetch_time
@@ -272,39 +268,40 @@ def fetch_incidents(
     # API returns a list if there is albert event data. data key is a string if there is no data.
     if isinstance(retrieve_events_data, list):
         for event in retrieve_events_data:
-            event_s_time = datetime.strptime(event.get('stime'), MSISAC_S_TIME_FORMAT)
-            event_id = event.get('event_id','')
-            event_description = event.get('description','')
-            if event_s_time > fetch_time: # Make sure event happened after last fetch
-                events_to_fetch.append({
-                    'name': f"{event_id} - {event_description}",
-                    'occurred': event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
-                    'rawJSON': json.dumps(event),
-                    # We are not using mirroring.
-                    # This will show ingested event numbers in fetch history modal.
-                    'dbotMirrorId': f'{event_id}'
-                })
+            event_s_time = datetime.strptime(event.get("stime"), MSISAC_S_TIME_FORMAT)
+            event_id = event.get("event_id", "")
+            event_description = event.get("description", "")
+            if event_s_time > fetch_time:  # Make sure event happened after last fetch
+                events_to_fetch.append(
+                    {
+                        "name": f"{event_id} - {event_description}",
+                        "occurred": event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT),
+                        "rawJSON": json.dumps(event),
+                        # We are not using mirroring.
+                        # This will show ingested event numbers in fetch history modal.
+                        "dbotMirrorId": f"{event_id}",
+                    }
+                )
                 if event_s_time > latest_event_s_time:
                     latest_event_s_time = event_s_time
-        
+
     else:
         demisto.debug(f"Here is the event data that was returned: {retrieve_events_data}")
 
-    next_run_dict = {'lastRun': latest_event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}
+    next_run_dict = {"lastRun": latest_event_s_time.strftime(XSOAR_INCIDENT_DATE_FORMAT)}
 
     return events_to_fetch, next_run_dict
-    
+
 
 """ MAIN FUNCTION """
 
 
 def main():
-
     params = demisto.params()
     args = demisto.args()
     command = demisto.command()
 
-    api_key = params.get('apikey',{}).get("credentials", {}).get('sshkey', '')
+    api_key = params.get("apikey", {}).get("credentials", {}).get("sshkey", "")
 
     base_url = urljoin(params["url"], API_ROUTE)
 
@@ -328,14 +325,11 @@ def main():
             result = retrieve_events_command(client, args)
             return_results(result)
 
-        elif command == 'fetch-incidents':
+        elif command == "fetch-incidents":
             # Since arg_to_datetime returns Optional[datetime], but we are forcing a datetime object to be returned.
             # Because of this we need to use type hint casting to force the return.
-            first_fetch: datetime =  cast(datetime, arg_to_datetime(params.get("first_fetch", "1 day ago"), required=True))
-            events, next_run = fetch_incidents(client=client,
-                                        first_fetch=first_fetch,
-                                        last_run=demisto.getLastRun()
-                                        )
+            first_fetch: datetime = cast(datetime, arg_to_datetime(params.get("first_fetch", "1 day ago"), required=True))
+            events, next_run = fetch_incidents(client=client, first_fetch=first_fetch, last_run=demisto.getLastRun())
 
             demisto.incidents(events)
             demisto.setLastRun(next_run)
@@ -343,7 +337,7 @@ def main():
     # Log exceptions and return errors
     except Exception as e:
         return_error(f"Failed to execute {command} command.\nError:\n{str(e)}")
-        
+
 
 """ ENTRY POINT """
 
