@@ -122,7 +122,7 @@ class HealthCheck:
                     combined_error = HealthCheckError(
                         account_id=account_id,
                         connector_id=self.connector_id,
-                        message=_aggregate_error_messages(errors),
+                        message=f"{account_id}: {_aggregate_error_messages(errors)}",
                         error_type=error_type,
                     )
                     aggregated_errors.append(combined_error.to_dict())
@@ -132,7 +132,7 @@ class HealthCheck:
         return (
             CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=_aggregate_errors())
             if self.errors
-            else HealthStatus.OK
+            else HealthStatus.OK.value
         )
 
 
@@ -289,7 +289,7 @@ def run_permissions_check_for_accounts(
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK
+        return HealthStatus.OK.value
 
     health_check_result = HealthCheck(connector_id)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -307,10 +307,23 @@ def run_permissions_check_for_accounts(
     return health_check_result.summarize()
 
 
-def get_proxydome_token():
+def get_proxydome_token() -> str:
+    """
+    Retrieves a Proxydome identity token from the GCP metadata server.
+
+    This function makes a request to the GCP metadata server to obtain an identity token
+    that can be used for authentication with Proxydome services. It bypasses any configured
+    proxies for this request.
+
+    Returns:
+        str: The identity token as a string.
+
+    Raises:
+        requests.RequestException: If the request to the metadata server fails.
+    """
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
     params = {"audience": "cortex.platform.local"}
     headers = {"Metadata-Flavor": "Google"}
-    proxies = {"http": None, "https": None}
+    proxies = {"http": "", "https": ""}
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text
