@@ -1,6 +1,7 @@
 import ast
 import uuid
 from collections.abc import Callable
+from typing import Dict, Any, List, Optional
 
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
@@ -719,6 +720,530 @@ class Client(BaseClient):
         }
 
         return self._http_request("DELETE", f"config/dictionaries/{dictionary_name}/words", params=params, json_data=json_data)
+
+    def dictionary_words_update_request(
+        self,
+        dictionary_name: str,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        words: list,
+    ) -> Dict[str, Any]:
+        """
+        Update the words in a specified dictionary.
+
+        This method sends a PUT request to update the list of words in a dictionary
+        on a Cisco ESA device or group/cluster.
+
+        Args:
+            dictionary_name (str): Name of the dictionary to update.
+            mode (str): Mode of operation ('cluster', 'group', or 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            words (list): List of words to be added or updated in the dictionary.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        json_data = {
+            "data": {
+                "words": words,
+            }
+        }
+
+        return self._http_request(
+            "PUT",
+            f"config/dictionaries/{dictionary_name}/words",
+            params=params,
+            json_data=json_data,
+        )
+
+    def url_list_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        url_list_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Retrieve URL list or all URL lists.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            url_list_name (str, optional): Specific URL list name to retrieve.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = "config/url_lists"
+        if url_list_name:
+            endpoint += f"/{url_list_name}"
+
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+
+        return self._http_request("GET", endpoint, params=params)
+
+    def url_list_create_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        url_list_name: str,
+        urls: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Create a new URL list with the specified URLs.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            url_list_name (str): Name of the URL list to create.
+            urls (List[str]): List of URLs to include in the new list.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = f"config/url_lists/{url_list_name}"
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = {"data": {"urls": urls}}
+        return self._http_request("POST", endpoint, params=params, json_data=json_data)
+
+    def url_list_update_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        url_list_name: str,
+        urls: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Update an existing URL list with a new set of URLs.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            url_list_name (str): Name of the URL list to update.
+            urls (List[str]): New list of URLs to apply.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = f"config/url_lists/{url_list_name}"
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = {"data": {"urls": urls}}
+        return self._http_request("PUT", endpoint, params=params, json_data=json_data)
+
+    def url_list_delete_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        url_list_names: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Delete one or more URL lists.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            url_list_names (List[str]): List of URL list names to delete.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = "config/url_lists"
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = {"data": {"url_lists": url_list_names}}
+        return self._http_request("DELETE", endpoint, params=params, json_data=json_data)
+
+    def file_hash_list_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        file_hash_list_name: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Retrieve a specific file hash list or all file hash lists.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            file_hash_list_name (str, optional): Specific list name to retrieve.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        endpoint = "config/file_hash_lists"
+        if file_hash_list_name:
+            endpoint += f"/{file_hash_list_name}"
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        return self._http_request("GET", endpoint, params=params)
+
+    def file_hash_create_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        file_hash_list_name: str,
+        filehashes: List[str],
+        description: str,
+        list_type: str,
+    ) -> Dict[str, Any]:
+        """
+        Create a new file hash list.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            file_hash_list_name (str): Name of the file hash list to create.
+            filehashes (List[str]): List of file hashes to include.
+            description (str): Description of the list.
+            list_type (str): Type of the list (e.g., 'malware', 'trusted').
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = {
+            "data": {"filehashes": filehashes, "description": description, "list_type": list_type}
+        }
+        return self._http_request(
+            "POST",
+            f"config/file_hash_lists/{file_hash_list_name}",
+            params=params,
+            json_data=json_data,
+        )
+
+    def file_hash_update_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        file_hash_list_name: str,
+        filehashes: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Update an existing file hash list with new hashes.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            file_hash_list_name (str): Name of the file hash list to update.
+            filehashes (List[str]): List of file hashes to set.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = {"data": {"filehashes": filehashes}}
+        return self._http_request(
+            "PUT",
+            f"config/file_hash_lists/{file_hash_list_name}",
+            params=params,
+            json_data=json_data,
+        )
+
+    def pvo_quarantine_list_request(
+        self,
+        quarantine_type: str,
+        limit: Optional[int] = 50,
+        all_results: bool = False,
+        rule_id: Optional[str] = None,
+        offset: Optional[int] = None,
+        order_by: Optional[str] = None,
+        order_direction: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        List all PVO quarantine rules or a specific rule by ID.
+        """
+        endpoint = "quarantine/rules"
+
+        params = assign_params(
+            quarantineType=quarantine_type,
+            limit=limit if rule_id else None,
+            ruleId=rule_id,
+            offset=offset if rule_id else None,
+            orderBy=order_by if rule_id else None,
+            orderDir=order_direction if rule_id else None,
+        )
+        return self._http_request("GET", endpoint, params=params)
+
+    def pvo_quarantine_release_request(
+        self, quarantine_type: str, rule_ids: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Release messages matching the specified PVO rule IDs.
+        """
+        endpoint = "quarantine/rules"
+        json_data = {
+            "data": {"action": "release", "quarantineType": quarantine_type, "ruleIds": rule_ids}
+        }
+        return self._http_request("POST", endpoint, json_data=json_data)
+
+    def pvo_quarantine_delete_request(
+        self, quarantine_type: str, rule_ids: List[str]
+    ) -> Dict[str, Any]:
+        """
+        Delete messages matching the specified PVO rule IDs.
+        """
+        endpoint = "quarantine/rules"
+        json_data = {
+            "data": {"action": "delete", "quarantineType": quarantine_type, "ruleIds": rule_ids}
+        }
+        return self._http_request("DELETE", endpoint, json_data=json_data)
+
+    def user_entry_list_request(
+        self, mode: str, host_name: Optional[str], group_name: Optional[str], policy_name: str
+    ) -> Dict[str, Any]:
+        """
+        Retrieve user-defined sender and recipient entries for a given mail policy.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            policy_name (str): Name of the mail policy.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        return self._http_request(
+            "GET",
+            f"config/incoming_mail_policies/{policy_name}/senders_and_recipients",
+            params=params,
+        )
+
+    def user_entry_add_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        policy_name: str,
+        sender_domain_entries: Optional[List[str]] = None,
+        sender_non_domain_entries: Optional[List[str]] = None,
+        receiver_operation: Optional[str] = None,
+        receiver_domain_entries: Optional[List[str]] = None,
+        receiver_not_domain_entries: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Add new sender and/or recipient entries to a mail policy.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            policy_name (str): Name of the mail policy.
+            sender_domain_entries (List[str], optional): Sender domain entries.
+            sender_non_domain_entries (List[str], optional): Sender non-domain entries (e.g., specific emails).
+            receiver_operation (str, optional): Logical operation for receivers ('AND', 'OR', etc.).
+            receiver_domain_entries (List[str], optional): Recipient domain entries.
+            receiver_not_domain_entries (List[str], optional): Negated recipient domain entries.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa", mode=mode, host_name=host_name, group_name=group_name
+        )
+        json_data = build_user_entry_payload(
+            sender_domain_entries,
+            sender_non_domain_entries,
+            receiver_operation,
+            receiver_domain_entries,
+            receiver_not_domain_entries,
+        )
+        return self._http_request(
+            "POST",
+            f"config/incoming_mail_policies/{policy_name}/senders_and_recipients",
+            params=params,
+            json_data={"data": json_data},
+        )
+
+    def user_entry_update_request(
+        self,
+        mode: str,
+        host_name: Optional[str],
+        group_name: Optional[str],
+        policy_name: str,
+        sender_domain_entries: Optional[List[str]] = None,
+        sender_non_domain_entries: Optional[List[str]] = None,
+        receiver_operation: Optional[str] = None,
+        receiver_domain_entries: Optional[List[str]] = None,
+        receiver_not_domain_entries: Optional[List[str]] = None,
+    ) -> Dict[str, Any]:
+        """
+        Update user-defined sender and recipient entries in a mail policy.
+
+        Args:
+            mode (str): Cluster mode ('cluster', 'group', 'machine').
+            host_name (str, optional): Host name if mode is 'machine'.
+            group_name (str, optional): Group name if mode is 'group'.
+            policy_name (str): Name of the mail policy.
+            current_data (List[Dict[str, Any]]): Existing list of user entries to be updated.
+            sender_domain_entries (List[str], optional): Sender domain entries.
+            sender_non_domain_entries (List[str], optional): Sender non-domain entries.
+            receiver_operation (str, optional): Logical operation for receivers.
+            receiver_domain_entries (List[str], optional): Recipient domain entries.
+            receiver_not_domain_entries (List[str], optional): Negated recipient domain entries.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        params = assign_params(
+            device_type="esa",
+            mode=mode,
+            host_name=host_name,
+            group_name=group_name,
+        )
+        json_data = build_user_entry_payload(
+            sender_domain_entries,
+            sender_non_domain_entries,
+            receiver_operation,
+            receiver_domain_entries,
+            receiver_not_domain_entries,
+        )
+        return self._http_request(
+            "PUT",
+            f"config/incoming_mail_policies/{policy_name}/senders_and_recipients",
+            params=params,
+            json_data={"data": [json_data]},
+        )
+
+    def message_connection_details_get_request(
+        self,
+        serial_number: str,
+        message_ids: List[int],
+        injection_connection_id: Optional[int] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get SMTP connection and transmission behavior details for specific messages.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+        return self._http_request(
+            "GET",
+            "message-tracking/connection-details",
+            params=remove_empty_elements(
+                {
+                    "sma_serial_number": serial_number,
+                    "mid": message_ids,
+                    "icid": injection_connection_id,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                }
+            ),
+        )
+
+    def message_remediation_details_get_request(
+        self,
+        serial_number: str,
+        message_ids: List[int],
+        injection_connection_id: Optional[int] = None,
+        start_date: Optional[str] = None,
+        end_date: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """
+        Get historical remediation actions (deletion, recall) taken on specific messages.
+
+        Returns:
+            Dict[str, Any]: API response from Cisco ESA.
+        """
+
+        return self._http_request(
+            "GET",
+            "message-tracking/remediation-details",
+            params=remove_empty_elements(
+                {
+                    "sma_serial_number": serial_number,
+                    "mid": message_ids,
+                    "icid": injection_connection_id,
+                    "start_date": start_date,
+                    "end_date": end_date,
+                }
+            ),
+        )
+
+
+def build_user_entry_payload(
+    sender_domain_entries: Optional[List[str]] = None,
+    sender_non_domain_entries: Optional[List[str]] = None,
+    receiver_operation: Optional[str] = None,
+    receiver_domain_entries: Optional[List[str]] = None,
+    receiver_not_domain_entries: Optional[List[str]] = None,
+) -> Dict[str, Any]:
+    """
+    Constructs the user entry payload for add/update commands.
+    Accepts already-parsed lists for domain_entries fields.
+    """
+    payload = {
+        "sender_config": {
+            "sender": {"domain_entries": sender_domain_entries},
+            "sender_not": {"domain_entries": sender_non_domain_entries},
+        },
+        "receiver_config": {
+            "operation": receiver_operation,
+            "receiver": {"domain_entries": receiver_domain_entries},
+            "receiver_not": {"domain_entries": receiver_not_domain_entries},
+        },
+    }
+    return remove_empty_elements(payload)
+
+
+def get_paginated_data(data: Optional[List], limit: int, all_results: bool) -> List:
+    """
+    Returns a paginated or full list of data based on input parameters.
+
+    Args:
+        data (Optional[List]): The list of data items to paginate. Can be None.
+        limit (int): The maximum number of items to return if pagination is applied.
+        all_results (bool): If True, return the entire list. If False, return up to 'limit' items.
+
+    Returns:
+        List: A list containing either all items or up to 'limit' items, or an empty list if data is None or empty.
+    """
+    if not data:
+        return []
+    return data if all_results else data[:limit]
 
 
 def format_custom_query_args(custom_query: str = None) -> Dict[str, Any]:
@@ -2007,6 +2532,421 @@ def dictionary_words_delete_command(client: Client, args: Dict[str, Any]) -> Com
     )
 
 
+def dictionary_words_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    """
+    Add words to an existing dictionary configuration.
+
+    Args:
+        client (Client): Cisco ESA API client.
+        args (Dict[str, Any]): Command arguments from XSOAR.
+
+    Returns:
+        CommandResults: Readable outputs for XSOAR, indicating the successful addition of words to the dictionary.
+    """
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name = args.get("host_name", "")
+    group_name = args.get("group_name", "")
+    dictionary_name = args.get("dictionary_name", "")
+    words = args.get("words", "")
+
+    host_name, group_name = check_dictionary_mode_args(mode, host_name, group_name)
+    words = convert_words_to_list(words)
+
+    response = client.dictionary_words_update_request(
+        dictionary_name=dictionary_name,
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+        words=words,
+    )
+
+    return CommandResults(
+        readable_output=f"Added successfully to {dictionary_name}.",
+        raw_response=response,
+    )
+
+
+def url_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    url_list_name = args.get("url_list_name")
+    all_results = argToBoolean(args.get("all_results", False))
+    limit = arg_to_number(args.get("limit")) or 50
+    response = client.url_list_request(mode, host_name, group_name, url_list_name)
+
+    outputs = response.get("data")
+    if not url_list_name:
+        outputs = get_paginated_data(outputs, limit, all_results)
+
+    readable_output = tableToMarkdown(
+        name="URL List" if not url_list_name else f"URL List: {url_list_name}",
+        t=outputs,
+        headers=["name", "urls", "urls_count", "used_by"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="CiscoESA.URLList",
+        outputs=outputs,
+        outputs_key_field="name",
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def url_list_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    url_list_name = args["url_list_name"]
+    urls = argToList(args["urls"])
+    response = client.url_list_create_request(mode, host_name, group_name, url_list_name, urls)
+    return CommandResults(
+        readable_output=f"`{url_list_name}` was successfully created.", raw_response=response
+    )
+
+
+def url_list_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    url_list_name = args["url_list_name"]
+    urls = argToList(args["urls"])
+    response = client.url_list_update_request(mode, host_name, group_name, url_list_name, urls)
+    return CommandResults(
+        readable_output=f"`{url_list_name}` was successfully updated.", raw_response=response
+    )
+
+
+def url_list_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    url_list_names = argToList(args["url_list_names"])
+    response = client.url_list_delete_request(mode, host_name, group_name, url_list_names)
+    return CommandResults(
+        readable_output=f"URL List(s) `{', '.join(url_list_names)}` were successfully deleted.",
+        raw_response=response,
+    )
+
+
+def file_hash_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    file_hash_list_name = args.get("file_hash_list_name")
+    all_results = argToBoolean(args.get("all_results", False))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = client.file_hash_list_request(mode, host_name, group_name, file_hash_list_name)
+
+    outputs = response.get("data")
+    if not file_hash_list_name:
+        outputs = get_paginated_data(outputs, limit, all_results)
+
+    readable_output = tableToMarkdown(
+        name="File Hash List",
+        t=outputs,
+        headers=["name", "description", "filehashes", "filehashes_count", "list_type"],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+    return CommandResults(
+        outputs_prefix="CiscoESA.FileHashList",
+        outputs_key_field="name",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def file_hash_create_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    file_hash_list_name = args["file_hash_list_name"]
+    filehashes = argToList(args["filehashes"])
+    description = args["description"]
+    list_type = args["list_type"]
+    response = client.file_hash_create_request(
+        mode, host_name, group_name, file_hash_list_name, filehashes, description, list_type
+    )
+    return CommandResults(
+        readable_output=f"`{file_hash_list_name}` was successfully created.", raw_response=response
+    )
+
+
+def file_hash_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    file_hash_list_name = args["file_hash_list_name"]
+    filehashes = argToList(args["filehashes"])
+    response = client.file_hash_update_request(
+        mode, host_name, group_name, file_hash_list_name, filehashes
+    )
+    return CommandResults(
+        readable_output=f"`{file_hash_list_name}` was successfully updated.", raw_response=response
+    )
+
+
+def pvo_quarantine_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    quarantine_type = args.get("type", "pvo")
+    rule_id = args.get("rule_id")
+    offset = arg_to_number(args.get("offset"))
+    limit = arg_to_number(args.get("limit", 50))
+    order_by = args.get("order_by")
+    order_direction = args.get("order_direction")
+    all_results = argToBoolean(args.get("all_results", False))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = client.pvo_quarantine_list_request(
+        quarantine_type=quarantine_type,
+        rule_id=rule_id,
+        offset=offset,
+        limit=limit,
+        order_by=order_by,
+        order_direction=order_direction,
+    )
+
+    paginated_outputs = get_paginated_data(response.get("data"), limit, all_results)
+    outputs = [
+        snakify(entry.get("attributes", {})) | {"rid": entry.get("rid")}
+        for entry in paginated_outputs
+    ]
+    readable_output = tableToMarkdown(
+        name="PVO Quarantine Rule List",
+        t=outputs,
+        headers=[
+            "rule_id",
+            "rule_description",
+            "number_of_messages",
+            "totalsize",
+            "capacity",
+            "average_message_size",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="CiscoESA.QuarantineRule",
+        outputs_key_field="rule_id",
+        outputs=outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def pvo_quarantine_release_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    quarantine_type = args.get("quarantine_type", "pvo")
+    rule_ids = argToList(args["rule_ids"])
+    response = client.pvo_quarantine_release_request(quarantine_type, rule_ids)
+
+    return CommandResults(
+        readable_output=f"Messages were successfully released from rule(s): {', '.join(rule_ids)}",
+        raw_response=response,
+    )
+
+
+def pvo_quarantine_delete_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    quarantine_type = args.get("quarantine_type", "pvo")
+    rule_ids = argToList(args["rule_ids"])
+    response = client.pvo_quarantine_delete_request(quarantine_type, rule_ids)
+
+    return CommandResults(
+        readable_output=f"Messages were successfully deleted from rule(s): {', '.join(rule_ids)}",
+        raw_response=response,
+    )
+
+
+def user_entry_list_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    policy_name = args["policy_name"]
+    all_results = argToBoolean(args.get("all_results", False))
+    limit = arg_to_number(args.get("limit")) or 50
+
+    response = client.user_entry_list_request(mode, host_name, group_name, policy_name)
+    paginated_outputs = get_paginated_data(response.get("data"), limit, all_results)
+
+    hr = [
+        {
+            "sender_domain_entries": dict_safe_get(
+                user_entry, ["sender_config", "sender", "domain_entries"]
+            ),
+            "sender_not_domain_entries": dict_safe_get(
+                user_entry, ["sender_config", "sender_not", "domain_entries"]
+            ),
+            "reciver_operation": dict_safe_get(user_entry, ["receiver_config", "operation"]),
+            "receiver_domain_entries": dict_safe_get(
+                user_entry, ["receiver_config", "receiver", "domain_entries"]
+            ),
+            "receiver_not_domain_entries": dict_safe_get(
+                user_entry, ["receiver_config", "receiver_not", "domain_entries"]
+            ),
+        }
+        for user_entry in paginated_outputs
+    ]
+    readable_output = tableToMarkdown(
+        name=f"User Entry List for Policy: {policy_name}",
+        t=hr,
+        headers=[
+            "sender_domain_entries",
+            "sender_not_domain_entries",
+            "reciver_operation",
+            "receiver_domain_entries",
+            "receiver_not_domain_entries",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        outputs_prefix="CiscoESA.IncomingMailPolicyUser",
+        outputs=paginated_outputs,
+        raw_response=response,
+        readable_output=readable_output,
+    )
+
+
+def user_entry_add_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    policy_name = args["policy_name"]
+
+    response = client.user_entry_add_request(
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+        policy_name=policy_name,
+        sender_domain_entries=argToList(args.get("sender_domain_entries")),
+        sender_non_domain_entries=argToList(args.get("sender_non_domain_entries")),
+        receiver_operation=args.get("receiver_operation"),
+        receiver_domain_entries=argToList(args.get("receiver_domain_entries")),
+        receiver_not_domain_entries=argToList(args.get("receiver_not_domain_entries")),
+    )
+
+    return CommandResults(
+        readable_output=f"`{policy_name}` user entry was successfully added.",
+        raw_response=response,
+    )
+
+
+def user_entry_update_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    mode = args.get("mode", DEFAULT_MODE_DICTIONARIES)
+    host_name, group_name = check_dictionary_mode_args(
+        mode, args.get("host_name", ""), args.get("group_name", "")
+    )
+    policy_name = args["policy_name"]
+
+    response = client.user_entry_update_request(
+        mode=mode,
+        host_name=host_name,
+        group_name=group_name,
+        policy_name=policy_name,
+        sender_domain_entries=argToList(args.get("sender_domain_entries")),
+        sender_non_domain_entries=argToList(args.get("sender_non_domain_entries")),
+        receiver_operation=args.get("receiver_operation"),
+        receiver_domain_entries=argToList(args.get("receiver_domain_entries")),
+        receiver_not_domain_entries=argToList(args.get("receiver_not_domain_entries")),
+    )
+
+    return CommandResults(
+        readable_output=f"`{policy_name}` user entry was successfully updated.",
+        raw_response=response,
+    )
+
+
+def message_connection_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    serial_number = args["serial_number"]
+    message_ids = format_number_list_argument(args["message_ids"])
+    injection_connection_id = arg_to_number(args.get("injection_connection_id"))
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+    limit = args.get("limit") or 50
+    all_results = argToBoolean(args.get("all_results", "false"))
+    response = client.message_connection_details_get_request(
+        serial_number=serial_number,
+        message_ids=message_ids,
+        injection_connection_id=injection_connection_id,
+        start_date=start_date,
+        end_date=end_date,
+    )
+
+    sender_group = response.get("senderGroup")
+    messages = get_paginated_data(response.get("messages", {}).get("summary", []), limit, all_results)
+    outputs = {
+        "Message": [snakify(msg) for msg in messages],
+        "sbrs": response.get("sbrs"),
+        "sender_group": sender_group,
+    }
+    readable_output = tableToMarkdown(
+        name=f"Message Connection Report Details Summary: Sender group: {sender_group}",
+        t=outputs["Message"],
+        headers=[
+            "timestamp",
+            "description",
+        ],
+        removeNull=True,
+        headerTransform=string_to_table_header,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CiscoESA.MessageConnection",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
+def message_remediation_details_get_command(client: Client, args: Dict[str, Any]) -> CommandResults:
+    serial_number = args["serial_number"]
+    message_ids = format_number_list_argument(args["message_ids"])
+    injection_connection_id = arg_to_number(args.get("injection_connection_id"))
+    start_date = args.get("start_date")
+    end_date = args.get("end_date")
+    limit = args.get("limit") or 50
+    all_results = argToBoolean(args.get("all_results", "true"))
+    response = client.message_remediation_details_get_request(
+        serial_number=serial_number,
+        message_ids=message_ids,
+        injection_connection_id=injection_connection_id,
+        start_date=start_date,
+        end_date=end_date,
+    )
+    outputs = {
+        **response,
+        "message_details": get_paginated_data(response.get("message_details", []), limit, all_results),
+    }
+
+    readable_output = tableToMarkdown(
+        name="Message Remediation Report Details Summary:",
+        t=outputs.get("message_details", []),
+        headers=["delivered_at", "mid", "from_email", "recipient_email", "mor_status", "msg_read"],
+        headerTransform=pascalToSpace,
+    )
+
+    return CommandResults(
+        readable_output=readable_output,
+        outputs_prefix="CiscoESA.MessageRemediation",
+        outputs=outputs,
+        raw_response=response,
+    )
+
+
 def fetch_incidents(
     client: Client,
     max_fetch: int,
@@ -2165,9 +3105,7 @@ def main() -> None:
         "cisco-esa-list-entry-delete": list_entry_delete_command,
         "cisco-esa-message-search": message_search_command,
         "cisco-esa-message-details-get": message_details_get_command,
-        "cisco-esa-message-amp-details-get": message_amp_details_get_command,
         "cisco-esa-message-dlp-details-get": message_dlp_details_get_command,
-        "cisco-esa-message-url-details-get": message_url_details_get_command,
         "cisco-esa-report-get": report_get_command,
         "cisco-esa-dictionary-list": dictionary_list_command,
         "cisco-esa-dictionary-add": dictionary_add_command,
@@ -2175,6 +3113,24 @@ def main() -> None:
         "cisco-esa-dictionary-delete": dictionary_delete_command,
         "cisco-esa-dictionary-words-add": dictionary_words_add_command,
         "cisco-esa-dictionary-words-delete": dictionary_words_delete_command,
+        "cisco-esa-url-list": url_list_command,
+        "cisco-esa-url-list-create": url_list_create_command,
+        "cisco-esa-url-list-update": url_list_update_command,
+        "cisco-esa-url-list-delete": url_list_delete_command,
+        "cisco-esa-file-hash-list": file_hash_list_command,
+        "cisco-esa-file-hash-create": file_hash_create_command,
+        "cisco-esa-file-hash-update": file_hash_update_command,
+        "cisco-esa-pvo-quarantine-list": pvo_quarantine_list_command,
+        "cisco-esa-pvo-quarantine-message-release": pvo_quarantine_release_command,
+        "cisco-esa-pvo-quarantine-message-delete": pvo_quarantine_delete_command,
+        "cisco-esa-incoming-policy-user-list": user_entry_list_command,
+        "cisco-esa-incoming-policy-user-add": user_entry_add_command,
+        "cisco-esa-incoming-policy-user-update": user_entry_update_command,
+        "cisco-esa-message-connection-details-get": message_connection_details_get_command,
+        "cisco-esa-message-remediation-details-get": message_remediation_details_get_command,
+        "cisco-esa-message-amp-details-get": message_amp_details_get_command,
+        "cisco-esa-message-url-details-get": message_url_details_get_command,
+        "cisco-esa-dictionary-words-update": dictionary_words_update_command,
     }
     try:
         client: Client = Client(
