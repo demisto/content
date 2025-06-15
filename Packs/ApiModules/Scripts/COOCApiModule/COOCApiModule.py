@@ -4,8 +4,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
-from typing import Any, Optional
+from typing import Any
 import requests
+
 
 class CloudTypes(Enum):
     AWS = "AWS"
@@ -136,7 +137,7 @@ class HealthCheck:
         )
 
 
-def get_connector_id() -> Optional[str]:
+def get_connector_id() -> str | None:
     """
     Retrieves the connector ID from the calling context.
 
@@ -145,7 +146,7 @@ def get_connector_id() -> Optional[str]:
     need to know which connector they're associated with.
 
     Returns:
-        Optional[str]: The connector ID if available in the context, otherwise None.
+        str | None: The connector ID if available in the context, otherwise None.
     """
     cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
     demisto.info(f"Cloud credentials request context: {cloud_info_context}")
@@ -288,7 +289,7 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
+    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 10
 ) -> str | CommandResults:
     """
     Runs a permission check function for each account associated with a connector concurrently.
