@@ -1890,8 +1890,14 @@ class TestFetch:
             The `first_behavior_time` doesn't change and an `offset` of 2 is added.
 
         """
-        from CrowdStrikeFalcon import fetch_items
-
+        from CrowdStrikeFalcon import fetch_items, TOTAL_FETCH_TYPE_XSOAR, LastRunIndex, set_last_run_per_type
+        
+        last_run_object = create_empty_last_run(TOTAL_FETCH_TYPE_XSOAR)
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.DETECTIONS, data={"time": "2020-09-04T09:16:10Z"})
+        set_last_run_per_type(
+            last_run_object, index=LastRunIndex.INCIDENTS, data={"time": "2020-09-04T09:22:10Z"})
+        
         mocker.patch.object(demisto, "params", return_value={})
         mocker.patch.object(
             demisto,
@@ -1905,16 +1911,7 @@ class TestFetch:
             },
         )
         fetch_items()
-        assert demisto.setLastRun.mock_calls[0][1][0] == [
-            {"time": "2020-09-04T09:16:10Z"},
-            {"time": "2020-09-04T09:22:10Z"},
-            {},
-            {},
-            {},
-            {},
-            {},
-            {},
-        ]
+        assert demisto.setLastRun.mock_calls[0][1][0] == last_run_object
 
     @freeze_time("2020-09-04T09:16:10Z")
     def test_new_fetch(self, set_up_mocks, mocker, requests_mock):
