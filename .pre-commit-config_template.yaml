@@ -290,15 +290,15 @@ repos:
     args:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
+    - --ignore=BA129
     args:packwise:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
     - --ignore=DO106
     - --ignore=CJ105
-    args:not_check_private_packs:
+    args:check_private_packs:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
-    - --ignore=BA129
     pass_filenames: false
     language: system
     require_serial: true
