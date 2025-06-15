@@ -960,6 +960,52 @@ def test_module(creds: Credentials, args: dict[str, Any]) -> str:
         raise DemistoException(f"Failed to connect to GCP: {str(e)}")
 
 
+def get_credentials(args: dict, params: dict) -> Credentials:
+    """
+    Helper function to get and validate GCP credentials from either service account or token.
+
+    Args:
+        args: Command arguments
+        params: Integration parameters
+
+    Returns:
+        Credentials: Authenticated GCP credentials object
+
+    Raises:
+        DemistoException: If credentials cannot be retrieved or are invalid
+    """
+
+    # Set up credentials - first try service account, then token-based auth
+    if (credentials := params.get("credentials")) and (password := credentials.get("password")):
+        try:
+            service_account_info = json.loads(password)
+            creds = google_service_account.Credentials.from_service_account_info(service_account_info)
+            # If project_id wasn't provided in args, try to get it from service account
+            if not args.get("project_id") and "project_id" in service_account_info:
+                args["project_id"] = service_account_info.get("project_id")
+            demisto.debug("Using service account credentials")
+            return creds
+        except json.JSONDecodeError:
+            raise DemistoException("Invalid service account JSON format")
+        except Exception as e:
+            demisto.debug(f"Error creating service account credentials: {str(e)}")
+
+    # Fall back to token-based authentication for COOC
+    project_id = args.get("project_id")
+    if not project_id:
+        raise DemistoException("Missing required parameter 'project_id'")
+    try:
+        credential_data = get_cloud_credentials(CloudTypes.GCP.value, project_id)
+        token = credential_data.get("access_token")
+        if not token:
+            raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
+
+        creds = Credentials(token=token)
+        demisto.debug("Using token-based credentials")
+        return creds
+    except Exception as e:
+        raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
+
 def main():
     """
     Main function to route commands and execute logic.
@@ -999,34 +1045,14 @@ def main():
         }
 
         if command == "test-module" and (connector_id := get_connector_id()):
+            demisto.debug(f"Running health check for connector ID: {connector_id}")
             return_results(run_permissions_check_for_accounts(connector_id, health_check))
 
-        if command not in command_map:
+        elif command in command_map:
+            creds = get_credentials(args, params)
+            return_results(command_map[command](creds, args))
+        else:
             raise NotImplementedError(f"Command not implemented: {command}")
-
-        # Set up credentials - first try service account, then token-based auth
-        creds = None
-        if (credentials := params.get("credentials")) and (password := credentials.get("password")):
-            try:
-                service_account_info = json.loads(password)
-                creds = google_service_account.Credentials.from_service_account_info(service_account_info)
-                if not args.get("project_id"):
-                    args["project_id"] = service_account_info.get("project_id")
-                demisto.debug("Using service account credentials")
-            except json.JSONDecodeError:
-                raise DemistoException("Invalid service account JSON format")
-        if not creds:
-            project_id = args.get("project_id")
-            if not project_id:
-                raise DemistoException("Missing required parameter 'project_id'")
-            token = get_cloud_credentials(CloudTypes.GCP.value, project_id).get("access_token")
-            if not token:
-                raise DemistoException("Failed to retrieve GCP access token - token is missing from credentials")
-            creds = Credentials(token=token)
-            demisto.debug("Using token-based credentials")
-
-        result = command_map[command](creds, args)
-        return_results(result)
 
     except Exception as e:
         return_error(f"Failed to execute command {demisto.command()}. Error: {str(e)}")

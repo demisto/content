@@ -249,6 +249,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
         all_accounts.extend(accounts)
 
         next_token = res_json.get("next_token", "")
+        demisto.debug(f"Fetched {len(accounts)} accounts")
         if not next_token or (max_results and len(all_accounts) >= max_results):
             break
 
@@ -303,6 +304,7 @@ def run_permissions_check_for_accounts(
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
+    demisto.debug(f"Fetched the following accounts: {accounts}")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
