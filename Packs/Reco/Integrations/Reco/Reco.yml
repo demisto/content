@@ -480,6 +480,40 @@ script:
     - contextPath: Reco.Apps.status
       description: The status of the application.
       type: String
+  - arguments:
+    - description: Application ID to update authorization status for.
+      name: app_id
+      required: true
+    - description: Authorization status to set for the application.
+      name: authorization_status
+      required: true
+      auto: PREDEFINED
+      predefined:
+      - AUTH_STATUS_UNSPECIFIED
+      - AUTH_STATUS_TO_REVIEW
+      - AUTH_STATUS_SANCTIONED
+      - AUTH_STATUS_UNSANCTIONED
+      - AUTH_STATUS_ACCEPTED_RISK
+      - AUTH_STATUS_EVALUATING
+      - AUTH_STATUS_UNDER_INVESTIGATION
+      - AUTH_STATUS_INVESTIGATED
+      - AUTH_STATUS_CLOUD_INVENTORY
+      - AUTH_STATUS_SYSTEM_SANCTIONED
+    description: Set authorization status for an application in Reco.
+    name: reco-set-app-authorization-status
+    outputs:
+    - contextPath: Reco.AppAuthorization.app_id
+      description: The application ID that was updated.
+      type: String
+    - contextPath: Reco.AppAuthorization.authorization_status
+      description: The authorization status that was set.
+      type: String
+    - contextPath: Reco.AppAuthorization.updated
+      description: Whether the update was successful.
+      type: Boolean
+    - contextPath: Reco.AppAuthorization.rows_affected
+      description: Number of rows affected by the update operation.
+      type: Number
 tests:
 - No tests
 fromversion: 6.5.0
