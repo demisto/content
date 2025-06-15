@@ -1,7 +1,7 @@
 variables:
-  CURRENT_BRANCH_NAME: "yc/dependabot_delete_mitmproxy"
+  CURRENT_BRANCH_NAME: "yc/update-upload-flow-tag"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
-    ref: "yc/dependabot_delete_mitmproxy"
+    ref: "yc/update-upload-flow-tag"
     project: "${CI_PROJECT_NAMESPACE}/infra"
