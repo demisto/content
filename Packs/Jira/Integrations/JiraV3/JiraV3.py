@@ -4512,6 +4512,18 @@ def update_remote_system_command(
     entries = remote_args.entries
     remote_id = remote_args.remote_incident_id
     delta = remote_args.delta
+    parsed_delta = {}
+    if isinstance(delta, dict):
+        parsed_delta = delta
+    elif isinstance(delta, str) and delta:
+        demisto.debug(f"Received delta as a string: '{delta}'. Attempting to parse as JSON.")
+        try:
+            parsed_delta = json.loads(delta)
+        except json.JSONDecodeError as e:
+            demisto.error(f"Error: Could not decode delta string into JSON for incident {remote_id}. Error: {e}")
+    elif delta:
+        demisto.error(f"Delta was of an unexpected type: {type(delta)}. Resetting to empty dict.")
+    delta = parsed_delta
     demisto.debug(
         f"Update remote system check if need to update: remoteId: {remote_id}, incidentChanged: "
         f"{remote_args.incident_changed}, data:"
