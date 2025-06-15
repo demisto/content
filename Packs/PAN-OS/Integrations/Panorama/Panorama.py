@@ -6624,7 +6624,7 @@ def panorama_check_latest_dynamic_update_command(args: dict):
                 f"{result['response']['msg']}"
             )
 
-    outputs["ContentTypesOutOfDate"] = outdated_item_count
+    outputs["ContentTypesOutOfDate"] = {"Count": outdated_item_count}
 
     # Create summary table for human-readable output
     summary_table = []
@@ -6646,7 +6646,7 @@ def panorama_check_latest_dynamic_update_command(args: dict):
     summary_markdown = tableToMarkdown(
         "Dynamic Update Status Summary",
         summary_table,
-        headers=["Update Type", "Status", "Latest Available Version", "Currently Installed Version"],
+        headers=["Update Type", "Is Up To Date", "Latest Available Version", "Currently Installed Version"],
     )
 
     summary_markdown += f"\n\n**Total Content Types Outdated: {outdated_item_count}**"
@@ -15661,7 +15661,7 @@ def main():  # pragma: no cover
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.GP, args)
 
         # Check download status of the latest app/threat content update
-        elif command == "pan-os-content-update-download-status":
+        elif command == "panorama-content-update-download-status" or "pan-os-content-update-download-status":
             panorama_dynamic_update_download_status_command(DynamicUpdateType.APP_THREAT, args)
 
         # Install the latest app/threat content update
