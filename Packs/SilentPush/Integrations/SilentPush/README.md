@@ -974,12 +974,12 @@ This command retrieve historical reputation data for a specified nameserver, inc
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| SilentPush.SubnetReputation.nameserver | Number | The nameserver associated with the reputation history entry. |
-| SilentPush.SubnetReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). |
-| SilentPush.SubnetReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. |
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. |
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. |
-| SilentPush.SubnetReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. |
+| SilentPush.NameserverReputation.nameserver | Number | The nameserver associated with the reputation history entry. |
+| SilentPush.NameserverReputation.reputation_data.date | Number | Date of the reputation history entry \(in YYYYMMDD format\). |
+| SilentPush.NameserverReputation.reputation_data.ns_server | String | Name of the nameserver associated with the reputation history entry. |
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation | Number | Reputation score of the nameserver on the specified date. |
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domain_density | Number | Number of domains associated with the nameserver. |
+| SilentPush.NameserverReputation.reputation_data.ns_server_reputation_explain.ns_server_domains_listed | Number | Number of domains listed in reputation databases. |
 
 ### **Command Example**  
 
@@ -1504,7 +1504,7 @@ This command scan a URL to retrieve hosting metadata..
 >
 >| Field          | Value                      |
 >|----------------|----------------------------|
->| URL            | https://silentpush.com     |
+>| URL            | <https://silentpush.com>     |
 >| Scan Status    | No scan results found      |
 
 ### silentpush-reverse-padns-lookup
@@ -1579,7 +1579,6 @@ This command retrieve reverse Passive DNS data for specific DNS record types.
 ### **Human Readable Output**  
 
 >### Results
->
 >| Field             | Value                                |
 >|-------------------|--------------------------------------|
 >| Answer            | vida.ns.cloudflare.com               |
@@ -1640,7 +1639,7 @@ This commandGenerate screenshot of a URL.
 >
 >| Field             | Value                                                             |
 >|-------------------|-------------------------------------------------------------------|
->| URL               | https://www.virustotal.com/gui/domain/tbibank-bg.com              |
+>| URL               | <https://www.virustotal.com/gui/domain/tbibank-bg.com>              |
 >| Status            | Success                                                            |
 >| Screenshot URL    | [View Screenshot](https://fs.silentpush.com/screenshots/virustotal.com/f2fa9440ee769ad6f6702529c006522b.jpg) |
 >| File Name         | www.virustotal.com_screenshot.jpg                                 |

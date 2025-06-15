@@ -147,7 +147,12 @@
         },
         {
             "integrations": "CrowdstrikeFalcon",
-            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File"
+            "playbookID": "Test Playbook - CrowdStrike Falcon - Retrieve File",
+            "timeout": 1200
+        },
+        {
+            "integrations": "CrowdstrikeFalcon",
+            "playbookID": "CrowdStrike Falcon Basic Test"
         },
         {
             "integrations": "CrowdstrikeFalcon",
@@ -902,10 +907,13 @@
         },
         {
             "playbookID": "Create Phishing Classifier V2 ML Test",
-            "timeout": 60000,
             "fromversion": "6.1.0",
             "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "integrations": "Rasterize",
+            "timeout": 1000
         },
         {
             "integrations": "ZeroFox",
@@ -1960,7 +1968,7 @@
             "integrations": "CrowdstrikeFalcon",
             "playbookID": "Test - CrowdStrike Falcon",
             "fromversion": "4.1.0",
-            "timeout": 5000
+            "timeout": 6000
         },
         {
             "playbookID": "ExposeIncidentOwner-Test"
@@ -2379,6 +2387,10 @@
             "integrations": "PrismaCloud v2",
             "playbookID": "Prisma Cloud V2 Test",
             "memory_threshold": 250
+        },
+         {
+            "integrations": "PrismaCloud v2",
+            "playbookID": "Prisma Cloud V2 Basic Test"
         },
         {
             "integrations": "Symantec Messaging Gateway",
@@ -4037,8 +4049,11 @@
         },
         {
             "playbookID": "DbotPredictOufOfTheBoxTestV2",
-            "fromversion": "5.5.0",
-            "timeout": 1000
+            "fromversion": "6.10.0",
+            "scripts": [
+                "FindDuplicateEmailIncidents"
+            ],
+            "integrations": "Rasterize"
         },
         {
             "integrations": "HPEArubaClearPass",
@@ -4153,8 +4168,7 @@
             "playbookID": "DBot Build Phishing Classifier Test - Multiple Algorithms",
             "timeout": 60000,
             "fromversion": "6.1.0",
-            "instance_names": "ml_dummy_prod",
-            "integrations": "AzureWAF"
+            "instance_names": "ml_dummy_prod"
         },
         {
             "integrations": [
