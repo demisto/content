@@ -2,6 +2,7 @@ from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, Entit
 import pytest
 from AnomaliThreatStreamFeed import Client
 from datetime import datetime, UTC
+
 from typing import Any
 
 
@@ -9,12 +10,10 @@ THREAT_STREAM = "Anomali ThreatStream Feed"
 
 
 def mock_client():
-    return Client(base_url="https://svlpartner-optic-api.threatstream.com", user_name="user", api_key="key", verify=True)
+    return Client(base_url="https://api.threatstream.com", user_name="user", api_key="key", verify=True)
 
 
 def test_get_indicators_command_success_with_type(mocker):
-    from AnomaliThreatStreamFeed import get_indicators_command
-
     """
     Tests the successful execution of get_indicators_command when an indicator_type is specified.
     Verifies that the command fetches indicators and returns a human-readable table with the dynamic header.
@@ -25,12 +24,11 @@ def test_get_indicators_command_success_with_type(mocker):
     When:
         - Calling get_indicators_command.
     Then:
-        - The client's http_request method is called with the correct parameters, including 'type'.
-        - `parse_indicators_for_get_command` is called with the raw indicators.
-        - `tableToMarkdown` is called with the expected headers (including the dynamic type header).
+        Verify that:
         - The readable_output of CommandResults contains the expected table.
         - The raw_response of CommandResults contains the raw indicators.
     """
+    from AnomaliThreatStreamFeed import get_indicators_command, parse_indicators_for_get_command
 
     client = mock_client()
 
@@ -75,45 +73,8 @@ def test_get_indicators_command_success_with_type(mocker):
         ]
     }
 
-    mock_parsed_indicators = [
-        {
-            "ThreatStreamID": "123",
-            "Confidence": 90,
-            "Description": "Test domain",
-            "Source": "TestSource",
-            "domain": "mydomain1.com",
-            "Tags": ["malware", "phishing"],
-            "TrafficLightProtocol": "RED",
-            "CountryCode": "US",
-            "Modified": "2023-01-01T12:00:00Z",
-            "Organization": "",
-            "Creation": "2022-01-01T12:00:00Z",
-            "Expiration": "2024-01-01T12:00:00Z",
-            "TargetIndustries": ["finance"],
-            "ASN": "AS12345",
-            "Location": "New York",
-        },
-        {
-            "ThreatStreamID": "124",
-            "Confidence": 80,
-            "Description": "Another test domain",
-            "Source": "AnotherSource",
-            "domain": "mydomain.com",
-            "Tags": ["c2"],
-            "TrafficLightProtocol": "AMBER",
-            "CountryCode": "FR",
-            "Modified": "2023-02-01T12:00:00Z",
-            "Organization": "AnotherOrg",
-            "Creation": "2022-02-01T12:00:00Z",
-            "Expiration": "2024-02-01T12:00:00Z",
-            "TargetIndustries": ["tech"],
-            "ASN": "AS67890",
-            "Location": "London",
-        },
-    ]
-
     mocker.patch.object(client, "http_request", return_value=mock_api_response)
-    mocker.patch("AnomaliThreatStreamFeed.parse_indicators_for_get_command", return_value=mock_parsed_indicators)
+    returned_parsed_indicators = parse_indicators_for_get_command(mock_api_response["objects"])
 
     args = {"indicator_type": "domain", "limit": 2}
     result = get_indicators_command(client, args)
@@ -123,7 +84,7 @@ def test_get_indicators_command_success_with_type(mocker):
         "Source",
         "ThreatStreamID",
         "Country Code",
-        "domain",
+        "Domain",
         "Description",
         "Modified",
         "Organization",
@@ -138,7 +99,7 @@ def test_get_indicators_command_success_with_type(mocker):
 
     human_readable = tableToMarkdown(
         name=f"Indicators from {THREAT_STREAM}:",
-        t=mock_parsed_indicators,
+        t=returned_parsed_indicators,
         headers=expected_headers_with_type,
         removeNull=True,
         is_auto_json_transform=True,
@@ -148,8 +109,6 @@ def test_get_indicators_command_success_with_type(mocker):
 
 
 def test_get_indicators_command_success_no_type(mocker):
-    from AnomaliThreatStreamFeed import get_indicators_command
-
     """
     Tests the successful execution of get_indicators_command when no indicator_type is specified.
     Verifies that the command fetches indicators and returns a human-readable table.
@@ -160,12 +119,14 @@ def test_get_indicators_command_success_no_type(mocker):
     When:
         - Calling get_indicators_command.
     Then:
+        Verify that:
         - The client's http_request method is called with the correct parameters.
         - `parse_indicators_for_get_command` is called with the raw indicators.
         - `tableToMarkdown` is called with the expected headers (no dynamic type header).
         - The readable_output of CommandResults contains the expected table.
         - The raw_response of CommandResults contains the raw indicators.
     """
+    from AnomaliThreatStreamFeed import get_indicators_command, parse_indicators_for_get_command
 
     client = mock_client()
 
@@ -228,62 +189,8 @@ def test_get_indicators_command_success_no_type(mocker):
         ]
     }
 
-    mock_parsed_indicators = [
-        {
-            "ThreatStreamID": "123",
-            "Confidence": 90,
-            "Description": "Test domain",
-            "Source": "TestSource",
-            "domain": "mydomain1.com",
-            "Tags": ["malware", "phishing"],
-            "TrafficLightProtocol": "RED",
-            "CountryCode": "US",
-            "Modified": "2023-01-01T12:00:00Z",
-            "Organization": "",
-            "Creation": "2022-01-01T12:00:00Z",
-            "Expiration": "2024-01-01T12:00:00Z",
-            "TargetIndustries": ["finance"],
-            "ASN": "AS12345",
-            "Location": "New York",
-        },
-        {
-            "ThreatStreamID": "124",
-            "Confidence": 10,
-            "Description": "test ip",
-            "Source": "AnotherSource",
-            "ip": "1.1.1.1",
-            "Tags": ["tag1"],
-            "TrafficLightProtocol": "GREEN",
-            "CountryCode": "FR",
-            "Modified": "2023-02-01T12:00:00Z",
-            "Organization": "AnotherOrg",
-            "Creation": "2022-02-01T12:00:00Z",
-            "Expiration": "2024-02-01T12:00:00Z",
-            "TargetIndustries": ["tech"],
-            "ASN": "",
-            "Location": "London",
-        },
-        {
-            "ThreatStreamID": "125",
-            "Confidence": 65,
-            "Description": "test ip",
-            "Source": "NewSource",
-            "email": "test_email@test.com",
-            "Tags": [{"id": "125a", "name": "tag125a"}, {"id": "125b", "name": "tag125b"}],
-            "TrafficLightProtocol": "RED",
-            "CountryCode": "",
-            "Modified": "2023-02-01T12:00:00Z",
-            "Organization": "currentOrganization",
-            "Creation": "2022-02-01T12:00:00Z",
-            "Expiration": "2024-02-01T12:00:00Z",
-            "TargetIndustries": [],
-            "ASN": "",
-            "Location": "California",
-        },
-    ]
-
     mocker.patch.object(client, "http_request", return_value=mock_api_response)
-    mocker.patch("AnomaliThreatStreamFeed.parse_indicators_for_get_command", return_value=mock_parsed_indicators)
+    returned_parsed_indicators = parse_indicators_for_get_command(mock_api_response["objects"])
 
     args = {"limit": 3}
     result = get_indicators_command(client, args)
@@ -307,7 +214,7 @@ def test_get_indicators_command_success_no_type(mocker):
 
     human_readable = tableToMarkdown(
         name=f"Indicators from {THREAT_STREAM}:",
-        t=mock_parsed_indicators,
+        t=returned_parsed_indicators,
         headers=expected_headers_with_type,
         removeNull=True,
         is_auto_json_transform=True,
@@ -316,9 +223,35 @@ def test_get_indicators_command_success_no_type(mocker):
     assert result.raw_response == mock_api_response["objects"]
 
 
-def test_get_indicators_command_no_indicators_found(mocker):
+def test_get_indicators_command_invalid_type():
+    """
+    Tests the scenario where an invalid indicator_type is provided to get_indicators_command.
+    Verifies that the function returns an error message and does not proceed to make API calls.
+
+    Given:
+        - A mock Client instance.
+        - Arguments with an 'indicator_type' that is not in the allowed list.
+    When:
+        - Calling get_indicators_command.
+    Then:
+        Verify that:
+        - The returned CommandResults object has the expected human-readable error output.
+    """
     from AnomaliThreatStreamFeed import get_indicators_command
 
+    client = mock_client()
+
+    # Arguments with an invalid indicator type
+    args = {"indicator_type": "malware", "limit": 10}
+
+    result = get_indicators_command(client, args)
+
+    expected_readable_output = """### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url"""
+    assert result.readable_output == expected_readable_output
+    assert result.raw_response is None
+
+
+def test_get_indicators_command_no_indicators_found(mocker):
     """
     Tests the scenario where no indicators are found for the given criteria.
     Verifies that the command returns an appropriate message.
@@ -329,11 +262,12 @@ def test_get_indicators_command_no_indicators_found(mocker):
     When:
         - Calling get_indicators_command.
     Then:
-        - The client's http_request method is called.
-        - `demisto.info` is called with the "No indicators found" message.
+        Verify that:
         - The readable_output of CommandResults contains "No indicators found.".
         - The raw_response is an empty list.
     """
+    from AnomaliThreatStreamFeed import get_indicators_command
+
     client = mock_client()
     args = {"limit": 10, "indicator_type": "url"}
 
@@ -342,13 +276,11 @@ def test_get_indicators_command_no_indicators_found(mocker):
     result = get_indicators_command(client, args)
 
     client.http_request.assert_called_once_with(method="GET", url_suffix="v2/intelligence", params={"limit": 10, "type": "url"})
-    assert result.readable_output == "### No indicators found."
+    assert result.readable_output == "### No indicators were found."
     assert result.raw_response is None
 
 
 def test_parse_indicators_for_get_command_full_data():
-    from AnomaliThreatStreamFeed import parse_indicators_for_get_command
-
     """
     Tests parse_indicators_for_get_command with a complete raw indicator.
     Verifies that all fields are correctly mapped and the dynamic field is added.
@@ -358,9 +290,12 @@ def test_parse_indicators_for_get_command_full_data():
     When:
         - Calling parse_indicators_for_get_command.
     Then:
+        Verify that:
         - The returned list contains one parsed indicator with all fields correctly mapped,
-          including the dynamic 'domain' field and string conversions for 'id' and 'confidence'.
+          including the dynamic indicator's type field and string conversions for 'id' and 'confidence'.
     """
+    from AnomaliThreatStreamFeed import parse_indicators_for_get_command
+
     mock_raw_indicators = [
         {
             "id": "123",
@@ -387,7 +322,7 @@ def test_parse_indicators_for_get_command_full_data():
             "Source": "TestSource",
             "ThreatStreamID": "123",
             "CountryCode": "US",
-            "domain": "mydomain1.com",
+            "Domain": "mydomain1.com",
             "Description": "Test domain",
             "Modified": "2023-01-01T12:00:00Z",
             "Confidence": "90",
@@ -406,8 +341,6 @@ def test_parse_indicators_for_get_command_full_data():
 
 
 def test_parse_indicators_for_get_command_missing_fields():
-    from AnomaliThreatStreamFeed import parse_indicators_for_get_command
-
     """
     Tests parse_indicators_for_get_command when some fields are missing in the raw indicator.
     Verifies that missing fields are correctly omitted (due to assign_params).
@@ -417,9 +350,12 @@ def test_parse_indicators_for_get_command_missing_fields():
     When:
         - Calling parse_indicators_for_get_command.
     Then:
+        Verify that:
         - The returned list contains one parsed indicator where missing fields are not present.
         - Dynamic field is still added if type and value exist.
     """
+    from AnomaliThreatStreamFeed import parse_indicators_for_get_command
+
     mock_raw_indicators = [
         {
             "id": "456",
@@ -433,7 +369,7 @@ def test_parse_indicators_for_get_command_missing_fields():
     ]
 
     expected_parsed_indicators = [
-        {"Source": "AnotherSource", "ThreatStreamID": "456", "ip": "2.2.2.2", "Description": "Simple IP", "Confidence": "None"},
+        {"Source": "AnotherSource", "ThreatStreamID": "456", "IP": "2.2.2.2", "Description": "Simple IP", "Confidence": "None"},
     ]
 
     result = parse_indicators_for_get_command(mock_raw_indicators)
@@ -441,8 +377,6 @@ def test_parse_indicators_for_get_command_missing_fields():
 
 
 def test_get_past_time_basic_interval(mocker):
-    from AnomaliThreatStreamFeed import get_past_time
-
     """
     Tests get_past_time with a standard minutes interval.
     Verifies that the returned time is correctly calculated and formatted.
@@ -453,9 +387,12 @@ def test_get_past_time_basic_interval(mocker):
     When:
         - Calling get_past_time, imported from 'AnomaliThreatStreamFeed'.
     Then:
+        Verify that:
         - Mocks 'AnomaliThreatStreamFeed.get_current_utc_time' to return a fixed datetime.
         - The function returns the expected past time in ISO 8601 format with milliseconds and 'Z'.
     """
+    from AnomaliThreatStreamFeed import get_past_time
+
     mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500Z"
@@ -466,9 +403,7 @@ def test_get_past_time_basic_interval(mocker):
     assert result == expected_past_time
 
 
-def test_calculate_score_none_no_confidence_field(mocker):
-    from AnomaliThreatStreamFeed import DBotScoreCalculator
-
+def test_calculate_score_none_no_confidence_field():
     """
     Tests calculate_score when the 'confidence' field is missing from the indicator.
     Verifies that DBotScore.NONE is returned and a debug message is logged.
@@ -478,9 +413,11 @@ def test_calculate_score_none_no_confidence_field(mocker):
     When:
         - Calling calculate_score.
     Then:
+        Verify that:
         - The function returns Common.DBotScore.NONE.
-        - A debug message indicating confidence not found is logged.
     """
+    from AnomaliThreatStreamFeed import DBotScoreCalculator
+
     calculator = DBotScoreCalculator()
     indicator = {"description": "test"}  # No confidence field
 
@@ -492,27 +429,44 @@ DEFAULT_MALICIOUS_THRESHOLD = 65
 DEFAULT_SUSPICIOUS_THRESHOLD = 25
 DEFAULT_BENIGN_THRESHOLD = 0
 DBOT_SCORE_TEST_CASES = [
-    # Test cases for BAD score (confidence > 65)
-    ({"confidence": 71}, Common.DBotScore.BAD),
-    ({"confidence": 100}, Common.DBotScore.BAD),
-    # Test cases for SUSPICIOUS score (confidence > 25 and <= 65)
-    ({"confidence": 51}, Common.DBotScore.SUSPICIOUS),
-    ({"confidence": DEFAULT_MALICIOUS_THRESHOLD}, Common.DBotScore.SUSPICIOUS),  # 65 is not > 65
-    ({"confidence": 60}, Common.DBotScore.SUSPICIOUS),
-    ({"confidence": 26}, Common.DBotScore.SUSPICIOUS),  # Just above suspicious threshold
-    # Test cases for GOOD score (confidence > 0 and <= 25)
-    ({"confidence": 15}, Common.DBotScore.GOOD),
-    ({"confidence": DEFAULT_SUSPICIOUS_THRESHOLD}, Common.DBotScore.GOOD),  # 25 is not > 25
-    ({"confidence": 20}, Common.DBotScore.GOOD),
-    ({"confidence": 1}, Common.DBotScore.GOOD),  # Just above benign threshold
-    # Test cases for NONE score (confidence <= 0)
-    ({"confidence": 0}, Common.DBotScore.NONE),
-    ({"confidence": DEFAULT_BENIGN_THRESHOLD}, Common.DBotScore.NONE),  # 0 is not > 0
-    ({"confidence": -5}, Common.DBotScore.NONE),  # Negative confidence
-    # Test cases for NONE score (missing/invalid confidence)
-    ({"description": "no confidence"}, Common.DBotScore.NONE),  # Missing confidence field
-    ({"confidence": None}, Common.DBotScore.NONE),  # Explicitly None confidence
-    ({"confidence": ""}, Common.DBotScore.NONE),  # Empty string confidence
+    # Test cases for BAD score (confidence > 65) - ID 0-1
+    pytest.param({"confidence": 71}, Common.DBotScore.BAD, id="ID 0 - Test cases for BAD score (confidence > 65)"),
+    pytest.param({"confidence": 100}, Common.DBotScore.BAD, id="ID 1 - Test cases for BAD score (confidence > 65)"),
+    pytest.param(
+        {"confidence": 51}, Common.DBotScore.SUSPICIOUS, id="ID 2 - Test cases for SUSPICIOUS score (confidence > 25 and <= 65)"
+    ),
+    pytest.param(
+        {"confidence": DEFAULT_MALICIOUS_THRESHOLD},
+        Common.DBotScore.SUSPICIOUS,
+        id="ID 3 - Test cases for SUSPICIOUS score (confidence > 25 and <= 65)",
+    ),  # 65 is not > 65
+    pytest.param(
+        {"confidence": 60}, Common.DBotScore.SUSPICIOUS, id="ID 4 - Test cases for SUSPICIOUS score (confidence > 25 and <= 65)"
+    ),
+    pytest.param(
+        {"confidence": 26}, Common.DBotScore.SUSPICIOUS, id="ID 5 - Test cases for SUSPICIOUS score (confidence > 25 and <= 65)"
+    ),
+    pytest.param({"confidence": 15}, Common.DBotScore.GOOD, id="ID 6 - Test cases for GOOD score (confidence > 0 and <= 25)"),
+    pytest.param(
+        {"confidence": DEFAULT_SUSPICIOUS_THRESHOLD},
+        Common.DBotScore.GOOD,
+        id="ID 7 - Test cases for GOOD score (confidence > 0 and <= 25)",
+    ),  # 25 is not > 25
+    pytest.param({"confidence": 20}, Common.DBotScore.GOOD, id="ID 8 - Test cases for GOOD score (confidence > 0 and <= 25)"),
+    pytest.param({"confidence": 1}, Common.DBotScore.GOOD, id="ID 9 - Test cases for GOOD score (confidence > 0 and <= 25)"),
+    pytest.param({"confidence": 0}, Common.DBotScore.NONE, id="ID 10 - Test cases for NONE score (confidence <= 0)"),
+    pytest.param(
+        {"confidence": DEFAULT_BENIGN_THRESHOLD}, Common.DBotScore.NONE, id="ID 11 - Test cases for NONE score (confidence <= 0)"
+    ),
+    pytest.param({"confidence": -5}, Common.DBotScore.NONE, id="ID 12 - Test cases for NONE score (confidence <= 0)"),
+    # Test cases for NONE score (missing/invalid confidence) - ID 13-15
+    pytest.param(
+        {"description": "no confidence"},
+        Common.DBotScore.NONE,
+        id="ID 13 -Test cases for NONE score (missing/invalid confidence)",
+    ),
+    pytest.param({"confidence": None}, Common.DBotScore.NONE, id="ID 14 -Test cases for NONE score (missing/invalid confidence)"),
+    pytest.param({"confidence": ""}, Common.DBotScore.NONE, id="ID 15 -Test cases for NONE score (missing/invalid confidence)"),
 ]
 
 
@@ -521,11 +475,17 @@ def test_calculate_score_various_scenarios(
     indicator_input: dict[str, Any],
     expected_score: int,
 ):
-    from AnomaliThreatStreamFeed import DBotScoreCalculator
-
     """
     Tests calculate_score across various confidence levels and edge cases,
     including missing or invalid confidence values.
+
+    Test Cases Explained:
+
+    - **0-1:** Test cases for **BAD** score (> 65 confidence).
+    - **2-5:** Test cases for **SUSPICIOUS** score (> 25 and <= 65 confidence), including boundary checks at 65 and 26.
+    - **6-9:** Test cases for **GOOD** score (> 0 and <= 25 confidence), including boundary checks at 25 and 1.
+    - **10-12:** Test cases for **NONE** score (<= 0 confidence), including boundary check at 0 and negative values.
+    - **13-15:** Test cases for **NONE** score where confidence is missing or invalid (e.g., `None`, empty string).
 
     Given:
         - An indicator dictionary with varying 'confidence' values or missing 'confidence'.
@@ -533,9 +493,11 @@ def test_calculate_score_various_scenarios(
     When:
         - Calling calculate_score.
     Then:
+        Verify that:
         - The function returns the expected DBotScore.
-        - demisto.debug is called or not called as expected based on the scenario.
     """
+    from AnomaliThreatStreamFeed import DBotScoreCalculator
+
     calculator = DBotScoreCalculator()
 
     result = calculator.calculate_score(indicator_input)
@@ -543,8 +505,6 @@ def test_calculate_score_various_scenarios(
 
 
 def test_create_relationships_disabled():
-    from AnomaliThreatStreamFeed import create_relationships
-
     """
     Tests create_relationships when relationship creation is disabled.
     Verifies that an empty list is returned.
@@ -555,9 +515,12 @@ def test_create_relationships_disabled():
     When:
         - Calling create_relationships.
     Then:
+        Verify that:
         - An empty list is returned.
         - No debug messages are logged.
     """
+    from AnomaliThreatStreamFeed import create_relationships
+
     indicator = {
         "id": "125",
         "type": "email",
@@ -583,10 +546,8 @@ def test_create_relationships_disabled():
 
 
 def test_create_relationships_missing_indicator_type_or_value():
-    from AnomaliThreatStreamFeed import create_relationships
-
     """
-    Tests create_relationships when indicator type or value is missing.
+    Tests create_relationships when the indicator type or value is missing.
     Verifies that an empty list is returned and a debug message is logged.
 
     Given:
@@ -595,9 +556,12 @@ def test_create_relationships_missing_indicator_type_or_value():
     When:
         - Calling create_relationships.
     Then:
+        Verify that:
         - An empty list is returned.
         - A debug message about skipping relationship creation is logged.
     """
+    from AnomaliThreatStreamFeed import create_relationships
+
     reliability = "B - Usually reliable"
 
     # Test missing type
@@ -617,20 +581,21 @@ def test_create_relationships_missing_indicator_type_or_value():
 
 
 def test_create_relationships_single_related_entity():
-    from AnomaliThreatStreamFeed import create_relationships
-
     """
     Tests create_relationships with a single related entity.
     Verifies that one relationship is created correctly.
 
     Given:
         - create_relationships_param is True.
-        - An Domain indicator with a single related ip.
+        - A Domain indicator with a single related IP.
     When:
         - Calling create_relationships.
     Then:
+        Verify that:
         - A list containing one correctly formatted relationship is returned.
     """
+    from AnomaliThreatStreamFeed import create_relationships
+
     indicator = {
         "id": "123",
         "type": "domain",
@@ -672,20 +637,21 @@ def test_create_relationships_single_related_entity():
 
 
 def test_create_relationships_multiple_related_entities():
-    from AnomaliThreatStreamFeed import create_relationships
-
     """
     Tests create_relationships with multiple related entities in a list.
     Verifies that multiple relationships are created correctly.
 
     Given:
         - create_relationships_param is True.
-        - An domain indicator.
+        - A domain indicator.
     When:
         - Calling create_relationships.
     Then:
+        Verify that:
         - A list containing multiple correctly formatted relationships is returned.
     """
+    from AnomaliThreatStreamFeed import create_relationships
+
     indicator = {
         "id": "123",
         "type": "domain",
@@ -727,146 +693,228 @@ def test_create_relationships_multiple_related_entities():
     assert result == expected_relationships
 
 
-@pytest.mark.parametrize(
-    "indicator, tlp_color, create_relationship_param, reliability, "
-    "mock_relationships_return, mock_dbot_score_return, expected_output, expect_error",
-    [
-        # Basic valid indicator with relationships enabled
-        (
-            {
-                "id": "123",
-                "type": "ip",
-                "confidence": 80,
-                "description": "Test IP",
-                "source": "TestSource",
-                "value": "1.1.1.1",
-                "tags": ["tag1", "tag2"],
-                "tlp": "RED",
-                "country": "US",
-                "modified_ts": "2023-01-01T12:00:00Z",
-                "org": "",
-                "created_ts": "2022-01-01T12:00:00Z",
-                "expiration_ts": "2024-01-01T12:00:00Z",
-                "target_industry": ["finance"],
-                "asn": "AS12345",
-                "locations": "New York",
-                "rdns": "example.com",
-                "meta.maltype": "type",
-            },
-            "AMBER",
-            True,
-            "A - Completely reliable",
-            [{"entityA": "1.1.1.1", "name": "resolves-to", "entityB": "example.com", "type": "Relationship"}],
-            Common.DBotScore.BAD,
-            {
-                "value": "1.1.1.1",
-                "type": "IP",
-                "fields": {
-                    "ThreatStreamID": "123",
-                    "Source": "TestSource",
-                    "IP": "1.1.1.1",
-                    "Description": "Test IP",
-                    "Confidence": "80",
-                    "TrafficLightProtocol": "AMBER",
-                    "TargetIndustries": ["finance"],
-                    "CountryCode": "US",
-                    "Modified": "2023-01-01T12:00:00Z",
-                    "Creation": "2022-01-01T12:00:00Z",
-                    "Tags": ["tag1", "tag2"],
-                    "Location": "New York",
-                    "ASN": "AS12345",
-                },
-                "relationships": [
-                    {"entityA": "1.1.1.1", "name": "resolves-to", "entityB": "example.com", "type": "Relationship"}
-                ],
-                "rawJSON": {
-                    "id": "123",
-                    "type": "ip",
-                    "value": "1.1.1.1",
-                    "confidence": 80,
-                    "source": "TestSource",
-                    "description": "Test IP",
-                    "rdns": "example.com",
-                    "meta.maltype": "type",
-                    "target_industry": ["finance"],
-                    "asn": "AS12345",
-                    "locations": "New York",
-                    "tags": ["tag1", "tag2"],
-                    "tlp": "RED",
-                    "country": "US",
-                    "modified_ts": "2023-01-01T12:00:00Z",
-                    "org": "",
-                    "created_ts": "2022-01-01T12:00:00Z",
-                    "expiration_ts": "2024-01-01T12:00:00Z",
-                },
-                "score": Common.DBotScore.BAD,
-            },
-            False,
-        ),
-        # Missing indicator 'type'
-        (
-            {"id": "125", "value": "missing_type_value", "confidence": 50},
-            "RED",
-            True,
-            "C - Fairly reliable",
-            [],
-            Common.DBotScore.NONE,
-            None,
-            True,  # Expect ValueError
-        ),
-        # Missing indicator 'value'
-        (
-            {"id": "126", "type": "url", "confidence": 50},
-            "RED",
-            True,
-            "C - Fairly reliable",
-            [],
-            Common.DBotScore.NONE,
-            None,
-            True,  # Expect ValueError
-        ),
-    ],
-)
-def test_parse_indicator_for_fetch_various_scenarios(
-    indicator: dict[str, Any],
-    tlp_color: str,
-    create_relationship_param: bool,
-    reliability: str,
-    mock_relationships_return: list[dict[str, Any]],
-    mock_dbot_score_return: int,
-    expected_output: dict[str, Any],
-    expect_error: bool,
-    mocker,
-):
-    from AnomaliThreatStreamFeed import parse_indicator_for_fetch
-
+def test_parse_indicator_for_fetch_success_scenarios(mocker):
     """
-    Tests parse_indicator_for_fetch across various scenarios, including valid inputs,
-    missing/invalid indicator data, and different relationship/DBotScore outcomes.
+    Tests parse_indicator_for_fetch for successful parsing scenarios.
 
     Given:
         - A raw indicator dictionary.
         - TLP color, relationship creation flag, and reliability.
-        - Mock return values for create_relationships and DBotScoreCalculator.calculate_score.
-        - Expected output dictionary or a flag indicating an expected error.
+        - Mock return value for DBotScoreCalculator.calculate_score.
+        - Expected output dictionary.
     When:
         - Calling parse_indicator_for_fetch.
     Then:
-        - If an error is expected, verifies that ValueError is raised.
-        - Otherwise, verifies that the returned parsed indicator matches the expected output.
-        - Verifies that create_relationships and calculate_score are called with correct arguments.
+        Verify that:
+        - The returned parsed indicator matches the expected output.
+        - Verifies that calculate_score is called with correct arguments.
     """
+    from AnomaliThreatStreamFeed import parse_indicator_for_fetch
+
+    indicator = {
+        "id": "123",
+        "type": "ip",
+        "confidence": 80,
+        "description": "Test IP",
+        "source": "TestSource",
+        "value": "1.1.1.1",
+        "tags": ["tag1", "tag2"],
+        "tlp": "RED",
+        "country": "US",
+        "modified_ts": "2023-01-01T12:00:00Z",
+        "org": "",
+        "created_ts": "2022-01-01T12:00:00Z",
+        "expiration_ts": "2024-01-01T12:00:00Z",
+        "target_industry": ["finance"],
+        "asn": "AS12345",
+        "locations": "New York",
+        "rdns": "example.com",
+        "meta.maltype": "type",
+    }
+    tlp_color = "AMBER"
+    create_relationship_param = True
+    reliability = "A - Completely reliable"
+
+    expected_output = {
+        "value": "1.1.1.1",
+        "type": "IP",
+        "fields": {
+            "ThreatStreamID": "123",
+            "Source": "TestSource",
+            "IP": "1.1.1.1",
+            "Description": "Test IP",
+            "Confidence": "80",
+            "TrafficLightProtocol": "AMBER",
+            "TargetIndustries": ["finance"],
+            "CountryCode": "US",
+            "Modified": "2023-01-01T12:00:00Z",
+            "Creation": "2022-01-01T12:00:00Z",
+            "Tags": ["tag1", "tag2"],
+            "Location": "New York",
+            "ASN": "AS12345",
+        },
+        "relationships": [
+            {
+                "name": "resolves-to",
+                "reverseName": "resolved-from",
+                "type": "IndicatorToIndicator",
+                "entityA": "1.1.1.1",
+                "entityAFamily": "Indicator",
+                "entityAType": "IP",
+                "entityB": "example.com",
+                "entityBFamily": "Indicator",
+                "entityBType": "Domain",
+                "fields": {},
+            }
+        ],
+        "rawJSON": {
+            "id": "123",
+            "type": "ip",
+            "value": "1.1.1.1",
+            "confidence": 80,
+            "source": "TestSource",
+            "description": "Test IP",
+            "rdns": "example.com",
+            "meta.maltype": "type",
+            "target_industry": ["finance"],
+            "asn": "AS12345",
+            "locations": "New York",
+            "tags": ["tag1", "tag2"],
+            "tlp": "RED",
+            "country": "US",
+            "modified_ts": "2023-01-01T12:00:00Z",
+            "org": "",
+            "created_ts": "2022-01-01T12:00:00Z",
+            "expiration_ts": "2024-01-01T12:00:00Z",
+        },
+        "score": Common.DBotScore.BAD,
+    }
+
+    mocker.patch("AnomaliThreatStreamFeed.DBotScoreCalculator.calculate_score", return_value=Common.DBotScore.BAD)
+
+    result = parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
+    assert result == expected_output
+
+
+@pytest.mark.parametrize(
+    "indicator, tlp_color, create_relationship_param, reliability, mock_dbot_score_return",
+    [
+        pytest.param(
+            {"id": "125", "value": "missing_type_value", "confidence": 50},
+            "RED",
+            True,
+            "C - Fairly reliable",
+            Common.DBotScore.NONE,
+            id="Test Case 1: Missing indicator 'type'",
+        ),
+        pytest.param(
+            {"id": "126", "type": "url", "confidence": 50},
+            "RED",
+            True,
+            "C - Fairly reliable",
+            Common.DBotScore.NONE,
+            id="Test Case 2: Missing indicator 'value'",
+        ),
+    ],
+)
+def test_parse_indicator_for_fetch_error_scenarios(
+    indicator: dict[str, Any],
+    tlp_color: str,
+    create_relationship_param: bool,
+    reliability: str,
+    mock_dbot_score_return: int,
+    mocker,
+):
+    """
+    Tests parse_indicator_for_fetch for scenarios that are expected to raise an error.
+
+    Given:
+        - A raw indicator dictionary with missing or invalid critical data.
+        - TLP color, relationship creation flag, and reliability.
+        - Mock return value for DBotScoreCalculator.calculate_score.
+    When:
+        - Calling parse_indicator_for_fetch.
+    Then:
+        Verify that:
+        - A `ValueError` is raised with the expected error message.
+
+    Test Cases Explained:
+    - **Test Case 1 (Missing indicator 'type'):** This case specifically tests the error handling when the essential 'type' field
+        is missing from the raw indicator data. It expects a `ValueError` to be raised, indicating that the indicator cannot be
+        processed without this crucial piece of information.
+    - **Test Case 2 (Missing indicator 'value'):** Similar to the previous case, this tests the error handling when the 'value'
+        field, which is also critical for identifying the indicator, is missing. It also expects a `ValueError`, confirming that
+        the function correctly identifies and handles incomplete indicator data.
+    """
+    from AnomaliThreatStreamFeed import parse_indicator_for_fetch
+
     # Mock the external functions/methods
-    mocker.patch("AnomaliThreatStreamFeed.create_relationships", return_value=mock_relationships_return)
     mocker.patch("AnomaliThreatStreamFeed.DBotScoreCalculator.calculate_score", return_value=mock_dbot_score_return)
 
-    if expect_error:
-        with pytest.raises(ValueError) as excinfo:
-            parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
-        assert f"Indicator missing 'type' or 'value': {indicator}" in str(excinfo.value)
+    with pytest.raises(ValueError) as excinfo:
+        parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
+    assert f"Indicator missing 'type' or 'value': {indicator}" in str(excinfo.value)
+
+
+TEST_CASES = [
+    {
+        "params": {},  # Use defaults
+        "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
+        "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
+        "mock_get_past_time_return": None,
+        "mock_parse_indicator_for_fetch_side_effect": [],
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
+        "expected_parsed_indicators": [],
+        "expected_exception": None,
+    },
+]
+
+
+@pytest.mark.parametrize("test_case", TEST_CASES)
+def test_fetch_indicators_command_subsequent_run_no_new_indicators(mocker, test_case):
+    """
+    Tests fetch_indicators_command across various scenarios using parametrization.
+
+    Covers: first run, subsequent runs, pagination, no new indicators,
+    parsing errors, pagination errors, and parameter handling.
+
+    Given:
+        - A test_case dictionary containing specific inputs and expected outcomes
+          for client responses, mocked function returns, and log messages.
+    When:
+        - Calling fetch_indicators_command with the test case's parameters.
+    Then:
+        Verify that:
+        - Verifies that the command returns the expected next run timestamp and parsed indicators.
+        - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch)
+          are called correctly based on the scenario.
+        - Handles expected exceptions.
+    """
+    from AnomaliThreatStreamFeed import fetch_indicators_command
+
+    client = mock_client()
+    mock_http_request = mocker.patch.object(client, "http_request")
+    # Use a list of responses for http_request to simulate pagination
+    mock_http_request.side_effect = test_case["mock_http_responses"]
+
+    mock_parse_indicator_for_fetch = mocker.patch("AnomaliThreatStreamFeed.parse_indicator_for_fetch")
+    mock_parse_indicator_for_fetch.side_effect = test_case["mock_parse_indicator_for_fetch_side_effect"]
+
+    # Mock datetime.now for consistent timestamps
+    mock_now_dt = test_case["mock_now"]
+    mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
+
+    if test_case["expected_exception"]:
+        with pytest.raises(test_case["expected_exception"]):
+            fetch_indicators_command(client, test_case["params"], test_case["last_run"])
     else:
-        result = parse_indicator_for_fetch(indicator, tlp_color, create_relationship_param, reliability)
-        assert result == expected_output
+        next_run_timestamp, parsed_indicators_list = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
+
+        assert next_run_timestamp == test_case["expected_next_run_timestamp"]
+        assert parsed_indicators_list == test_case["expected_parsed_indicators"]
+
+        assert mock_parse_indicator_for_fetch.call_count == 0  # No indicators to parse
 
 
 TEST_CASES = [
@@ -891,22 +939,11 @@ TEST_CASES = [
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
         "expected_exception": None,
     },
-    {
-        "params": {},  # Use defaults
-        "last_run": {"last_successful_run": "2023-08-01T09:00:00Z"},
-        "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
-        "mock_get_past_time_return": None,
-        "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
-        "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
-        "expected_parsed_indicators": [],
-        "expected_exception": None,
-    },
 ]
 
 
 @pytest.mark.parametrize("test_case", TEST_CASES)
-def test_fetch_indicators_command_scenarios(mocker, test_case):
+def test_fetch_indicators_command_first_run_with_indicators(mocker, test_case):
     """
     Tests fetch_indicators_command across various scenarios using parametrization.
 
@@ -919,6 +956,7 @@ def test_fetch_indicators_command_scenarios(mocker, test_case):
     When:
         - Calling fetch_indicators_command with the test case's parameters.
     Then:
+        Verify that:
         - Verifies that the command returns the expected next run timestamp and parsed indicators.
         - Asserts that external functions (http_request, get_past_time, parse_indicator_for_fetch)
           are called correctly based on the scenario.
@@ -932,47 +970,128 @@ def test_fetch_indicators_command_scenarios(mocker, test_case):
     mock_http_request.side_effect = test_case["mock_http_responses"]
 
     mock_get_past_time = mocker.patch("AnomaliThreatStreamFeed.get_past_time")
-    if test_case["mock_get_past_time_return"]:
-        mock_get_past_time.return_value = test_case["mock_get_past_time_return"]
+    mock_get_past_time.return_value = test_case["mock_get_past_time_return"]
 
     mock_parse_indicator_for_fetch = mocker.patch("AnomaliThreatStreamFeed.parse_indicator_for_fetch")
-    # Handle both single return value and list of side effects for parse_indicator_for_fetch
-    if isinstance(test_case["mock_parse_indicator_for_fetch_side_effect"], list):
-        mock_parse_indicator_for_fetch.side_effect = test_case["mock_parse_indicator_for_fetch_side_effect"]
-    else:
-        mock_parse_indicator_for_fetch.return_value = test_case["mock_parse_indicator_for_fetch_side_effect"]
+    mock_parse_indicator_for_fetch.return_value = test_case["mock_parse_indicator_for_fetch_side_effect"]
 
     # Mock datetime.now for consistent timestamps
     mock_now_dt = test_case["mock_now"]
     mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
 
-    if test_case["expected_exception"]:
-        with pytest.raises(test_case["expected_exception"]):
-            fetch_indicators_command(client, test_case["params"], test_case["last_run"])
-    else:
-        next_run_timestamp, parsed_indicators_list = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
+    next_run_timestamp, parsed_indicators_list = fetch_indicators_command(client, test_case["params"], test_case["last_run"])
 
-        assert next_run_timestamp == test_case["expected_next_run_timestamp"]
-        assert parsed_indicators_list == test_case["expected_parsed_indicators"]
+    assert next_run_timestamp == test_case["expected_next_run_timestamp"]
+    assert parsed_indicators_list == test_case["expected_parsed_indicators"]
 
-        if test_case["expected_parsed_indicators"]:
-            # If parsing errors can occur, the number of calls might not equal len(expected_parsed_indicators)
-            # It should equal the number of raw indicators in http responses.
-            num_raw_indicators_to_parse = 0
-            for http_resp in test_case["mock_http_responses"]:
-                if isinstance(http_resp, dict) and "objects" in http_resp:
-                    num_raw_indicators_to_parse += len(http_resp["objects"])
+    # If parsing errors can occur, the number of calls might not equal len(expected_parsed_indicators)
+    # It should equal the number of raw indicators in http responses.
+    num_raw_indicators_to_parse = 0
+    for http_resp in test_case["mock_http_responses"]:
+        num_raw_indicators_to_parse += len(http_resp["objects"])
 
-            # If there was a parsing error side effect, reduce the count of expected successful parses
-            if isinstance(test_case["mock_parse_indicator_for_fetch_side_effect"], list):
-                expected_parse_calls = 0
-                for item in test_case["mock_parse_indicator_for_fetch_side_effect"]:
-                    if not isinstance(item, Exception):
-                        expected_parse_calls += 1
-                assert (
-                    mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
-                )  # All raw indicators are attempted to be parsed
-            else:  # Single return value implies all parsed successfully
-                assert mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
-        else:
-            assert mock_parse_indicator_for_fetch.call_count == 0  # No indicators to parse
+    # If there was a parsing error side effect, reduce the count of expected successful parses
+    if isinstance(test_case["mock_parse_indicator_for_fetch_side_effect"], list):
+        expected_parse_calls = 0
+        for item in test_case["mock_parse_indicator_for_fetch_side_effect"]:
+            if not isinstance(item, Exception):
+                expected_parse_calls += 1
+        assert (
+            mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
+        )  # All raw indicators are attempted to be parsed
+    else:  # Single return value implies all parsed successfully
+        assert mock_parse_indicator_for_fetch.call_count == num_raw_indicators_to_parse
+
+
+def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
+    """
+    Tests fetch_indicators_command's error handling for individual indicator parsing.
+
+    Given:
+        - A scenario where `parse_indicator_for_fetch` raises an exception for one indicator
+          but successfully parses another.
+        - Mock API response with multiple raw indicators.
+    When:
+        - Calling fetch_indicators_command.
+    Then:
+        Verify that:
+        - `demisto.error` is called for the skipped indicator.
+        - Only successfully parsed indicators are returned.
+        - `parse_indicator_for_fetch` is attempted for all raw indicators.
+        - The `next_run_timestamp` is correctly updated.
+    """
+    from AnomaliThreatStreamFeed import fetch_indicators_command  # Assuming it's in this module
+
+    # Define test data
+    first_indicator_raw = {"id": "1", "type": "ip", "value": "1.1.1.1", "modified_ts": "2023-08-01T11:00:00.000Z"}
+    second_indicator_raw = {"id": "2", "type": "domain", "value": "example.com", "modified_ts": "2023-08-01T11:01:00.000Z"}
+
+    test_case_data = {
+        "params": {
+            "createRelationships": True,
+            "tlp_color": "GREEN",
+            "feedReliability": "B - Usually reliable",
+            "feedFetchInterval": "10",
+        },
+        "last_run": {},
+        "mock_http_responses": [
+            {
+                "objects": [first_indicator_raw, second_indicator_raw],
+                "meta": {"next": None},
+            }
+        ],
+        "mock_get_past_time_return": "2023-08-01T10:00:00.000Z",
+        "mock_parse_indicator_for_fetch_side_effect": [
+            ValueError("Simulated parsing error"),  # First indicator fails parsing
+            {"value": "example.com", "type": "DOMAIN"},  # Second indicator parses successfully
+        ],
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
+        "expected_parsed_indicators": [{"value": "example.com", "type": "DOMAIN"}],  # Only the second one
+    }
+
+    client = mock_client()
+    mocker.patch.object(client, "http_request", side_effect=test_case_data["mock_http_responses"])
+
+    mock_parse_indicator_for_fetch = mocker.patch(
+        "AnomaliThreatStreamFeed.parse_indicator_for_fetch",
+        side_effect=test_case_data["mock_parse_indicator_for_fetch_side_effect"],
+    )
+    mock_demisto_error = mocker.patch("AnomaliThreatStreamFeed.demisto.error")  # Patch demisto.error to assert its call
+
+    mock_now_dt = test_case_data["mock_now"]
+    mocker.patch("AnomaliThreatStreamFeed.get_current_utc_time", return_value=mock_now_dt)
+
+    next_run_timestamp, parsed_indicators_list = fetch_indicators_command(
+        client, test_case_data["params"], test_case_data["last_run"]
+    )
+
+    # Assertions
+    assert next_run_timestamp == test_case_data["expected_next_run_timestamp"]
+    assert parsed_indicators_list == test_case_data["expected_parsed_indicators"]
+
+    # Verify demisto.error was called for the skipped indicator
+    mock_demisto_error.assert_called_once_with(
+        f"{THREAT_STREAM} - Error parsing indicator ID {first_indicator_raw.get('id')}:"
+        f"Simulated parsing error. Skipping this indicator."
+    )
+
+    # Verify that parse_indicator_for_fetch was called for ALL raw indicators,
+    # even though one failed.
+    assert mock_parse_indicator_for_fetch.call_count == 2
+    mock_parse_indicator_for_fetch.assert_has_calls(
+        [
+            mocker.call(
+                first_indicator_raw,
+                test_case_data["params"]["tlp_color"],
+                test_case_data["params"]["createRelationships"],
+                test_case_data["params"]["feedReliability"],
+            ),
+            mocker.call(
+                second_indicator_raw,
+                test_case_data["params"]["tlp_color"],
+                test_case_data["params"]["createRelationships"],
+                test_case_data["params"]["feedReliability"],
+            ),
+        ]
+    )

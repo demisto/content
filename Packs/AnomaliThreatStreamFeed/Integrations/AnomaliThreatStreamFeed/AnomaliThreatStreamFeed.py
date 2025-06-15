@@ -12,15 +12,28 @@ DEFAULT_SUSPICIOUS_THRESHOLD = 25
 DEFAULT_BENIGN_THRESHOLD = 0
 THREAT_STREAM = "Anomali ThreatStream Feed"
 RETRY_COUNT = 2
-LIMIT = 1000
-STATUS = "active"
+LIMIT_RES_FROM_API = 1000
+STATUS_OF_INDICATORS = "active"
+URL_SUFFIX = "v2/intelligence"
+DEFAULT_CONFIDENCE_THRESHOLD = 65
+DEFAULT_FEED_FETCH_INTERVAL = 240
+STRFTIME_CONST = "%Y-%m-%dT%H:%M:%SZ"
 
-indicatorType = {
+
+INDICATOR_TYPE = {
     "domain": FeedIndicatorType.Domain,
     "ip": FeedIndicatorType.IP,
     "md5": FeedIndicatorType.File,
     "url": FeedIndicatorType.URL,
     "email": FeedIndicatorType.Email,
+}
+
+INDICATOR_TYPE_UPPER = {
+    "domain": "Domain",
+    "ip": "IP",
+    "md5": "MD5",
+    "url": "URL",
+    "email": "Email",
 }
 
 RELATIONSHIPS_MAPPING = {
@@ -96,11 +109,11 @@ class Client(BaseClient):
         """
         # Handle error responses gracefully
         if res.status_code == 401:
-            raise DemistoException(f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials.")
+            raise DemistoException(f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials. {res.text}")
         elif res.status_code == 204:
             return
         elif res.status_code == 404:
-            raise DemistoException(f"{THREAT_STREAM} - The resource was not found.")
+            raise DemistoException(f"{THREAT_STREAM} - The resource was not found. {res.text}")
         raise DemistoException(f"{THREAT_STREAM} - Error in API call {res.status_code} - {res.text}")
 
 
@@ -112,7 +125,7 @@ class DBotScoreCalculator:
 
     def calculate_score(self, indicator):
         """
-        Calculate the DBot score according to the indicator's confidence.
+        Calculates the DBot score according to the indicator's confidence.
 
         Args:
             indicator (dict[str, Any]): The raw indicator dictionary from the API response.
@@ -121,7 +134,7 @@ class DBotScoreCalculator:
             int: The calculated DBot score (Common.DBotScore.NONE, GOOD, SUSPICIOUS, BAD).
         """
         confidence = arg_to_number(indicator.get("confidence", None))
-        if confidence is None:
+        if not confidence:
             demisto.debug(f"{THREAT_STREAM} - Confidence not found for indicator. Assigning default score.")
             return Common.DBotScore.NONE
 
@@ -151,40 +164,73 @@ def test_module(client: Client) -> str:
         str: 'ok' if the test passed, otherwise raises an exception.
     """
 
-    client.http_request("GET", "v2/intelligence/", params={"limit": 1})
+    client.http_request("GET", f"{URL_SUFFIX}/", params={"limit": 1})
     return "ok"
 
 
 def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResults:
     """
     Wrapper for retrieving indicators from the feed to the war-room.
-    This command is typically used for manual fetching and display in the CLI.
+    This command is mainly used for testing and debugging purposes.
 
     Args:
         client (Client): The client object to use for API requests.
         args (dict[str, Any]): Arguments passed to the command (e.g., indicator_type, limit).
 
     Returns:
-        CommandResults: An object containing the human-readable output.
+        CommandResults: An object containing the indicators' data.
     """
 
-    indicator_type = str(args.get("indicator_type", ""))
+    indicator_type = args.get("indicator_type", "")
     limit = arg_to_number(args.get("limit")) if args.get("limit") else 10
 
     params: dict[str, Any] = {"limit": limit}
     if indicator_type:
-        params["type"] = indicator_type
+        if indicator_type not in ["domain", "email", "ip", "md5", "url"]:
+            demisto.info(f"{THREAT_STREAM} - Invalid indicator type.")
+            return CommandResults(
+                readable_output="""### Invalid indicator type. Select one of the following types: domain, email, ip, md5, url"""
+            )
+        else:
+            params["type"] = indicator_type
 
     demisto.debug(f"{THREAT_STREAM} - Calling API to get indicators with params: {params}")
-    res = client.http_request(method="GET", url_suffix="v2/intelligence", params=params)
+    res = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=params)
 
-    indicators_raw = res.get("objects", [])
+    indicators_raw: list[dict[str, Any]] = res.get("objects", [])
     if not indicators_raw:
-        demisto.info(f"{THREAT_STREAM} - No indicators found for the given criteria in get-indicators command.")
-        return CommandResults(readable_output="### No indicators found.")
+        demisto.info(f"""{THREAT_STREAM} - No indicators found for the given criteria in the
+                     'threatstream-feed-get-indicators' command.""")
+        return CommandResults(readable_output="### No indicators were found.")
+
+    limit = limit - LIMIT_RES_FROM_API  # type: ignore
+    next_page = res.get("meta", {}).get("next", None)
+    while next_page and limit > 0:
+        try:
+            if next_page.startswith("/api/"):
+                # /api/ is removed here as it appears in the base_url of the client.
+                url_suffix_for_next_page = next_page[len("/api/") :]
+            else:
+                url_suffix_for_next_page = next_page  # Use as is if it's already relative
+            url_suffix_for_next_page = url_suffix_for_next_page.replace("limit=1000", f"limit={limit}")
+            limit = limit - LIMIT_RES_FROM_API
+            demisto.debug(f"{THREAT_STREAM} - Fetching next page: {url_suffix_for_next_page}")
+            res = client.http_request(method="GET", url_suffix=url_suffix_for_next_page)
+            current_page_indicators = res.get("objects", [])
+
+            if current_page_indicators:
+                indicators_raw.extend(current_page_indicators)
+            else:
+                demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
+                break
+
+            next_page = res.get("meta", {}).get("next", None)
+        except Exception as e:
+            demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
+            break  # Break pagination on error but process what's already fetched
 
     parsed_indicators = parse_indicators_for_get_command(indicators_raw)
-    demisto.debug(f"{THREAT_STREAM} - get-indicators command got {len(parsed_indicators)} indicators.")
+    demisto.debug(f"{THREAT_STREAM}-get-indicators command got {len(parsed_indicators)} indicators.")
 
     # Define headers dynamically based on whether an indicator type was specified
     headers = [
@@ -205,7 +251,8 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     ]
 
     if indicator_type:
-        # Insert the dynamic indicator type header (e.g., "ip", "domain") right after "Country Code"
+        # Insert the dynamic indicator type header (e.g., "IP", "Domain") right after "Country Code"
+        indicator_type = INDICATOR_TYPE_UPPER.get(indicator_type)
         headers.insert(headers.index("Country Code") + 1, indicator_type)
 
     human_readable = tableToMarkdown(
@@ -231,7 +278,7 @@ def parse_indicators_for_get_command(indicators) -> list[dict[str, Any]]:
     """
     res: list[dict[str, Any]] = []
     for indicator in indicators:
-        indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email"
+        indicator_type = INDICATOR_TYPE_UPPER.get(indicator.get("type"))  # e.g., "IP", "Domain", "Email"
         indicator_value = indicator.get("value")  # The actual value of the indicator
 
         dynamic_field: dict[str, Any] = {}
@@ -290,7 +337,7 @@ def fetch_indicators_command(
     client: Client, params: dict[str, Any], last_run: dict[str, Any]
 ) -> tuple[str, list[dict[str, Any]]]:
     """
-    Wrapper for fetching indicators from the feed to the Indicators tab in Cortex XSOAR.
+    Wrapper for fetching indicators from the feed to the Threat Intel Management (TIM) in Cortex XSOAR.
     This function handles pagination and updates the last run time.
 
     Args:
@@ -307,13 +354,13 @@ def fetch_indicators_command(
     tlp_color = params.get("tlp_color", "WHITE")
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
     now = get_current_utc_time()
-    order_by = params.get("fetchBy", "modified") + "_ts"
-    confidence_threshold = arg_to_number(params.get("confidenceThreshold", "65"))
+    order_by = f"{params.get('fetchBy', 'modified')}_ts"
+    confidence_threshold = arg_to_number(params.get("confidenceThreshold", DEFAULT_CONFIDENCE_THRESHOLD))
 
     # Initialize last_fetch_time based on the last_run object.
     # If it's the first run, or last_run is empty, fetch from a default interval.
     last_fetch_time = last_run.get("last_successful_run")
-    feed_fetch_interval = arg_to_number(params.get("feedFetchInterval", "240"))
+    feed_fetch_interval = arg_to_number(params.get("feedFetchInterval", DEFAULT_FEED_FETCH_INTERVAL))
 
     if not last_fetch_time:
         demisto.info(
@@ -324,7 +371,9 @@ def fetch_indicators_command(
     else:
         demisto.info(f"{THREAT_STREAM} - Fetching indicators {order_by.replace('_ts', '')} since {last_fetch_time}.")
 
-    query: dict[str, Any] = assign_params(limit=LIMIT, status=STATUS, order_by=order_by, confidence__gt=confidence_threshold)
+    query: dict[str, Any] = assign_params(
+        limit=LIMIT_RES_FROM_API, status=STATUS_OF_INDICATORS, order_by=order_by, confidence__gt=confidence_threshold
+    )
 
     if order_by == "modified_ts":
         # TODO will be deleted later - good for tests and demo
@@ -333,11 +382,11 @@ def fetch_indicators_command(
         query["created_ts__gte"] = last_fetch_time
 
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
-    response = client.http_request(method="GET", url_suffix="v2/intelligence", params=query)
+    response = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=query)
     all_raw_indicators: list[dict[str, Any]] = response.get("objects", [])
-    next_page = response.get("meta", {}).get("next", None)
+    next_page = response.get("meta", {}).get("next")
 
-    while next_page:
+    while next_page:  # Handles pagination
         try:
             if next_page.startswith("/api/"):
                 url_suffix_for_next_page = next_page[len("/api/") :]
@@ -354,7 +403,7 @@ def fetch_indicators_command(
                 demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
                 break
 
-            next_page = response.get("meta", {}).get("next", None)
+            next_page = response.get("meta", {}).get("next")
         except Exception as e:
             demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
             break  # Break pagination on error but process what's already fetched
@@ -362,7 +411,7 @@ def fetch_indicators_command(
     if not all_raw_indicators:
         demisto.info(f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.")
         # Update last_run even if no indicators are found, to avoid refetching the same period.
-        return now.strftime("%Y-%m-%dT%H:%M:%SZ"), []
+        return now.strftime(STRFTIME_CONST), []
 
     demisto.debug(f"{THREAT_STREAM} - Total raw indicators fetched: {len(all_raw_indicators)}")
     parsed_indicators_list: list[dict[str, Any]] = []
@@ -378,8 +427,7 @@ def fetch_indicators_command(
 
     demisto.debug(f"{THREAT_STREAM} - Successfully parsed {len(parsed_indicators_list)} indicators for fetch.")
     # Return the current UTC timestamp for the next successful run and the list of parsed indicators
-    # todo here
-    return now.strftime("%Y-%m-%dT%H:%M:%SZ"), parsed_indicators_list
+    return now.strftime(STRFTIME_CONST), parsed_indicators_list
 
 
 def create_relationships(create_relationships_param: bool, reliability: str, indicator: dict[str, Any]) -> list[dict[str, Any]]:
@@ -398,6 +446,7 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
     relationships: list[dict[str, Any]] = []
 
     if not create_relationships_param:
+        demisto.debug(f"{THREAT_STREAM} - Skipping relationship creation for indicator {indicator}")
         return relationships
 
     indicator_type = indicator.get("type")
@@ -422,7 +471,7 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
                 relationships.append(
                     EntityRelationship(
                         entity_a=indicator_value,
-                        entity_a_type=indicatorType.get(indicator_type),
+                        entity_a_type=INDICATOR_TYPE.get(indicator_type),
                         name=relationship_name,
                         entity_b=entity_b_values,  # entity_b_item,
                         entity_b_type=entity_b_type,
@@ -430,7 +479,7 @@ def create_relationships(create_relationships_param: bool, reliability: str, ind
                         brand=THREAT_STREAM,
                     ).to_indicator()  # Convert the EntityRelationship object to a dictionary
                 )
-
+        demisto.debug(f"{THREAT_STREAM} - Relationship successfully created for indicator {indicator}")
     return relationships
 
 
@@ -454,7 +503,7 @@ def parse_indicator_for_fetch(
     relationships = create_relationships(create_relationship_param, reliability, indicator)
 
     # indicator_type = indicator.get("type")  # e.g., "ip", "domain", "email", "md5", "url"
-    indicator_type = indicatorType.get(str(indicator.get("type")))
+    indicator_type = INDICATOR_TYPE.get(str(indicator.get("type")))
     indicator_value = indicator.get("value")  # The actual value of the indicator (e.g., "1.1.1.1", "example.com")
 
     if not indicator_type or not indicator_value:
@@ -500,7 +549,7 @@ def main():
     Initiate integration command
     """
     command = demisto.command()
-    LOG(f"Command being called is {command}")
+    demisto.debug(f"Command being called is {command}")
 
     params = demisto.params()
 
@@ -518,7 +567,7 @@ def main():
         )
 
         if command == "test-module":
-            # This is the call made when pressing the integration Test button.
+            # This call is made when clicking the integration 'Test' button.
             return_results(test_module(client))
 
         elif command == "threatstream-feed-get-indicators":

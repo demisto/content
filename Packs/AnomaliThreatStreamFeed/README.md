@@ -1,6 +1,3 @@
-Anomali ThreatStream Feed and Sample Management
-This pack is designed to fetch, manage, and query threat intelligence feeds and associated samples from Anomali ThreatStream.
-
 ## What does this pack do?
 Indicator Ingestion: The Feed integration facilitates the retrieval of threat indicators directly from Anomali ThreatStream.
 

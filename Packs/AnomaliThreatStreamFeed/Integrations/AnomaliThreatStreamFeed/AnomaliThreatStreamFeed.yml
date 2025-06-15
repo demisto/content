@@ -76,7 +76,7 @@ configuration:
   advanced: true
 - display: Indicator Reputation
   name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation.
   options:
   - None
   - Good
@@ -112,7 +112,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Anomali ThreatStream Feed Integration.
+description: Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream Feed.
 display: Anomali ThreatStream Feed
 name: Anomali ThreatStream Feed
 script:
@@ -135,7 +135,7 @@ script:
       isArray: false
       required: false
       type: Number
-    description: Gets indicators from the feed.
+    description: Gets indicators from the feed. This command is mainly used for testing and debugging purposes.
     name: threatstream-feed-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.3205634
   runonce: false
@@ -145,4 +145,4 @@ script:
   type: python
 tests:
 - No tests (auto formatted)
-fromversion: 5.5.0
+fromversion: 6.0.0
