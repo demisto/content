@@ -86,7 +86,7 @@ def parse_firewall_rule(rule_str: str) -> list[dict[str, list[str] | str]]:
                         e.g., "ipprotocol=abc,ports=123;ipprotocol=ded,ports=22,443".
 
     Returns:
-        list[dict[str, Union[str, list[str]]]]: A list of dictionaries containing 'IPProtocol' and 'ports'.
+        list[dict[str, list[str] | str]]: A list of dictionaries containing 'IPProtocol' and 'ports'.
     """
     rules = []
     for f in rule_str.split(";"):
@@ -1006,7 +1006,8 @@ def get_credentials(args: dict, params: dict) -> Credentials:
     except Exception as e:
         raise DemistoException(f"Failed to authenticate with GCP: {str(e)}")
 
-def main():
+
+def main():  # pragma: no cover
     """
     Main function to route commands and execute logic.
 

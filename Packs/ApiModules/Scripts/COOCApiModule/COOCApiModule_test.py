@@ -218,7 +218,6 @@ def test_check_account_permissions(mocker):
     When: _check_account_permissions is called.
     Then: It calls the permission check function with the correct parameters and returns its result.
     """
-    import demistomock as demisto
     from COOCApiModule import _check_account_permissions
 
     # Mock permission check function
@@ -286,7 +285,7 @@ def test_run_permissions_check_for_accounts(mocker):
     When: run_permissions_check_for_accounts is called.
     Then: It retrieves accounts and runs permission checks concurrently.
     """
-    from COOCApiModule import run_permissions_check_for_accounts, HealthCheck, HealthCheckError, ErrorType, HealthStatus
+    from COOCApiModule import run_permissions_check_for_accounts, HealthCheckError, ErrorType
 
     # Mock get_accounts_by_connector_id
     accounts = [{"account_id": "account-1"}, {"account_id": "account-2"}]
