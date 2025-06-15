@@ -136,6 +136,28 @@ class HealthCheck:
         )
 
 
+def get_connector_id() -> Optional[str]:
+    """
+    Retrieves the connector ID from the calling context.
+
+    This function extracts the connector ID from the CloudIntegrationInfo
+    in the calling context. This is useful for integration commands that
+    need to know which connector they're associated with.
+
+    Returns:
+        Optional[str]: The connector ID if available in the context, otherwise None.
+    """
+    cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
+    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
+
+    if connector_id := cloud_info_context.get("connectorID"):
+        demisto.debug(f"Retrieved connector ID from context: {connector_id}")
+    else:
+        demisto.debug("No connector ID found in context")
+
+    return connector_id
+
+
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
     """
     Retrieves valid credentials for the specified cloud provider from CTS.
@@ -164,23 +186,18 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         name = PROVIDER_ACCOUNT_NAMES.get(cloud_type, "account identifier")
         raise ValueError(f"Missing {name} for {cloud_type}")
 
-    context = demisto.callingContext.get("context", {})
-    cloud_info = context.get("CloudIntegrationInfo", {})
-
-    demisto.info(f"Cloud credentials request context: {context}")
+    cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
+    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
 
     request_data = {
-        "connector_id": cloud_info.get("connectorID"),
+        "connector_id": cloud_info_context.get("connectorID"),
         "account_id": account_id,
-        "outpost_id": cloud_info.get("outpostID"),
+        "outpost_id": cloud_info_context.get("outpostID"),
         "cloud_type": cloud_type,
     }
 
     if scopes:
         request_data["scopes"] = scopes
-
-    if cloud_type == CloudTypes.AWS.value and context.get("region_name"):
-        request_data["region_name"] = context["region_name"]
 
     demisto.info(f"Request data for credentials retrieval: {request_data}")
 

@@ -971,10 +971,7 @@ def main():
         command = demisto.command()
         args = demisto.args()
         params = demisto.params()
-        context = demisto.callingContext.get("context", {})
-        cloud_info = context.get("CloudIntegrationInfo", {})
 
-        connector_id = cloud_info.get("connectorID")
         command_map = {
             "test-module": test_module,
             # Compute Engine commands
@@ -1001,7 +998,7 @@ def main():
             # "gcp-admin-user-signout": admin_user_signout,
         }
 
-        if command == "test-module" and connector_id:
+        if command == "test-module" and (connector_id := get_connector_id()):
             return_results(run_permissions_check_for_accounts(connector_id, health_check))
 
         if command not in command_map:
