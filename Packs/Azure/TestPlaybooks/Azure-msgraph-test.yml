@@ -1,0 +1,171 @@
+id: 9c4aa97e-8e46-431d-84ed-0403cacead0b
+version: 2
+vcShouldKeepItemLegacyProdMachine: false
+name: Azure-msgraph-test
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 06cafeba-9d72-4f8f-835c-f4e1bbdd82fb
+    type: start
+    task:
+      id: 06cafeba-9d72-4f8f-835c-f4e1bbdd82fb
+      version: -1
+      name: ""
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "1"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 50
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "1":
+    id: "1"
+    taskid: 23e3a803-6984-4085-a5d9-8c111d20ec1f
+    type: regular
+    task:
+      id: 23e3a803-6984-4085-a5d9-8c111d20ec1f
+      version: -1
+      name: Get Group Members asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 255
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "2":
+    id: "2"
+    taskid: b4a3022c-3cae-489b-9a8b-cb075618097a
+    type: regular
+    task:
+      id: b4a3022c-3cae-489b-9a8b-cb075618097a
+      version: -1
+      name: msgraph-groups-remove-member
+      description: Removes a member from a group.
+      script: AZURE|||azure-remove-member-from-group
+      type: regular
+      iscommand: true
+      brand: AZURE
+    nexttasks:
+      '#none#':
+      - "3"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 352
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "3":
+    id: "3"
+    taskid: 7f950d75-5ac5-46bb-a9c8-25e2cba224bc
+    type: regular
+    task:
+      id: 7f950d75-5ac5-46bb-a9c8-25e2cba224bc
+      version: -1
+      name: Get Role Members asset details
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "4"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 451,
+          "y": 664
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "4":
+    id: "4"
+    taskid: ee7123e5-5c4a-490f-a191-891ce7077bee
+    type: regular
+    task:
+      id: ee7123e5-5c4a-490f-a191-891ce7077bee
+      version: -1
+      name: msgraph-identity-directory-role-member-remove
+      description: Removes a user from a role.
+      script: AZURE|||azure-remove-member-from-role
+      type: regular
+      iscommand: true
+      brand: AZURE
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 450,
+          "y": 760
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+view: |-
+  {
+    "linkLabelsPosition": {},
+    "paper": {
+      "dimensions": {
+        "height": 780,
+        "width": 382,
+        "x": 450,
+        "y": 50
+      }
+    }
+  }
+inputs: []
+outputs: []
+quiet: true
