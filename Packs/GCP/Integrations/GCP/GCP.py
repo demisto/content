@@ -856,12 +856,12 @@ def check_required_permissions(
             granted = set(response.get("permissions", []))
             missing = set(testable_permissions) - granted
         except Exception as e:
-            error_message = f"Failed to test IAM permissions: {str(e)}"
+            error_message = f"Failed to test permissions for GCP integration: {str(e)}"
             if connector_id:
                 return HealthCheckError(
                     account_id=project_id,
                     connector_id=connector_id,
-                    message="Failed to test permissions for GCP integration",
+                    message=error_message,
                     error_type=ErrorType.PERMISSION_ERROR,
                 )
 
@@ -870,13 +870,13 @@ def check_required_permissions(
     if missing:
         perm_to_cmds = {perm: [cmd for cmd, perms in REQUIRED_PERMISSIONS.items() if perm in perms] for perm in missing}
         error_lines = [f"- {perm} (required for: {', '.join(cmds)})" for perm, cmds in perm_to_cmds.items()]
-        error_message = "Missing permissions:\n" + "\n".join(error_lines)
+        error_message = "Missing required permissions for GCP integration:\n" + "\n".join(error_lines)
 
         if connector_id:
             return HealthCheckError(
                 account_id=project_id,
                 connector_id=connector_id,
-                message="Missing required permissions for GCP integration: " + error_message,
+                message=error_message,
                 error_type=ErrorType.PERMISSION_ERROR,
             )
 
@@ -922,11 +922,10 @@ def health_check(project_id: str, connector_id: str) -> HealthCheckError | None:
         demisto.debug("Using token-based credentials for health check")
         return check_required_permissions(creds, project_id, connector_id)
     except Exception as e:
-        error_message = str(e)
         return HealthCheckError(
             account_id=project_id,
             connector_id=connector_id,
-            message=f"Failed to connect to GCP: {error_message}",
+            message=f"Failed to connect to GCP: {str(e)}",
             error_type=ErrorType.CONNECTIVITY_ERROR,
         )
 
