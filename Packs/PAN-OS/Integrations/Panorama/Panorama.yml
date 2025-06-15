@@ -7706,8 +7706,14 @@ script:
     - contextPath: PANOS.ShowSystemInfo.Result.url_filtering_version
       description: The URL filtering content version.
       type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.advanced_routing
+      description: Advanced routing feature.
+      type: String
+    - contextPath: PANOS.ShowSystemInfo.Result.multi_vsys
+      description: Virtual system feature.
+      type: String
   - arguments:
-    - description: The string by which to filter the results to only show specific hostnames or serial numbers.
+    - description: The string to filter the results by to only show specific hostnames or serial numbers.
       name: device_filter_string
     description: Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
     name: pan-os-platform-get-device-groups
@@ -9798,7 +9804,7 @@ script:
       type: Number
       required: true
       isArray: false
-  dockerimage: demisto/pan-os-python:1.0.0.2067372
+  dockerimage: demisto/pan-os-python:1.0.0.3273320
   isfetch: true
   runonce: false
   script: ''

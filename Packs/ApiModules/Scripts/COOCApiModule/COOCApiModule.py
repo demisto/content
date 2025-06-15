@@ -5,7 +5,7 @@ from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
 from typing import Any, Optional
-
+import requests
 
 class CloudTypes(Enum):
     AWS = "AWS"
@@ -289,7 +289,7 @@ def run_permissions_check_for_accounts(
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK
+        return HealthStatus.OK.value
 
     health_check_result = HealthCheck(connector_id)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -324,7 +324,6 @@ def get_proxydome_token() -> str:
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
     params = {"audience": "cortex.platform.local"}
     headers = {"Metadata-Flavor": "Google"}
-    # Use empty string instead of None to satisfy type checker
     proxies = {"http": "", "https": ""}
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text

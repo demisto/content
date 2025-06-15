@@ -6,12 +6,11 @@ import urllib3
 import traceback
 from typing import Any
 import ast
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import demistomock as demisto  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerPython import *  # noqa: E402 lgtm [py/polluting-import]
 from CommonServerUserPython import *  # noqa: E402 lgtm [py/polluting-import]
-
 
 # Disable insecure warnings
 urllib3.disable_warnings()
@@ -24,7 +23,7 @@ RESOURCE = {"ipv4", "ipv6", "domain"}
 
 # API ENDPOINTS
 JOB_STATUS = "explore/job"
-NAMESERVER_REPUTATION = "explore/nsreputation/nameserver"
+NAMESERVER_REPUTATION = "explore/nsreputation/history/nameserver"
 SUBNET_REPUTATION = "explore/ipreputation/history/subnet"
 ASNS_DOMAIN = "explore/padns/lookup/domain/asns"
 DENSITY_LOOKUP = "explore/padns/lookup/density"
@@ -57,10 +56,12 @@ JOB_STATUS_INPUTS = [  # pragma: no cover
     InputArgument(name="max_wait", description="Number of seconds to wait for results (0-25 seconds)."),
     InputArgument(name="status_only", description="Return job status, even if job is complete."),
     InputArgument(
-        name="force_metadata_on", description="Always return query metadata, even if original request did not include metadata."
+        name="force_metadata_on",
+        description="Always return query metadata, even if original request did not include metadata.",
     ),
     InputArgument(
-        name="force_metadata_off", description="Never return query metadata, even if original request did include metadata."
+        name="force_metadata_off",
+        description="Never return query metadata, even if original request did include metadata.",
     ),
 ]
 NAMESERVER_REPUTATION_INPUTS = [
@@ -148,7 +149,9 @@ DOMAIN_CERTIFICATE_INPUTS = [
 ]
 ENRICHMENT_INPUTS = [
     InputArgument(
-        name="resource", description="Type of resource for which information needs to be retrieved {e.g. domain}.", required=True
+        name="resource",
+        description="Type of resource for which information needs to be retrieved {e.g. domain}.",
+        required=True,
     ),
     InputArgument(
         name="value",
@@ -258,7 +261,9 @@ NAMESERVER_REPUTATION_OUTPUTS = [
         name="nameserver", output_type=int, description="The nameserver associated with the reputation history entry."
     ),
     OutputArgument(
-        name="reputation_data.date", output_type=int, description="Date of the reputation history entry (in YYYYMMDD format)."
+        name="reputation_data.date",
+        output_type=int,
+        description="Date of the reputation history entry (in YYYYMMDD format).",
     ),
     OutputArgument(
         name="reputation_data.ns_server",
@@ -285,7 +290,9 @@ SUBNET_REPUTATION_OUTPUTS = [
     OutputArgument(name="subnet", output_type=str, description="The subnet associated with the reputation history."),
     OutputArgument(name="reputation_history.date", output_type=int, description="The date of the subnet reputation record."),
     OutputArgument(
-        name="reputation_history.subnet", output_type=str, description="The subnet associated with the reputation record."
+        name="reputation_history.subnet",
+        output_type=str,
+        description="The subnet associated with the reputation record.",
     ),
     OutputArgument(
         name="reputation_history.subnet_reputation", output_type=int, description="The reputation score of the subnet."
@@ -309,13 +316,17 @@ SUBNET_REPUTATION_OUTPUTS = [
 ASNS_DOMAIN_OUTPUTS = [
     OutputArgument(name="domain", output_type=str, description="The domain name for which ASNs are retrieved."),
     OutputArgument(
-        name="asns", output_type=dict, description="Dictionary of Autonomous System Numbers (ASNs) associated with the domain."
+        name="asns",
+        output_type=dict,
+        description="Dictionary of Autonomous System Numbers (ASNs) associated with the domain.",
     ),
 ]
 DENSITY_LOOKUP_OUTPUTS = [
     OutputArgument(name="qtype", output_type=str, description="The following qtypes are supported: nssrv, mxsrv."),
     OutputArgument(
-        name="query", output_type=str, description="The query value to lookup, which can be the name of an NS or MX server."
+        name="query",
+        output_type=str,
+        description="The query value to lookup, which can be the name of an NS or MX server.",
     ),
     OutputArgument(name="records.density", output_type=int, description="The density value associated with the query result."),
     OutputArgument(name="records.nssrv", output_type=str, description="The name server (NS) for the query result."),
@@ -328,10 +339,14 @@ SEARCH_DOMAIN_OUTPUTS = [
     ),
     OutputArgument(name="host", output_type=str, description="The domain name (host) associated with the record."),
     OutputArgument(
-        name="ip_diversity_all", output_type=int, description="The total number of unique IPs associated with the domain."
+        name="ip_diversity_all",
+        output_type=int,
+        description="The total number of unique IPs associated with the domain.",
     ),
     OutputArgument(
-        name="ip_diversity_groups", output_type=int, description="The number of unique IP groups associated with the domain."
+        name="ip_diversity_groups",
+        output_type=int,
+        description="The number of unique IP groups associated with the domain.",
     ),
 ]
 DOMAIN_INFRATAGS_OUTPUTS = [
@@ -339,7 +354,9 @@ DOMAIN_INFRATAGS_OUTPUTS = [
     OutputArgument(name="infratags.mode", output_type=str, description="The mode associated with the domain infratag."),
     OutputArgument(name="infratags.tag", output_type=str, description="The tag associated with the domain infratag."),
     OutputArgument(
-        name="tag_clusters.25.domains", output_type=list, description="List of domains in the tag cluster with score 25."
+        name="tag_clusters.25.domains",
+        output_type=list,
+        description="List of domains in the tag cluster with score 25.",
     ),
     OutputArgument(
         name="tag_clusters.25.match",
@@ -347,7 +364,9 @@ DOMAIN_INFRATAGS_OUTPUTS = [
         description="The match string associated with the domains in the tag cluster with score 25.",
     ),
     OutputArgument(
-        name="tag_clusters.50.domains", output_type=list, description="List of domains in the tag cluster with score 50."
+        name="tag_clusters.50.domains",
+        output_type=list,
+        description="List of domains in the tag cluster with score 50.",
     ),
     OutputArgument(
         name="tag_clusters.50.match",
@@ -355,7 +374,9 @@ DOMAIN_INFRATAGS_OUTPUTS = [
         description="The match string associated with the domains in the tag cluster with score 50.",
     ),
     OutputArgument(
-        name="tag_clusters.75.domains", output_type=list, description="List of domains in the tag cluster with score 75."
+        name="tag_clusters.75.domains",
+        output_type=list,
+        description="List of domains in the tag cluster with score 75.",
     ),
     OutputArgument(
         name="tag_clusters.75.match",
@@ -363,7 +384,9 @@ DOMAIN_INFRATAGS_OUTPUTS = [
         description="The match string associated with the domains in the tag cluster with score 75.",
     ),
     OutputArgument(
-        name="tag_clusters.100.domains", output_type=list, description="List of domains in the tag cluster with score 100."
+        name="tag_clusters.100.domains",
+        output_type=list,
+        description="List of domains in the tag cluster with score 100.",
     ),
     OutputArgument(
         name="tag_clusters.100.match",
@@ -416,7 +439,9 @@ DOMAIN_CERTIFICATE_OUTPUTS = [
     OutputArgument(name="certificates.source_url", output_type=str, description="URL of the certificate log source."),
     OutputArgument(name="certificates.subject", output_type=str, description="Subject details of the certificate."),
     OutputArgument(
-        name="certificates.wildcard", output_type=int, description="Indicates if the certificate is a wildcard certificate."
+        name="certificates.wildcard",
+        output_type=int,
+        description="Indicates if the certificate is a wildcard certificate.",
     ),
     OutputArgument(name="job_details.get", output_type=str, description="URL to get the data of the job or its status."),
     OutputArgument(name="job_details.job_id", output_type=str, description="ID of the job."),
@@ -458,7 +483,9 @@ ENRICHMENT_OUTPUTS = [
         description="Score indicating likelihood of domain being dynamically generated.",
     ),
     OutputArgument(
-        name="domain_urls.results_summary.is_dynamic_domain", output_type=bool, description="Indicates if the domain is dynamic."
+        name="domain_urls.results_summary.is_dynamic_domain",
+        output_type=bool,
+        description="Indicates if the domain is dynamic.",
     ),
     OutputArgument(
         name="domain_urls.results_summary.is_url_shortener",
@@ -466,7 +493,9 @@ ENRICHMENT_OUTPUTS = [
         description="Indicates if the domain is a known URL shortener.",
     ),
     OutputArgument(
-        name="domain_urls.results_summary.results", output_type=int, description="Number of results found for the domain."
+        name="domain_urls.results_summary.results",
+        output_type=int,
+        description="Number of results found for the domain.",
     ),
     OutputArgument(
         name="domain_urls.results_summary.url_shortner_score", output_type=int, description="Score of the shortned URL"
@@ -479,14 +508,20 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="domaininfo.whois_created_date", output_type=str, description="The created date on WHOIS records."),
     OutputArgument(name="domaininfo.query", output_type=str, description="The domain name that was queried in the system."),
     OutputArgument(
-        name="domaininfo.last_seen", output_type=int, description="The first recorded observation of the domain in the database."
+        name="domaininfo.last_seen",
+        output_type=int,
+        description="The first recorded observation of the domain in the database.",
     ),
     OutputArgument(
-        name="domaininfo.first_seen", output_type=int, description="The last recorded observation of the domain in the database."
+        name="domaininfo.first_seen",
+        output_type=int,
+        description="The last recorded observation of the domain in the database.",
     ),
     OutputArgument(name="domaininfo.is_new", output_type=bool, description='Indicates whether the domain is considered "new.".'),
     OutputArgument(
-        name="domaininfo.is_new_score", output_type=int, description='A scoring metric indicating how "new" the domain is.'
+        name="domaininfo.is_new_score",
+        output_type=int,
+        description='A scoring metric indicating how "new" the domain is.',
     ),
     OutputArgument(name="domaininfo.age", output_type=int, description="Represents the age of the domain in days."),
     OutputArgument(
@@ -495,10 +530,14 @@ ENRICHMENT_OUTPUTS = [
         description="A scoring metric indicating the trustworthiness of the domain based on its age.",
     ),
     OutputArgument(
-        name="ip_diversity.asn_diversity", output_type=str, description="Number of different ASNs associated with the domain."
+        name="ip_diversity.asn_diversity",
+        output_type=str,
+        description="Number of different ASNs associated with the domain.",
     ),
     OutputArgument(
-        name="ip_diversity.ip_diversity_all", output_type=str, description="Total number of unique IPs observed for the domain."
+        name="ip_diversity.ip_diversity_all",
+        output_type=str,
+        description="Total number of unique IPs observed for the domain.",
     ),
     OutputArgument(name="ip_diversity.host", output_type=str, description="The hostname being analyzed."),
     OutputArgument(
@@ -507,7 +546,9 @@ ENRICHMENT_OUTPUTS = [
         description="The number of distinct IP groups (e.g., IPs belonging to different ranges or providers).",
     ),
     OutputArgument(
-        name="ns_reputation.is_expired", output_type=bool, description="Indicates if the domain`s nameserver is expired."
+        name="ns_reputation.is_expired",
+        output_type=bool,
+        description="Indicates if the domain`s nameserver is expired.",
     ),
     OutputArgument(
         name="ns_reputation.is_parked",
@@ -523,7 +564,9 @@ ENRICHMENT_OUTPUTS = [
         name="ns_reputation.ns_reputation_max", output_type=int, description="Maximum reputation score for nameservers."
     ),
     OutputArgument(
-        name="ns_reputation.ns_reputation_score", output_type=int, description="Reputation score of the domain`s nameservers."
+        name="ns_reputation.ns_reputation_score",
+        output_type=int,
+        description="Reputation score of the domain`s nameservers.",
     ),
     OutputArgument(name="ns_reputation.ns_srv_reputation.domain", output_type=str, description="The nameservers of domain."),
     OutputArgument(name="ns_reputation.ns_srv_reputation.ns_server", output_type=str, description="Provided nameserver."),
@@ -538,10 +581,14 @@ ENRICHMENT_OUTPUTS = [
         description="Number of listed domains using this NS.",
     ),
     OutputArgument(
-        name="ns_reputation.ns_srv_reputation.ns_server_reputation", output_type=int, description="Reputation score for this NS"
+        name="ns_reputation.ns_srv_reputation.ns_server_reputation",
+        output_type=int,
+        description="Reputation score for this NS",
     ),
     OutputArgument(
-        name="scan_data.certificates.domain", output_type=str, description="Domain for which the SSL certificate was issued."
+        name="scan_data.certificates.domain",
+        output_type=str,
+        description="Domain for which the SSL certificate was issued.",
     ),
     OutputArgument(
         name="scan_data.certificates.domains",
@@ -554,16 +601,24 @@ ENRICHMENT_OUTPUTS = [
         description="Issuer organization of the SSL certificate.",
     ),
     OutputArgument(
-        name="scan_data.certificates.fingerprint_sha1", output_type=str, description="A unique identifier for the certificate."
+        name="scan_data.certificates.fingerprint_sha1",
+        output_type=str,
+        description="A unique identifier for the certificate.",
     ),
     OutputArgument(
-        name="scan_data.certificates.hostname", output_type=str, description="The hostname associated with the certificate."
+        name="scan_data.certificates.hostname",
+        output_type=str,
+        description="The hostname associated with the certificate.",
     ),
     OutputArgument(
-        name="scan_data.certificates.ip", output_type=str, description="The IP address of the server using this certificate."
+        name="scan_data.certificates.ip",
+        output_type=str,
+        description="The IP address of the server using this certificate.",
     ),
     OutputArgument(
-        name="scan_data.certificates.is_expired", output_type=str, description="Indicates whether the certificate has expired."
+        name="scan_data.certificates.is_expired",
+        output_type=str,
+        description="Indicates whether the certificate has expired.",
     ),
     OutputArgument(
         name="scan_data.certificates.issuer_common_name",
@@ -585,7 +640,9 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="scan_data.headers.scan_date", output_type=str, description="The date when the headers were scanned."),
     OutputArgument(name="scan_data.headers.headers.cache-control", output_type=str, description="HTTP cache-control"),
     OutputArgument(
-        name='scan_data.headers.headers.content-length"', output_type=str, description="Content lenght of the HTTP response."
+        name='scan_data.headers.headers.content-length"',
+        output_type=str,
+        description="Content lenght of the HTTP response.",
     ),
     OutputArgument(name="scan_data.headers.headers.date", output_type=str, description="The date/time of the response."),
     OutputArgument(
@@ -623,7 +680,9 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="scan_data.jarm.hostname", output_type=str, description="The hostname where this jarm was found."),
     OutputArgument(name="scan_data.jarm.ip", output_type=str, description="The IP address responding to the request."),
     OutputArgument(
-        name="scan_data.jarm.jarm_hash", output_type=str, description="Unique identifier for the TLS configuration of the server."
+        name="scan_data.jarm.jarm_hash",
+        output_type=str,
+        description="Unique identifier for the TLS configuration of the server.",
     ),
     OutputArgument(name="scan_data.jarm.scan_date", output_type=str, description="Date when this jarm was last scanned."),
     OutputArgument(name="sp_risk_score", output_type=int, description="Overall risk score for the domain."),
@@ -642,10 +701,14 @@ ENRICHMENT_OUTPUTS = [
         name="ip2asn.asn_reputation_explain.ips_in_asn", output_type=int, description="Total number of IPs in the ASN."
     ),
     OutputArgument(
-        name="ip2asn.asn_reputation_explain.ips_num_active", output_type=int, description="Number of active IPs in the ASN."
+        name="ip2asn.asn_reputation_explain.ips_num_active",
+        output_type=int,
+        description="Number of active IPs in the ASN.",
     ),
     OutputArgument(
-        name="ip2asn.asn_reputation_explain.ips_num_listed", output_type=int, description="Number of listed IPs in the ASN."
+        name="ip2asn.asn_reputation_explain.ips_num_listed",
+        output_type=int,
+        description="Number of listed IPs in the ASN.",
     ),
     OutputArgument(name="ip2asn.asn_reputation_score", output_type=int, description="Reputation score of the ASN."),
     OutputArgument(name="ip2asn.asn_takedown_reputation", output_type=int, description="Takedown reputation score of the ASN."),
@@ -670,7 +733,9 @@ ENRICHMENT_OUTPUTS = [
         description="Maximum age of listings for the ASN with takedown reputation.",
     ),
     OutputArgument(
-        name="ip2asn.asn_takedown_reputation_score", output_type=int, description="Takedown reputation score of the ASN."
+        name="ip2asn.asn_takedown_reputation_score",
+        output_type=int,
+        description="Takedown reputation score of the ASN.",
     ),
     OutputArgument(name="ip2asn.asname", output_type=str, description="Name of the Autonomous System (AS)."),
     OutputArgument(
@@ -704,7 +769,9 @@ ENRICHMENT_OUTPUTS = [
     ),
     OutputArgument(name="ip2asn.ip_is_dsl_dynamic", output_type=bool, description="the IP is from a dynamic DSL pool."),
     OutputArgument(
-        name="ip2asn.ip_is_dsl_dynamic_score", output_type=int, description="A score indicating how likely this IP is dynamic."
+        name="ip2asn.ip_is_dsl_dynamic_score",
+        output_type=int,
+        description="A score indicating how likely this IP is dynamic.",
     ),
     OutputArgument(
         name="ip2asn.ip_is_ipfs_node",
@@ -712,7 +779,9 @@ ENRICHMENT_OUTPUTS = [
         description="the InterPlanetary File System (IPFS), a decentralized file storage system.",
     ),
     OutputArgument(
-        name="ip2asn.ip_is_tor_exit_node", output_type=bool, description="Tor exit node (used for anonymous internet browsing)."
+        name="ip2asn.ip_is_tor_exit_node",
+        output_type=bool,
+        description="Tor exit node (used for anonymous internet browsing).",
     ),
     OutputArgument(
         name="ip2asn.ip_location.continent_code",
@@ -742,7 +811,9 @@ ENRICHMENT_OUTPUTS = [
         description="Measures how frequently the IP appears in threat intelligence or blacklist databases.",
     ),
     OutputArgument(
-        name="ip2asn.listing_score_explain", output_type=dict, description="A breakdown of why the listing score is assigned."
+        name="ip2asn.listing_score_explain",
+        output_type=dict,
+        description="A breakdown of why the listing score is assigned.",
     ),
     OutputArgument(name="ip2asn.malscore", output_type=int, description="Malicious activity score for the IP."),
     OutputArgument(
@@ -771,7 +842,9 @@ ENRICHMENT_OUTPUTS = [
         description="Organization that issued the SSL certificate.",
     ),
     OutputArgument(
-        name="ip2asn.scan_data.certificates.not_before", output_type=str, description="Start date of SSL certificate validity."
+        name="ip2asn.scan_data.certificates.not_before",
+        output_type=str,
+        description="Start date of SSL certificate validity.",
     ),
     OutputArgument(
         name="ip2asn.scan_data.certificates.not_after",
@@ -787,7 +860,9 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="ip2asn.scan_data.certificates.scan_date", output_type=str, description="Scan date of the certificate."),
     OutputArgument(name="ip2asn.scan_data.favicon.favicon2_md5", output_type=str, description="MD5 hash of the second favicon."),
     OutputArgument(
-        name="ip2asn.scan_data.favicon.favicon2_mmh3", output_type=int, description="MurmurHash3 value of the second favicon."
+        name="ip2asn.scan_data.favicon.favicon2_mmh3",
+        output_type=int,
+        description="MurmurHash3 value of the second favicon.",
     ),
     OutputArgument(name="ip2asn.scan_data.favicon.favicon_md5", output_type=str, description="MD5 hash of the favicon."),
     OutputArgument(
@@ -799,10 +874,14 @@ ENRICHMENT_OUTPUTS = [
     OutputArgument(name="ip2asn.scan_data.favicon.scan_date", output_type=str, description="Scan date of favicon file."),
     OutputArgument(name="ip2asn.scan_data.headers.response", output_type=str, description="HTTP response code from the scan."),
     OutputArgument(
-        name="ip2asn.scan_data.headers.scan_date", output_type=str, description="The date and time when the scan was performed."
+        name="ip2asn.scan_data.headers.scan_date",
+        output_type=str,
+        description="The date and time when the scan was performed.",
     ),
     OutputArgument(
-        name="ip2asn.scan_data.headers.headers.server", output_type=str, description="Server header from the HTTP response."
+        name="ip2asn.scan_data.headers.headers.server",
+        output_type=str,
+        description="Server header from the HTTP response.",
     ),
     OutputArgument(
         name="ip2asn.scan_data.headers.headers.content-type",
@@ -824,16 +903,24 @@ ENRICHMENT_OUTPUTS = [
     ),
     OutputArgument(name="ip2asn.scan_data.html.html_title", output_type=str, description="Title of the scanned HTML page."),
     OutputArgument(
-        name="ip2asn.scan_data.html.html_body_murmur3", output_type=str, description="MurmurHash3 of the HTML body content."
+        name="ip2asn.scan_data.html.html_body_murmur3",
+        output_type=str,
+        description="MurmurHash3 of the HTML body content.",
     ),
     OutputArgument(
-        name="ip2asn.scan_data.html.html_body_ssdeep", output_type=str, description="SSDEEP fuzzy hash of the HTML body content."
+        name="ip2asn.scan_data.html.html_body_ssdeep",
+        output_type=str,
+        description="SSDEEP fuzzy hash of the HTML body content.",
     ),
     OutputArgument(
-        name="ip2asn.scan_data.html.scan_date", output_type=str, description="The date and time when the scan was performed."
+        name="ip2asn.scan_data.html.scan_date",
+        output_type=str,
+        description="The date and time when the scan was performed.",
     ),
     OutputArgument(
-        name="ip2asn.scan_data.jarm.scan_date", output_type=str, description="The date and time when the scan was performed."
+        name="ip2asn.scan_data.jarm.scan_date",
+        output_type=str,
+        description="The date and time when the scan was performed.",
     ),
     OutputArgument(
         name="ip2asn.scan_data.jarm.jarm_hash", output_type=str, description="JARM fingerprint hash for TLS analysis."
@@ -884,7 +971,9 @@ ENRICHMENT_OUTPUTS = [
 LIST_IP_OUTPUTS = [
     OutputArgument(name="ip_is_dsl_dynamic", output_type=bool, description="Indicates if the IP is a DSL dynamic IP."),
     OutputArgument(
-        name="ip_has_expired_certificate", output_type=bool, description="Indicates if the IP has an expired certificate."
+        name="ip_has_expired_certificate",
+        output_type=bool,
+        description="Indicates if the IP has an expired certificate.",
     ),
     OutputArgument(name="subnet_allocation_age", output_type=str, description="Age of the subnet allocation."),
     OutputArgument(name="asn_rank_score", output_type=int, description="Rank score of the ASN."),
@@ -896,7 +985,9 @@ LIST_IP_OUTPUTS = [
         description="Number of active IPs in the ASN takedown reputation.",
     ),
     OutputArgument(
-        name="asn_takedown_reputation_explain.ips_in_asn", output_type=int, description="Total number of IPs in the ASN."
+        name="asn_takedown_reputation_explain.ips_in_asn",
+        output_type=int,
+        description="Total number of IPs in the ASN.",
     ),
     OutputArgument(
         name="asn_takedown_reputation_explain.ips_num_listed",
@@ -960,7 +1051,9 @@ LIST_IP_OUTPUTS = [
     OutputArgument(name="listing_score", output_type=int, description="Listing score of the IP."),
     OutputArgument(name="malscore", output_type=int, description="Malware score associated with the IP."),
     OutputArgument(
-        name="sinkhole_info.known_sinkhole_ip", output_type=bool, description="Indicates if the IP is a known sinkhole IP."
+        name="sinkhole_info.known_sinkhole_ip",
+        output_type=bool,
+        description="Indicates if the IP is a known sinkhole IP.",
     ),
     OutputArgument(name="sinkhole_info.tags", output_type=str, description="Tags associated with the sinkhole information."),
     OutputArgument(name="subnet_reputation", output_type=int, description="Reputation score of the subnet."),
@@ -985,12 +1078,16 @@ LIST_IP_OUTPUTS = [
 ]
 ASN_REPUTATION_OUTPUTS = [
     OutputArgument(
-        name="asn", output_type=int, description="Autonomous System Number (ASN) associated with the reputation history."
+        name="asn",
+        output_type=int,
+        description="Autonomous System Number (ASN) associated with the reputation history.",
     ),
     OutputArgument(name="asn_reputation", output_type=int, description="Reputation score of the ASN at a given point in time."),
     OutputArgument(name="asn_reputation_explain.ips_in_asn", output_type=int, description="Total number of IPs within the ASN."),
     OutputArgument(
-        name="asn_reputation_explain.ips_num_active", output_type=int, description="Number of actively used IPs in the ASN."
+        name="asn_reputation_explain.ips_num_active",
+        output_type=int,
+        description="Number of actively used IPs in the ASN.",
     ),
     OutputArgument(
         name="asn_reputation_explain.ips_num_listed",
@@ -1007,7 +1104,9 @@ ASN_TAKEDOWN_REPUTATION_OUTPUTS = [
         name="takedown_reputation.allocation_age", output_type=int, description="The age of the ASN allocation in days."
     ),
     OutputArgument(
-        name="takedown_reputation.allocation_date", output_type=int, description="The date when the ASN was allocated (YYYYMMDD)."
+        name="takedown_reputation.allocation_date",
+        output_type=int,
+        description="The date when the ASN was allocated (YYYYMMDD).",
     ),
     OutputArgument(
         name="takedown_reputation.asn_takedown_reputation",
@@ -1097,10 +1196,14 @@ SEARCH_SCAN_OUTPUTS = [
     OutputArgument(name="body_analysis.google-adstag", output_type=list, description="List of Google adstag identifiers."),
     OutputArgument(name="body_analysis.header_sha256", output_type=list, description="SHA-256 hash of the header content."),
     OutputArgument(
-        name="body_analysis.js_sha256", output_type=list, description="List of JavaScript files with SHA-256 hash values."
+        name="body_analysis.js_sha256",
+        output_type=list,
+        description="List of JavaScript files with SHA-256 hash values.",
     ),
     OutputArgument(
-        name="body_analysis.js_ssdeep", output_type=list, description="List of JavaScript files with SSDEEP hash values."
+        name="body_analysis.js_ssdeep",
+        output_type=list,
+        description="List of JavaScript files with SSDEEP hash values.",
     ),
     OutputArgument(name="body_analysis.onion", output_type=list, description="List of Onion URLs detected."),
     OutputArgument(name="body_analysis.telegram", output_type=list, description="List of Telegram-related information."),
@@ -1206,13 +1309,17 @@ LIVE_SCAN_URL_OUTPUTS = [
     OutputArgument(name="origin_ssl.not_after", output_type=str, description="Expiration date of the SSL certificate."),
     OutputArgument(name="origin_ssl.not_before", output_type=str, description="Start date of the SSL certificate validity."),
     OutputArgument(
-        name="origin_ssl.sans", output_type=list, description="List of Subject Alternative Names (SANs) for the SSL certificate."
+        name="origin_ssl.sans",
+        output_type=list,
+        description="List of Subject Alternative Names (SANs) for the SSL certificate.",
     ),
     OutputArgument(name="origin_ssl.sans_count", output_type=int, description="Count of SANs for the SSL certificate."),
     OutputArgument(name="origin_ssl.serial_number", output_type=str, description="Serial number of the SSL certificate."),
     OutputArgument(name="origin_ssl.sigalg", output_type=str, description="Signature algorithm used for the SSL certificate."),
     OutputArgument(
-        name="origin_ssl.subject.common_name", output_type=str, description="Subject common name for the SSL certificate."
+        name="origin_ssl.subject.common_name",
+        output_type=str,
+        description="Subject common name for the SSL certificate.",
     ),
     OutputArgument(name="origin_ssl.subject_key_id", output_type=str, description="Subject Key Identifier for SSL certificate."),
     OutputArgument(name="origin_ssl.valid", output_type=bool, description="Indicates if the SSL certificate is valid."),
@@ -1241,7 +1348,9 @@ LIVE_SCAN_URL_OUTPUTS = [
     OutputArgument(name="ssl.not_after", output_type=str, description="Expiration date of the SSL certificate."),
     OutputArgument(name="ssl.not_before", output_type=str, description="Start date of the SSL certificate validity."),
     OutputArgument(
-        name="ssl.sans", output_type=list, description="List of Subject Alternative Names (SANs) for the SSL certificate."
+        name="ssl.sans",
+        output_type=list,
+        description="List of Subject Alternative Names (SANs) for the SSL certificate.",
     ),
     OutputArgument(name="ssl.sans_count", output_type=int, description="Count of SANs for the SSL certificate."),
     OutputArgument(name="ssl.serial_number", output_type=str, description="Serial number of the SSL certificate."),
@@ -1280,17 +1389,25 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Cumulative score assigned to the indicator by all sources.",
     ),
     OutputArgument(
-        name="indicators.name", output_type=str, description="Name associated with the indicator, such as a domain name."
+        name="indicators.name",
+        output_type=str,
+        description="Name associated with the indicator, such as a domain name.",
     ),
     OutputArgument(
-        name="indicators.total_custom", output_type=int, description="Total number of custom indicators for the specific entry."
+        name="indicators.total_custom",
+        output_type=int,
+        description="Total number of custom indicators for the specific entry.",
     ),
     OutputArgument(name="indicators.source_name", output_type=str, description="Name of the source providing the indicator."),
     OutputArgument(
-        name="indicators.first_seen_on", output_type=str, description="Date and time when the indicator was first observed."
+        name="indicators.first_seen_on",
+        output_type=str,
+        description="Date and time when the indicator was first observed.",
     ),
     OutputArgument(
-        name="indicators.last_seen_on", output_type=str, description="Date and time when the indicator was last observed."
+        name="indicators.last_seen_on",
+        output_type=str,
+        description="Date and time when the indicator was last observed.",
     ),
     OutputArgument(name="indicators.type", output_type=str, description="Type of the indicator (e.g., domain, IP address, URL)."),
     OutputArgument(name="indicators.uuid", output_type=str, description="Unique identifier assigned to the indicator."),
@@ -1300,7 +1417,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Template type describing the indicator (e.g., domain template).",
     ),
     OutputArgument(
-        name="indicators.ioc_uuid", output_type=str, description="Unique identifier for the IOC related to the indicator."
+        name="indicators.ioc_uuid",
+        output_type=str,
+        description="Unique identifier for the IOC related to the indicator.",
     ),
     OutputArgument(
         name="indicators.source_vendor_name",
@@ -1332,7 +1451,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Indicates whether the IP address is a known TOR exit node.",
     ),
     OutputArgument(
-        name="indicators.ip_is_dsl_dynamic", output_type=bool, description="Indicates whether the IP address is a DSL dynamic IP."
+        name="indicators.ip_is_dsl_dynamic",
+        output_type=bool,
+        description="Indicates whether the IP address is a DSL dynamic IP.",
     ),
     OutputArgument(
         name="indicators.ip_reputation_score",
@@ -1350,7 +1471,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Indicates whether the indicator is known to be benign or harmless.",
     ),
     OutputArgument(
-        name="indicators.asn_rank_score", output_type=int, description="Score indicating the reputation rank of the ASN."
+        name="indicators.asn_rank_score",
+        output_type=int,
+        description="Score indicating the reputation rank of the ASN.",
     ),
     OutputArgument(
         name="indicators.asn_reputation_score",
@@ -1373,7 +1496,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Reputation score of the ASN considering takedown activities or abuse reports.",
     ),
     OutputArgument(
-        name="indicators.asn", output_type=int, description="Autonomous System Number (ASN) associated with the indicator."
+        name="indicators.asn",
+        output_type=int,
+        description="Autonomous System Number (ASN) associated with the indicator.",
     ),
     OutputArgument(
         name="indicators.density",
@@ -1381,7 +1506,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Indicator density score based on traffic or other relevant factors.",
     ),
     OutputArgument(
-        name="indicators.asn_rank", output_type=int, description="Rank of the ASN indicating its reputation or trustworthiness."
+        name="indicators.asn_rank",
+        output_type=int,
+        description="Rank of the ASN indicating its reputation or trustworthiness.",
     ),
     OutputArgument(
         name="indicators.malscore",
@@ -1401,14 +1528,20 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
     ),
     OutputArgument(name="indicators.ipv4", output_type=str, description="IPv4 address associated with the indicator."),
     OutputArgument(
-        name="indicators.asname", output_type=str, description="Autonomous System Name (ASName) associated with the ASN."
+        name="indicators.asname",
+        output_type=str,
+        description="Autonomous System Name (ASName) associated with the ASN.",
     ),
     OutputArgument(
-        name="indicators.ip_ptr", output_type=str, description="PTR (reverse DNS) record associated with the IP address."
+        name="indicators.ip_ptr",
+        output_type=str,
+        description="PTR (reverse DNS) record associated with the IP address.",
     ),
     OutputArgument(name="indicators.subnet", output_type=str, description="Subnet associated with the indicator."),
     OutputArgument(
-        name="indicators.country_code", output_type=int, description="Country code associated with the indicator (e.g., US, CA)."
+        name="indicators.country_code",
+        output_type=int,
+        description="Country code associated with the indicator (e.g., US, CA).",
     ),
     OutputArgument(
         name="indicators.continent_code",
@@ -1416,7 +1549,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Continent code associated with the indicator (e.g., NA, EU).",
     ),
     OutputArgument(
-        name="indicators.it_exists", output_type=bool, description="Indicates if the indicator currently exists in the dataset."
+        name="indicators.it_exists",
+        output_type=bool,
+        description="Indicates if the indicator currently exists in the dataset.",
     ),
     OutputArgument(name="indicators.is_new", output_type=bool, description="Indicates if the indicator is newly detected."),
     OutputArgument(
@@ -1425,7 +1560,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Indicates if the domain is part of the Alexa Top 10K list.",
     ),
     OutputArgument(
-        name="indicators.is_dynamic_domain", output_type=bool, description="Indicates if the domain is classified as dynamic."
+        name="indicators.is_dynamic_domain",
+        output_type=bool,
+        description="Indicates if the domain is classified as dynamic.",
     ),
     OutputArgument(
         name="indicators.is_url_shortener",
@@ -1457,13 +1594,17 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Score indicating the likelihood of the domain being newly registered.",
     ),
     OutputArgument(
-        name="indicators.ns_avg_ttl_score", output_type=int, description="Score representing the average TTL of the nameservers."
+        name="indicators.ns_avg_ttl_score",
+        output_type=int,
+        description="Score representing the average TTL of the nameservers.",
     ),
     OutputArgument(
         name="indicators.ns_reputation_max", output_type=int, description="Maximum reputation score of the nameservers."
     ),
     OutputArgument(
-        name="indicators.ns_reputation_score", output_type=int, description="Overall reputation score of the nameservers."
+        name="indicators.ns_reputation_score",
+        output_type=int,
+        description="Overall reputation score of the nameservers.",
     ),
     OutputArgument(
         name="indicators.avg_probability_score",
@@ -1495,7 +1636,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         name="indicators.whois_age", output_type=int, description="Age of the domain based on the WHOIS creation date."
     ),
     OutputArgument(
-        name="indicators.alexa_rank", output_type=int, description="Alexa rank of the domain, indicating its popularity."
+        name="indicators.alexa_rank",
+        output_type=int,
+        description="Alexa rank of the domain, indicating its popularity.",
     ),
     OutputArgument(
         name="indicators.asn_diversity",
@@ -1518,11 +1661,15 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Average probability indicating the likelihood of malicious activity.",
     ),
     OutputArgument(
-        name="indicators.whois_created_date", output_type=str, description="Creation date of the domain from WHOIS records."
+        name="indicators.whois_created_date",
+        output_type=str,
+        description="Creation date of the domain from WHOIS records.",
     ),
     OutputArgument(name="indicators.domain", output_type=str, description="Domain name associated with the indicator."),
     OutputArgument(
-        name="indicators.subdomain", output_type=str, description="Subdomain associated with the indicator, if applicable."
+        name="indicators.subdomain",
+        output_type=str,
+        description="Subdomain associated with the indicator, if applicable.",
     ),
     OutputArgument(name="indicators.host", output_type=str, description="Host associated with the indicator."),
     OutputArgument(
@@ -1566,7 +1713,9 @@ FUTURE_ATTACK_INDICATOR_OUTPUTS = [
         description="Custom score provided by the source for the indicator.",
     ),
     OutputArgument(
-        name="indicators.source_score", output_type=int, description="Overall score assigned by the source to the indicator."
+        name="indicators.source_score",
+        output_type=int,
+        description="Overall score assigned by the source to the indicator.",
     ),
     OutputArgument(
         name="indicators.source_frequency",
@@ -1617,7 +1766,12 @@ metadata_collector = YMLMetadataCollector(
             required=False,
             key_type=ParameterTypes.AUTH,
         ),
-        ConfKey(name="insecure", display="Trust any certificate (not secure)", required=False, key_type=ParameterTypes.BOOLEAN),
+        ConfKey(
+            name="insecure",
+            display="Trust any certificate (not secure)",
+            required=False,
+            key_type=ParameterTypes.BOOLEAN,
+        ),
         ConfKey(name="proxy", display="Use system proxy settings", required=False, key_type=ParameterTypes.BOOLEAN),
     ],
 )
@@ -1722,18 +1876,23 @@ class Client(BaseClient):
             limit (int): Maximum number of reputation entries to return.
 
         Returns:
-            dict: Reputation history for the given nameserver.
+            list: A list of reputation entries (each being a dict) for the given nameserver.
         """
-
         url_suffix = f"{NAMESERVER_REPUTATION}/{nameserver}"
 
-        params = {"explain": explain, "limit": limit}
+        params = {"explain": int(bool(explain)), "limit": limit}
+
         remove_nulls_from_dictionary(params)
 
         response = self._http_request(method="GET", url_suffix=url_suffix, params=params)
 
-        # Return the reputation history, or an empty list if not found
-        return response.get("response", {}).get("ns_server_reputation", [])
+        if isinstance(response, str):
+            try:
+                response = json.loads(response)
+            except Exception as e:
+                raise ValueError(f"Unable to parse JSON from response: {e}")
+
+        return response.get("response", {}).get("ns_server_reputation_history", [])
 
     def get_subnet_reputation(self, subnet: str, explain: bool = False, limit: int | None = None) -> dict[str, Any]:
         """
@@ -1882,11 +2041,17 @@ class Client(BaseClient):
         """
         url_suffix = DOMAIN_INFRATAGS
 
-        params = {"mode": mode, "match": match, "clusters": int(cluster), "as_of": as_of, "origin_uid": origin_uid}
-        remove_nulls_from_dictionary(params)
+        payload = {
+            "domains": domains,
+            "mode": mode,
+            "match": match,
+            "clusters": int(cluster),
+            "as_of": as_of,
+            "origin_uid": origin_uid,
+        }
+        remove_nulls_from_dictionary(payload)
 
-        payload = {"domains": domains}
-        return self._http_request(method="POST", url_suffix=url_suffix, params=params, data=payload)
+        return self._http_request(method="POST", url_suffix=url_suffix, data=payload)
 
     def fetch_bulk_domain_info(self, domains: list[str]) -> dict[str, Any]:
         """Fetch basic domain information for a list of domains."""
@@ -1909,9 +2074,11 @@ class Client(BaseClient):
             return {
                 "Registrant Name": whois_data.get("name", "N/A"),
                 "Registrant Organization": whois_data.get("org", "N/A"),
-                "Registrant Address": ", ".join(whois_data.get("address", []))
-                if isinstance(whois_data.get("address"), list)
-                else whois_data.get("address", "N/A"),
+                "Registrant Address": (
+                    ", ".join(whois_data.get("address", []))
+                    if isinstance(whois_data.get("address"), list)
+                    else whois_data.get("address", "N/A")
+                ),
                 "Registrant City": whois_data.get("city", "N/A"),
                 "Registrant State": whois_data.get("state", "N/A"),
                 "Registrant Country": whois_data.get("country", "N/A"),
@@ -2079,7 +2246,7 @@ class Client(BaseClient):
 
         return self._http_request("POST", url_suffix, data=ip_data)
 
-    def get_asn_reputation(self, asn: int, limit: int | None = None, explain: bool | None = False) -> dict[str, Any]:
+    def get_asn_reputation(self, asn: int, limit: int | None = None, explain: bool = False) -> dict[str, Any]:
         """
         Retrieve reputation history for a specific Autonomous System Number (ASN).
 
@@ -2091,10 +2258,9 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: ASN reputation history information.
         """
-        url_suffix = f"{ASN_REPUTATION}/{asn}"
-        query_params = assign_params(limit=limit, explain=explain)
+        params = {"explain": int(bool(explain)), "limit": limit}
 
-        return self._http_request(method="GET", url_suffix=url_suffix, params=query_params)
+        return self._http_request(method="GET", url_suffix=f"{ASN_REPUTATION}/{asn}", params=params)
 
     def get_asn_takedown_reputation(self, asn: str, explain: int = 0, limit: int = None) -> dict[str, Any]:
         """
@@ -2115,29 +2281,50 @@ class Client(BaseClient):
         """
         if not asn:
             raise ValueError("ASN is required.")
+
         url_suffix = f"{ASN_TAKEDOWN_REPUTATION}/{asn}"
-        query_params = assign_params(limit=limit, explain=explain)
+        query_params = assign_params(explain=int(bool(explain)), limit=limit)
 
         raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=query_params)
+        return raw_response.get("response", {})
 
-        response = raw_response.get("response")
-
-        if isinstance(response, dict):
-            return response.get("takedown_reputation", {})
-        else:
-            # Log or wrap the unexpected response type for debugging or display
-            return {"error": response if isinstance(response, str) else "Unexpected response type"}
-
-    def get_ipv4_reputation(self, ipv4: str, explain: int = 0, limit: int = None) -> dict[str, Any]:
+    def get_ipv4_reputation(self, ipv4: str, explain: bool = False, limit: int = None) -> dict:
         """
-        Retrieve reputation information for an IPv4 address.
+        Retrieve historical reputation data for the specified IPv4 address.
+
+        Args:
+            ipv4 (str): The IPv4 address to check.
+            explain (bool): Whether to include explanation details.
+            limit (int): Maximum number of history entries to return.
+
+        Returns:
+            dict: Dictionary containing 'ip_reputation_history' key with list of entries.
         """
         url_suffix = f"{IPV4_REPUTATION}/{ipv4}"
-        query_params = assign_params(limit=limit, explain=explain)
 
-        raw_response = self._http_request(method="GET", url_suffix=url_suffix, params=query_params)
+        params = {"explain": int(bool(explain)), "limit": limit}
 
-        return raw_response
+        remove_nulls_from_dictionary(params)
+
+        response = self._http_request(
+            method="GET",
+            url_suffix=url_suffix,
+            params=params,
+            headers={"Accept": "application/json", "Content-Type": "application/json"},
+        )
+
+        if response.get("error") is not None:
+            raise ValueError(f"API Error: {response['error']}")
+
+        if isinstance(response, str):
+            try:
+                response = json.loads(response)
+            except Exception as e:
+                raise ValueError(f"Unable to parse JSON from response: {e}")
+
+        data = response.get("response", {}).get("ip_reputation_history", [])
+
+        return {"ip_reputation_history": data if isinstance(data, list) else []}
 
     def forward_padns_lookup(self, qtype: str, qname: str, **kwargs) -> dict[str, Any]:
         """
@@ -2205,7 +2392,12 @@ class Client(BaseClient):
         return self._http_request(method="POST", url_suffix=url_suffix, data=payload, params=params)
 
     def live_url_scan(
-        self, url: str, platform: str | None = None, os: str | None = None, browser: str | None = None, region: str | None = None
+        self,
+        url: str,
+        platform: str | None = None,
+        os: str | None = None,
+        browser: str | None = None,
+        region: str | None = None,
     ) -> dict[str, Any]:
         """
         Perform a live scan of a URL to get hosting metadata.
@@ -2239,7 +2431,8 @@ class Client(BaseClient):
         Returns:
             Dict[str, Any]: Response containing future attack indicators.
         """
-        params = {"feed_uuids": feed_uuid, "page": page_no, "size": page_size}
+
+        params = {"source_uuids": feed_uuid, "page": page_no, "limit": page_size}
 
         query_string = urlencode(params)
         url = self._base_url.replace("/api/v1/merge-api", "") + f"/api/v2/iocs/threat-ranking/?{query_string}"
@@ -2261,7 +2454,6 @@ class Client(BaseClient):
         remove_nulls_from_dictionary(params)
 
         response = self._http_request(method="GET", url_suffix=endpoint, params=params)
-
         if response.get("error"):
             return {"error": f"Failed to get screenshot: {response['error']}"}
 
@@ -2365,9 +2557,9 @@ def get_job_status_command(client: Client, args: dict) -> CommandResults:
 @metadata_collector.command(
     command_name="silentpush-get-nameserver-reputation",
     inputs_list=NAMESERVER_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.SubnetReputation",
+    outputs_prefix="SilentPush.NameserverReputation",
     outputs_list=NAMESERVER_REPUTATION_OUTPUTS,
-    description="This command retrieve historical reputation data for a specified nameserver, "
+    description="This command retrieves historical reputation data for a specified nameserver,"
     "including reputation scores and optional detailed calculation information.",
 )
 def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResults:
@@ -2382,24 +2574,39 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
         CommandResults: The command results containing nameserver reputation data.
     """
     nameserver = args.get("nameserver")
-    explain = argToBoolean(args.get("explain", False))
+    explain = argToBoolean(args.get("explain", "false"))
     limit = arg_to_number(args.get("limit"))
 
     if not nameserver:
         raise ValueError("Nameserver is required.")
 
-    # Fetch reputation data
     reputation_data = client.get_nameserver_reputation(nameserver, explain, limit)
 
-    # Prepare the readable output
-    if reputation_data:
+    if not isinstance(reputation_data, list):
+        demisto.error(f"Expected list, got: {type(reputation_data)}")
+        reputation_data = []
+
+    for item in reputation_data:
+        date_val = item.get("date")
+        if isinstance(date_val, int):
+            try:
+                parsed_date = datetime.strptime(str(date_val), "%Y%m%d").date()
+                item["date"] = parsed_date.isoformat()
+            except ValueError as e:
+                demisto.error(f"Failed to parse date {date_val}: {e}")
+
+    if reputation_data and all(isinstance(item, dict) for item in reputation_data):
+        all_headers = set()
+        for item in reputation_data:
+            all_headers.update(item.keys())
+
         readable_output = tableToMarkdown(
-            f"Nameserver Reputation for {nameserver}", reputation_data, headers=list(reputation_data[0].keys()), removeNull=True
+            f"Nameserver Reputation for {nameserver}", reputation_data, headers=sorted(all_headers), removeNull=True
         )
     else:
-        readable_output = f"No reputation history found for nameserver: {nameserver}"
+        readable_output = f"No valid reputation history found for nameserver: {nameserver}"
+        reputation_data = []
 
-    # Return command results
     return CommandResults(
         outputs_prefix="SilentPush.NameserverReputation",
         outputs_key_field="ns_server",
@@ -2412,7 +2619,7 @@ def get_nameserver_reputation_command(client: Client, args: dict) -> CommandResu
 @metadata_collector.command(
     command_name="silentpush-get-subnet-reputation",
     inputs_list=SUBNET_REPUTATION_INPUTS,
-    outputs_prefix="SilentPush.SubnetReputation",
+    outputs_prefix="SilentPush.NameserverReputation",
     outputs_list=SUBNET_REPUTATION_OUTPUTS,
     description="This command retrieves the reputation history for a specific subnet.",
 )
@@ -2664,16 +2871,21 @@ def list_domain_infratags_command(client: Client, args: dict) -> CommandResults:
     """
     domains = argToList(args.get("domains", ""))
     cluster = argToBoolean(args.get("cluster", False))
-    mode = args.get("mode", "live")
+    mode = args.get("mode", "live").lower()
     match = args.get("match", "self")
-    as_of = args.get("as_of", None)
-    origin_uid = args.get("origin_uid", None)
+    as_of = args.get("as_of")
+    origin_uid = args.get("origin_uid")
     use_get = argToBoolean(args.get("use_get", False))
 
     if not domains and not use_get:
         raise ValueError('"domains" argument is required when using POST.')
 
-    raw_response = client.list_domain_infratags(domains, cluster, mode, match, as_of, origin_uid)
+    raw_response = client.list_domain_infratags(domains, cluster, mode=mode, match=match, as_of=as_of, origin_uid=origin_uid)
+
+    response_mode = raw_response.get("response", {}).get("mode", "").lower()
+    if response_mode and response_mode != mode:
+        raise ValueError(f"Expected mode '{mode}' but got '{response_mode}'")
+
     infratags = raw_response.get("response", {}).get("infratags", [])
     tag_clusters = raw_response.get("response", {}).get("tag_clusters", [])
 
@@ -2774,7 +2986,7 @@ def format_domain_information(response: dict[str, Any], fetch_risk_score: bool, 
             whois_info = domain_data.get("whois_info", {})
             if whois_info and isinstance(whois_info, dict):
                 if "error" in whois_info:
-                    markdown.append(f'WHOIS Error: {whois_info["error"]}')
+                    markdown.append(f"WHOIS Error: {whois_info['error']}")
                 else:
                     markdown.append(tableToMarkdown("WHOIS Information", [whois_info]))
 
@@ -3085,8 +3297,14 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
         CommandResults: Formatted command results for XSOAR
     """
     asn = args.get("asn")
-    limit = arg_to_number(args.get("limit", None))
-    explain = argToBoolean(args.get("explain", False))
+    if not asn:
+        raise ValueError("ASN is required.")
+    try:
+        asn = int(asn)
+    except ValueError:
+        raise ValueError("Invalid ASN number")
+    limit = arg_to_number(args.get("limit"))
+    explain = argToBoolean(args.get("explain", "false"))
 
     if not asn:
         raise ValueError("ASN is required.")
@@ -3095,7 +3313,13 @@ def get_asn_reputation_command(client: Client, args: dict) -> CommandResults:
     asn_reputation = extract_and_sort_asn_reputation(raw_response)
 
     if not asn_reputation:
-        return generate_no_reputation_response(asn, raw_response)
+        return CommandResults(
+            readable_output=f"No reputation data found for ASN {asn}.",
+            outputs_prefix="SilentPush.ASNReputation",
+            outputs_key_field="asn",
+            outputs=[],
+            raw_response=raw_response,
+        )
 
     data_for_table = prepare_asn_reputation_table(asn_reputation, explain)
     readable_output = tableToMarkdown(f"ASN Reputation for {asn}", data_for_table, headers=get_table_headers(explain))
@@ -3121,17 +3345,14 @@ def extract_and_sort_asn_reputation(raw_response: dict) -> list:
     """
     response_data = raw_response.get("response", {})
 
-    # Handle unexpected format gracefully
     if not isinstance(response_data, dict):
         response_data = {"asn_reputation": response_data}
 
     asn_reputation = response_data.get("asn_reputation") or response_data.get("asn_reputation_history", [])
 
-    # Normalize to list
     if isinstance(asn_reputation, dict):
         asn_reputation = [asn_reputation]
     elif not isinstance(asn_reputation, list):
-        # If it's something else (e.g., a string), fallback to an empty list
         asn_reputation = []
 
     return sorted(asn_reputation, key=lambda x: x.get("date", ""), reverse=True)
@@ -3225,30 +3446,46 @@ def get_asn_takedown_reputation_command(client, args):
     """
     asn = args.get("asn")
     if not asn:
-        raise ValueError("ASN is a required parameter")
+        raise ValueError("ASN is a required parameter.")
 
-    explain = argToBoolean(args.get("explain", False))
-    limit = arg_to_number(args.get("limit"))
+    try:
+        explain = argToBoolean(args.get("explain", False))
+        limit = arg_to_number(args.get("limit"))
+    except Exception as e:
+        raise ValueError(f"Invalid argument: {e}")
 
-    response = client.get_asn_takedown_reputation(asn, explain, limit)
+    try:
+        response = client.get_asn_takedown_reputation(asn, explain, limit)
+    except Exception as e:
+        raise DemistoException(f"API call failed: {str(e)}")
 
-    if isinstance(response, dict):
-        table_data = [response]
-    elif isinstance(response, str):
-        table_data = [{"message": response}]
-    else:
-        table_data = [{"error": "Invalid response format"}]
+    takedown_history = response.get("takedown_reputation")
 
-    # Explicitly specify headers from keys of first dict
-    headers = list(table_data[0].keys()) if table_data else ["message"]
+    if not takedown_history:
+        return CommandResults(
+            readable_output=f"No takedown reputation history found for ASN: {asn}",
+            outputs_prefix="SilentPush.ASNTakedownReputation",
+            outputs_key_field="asn",
+            outputs=takedown_history,
+            raw_response=response,
+        )
 
-    readable_output = tableToMarkdown(f"Takedown Reputation for ASN {asn}", table_data, headers=headers, removeNull=True)
+    if isinstance(takedown_history.get("asn_allocation_date"), int):
+        try:
+            takedown_history["asn_allocation_date"] = (
+                datetime.strptime(str(takedown_history["asn_allocation_date"]), "%Y%m%d").date().isoformat()
+            )
+        except ValueError:
+            demisto.debug(f"Failed to format date: {takedown_history.get('asn_allocation_date')}")
+
+    readable_output = tableToMarkdown(f"Takedown Reputation for ASN {asn}", takedown_history, removeNull=True)
 
     return CommandResults(
         readable_output=readable_output,
         outputs_prefix="SilentPush.ASNTakedownReputation",
         outputs_key_field="asn",
-        outputs=table_data,
+        outputs=takedown_history,
+        raw_response=response,
     )
 
 
@@ -3271,7 +3508,6 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
         CommandResults: The results of the command including the IPv4 reputation data.
     """
     ipv4 = args.get("ipv4")
-
     if not ipv4:
         raise DemistoException("IPv4 address is required")
 
@@ -3282,10 +3518,8 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
 
     raw_response = client.get_ipv4_reputation(ipv4, explain, limit)
 
-    # Defensive extraction
-    history = raw_response.get("response", {}).get("ip_reputation_history", {})
-
-    if not history or history.get("error") == "Not found":
+    history = raw_response.get("ip_reputation_history", {})
+    if not history:
         return CommandResults(
             readable_output=f"No reputation data found for IPv4: {ipv4}",
             outputs_prefix="SilentPush.IPv4Reputation",
@@ -3293,27 +3527,11 @@ def get_ipv4_reputation_command(client: Client, args: dict[str, Any]) -> Command
             outputs={"ip": ipv4},
             raw_response=raw_response,
         )
-
-    # Construct result
-    reputation_data = {
-        "ip": history.get("ipv4", ipv4),
-        "date": history.get("date"),
-        "reputation_score": history.get("ip_reputation"),
-    }
-
-    explain_data = history.get("ip_reputation_explain", {})
-    if explain_data:
-        reputation_data["ip_reputation_explain"] = {
-            "ip_density": explain_data.get("ip_density"),
-            "names_num_listed": explain_data.get("names_num_listed"),
-        }
-
-    readable_output = tableToMarkdown(f"IPv4 Reputation Information for {ipv4}", [reputation_data])
-
+    readable_output = tableToMarkdown(f"IPv4 Reputation Information for {ipv4}", history)
     return CommandResults(
         outputs_prefix="SilentPush.IPv4Reputation",
         outputs_key_field="ip",
-        outputs=reputation_data,
+        outputs=history,
         readable_output=readable_output,
         raw_response=raw_response,
     )
@@ -3646,11 +3864,26 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
     if result.get("error"):
         raise Exception(result.get("error"))
 
-    image_response = generic_http_request("GET", result["screenshot_url"], url_suffix="", resp_type="response")
-    if image_response.status_code != 200:
-        return {"error": f"Failed to download screenshot image: HTTP {image_response.status_code}"}
+    if not result.get("screenshot_url"):
+        raise ValueError("screenshot_url is missing from API response.")
 
-    filename = f"{url.split('://')[1].split('/')[0]}_screenshot.jpg"
+    screenshot_url = result["screenshot_url"]
+    parsed_url = urlparse(screenshot_url)
+
+    if not parsed_url.scheme or not parsed_url.netloc:
+        raise ValueError(f"Invalid screenshot URL format: {screenshot_url}")
+
+    server_url = f"{parsed_url.scheme}://{parsed_url.netloc}"
+    url_suffix = parsed_url.path
+    if parsed_url.query:
+        url_suffix += f"?{parsed_url.query}"
+
+    image_response = generic_http_request(method="GET", server_url=server_url, url_suffix=url_suffix, resp_type="response")
+
+    if not image_response or image_response.status_code != 200:
+        return {"error": f"Failed to download screenshot image: HTTP {getattr(image_response, 'status_code', 'No response')}"}
+
+    filename = f"{urlparse(url).netloc}_screenshot.jpg"
 
     readable_output = (
         f"### Screenshot captured for {url}\n"
@@ -3662,13 +3895,12 @@ def screenshot_url_command(client: Client, args: dict[str, Any]) -> CommandResul
     result_data = {
         "url": url,
         "status": "success",
-        "status_code": result["status_code"],
+        "status_code": result.get("status_code"),
         "screenshot_url": result["screenshot_url"],
-        "file_name": "filename",
+        "file_name": filename,
     }
     remove_nulls_from_dictionary(result_data)
 
-    # Download link of the image
     return_results(fileResult(filename, image_response.content))
 
     return CommandResults(

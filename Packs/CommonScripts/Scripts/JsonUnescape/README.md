@@ -1,6 +1,7 @@
 Recursively un-escapes JSON data if escaped JSON is found
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Recursively un-escapes JSON data if escaped JSON is found
 | Tags | transformer |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -16,6 +18,7 @@ Recursively un-escapes JSON data if escaped JSON is found
 | value | JSON object |
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

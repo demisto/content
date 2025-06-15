@@ -2,7 +2,6 @@ Integration with Humio
 
 ## Configure Humio in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Humio URL | True |
@@ -17,46 +16,51 @@ Integration with Humio
 | incidentType | Incident type | False |
 
 ## Obtaining an API key
+
 Go to https://your-humio/settings and copy the API token. Example [https://cloud.humio.com/settings](https://cloud.humio.com/settings)
 
 ## Fetch incidents
+
 The parameters used for fetch-incidents are only used if you want to use the fetch incidents feature. It is recommended to use alerts and notifiers in Humio to send this data to XSOAR via a webhook notifier instead. You can read more about the supported time-formats for backfilling [here](https://docs.humio.com/reference/api/search-api/#time-specification).
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### humio-query
+
 ***
 Query the data from Humio
-
 
 #### Base Command
 
 `humio-query`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to search | Required | 
-| queryString | Query string to use | Required | 
-| start | Relative or absolute (epoch) | Optional | 
-| end | Relative or absolute (epoch) | Optional | 
-| isLive | Answer with true, 1, t, y or yes | Optional | 
-| timeZoneOffsetMinutes | TimeZoneOffset in Minutes (default 0) | Optional | 
-| arguments | Additional arguments | Optional | 
-
+| repository | Repository to search | Required |
+| queryString | Query string to use | Required |
+| start | Relative or absolute (epoch) | Optional |
+| end | Relative or absolute (epoch) | Optional |
+| isLive | Answer with true, 1, t, y or yes | Optional |
+| timeZoneOffsetMinutes | TimeZoneOffset in Minutes (default 0) | Optional |
+| arguments | Additional arguments | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Query | Unknown | Query output | 
-
+| Humio.Query | Unknown | Query output |
 
 #### Command Example
+
 ```!humio-query repository=sandbox queryString="foo=bar" start=24h end=now isLive=false```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -92,44 +96,45 @@ Query the data from Humio
 #### Human Readable Output
 
 >### Humio Query Results
+>
 >|#repo|#type|@id|@rawstring|@session|@timestamp|@timezone|bar|foo|
 >|---|---|---|---|---|---|---|---|---|
 >| sandbox_Szpj6CNb6h7eWK1ZI09D9HFk | kv | hgXrSjcMWB08aJW40hfNUONL_3_2_1588676868 | foo=bar bar=foo | c12af55f-069d-43eb-840f-ff08fd11f685 | 1588676868908 | Z | foo | bar |
 >| sandbox_Szpj6CNb6h7eWK1ZI09D9HFk | kv | hgXrSjcMWB08aJW40hfNUONL_3_1_1588676850 | foo=bar | c12af55f-069d-43eb-840f-ff08fd11f685 | 1588676850226 | Z |  | bar |
 
-
 ### humio-query-job
+
 ***
 Issue a query job to Humio
-
 
 #### Base Command
 
 `humio-query-job`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| queryString | Query string to use | Required | 
-| start | Relative or absolute (epoch) | Optional | 
-| end | Relative or absolute (epoch) | Optional | 
-| repository | Repository to use | Required | 
-| isLive | Is it live? | Optional | 
-| timeZoneOffsetMinutes | Timezone offset in Minutes | Optional | 
-| arguments | Additional Arguments | Optional | 
-
+| queryString | Query string to use | Required |
+| start | Relative or absolute (epoch) | Optional |
+| end | Relative or absolute (epoch) | Optional |
+| repository | Repository to use | Required |
+| isLive | Is it live? | Optional |
+| timeZoneOffsetMinutes | Timezone offset in Minutes | Optional |
+| arguments | Additional Arguments | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Job | Unknown | Query Job outputs | 
-
+| Humio.Job | Unknown | Query Job outputs |
 
 #### Command Example
+
 ```!humio-query-job queryString="foo=bar" repository=sandbox```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -144,43 +149,44 @@ Issue a query job to Humio
 #### Human Readable Output
 
 >### Humio Query Job
+>
 >|id|queryOnView|
 >|---|---|
 >| 1-1feyl7ulm_fmWhWmLhkPkWxZ | <M:foo=bar> |
 
-
 ### humio-poll
+
 ***
 Issue poll command to Humio
-
 
 #### Base Command
 
 `humio-poll`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-| id | Id to poll for  | Required | 
-
+| repository | Repository to use | Required |
+| id | Id to poll for  | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Result | Unknown | Poll results | 
-| Humio.Result.cancelled | Unknown | If it was cancelled | 
-| Humio.Result.events | Unknown | Events in the poll | 
-| Humio.Result.done | Unknown | If its done | 
-| Humio.Result.metaData | Unknown | MetaData from the poll | 
-| Humio.Result.job_id | String | Humio Job id the results came from | 
-
+| Humio.Result | Unknown | Poll results |
+| Humio.Result.cancelled | Unknown | If it was cancelled |
+| Humio.Result.events | Unknown | Events in the poll |
+| Humio.Result.done | Unknown | If its done |
+| Humio.Result.metaData | Unknown | MetaData from the poll |
+| Humio.Result.job_id | String | Humio Job id the results came from |
 
 #### Command Example
+
 ```!humio-poll repository=sandbox id=1-mJg87kWn247FiYFpsnwZcx9G```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -246,36 +252,38 @@ Issue poll command to Humio
 #### Human Readable Output
 
 >### Humio Poll Result
+>
 >|#repo|#type|@id|@rawstring|@session|@timestamp|@timezone|bar|foo|
 >|---|---|---|---|---|---|---|---|---|
 >| sandbox_Szpj6CNb6h7eWK1ZI09D9HFk | kv | hgXrSjcMWB08aJW40hfNUONL_3_2_1588676868 | foo=bar bar=foo | c12af55f-069d-43eb-840f-ff08fd11f685 | 1588676868908 | Z | foo | bar |
 >| sandbox_Szpj6CNb6h7eWK1ZI09D9HFk | kv | hgXrSjcMWB08aJW40hfNUONL_3_1_1588676850 | foo=bar | c12af55f-069d-43eb-840f-ff08fd11f685 | 1588676850226 | Z |  | bar |
 
-
 ### humio-delete-job
+
 ***
 Issue a job delete command to Humio
-
 
 #### Base Command
 
 `humio-delete-job`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | ID of the job to delete | Required | 
-| repository | Repository to use | Required | 
-
+| id | ID of the job to delete | Required |
+| repository | Repository to use | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!humio-delete-job repository=sandbox id=1-mJg87kWn247FiYFpsnwZcx9G```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -285,40 +293,41 @@ There is no context output for this command.
 >Command executed. Status code <Response [204]>
 
 ### humio-list-alerts
+
 ***
 List alerts from Humio
-
 
 #### Base Command
 
 `humio-list-alerts`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-
+| repository | Repository to use | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Alert.description | String | Description of the alert | 
-| Humio.Alert.id | String | The alert id | 
-| Humio.Alert.name | String | The alert name | 
-| Humio.Alert.notifiers | String | The notifiers the alert will use | 
-| Humio.Alert.query.end | String | the end time of the query | 
-| Humio.Alert.query.isLive | Number | whether or not the query is live | 
-| Humio.Alert.query.queryString | String | The query string being used | 
-| Humio.Alert.query.start | String | The start time of the query | 
-| Humio.Alert.silenced | Number | Whether or not the alert is enabled | 
-| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts | 
-
+| Humio.Alert.description | String | Description of the alert |
+| Humio.Alert.id | String | The alert id |
+| Humio.Alert.name | String | The alert name |
+| Humio.Alert.notifiers | String | The notifiers the alert will use |
+| Humio.Alert.query.end | String | the end time of the query |
+| Humio.Alert.query.isLive | Number | whether or not the query is live |
+| Humio.Alert.query.queryString | String | The query string being used |
+| Humio.Alert.query.start | String | The start time of the query |
+| Humio.Alert.silenced | Number | Whether or not the alert is enabled |
+| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts |
 
 #### Command Example
+
 ```!humio-list-alerts repository=sandbox```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -486,6 +495,7 @@ List alerts from Humio
 #### Human Readable Output
 
 >### Humio Alerts
+>
 >|description|error|id|labels|lastAlarm|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|---|---|---|---|
 >|  | All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc |  | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
@@ -497,43 +507,43 @@ List alerts from Humio
 >|  | All notifications failed. | sn82IuvTc9Vfnl45XqLWoZASIcBezvu1 |  | 1588680716684 | new_alert_name4 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
 >|  | All notifications failed. | ljeBta_tEvrGRRbae7MzLRiZG4NbckBm |  | 1588680716684 | new_alert_name5 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
 
-
 ### humio-get-alert-by-id
+
 ***
 list alerts by id from Humio
-
 
 #### Base Command
 
 `humio-get-alert-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-| id | Alert ID | Required | 
-
+| repository | Repository to use | Required |
+| id | Alert ID | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Alert.description | String | Description of the alert | 
-| Humio.Alert.id | String | The alert id | 
-| Humio.Alert.name | String | The alert name | 
-| Humio.Alert.notifiers | String | The notifiers the alert will use | 
-| Humio.Alert.query.end | String | the end time of the query | 
-| Humio.Alert.query.isLive | Number | whether or not the query is live | 
-| Humio.Alert.query.queryString | String | The query string being used | 
-| Humio.Alert.query.start | String | The start time of the query | 
-| Humio.Alert.silenced | Number | Whether or not the alert is enabled | 
-| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts | 
-
+| Humio.Alert.description | String | Description of the alert |
+| Humio.Alert.id | String | The alert id |
+| Humio.Alert.name | String | The alert name |
+| Humio.Alert.notifiers | String | The notifiers the alert will use |
+| Humio.Alert.query.end | String | the end time of the query |
+| Humio.Alert.query.isLive | Number | whether or not the query is live |
+| Humio.Alert.query.queryString | String | The query string being used |
+| Humio.Alert.query.start | String | The start time of the query |
+| Humio.Alert.silenced | Number | Whether or not the alert is enabled |
+| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts |
 
 #### Command Example
+
 ```!humio-get-alert-by-id repository=sandbox id=ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -563,54 +573,55 @@ list alerts by id from Humio
 #### Human Readable Output
 
 >### Humio Alerts
+>
 >|error|id|lastAlarm|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|---|---|
 >| All notifications failed. | ArHY37FM9Z8kWxYMRknwmdR5yJwNEUgc | 1588680716684 | new_alert_namme2 | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | end: now<br/>isLive: true<br/>queryString: alert=true<br/>start: 24h | false | 300000 |
 
-
 ### humio-create-alert
+
 ***
 Create an alert in Humio
-
 
 #### Base Command
 
 `humio-create-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-| name | Name of the alert | Required | 
-| queryString | Query to use | Required | 
-| start | Start time, relative or epoch in ms. | Optional | 
-| description | Description of the alert | Optional | 
-| throttleTimeMillis | Time millis interval | Optional | 
-| silenced | Is it silenced | Optional | 
-| notifiers | comma-separated values of notifier IDs | Required | 
-| labels | comma-separated values of labels | Optional | 
-
+| repository | Repository to use | Required |
+| name | Name of the alert | Required |
+| queryString | Query to use | Required |
+| start | Start time, relative or epoch in ms. | Optional |
+| description | Description of the alert | Optional |
+| throttleTimeMillis | Time millis interval | Optional |
+| silenced | Is it silenced | Optional |
+| notifiers | comma-separated values of notifier IDs | Required |
+| labels | comma-separated values of labels | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Alert.description | String | Description of the alert | 
-| Humio.Alert.id | String | The alert id | 
-| Humio.Alert.name | String | The alert name | 
-| Humio.Alert.notifiers | String | The notifiers the alert will use | 
-| Humio.Alert.query.end | String | the end time of the query | 
-| Humio.Alert.query.isLive | Number | whether or not the query is live | 
-| Humio.Alert.query.queryString | String | The query string being used | 
-| Humio.Alert.query.start | String | The start time of the query | 
-| Humio.Alert.silenced | Number | Whether or not the alert is enabled | 
-| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts | 
-
+| Humio.Alert.description | String | Description of the alert |
+| Humio.Alert.id | String | The alert id |
+| Humio.Alert.name | String | The alert name |
+| Humio.Alert.notifiers | String | The notifiers the alert will use |
+| Humio.Alert.query.end | String | the end time of the query |
+| Humio.Alert.query.isLive | Number | whether or not the query is live |
+| Humio.Alert.query.queryString | String | The query string being used |
+| Humio.Alert.query.start | String | The start time of the query |
+| Humio.Alert.silenced | Number | Whether or not the alert is enabled |
+| Humio.Alert.throttleTimeMillis | Number | The throttle time for alerts |
 
 #### Command Example
+
 ```!humio-create-alert name=SampleTestAlert notifiers=BTkuj8QArhIFMh_L39FoN0tnyTUEXplc queryString="foo=bar" repository=sandbox```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -638,37 +649,38 @@ Create an alert in Humio
 #### Human Readable Output
 
 >### Humio Alerts
+>
 >|id|name|notifiers|query|silenced|throttleTimeMillis|
 >|---|---|---|---|---|---|
 >| _LLJeuH_--APkyCVaj3NDdXPlyfAtcsB | SampleTestAlert | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | end: now<br/>isLive: true<br/>queryString: foo=bar<br/>start: 24h | false | 300000 |
 
-
 ### humio-list-notifiers
+
 ***
 List all notifiers in Humio
-
 
 #### Base Command
 
 `humio-list-notifiers`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-
+| repository | Repository to use | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Notifier | Unknown | List of notifiers | 
-
+| Humio.Notifier | Unknown | List of notifiers |
 
 #### Command Example
+
 ```!humio-list-notifiers repository=sandbox```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -709,39 +721,40 @@ List all notifiers in Humio
 #### Human Readable Output
 
 >### Humio Notifiers
+>
 >|entity|id|name|properties|
 >|---|---|---|---|
 >| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br/>  "repository": "{repo_name}",<br/>  "timestamp": "{alert_triggered_timestamp}",<br/>  "alert": {<br/>    "name": "{alert_name}",<br/>    "description": "{alert_description}",<br/>    "query": {<br/>      "queryString": "{query_string} ",<br/>      "end": "{query_time_end}",<br/>      "start": "{query_time_start}"<br/>    },<br/>    "notifierID": "{alert_notifier_id}",<br/>    "id": "{alert_id}",<br/>    "linkURL": "{url}"<br/>  },<br/>  "warnings": "{warnings}",<br/>  "events": {events},<br/>  "numberOfEvents": {event_count}<br/>}<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
 >| WebHookNotifier | AQs6CuWm-uyXfYaNzwMyDGTX4S4qyAez | other | bodyTemplate: BODY<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |
 
-
 ### humio-delete-alert
+
 ***
 Delete alert in Humio
-
 
 #### Base Command
 
 `humio-delete-alert`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-| id | ID of the alert to be deleted | Required | 
-
+| repository | Repository to use | Required |
+| id | ID of the alert to be deleted | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Humio-delete-alert | Unknown | Details of the deletion | 
-
+| Humio.Humio-delete-alert | Unknown | Details of the deletion |
 
 #### Command Example
+
 ```!humio-delete-alert repository=sandbox id=dIn3uuIvY4Gz90Bt2Dn2mVtDuB11ZUl2```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -751,32 +764,33 @@ Delete alert in Humio
 >Command executed. Status code <Response [204]>
 
 ### humio-get-notifier-by-id
+
 ***
 Get notifier from Humio by id
-
 
 #### Base Command
 
 `humio-get-notifier-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| repository | Repository to use | Required | 
-| id | ID to use | Required | 
-
+| repository | Repository to use | Required |
+| id | ID to use | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Humio.Notifier | Unknown | Details of the notifier | 
-
+| Humio.Notifier | Unknown | Details of the notifier |
 
 #### Command Example
+
 ```!humio-get-notifier-by-id repository=sandbox id=BTkuj8QArhIFMh_L39FoN0tnyTUEXplc```
 
 #### Context Example
+
 ```
 {
     "Humio": {
@@ -801,6 +815,7 @@ Get notifier from Humio by id
 #### Human Readable Output
 
 >### Humio Notifiers
+>
 >|entity|id|name|properties|
 >|---|---|---|---|
 >| WebHookNotifier | BTkuj8QArhIFMh_L39FoN0tnyTUEXplc | Null Webhook | bodyTemplate: {<br/>  "repository": "{repo_name}",<br/>  "timestamp": "{alert_triggered_timestamp}",<br/>  "alert": {<br/>    "name": "{alert_name}",<br/>    "description": "{alert_description}",<br/>    "query": {<br/>      "queryString": "{query_string} ",<br/>      "end": "{query_time_end}",<br/>      "start": "{query_time_start}"<br/>    },<br/>    "notifierID": "{alert_notifier_id}",<br/>    "id": "{alert_id}",<br/>    "linkURL": "{url}"<br/>  },<br/>  "warnings": "{warnings}",<br/>  "events": {events},<br/>  "numberOfEvents": {event_count}<br/>}<br/>headers: {"Content-Type": "application/json"}<br/>ignoreSSL: false<br/>method: POST<br/>url: http://localhost |

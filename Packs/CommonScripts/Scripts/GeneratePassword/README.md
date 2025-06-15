@@ -1,14 +1,15 @@
-Generates a password and allows various parameters to customize the properties of the password depending on the use case. For example, "password complexity requirements".  The default behavior is to generate a password of  *random length* including all four character classes, upper, lower, digits, and symbols, with at least five and at most ten characters per class. 
+Generates a password and allows various parameters to customize the properties of the password depending on the use case. For example, "password complexity requirements".  The default behavior is to generate a password of  *random length* including all four character classes, upper, lower, digits, and symbols, with at least five and at most ten characters per class.
 
-The `min_* values` all default to 0. 
+The `min_* values` all default to 0.
 
 This means that if the command is executed in this way:
 `!GeneratePassword max_lcase=10`
-It is possible that a password of length zero could be generated. It is therefore recommended to always include a `min_* parameter` that matches. 
+It is possible that a password of length zero could be generated. It is therefore recommended to always include a `min_* parameter` that matches.
 
 The debug parameter will print certain properties of the command into the War Room for easy diagnostics.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -16,8 +17,8 @@ The debug parameter will print certain properties of the command into the War Ro
 | Script Type | python |
 | Tags | Utility |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -32,11 +33,11 @@ The debug parameter will print certain properties of the command into the War Ro
 | max_symbols | The maximum number of symbols to include in password. |
 | debug | Sees various values as they pass through the function if enabled. |
 
-
-**Note:** 
+**Note:**
 At least one of the following arguments should be above 0: min_uppercase, min_lowercase, min_digits, min_symbols
 
 ## Outputs
+
 ---
 
 | **Path** | **Description** | **Type** |

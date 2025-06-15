@@ -5,7 +5,6 @@ This integration was integrated and tested with version 4.2.20 of Forescout EyeI
 
 ## Configure Forescout EyeInspect in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | Server URL |  | True |
@@ -19,16 +18,19 @@ This integration was integrated and tested with version 4.2.20 of Forescout EyeI
 | Fetch incidents |  | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### forescout-ei-host-list
+
 ***
 Retrieves information about the hosts in the eyeInspect CC database.
-
 
 #### Base Command
 
 `forescout-ei-host-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -43,7 +45,6 @@ Retrieves information about the hosts in the eyeInspect CC database.
 | sensor_id | A comma-separated list of sensor IDs. The command will filter the results from the returned page according to the provided values. | Optional |
 | sort_field | List records and sort them based on the specified field, as well as on the ID. Also, the command will filter the results from the returned page. Possible values are: ip_reuse_domain_id, ip_reuse_domain, address, ip, vlan, nested_address, mac_addresses, sorted_mac_addresses, real_mac_addresses, sorted_real_mac_addresses, observed_mac_addresses, sorted_observed_mac_addresses, mac_vendors, vendor_with_real_macs, vendor_with_observed_macs, sensor_ids, is_broadcast_ip, is_multicast_ip, is_public_ip, is_learnt_host, name, all_names, description, role, all_roles, vendor_model, all_vendors_models, os_version, client_proto_port_info, server_proto_port_info, first_seen, last_seen, labels, sorted_labels, purdue_level, criticality, firmware_version, hardware_version, serial_number, project, ip_type, monitored_networks, open_ports, complex_cves, sorted_client_protocols, sorted_server_protocols, module_count, sorted_module_details, security_risk, operational_risk, alert_count. | Optional |
 | sort_ascending | Indicates whether the result list should be sorted in ascending or descending order. Possible values are: true, false. | Optional |
-
 
 #### Context Output
 
@@ -64,8 +65,11 @@ Retrieves information about the hosts in the eyeInspect CC database.
 | ForescoutEyeInspect.Host.open_ports | String | The open TCP and UDP ports of the host. |
 
 #### Command example
+
 ```!forescout-ei-host-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -91,21 +95,24 @@ Retrieves information about the hosts in the eyeInspect CC database.
 
 #### Human Readable Output
 
->### Hosts List:
+>### Hosts List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|IP|MAC Addresses|
 >|---|---|---|
 >| 34558 | 20.190.159.71 | C4:24:56:A4:86:11 |
 
 ### forescout-ei-link-list
+
 ***
 Retrieves information about the links in the eyeInspect CC database.
-
 
 #### Base Command
 
 `forescout-ei-link-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -120,7 +127,6 @@ Retrieves information about the links in the eyeInspect CC database.
 | id_min | Retrieve links that are greater than or equal to the specified ID. | Optional |
 | sort_field | List records and sort them based on the specified field, as well as on the ID. Possible values are: src_host_id, dst_host_id, proto, ports, tx_bytes, rx_bytes, first_seen, last_seen. | Optional |
 | sort_ascending | Indicates whether the result list should be sorted in ascending or descending order. Possible values are: true, false. | Optional |
-
 
 #### Context Output
 
@@ -137,8 +143,11 @@ Retrieves information about the links in the eyeInspect CC database.
 | ForescoutEyeInspect.Link.ports | String | TCP or UDP ports used in the link. |
 
 #### Command example
+
 ```!forescout-ei-link-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -156,27 +165,29 @@ Retrieves information about the links in the eyeInspect CC database.
 
 #### Human Readable Output
 
->### Host Links List:
+>### Host Links List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|Source Host ID|Destination Host ID|Protocol|
 >|---|---|---|---|
 >| 203725 | 8 | 34555 | FailedConnection (TCP) |
 
 ### forescout-ei-vulnerability-info-get
+
 ***
 Retrieves information about a specific vulnerability stored in the eyeInspect CC database.
-
 
 #### Base Command
 
 `forescout-ei-vulnerability-info-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cve_id | The unique ID of the vulnerability information record to be retrieved. The CVE ID can be retrieved from public vulnerability databases, such as NVD, or from the "CVEs and IoCs" page inside Forescout EyeInspect. | Required |
-
 
 #### Context Output
 
@@ -206,8 +217,11 @@ Retrieves information about a specific vulnerability stored in the eyeInspect CC
 | ForescoutEyeInspect.CVE.solution | String | Description of the proposed vulnerability solution \(including to what version to update the software/firmware\). |
 
 #### Command example
+
 ```!forescout-ei-vulnerability-info-get cve_id=CVE-2019-20218```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -247,19 +261,21 @@ Retrieves information about a specific vulnerability stored in the eyeInspect CC
 
 #### Human Readable Output
 
->### CVE CVE-2019-20218 Information:
+>### CVE CVE-2019-20218 Information
+>
 >|ID|Title|Published Date|Cvss Score|
 >|---|---|---|---|
 >| CVE-2019-20218 | Improper handling of exceptional conditions vulnerability in SQLite database in the SIMATIC S7-1500 CPU 1518(F)-4 PN/DP MFP | 2018-11-27T01:00:00.000+01:00 | 5.0 |
 
 ### forescout-ei-alert-list
+
 ***
 Retrieves information about the alerts inside eyeInspect CC.
-
 
 #### Base Command
 
 `forescout-ei-alert-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -282,7 +298,6 @@ Retrieves information about the alerts inside eyeInspect CC.
 | src_host_id | List records that have the src_ip or src_mac property equal to the IP address or MAC address of the host with ID equal to the specified parameter. | Optional |
 | dst_host_id | List records that have the dst_ip or dst_mac property equal to the IP address or MAC address of the host with ID equal to the specified parameter. | Optional |
 | host_id | List records that have either the src_ip, src_mac or dst_ip, dst_mac equal to the IP address or MAC address of the host with ID equal to the specified parameter. | Optional |
-
 
 #### Context Output
 
@@ -314,8 +329,11 @@ Retrieves information about the alerts inside eyeInspect CC.
 | ForescoutEyeInspect.Alert.status | String | The status of the alert. |
 
 #### Command example
+
 ```!forescout-ei-alert-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -367,27 +385,29 @@ Retrieves information about the alerts inside eyeInspect CC.
 
 #### Human Readable Output
 
->### Alerts List:
+>### Alerts List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|Alert ID|Description|Timestamp|Source IP|Destination IP|
 >|---|---|---|---|---|
->| 1 | TCP portscan: the attacker sends multiple out-of-state ACK packets to scan the victim's hosts and determine the open ports. This might be intelligence gathering or (the first phase of) an attack (e.g., DoS, exploit)<br/><br/>Failed connections:<br/> - (scanner) 213.8.143.143  <br/>    - 192.168.92.12  <br/>        * 54009 (    1 failed connection(s) [ ACK: 1 ] )<br/>        * 54010 (    1 failed connection(s) [ ACK: 1 ] )<br/>        * 54011 (    1 failed connection(s) [ ACK: 1 ] )<br/>        * 54013 (    1 failed connection(s) [ ACK: 1 ] )<br/>        * 54017 (    1 failed connection(s) [ ACK: 1 ] )<br/> | 2022-02-03T07:49:50.092+01:00 | 213.8.143.143 | 192.168.92.12 |
+>| 1 | TCP portscan: the attacker sends multiple out-of-state ACK packets to scan the victim's hosts and determine the open ports. This might be intelligence gathering or (the first phase of) an attack (e.g., DoS, exploit)<br/><br/>Failed connections:<br/> - (scanner) 213.8.143.143  <br/>    - 192.168.92.12  <br/>        *54009 (    1 failed connection(s) [ ACK: 1 ] )<br/>* 54010 (    1 failed connection(s) [ ACK: 1 ] )<br/>        *54011 (    1 failed connection(s) [ ACK: 1 ] )<br/>* 54013 (    1 failed connection(s) [ ACK: 1 ] )<br/>        * 54017 (    1 failed connection(s) [ ACK: 1 ] )<br/> | 2022-02-03T07:49:50.092+01:00 | 213.8.143.143 | 192.168.92.12 |
 
 ### forescout-ei-alert-pcap-get
+
 ***
 Retrieves the PCAP file associated to a given alert.
-
 
 #### Base Command
 
 `forescout-ei-alert-pcap-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | alert_id | The unique ID of the alert to get the PCAP of. | Required |
-
 
 #### Context Output
 
@@ -401,8 +421,11 @@ Retrieves the PCAP file associated to a given alert.
 | InfoFile.Extension | String | The file extension. |
 
 #### Command example
+
 ```!forescout-ei-alert-pcap-get alert_id=1```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -418,16 +441,15 @@ Retrieves the PCAP file associated to a given alert.
 
 #### Human Readable Output
 
-
-
 ### forescout-ei-sensor-list
+
 ***
 Retrieves information about the sensors associated to the eyeInspect CC.
-
 
 #### Base Command
 
 `forescout-ei-sensor-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -440,7 +462,6 @@ Retrieves information about the sensors associated to the eyeInspect CC.
 | port | A comma-separated list of listening ports. The command will filter the results from the returned page according to the provided values. | Optional |
 | type | A comma-separated list of sensor types. The command will filter the results according to the provided values. Possible values are: PASSIVE, PATROL. | Optional |
 | state | A comma-separated list of sensor states. The command will filter the results from the returned page according to the provided values. Possible values are: OPERATIVE_ON, OPERATIVE_OFF, DISCONNECTED, LICENSE_EXPIRED, LICENSE_INVALID, UNKNOWN. | Optional |
-
 
 #### Context Output
 
@@ -456,8 +477,11 @@ Retrieves information about the sensors associated to the eyeInspect CC.
 | ForescoutEyeInspect.Sensor.health_status | String | Current health status of the sensor. |
 
 #### Command example
+
 ```!forescout-ei-sensor-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -543,21 +567,24 @@ Retrieves information about the sensors associated to the eyeInspect CC.
 
 #### Human Readable Output
 
->### Sensors List:
+>### Sensors List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|Name|Address|Port|Type|
 >|---|---|---|---|---|
 >| 2 | sensor1 | 127.0.0.1 | 9999 | PASSIVE |
 
 ### forescout-ei-sensor-module-list
+
 ***
 Retrieves information about the modules of the specified sensor.
-
 
 #### Base Command
 
 `forescout-ei-sensor-module-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -565,7 +592,6 @@ Retrieves information about the modules of the specified sensor.
 | sensor_id | The unique ID of the sensor to query for modules. | Required |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
-
 
 #### Context Output
 
@@ -582,8 +608,11 @@ Retrieves information about the modules of the specified sensor.
 | ForescoutEyeInspect.SensorModule.date_last_update | String | Timestamp in ISO format of when the module was last updated. |
 
 #### Command example
+
 ```!forescout-ei-sensor-module-list sensor_id=2 page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -604,21 +633,24 @@ Retrieves information about the modules of the specified sensor.
 
 #### Human Readable Output
 
->### Sensor 2 Modules List:
+>### Sensor 2 Modules List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|Name|Engine|Started|
 >|---|---|---|---|
 >| 1 | Industrial threat library (ITL) | THREAT_LIBRARY | true |
 
 ### forescout-ei-sensor-module-update
+
 ***
 Changes the specified properties of the specified module.
-
 
 #### Base Command
 
 `forescout-ei-sensor-module-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -629,7 +661,6 @@ Changes the specified properties of the specified module.
 | description | Description of the module. | Optional |
 | started | If set to true, the module will be started. If set to false, the module will be paused. Possible values are: true, false. | Optional |
 | operational_mode | Changes the operational mode of the module to the specified value. Possible values are: Learning, Detecting. | Optional |
-
 
 #### Context Output
 
@@ -646,8 +677,11 @@ Changes the specified properties of the specified module.
 | ForescoutEyeInspect.SensorModule.date_last_update | String | Timestamp in ISO format of when the module was last updated. |
 
 #### Command example
+
 ```!forescout-ei-sensor-module-update sensor_id=2 module_id=5 started=true```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -668,19 +702,21 @@ Changes the specified properties of the specified module.
 
 #### Human Readable Output
 
->### Updated Module 5 of Sensor 2:
+>### Updated Module 5 of Sensor 2
+>
 >|Name|Engine|Started|
 >|---|---|---|
 >| Portscan | PORTSCAN | true |
 
 ### forescout-ei-sensor-module-delete
+
 ***
 Deletes the specified module from the specified sensor and from the eyeInspect CC database.
-
 
 #### Base Command
 
 `forescout-ei-sensor-module-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -688,34 +724,48 @@ Deletes the specified module from the specified sensor and from the eyeInspect C
 | sensor_id | The unique ID of the sensor of the module to delete. | Required |
 | module_id | The unique ID of the module to delete. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!forescout-ei-sensor-module-delete sensor_id=2 module_id=8```
+
 #### Human Readable Output
->## The module 8 of sensor 2 was successfully deleted!
+>
+>## The module 8 of sensor 2 was successfully deleted
+>
 ### forescout-ei-ip-blacklist-get
+
 ***
 Retrieves the IP blacklist from the Industrial Threat Library of the specified sensor.
+
 #### Base Command
+
 `forescout-ei-ip-blacklist-get`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The unique ID of the sensor for which to retrieve the IP blacklist. | Required |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.IPBlacklist.address | String | A blacklisted IP address. |
 | ForescoutEyeInspect.IPBlacklist.comment | String | A comment provided by the user. The comment might be empty. |
+
 #### Command example
+
 ```!forescout-ei-ip-blacklist-get sensor_id=2 page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -730,21 +780,24 @@ Retrieves the IP blacklist from the Industrial Threat Library of the specified s
 
 #### Human Readable Output
 
->### IP Blacklist of Sensor 2:
+>### IP Blacklist of Sensor 2
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|Address|Comment|
 >|---|---|
 >| 1.1.1.5 | demo test |
 
 ### forescout-ei-ip-blacklist-add
+
 ***
 Adds a new entry to the IP blacklist from the Industrial Threat Library of the specified sensor.
-
 
 #### Base Command
 
 `forescout-ei-ip-blacklist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -753,37 +806,52 @@ Adds a new entry to the IP blacklist from the Industrial Threat Library of the s
 | address | The IP address to add to the blacklist. | Required |
 | comment | A comment about the blacklisted IP address. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!forescout-ei-ip-blacklist-add sensor_id=2 address=3.4.5.6 comment=Malicious```
+
 #### Human Readable Output
->### New IP Blacklist Entry of Sensor 2:
+>
+>### New IP Blacklist Entry of Sensor 2
+>
 >|Address|Comment|
 >|---|---|
 >| 3.4.5.6 | Malicious |
+>
 ### forescout-ei-domain-blacklist-get
+
 ***
 Retrieves the domain name blacklist from the Industrial Threat Library of the specified sensor.
+
 #### Base Command
+
 `forescout-ei-domain-blacklist-get`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The unique ID of the sensor that contains the domain blacklist. | Required |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.DomainBlacklist.domain_name | String | A blacklisted domain name. |
 | ForescoutEyeInspect.DomainBlacklist.comment | String | A comment provided by the user. The comment might be empty. |
+
 #### Command example
+
 ```!forescout-ei-domain-blacklist-get sensor_id=2 page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -798,21 +866,24 @@ Retrieves the domain name blacklist from the Industrial Threat Library of the sp
 
 #### Human Readable Output
 
->### Domain Blacklist of Sensor 2:
+>### Domain Blacklist of Sensor 2
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|Domain Name|Comment|
 >|---|---|
 >| 028xmz.com | demo command |
 
 ### forescout-ei-domain-blacklist-add
+
 ***
 Adds a new entry to the domain name blacklist from the Industrial Threat Library of the specified sensor.
-
 
 #### Base Command
 
 `forescout-ei-domain-blacklist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -821,39 +892,54 @@ Adds a new entry to the domain name blacklist from the Industrial Threat Library
 | domain_name | The domain name to add to the blacklist. | Required |
 | comment | A comment about the domain name. Default is Command and Control server. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!forescout-ei-domain-blacklist-add sensor_id=2 domain_name=malicious.xyz comment=Maleware```
+
 #### Human Readable Output
+>
 >### New Domain Blacklist Entry of Sensor 2
+>
 >|Domain Name|Comment|
 >|---|---|
 >| malicious.xyz | Maleware |
+>
 ### forescout-ei-ssl-client-blacklist-get
+
 ***
 Retrieves the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
+
 #### Base Command
+
 `forescout-ei-ssl-client-blacklist-get`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The unique ID of the sensor for which to retrieve the SSL client blacklist. | Required |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.SSLClientBlacklist.sensor_id | Number | The unique ID of the sensor for which to retrieve the SSL client. |
 | ForescoutEyeInspect.SSLClientBlacklist.application_name | String | The application name related to the entry. |
 | ForescoutEyeInspect.SSLClientBlacklist.ja3_hash | String | The JA3 hash of a blacklisted client application. |
 | ForescoutEyeInspect.SSLClientBlacklist.comment | String | A comment provided by the user. The comment might be empty. |
+
 #### Command example
+
 ```!forescout-ei-ssl-client-blacklist-get sensor_id=2 page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -869,21 +955,24 @@ Retrieves the SSL client application blacklist from the Industrial Threat Librar
 
 #### Human Readable Output
 
->### SSL Client Applications Blacklist of Sensor 2:
+>### SSL Client Applications Blacklist of Sensor 2
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|Application Name|Ja3 Hash|Comment|
 >|---|---|---|
 >| Potential malware: eitest-hoeflertext-chrome-popup-traffic-4-of-6 | 098f55e27d8c4b0a590102cbdb3a5f3a | Generated from all PCAPs on https:<span>//</span>www.malware-traffic-analysis.net |
 
 ### forescout-ei-ssl-client-blacklist-add
+
 ***
 Adds a new entry to the SSL client application blacklist from the Industrial Threat Library of the specified sensor.
-
 
 #### Base Command
 
 `forescout-ei-ssl-client-blacklist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -893,39 +982,54 @@ Adds a new entry to the SSL client application blacklist from the Industrial Thr
 | ja3_hash | The JA3 hash of a blacklisted client application. | Required |
 | comment | Comment about the SSL client application. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!forescout-ei-ssl-client-blacklist-add sensor_id=2 application_name=Shodan ja3_hash=0ad94fcb7d3a2c56679fbd004f6b12cd comment=Malicious```
+
 #### Human Readable Output
->### New SSL Client Blacklist Entry of Sensor 2:
+>
+>### New SSL Client Blacklist Entry of Sensor 2
+>
 >|Application Name|Ja3 Hash|Comment|
 >|---|---|---|
 >| Shodan | 0ad94fcb7d3a2c56679fbd004f6b12cd | Malicious |
+>
 ### forescout-ei-file-operation-blacklist-get
+
 ***
 Retrieves the file operation blacklist from the Industrial Threat Library of the specified sensor.
+
 #### Base Command
+
 `forescout-ei-file-operation-blacklist-get`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | sensor_id | The unique ID of the sensor for which to retrieve the file operation blacklist. | Required |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.FileOperationBlacklist.matching_type | String | The way file or folder should be matched. |
 | ForescoutEyeInspect.FileOperationBlacklist.file_or_folder | String | The name of the file or folder the entry applies to. |
 | ForescoutEyeInspect.FileOperationBlacklist.operation | String | The name of the file operation. |
 | ForescoutEyeInspect.FileOperationBlacklist.comment | String | A comment provided by the user. The comment might be empty. |
+
 #### Command example
+
 ```!forescout-ei-file-operation-blacklist-get sensor_id=2 page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -942,21 +1046,24 @@ Retrieves the file operation blacklist from the Industrial Threat Library of the
 
 #### Human Readable Output
 
->### File Operation Blacklist of Sensor 2:
+>### File Operation Blacklist of Sensor 2
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|Matching Type|File Or Folder|Operation|Comment|
 >|---|---|---|---|
 >| REGEX | \.accdb$ | WRITE | Access 2007 Database File. A database file created with Microsoft Access 2007 or later. It typically contains data organized into tables and fields. (default blacklist entry). |
 
 ### forescout-ei-file-operation-blacklist-add
+
 ***
 Adds entries to the file operation blacklist from the Industrial Threat Library of the specified sensor.
-
 
 #### Base Command
 
 `forescout-ei-file-operation-blacklist-add`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -967,27 +1074,38 @@ Adds entries to the file operation blacklist from the Industrial Threat Library 
 | operation | The name of the file operation. Possible values are: WRITE, READWRITE. | Required |
 | comment | A comment provided by the user. | Optional |
 
-
 #### Context Output
 
 There is no context output for this command.
 
 #### Command example
+
 ```!forescout-ei-file-operation-blacklist-add sensor_id=2 matching_type=REGEX file_or_folder=\\.mal$ operation=WRITE comment=Virus```
+
 #### Human Readable Output
->### New File Operation Blacklist Entry of Sensor 2:
+>
+>### New File Operation Blacklist Entry of Sensor 2
+>
 >|Matching Type|File Or Folder|Operation|Comment|
 >|---|---|---|---|
 >| REGEX | \.mal$ | WRITE | Virus |
+>
 ### forescout-ei-diagnostics-information-get
+
 ***
 Retrieves information about all monitored Command Center resources and their health status excluding the logs.
+
 #### Base Command
+
 `forescout-ei-diagnostics-information-get`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.CCInfo.ip_address | String | IP address of the Command Center. |
@@ -995,9 +1113,13 @@ Retrieves information about all monitored Command Center resources and their hea
 | ForescoutEyeInspect.CCInfo.open_ports | String | TCP open port number of the Command Center. |
 | ForescoutEyeInspect.CCInfo.cc_version | String | Version of the Command Center software. |
 | ForescoutEyeInspect.CCInfo.health_status | String | Current health status of the Command Center. |
+
 #### Command example
+
 ```!forescout-ei-diagnostics-information-get```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1087,26 +1209,27 @@ Retrieves information about all monitored Command Center resources and their hea
 
 #### Human Readable Output
 
->### Command Center Diagnostics Information:
+>### Command Center Diagnostics Information
+>
 >|IP Address|Hostname|Open Ports|Cc Version|
 >|---|---|---|---|
 >| 192.168.30.115 | 4321-bundle-16g | 443 | 4.3.21 |
 
 ### forescout-ei-diagnostic-logs-get
+
 ***
 Download the ZIP file which contains diagnostic logs of the Command Center.
-
 
 #### Base Command
 
 `forescout-ei-diagnostic-logs-get`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | cc_info | Whether to include Command Center diagnostic logs inside the downloaded zip, in addition to sensors logs. If this value is false, the downloaded zip won't contain the general server logs, but only the logs about the sensors. Possible values are: true, false. Default is True. | Optional |
 | sensor_id | Include logs from a specific sensor by its ID, or all sensors (by specifying All). | Optional |
-
 
 #### Context Output
 
@@ -1120,8 +1243,11 @@ Download the ZIP file which contains diagnostic logs of the Command Center.
 | InfoFile.Extension | String | The file extension. |
 
 #### Command example
+
 ```!forescout-ei-diagnostic-logs-get sensor_id=2```
+
 #### Context Example
+
 ```json
 {
     "InfoFile": {
@@ -1137,23 +1263,21 @@ Download the ZIP file which contains diagnostic logs of the Command Center.
 
 #### Human Readable Output
 
-
-
 ### forescout-ei-group-policy-list
+
 ***
 Get all group policies.
-
 
 #### Base Command
 
 `forescout-ei-group-policy-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
-
 
 #### Context Output
 
@@ -1165,8 +1289,11 @@ Get all group policies.
 | ForescoutEyeInspect.GroupPolicy.constraints | Unknown | List of constraints of the policy. |
 
 #### Command example
+
 ```!forescout-ei-group-policy-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1188,29 +1315,31 @@ Get all group policies.
 
 #### Human Readable Output
 
->### Group Policies List:
+>### Group Policies List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 8 | Test Playbook Policy | Test |
 
 ### forescout-ei-group-policy-create
+
 ***
 Create a new group policy.
-
 
 #### Base Command
 
 `forescout-ei-group-policy-create`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | name | The name of the group policy. | Required |
 | description | The description of the group policy. | Required |
-| constraints | List of constraints of the policy.<br/><br/>Each policy constraint is an object that includes the following fields:<br/>* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.<br/>* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).<br/>* os_version: The value of the OS version for the os_version type.<br/>* firmware_version: The value of the firmware version for the firmware_version type.<br/>* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/>* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/><br/>Example for list of policy constraints: [{ "type": "os_version", "operator": "contains", "os_version": "Windows" }]. . | Required |
-
+| constraints | List of constraints of the policy.<br/><br/>Each policy constraint is an object that includes the following fields:<br/>*type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.<br/>* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).<br/>*os_version: The value of the OS version for the os_version type.<br/>* firmware_version: The value of the firmware version for the firmware_version type.<br/>*open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/>* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/><br/>Example for list of policy constraints: [{ "type": "os_version", "operator": "contains", "os_version": "Windows" }]. . | Required |
 
 #### Context Output
 
@@ -1222,8 +1351,11 @@ Create a new group policy.
 | ForescoutEyeInspect.GroupPolicy.constraints | Unknown | List of constraints of the policy. |
 
 #### Command example
+
 ```!forescout-ei-group-policy-create name="example policy" description="policy" constraints="[{\"type\": \"os_version\", \"operator\": \"equals\", \"os_version\": \"Windows 10\"}]"```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1245,23 +1377,27 @@ Create a new group policy.
 
 #### Human Readable Output
 
->### Group Policy Information:
+>### Group Policy Information
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 20 | example policy | policy |
->### Group Policy Constraints:
+>
+>### Group Policy Constraints
+>
 >|Type|Operator|Os Version|
 >|---|---|---|
 >| os_version | equals | Windows 10 |
 
 ### forescout-ei-group-policy-update
+
 ***
 Update a group policy. Note: the whole policy will be overridden, therefore all fields are required.
-
 
 #### Base Command
 
 `forescout-ei-group-policy-update`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1269,8 +1405,7 @@ Update a group policy. Note: the whole policy will be overridden, therefore all 
 | policy_id | The unique ID of the policy to be updated. | Required |
 | name | The name of the group policy. | Required |
 | description | The description of the group policy. | Required |
-| constraints | List of constraints of the policy.<br/><br/>Each policy constraint is an object that includes the following fields:<br/>* type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.<br/>* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).<br/>* os_version: The value of the OS version for the os_version type.<br/>* firmware_version: The value of the firmware version for the firmware_version type.<br/>* open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/>* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/><br/>Example for list of policy constraints: [{ "type": "os_version", "operator": "contains", "os_version": "Windows" }]. | Required |
-
+| constraints | List of constraints of the policy.<br/><br/>Each policy constraint is an object that includes the following fields:<br/>*type: The type of the constraint. Possible values are os_version, firmware_version, open_ports.<br/>* operator: The operator of the constraint. Possible values are equals (all types), allowed (open_ports) and contains (os_version, firmware_version).<br/>*os_version: The value of the OS version for the os_version type.<br/>* firmware_version: The value of the firmware version for the firmware_version type.<br/>*open_ports_tcp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/>* open_ports_udp: Comma-separated list of ports or range of ports for the open_ports type. Example: "10, 20-30".<br/><br/>Example for list of policy constraints: [{ "type": "os_version", "operator": "contains", "os_version": "Windows" }]. | Required |
 
 #### Context Output
 
@@ -1282,8 +1417,11 @@ Update a group policy. Note: the whole policy will be overridden, therefore all 
 | ForescoutEyeInspect.GroupPolicy.constraints | Unknown | List of constraints of the policy. |
 
 #### Command example
+
 ```!forescout-ei-group-policy-update policy_id=20 name="example policy" description="policy" constraints="[{\"type\": \"os_version\", \"operator\": \"equals\", \"os_version\": \"Windows 10\"}]"```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1305,82 +1443,121 @@ Update a group policy. Note: the whole policy will be overridden, therefore all 
 
 #### Human Readable Output
 
->### Updated Group Policy:
+>### Updated Group Policy
+>
 >|ID|Name|Description|
 >|---|---|---|
 >| 20 | example policy | policy |
->### Group Policy Constraints:
+>
+>### Group Policy Constraints
+>
 >|Type|Operator|Os Version|
 >|---|---|---|
 >| os_version | equals | Windows 10 |
 
 ### forescout-ei-group-policy-delete
+
 ***
 Delete a group policy.
-
 
 #### Base Command
 
 `forescout-ei-group-policy-delete`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | The unique ID of the policy for which the hosts will be added to. | Required |
 
-
 #### Context Output
 
 There is no context output for this command.
+
 #### Command example
+
 ```!forescout-ei-group-policy-delete policy_id=20```
+
 #### Human Readable Output
->## The group policy 20 was successfully deleted!
+>
+>## The group policy 20 was successfully deleted
+>
 ### forescout-ei-group-policy-hosts-assign
+
 ***
 Add all hosts not assigned to any policy (individual or group) matching the filter to the group policy.
+
 #### Base Command
+
 `forescout-ei-group-policy-hosts-assign`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | The unique ID of the policy for which the hosts will be added to. | Required |
 | filter_type | The type of the filter. Possible values are: address, host_mac_address_exact, vendor_model, os_version, firmware_version, ip_reuse_domain. | Required |
 | filter_value | The value of the filter. | Required |
+
 #### Context Output
+
 There is no context output for this command.
+
 #### Command example
+
 ```!forescout-ei-group-policy-hosts-assign policy_id=20 filter_type=address filter_value=192.168.1.1```
+
 #### Human Readable Output
->## 1 Additional Hosts Were Assigned to Group Policy 20!
+>
+>## 1 Additional Hosts Were Assigned to Group Policy 20
+>
 ### forescout-ei-group-policy-hosts-unassign
+
 ***
 Unassign all hosts assigned to the group policy matching the filter.
+
 #### Base Command
+
 `forescout-ei-group-policy-hosts-unassign`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | policy_id | The unique ID of the policy for which the hosts will be removed. | Required |
 | filter_type | The type of the filter. Possible values are: address, host_mac_address_exact, vendor_model, os_version, firmware_version, ip_reuse_domain. | Required |
 | filter_value | The value of the filter. | Required |
+
 #### Context Output
+
 There is no context output for this command.
+
 #### Command example
+
 ```!forescout-ei-group-policy-hosts-unassign policy_id=20 filter_type=address filter_value=192.168.1.1```
+
 #### Human Readable Output
->## 1 Additional Hosts Were Unassigned from Group Policy 20!
+>
+>## 1 Additional Hosts Were Unassigned from Group Policy 20
+>
 ### forescout-ei-ip-reuse-domain-list
+
 ***
 Get all IP reuse domains.
+
 #### Base Command
+
 `forescout-ei-ip-reuse-domain-list`
+
 #### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
 | page | The page number of the results to retrieve (minimum is 1). Default is 1. | Optional |
 | limit | Maximum number of records to retrieve. Default is 50. | Optional |
+
 #### Context Output
+
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | ForescoutEyeInspect.IPReuseDomain.id | Number | The ID of the IP reuse domain. |
@@ -1389,9 +1566,13 @@ Get all IP reuse domains.
 | ForescoutEyeInspect.IPReuseDomain.address | String | The address of the IP reuse domain. |
 | ForescoutEyeInspect.IPReuseDomain.mask | Number | The number of bits in the mask. |
 | ForescoutEyeInspect.IPReuseDomain.vlan_ids | String | VLAN IDs of the IP reuse domain. |
+
 #### Command example
+
 ```!forescout-ei-ip-reuse-domain-list page=2 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1409,21 +1590,24 @@ Get all IP reuse domains.
 
 #### Human Readable Output
 
->### IP Reuse Domains List:
+>### IP Reuse Domains List
+>
 > Current page size: 1
 > Showing page 2 out of others that may exist.
+>
 >|ID|Name|Description|Address|
 >|---|---|---|---|
 >| 2 | servers | Servers IP Reuse | 192.168.99.0 |
 
 ### forescout-ei-hosts-changelog-list
+
 ***
 Retrieves information about the changes of host properties and configuration from the eyeInspect CC database.
-
 
 #### Base Command
 
 `forescout-ei-hosts-changelog-list`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
@@ -1435,7 +1619,6 @@ Retrieves information about the changes of host properties and configuration fro
 | end_timestamp | List only records with the timestamp property less than or equal to the specified value. 2020-05-26T15:00:00.000Z+01:00. | Optional |
 | event_type_id | List only records with the event_type_id property equal to the specified value. Possible values are: hostcl_new_host, hostcl_new_mac, hostcl_new_name, hostcl_new_role, hostcl_new_vendor_model, hostcl_new_os_version, hostcl_changed_os_version, hostcl_new_client_proto, hostcl_new_client_port, hostcl_new_server_proto, hostcl_new_server_port, hostcl_new_label, hostcl_new_fw_version, hostcl_changed_fw_version, hostcl_new_hw_version, hostcl_changed_hw_version, hostcl_changed_serial, hostcl_new_project, hostcl_changed_project, hostcl_new_module, hostcl_changed_module_name, hostcl_changed_module_type, hostcl_changed_module_vendor. | Optional |
 | event_category | List only records with the event_type_id property equal to the specified value. Possible values are: PROPERTIES, CONFIGURATION, ALL. | Optional |
-
 
 #### Context Output
 
@@ -1460,8 +1643,11 @@ Retrieves information about the changes of host properties and configuration fro
 | ForescoutEyeInspect.HostChangeLog.host_mac_addresses | String | The MAC addresses associated to the host. |
 
 #### Command example
+
 ```!forescout-ei-hosts-changelog-list page=1 limit=1```
+
 #### Context Example
+
 ```json
 {
     "ForescoutEyeInspect": {
@@ -1492,9 +1678,11 @@ Retrieves information about the changes of host properties and configuration fro
 
 #### Human Readable Output
 
->### Hosts Changes List:
+>### Hosts Changes List
+>
 > Current page size: 1
 > Showing page 1 out of others that may exist.
+>
 >|ID|Host ID|Event Type Name|
 >|---|---|---|
 >| 1 | 1 | New host |

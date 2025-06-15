@@ -1,6 +1,7 @@
 Mark entries as evidence if they are tagged with given tag
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -9,6 +10,7 @@ Mark entries as evidence if they are tagged with given tag
 | Tags | Utility |
 
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -17,5 +19,6 @@ Mark entries as evidence if they are tagged with given tag
 | description | Description for the Evidence item |
 
 ## Outputs
+
 ---
 There are no outputs for this script.

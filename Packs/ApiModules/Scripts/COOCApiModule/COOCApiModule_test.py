@@ -209,7 +209,7 @@ def test_health_check_summarize_no_errors():
     result = health_check.summarize()
 
     # Verify result
-    assert result == HealthStatus.OK
+    assert result == HealthStatus.OK.value
 
 
 def test_check_account_permissions(mocker):
@@ -239,7 +239,6 @@ def test_check_account_permissions_no_account_id(mocker):
     When: _check_account_permissions is called.
     Then: It logs a debug message and returns None.
     """
-    import demistomock as demisto
     from COOCApiModule import _check_account_permissions
 
     # Mock permission check function and debug function
@@ -262,7 +261,6 @@ def test_check_account_permissions_exception(mocker):
     When: _check_account_permissions is called.
     Then: It handles the exception and returns a HealthCheckError.
     """
-    import demistomock as demisto
     from COOCApiModule import _check_account_permissions, HealthCheckError, ErrorType
 
     # Mock permission check function to raise exception
@@ -342,7 +340,6 @@ def test_run_permissions_check_no_accounts(mocker):
     When: run_permissions_check_for_accounts is called.
     Then: It returns "ok" without running any permission checks.
     """
-    import demistomock as demisto
     from COOCApiModule import run_permissions_check_for_accounts, HealthStatus
 
     # Mock get_accounts_by_connector_id to return empty list
@@ -353,5 +350,5 @@ def test_run_permissions_check_no_accounts(mocker):
     result = run_permissions_check_for_accounts(connector_id="test-connector-id", permission_check_func=mocker.Mock())
 
     # Verify results
-    assert result == HealthStatus.OK
+    assert result == HealthStatus.OK.value
     assert demisto.debug.called
