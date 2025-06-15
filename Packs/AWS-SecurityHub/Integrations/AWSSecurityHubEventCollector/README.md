@@ -4,7 +4,6 @@ This is the default integration for this content pack when configured by the Dat
 
 ## Configure AWS Security Hub Event Collector in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | AWS Default Region |  | True |
@@ -19,7 +18,6 @@ This is the default integration for this content pack when configured by the Dat
 | Retries | The maximum number of retry attempts when connection or throttling errors are encountered. Set to 0 to disable retries. The default value is 5 and the limit is 10. Note: Increasing the number of retries will increase the execution time. | False |
 | Trust any certificate (not secure) |  | False |
 | Use system proxy settings |  | False |
-
 
 ## Commands
 
@@ -36,5 +34,5 @@ Fetch events from AWS Security Hub.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required | 
-| limit | Maximum results to return. | Optional | 
+| should_push_events | If true, the command will create events, otherwise it will only display them. Possible values are: true, false. Default is false. | Required |
+| limit | Maximum results to return. | Optional |

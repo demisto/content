@@ -2,7 +2,6 @@ Use this feed integration to fetch VirusTotal Retrohunt matches. It processes th
 
 ## Configure VirusTotal Retrohunt Feed in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | API Key (leave empty. Fill in the API key in the password field.) |  | True |
@@ -19,41 +18,45 @@ Use this feed integration to fetch VirusTotal Retrohunt matches. It processes th
 | Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### vt-retrohunt-get-indicators
+
 ***
 Gets the matches from a given retrohunt job's id or the latest finished by default.
 
 ### vt-retrohunt-reset-fetch-indicators
+
 ***
 Reset the last processed job's id
-
-
 
 #### Base Command
 
 `vt-retrohunt-get-indicators`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| limit | The maximum number of results to return. Default is 40. | Optional | 
-| job_id | VT Retrohunt job's ID. | Optional | 
-
+| limit | The maximum number of results to return. Default is 40. | Optional |
+| job_id | VT Retrohunt job's ID. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!vt-retrohunt-get-indicators```
 ```!vt-retrohunt-get-indicators limit=10```
 ```!vt-retrohunt-get-indicators limit=10 job_id="RETROHUNT-JOB-ID"```
 
 #### Human Readable Output
 
-### Indicators from VirusTotal Retrohunt Feed:
+### Indicators from VirusTotal Retrohunt Feed
+
 |Sha256|Detections|Filetype|
 |---|---|---|
 | 80db033dfe2b4e966d46a4ceed36e20b98a13891ce364a1308b90da7ad694cf3 | 1/59 | ELF |

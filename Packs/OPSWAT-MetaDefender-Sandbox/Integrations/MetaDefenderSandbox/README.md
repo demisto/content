@@ -2,7 +2,6 @@ Unique adaptive threat analysis technology, enabling zero-day malware detection 
 
 ## Configure MetaDefender Sandbox in Cortex
 
-
 | **Parameter** | **Required** |
 | --- | --- |
 | Server URL (e.g. <https://www.filescan.io/api>) | True |
@@ -11,12 +10,10 @@ Unique adaptive threat analysis technology, enabling zero-day malware detection 
 | Use system proxy settings | False |
 | Verbose | False |
 
-
 ## Commands
 
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
-
 
 ### metadefender-sandbox-scan-url
 
@@ -49,27 +46,27 @@ Notice: Submitting indicators using this command might make the indicator data p
 | --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-| File.Name | String | The full file name. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. | 
-| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. | 
-| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. | 
-| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. | 
-| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. | 
-| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. | 
-| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. | 
+| File.Name | String | The full file name. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. |
+| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. |
+| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. |
+| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. |
+| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. |
+| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. |
+| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. |
+| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. |
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. |
+| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. |
 
 #### Command example
 
@@ -227,7 +224,7 @@ Notice: Submitting indicators using this command might make the indicator data p
 
 #### Human Readable Output
 
->### Scan Result (digest):
+>### Scan Result (digest)
 
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
@@ -260,27 +257,27 @@ Scan File with MetaDefender Sandbox
 | --- | --- | --- |
 | DBotScore.Indicator | String | The indicator that was tested. |
 | DBotScore.Type | String | The indicator type. |
-| DBotScore.Vendor | String | The vendor used to calculate the score. | 
+| DBotScore.Vendor | String | The vendor used to calculate the score. |
 | DBotScore.Score | Number | The actual score. |
-| File.Name | String | The full file name. | 
-| File.SHA256 | String | The SHA256 hash of the file. | 
-| File.Malicious.Vendor | String | The vendor that reported the file as malicious. | 
-| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. | 
-| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. | 
-| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. | 
-| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. | 
-| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. | 
-| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. | 
-| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. | 
-| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. | 
-| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. | 
-| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. | 
-| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. | 
+| File.Name | String | The full file name. |
+| File.SHA256 | String | The SHA256 hash of the file. |
+| File.Malicious.Vendor | String | The vendor that reported the file as malicious. |
+| MetaDefender.Sandbox.Analysis.finalVerdict.verdict | String | The final verdict. |
+| MetaDefender.Sandbox.Analysis.allTags | Unknown | All tags. |
+| MetaDefender.Sandbox.Analysis.overallState | String | Overall state of the scan. |
+| MetaDefender.Sandbox.Analysis.taskReference.name | String | Name of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.additionalInfo | Unknown | Additional informations about the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.ID | String | ID of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.state | String | State of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.resourceReference | Unknown | Resource reference of the main scan task. |
+| MetaDefender.Sandbox.Analysis.taskReference.opcount | Number | Counter. |
+| MetaDefender.Sandbox.Analysis.taskReference.processTime | Number | processTime. |
+| MetaDefender.Sandbox.Analysis.subtaskReferences | Unknown | Status of scan subtasks. |
+| MetaDefender.Sandbox.Analysis.allSignalGroups | Unknown | All signal groups. |
+| MetaDefender.Sandbox.Analysis.resources | Unknown | Resources. |
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Sandbox.Analysis.file.hash | String | The SHA256 of the file. |
+| MetaDefender.Sandbox.Analysis.file.type| String | The type of the submission. |
 
 #### Command example
 
@@ -429,7 +426,7 @@ Scan File with MetaDefender Sandbox
 
 #### Human Readable Output
 
->### Scan Result (digest):
+>### Scan Result (digest)
 
 >|FileHash|FileName|FileType|FinalVerdict|SubtaskReferences|Tags|
 >|---|---|---|---|---|---|
@@ -453,20 +450,19 @@ Search for reports. Finds reports and uploaded files by various tokens.
 | page | Page number, starting from 1 | Optional |
 | page_size | The page size. Can be 5, 10 or 20 | Optional |
 
-
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| MetaDefender.Sandbox.Analysis.id | String | The analysis id. | 
-| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. | 
-| MetaDefender.Sandbox.Analysis.file.sha256 | String | The SHA256 of the file. | 
-| MetaDefender.Sandbox.Analysis.verdict | String | The final verdict. | 
-| MetaDefender.Sandbox.Analysis.state | String | Overall state of the scan. | 
-| MetaDefender.Sandbox.Analysis.date | Date | The scan date. | 
+| MetaDefender.Sandbox.Analysis.id | String | The analysis id. |
+| MetaDefender.Sandbox.Analysis.file.name | String | The name of the file. |
+| MetaDefender.Sandbox.Analysis.file.sha256 | String | The SHA256 of the file. |
+| MetaDefender.Sandbox.Analysis.verdict | String | The final verdict. |
+| MetaDefender.Sandbox.Analysis.state | String | Overall state of the scan. |
+| MetaDefender.Sandbox.Analysis.date | Date | The scan date. |
 | MetaDefender.Sandbox.Analysis.file.mime_type | String | The file MimeType. |
 | MetaDefender.Sandbox.Analysis.file.short_type | String | The type of the submission. |
-| MetaDefender.Sandbox.Analysis.tags | Unknown | All tags. | 
+| MetaDefender.Sandbox.Analysis.tags | Unknown | All tags. |
 
 #### Command example
 
@@ -519,7 +515,7 @@ Search for reports. Finds reports and uploaded files by various tokens.
 
 #### Human Readable Output
 
->### Analysis Result:
+>### Analysis Result
 
 >| Id | SampleName | SHA256 | Verdict | State | Date |
 >|---|---|---|---|---|---|

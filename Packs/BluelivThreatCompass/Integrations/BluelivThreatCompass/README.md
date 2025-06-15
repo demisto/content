@@ -3,7 +3,6 @@ organization and its employees safe
 
 ## Configure Blueliv ThreatCompass in Cortex
 
-
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
 | url | Server URL (e.g. `https://demisto.blueliv.com/api/v2` ) | False |
@@ -20,37 +19,40 @@ organization and its employees safe
 | first_fetch_time | First fetch time | False |
 
 ## Commands
+
 You can execute these commands from the CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
+
 ### blueliv-resource-all
+
 ***
 Recovers all resources from the module.
-
 
 #### Base Command
 
 `blueliv-resource-all`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| startDate | Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional | 
-| finalDate | Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional | 
-| page | Results page to get. For each page, there are {limit} resources. | Optional | 
-| limit | Maximum number of resources to recover | Optional | 
-
+| startDate | Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional |
+| finalDate | Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional |
+| page | Results page to get. For each page, there are {limit} resources. | Optional |
+| limit | Maximum number of resources to recover | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatCompass | Unknown | List object of recovered resources | 
-
+| BluelivThreatCompass | Unknown | List object of recovered resources |
 
 #### Command Example
+
 ```!blueliv-resource-all limit=10```
 
 #### Context Example
+
 ```
 {
     "BluelivThreatCompass": {
@@ -462,6 +464,7 @@ Recovers all resources from the module.
 #### Human Readable Output
 
 >### Blueliv DataLeakage info
+>
 >|analysis_calc_result|analysis_result|analysis_user_result|changed_at|checked_at|content_type|countries_id|created_at|domain_type|fav|file|followedUp|history|id|issued|labels|language_id|read|retweet_info|searchPhrase|search_words|title|tlpStatus|total_retweets|url|user_rating|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'MODULE_LABEL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | https://www.scribd.com/document/461608373 | 3 |
@@ -475,68 +478,66 @@ Recovers all resources from the module.
 >| POSITIVE | POSITIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711235 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | SODIMAC COLOMBIA S.A. - ?· empresas emisoras de valores, lo que nos conlleva a presentar a consideración… | AMBER | 0 | https://fdocuments.es/document/sodimac-colombia-sa-empresas-emisoras-de-valores-lo-que-nos-conlleva-a.html | 0 |
 >| INFORMATIVE | INFORMATIVE |  | 1589633026000 | 1589633026000 | text/html | DE | 1589633026000 | UNKNOWN | NOT_STARRED |  | false |  | 10711236 | false | {'id': 1861, 'name': 'FDocumentsSpain', 'type': 'MODULE_LABEL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'MODULE_LABEL'} | es | false |  | sodimac | sodimac | Programa SCM Update ?· en Sodimac. Mauricio Muñoz Jefe de logística en Clínica Alemana. Lía Vera… | AMBER | 0 | https://fdocuments.es/document/programa-scm-update-en-sodimac-mauricio-munoz-jefe-de-logistica-en-clinica.html | 0 |
 
-
 ### blueliv-resource-search
+
 ***
 Search for a specific resource.
-
 
 #### Base Command
 
 `blueliv-resource-search`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| search | Keywords to search in resources text | Optional | 
-| status | Comma-separated list of any combination of status: NOT_AVAILABLE, NOT_IMPORTANT, NOT_PROCESSABLE, POSITIVE, NEGATIVE, INFORMATIVE, IMPORTANT | Optional | 
-| startDate | Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional | 
-| finalDate | Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional | 
-| read | What results read status to get. | Optional | 
-| limit | Maximum number of resources to recover | Optional | 
-| page | Results page to get. For each page, there are {limit} resources. | Optional | 
-
+| search | Keywords to search in resources text | Optional |
+| status | Comma-separated list of any combination of status: NOT_AVAILABLE, NOT_IMPORTANT, NOT_PROCESSABLE, POSITIVE, NEGATIVE, INFORMATIVE, IMPORTANT | Optional |
+| startDate | Minimum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional |
+| finalDate | Maximum date to recover resources. Formats: yyyy-mm-dd or yyyy-mm-ddThh:mm:ss | Optional |
+| read | What results read status to get. | Optional |
+| limit | Maximum number of resources to recover | Optional |
+| page | Results page to get. For each page, there are {limit} resources. | Optional |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatCompass | Unknown | List object of recovered resources | 
-
+| BluelivThreatCompass | Unknown | List object of recovered resources |
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### blueliv-resource-search-by-id
+
 ***
 Recovers all the information of a given resource
-
 
 #### Base Command
 
 `blueliv-resource-search-by-id`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-
+| id | Resource ID | Required |
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatCompass | Unknown | Object with the information of the recovered resource | 
-
+| BluelivThreatCompass | Unknown | Object with the information of the recovered resource |
 
 #### Command Example
+
 ```!blueliv-resource-search-by-id id=10712044```
 
 #### Context Example
+
 ```
 {
     "BluelivThreatCompass": {
@@ -594,35 +595,37 @@ Recovers all the information of a given resource
 #### Human Readable Output
 
 >### Blueliv DataLeakageinfo
+>
 >|analysis_calc_result|analysis_result|analysis_user_result|changed_at|checked_at|content_type|countries_id|created_at|domain_type|fav|file|followedUp|history|id|issued|labels|language_id|read|retweet_info|searchPhrase|search_words|title|tlpStatus|total_retweets|transform|url|user_rating|
 >|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
 >| POSITIVE | POSITIVE | POSITIVE | 1589634898000 | 1589634898000 | text/html;charset=utf-8 | US | 1589634898000 | SOCIAL_NETWORK | USER_STARRED | 2020/5/16/10712044.html | false |  | 10712044 | false | {'id': 1306, 'name': 'Confidential', 'type': 'GLOBAL'},<br/>{'id': 1305, 'name': 'Public', 'type': 'GLOBAL'},<br/>{'id': 205, 'name': 'TopScribdDocsSearch', 'type': 'GLOBAL'} | en | false |  | falabella.com.pe | falabella.com.pe | TOTUS SEDE SJM FINAL.doc \| Internet Protocols \| Transmission Control Protocol | AMBER | 0 | TopScribdDocsSearch | https://www.scribd.com/document/461608373 | 3 |
 
-
 ### blueliv-resource-set-status
+
 ***
 Changes a resource status.
-
 
 #### Base Command
 
 `blueliv-resource-set-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| status | New status to assign to the resource | Required | 
-
+| id | Resource ID | Required |
+| status | New status to assign to the resource | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-set-status id=10712044 status=positive```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -632,56 +635,57 @@ There is no context output for this command.
 >Status changed to **positive**
 
 ### blueliv-resource-set-label
+
 ***
 Adds a label to the given resource
-
 
 #### Base Command
 
 `blueliv-resource-set-label`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| labelId | Label ID | Required | 
-
+| id | Resource ID | Required |
+| labelId | Label ID | Required |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
-
 ### blueliv-resource-set-read-status
+
 ***
 Mark the result as read or not.
-
 
 #### Base Command
 
 `blueliv-resource-set-read-status`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| read | The read status to set. | Optional | 
-
+| id | Resource ID | Required |
+| read | The read status to set. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-set-read-status id=10712044 read=false```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -691,29 +695,31 @@ There is no context output for this command.
 >Read status changed to **false**.
 
 ### blueliv-resource-assign-rating
+
 ***
 Assign tating to a given result.
-
 
 #### Base Command
 
 `blueliv-resource-assign-rating`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| rating | Rating to assign to the result. | Optional | 
-
+| id | Resource ID | Required |
+| rating | Rating to assign to the result. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-assign-rating id=10712044 rating=3```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -723,29 +729,31 @@ There is no context output for this command.
 >Rating changed to **3**.
 
 ### blueliv-resource-fav
+
 ***
 Changes the favourite status of a resource.
-
 
 #### Base Command
 
 `blueliv-resource-fav`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| fav | The new fav status of the resource. Can be applied to the user, group or general. | Optional | 
-
+| id | Resource ID | Required |
+| fav | The new fav status of the resource. Can be applied to the user, group or general. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
+
 ```!blueliv-resource-fav id=10712044 fav=User```
 
 #### Context Example
+
 ```
 {}
 ```
@@ -755,58 +763,60 @@ There is no context output for this command.
 >Resource fav masked as **User** correctly.
 
 ### blueliv-resource-set-tlp
+
 ***
 Sets a new TLP status to a given resource.
-
 
 #### Base Command
 
 `blueliv-resource-set-tlp`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID | Required | 
-| tlp | The new TLP to assign.  | Optional | 
-
+| id | Resource ID | Required |
+| tlp | The new TLP to assign.  | Optional |
 
 #### Context Output
 
 There is no context output for this command.
 
 #### Command Example
-``` ```
+
+``````
 
 #### Human Readable Output
 
-
 ### blueliv-resource-favourite
+
 ***
 Changes the favorite status of a resource.
-
 
 #### Base Command
 
 `blueliv-resource-favourite`
+
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| id | Resource ID. | Required | 
-| favourite | The new favorite status of the resource. Can be "Not", "User", "Group", or "All". Possible values are: Not, User, Group, All. Default is group. | Optional | 
-
+| id | Resource ID. | Required |
+| favourite | The new favorite status of the resource. Can be "Not", "User", "Group", or "All". Possible values are: Not, User, Group, All. Default is group. | Optional |
 
 #### Context Output
 
 There is no context output for this command.
+
 ### blueliv-module-get-labels
+
 ***
 Gets the label list of the module.
-
 
 #### Base Command
 
 `blueliv-module-get-labels`
+
 #### Input
 
 There are no input arguments for this command.
@@ -815,11 +825,11 @@ There are no input arguments for this command.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| BluelivThreatCompass.Label.BackgroundColor | String | Hexadecimal color of the label background in the GUI. | 
-| BluelivThreatCompass.Label.Id | String | Label ID. | 
-| BluelivThreatCompass.Label.Name | String | Label name. | 
-| BluelivThreatCompass.Label.Protected | Boolean | Whether the label is protected. | 
-| BluelivThreatCompass.Label.TypeId | Number | Label type ID. | 
-| BluelivThreatCompass.Label.TypeName | String | Label type name | 
-| BluelivThreatCompass.Label.Prioritized | Boolean | Whether the label is prioritized. | 
-| BluelivThreatCompass.Label.TextColor | String | Hexadecimal color of the label text in the GUI. | 
+| BluelivThreatCompass.Label.BackgroundColor | String | Hexadecimal color of the label background in the GUI. |
+| BluelivThreatCompass.Label.Id | String | Label ID. |
+| BluelivThreatCompass.Label.Name | String | Label name. |
+| BluelivThreatCompass.Label.Protected | Boolean | Whether the label is protected. |
+| BluelivThreatCompass.Label.TypeId | Number | Label type ID. |
+| BluelivThreatCompass.Label.TypeName | String | Label type name |
+| BluelivThreatCompass.Label.Prioritized | Boolean | Whether the label is prioritized. |
+| BluelivThreatCompass.Label.TextColor | String | Hexadecimal color of the label text in the GUI. |

@@ -38,6 +38,7 @@ configuration:
   - Elasticsearch
   - OpenSearch
   - Elasticsearch_v8
+  - Elasticsearch_v9
   type: 15
   section: Connect
   advanced: true
@@ -69,7 +70,7 @@ configuration:
   name: raw_query
   type: 12
   additionalinfo: |-
-    Will override the 'Query String' Lucene syntax string. Results will not be filtered.
+    Will override the 'Query String' Lucene syntax string. Results will not be filtered or sorted. Use additional parameters in the raw query for these porpuses.
 
     The integration test button doesn't fully test the fetch incidents validity. To verify that the instance is set up correctly for fetching incidents, run the '!es-integration-health-check' command.
   section: Collect
@@ -424,6 +425,17 @@ script:
       description: The result of the index operation.
       type: string
     description: Indexes a document into an Elasticsearch index.
+  - name: es-esql-search
+    arguments:
+      - description: The ES|QL query string to execute using piped syntax (for example, FROM index | WHERE field == "value").
+        name: query
+        required: true
+      - description: Maximum number of results to return.
+        name: limit
+    description: Search using ES|QL query. (Elastic >=8.11).
+    outputs:
+      - contextPath: Elasticsearch.ESQLSearch
+        description: ES|QL search result.
   dockerimage: demisto/elasticsearch:1.0.0.2640600
   isfetch: true
   runonce: false

@@ -67,10 +67,10 @@
 <p> </p>
 <h5>Command Examples</h5>
 <ul>
-<li><code>!wisdom-domain-flags	domain=microsoft775.com</code></li>
-<li><code>!wisdom-domain-flags	domain=c0i8h8ac7e.bid</code></li>
-<li><code>!wisdom-domain-flags	domain=service.downloadadmin.com</code></li>
-<li><code>!wisdom-domain-flags	domain=luoxk.f3322.net</code></li>
+<li><code>!wisdom-domain-flags domain=microsoft775.com</code></li>
+<li><code>!wisdom-domain-flags domain=c0i8h8ac7e.bid</code></li>
+<li><code>!wisdom-domain-flags domain=service.downloadadmin.com</code></li>
+<li><code>!wisdom-domain-flags domain=luoxk.f3322.net</code></li>
 </ul>
 <h5>Raw Output</h5>
 <pre>{  
@@ -137,8 +137,8 @@
 <p> </p>
 <h5>Command Examples</h5>
 <ul>
-<li><code>!wisdom-ip-flags	proto=tcp	ip=182.176.178.74 port=1604</code></li>
-<li><code>!wisdom-ip-flags	proto=tcp	ip=95.181.249.58 port=443</code></li>
+<li><code>!wisdom-ip-flags proto=tcp ip=182.176.178.74 port=1604</code></li>
+<li><code>!wisdom-ip-flags proto=tcp ip=95.181.249.58 port=443</code></li>
 </ul>
 <h5>Raw Output</h5>
 <pre>{  

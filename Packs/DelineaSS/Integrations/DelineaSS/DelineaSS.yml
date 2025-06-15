@@ -473,6 +473,8 @@ script:
     - contextPath: Delinea.User.Create
       description: User object.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: Filter users by Active Directory domain (integer).
       name: filter_domainid
@@ -600,6 +602,8 @@ script:
     - contextPath: Delinea.User.Delete
       description: User object.
       type: String
+    compliantpolicies:
+    - User Hard Remediation
   - arguments:
     - description: Secret ID.
       name: secret_id
@@ -615,7 +619,7 @@ script:
     - contextPath: Delinea.Secret.ChangePassword
       description: Secret summary.
       type: String
-  dockerimage: demisto/python3:3.11.10.115186
+  dockerimage: demisto/python3:3.12.8.3296088
   runonce: false
   script: '-'
   subtype: python3

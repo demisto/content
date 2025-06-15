@@ -25,7 +25,6 @@ After you successfully execute a command, a DBot message appears in the War Room
 ***
 Gets a dynamic list of threatening IP addresses by the given list type.
 
-
 #### Base Command
 
 `f5-silverline-ip-objects-list`
@@ -38,7 +37,6 @@ Gets a dynamic list of threatening IP addresses by the given list type.
 | object_id | A comma-separated list of IP object IDs. If this argument is given, only those IP objects will be displayed. Otherwise, all IP objects that match the given list_type will be displayed. IF you don't the object ID, run this command without the object_id argument to get all the IDs. | Optional |
 | page_number | Page number to return. The first page number is 1. | Optional |
 | page_size | Number of results in a page. | Optional |
-
 
 #### Context Output
 
@@ -59,7 +57,6 @@ Gets a dynamic list of threatening IP addresses by the given list type.
 | F5Silverline.Paging.last_page_number | Number | The last page number that exists. |
 | F5Silverline.Paging.current_page_size | Number | The number of IP objects to be returned on each page. |
 | F5Silverline.Paging.current_page_number | Number | The number of the requested page. |
-
 
 #### Command Example
 
@@ -126,12 +123,10 @@ Gets a dynamic list of threatening IP addresses by the given list type.
 >| 822f2572-ddc4-4eb1-84ab-f27e4095c8c4 | 1.2.3.5/32 | 2021-05-20T10:25:32.694Z | 2021-05-20T10:25:32.694Z |
 >| 66202ba3-04f1-4f7c-b1a8-9a49776a96a4 | 14.16.1.0/32 | 2021-06-09T07:59:31.772Z | 2021-06-09T07:59:31.772Z |
 
-
 ### f5-silverline-ip-object-add
 
 ***
 Adds a new particular threatening IP address object by its IP address.
-
 
 #### Base Command
 
@@ -147,7 +142,6 @@ Adds a new particular threatening IP address object by its IP address.
 | duration | The duration (in seconds) of a new particular threatening IP address object where the list type is 'denylist'. Setting the duration to 0 (default) means the new IP address object will never expire. This feature has been removed for allowlist. | Optional |
 | note | The note of a new particular threatening IP address object. Default is empty. | Optional |
 | tags | A comma-separated list of tags of a new particular threatening IP address object. | Optional |
-
 
 #### Context Output
 
@@ -166,7 +160,6 @@ There is no context output for this command.
 ***
 Deletes an existing particular threatening IP address object by its object ID or by its IP address.
 
-
 #### Base Command
 
 `f5-silverline-ip-object-delete`
@@ -178,7 +171,6 @@ Deletes an existing particular threatening IP address object by its object ID or
 | list_type | The dynamic lists type of threatening IP addresses. The type can be one of allowlist or denylist. Possible values are: allowlist, denylist. Note: Allowlists are named DDOS IP Allowlists in the F5 Silverline portal. | Required |
 | object_id | The object ID of a particular threatening IP address object that should be deleted. | Optional |
 | object_ip | The IP address of an existing threatening IP address object that should be deleted. | Optional |
-
 
 #### Context Output
 
@@ -192,7 +184,6 @@ There is no context output for this command.
 
 >IP object with ID: 66202ba3-04f1-4f7c-b1a8-9a49776a96a4 deleted successfully from the denylist list.
 
-
 ## Fetch F5 Silverline alerts
 
 | **F5 Silverline supported alert type** | **Incident Type** |
@@ -201,7 +192,6 @@ There is no context output for this command.
 | L7 DDoS logs | F5 Silverline L7 DDoS Events |
 | Threat Intelligence logs | F5 Silverline Threat Intelligence Events |
 | iRule logs | F5 Silverline iRule Events |
-
 
 As F5 Silverline API does not support fetch incidents for now, we retrieve alerts via a log collector.
 In order to fetch alerts, follow the instructions below:

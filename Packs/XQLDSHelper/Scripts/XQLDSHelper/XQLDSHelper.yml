@@ -57,6 +57,14 @@ args:
   name: query_timeout_duration
 - description: The custom context data is merged with the current context data for use.
   name: context_data
+- name: output_recordset
+  auto: PREDEFINED
+  predefined:
+  - "true"
+  - "false"
+  description: Set to true to return the recordset in the outputs context; otherwise,
+    set to false.
+  defaultValue: "false"
 - description: The name of the integration instance to execute xdr-xql-generic-query and xdr-xql-get-query-results.
   name: xql_query_instance
 commonfields:
@@ -65,7 +73,7 @@ commonfields:
 contentitemexportablefields:
   contentitemfields:
     fromServerVersion: ''
-dockerimage: demisto/python3:3.12.8.1983910
+dockerimage: demisto/python3:3.12.8.3296088
 enabled: true
 engineinfo: {}
 name: XQLDSHelper
@@ -76,8 +84,22 @@ outputs:
 - contextPath: XQLDSHelper.QueryHash
   description: The hash value of the query parameters.
   type: string
+- contextPath: XQLDSHelper.RequestURL
+  description: The URL path, including query parameters, used to search datasets in
+    the XQL builder.
+  type: string
+- contextPath: XQLDSHelper.ResultURL
+  description: 'The URL path used to get the results of an executed query in the XQL
+    builder. '
+  type: string
+- contextPath: XQLDSHelper.ExecutionID
+  description: The unique execution ID for the request query.
+  type: string
 - contextPath: XQLDSHelper.Entry
   description: The entry data for the general dynamic section.
+  type: unknown
+- contextPath: XQLDSHelper.RecordSet
+  description: The record set retrieved by the XQL query.
   type: unknown
 runas: DBotWeakRole
 runonce: false
