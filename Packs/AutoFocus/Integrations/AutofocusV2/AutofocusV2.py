@@ -948,6 +948,11 @@ def search_indicator(client, indicator_type, indicator_value):
         # 404, 409, 503 a list of status codes that we want to handle in the code and not raise automatic exception about.
         ok_codes = (200, 404, 409, 503)
         demisto.debug(f"search_indicator: using the client with {ok_codes=}")
+        if demisto.isTimeSensitive():
+            demisto.info('search_indicator: !is_time_sensitive!')
+            params['timeout'] = 15
+        else:
+            demisto.info('search_indicator: !not is_time_sensitive!')
         result = client.http_request(method="GET", url_suffix="/tic", headers=headers, params=params, ok_codes=ok_codes)
         demisto.debug(f"search_indicator: {result.status_code=} {result=}")
 
