@@ -192,6 +192,8 @@ script:
     - contextPath: Core.Isolation.endpoint_id
       description: The endpoint ID.
       type: String
+    compliantpolicies:
+    - EndPoint Isolation
   - arguments:
     - description: Links the response action to the triggered incident.
       name: incident_id
