@@ -109,7 +109,7 @@ def extract_fqdn(the_input):
     the_input = unescape_url(the_input)
 
     if indicator := get_fqdn(the_input):
-        indicator = ".".join([re.sub("[^\w-]", "", part) for part in indicator.split(".")])
+        indicator = ".".join([re.sub("[^\\w-]", "", part) for part in indicator.split(".")])
     return indicator
 
 
