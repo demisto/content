@@ -200,35 +200,44 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
         (dict) the updated lastRun object.
     """
 
+    # --- 1. Fetch General Audit Events ---
     query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
+    audit_events = []
     try:
-        audit_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
+        demisto.debug("Starting fetch for general audit events.")
+        fetched_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
+        audit_events.extend(fetched_events)
+        demisto.debug(f"Successfully fetched {len(audit_events)} aggregated audit events.")
     except DemistoException as e:
-        if not e.res:
+        if not e.res or e.res.status_code != 403:
             raise e
         else:
-            demisto.debug(f"Encountered the following error when trying to get events with endpoint /audit_events: {e}")
-            demisto.debug("Moving to other event types")
-    else:
-        demisto.debug(f"Aggregated audits events: {len(audit_events)}")
+            demisto.error(f"User unauthorized to use endpoint/audit_events, execution will continue. Error: {e}")
 
+    # --- 2. Fetch Group and Project Events ---
     group_and_project_events = []
     for event_type in ["groups", "projects"]:
-        try:
-            for obj_id in events_types_ids.get(f"{event_type}_ids", []):
-                query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
+        demisto.debug(f"Starting fetch for '{event_type}' events.")
+        ids_to_fetch = events_types_ids.get(f"{event_type}_ids", [])
+        query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
+
+        for obj_id in ids_to_fetch:
+            try:
                 events = client.fetch_events(
                     query_params_url, last_run.get(event_type, {}), params, url_suffix=f"/{event_type}/{obj_id}/audit_events"
                 )
                 group_and_project_events.extend(events)
-        except DemistoException as e:
-            if not e.res:
-                raise e
-            else:
-                demisto.debug(f"Encountered the following error when trying to get events with endpoint /{event_type}/<obj_id>/audit_events: {e}")
-                demisto.debug("Moving to other event types")
-                continue
-
+            except DemistoException as e:
+                if not e.res or not e.res.status_code: # if not a http error
+                    raise e
+                elif e.res.status_code == 404:
+                    demisto.error(f"Object id {obj_id} of type {event_type} not found. Moving to next id. Error: {e}")
+                    continue
+                else:
+                    demisto.error(f"An HTTP error occurred while fetching events for {event_type} (ID: {obj_id}). "
+                                  f"Skipping remaining '{event_type}' events. Error: {e}")
+                    # The 'break' exits the inner loop and continues to the next endpoint type.
+                    break
 
     demisto.debug(f"Aggregated group and project events: {len(group_and_project_events)}")
     return audit_events, group_and_project_events, last_run
