@@ -73,7 +73,7 @@ def test_fetch_events(mocker):
         ]
     )
     mocker.patch.object(Session, "request", return_value=mock_response)
-    events, _, new_last_run = fetch_events_command(Client(base_url=""), params={}, last_run=last_run, events_types_ids={})
+    events, _, new_last_run = fetch_events_command(Client(base_url=""), params={}, last_run=last_run, event_type_management={})
 
     assert len(events) == 2
     assert events[0].get("id") != "1"
@@ -109,7 +109,7 @@ def test_fetch_events_with_two_iterations(mocker):
     mock_response = MockResponse([{"id": i, "created_at": 1521214343} for i in range(200)])
     mock_response.links = {"next": {"url": "https://example.com?param=value"}}
     mock_request = mocker.patch.object(Session, "request", return_value=mock_response)
-    events, _, _ = fetch_events_command(Client(base_url=""), params={"limit": 300}, last_run=last_run, events_types_ids={})
+    events, _, _ = fetch_events_command(Client(base_url=""), params={"limit": 300}, last_run=last_run, event_type_management={})
 
     assert events[0].get("id") == first_id
     assert mock_request.call_count == 2
@@ -144,7 +144,7 @@ def test_fetch_events_with_groups_and_projects(mocker):
         Client(base_url=""),
         params={"limit": 4, "url": ""},
         last_run=last_run,
-        events_types_ids={"groups_ids": [1], "projects_ids": [2, 3, 4]},
+        event_type_management={"groups_ids": [1], "projects_ids": [2, 3, 4]},
     )
 
     assert len(audit_events) == 4
