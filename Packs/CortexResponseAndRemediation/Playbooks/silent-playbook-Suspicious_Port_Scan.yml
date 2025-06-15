@@ -39,9 +39,10 @@ description: |-
   - Terminates the processes.
   - Quarantines the malicious process.
   - Adds the malicious process hash to the blocklist.
+  - Adds an IOC rule for malicious processes.
   - Isolate the source host.  (Requires analyst approval).
   - Block the source IP Address (Requires analyst approval).
-  - Automatically Close the alert.
+  - Automatically close the alert.
 tags:
 - TA0007 - Discovery
 - T1046 - Network Service Discovery
@@ -220,8 +221,8 @@ tasks:
     task:
       id: 81912a32-c19c-4b6b-8dbc-6150de1c2c7b
       version: -1
-      name: Found any alerts indicating a malicious process execution?
-      description: Determines whether specific related alerts to the source host have been found and indicate malicious activity.
+      name: Found any alerts indicating a malicious activity on the source host?
+      description: Determines whether specific alerts related to the source host have been found and indicate malicious activity.
       type: condition
       iscommand: false
       brand: ""
@@ -286,7 +287,7 @@ tasks:
       {
         "position": {
           "x": 243,
-          "y": 4171
+          "y": 4181
         }
       }
     note: false
@@ -304,7 +305,7 @@ tasks:
       id: 0bd3add5-ef26-48eb-9fdb-8b4a2356a61b
       version: -1
       name: Terminate Causality Process
-      description: Terminate a process tree by its causality ID. Available only from Cortex XSIAM 2.4.
+      description: Terminate a process tree by its causality ID.
       script: '|||core-terminate-causality'
       type: regular
       iscommand: true
@@ -490,7 +491,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -138,
+          "x": -163,
           "y": 3576
         }
       }
@@ -839,12 +840,13 @@ tasks:
       '#none#':
       - "78"
       - "93"
+      - "197"
     separatecontext: false
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": -322,
+          "x": -568,
           "y": 3447
         }
       }
@@ -918,7 +920,7 @@ tasks:
       - "175"
     scriptarguments:
       closeNotes:
-        simple: Resolved as True Positive - Handled by the playbook " Suspicious Port Scan"
+        simple: Resolved as True Positive - Handled by the playbook "Suspicious Port Scan"
       closeReason:
         simple: Resolved - True Positive
       id:
@@ -929,7 +931,7 @@ tasks:
       {
         "position": {
           "x": 243,
-          "y": 4322
+          "y": 4301
         }
       }
     note: false
@@ -994,8 +996,8 @@ tasks:
     task:
       id: 19e39a28-03d4-43bb-b0aa-f835560493e9
       version: -1
-      name: Found any alerts indicating a malicious process execution?
-      description: Determines whether specific related alerts to the destination host have been found and indicate suspicious activity.
+      name: Found any alerts indicating a malicious activity on the destination host?
+      description: Determines whether specific alerts related to the destination host have been found and indicate suspicious activity.
       type: condition
       iscommand: false
       brand: ""
@@ -1397,7 +1399,7 @@ tasks:
       id: b5cf9594-e9f3-45e5-87f5-30a04bd48cfe
       version: -1
       name: Suspicious ratio of unique ports to connections
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2145,7 +2147,7 @@ tasks:
       id: b8cc2295-50b9-4109-85e5-f0630fce74bd
       version: -1
       name: Set Suspicious alert related to the source host
-      description: "Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.\n\nThis automation runs using the default Limited User role, unless you explicitly change the permissions.\nFor more information, see the section about permissions here:\n- For Cortex XSOAR 6 see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/6.x/Cortex-XSOAR-Playbook-Design-Guide/Automations \n- For Cortex XSOAR 8 Cloud see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8/Cortex-XSOAR-Cloud-Documentation/Create-a-script\n- For Cortex XSOAR 8.7 On-prem see https://docs-cortex.paloaltonetworks.com/r/Cortex-XSOAR/8.7/Cortex-XSOAR-On-prem-Documentation/Create-a-script"
+      description: Set a value in context under the key you entered. If no value is entered, the script doesn't do anything.
       scriptName: SetAndHandleEmpty
       type: regular
       iscommand: false
@@ -2644,7 +2646,7 @@ tasks:
       {
         "position": {
           "x": 243,
-          "y": 4490
+          "y": 4440
         }
       }
     note: false
@@ -3418,6 +3420,57 @@ tasks:
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
+  "197":
+    id: "197"
+    taskid: 108d1c10-0893-4904-8b81-f1007f84d074
+    type: regular
+    task:
+      id: 108d1c10-0893-4904-8b81-f1007f84d074
+      version: -1
+      name: Add an IOC rule for malicious processes
+      description: Upload the IOC rules to XSIAM. When the ioc_object is defined, disregard any other provided arguments, as the ioc_object takes precedence. Validate the indicator parameters when ioc_object is used. If `vendor_name`, `vendor_reputation`, and `vendor_reliability` are used, only a single vendor is supported. For multiple vendors, utilize an `ioc_object` in JSON format. Adding a rule with the same indicator, but with different parameters, will update the existing rule.
+      script: '|||core-add-indicator-rule'
+      type: regular
+      iscommand: true
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      comment:
+        simple: 'The IOC rule was added by the playbook ''Suspicious Port Scan'' as part of handling alert ID: ${alert.id}'
+      indicator:
+        complex:
+          root: MaliciousCGOProcess
+          accessor: cgoSha256
+          transformers:
+          - operator: append
+            args:
+              item:
+                value:
+                  simple: MaliciousOSActorProcess.actorSha256
+                iscontext: true
+          - operator: uniq
+      severity:
+        simple: HIGH
+      type:
+        simple: HASH
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": -974,
+          "y": 3576
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {
@@ -3425,13 +3478,15 @@ view: |-
       "123_94_yes": 0.39,
       "141_165_#default#": 0.26,
       "147_164_yes": 0.51,
-      "147_165_#default#": 0.32,
+      "147_165_#default#": 0.22,
       "149_163_yes": 0.48,
-      "149_165_#default#": 0.29,
+      "149_165_#default#": 0.11,
       "151_152_yes": 0.43,
+      "151_2_#default#": 0.35,
       "154_196_yes": 0.53,
       "160_1_#default#": 0.11,
       "166_159_#default#": 0.25,
+      "166_184_yes": 0.3,
       "168_165_#default#": 0.19,
       "168_169_Malicious": 0.51,
       "168_171_Suspicious": 0.64,
@@ -3439,22 +3494,25 @@ view: |-
       "177_178_yes": 0.45,
       "179_165_#default#": 0.23,
       "183_123_#default#": 0.89,
+      "183_158_yes": 0.36,
       "186_159_#error#": 0.51,
       "187_13_Already isolated": 0.19,
       "187_159_#default#": 0.39,
       "190_159_#default#": 0.54,
       "190_186_yes": 0.42,
+      "2_154_#default#": 0.29,
+      "2_83_yes": 0.24,
       "81_82_yes": 0.43,
       "81_86_#default#": 0.55,
       "84_85_yes": 0.38,
       "84_86_#default#": 0.51,
-      "8_169_yes": 0.32
+      "8_169_yes": 0.27
     },
     "paper": {
       "dimensions": {
-        "height": 4447,
-        "width": 5052,
-        "x": -568,
+        "height": 4397,
+        "width": 5458,
+        "x": -974,
         "y": 103
       }
     }
