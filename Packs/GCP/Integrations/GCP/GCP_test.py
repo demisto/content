@@ -445,7 +445,7 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     """
     Given: A GCS bucket needs both versioning and uniform access settings updated
     When: storage_bucket_metadata_update is called with both settings
-    Then: The function should call bucket.patch with both settings configured correctly
+    Then: The function should call bucket.Patch with both settings configured correctly
     """
     from GCP import storage_bucket_metadata_update
 
@@ -498,57 +498,559 @@ def test_storage_bucket_metadata_update_enable_both_settings(mocker):
     assert result.outputs_key_field == "name"
 
 
-# def test_check_required_permissions_specific_command_missing_permission(mocker):
-#     """
-#     Given: Need to verify permissions for a specific command but some permissions are missing
-#     When: check_required_permissions is called for 'gcp-compute-firewall-patch' with missing permissions
-#     Then: The function should raise a DemistoException with the missing permissions
-#     """
-#     from GCP import check_required_permissions
-#     from CommonServerPython import DemistoException
-#
-#     # Mock arguments
-#     args = {"project_id": "test-project"}
-#
-#     # Mock credentials
-#     mock_creds = mocker.Mock(spec=Credentials)
-#
-#     # Mock response with some permissions missing
-#     mock_response = {
-#         "permissions": [
-#             "compute.firewalls.update",
-#             "compute.firewalls.get",
-#             # Missing: "compute.firewalls.list",
-#             "compute.networks.updatePolicy",
-#             # Missing: "compute.networks.list"
-#         ]
-#     }
-#
-#     # Use MagicMock for resourcemanager
-#     mock_resourcemanager = MagicMock()
-#     mock_resourcemanager.projects().testIamPermissions().execute.return_value = mock_response
-#
-#     mocker.patch("GCP.build", return_value=mock_resourcemanager)
-#
-#     # The function should raise an exception due to missing permissions
-#     with pytest.raises(DemistoException) as excinfo:
-#         check_required_permissions(mock_creds, args, command="gcp-compute-firewall-patch")
-#
-#     # Verify the exception contains information about missing permissions
-#     exception_msg = str(excinfo.value)
-#     assert "Missing permissions" in exception_msg
-#     assert "compute.firewalls.list" in exception_msg
-#     assert "compute.networks.list" in exception_msg
-#
-#     # Verify correct parameters were used in the API call
-#     called_args, called_kwargs = mock_resourcemanager.projects().testIamPermissions.call_args
-#
-#     assert called_kwargs["resource"] == "projects/test-project"
-#
-#     # The body should contain only permissions for the firewall-patch command
-#     permissions = called_kwargs["body"]["permissions"]
-#     assert "compute.firewalls.update" in permissions
-#     assert "compute.firewalls.get" in permissions
-#     assert "compute.firewalls.list" in permissions
-#     assert "compute.networks.updatePolicy" in permissions
-#     assert "compute.networks.list" in permissions
+def test_compute_instance_service_account_set(mocker):
+    """
+    Given: A VM instance that needs a service account assigned
+    When: compute_instance_service_account_set is called with service_account_email and scopes
+    Then: The function should call setServiceAccount with the proper email and scopes
+    """
+    from GCP import compute_instance_service_account_set
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-c",
+        "resource_name": "test-instance",
+        "service_account_email": "service-account@test-project.iam.gserviceaccount.com",
+        "scopes": "https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/devstorage.read_only"
+    }
+
+    # Mock response
+    mock_response = {
+        "id": "operation-123",
+        "name": "operation-123",
+        "operationType": "setServiceAccount",
+        "progress": "100",
+        "zone": "us-central1-c",
+        "status": "RUNNING"
+    }
+
+    # Use MagicMock for compute
+    mock_compute = MagicMock()
+    mock_compute.instances().setServiceAccount().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = compute_instance_service_account_set(mock_creds, args)
+
+    # Verify correct parameters were used
+    called_args, called_kwargs = mock_compute.instances().setServiceAccount.call_args
+
+    assert called_kwargs["project"] == "test-project"
+    assert called_kwargs["zone"] == "us-central1-c"
+    assert called_kwargs["instance"] == "test-instance"
+
+    # Check that email and scopes are set correctly
+    body = called_kwargs["body"]
+    assert body["email"] == "service-account@test-project.iam.gserviceaccount.com"
+    assert body["scopes"] == [
+        "https://www.googleapis.com/auth/compute",
+        "https://www.googleapis.com/auth/devstorage.read_only"
+    ]
+
+    # Check outputs
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_compute_instance_service_account_set_empty_scopes(mocker):
+    """
+    Given: A VM instance that needs a service account assigned with empty scopes
+    When: compute_instance_service_account_set is called with only a service_account_email
+    Then: The function should call setServiceAccount with the email and empty scopes list
+    """
+    from GCP import compute_instance_service_account_set
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-c",
+        "resource_name": "test-instance",
+        "service_account_email": "service-account@test-project.iam.gserviceaccount.com"
+    }
+
+    # Mock response
+    mock_response = {
+        "id": "operation-123",
+        "name": "operation-123",
+        "operationType": "setServiceAccount",
+        "progress": "100",
+        "zone": "us-central1-c",
+        "status": "RUNNING"
+    }
+
+    # Use MagicMock for compute
+    mock_compute = MagicMock()
+    mock_compute.instances().setServiceAccount().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = compute_instance_service_account_set(mock_creds, args)
+
+    # Verify correct parameters were used
+    called_args, called_kwargs = mock_compute.instances().setServiceAccount.call_args
+
+    # Check that email is set correctly and scopes is an empty list
+    body = called_kwargs["body"]
+    assert body["email"] == "service-account@test-project.iam.gserviceaccount.com"
+    assert body["scopes"] == []
+
+    # Check outputs
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_compute_instance_service_account_remove(mocker):
+    """
+    Given: A VM instance that has a service account attached
+    When: compute_instance_service_account_remove is called
+    Then: The function should call setServiceAccount with an empty email and scopes
+    """
+    from GCP import compute_instance_service_account_remove
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "zone": "us-central1-c",
+        "resource_name": "test-instance"
+    }
+
+    # Mock response
+    mock_response = {
+        "id": "operation-123",
+        "name": "operation-123",
+        "operationType": "setServiceAccount",
+        "progress": "100",
+        "zone": "us-central1-c",
+        "status": "RUNNING"
+    }
+
+    # Use MagicMock for compute
+    mock_compute = MagicMock()
+    mock_compute.instances().setServiceAccount().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_compute)
+    mocker.patch("GCP.tableToMarkdown", return_value="mocked markdown")
+
+    # Execute the function
+    result = compute_instance_service_account_remove(mock_creds, args)
+
+    # Verify correct parameters were used
+    called_args, called_kwargs = mock_compute.instances().setServiceAccount.call_args
+
+    assert called_kwargs["project"] == "test-project"
+    assert called_kwargs["zone"] == "us-central1-c"
+    assert called_kwargs["instance"] == "test-instance"
+
+    # Check that email and scopes are empty
+    body = called_kwargs["body"]
+    assert body["email"] == ""
+    assert body["scopes"] == []
+
+    # Check outputs
+    assert result.outputs_prefix == "GCP.Compute.Operations"
+    assert result.outputs == mock_response
+
+
+def test_iam_project_policy_binding_remove(mocker):
+    """
+    Given: A GCP project with an IAM policy that has members assigned to roles
+    When: iam_project_policy_binding_remove is called to remove a member from a specific role
+    Then: The function should call setIamPolicy with the updated policy
+    """
+    from GCP import iam_project_policy_binding_remove
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "member": "user:test@example.com,serviceAccount:sa@example.com",
+        "role": "roles/editor"
+    }
+
+    # Mock policy response with multiple roles and members
+    mock_policy = {
+        "bindings": [
+            {
+                "role": "roles/editor",
+                "members": ["user:test@example.com", "serviceAccount:sa@example.com", "user:keep@example.com"]
+            },
+            {
+                "role": "roles/viewer",
+                "members": ["user:test@example.com", "user:other@example.com"]
+            }
+        ],
+        "etag": "BwWKmjvelug="
+    }
+
+    # Use MagicMock for resource manager
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().getIamPolicy().execute.return_value = mock_policy
+    mock_resource_manager.projects().setIamPolicy().execute.return_value = {}
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function
+    result = iam_project_policy_binding_remove(mock_creds, args)
+
+    # Verify getIamPolicy was called correctly
+    get_policy_args = mock_resource_manager.projects().getIamPolicy.call_args[1]
+    assert get_policy_args["resource"] == "projects/test-project"
+
+    # Verify setIamPolicy was called with modified policy
+    set_policy_args, set_policy_kwargs = mock_resource_manager.projects().setIamPolicy.call_args
+    updated_policy = set_policy_kwargs["body"]["policy"]
+
+    # Check that the members were removed from the editor role but kept in viewer role
+    editor_role = next(binding for binding in updated_policy["bindings"] if binding["role"] == "roles/editor")
+    viewer_role = next(binding for binding in updated_policy["bindings"] if binding["role"] == "roles/viewer")
+
+    assert "user:test@example.com" not in editor_role["members"]
+    assert "serviceAccount:sa@example.com" not in editor_role["members"]
+    assert "user:keep@example.com" in editor_role["members"]
+    assert "user:test@example.com" in viewer_role["members"]  # Should still be in other roles
+
+    # Check readable output
+    assert "`user:test@example.com`" in result.readable_output
+    assert "`serviceAccount:sa@example.com`" in result.readable_output
+    assert "successfully removed" in result.readable_output
+
+
+def test_iam_project_deny_policy_create(mocker):
+    """
+    Given: A GCP project that needs a deny policy created
+    When: iam_project_deny_policy_create is called with policy details
+    Then: The function should call createPolicy with the correct configuration
+    """
+    from GCP import iam_project_deny_policy_create
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "policy_id": "test-deny-policy",
+        "display_name": "Test Deny Policy",
+        "denied_principals": "user:test@example.com,serviceAccount:sa@example.com",
+        "denied_permissions": "compute.instances.create,compute.instances.delete"
+    }
+
+    # Mock response
+    mock_response = {
+        "name": "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies/test-deny-policy",
+        "displayName": "Test Deny Policy",
+        "createTime": "2023-08-15T12:00:00Z",
+        "updateTime": "2023-08-15T12:00:00Z",
+        "rules": [
+            {
+                "denyRule": {
+                    "deniedPrincipals": ["user:test@example.com", "serviceAccount:sa@example.com"],
+                    "deniedPermissions": ["compute.instances.create", "compute.instances.delete"]
+                }
+            }
+        ]
+    }
+
+    # Use MagicMock for IAM
+    mock_iam = MagicMock()
+    mock_iam.policies().createPolicy().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_iam)
+
+    # Execute the function
+    result = iam_project_deny_policy_create(mock_creds, args)
+
+    # Verify createPolicy was called with correct parameters
+    call_args, call_kwargs = mock_iam.policies().createPolicy.call_args
+
+    assert call_kwargs["parent"] == "policies/cloudresourcemanager.googleapis.com%2Fprojects%2Ftest-project/denypolicies"
+    assert call_kwargs["policyId"] == "test-deny-policy"
+
+    body = call_kwargs["body"]
+    assert body["displayName"] == "Test Deny Policy"
+    assert body["rules"][0]["denyRule"]["deniedPrincipals"] == ["user:test@example.com", "serviceAccount:sa@example.com"]
+    assert body["rules"][0]["denyRule"]["deniedPermissions"] == ["compute.instances.create", "compute.instances.delete"]
+
+    # Check outputs
+    assert result.outputs_prefix == "GCP.IAM.DenyPolicy"
+    assert result.outputs == mock_response
+    assert "test-deny-policy" in result.readable_output
+    assert "successfully created" in result.readable_output
+
+
+def test_iam_service_account_delete(mocker):
+    """
+    Given: A GCP service account that needs to be deleted
+    When: iam_service_account_delete is called with project_id and service_account_email
+    Then: The function should call serviceAccounts().delete with the correct resource name
+    """
+    from GCP import iam_service_account_delete
+
+    # Mock arguments
+    args = {
+        "project_id": "test-project",
+        "service_account_email": "test-sa@test-project.iam.gserviceaccount.com"
+    }
+
+    # Use MagicMock for IAM
+    mock_iam = MagicMock()
+    mock_iam.projects().serviceAccounts().delete().execute.return_value = {}
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_iam)
+
+    # Execute the function
+    result = iam_service_account_delete(mock_creds, args)
+
+    # Verify delete was called with correct name
+    call_args, call_kwargs = mock_iam.projects().serviceAccounts().delete.call_args
+
+    assert call_kwargs["name"] == "projects/test-project/serviceAccounts/test-sa@test-project.iam.gserviceaccount.com"
+
+    # Check readable output
+    assert "test-sa@test-project.iam.gserviceaccount.com" in result.readable_output
+    assert "successfully deleted" in result.readable_output
+
+
+def test_iam_group_membership_delete(mocker):
+    """
+    Given: A Google Cloud Identity group with a member that needs to be removed
+    When: iam_group_membership_delete is called with group_id and membership_id
+    Then: The function should call memberships().delete with the correct membership name
+    """
+    from GCP import iam_group_membership_delete
+
+    # Mock arguments
+    args = {
+        "group_id": "01abc123def456",
+        "membership_id": "member789ghi"
+    }
+
+    # Use MagicMock for Cloud Identity
+    mock_cloud_identity = MagicMock()
+    mock_cloud_identity.groups().memberships().delete().execute.return_value = {}
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_cloud_identity)
+
+    # Execute the function
+    result = iam_group_membership_delete(mock_creds, args)
+
+    # Verify delete was called with correct name
+    call_args, call_kwargs = mock_cloud_identity.groups().memberships().delete.call_args
+
+    assert call_kwargs["name"] == "groups/01abc123def456/memberships/member789ghi"
+
+    # Check readable output
+    assert "Membership member789ghi was deleted from group 01abc123def456" in result.readable_output
+
+
+def test_check_required_permissions_all_granted(mocker):
+    """
+    Given: GCP credentials with all required permissions
+    When: check_required_permissions is called without specifying a command
+    Then: The function should return None, indicating all permissions are granted
+    """
+    from GCP import check_required_permissions, REQUIRED_PERMISSIONS
+
+    # Get all permissions that need to be tested
+    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
+
+    # Mock response from testIamPermissions - all permissions granted
+    mock_response = {"permissions": testable_permissions}
+
+    # Use MagicMock for resource manager
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function
+    result = check_required_permissions(mock_creds, "test-project")
+
+    # Verify testIamPermissions was called with all permissions
+    test_perms_args, test_perms_kwargs = mock_resource_manager.projects().testIamPermissions.call_args
+
+    assert test_perms_kwargs["resource"] == "projects/test-project"
+    assert set(test_perms_kwargs["body"]["permissions"]) == set(testable_permissions)
+
+    # Function should return None when all permissions are granted
+    assert result is None
+
+
+def test_check_required_permissions_for_specific_command(mocker):
+    """
+    Given: GCP credentials when checking permissions for a specific command
+    When: check_required_permissions is called with a specific command
+    Then: The function should only check permissions required for that command
+    """
+    from GCP import check_required_permissions, REQUIRED_PERMISSIONS
+
+    # Check permissions for a specific command
+    command = "gcp-compute-firewall-patch"
+    required_perms = REQUIRED_PERMISSIONS[command]
+    testable_permissions = [p for p in required_perms if not p.startswith("cloudidentity.")]
+
+    # Mock response from testIamPermissions - all permissions granted
+    mock_response = {"permissions": testable_permissions}
+
+    # Use MagicMock for resource manager
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function
+    result = check_required_permissions(mock_creds, "test-project", command=command)
+
+    # Verify testIamPermissions was called with only the required permissions for this command
+    test_perms_args, test_perms_kwargs = mock_resource_manager.projects().testIamPermissions.call_args
+
+    assert test_perms_kwargs["resource"] == "projects/test-project"
+    assert set(test_perms_kwargs["body"]["permissions"]) == set(testable_permissions)
+
+    # Function should return None when all permissions are granted
+    assert result is None
+
+
+def test_check_required_permissions_missing_permissions(mocker):
+    """
+    Given: GCP credentials missing some required permissions
+    When: check_required_permissions is called
+    Then: The function should raise DemistoException with missing permissions
+    """
+    from GCP import check_required_permissions, REQUIRED_PERMISSIONS, DemistoException
+
+    # Get all permissions that need to be tested
+    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
+
+    # Mock response from testIamPermissions - some permissions are missing
+    granted_permissions = testable_permissions[:-2]  # All except the last two
+    missing_permissions = testable_permissions[-2:]  # Just the last two permissions
+
+    mock_response = {"permissions": granted_permissions}
+
+    # Use MagicMock for resource manager
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function and expect an exception
+    with pytest.raises(DemistoException) as e:
+        check_required_permissions(mock_creds, "test-project")
+
+    # Verify that the error message contains the missing permissions
+    for missing_perm in missing_permissions:
+        assert missing_perm in str(e.value)
+    assert "Missing required permissions" in str(e.value)
+
+
+def test_check_required_permissions_with_connector_id(mocker):
+    """
+    Given: GCP credentials with connector_id and missing permissions
+    When: check_required_permissions is called with connector_id
+    Then: The function should return a HealthCheckError instead of raising an exception
+    """
+    from GCP import check_required_permissions, REQUIRED_PERMISSIONS, HealthCheckError, ErrorType
+
+    # Get all permissions that need to be tested
+    all_permissions = list({p for perms in REQUIRED_PERMISSIONS.values() for p in perms})
+    testable_permissions = [p for p in all_permissions if not p.startswith("cloudidentity.")]
+
+    # Mock response from testIamPermissions - some permissions are missing
+    granted_permissions = testable_permissions[:-2]  # All except the last two
+
+    mock_response = {"permissions": granted_permissions}
+
+    # Use MagicMock for resource manager
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.return_value = mock_response
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function with connector_id
+    result = check_required_permissions(mock_creds, "test-project", connector_id="test-connector-id")
+
+    # Verify that the result is a HealthCheckError
+    assert isinstance(result, HealthCheckError)
+    assert result.account_id == "test-project"
+    assert result.connector_id == "test-connector-id"
+    assert result.error_type == ErrorType.PERMISSION_ERROR
+    assert "Missing required permissions" in result.message
+
+
+def test_check_required_permissions_api_error(mocker):
+    """
+    Given: GCP credentials that cause an API error when checking permissions
+    When: check_required_permissions is called
+    Then: The function should raise DemistoException with the error message
+    """
+    from GCP import check_required_permissions, DemistoException
+
+    # Use MagicMock for resource manager that raises an exception
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.side_effect = Exception("API Error")
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function and expect an exception
+    with pytest.raises(DemistoException) as e:
+        check_required_permissions(mock_creds, "test-project")
+
+    # Verify that the error message contains the API error
+    assert "Failed to test permissions" in str(e.value)
+    assert "API Error" in str(e.value)
+
+
+def test_check_required_permissions_api_error_with_connector_id(mocker):
+    """
+    Given: GCP credentials with connector_id that cause an API error
+    When: check_required_permissions is called with connector_id
+    Then: The function should return a HealthCheckError instead of raising an exception
+    """
+    from GCP import check_required_permissions, HealthCheckError, ErrorType
+
+    # Use MagicMock for resource manager that raises an exception
+    mock_resource_manager = MagicMock()
+    mock_resource_manager.projects().testIamPermissions().execute.side_effect = Exception("API Error")
+
+    # Mock the build function
+    mock_creds = mocker.Mock(spec=Credentials)
+    mocker.patch("GCP.build", return_value=mock_resource_manager)
+
+    # Execute the function with connector_id
+    result = check_required_permissions(mock_creds, "test-project", connector_id="test-connector-id")
+
+    # Verify that the result is a HealthCheckError
+    assert isinstance(result, HealthCheckError)
+    assert result.account_id == "test-project"
+    assert result.connector_id == "test-connector-id"
+    assert result.error_type == ErrorType.PERMISSION_ERROR
+    assert "Failed to test permissions" in result.message
+    assert "API Error" in result.message
