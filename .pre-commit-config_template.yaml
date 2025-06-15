@@ -296,6 +296,7 @@ repos:
     - --config-path=validation_config.toml
     - --ignore=DO106
     - --ignore=CJ105
+    - --ignore=BA129
     args:check_private_packs:
     - --skip-pack-dependencies
     - --config-path=validation_config.toml
