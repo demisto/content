@@ -1,8 +1,8 @@
-id: silent-Suspicious Hidden User Created Test
+id: silent-Suspicious Hidden User Created
 version: -1
 contentitemexportablefields:
   contentitemfields: {}
-name: silent-Suspicious Hidden User Created Test
+name: silent-Suspicious Hidden User Created
 issilent: true
 description: |-
   This playbook addresses the following alerts:
