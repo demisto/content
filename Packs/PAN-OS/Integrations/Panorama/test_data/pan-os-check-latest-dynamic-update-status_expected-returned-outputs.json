@@ -147,5 +147,7 @@
         },
         "IsUpToDate": true
     },
-    "ContentTypesOutOfDate": 2
+    "ContentTypesOutOfDate": {
+        "Count": 2
+    }
 }
