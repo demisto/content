@@ -27,6 +27,7 @@ from Reco import (
     get_assets_shared_externally_command,
     get_files_exposed_to_email_command,
     get_private_email_list_with_access,
+    get_apps_command,
 )
 
 from test_data.structs import (
@@ -798,3 +799,55 @@ def test_get_user_context_by_email(requests_mock, reco_client: RecoClient) -> No
     assert res.outputs_prefix == "Reco.User"
     assert res.outputs.get("email_account") != ""
     assert res.outputs.get("email_account") == "charles@corp.com"
+
+
+def test_get_apps_command(requests_mock, reco_client: RecoClient) -> None:
+    """Test the get_apps_command functionality."""
+    # Mock response for app discovery
+    raw_result = get_random_assets_user_has_access_to_response()  # Reusing existing response structure
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+
+    # Test the get_apps_command function
+    actual_result = get_apps_command(reco_client=reco_client, limit=100)
+
+    # Verify the response structure
+    assert "App Discovery" in actual_result.readable_output
+
+
+def test_get_app_discovery_client_method(requests_mock, reco_client: RecoClient) -> None:
+    """Test the RecoClient.get_app_discovery method."""
+    raw_result = get_random_assets_user_has_access_to_response()  # Reusing existing response structure
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+
+    # Test the client method directly
+    apps = reco_client.get_app_discovery(limit=50)
+
+    # Verify the response
+    assert isinstance(apps, list)
+    assert len(apps) == len(raw_result.getTableResponse.data.rows)
+
+
+def test_get_app_discovery_with_filters(requests_mock, reco_client: RecoClient) -> None:
+    """Test the get_app_discovery method with date filters."""
+    raw_result = get_random_assets_user_has_access_to_response()
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json=raw_result, status_code=200)
+
+    # Test with date filters
+    from datetime import datetime, timedelta
+
+    before = datetime.now()
+    after = datetime.now() - timedelta(days=30)
+
+    apps = reco_client.get_app_discovery(before=before, after=after, limit=100)
+
+    # Verify the response
+    assert isinstance(apps, list)
+    assert len(apps) == len(raw_result.getTableResponse.data.rows)
+
+
+def test_get_app_discovery_error(capfd, requests_mock, reco_client: RecoClient) -> None:
+    """Test error handling in get_app_discovery."""
+    requests_mock.put(f"{DUMMY_RECO_API_DNS_NAME}/asset-management/query", json={}, status_code=200)
+
+    with capfd.disabled(), pytest.raises(Exception):
+        reco_client.get_app_discovery()

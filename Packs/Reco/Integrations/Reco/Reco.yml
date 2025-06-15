@@ -439,6 +439,47 @@ script:
     - contextPath: Reco.AlertSummary.markdown
       description: The markdown of the alert summary.
       type: String
+  - arguments:
+    - description: Before date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format).
+      name: before
+      required: false
+    - description: After date filter (YYYY-MM-DD or YYYY-MM-DDTHH:MM:SSZ format).
+      name: after
+      required: false
+    - description: Page size for pagination (default 1000). The command fetches all available apps across all pages.
+      name: limit
+      required: false
+      defaultValue: '1000'
+    description: Get app discovery data from Reco. Fetches all available apps using pagination.
+    name: reco-get-apps
+    outputs:
+    - contextPath: Reco.Apps.app_name
+      description: The name of the application.
+      type: String
+    - contextPath: Reco.Apps.app_id
+      description: The unique identifier of the application.
+      type: String
+    - contextPath: Reco.Apps.category
+      description: The category of the application.
+      type: String
+    - contextPath: Reco.Apps.risk_score
+      description: The risk score of the application.
+      type: Number
+    - contextPath: Reco.Apps.users_count
+      description: The number of users with access to the application.
+      type: Number
+    - contextPath: Reco.Apps.data_access
+      description: The data access level of the application.
+      type: String
+    - contextPath: Reco.Apps.updated_at
+      description: The last update timestamp of the application.
+      type: Date
+    - contextPath: Reco.Apps.created_at
+      description: The creation timestamp of the application.
+      type: Date
+    - contextPath: Reco.Apps.status
+      description: The status of the application.
+      type: String
 tests:
 - No tests
 fromversion: 6.5.0
