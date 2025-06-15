@@ -5,6 +5,7 @@ No available replacement.
 Executes a volatility with command and returns a tabular output. In cases where proper JSON output is not supported, scripts will return errors. The User should use the raw command.
 
 ## Script Data
+
 ---
 
 | **Name** | **Description** |
@@ -12,8 +13,8 @@ Executes a volatility with command and returns a tabular output. In cases where 
 | Script Type | javascript |
 | Tags | memory, forensics, volatility, server |
 
-
 ## Inputs
+
 ---
 
 | **Argument Name** | **Description** |
@@ -24,5 +25,6 @@ Executes a volatility with command and returns a tabular output. In cases where 
 | profile | The Volatility profile to use. |
 
 ## Outputs
+
 ---
 There are no outputs for this script.
