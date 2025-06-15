@@ -39,7 +39,7 @@ This integration was integrated and tested with versions 8.xx, 9.xx, 10.xx and 1
 
 * Maximum commit queue length is 3. Running numerous Panorama commands simultaneously might cause errors.
 * After running `panorama-create-` commands and the object is not committed, the `panorama-edit` commands or `panorama-get` commands might not run correctly.
-* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the <https://urlfiltering.paloaltonetworks.com> website.
+* URL Filtering `request change` of a URL is not available via the API. Instead, you need to use the https://urlfiltering.paloaltonetworks.com website.
 * If you do not specify a vsys (Firewall instances) or a device group (Panorama instances), you will only be able to execute the following commands.
   * [pan-os-get-url-category](#pan-os-get-url-category)
   * [pan-os-commit](#pan-os-commit)
@@ -61,19 +61,16 @@ The Panorama integration now supports fetch incidents.
 The incidents are fetched according to a number of different optional log type queries. The log types are: **Traffic, Threat, URL, Data, Correlation, System, Wildfire, Decryption**.
 
 ##### Max incidents per fetch
-
 * The max incidents per fetch parameter specifies the maximum number of incidents to fetch **per** Log Type Query.
 * Important note: Cortex XSOAR standard setup is not designed to handle many hundreds of new incidents every minute. Therefore, it is strongly recommended to narrow your query by log type, severity, or other criteria to ensure that each fetch cycle retrieves no more than 200 incidents at a time.
 
 ##### Log Type
 
 The queries that will be included during the fetch are decided according to the "Log Type" parameter (Multiple select dropdown).
-
 * Selecting "All" will use all the log type queries in the fetch.
 * To choose a specific set of queries, select their log types from the dropdown (make sure "All" option is unselected).
 
 ##### Log Type Query
-
 * Each log type has its own query field in the instance configuration.
 * Note that the default query values has some example text in it, make sure to enter a valid query.
 * Note: In case of multiple devices, for the sake of speed it is recommended to narrow the query to a specific device.
@@ -360,7 +357,7 @@ Run any command supported in the API.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api> | Optional |
+| action | Action to be taken, such as show, get, set, edit, delete, rename, clone, move, override, multi-move, multi-clone, or complete. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/pan-os-xml-api-request-types/configuration-api | Optional |
 | category | Category parameter. For example, when exporting a configuration file, use "category=configuration". | Optional |
 | cmd | Specifies the XML structure that defines the command. Used for operation commands (op type command). Can be retrieved from the PAN-OS web UI debugger or enabling debugging via the CLI using `debug cli on`. | Optional |
 | command | Run a command. For example, command =&lt;show&gt;&lt;arp&gt;&lt;entry name='all'/&gt;&lt;/arp&gt;&lt;/show&gt; | Optional |
@@ -372,7 +369,7 @@ Run any command supported in the API.
 | log-type | Retrieves log types. For example, log-type=threat for threat logs. | Optional |
 | where | Specifies the type of a move operation (for example, where=after, where=before, where=top, where=bottom). | Optional |
 | period | Time period. For example, period=last-24-hrs | Optional |
-| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - <https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath>. | Optional |
+| xpath | xpath location. xpath defines the location of the object. For example, xpath=/config/predefined/application/entry[@name='hotmail']. Documentation - https://docs.paloaltonetworks.com/pan-os/9-1/pan-os-panorama-api/about-the-pan-os-xml-api/structure-of-a-pan-os-xml-api-request/xml-and-xpath. | Optional |
 | pcap-id | PCAP ID included in the threat log. | Optional |
 | serialno | Specifies the device serial number. | Optional |
 | reporttype | Chooses the report type, such as dynamic, predefined or custom. | Optional |
@@ -2098,7 +2095,7 @@ Returns a list of external dynamic lists.
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
 >| blabla3 | url | lolo | hourly | 6u4ju7 |
->| bad_ip_edl_demisot_web_server | ip | <http://192.168.1.15/files/very_bad_ip2.txt> | five-minute | ip |
+>| bad_ip_edl_demisot_web_server | ip | http://192.168.1.15/files/very_bad_ip2.txt | five-minute | ip |
 
 ### pan-os-get-edl
 
@@ -2154,7 +2151,7 @@ Returns information for an external dynamic list
 >
 >|Name|Type|URL|Recurring|Description|
 >|---|---|---|---|---|
->| test_pb_domain_edl_DONT_DEL | url | <https://test_pb_task.not.real> | hourly | new description3 |
+>| test_pb_domain_edl_DONT_DEL | url | https://test_pb_task.not.real | hourly | new description3 |
 
 ### pan-os-create-edl
 
@@ -3994,7 +3991,7 @@ Show firewall device software version.
 ### pan-os-download-latest-content-update
 
 ***
-Downloads the latest content update.
+Downloads the latest app/threat dynamic update.
 
 #### Base Command
 
@@ -4004,26 +4001,15 @@ Downloads the latest content update.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | Job ID of the content download. |
-| Panorama.Content.Download.Status | String | Content download status. |
-
-#### Command Example
-
-```!pan-os-download-latest-content-update```
-
-#### Human Readable Output
-
->### Content download
->
->|JobID|Status|
->|---|---|
->| 657 | Pending |
+| Panorama.Content.Download.JobID | String | The job ID of the app/threat download. | 
+| Panorama.Content.Download.Status | String | The app/threat download status. | 
+| Panorama.Content.Download.Details | String | The download job details. | 
 
 ### pan-os-content-update-download-status
 
@@ -4036,41 +4022,29 @@ Checks the download status of a content update.
 
 #### Input
 
+### pan-os-content-update-download-status
+
+***
+Checks the download status of an app/threat dynamic update.
+
+#### Base Command
+
+`pan-os-content-update-download-status`
+
+#### Input
+
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| job_id | Job ID to check.                                                                             | Required |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | The job ID to check. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Download.JobID | String | Job ID to monitor. |
-| Panorama.Content.Download.Status | String | Download status. |
-| Panorama.Content.Download.Details | String | Job ID details. |
-
-#### Command Example
-
-```!pan-os-content-update-download-status job_id=678```
-
-#### Human Readable Output
-
->### Content download status
->
->|JobID|Status|Details|
->|---|---|---|
->| 678 | Completed | download succeeded with warnings |
-
-### pan-os-install-latest-content-update
-
-***
-Installs the latest content update.
-
-#### Base Command
-
-`pan-os-install-latest-content-update`
-
-#### Input
+| Panorama.Content.Download.JobID | String | The job ID to monitor. | 
+| Panorama.Content.Download.Status | String | The download status. | 
+| Panorama.Content.Download.Details | String | The job ID details. | 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
@@ -4081,43 +4055,32 @@ Installs the latest content update.
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
 | Panorama.Content.Install.JobID | String | Job ID of the installation. |
-| Panorama.Content.Install.Status | String | Installation status. |
+| Content.Install.Status | String | Installation status. |
 
 #### Command Example
-
-```!pan-os-install-latest-content-update```
-
-#### Human Readable Output
-
->### Result
->
->|JobID|Status|
->|---|---|
->| 878 | Pending |
-
-### pan-os-content-update-install-status
+### pan-os-install-latest-content-update
 
 ***
-Gets the installation status of the content update.
+Installs the latest app/threat dynamic update.
 
 #### Base Command
 
-`pan-os-content-update-install-status`
+`pan-os-install-latest-content-update`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
-| job_id | Job ID of the content installation. | Required |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.Content.Install.JobID | String | Job ID of the content installation. |
-| Panorama.Content.Install.Status | String | Content installation status. |
-| Panorama.Content.Install.Details | String | Content installation status details. |
+| Panorama.Content.Install.JobID | String | The job ID of the installation. | 
+| Panorama.Content.Install.Status | String | The installation status. | 
+| Panorama.Content.Install.Details | String | The install job details. | 
+
 
 #### Command Example
 
@@ -4129,41 +4092,29 @@ Gets the installation status of the content update.
 >
 >|JobID|Status|Details|
 >|---|---|---|
->| 878 | Completed | installation succeeded with warnings |
-
-### pan-os-check-latest-panos-software
+### pan-os-content-update-install-status
 
 ***
-Checks the PAN-OS software version from the repository.
+Gets the installation status of the app/threat dynamic update.
 
 #### Base Command
 
-`pan-os-check-latest-panos-software`
+`pan-os-content-update-install-status`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+| job_id | The job ID of the content installation. | Required | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.LatestVersions | unknown | Latest software versions. |
-
-#### Command Example
-
-```!pan-os-check-latest-panos-software```
-
-### pan-os-download-panos-version
-
-***
-Downloads the target PAN-OS software version to install on the target device.
-
-#### Base Command
-
-`pan-os-download-panos-version`
+| Panorama.Content.Install.JobID | String | The job ID of the content installation. | 
+| Panorama.Content.Install.Status | String | The content installation status. | 
+| Panorama.Content.Install.Details | String | The content installation status details. | 
 
 #### Input
 
@@ -5746,158 +5697,59 @@ Gets information from all PAN-OS systems in the topology.
 | PANOS.ShowSystemInfo.Result.app_release_date | String | Release date of the application content. |
 | PANOS.ShowSystemInfo.Result.threat_version | String | Threat content version. |
 | PANOS.ShowSystemInfo.Result.threat_release_date | String | Release date of the threat content. |
-| PANOS.ShowSystemInfo.Result.wildfire_version | String | Wildfire content version. |
-| PANOS.ShowSystemInfo.Result.wildfire_release_date | String | Wildfire release date. |
-| PANOS.ShowSystemInfo.Result.url_filtering_version | String | URL filtering content version. |
-| PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. |
-| PANOS.ShowSystemInfo.Result.advanced_routing | string | Advanced routing engine feature. |
-| PANOS.ShowSystemInfo.Result.multi_vsys | string | Virtual system feature. |
-
-#### Command example
-
-```!pan-os-platform-get-system-info```
-
-#### Context Example
-
-```json
-{
-    "PANOS": {
-        "ShowSystemInfo": {
-            "Result": [
-                {
-                    "app_release_date": "",
-                    "app_version": "8475-7000",
-                    "av_release_date": "",
-                    "av_version": "0",
-                    "default_gateway": "192.168.1.1",
-                    "family": "vm",
-                    "hostid": "0111112222333444",
-                    "hostname": "vm-lab-fw1",
-                    "ip_address": "2.2.2.2",
-                    "ipv6_address": "unknown",
-                    "mac_address": "00:0c:29:eb:35:ad",
-                    "model": "PA-VM",
-                    "netmask": "255.255.255.0",
-                    "operational_mode": "normal",
-                    "public_ip_address": "unknown",
-                    "sw_version": "10.0.5",
-                    "threat_release_date": "",
-                    "threat_version": "8475-7000",
-                    "uptime": "22 days, 0:20:49",
-                    "url_filtering_version": "20220218.20012",
-                    "wildfire_release_date": "",
-                    "wildfire_version": "0",
-                    "global_protect_client_package_version": "0.0.0",
-                    "advanced_routing": "on",
-                    "multi_vsys": "on"
-                },
-                {
-                    "app_release_date": "2021/12/06 18:49:44 PST",
-                    "app_version": "8496-7089",
-                    "av_release_date": "",
-                    "av_version": "0",
-                    "default_gateway": "192.168.1.1",
-                    "family": "pc",
-                    "hostid": "1.1.1.1",
-                    "hostname": "Panorama",
-                    "ip_address": "1.1.1.1",
-                    "ipv6_address": "unknown",
-                    "mac_address": "00:0c:29:31:bf:8b",
-                    "model": "Panorama",
-                    "netmask": "255.255.255.0",
-                    "operational_mode": "normal",
-                    "public_ip_address": "unknown",
-                    "sw_version": "10.0.7",
-                    "threat_release_date": "",
-                    "threat_version": "",
-                    "uptime": "3 days, 13:56:06",
-                    "url_filtering_version": "",
-                    "wildfire_release_date": "",
-                    "wildfire_version": "0",
-                    "advanced_routing": "off",
-                    "multi_vsys": "on"
-                }
-            ],
-            "Summary": [
-                {
-                    "family": "vm",
-                    "hostid": "0111112222333444",
-                    "hostname": "vm-lab-fw1",
-                    "ip_address": "2.2.2.2",
-                    "model": "PA-VM",
-                    "sw_version": "10.0.5",
-                    "uptime": "22 days, 0:20:49"
-                },
-                {
-                    "family": "pc",
-                    "hostid": "1.1.1.1",
-                    "hostname": "Panorama",
-                    "ip_address": "1.1.1.1",
-                    "model": "Panorama",
-                    "sw_version": "10.0.7",
-                    "uptime": "3 days, 13:56:06"
-                }
-            ]
-        }
-    }
-}
-```
-
-#### Human Readable Output
-
->### PAN-OS System Info
->
->|family|hostid|hostname|ip_address|model|sw_version|uptime|
->|---|---|---|---|---|---|---|
->| vm | 0111112222333444 | vm-lab-fw1 | 2.2.2.2 | PA-VM | 10.0.5 | 22 days, 0:20:49 |
->| pc | 1.1.1.1 | Panorama | 1.1.1.1 | Panorama | 10.0.7 | 3 days, 13:56:06 |
-
-### pan-os-platform-get-device-groups
+### pan-os-platform-get-system-info
 
 ***
-Gets the operational information of the device groups in the topology(only device groups with associated devices will be listed by this command).
+Gets information from all PAN-OS systems in the topology.
 
 #### Base Command
 
-`pan-os-platform-get-device-groups`
+`pan-os-platform-get-system-info`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| target | The target number of the firewall. Used only on a Panorama instance. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.DeviceGroupOp.hostid | String | ID of the PAN-OS host. |
-| PANOS.DeviceGroupOp.serial | String | Serial number of the firewall. |
-| PANOS.DeviceGroupOp.connected | String | Whether the firewall is currently connected. |
-| PANOS.DeviceGroupOp.hostname | String | Firewall hostname. |
-| PANOS.DeviceGroupOp.last_commit_all_state_sp | String | State of the last commit. |
-| PANOS.DeviceGroupOp.name | String | Device group name. |
+| PANOS.ShowSystemInfo.Summary.hostid | String | The ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Summary.ip_address | String | The management IP address. | 
+| PANOS.ShowSystemInfo.Summary.sw_version | String | The system software version. | 
+| PANOS.ShowSystemInfo.Summary.family | String | The platform family. | 
+| PANOS.ShowSystemInfo.Summary.model | String | The platform model. | 
+| PANOS.ShowSystemInfo.Summary.uptime | String | The total system uptime. | 
+| PANOS.ShowSystemInfo.Summary.hostname | String | The system hostname. | 
+| PANOS.ShowSystemInfo.Result.hostid | String | The ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Result.ip_address | String | The management IP address. | 
+| PANOS.ShowSystemInfo.Result.netmask | String | The management netmask. | 
+| PANOS.ShowSystemInfo.Result.mac_address | String | The management MAC address. | 
+| PANOS.ShowSystemInfo.Result.uptime | String | The total system uptime. | 
+| PANOS.ShowSystemInfo.Result.family | String | The platform family. | 
+| PANOS.ShowSystemInfo.Result.model | String | The platform model. | 
+| PANOS.ShowSystemInfo.Result.sw_version | String | The system software version. | 
+| PANOS.ShowSystemInfo.Result.operational_mode | String | The xurrent operational mode. | 
+| PANOS.ShowSystemInfo.Result.ipv6_address | String | The management IPv6 address. | 
+| PANOS.ShowSystemInfo.Result.default_gateway | String | The management default gateway. | 
+| PANOS.ShowSystemInfo.Result.public_ip_address | String | The firewall public IP address. | 
+| PANOS.ShowSystemInfo.Result.hostname | String | The device hostname. | 
+| PANOS.ShowSystemInfo.Result.av_version | String | The system anti-virus version. | 
+| PANOS.ShowSystemInfo.Result.av_release_date | String | The release date of the antivirus content. | 
+| PANOS.ShowSystemInfo.Result.app_version | String | The app content version. | 
+| PANOS.ShowSystemInfo.Result.app_release_date | String | The release date of the application content. | 
+| PANOS.ShowSystemInfo.Result.threat_version | String | The threat content version. | 
+| PANOS.ShowSystemInfo.Result.threat_release_date | String | The release date of the threat content. | 
+| PANOS.ShowSystemInfo.Result.wildfire_version | String | The Wildfire content version. | 
+| PANOS.ShowSystemInfo.Result.wildfire_release_date | String | The Wildfire release date. | 
+| PANOS.ShowSystemInfo.Result.url_filtering_version | String | The URL filtering content version. | 
+| PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. | 
+| PANOS.ShowSystemInfo.Result.advanced_routing | String | Advanced routing feature. | 
+| PANOS.ShowSystemInfo.Result.multi_vsys | String | Virtual system feature. | 
 
-### pan-os-platform-get-template-stacks
-
-***
-Gets the operational information of the template stacks in the topology.
-
-#### Base Command
-
-`pan-os-platform-get-template-stacks`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| PANOS.TemplateStackOp.hostid | String | ID of the PAN-OS host. |
 | PANOS.TemplateStackOp.serial | String | Serial number of the firewall. |
 | PANOS.TemplateStackOp.connected | String | Whether the firewall is currently connected. |
 | PANOS.TemplateStackOp.hostname | String | Firewall hostname. |
@@ -7094,6 +6946,38 @@ Checks the configured URL Filtering profiles to ensure at least one meets best p
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
+### pan-os-hygiene-check-vulnerability-profiles
+
+***
+Checks the configured vulnerability profiles to ensure at least one meets best practices.
+
+#### Base Command
+
+`pan-os-hygiene-check-vulnerability-profiles`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string by which to filter so that only the given device is checked. | Optional | 
+| minimum_block_severities | A comma-separated list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | A comma-separated list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+| return_nonconforming_profiles | Whether or not to return details about profiles that do not conform to best practices. Possible values are: yes, no. Default is no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | Number | The total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | The host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | The parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | The human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
 | PANOS.ConfigurationHygiene.Summary.description | String | The description of the check |
 | PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check |
 | PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed |
@@ -7124,67 +7008,37 @@ Checks the configured URL Filtering profiles to ensure at least one meets best p
             ]
         }
     }
-}
-```
-
-#### Human Readable Output
-
->### PAN-OS Configuration Hygiene Check
->
->|description|issue_code|issue_count|result|
->|---|---|---|---|
->| Fails if no spyware profile is configured for url-filtering | BP-V-6 | 0 | ✔️ |
-
-### pan-os-hygiene-conforming-url-filtering-profiles
+### pan-os-hygiene-check-spyware-profiles
 
 ***
-Returns a list of existing PANOS URL filtering objects that conform to best practices.
+Checks the configured anti-spyware profiles to ensure at least one meets best practices.
 
 #### Base Command
 
-`pan-os-hygiene-conforming-url-filtering-profiles`
+`pan-os-hygiene-check-spyware-profiles`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String to filter to only check given device. | Optional |
+| device_filter_string | The string by which to filter to only check given devices. | Optional | 
+| minimum_block_severities | A CSV list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional | 
+| minimum_alert_severities | A CSV list of severities that must be in alert/default or higher mode. Default is medium,low. | Optional | 
+| return_nonconforming_profiles | Whether or not to return details about profiles that do not conform to best practices. Possible values are: yes, no. Default is no. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.PanosObject.hostid | String | Host ID. |
-| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. |
-| PANOS.PanosObject.name | String | The PAN-OS object name |
-| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type |
-
-#### Command example
-
-```!pan-os-hygiene-conforming-url-filtering-profiles```
-
-#### Context Example
-
-```json
-{
-    "PANOS": {
-        "PanosObject": [
-            {
-                "container_name": "shared",
-                "hostid": "192.168.1.145",
-                "name": "Outbound-URL",
-                "object_type": "URLFilteringProfile"
-            },
-            {
-                "container_name": "shared",
-                "hostid": "192.168.1.145",
-                "name": "Exception-URL",
-                "object_type": "URLFilteringProfile"
-            }
-        ]
-    }
-}
-```
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | The total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | The host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | The human readable description of issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
 
 #### Human Readable Output
 
@@ -7216,66 +7070,36 @@ Returns all Anti-spyware profiles that conform to best practices.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.PanosObject.hostid | String | Host ID. |
-| PANOS.PanosObject.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. |
-| PANOS.PanosObject.name | String | The PAN-OS object name |
-| PANOS.PanosObject.object_type | String | The PAN-OS-Python object type |
-
-#### Command example
-
-```!pan-os-hygiene-conforming-spyware-profiles```
-
-#### Context Example
-
-```json
-{
-    "PANOS": {
-        "PanosObject": [
-            {
-                "container_name": "shared",
-                "hostid": "192.168.1.145",
-                "name": "Outbound-AS",
-                "object_type": "AntiSpywareProfile"
-            },
-            {
-                "container_name": "shared",
-                "hostid": "192.168.1.145",
-                "name": "Inbound-AS",
-                "object_type": "AntiSpywareProfile"
-            },
-            {
-                "container_name": "shared",
-                "hostid": "192.168.1.145",
-                "name": "Internal-AS",
-                "object_type": "AntiSpywareProfile"
-            }
-        ]
-    }
-}
-```
-
-#### Human Readable Output
-
->### PAN-OS Objects
->
->|container_name|hostid|name|object_type|
->|---|---|---|---|
->| shared | 192.168.1.145 | Outbound-AS | AntiSpywareProfile |
->| shared | 192.168.1.145 | Inbound-AS | AntiSpywareProfile |
->| shared | 192.168.1.145 | Internal-AS | AntiSpywareProfile |
-
-### pan-os-hygiene-conforming-vulnerability-profiles
+### pan-os-hygiene-check-url-filtering-profiles
 
 ***
-Returns all Vulnerability profiles that conform to best practices.
+Checks the configured URL filtering profiles to ensure at least one meets best practices of blocking the following URL categories - abused-drugs, adult, command-and-control, compromised-websites, gambling, grayware, hacking, malware, phishing, questionable, ransomware, scanning-activity, weapons.
 
 #### Base Command
 
-`pan-os-hygiene-conforming-vulnerability-profiles`
+`pan-os-hygiene-check-url-filtering-profiles`
 
 #### Input
 
 | **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| device_filter_string | The string to filter to only check a given device. | Optional | 
+| return_nonconforming_profiles | Whether or not to return details about profiles that do not conform to best practices. Possible values are: yes, no. Default is no. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| PANOS.ConfigurationHygiene.Summary.description | String | The description of the check. | 
+| PANOS.ConfigurationHygiene.Summary.issue_code | String | The shorthand code for this hygiene check. | 
+| PANOS.ConfigurationHygiene.Summary.result | String | Whether the check passed or failed. | 
+| PANOS.ConfigurationHygiene.Summary.issue_count | String | The total number of matching issues. | 
+| PANOS.ConfigurationHygiene.Result.hostid | String | The host ID. | 
+| PANOS.ConfigurationHygiene.Result.container_name | String | What parent container \(DG, Template, VSYS\) this object belongs to. | 
+| PANOS.ConfigurationHygiene.Result.issue_code | String | The shorthand code for the issue. | 
+| PANOS.ConfigurationHygiene.Result.description | String | The human readable description of the issue. | 
+| PANOS.ConfigurationHygiene.Result.name | String | The affected object name. | 
+
 | --- | --- | --- |
 | device_filter_string | String to filter to only check given device. | Optional |
 | minimum_block_severities | csv list of severities that must be in drop/reset/block-ip mode. Default is critical,high. | Optional |
@@ -7703,7 +7527,7 @@ Searches and returns a reference for the given object type and name. If no name 
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| object_type | The type of object to search; see <https://pandevice.readthedocs.io/en/latest/module-objects.html>. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required |
+| object_type | The type of object to search; see https://pandevice.readthedocs.io/en/latest/module-objects.html. Possible values are: AddressObject, AddressGroup, ServiceGroup, ServiceObject, ApplicationObject, ApplicationGroup, LogForwardingProfile, SecurityProfileGroup. | Required |
 | device_filter_string | If provided, only objects from the given device are returned. | Optional |
 | object_name | The name of the object reference to return if looking for a specific object. Supports regex if "use_regex" is set. | Optional |
 | parent | The parent vsys or device group to search. If not provided, all will be returned. | Optional |
@@ -9833,3 +9657,169 @@ There are no input arguments for this command.
 >| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
 >| --- | --- | --- | --- |
 >| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
+### pan-os-install-latest-antivirus-update
+
+***
+Installs the latest Antivirus update.
+
+#### Base Command
+
+`pan-os-install-latest-antivirus-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AntiVirus.Install.JobID | String | The job ID of the installation. | 
+| Panorama.AntiVirus.Install.Status | String | The installation status. | 
+| Panorama.AntiVirus.Install.Details | String | The install job details. | 
+
+### pan-os-download-latest-gp-update
+
+***
+Downloads the latest GlobalProtect Clientless VPN dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-gp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.GP.Download.JobID | String | The job ID of the GlobalProtect Clientless VPN download. | 
+| Panorama.GP.Download.Status | String | The GlobalProtect Clientless VPN download status. | 
+| Panorama.GP.Download.Details | String | The download job details. | 
+
+### pan-os-download-latest-antivirus-update
+
+***
+Downloads the latest antivirus dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-antivirus-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AntiVirus.Download.JobID | String | The job ID of the antivirus download. | 
+| Panorama.AntiVirus.Download.Status | String | The antivirus download status. | 
+| Panorama.AntiVirus.Download.Details | String | The download job details. | 
+
+### pan-os-install-latest-wildfire-update
+
+***
+Installs the latest WildFire dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-wildfire-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.WildFire.Install.JobID | String | The job ID of the installation. | 
+| Panorama.WildFire.Install.Status | String | The installation status. | 
+| Panorama.WildFire.Install.Details | String | The install job details. | 
+
+### pan-os-check-dynamic-updates-status
+
+***
+Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+
+#### Base Command
+
+`pan-os-check-dynamic-updates-status`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.Content.Versions.CurrentlyInstalled | String | Currently installed version of App/Threat dynamic update. | 
+| Panorama.Content.Versions.LatestAvailable | String | Latest available version of App/Threat dynamic update. | 
+| Panorama.AntiVirus.Versions.CurrentlyInstalled | String | Currently installed version of Anti-virus dynamic update. | 
+| Panorama.AntiVirus.Versions.LatestAvailable | String | Latest available version of Anti-virus dynamic update. | 
+| Panorama.WildFire.Versions.CurrentlyInstalled | String | Currently installed version of WildFire dynamic update. | 
+| Panorama.WildFire.Versions.LatestAvailable | String | Latest available version of WildFire dynamic update. | 
+| Panorama.GP.Versions.CurrentlyInstalled | String | Currently installed version of GlobalProtect Clientless VPN dynamic update. | 
+| Panorama.GP.Versions.LatestAvailable | String | Latest available version of GlobalProtect Clientless VPN dynamic update. | 
+
+### pan-os-download-latest-wildfire-update
+
+***
+Downloads the latest WildFire dynamic update.
+
+#### Base Command
+
+`pan-os-download-latest-wildfire-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.WildFire.Download.JobID | String | The job ID of the WildFire download. | 
+| Panorama.WildFire.Download.Status | String | The WildFire download status. | 
+| Panorama.WildFire.Download.Details | String | The download job details. | 
+
+### pan-os-install-latest-gp-update
+
+***
+Installs the latest GlobalProtect Clientless VPN dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-gp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.GP.Install.JobID | String | The job ID of the installation. | 
+| Panorama.GP.Install.Status | String | The installation status. | 
+| Panorama.GP.Install.Details | String | The install job details. | 
+

@@ -228,8 +228,8 @@ configuration:
   section: Collect
   type: 19
 description: Manage Palo Alto Networks Firewall and Panorama. Use this pack to manage Prisma Access through Panorama. For more information, see the Panorama documentation.
-display: Palo Alto Networks PAN-OS
-name: Panorama
+display: Palo Alto Networks PAN-OS mrizzo copy
+name: Panorama_mrizzo_copy
 script:
   commands:
   - arguments:
@@ -6686,6 +6686,36 @@ script:
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
+    description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
+    name: pan-os-check-dynamic-updates-status
+    outputs:
+    - contextPath: Panorama.Content.Versions.CurrentlyInstalled
+      description: Currently installed version of App/Threat dynamic update.
+      type: String
+    - contextPath: Panorama.Content.Versions.LatestAvailable
+      description: Latest available version of App/Threat dynamic update.
+      type: String
+    - contextPath: Panorama.AntiVirus.Versions.CurrentlyInstalled
+      description: Currently installed version of Anti-virus dynamic update.
+      type: String
+    - contextPath: Panorama.AntiVirus.Versions.LatestAvailable
+      description: Latest available version of Anti-virus dynamic update.
+      type: String
+    - contextPath: Panorama.WildFire.Versions.CurrentlyInstalled
+      description: Currently installed version of WildFire dynamic update.
+      type: String
+    - contextPath: Panorama.WildFire.Versions.LatestAvailable
+      description: Latest available version of WildFire dynamic update.
+      type: String
+    - contextPath: Panorama.GP.Versions.CurrentlyInstalled
+      description: Currently installed version of GlobalProtect Clientless VPN dynamic update.
+      type: String
+    - contextPath: Panorama.GP.Versions.LatestAvailable
+      description: Latest available version of GlobalProtect Clientless VPN dynamic update.
+      type: String
+  - arguments:
+    - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
+      name: target
     - description: Job ID for a running download process. Used for status polling
       name: job_id
       hidden: true
@@ -6698,6 +6728,9 @@ script:
       type: String
     - contextPath: Panorama.Content.Download.Status
       description: The app/threat download status.
+      type: String
+    - contextPath: Panorama.Content.Download.Details
+      description: The download job details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
@@ -6715,6 +6748,9 @@ script:
     - contextPath: Panorama.AntiVirus.Download.Status
       description: The antivirus download status.
       type: String
+    - contextPath: Panorama.AntiVirus.Download.Details
+      description: The download job details.
+      type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
@@ -6731,6 +6767,9 @@ script:
     - contextPath: Panorama.WildFire.Download.Status
       description: The WildFire download status.
       type: String
+    - contextPath: Panorama.WildFire.Download.Details
+      description: The download job details.
+      type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
@@ -6746,6 +6785,9 @@ script:
       type: String
     - contextPath: Panorama.GP.Download.Status
       description: The GlobalProtect Clientless VPN download status.
+      type: String
+    - contextPath: Panorama.GP.Download.Details
+      description: The download job details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
@@ -6782,6 +6824,9 @@ script:
     - contextPath: Panorama.Content.Install.Status
       description: The installation status.
       type: String
+    - contextPath: Panorama.Content.Install.Details
+      description: The install job details.
+      type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
@@ -6797,6 +6842,9 @@ script:
       type: String
     - contextPath: Panorama.AntiVirus.Install.Status
       description: The installation status.
+      type: String
+    - contextPath: Panorama.AntiVirus.Install.Details
+      description: The install job details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
@@ -6814,6 +6862,9 @@ script:
     - contextPath: Panorama.WildFire.Install.Status
       description: The installation status.
       type: String
+    - contextPath: Panorama.WildFire.Install.Details
+      description: The install job details.
+      type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
       name: target
@@ -6829,6 +6880,9 @@ script:
       type: String
     - contextPath: Panorama.GP.Install.Status
       description: The installation status.
+      type: String
+    - contextPath: Panorama.GP.Install.Details
+      description: The install job details.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.

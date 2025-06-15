@@ -6707,7 +6707,7 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             raise Exception("Download latest content is only supported on Firewall (not Panorama).")
         
         result = panorama_download_latest_dynamic_update_content(update_type, target)
-        
+
         if "result" in result["response"] and result["response"]["@status"] == "success":
             # Download has been given a job ID
             job_id = result["response"]["result"]["job"]
@@ -6739,6 +6739,7 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     else:
         # Check status of existing job
         result = panorama_content_update_download_status(target, job_id)
+
         job_result = result["response"]["result"]["job"]
         
         content_download_status = {"JobID": job_result["id"]}
