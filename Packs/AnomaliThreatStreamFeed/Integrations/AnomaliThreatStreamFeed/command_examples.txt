@@ -1,0 +1,1 @@
+!threatstream-feed-get-indicators indicator_type=domain limit=5
