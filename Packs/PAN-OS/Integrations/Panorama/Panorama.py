@@ -6557,9 +6557,9 @@ def panorama_check_latest_dynamic_update_content(update_type: DynamicUpdateType,
     }
     if target:
         params["target"] = target
-        
+
     result = http_request(URL, "POST", body=params)
-    
+
     return result
 
 
@@ -6570,47 +6570,47 @@ def panorama_check_latest_dynamic_update_command(args: dict):
     target = args.get("target")
     outdated_item_count = 0
     outputs = {}
-    
+
     for update_type in DynamicUpdateType:
         # Call firewall API to check for the latest available update of each type
         result = panorama_check_latest_dynamic_update_content(update_type, target)
 
         if "result" in result["response"] and result["response"]["@status"] == "success":
             versions = result["response"]["result"]["content-updates"]["entry"]
-            
+
             # Ensure versions is a list even if there's only one entry
             if not isinstance(versions, list):
                 versions = [versions]
-            
+
             latest_version = {}
             current_version = {}
             latest_version_parts = (0, 0)
-            
+
             # Identify the latest available version and what is currently installed
             for entry in versions:
                 # Find current version
-                if entry.get('current') == 'yes' or entry.get('installing') == 'yes':
+                if entry.get("current") == "yes" or entry.get("installing") == "yes":
                     current_version = entry
-                
+
                 # Parse version parts as integers for proper comparison
-                version_str = entry.get('version', '')
-                if '-' in version_str:
-                    major, minor = version_str.split('-')
+                version_str = entry.get("version", "")
+                if "-" in version_str:
+                    major, minor = version_str.split("-")
                     version_parts = (int(major), int(minor))
-                    
+
                     # Check if this is the latest version
                     if version_parts > latest_version_parts:
                         latest_version_parts = version_parts
                         latest_version = entry
-            
+
             # Check if currently installed is the most recent available
-            is_up_to_date = (current_version["version"] == latest_version["version"])
-            
+            is_up_to_date = current_version["version"] == latest_version["version"]
+
             context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
 
             if not is_up_to_date:
                 outdated_item_count += 1
-                
+
             # Add both latest and current versions to the output
             outputs[context_prefix] = {
                 "LatestAvailable": latest_version,
@@ -6623,7 +6623,7 @@ def panorama_check_latest_dynamic_update_command(args: dict):
                 f"Failed to retrieve dynamic update information for {update_type.value}.\nAPI response:\n"
                 f"{result['response']['msg']}"
             )
-            
+
     outputs["ContentTypesOutOfDate"] = outdated_item_count
 
     # Create summary table for human-readable output
@@ -6632,29 +6632,31 @@ def panorama_check_latest_dynamic_update_command(args: dict):
         # Skip the ContentTypesOutOfDate counter
         if update_type == "ContentTypesOutOfDate":
             continue
-            
-        summary_table.append({
-            "Update Type": update_type,
-            "Is Up To Date": "True" if data["IsUpToDate"] else "False",
-            "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),
-            "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),
-        })
-    
+
+        summary_table.append(
+            {
+                "Update Type": update_type,
+                "Is Up To Date": "True" if data["IsUpToDate"] else "False",
+                "Latest Available Version": data["LatestAvailable"].get("version", "N/A"),
+                "Currently Installed Version": data["CurrentlyInstalled"].get("version", "N/A"),
+            }
+        )
+
     # Add the outdated count as a footer in the table markdown
     summary_markdown = tableToMarkdown(
-        "Dynamic Update Status Summary", 
+        "Dynamic Update Status Summary",
         summary_table,
-        headers=["Update Type", "Status", "Latest Available Version", "Currently Installed Version"]
+        headers=["Update Type", "Status", "Latest Available Version", "Currently Installed Version"],
     )
-    
+
     summary_markdown += f"\n\n**Total Content Types Outdated: {outdated_item_count}**"
-    
+
     command_results = CommandResults(
         outputs_prefix="Panorama.DynamicUpdates",
         outputs=outputs,
         readable_output=summary_markdown,
     )
-        
+
     return_results(command_results)
 
 
@@ -6691,27 +6693,27 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
     target = args.get("target")
     job_id = args.get("job_id")
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-    
+
     # Map update type to command name
     command_map = {
         "APP_THREAT": "pan-os-download-latest-content-update",
         "ANTIVIRUS": "pan-os-download-latest-antivirus-update",
         "WILDFIRE": "pan-os-download-latest-wildfire-update",
-        "GP": "pan-os-download-latest-gp-update"
+        "GP": "pan-os-download-latest-gp-update",
     }
     command_to_run = command_map.get(update_type.name, "")
-    
+
     if not job_id:
         # Initiate new download job
         if DEVICE_GROUP and not target:
             raise Exception("Download latest content is only supported on Firewall (not Panorama).")
-        
+
         result = panorama_download_latest_dynamic_update_content(update_type, target)
 
         if "result" in result["response"] and result["response"]["@status"] == "success":
             # Download has been given a job ID
             job_id = result["response"]["result"]["job"]
-            
+
             # Schedule command to check download status
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
@@ -6720,18 +6722,15 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 args=args,
                 timeout_in_seconds=300,
             )
-            
-            entry_context = {
-                "JobID": job_id,
-                "Status": "Pending"
-            }
-            
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
             command_results = CommandResults(
                 scheduled_command=scheduled_command,
                 readable_output=f"Content download JobID {job_id} started on device {target}. Status will be checked shortly.",
-                outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context}
+                outputs={f"Panorama.{entry_context_prefix}.Download(val.JobID == obj.JobID)": entry_context},
             )
-            
+
             return_results(command_results)
         else:
             # No download took place
@@ -6741,9 +6740,9 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
         result = panorama_content_update_download_status(target, job_id)
 
         job_result = result["response"]["result"]["job"]
-        
+
         content_download_status = {"JobID": job_result["id"]}
-        
+
         # Determine job status
         if job_result["status"] in ["FIN", "ACT", "FAIL"]:
             status_res = job_result["result"]
@@ -6754,10 +6753,10 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
             elif status_res == "PEND":
                 content_download_status["Status"] = "Pending"
             content_download_status["Details"] = job_result
-        
+
         if job_result["status"] == "PEND":
             content_download_status["Status"] = "Pending"
-        
+
         if content_download_status.get("Status") == "Pending":
             # Schedule another status check
             args["job_id"] = job_id
@@ -6767,12 +6766,12 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 args=args,
                 timeout_in_seconds=300,
             )
-            
+
             command_results = CommandResults(
                 scheduled_command=scheduled_command,
                 readable_output=f"Dynamic Update download JobID {job_id} still running on device {target}. Status will be checked shortly.",
             )
-            
+
             return_results(command_results)
         else:
             # Job is complete, return final status
@@ -6783,15 +6782,17 @@ def panorama_download_latest_dynamic_update_command(update_type: DynamicUpdateTy
                 ["JobID", "Status", "Details"],
                 removeNull=True,
             )
-            
-            return_results({
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
-            })
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
 
 
 def panorama_dynamic_update_download_status_command(update_type: DynamicUpdateType, args: dict):
@@ -6869,15 +6870,15 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
     """
     target = args.get("target")
     job_id = args.get("job_id")
-    
+
     entry_context_prefix = DynamicUpdateContextPrefixMap.get(update_type)
-    
+
     # Map update type to command name
     command_map = {
         "APP_THREAT": "pan-os-install-latest-content-update",
         "ANTIVIRUS": "pan-os-install-latest-antivirus-update",
         "WILDFIRE": "pan-os-install-latest-wildfire-update",
-        "GP": "pan-os-install-latest-gp-update"
+        "GP": "pan-os-install-latest-gp-update",
     }
     command_to_run = command_map.get(update_type.name, "")
 
@@ -6888,7 +6889,7 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
         if "result" in result["response"]:
             # installation has been given a jobid
             job_id = result["response"]["result"]["job"]
-            
+
             # Schedule command to check install status
             args["job_id"] = job_id
             scheduled_command = ScheduledCommand(
@@ -6897,31 +6898,28 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 args=args,
                 timeout_in_seconds=300,
             )
-            
-            entry_context = {
-                "JobID": job_id,
-                "Status": "Pending"
-            }
-            
+
+            entry_context = {"JobID": job_id, "Status": "Pending"}
+
             command_results = CommandResults(
                 scheduled_command=scheduled_command,
                 readable_output=f"Content install JobID {job_id} started on device {target}. Status will be checked shortly.",
-                outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context}
+                outputs={f"Panorama.{entry_context_prefix}.Install(val.JobID == obj.JobID)": entry_context},
             )
-            
+
             return_results(command_results)
 
         else:
             # no content install took place
             return_results(result["response"]["msg"])
-            
+
     else:
         # Check status of existing job
         result = panorama_content_update_install_status(target, job_id)
         job_result = result["response"]["result"]["job"]
-        
+
         content_install_status = {"JobID": job_result["id"]}
-        
+
         # Determine job status
         if job_result["status"] in ["FIN", "ACT", "FAIL"]:
             status_res = job_result["result"]
@@ -6932,10 +6930,10 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
             elif status_res == "PEND":
                 content_install_status["Status"] = "Pending"
             content_install_status["Details"] = job_result
-        
+
         if job_result["status"] == "PEND":
             content_install_status["Status"] = "Pending"
-        
+
         if content_install_status.get("Status") == "Pending":
             # Schedule another status check
             args["job_id"] = job_id
@@ -6945,12 +6943,12 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 args=args,
                 timeout_in_seconds=300,
             )
-            
+
             command_results = CommandResults(
                 scheduled_command=scheduled_command,
                 readable_output=f"Dynamic Update install JobID {job_id} still running on device {target}. Status will be checked shortly.",
             )
-            
+
             return_results(command_results)
         else:
             # Job is complete, return final status
@@ -6961,15 +6959,17 @@ def panorama_install_latest_dynamic_update_command(update_type: DynamicUpdateTyp
                 ["JobID", "Status", "Details"],
                 removeNull=True,
             )
-            
-            return_results({
-                "Type": entryTypes["note"],
-                "ContentsFormat": formats["json"],
-                "Contents": result,
-                "ReadableContentsFormat": formats["markdown"],
-                "HumanReadable": human_readable,
-                "EntryContext": entry_context,
-            })
+
+            return_results(
+                {
+                    "Type": entryTypes["note"],
+                    "ContentsFormat": formats["json"],
+                    "Contents": result,
+                    "ReadableContentsFormat": formats["markdown"],
+                    "HumanReadable": human_readable,
+                    "EntryContext": entry_context,
+                }
+            )
 
 
 def panorama_dynamic_update_install_status_command(update_type: DynamicUpdateType, args: dict):
@@ -15643,7 +15643,7 @@ def main():  # pragma: no cover
         # Check latest available versions of Dynamic Updates
         elif command == "pan-os-check-dynamic-updates-status":
             panorama_check_latest_dynamic_update_command(args)
-        
+
         # Download the latest app/threat content update
         elif command == "panorama-download-latest-content-update" or command == "pan-os-download-latest-content-update":
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.APP_THREAT, args)

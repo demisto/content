@@ -5664,39 +5664,46 @@ Gets information from all PAN-OS systems in the topology.
 
 | **Argument Name** | **Description** | **Required** |
 | --- | --- | --- |
-| device_filter_string | String by which to filter the results to only show specific hostnames or serial numbers. | Optional |
-| target | Single serial number to target with this command | Optional |
+| device_filter_string | The string by which to filter the results to only show specific hostnames or serial numbers. | Optional | 
+| target | The target number of the firewall. Used only on a Panorama instance. | Optional | 
 
 #### Context Output
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| PANOS.ShowSystemInfo.Summary.hostid | String | ID of the PAN-OS host. |
-| PANOS.ShowSystemInfo.Summary.ip_address | String | Management IP address. |
-| PANOS.ShowSystemInfo.Summary.sw_version | String | System software version. |
-| PANOS.ShowSystemInfo.Summary.family | String | Platform family. |
-| PANOS.ShowSystemInfo.Summary.model | String | Platform model. |
-| PANOS.ShowSystemInfo.Summary.uptime | String | Total system uptime. |
-| PANOS.ShowSystemInfo.Summary.hostname | String | System hostname. |
-| PANOS.ShowSystemInfo.Result.hostid | String | ID of the PAN-OS host. |
-| PANOS.ShowSystemInfo.Result.ip_address | String | Management IP address. |
-| PANOS.ShowSystemInfo.Result.netmask | String | Management netmask. |
-| PANOS.ShowSystemInfo.Result.mac_address | String | Management MAC address. |
-| PANOS.ShowSystemInfo.Result.uptime | String | Total system uptime. |
-| PANOS.ShowSystemInfo.Result.family | String | Platform family. |
-| PANOS.ShowSystemInfo.Result.model | String | Platform model. |
-| PANOS.ShowSystemInfo.Result.sw_version | String | System software version. |
-| PANOS.ShowSystemInfo.Result.operational_mode | String | Current operational mode. |
-| PANOS.ShowSystemInfo.Result.ipv6_address | String | Management IPv6 address. |
-| PANOS.ShowSystemInfo.Result.default_gateway | String | Management default gateway. |
-| PANOS.ShowSystemInfo.Result.public_ip_address | String | Firewall public IP address. |
-| PANOS.ShowSystemInfo.Result.hostname | String | Device hostname. |
-| PANOS.ShowSystemInfo.Result.av_version | String | System anti-virus version. |
-| PANOS.ShowSystemInfo.Result.av_release_date | String | Release date of the antivirus content, |
-| PANOS.ShowSystemInfo.Result.app_version | String | App content version, |
-| PANOS.ShowSystemInfo.Result.app_release_date | String | Release date of the application content. |
-| PANOS.ShowSystemInfo.Result.threat_version | String | Threat content version. |
-| PANOS.ShowSystemInfo.Result.threat_release_date | String | Release date of the threat content. |
+| PANOS.ShowSystemInfo.Summary.hostid | String | The ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Summary.ip_address | String | The management IP address. | 
+| PANOS.ShowSystemInfo.Summary.sw_version | String | The system software version. | 
+| PANOS.ShowSystemInfo.Summary.family | String | The platform family. | 
+| PANOS.ShowSystemInfo.Summary.model | String | The platform model. | 
+| PANOS.ShowSystemInfo.Summary.uptime | String | The total system uptime. | 
+| PANOS.ShowSystemInfo.Summary.hostname | String | The system hostname. | 
+| PANOS.ShowSystemInfo.Result.hostid | String | The ID of the PAN-OS host. | 
+| PANOS.ShowSystemInfo.Result.ip_address | String | The management IP address. | 
+| PANOS.ShowSystemInfo.Result.netmask | String | The management netmask. | 
+| PANOS.ShowSystemInfo.Result.mac_address | String | The management MAC address. | 
+| PANOS.ShowSystemInfo.Result.uptime | String | The total system uptime. | 
+| PANOS.ShowSystemInfo.Result.family | String | The platform family. | 
+| PANOS.ShowSystemInfo.Result.model | String | The platform model. | 
+| PANOS.ShowSystemInfo.Result.sw_version | String | The system software version. | 
+| PANOS.ShowSystemInfo.Result.operational_mode | String | The xurrent operational mode. | 
+| PANOS.ShowSystemInfo.Result.ipv6_address | String | The management IPv6 address. | 
+| PANOS.ShowSystemInfo.Result.default_gateway | String | The management default gateway. | 
+| PANOS.ShowSystemInfo.Result.public_ip_address | String | The firewall public IP address. | 
+| PANOS.ShowSystemInfo.Result.hostname | String | The device hostname. | 
+| PANOS.ShowSystemInfo.Result.av_version | String | The system anti-virus version. | 
+| PANOS.ShowSystemInfo.Result.av_release_date | String | The release date of the antivirus content. | 
+| PANOS.ShowSystemInfo.Result.app_version | String | The app content version. | 
+| PANOS.ShowSystemInfo.Result.app_release_date | String | The release date of the application content. | 
+| PANOS.ShowSystemInfo.Result.threat_version | String | The threat content version. | 
+| PANOS.ShowSystemInfo.Result.threat_release_date | String | The release date of the threat content. | 
+| PANOS.ShowSystemInfo.Result.wildfire_version | String | The Wildfire content version. | 
+| PANOS.ShowSystemInfo.Result.wildfire_release_date | String | The Wildfire release date. | 
+| PANOS.ShowSystemInfo.Result.url_filtering_version | String | The URL filtering content version. | 
+| PANOS.ShowSystemInfo.Result.global_protect_client_package_version | String | The GlobalProtect client package version. | 
+| PANOS.ShowSystemInfo.Result.advanced_routing | String | Advanced routing feature. | 
+| PANOS.ShowSystemInfo.Result.multi_vsys | String | Virtual system feature. | 
+
 ### pan-os-platform-get-system-info
 
 ***
@@ -9657,29 +9664,6 @@ There are no input arguments for this command.
 >| Auto-renew master key | Encrypted on HSM | Remind at | Expire at |
 >| --- | --- | --- | --- |
 >| 0 | no | 2024/11/27 04:26:05 | 2025/02/18 04:26:05 |
-### pan-os-install-latest-antivirus-update
-
-***
-Installs the latest Antivirus update.
-
-#### Base Command
-
-`pan-os-install-latest-antivirus-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.AntiVirus.Install.JobID | String | The job ID of the installation. | 
-| Panorama.AntiVirus.Install.Status | String | The installation status. | 
-| Panorama.AntiVirus.Install.Details | String | The install job details. | 
-
 ### pan-os-download-latest-gp-update
 
 ***
@@ -9702,6 +9686,75 @@ Downloads the latest GlobalProtect Clientless VPN dynamic update.
 | Panorama.GP.Download.JobID | String | The job ID of the GlobalProtect Clientless VPN download. | 
 | Panorama.GP.Download.Status | String | The GlobalProtect Clientless VPN download status. | 
 | Panorama.GP.Download.Details | String | The download job details. | 
+
+### pan-os-install-latest-gp-update
+
+***
+Installs the latest GlobalProtect Clientless VPN dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-gp-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.GP.Install.JobID | String | The job ID of the installation. | 
+| Panorama.GP.Install.Status | String | The installation status. | 
+| Panorama.GP.Install.Details | String | The install job details. | 
+
+### pan-os-install-latest-wildfire-update
+
+***
+Installs the latest WildFire dynamic update.
+
+#### Base Command
+
+`pan-os-install-latest-wildfire-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.WildFire.Install.JobID | String | The job ID of the installation. | 
+| Panorama.WildFire.Install.Status | String | The installation status. | 
+| Panorama.WildFire.Install.Details | String | The install job details. | 
+
+### pan-os-install-latest-antivirus-update
+
+***
+Installs the latest Antivirus update.
+
+#### Base Command
+
+`pan-os-install-latest-antivirus-update`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
+
+#### Context Output
+
+| **Path** | **Type** | **Description** |
+| --- | --- | --- |
+| Panorama.AntiVirus.Install.JobID | String | The job ID of the installation. | 
+| Panorama.AntiVirus.Install.Status | String | The installation status. | 
+| Panorama.AntiVirus.Install.Details | String | The install job details. | 
 
 ### pan-os-download-latest-antivirus-update
 
@@ -9726,14 +9779,14 @@ Downloads the latest antivirus dynamic update.
 | Panorama.AntiVirus.Download.Status | String | The antivirus download status. | 
 | Panorama.AntiVirus.Download.Details | String | The download job details. | 
 
-### pan-os-install-latest-wildfire-update
+### pan-os-download-latest-wildfire-update
 
 ***
-Installs the latest WildFire dynamic update.
+Downloads the latest WildFire dynamic update.
 
 #### Base Command
 
-`pan-os-install-latest-wildfire-update`
+`pan-os-download-latest-wildfire-update`
 
 #### Input
 
@@ -9745,9 +9798,9 @@ Installs the latest WildFire dynamic update.
 
 | **Path** | **Type** | **Description** |
 | --- | --- | --- |
-| Panorama.WildFire.Install.JobID | String | The job ID of the installation. | 
-| Panorama.WildFire.Install.Status | String | The installation status. | 
-| Panorama.WildFire.Install.Details | String | The install job details. | 
+| Panorama.WildFire.Download.JobID | String | The job ID of the WildFire download. | 
+| Panorama.WildFire.Download.Status | String | The WildFire download status. | 
+| Panorama.WildFire.Download.Details | String | The download job details. | 
 
 ### pan-os-check-dynamic-updates-status
 
@@ -9776,50 +9829,4 @@ Checks for the latest available dynamic update versions and returns a list of la
 | Panorama.WildFire.Versions.LatestAvailable | String | Latest available version of WildFire dynamic update. | 
 | Panorama.GP.Versions.CurrentlyInstalled | String | Currently installed version of GlobalProtect Clientless VPN dynamic update. | 
 | Panorama.GP.Versions.LatestAvailable | String | Latest available version of GlobalProtect Clientless VPN dynamic update. | 
-
-### pan-os-download-latest-wildfire-update
-
-***
-Downloads the latest WildFire dynamic update.
-
-#### Base Command
-
-`pan-os-download-latest-wildfire-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.WildFire.Download.JobID | String | The job ID of the WildFire download. | 
-| Panorama.WildFire.Download.Status | String | The WildFire download status. | 
-| Panorama.WildFire.Download.Details | String | The download job details. | 
-
-### pan-os-install-latest-gp-update
-
-***
-Installs the latest GlobalProtect Clientless VPN dynamic update.
-
-#### Base Command
-
-`pan-os-install-latest-gp-update`
-
-#### Input
-
-| **Argument Name** | **Description** | **Required** |
-| --- | --- | --- |
-| target | Serial number of the firewall on which to run the command. Use only for a Panorama instance. | Optional | 
-
-#### Context Output
-
-| **Path** | **Type** | **Description** |
-| --- | --- | --- |
-| Panorama.GP.Install.JobID | String | The job ID of the installation. | 
-| Panorama.GP.Install.Status | String | The installation status. | 
-| Panorama.GP.Install.Details | String | The install job details. | 
 

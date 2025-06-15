@@ -8682,9 +8682,69 @@ class TestDynamicUpdateCommands:
             returned_results = mock_command_return.call_args[0][0]
 
             assert isinstance(returned_results, dict)
-            assert returned_results["Contents"] == {"response": {"@status": "success", "result": {"job": {"tenq": "2025/06/15 10:34:51", "tdeq": "10:34:51", "id": "1309", "user": None, "type": "Downld", "status": "FIN", "queued": "NO", "stoppable": "no", "result": "OK", "tfin": "2025/06/15 10:34:53", "description": None, "positionInQ": "0", "progress": "2025/06/15 10:34:53", "details": {"line": ["File successfully downloaded", "Successfully downloaded", "Applications and Threats version: 8988-9483"]}, "warnings": None}}}}
-            assert returned_results["HumanReadable"] == '### AntiVirus update download status:\n|JobID|Status|Details|\n|---|---|---|\n| 1309 | Completed | tenq: 2025/06/15 10:34:51<br>tdeq: 10:34:51<br>id: 1309<br>user: null<br>type: Downld<br>status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 10:34:53<br>description: null<br>positionInQ: 0<br>progress: 2025/06/15 10:34:53<br>details: {"line": ["File successfully downloaded", "Successfully downloaded", "Applications and Threats version: 8988-9483"]}<br>warnings: null |\n'
-            assert returned_results["EntryContext"] == {"Panorama.AntiVirus.Download(val.JobID == obj.JobID)": {"JobID": "1309", "Status": "Completed", "Details": {"tenq": "2025/06/15 10:34:51", "tdeq": "10:34:51", "id": "1309", "user": None, "type": "Downld", "status": "FIN", "queued": "NO", "stoppable": "no", "result": "OK", "tfin": "2025/06/15 10:34:53", "description": None, "positionInQ": "0", "progress": "2025/06/15 10:34:53", "details": {"line": ["File successfully downloaded", "Successfully downloaded", "Applications and Threats version: 8988-9483"]}, "warnings": None}}}
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 10:34:51",
+                            "tdeq": "10:34:51",
+                            "id": "1309",
+                            "user": None,
+                            "type": "Downld",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 10:34:53",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 10:34:53",
+                            "details": {
+                                "line": [
+                                    "File successfully downloaded",
+                                    "Successfully downloaded",
+                                    "Applications and Threats version: 8988-9483",
+                                ]
+                            },
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == '### AntiVirus update download status:\n|JobID|Status|Details|\n|---|---|---|\n| 1309 | Completed | tenq: 2025/06/15 10:34:51<br>tdeq: 10:34:51<br>id: 1309<br>user: null<br>type: Downld<br>status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 10:34:53<br>description: null<br>positionInQ: 0<br>progress: 2025/06/15 10:34:53<br>details: {"line": ["File successfully downloaded", "Successfully downloaded", "Applications and Threats version: 8988-9483"]}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Download(val.JobID == obj.JobID)": {
+                    "JobID": "1309",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 10:34:51",
+                        "tdeq": "10:34:51",
+                        "id": "1309",
+                        "user": None,
+                        "type": "Downld",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 10:34:53",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 10:34:53",
+                        "details": {
+                            "line": [
+                                "File successfully downloaded",
+                                "Successfully downloaded",
+                                "Applications and Threats version: 8988-9483",
+                            ]
+                        },
+                        "warnings": None,
+                    },
+                }
+            }
 
     @pytest.mark.parametrize(
         "install_phase, job_id, api_response_payload",
@@ -8696,12 +8756,7 @@ class TestDynamicUpdateCommands:
                     "response": {
                         "@status": "success",
                         "@code": "19",
-                        "result": {
-                            "msg": {
-                                "line": "Content install job enqueued with jobid 1318"
-                            },
-                            "job": "1318"
-                        }
+                        "result": {"msg": {"line": "Content install job enqueued with jobid 1318"}, "job": "1318"},
                     }
                 },
             ),
@@ -8727,9 +8782,9 @@ class TestDynamicUpdateCommands:
                                 "positionInQ": "0",
                                 "progress": "20",
                                 "warnings": None,
-                                "details": None
+                                "details": None,
                             }
-                        }
+                        },
                     }
                 },
             ),
@@ -8754,12 +8809,10 @@ class TestDynamicUpdateCommands:
                                 "description": None,
                                 "positionInQ": "0",
                                 "progress": "2025/06/15 12:44:21",
-                                "details": {
-                                    "line": "Job completed successfully"
-                                },
-                                "warnings": None
+                                "details": {"line": "Job completed successfully"},
+                                "warnings": None,
                             }
-                        }
+                        },
                     }
                 },
             ),
@@ -8804,6 +8857,54 @@ class TestDynamicUpdateCommands:
             returned_results = mock_command_return.call_args[0][0]
 
             assert isinstance(returned_results, dict)
-            assert returned_results["Contents"] == {"response": {"@status": "success", "result": {"job": {"tenq": "2025/06/15 12:43:29", "tdeq": "12:43:29", "id": "1318", "user": "admin", "type": "Antivirus", "status": "FIN", "queued": "NO", "stoppable": "no", "result": "OK", "tfin": "2025/06/15 12:44:21", "description": None, "positionInQ": "0", "progress": "2025/06/15 12:44:21", "details": {"line": "Job completed successfully"}, "warnings": None}}}}
-            assert returned_results["HumanReadable"] == '### AntiVirus update install status:\n|JobID|Status|Details|\n|---|---|---|\n| 1318 | Completed | tenq: 2025/06/15 12:43:29<br>tdeq: 12:43:29<br>id: 1318<br>user: admin<br>type: Antivirus<br>status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 12:44:21<br>description: null<br>positionInQ: 0<br>progress: 2025/06/15 12:44:21<br>details: {"line": "Job completed successfully"}<br>warnings: null |\n'
-            assert returned_results["EntryContext"] == {"Panorama.AntiVirus.Install(val.JobID == obj.JobID)": {"JobID": "1318", "Status": "Completed", "Details": {"tenq": "2025/06/15 12:43:29", "tdeq": "12:43:29", "id": "1318", "user": "admin", "type": "Antivirus", "status": "FIN", "queued": "NO", "stoppable": "no", "result": "OK", "tfin": "2025/06/15 12:44:21", "description": None, "positionInQ": "0", "progress": "2025/06/15 12:44:21", "details": {"line": "Job completed successfully"}, "warnings": None}}}
+            assert returned_results["Contents"] == {
+                "response": {
+                    "@status": "success",
+                    "result": {
+                        "job": {
+                            "tenq": "2025/06/15 12:43:29",
+                            "tdeq": "12:43:29",
+                            "id": "1318",
+                            "user": "admin",
+                            "type": "Antivirus",
+                            "status": "FIN",
+                            "queued": "NO",
+                            "stoppable": "no",
+                            "result": "OK",
+                            "tfin": "2025/06/15 12:44:21",
+                            "description": None,
+                            "positionInQ": "0",
+                            "progress": "2025/06/15 12:44:21",
+                            "details": {"line": "Job completed successfully"},
+                            "warnings": None,
+                        }
+                    },
+                }
+            }
+            assert (
+                returned_results["HumanReadable"]
+                == '### AntiVirus update install status:\n|JobID|Status|Details|\n|---|---|---|\n| 1318 | Completed | tenq: 2025/06/15 12:43:29<br>tdeq: 12:43:29<br>id: 1318<br>user: admin<br>type: Antivirus<br>status: FIN<br>queued: NO<br>stoppable: no<br>result: OK<br>tfin: 2025/06/15 12:44:21<br>description: null<br>positionInQ: 0<br>progress: 2025/06/15 12:44:21<br>details: {"line": "Job completed successfully"}<br>warnings: null |\n'
+            )
+            assert returned_results["EntryContext"] == {
+                "Panorama.AntiVirus.Install(val.JobID == obj.JobID)": {
+                    "JobID": "1318",
+                    "Status": "Completed",
+                    "Details": {
+                        "tenq": "2025/06/15 12:43:29",
+                        "tdeq": "12:43:29",
+                        "id": "1318",
+                        "user": "admin",
+                        "type": "Antivirus",
+                        "status": "FIN",
+                        "queued": "NO",
+                        "stoppable": "no",
+                        "result": "OK",
+                        "tfin": "2025/06/15 12:44:21",
+                        "description": None,
+                        "positionInQ": "0",
+                        "progress": "2025/06/15 12:44:21",
+                        "details": {"line": "Job completed successfully"},
+                        "warnings": None,
+                    },
+                }
+            }
