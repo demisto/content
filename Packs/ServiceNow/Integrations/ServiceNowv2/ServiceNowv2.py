@@ -3207,6 +3207,17 @@ def update_remote_system_command(client: Client, args: dict[str, Any], params: d
 
     """
     parsed_args = UpdateRemoteSystemArgs(args)
+    if isinstance(parsed_args.delta, str) and parsed_args.delta:
+        demisto.debug(f"Delta argument was a string, attempting to parse as JSON: {parsed_args.delta}")
+        try:
+            parsed_args.delta = json.loads(parsed_args.delta.replace("'", '"'))
+        except json.JSONDecodeError as e:
+            raise ValueError(f"The 'delta' argument is a malformed string and could not be parsed as JSON. Error: {e}")
+    if parsed_args.data is None:
+        demisto.debug("The 'data' argument was missing. Defaulting to an empty dictionary.")
+        parsed_args.data = {}
+    if not parsed_args.delta:
+        parsed_args.delta = {}
     if parsed_args.delta:
         demisto.debug(f"Got the following delta {parsed_args.delta}")
         demisto.debug(
