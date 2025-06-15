@@ -151,6 +151,34 @@
       "src_port": {
           "type": "int",
           "is_array": false
+        },
+      "proto": {
+          "type": "string",
+          "is_array": false
+        },
+        "deviceexternalid": {
+          "type": "string",
+          "is_array": false
+        },
+        "cn1": {
+          "type": "int",
+          "is_array": false
+        },
+        "in": {
+          "type": "string",
+          "is_array": false
+        },
+        "out": {
+          "type": "string",
+          "is_array": false
+        },
+        "reason": {
+          "type": "string",
+          "is_array": false
+        },
+        "outcome": {
+          "type": "string",
+          "is_array": false
         }
     }
 }
