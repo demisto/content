@@ -15661,7 +15661,7 @@ def main():  # pragma: no cover
             panorama_download_latest_dynamic_update_command(DynamicUpdateType.GP, args)
 
         # Check download status of the latest app/threat content update
-        elif command == "panorama-content-update-download-status" or "pan-os-content-update-download-status":
+        elif command == "panorama-content-update-download-status" or command == "pan-os-content-update-download-status":
             panorama_dynamic_update_download_status_command(DynamicUpdateType.APP_THREAT, args)
 
         # Install the latest app/threat content update

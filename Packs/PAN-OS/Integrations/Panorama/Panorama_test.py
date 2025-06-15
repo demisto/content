@@ -8560,7 +8560,12 @@ class TestDynamicUpdateCommands:
         # Prepare results for comparison
         returned_commandresults: CommandResults = mock_return_results.call_args[0][0]
         expected_returned_output = load_json("test_data/pan-os-check-latest-dynamic-update-status_expected-returned-outputs.json")
-        expected_returned_readable = "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | True | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+        expected_returned_readable = (
+            "### Dynamic Update Status Summary\n|Update Type|Is Up To Date|Latest Available "
+            "Version|Currently Installed Version|\n|---|---|---|---|\n| Content | True | 8987-9481 | 8987-9481 |\n| "
+            "AntiVirus | False | 5212-5732 | 5211-5731 |\n| WildFire | False | 986250-990242 | 986026-990018 |\n| GP | "
+            "True | 98-260 | 98-260 |\n\n\n**Total Content Types Outdated: 2**"
+        )
 
         assert returned_commandresults.outputs == expected_returned_output
         assert returned_commandresults.readable_output == expected_returned_readable
