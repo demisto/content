@@ -70,15 +70,13 @@ REQUIRED_API_PERMISSIONS = [
 DEFAULT_LIMIT = 50
 PREFIX_URL_AZURE = "https://management.azure.com/subscriptions/"
 PREFIX_URL_MS_GRAPH = "https://graph.microsoft.com/v1.0"
-POLICY_ASSIGNMENT_API_VERSION="2023-04-01"
+POLICY_ASSIGNMENT_API_VERSION="2024-05-01"
 POSTGRES_API_VERSION="2017-12-01"
 WEBAPP_API_VERSION="2024-04-01"
-RESOURCE_API_VERSION="2021-04-01"
-FLEXIBLE_API_VERSION="2023-06-01-preview"
-STORAGE_ACCOUNT_GET_API_VERSION="2024-01-01"
+FLEXIBLE_API_VERSION="2023-12-30"
 MONITOR_API_VERSION="2016-03-01"
 DISKS_API_VERSION="2024-03-02"
-ACR_API_VERSION="2023-01-01-preview"
+ACR_API_VERSION="2023-07-01"
 KEY_VAULT_API_VERSION="2022-07-01"
 SQL_DB_API_VERSION="2021-11-01"
 COSMOS_DB_API_VERSION="2024-11-15"
@@ -157,6 +155,7 @@ class AzureClient:
        
         if self.headers:
             self.headers |= {"x-caller-id": get_proxydome_token()}
+            print(self.headers)
             return self.base_client._http_request(  # type: ignore[misc]
                 method=method, url_suffix=url_suffix, full_url=full_url, json_data=json_data, params=params, resp_type=resp_type,
                 headers=self.headers, ok_codes=(200, 201, 202, 204, 206, 404), proxies=proxies
@@ -432,36 +431,6 @@ and resource group "{resource_group_name}" was not found.')
         return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
     
 
-    def resource_update(self, resource_id, allow_blob_public_access, location, account_type):
-        """
-        Updates an Azure resource.
-        
-        Args:
-            resource_id (str): The ID of the resource to update.
-            allow_blob_public_access (str): Whether to allow public access to blobs.
-            location (str): The location of the resource.
-            account_type (str): The account type.
-            
-        Returns:
-            dict: The response from the Azure REST API after applying the update.
-        """
-        full_url=(
-            f"https://management.azure.com/{resource_id}"
-        )
-        params = {"api-version": RESOURCE_API_VERSION}
-        data = {
-            "location": location,
-            "properties":
-            {
-                "allowBlobPublicAccess": allow_blob_public_access,
-                # "accountType": account_type,
-            },
-            "sku": {
-                "name": "Standard_LRS"
-            }
-        }
-        return self.http_request(method="PUT", full_url=full_url, json_data=data, params=params)
-    
     
     def flexible_server_param_set(self, server_name: str, configuration_name: str, subscription_id: str,
                              resource_group_name: str, source: str, value: str):
@@ -728,13 +697,10 @@ and resource group "{resource_group_name}" was not found.')
         Returns:
             dict: The threat policy of the SQL database.
         """
-        # params = {"api-version": SQL_DB_API_VERSION}
-        # full_url=(
-        #     f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
-        #     f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
-        # )
+        params = {"api-version": SQL_DB_API_VERSION}
         full_url=(
-            "https://management.azure.com/subscriptions?api-version=2020-01-01"
+            f"{PREFIX_URL_AZURE}{subscription_id}/resourceGroups/{resource_group_name}"
+            f"/providers/Microsoft.Sql/servers/{server_name}/databases/{db_name}/securityAlertPolicies/default"
         )
 
         return self.http_request("GET", full_url=full_url, params=params)
@@ -1860,7 +1826,6 @@ def main():
         token = ""
         if not params.get("credentials", {}).get("password"):
             token = get_cloud_credentials(CloudTypes.AZURE.value, get_from_args_or_params(params=params, args=args, key="subscription_id"), ["DEFAULT","GRAPH"]).get("access_token")
-            print(token)
             if not token:
                 raise DemistoException("Failed to retrieve AZURE access token - token is missing from credentials")
             headers = {"Authorization": f"Bearer {token}", "Content-Type": "application/json", "Accept": "application/json"}
@@ -1884,6 +1849,7 @@ def main():
             "azure-storage-blob-service-properties-set": storage_blob_service_properties_set_command,
             "azure-policy-assignment-create": create_policy_assignment_command,
             "azure-postgres-config-set": set_postgres_config_command,
+            "azure-postgres-server-update": postgres_server_update_command,
             "azure-webapp-config-set": set_webapp_config_command,
             "azure-webapp-auth-update": update_webapp_auth_command,
             "azure-mysql-flexible-server-param-set": mysql_flexible_server_param_set_command,
@@ -1891,7 +1857,6 @@ def main():
             "azure-disk-update": disk_update_command,
             "azure-webapp-update": webapp_update_command,
             "azure-acr-update": acr_update_command,
-            "azure-postgres-server-update": postgres_server_update_command,
             "azure-key-vault-update": update_key_vault_command,
             "azure-sql-db-threat-policy-update": sql_db_threat_policy_update_command,
             "azure-sql-db-transparent-data-encryption-set": sql_db_tde_set_command,
