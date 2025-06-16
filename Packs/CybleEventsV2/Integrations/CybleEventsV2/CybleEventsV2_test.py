@@ -1803,10 +1803,7 @@ def test_migrate_data_success(monkeypatch):
     mock_demisto = Mock()
     monkeypatch.setattr("CybleEventsV2.demisto", mock_demisto)
 
-    # Patch just datetime.utcnow that is used inside migrate_data
-    monkeypatch.setattr("CybleEventsV2.datetime", datetime)
-
-    # But intercept utcnow() only
+    # Patch datetime.utcnow inside migrate_data only
     class DummyDatetime(datetime):
         @classmethod
         def utcnow(cls):
@@ -1814,10 +1811,11 @@ def test_migrate_data_success(monkeypatch):
 
     monkeypatch.setattr("CybleEventsV2.datetime", DummyDatetime)
 
+    # Use DummyDatetime for returned timestamps too
     mock_client = Mock()
     mock_client.get_data_with_retry.side_effect = [
-        ([{"alert": "test_alert"}], datetime(2023, 1, 1, 13, 0, 0)),
-        ([{"alert": "test_alert"}], datetime(2023, 1, 1, 14, 0, 0)),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 13, 0, 0)),
+        ([{"alert": "test_alert"}], DummyDatetime(2023, 1, 1, 14, 0, 0)),
     ]
 
     input_params = {
@@ -1835,7 +1833,7 @@ def test_migrate_data_success(monkeypatch):
     assert len(result_alerts) == 2
     assert result_alerts[0] == {"alert": "test_alert"}
     assert isinstance(result_time, datetime)
-    assert result_time == datetime(2023, 1, 1, 14, 0, 0)
+    assert result_time == DummyDatetime(2023, 1, 1, 14, 0, 0)
     assert mock_client.get_data_with_retry.call_count == 2
 
 
