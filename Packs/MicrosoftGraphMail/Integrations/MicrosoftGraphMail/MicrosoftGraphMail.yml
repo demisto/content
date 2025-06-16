@@ -1165,6 +1165,10 @@ script:
     - description: The subject of the email.
       name: subject
       required: true
+      prettyname: Subject
+      auto: PREDEFINED
+      predefined:
+      - '[Security Alert] Malicious Email Removed From Your Mailbox'
     - description: The contents (body) of the email.
       name: body
     - auto: PREDEFINED
@@ -1205,6 +1209,9 @@ script:
       name: from
     - description: The content (body) of the email (in HTML format).
       name: htmlBody
+      prettyname: HTML Body
+      prettypredefined:
+        Alert Email Content: "<html><body><p><strong>[Security Alert]</strong> A suspicious email from ${issue.xdmemailsender} was removed.</p></body></html>"
     - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
