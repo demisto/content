@@ -1275,13 +1275,6 @@ script:
       auto: PREDEFINED
       prettypredefined:
         Issue Internet message ID: ${issue.xdmemailmessage_id}
-    - name: purge_type
-      description: 'Purge type. Possible values are: "SoftDelete" and "HardDelete". Default is "SoftDelete".'
-      auto: PREDEFINED
-      defaultValue: "SoftDelete"
-      predefined:
-      - 'SoftDelete'
-      - 'HardDelete'
     - name: exchange_location
       description: Comma-separated list of mailboxes or groups. Use "All" to target everyone (may be slow).
       isArray: true
@@ -1289,17 +1282,27 @@ script:
       auto: PREDEFINED
       prettypredefined:
         All: 'All'
-    - name: search_name
-      description: Internal argument used for polling.
-      hidden: true
-    - name: search_action_name
-      description: Internal argument used for polling.
-      hidden: true
+    - name: force
+      description: todo.
+      defaultValue: 'false'
+      auto: PREDEFINED
+      predefined:
+      - 'false'
+      - 'true'
+    - name: search_completed
+      description: todo.
+      # hidden: true
     outputs:
     - contextPath: O365.SecurityAndCompliance.CaseHoldRule.Name
       description: Case hold policy name.
       type: String
 
+  - name: o365-sc-test-polling
+    polling: true
+    description: test polling.
+    arguments:
+    - name: arg
+      description: test arg.
 
 
   dockerimage: demisto/pwsh-exchangev3:1.0.0.116826

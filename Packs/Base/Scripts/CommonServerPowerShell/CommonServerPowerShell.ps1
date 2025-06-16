@@ -597,9 +597,9 @@ function ReturnPollingOutputs(
         Contents       = $RawResponse;
         EntryContext   = $Outputs;
         PollingCommand = $CommandName;
-        NextRun        = '30';
+        NextRun        = '20';
         PollingArgs          = $PollingArgs
-        Timeout = '600';
+        Timeout = '180';
         PollingItemsRemaining = 0;
     }
     # Return 'readable_output' only if needed
