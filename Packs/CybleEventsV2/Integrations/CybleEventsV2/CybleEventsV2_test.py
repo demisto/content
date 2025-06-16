@@ -18,6 +18,7 @@ try:
         get_event_format,
         time_diff_in_mins,
         build_auth_headers,
+        MAX_THREADS,
     )
 except ImportError:
     # If direct import fails, these functions need to be defined in your main module
@@ -1795,22 +1796,24 @@ class TestFormatIncidents:
 def test_migrate_data_success(monkeypatch):
     """Test migrate_data with successful execution."""
 
-    # Patch demisto
+    # Patch MAX_THREADS directly
+    monkeypatch.setattr("CybleEventsV2.MAX_THREADS", 2)
+
+    # Patch demisto mock
     mock_demisto = Mock()
-    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.demisto", mock_demisto)
+    monkeypatch.setattr("CybleEventsV2.demisto", mock_demisto)
 
-    # Patch MAX_THREADS
-    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.MAX_THREADS", 2)
+    # Patch just datetime.utcnow that is used inside migrate_data
+    monkeypatch.setattr("CybleEventsV2.datetime", datetime)
 
-    # Patch datetime.utcnow inside CybleEventsV2
-    class FixedDatetime(datetime):
+    # But intercept utcnow() only
+    class DummyDatetime(datetime):
         @classmethod
         def utcnow(cls):
             return datetime(2023, 1, 1, 12, 0, 0)
 
-    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.datetime", FixedDatetime)
+    monkeypatch.setattr("CybleEventsV2.datetime", DummyDatetime)
 
-    # Mock client
     mock_client = Mock()
     mock_client.get_data_with_retry.side_effect = [
         ([{"alert": "test_alert"}], datetime(2023, 1, 1, 13, 0, 0)),
@@ -1826,7 +1829,6 @@ def test_migrate_data_success(monkeypatch):
         "skip": 0,
         "take": 10,
     }
-
 
     result_alerts, result_time = migrate_data(mock_client, input_params)
 
