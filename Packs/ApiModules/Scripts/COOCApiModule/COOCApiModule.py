@@ -4,8 +4,9 @@ import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from collections.abc import Callable
-from typing import Any, Optional
+from typing import Any
 import requests
+
 
 class CloudTypes(Enum):
     AWS = "AWS"
@@ -122,7 +123,7 @@ class HealthCheck:
                     combined_error = HealthCheckError(
                         account_id=account_id,
                         connector_id=self.connector_id,
-                        message=_aggregate_error_messages(errors),
+                        message=f"{account_id}: {_aggregate_error_messages(errors)}",
                         error_type=error_type,
                     )
                     aggregated_errors.append(combined_error.to_dict())
@@ -132,8 +133,30 @@ class HealthCheck:
         return (
             CommandResults(entry_type=_calculate_severity(), content_format=EntryFormat.JSON, raw_response=_aggregate_errors())
             if self.errors
-            else HealthStatus.OK
+            else HealthStatus.OK.value
         )
+
+
+def get_connector_id() -> str | None:
+    """
+    Retrieves the connector ID from the calling context.
+
+    This function extracts the connector ID from the CloudIntegrationInfo
+    in the calling context. This is useful for integration commands that
+    need to know which connector they're associated with.
+
+    Returns:
+        str | None: The connector ID if available in the context, otherwise None.
+    """
+    cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
+    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
+
+    if connector_id := cloud_info_context.get("connectorID"):
+        demisto.debug(f"Retrieved connector ID from context: {connector_id}")
+    else:
+        demisto.debug("No connector ID found in context")
+
+    return connector_id
 
 
 def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None) -> dict:
@@ -164,23 +187,18 @@ def get_cloud_credentials(cloud_type: str, account_id: str, scopes: list = None)
         name = PROVIDER_ACCOUNT_NAMES.get(cloud_type, "account identifier")
         raise ValueError(f"Missing {name} for {cloud_type}")
 
-    context = demisto.callingContext.get("context", {})
-    cloud_info = context.get("CloudIntegrationInfo", {})
-
-    demisto.info(f"Cloud credentials request context: {context}")
+    cloud_info_context = demisto.callingContext.get("context", {}).get("CloudIntegrationInfo", {})
+    demisto.info(f"Cloud credentials request context: {cloud_info_context}")
 
     request_data = {
-        "connector_id": cloud_info.get("connectorID"),
+        "connector_id": cloud_info_context.get("connectorID"),
         "account_id": account_id,
-        "outpost_id": cloud_info.get("outpostID"),
+        "outpost_id": cloud_info_context.get("outpostID"),
         "cloud_type": cloud_type,
     }
 
     if scopes:
         request_data["scopes"] = scopes
-
-    if cloud_type == CloudTypes.AWS.value and context.get("region_name"):
-        request_data["region_name"] = context["region_name"]
 
     demisto.info(f"Request data for credentials retrieval: {request_data}")
 
@@ -232,6 +250,7 @@ def get_accounts_by_connector_id(connector_id: str, max_results: int = None) -> 
         all_accounts.extend(accounts)
 
         next_token = res_json.get("next_token", "")
+        demisto.debug(f"Fetched {len(accounts)} accounts")
         if not next_token or (max_results and len(all_accounts) >= max_results):
             break
 
@@ -270,7 +289,7 @@ def _check_account_permissions(
 
 
 def run_permissions_check_for_accounts(
-    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: Optional[int] = 10
+    connector_id: str, permission_check_func: Callable[[str, str], Any], max_workers: None | int = 10
 ) -> str | CommandResults:
     """
     Runs a permission check function for each account associated with a connector concurrently.
@@ -286,10 +305,11 @@ def run_permissions_check_for_accounts(
         DemistoException: If the account retrieval fails.
     """
     accounts = get_accounts_by_connector_id(connector_id)
+    demisto.debug(f"Fetched the following accounts: {accounts}")
 
     if not accounts:
         demisto.debug(f"No accounts found for connector ID: {connector_id}")
-        return HealthStatus.OK
+        return HealthStatus.OK.value
 
     health_check_result = HealthCheck(connector_id)
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -307,10 +327,23 @@ def run_permissions_check_for_accounts(
     return health_check_result.summarize()
 
 
-def get_proxydome_token():
+def get_proxydome_token() -> str:
+    """
+    Retrieves a Proxydome identity token from the GCP metadata server.
+
+    This function makes a request to the GCP metadata server to obtain an identity token
+    that can be used for authentication with Proxydome services. It bypasses any configured
+    proxies for this request.
+
+    Returns:
+        str: The identity token as a string.
+
+    Raises:
+        requests.RequestException: If the request to the metadata server fails.
+    """
     url = "http://metadata/computeMetadata/v1/instance/service-accounts/default/identity"
     params = {"audience": "cortex.platform.local"}
     headers = {"Metadata-Flavor": "Google"}
-    proxies = {"http": None, "https": None}
+    proxies = {"http": "", "https": ""}
     response = requests.get(url, headers=headers, params=params, proxies=proxies)
     return response.text
