@@ -150,6 +150,24 @@ def test_fetch_incidents(mocker, client, requests_mock, demisto_mocker, last_run
         assert not incidents
 
 
+@freeze_time("2021-08-24 18:04:00")
+def test_fetch_incidents_input(mocker, client):
+    from SaasSecurity import fetch_incidents
+
+    first_fetch_time = "1 day"
+    fetch_limit = "1"
+    fetch_severity = ["4.0", "5.0"]
+    last_run = "2018-10-01T20:22:35.000Z"
+    get_incidents = util_load_json("test_data/get-incidents.json")
+    expected_params = {'from': '2018-10-01T20:22:35.000Z', 'limit': '1', 'severity': ['4.0', '5.0']}
+
+    mocker.patch.object(demisto, "getLastRun", return_value={"last_run_time": last_run})
+    http_request = mocker.patch.object(client, "http_request", return_value=get_incidents)
+
+    fetch_incidents(client, first_fetch_time, fetch_limit, "", fetch_severity, "", "")
+    http_request.assert_called_with("GET", url_suffix="/incident/api/incidents/delta", params=expected_params)
+
+
 def test_get_incidents_command(client, requests_mock):
     """
     Using the client mocker, requests_mock.
