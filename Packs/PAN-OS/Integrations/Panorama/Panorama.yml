@@ -8719,10 +8719,10 @@ script:
   - arguments:
     - description: The string to filter to only check a given device.
       name: device_filter_string
-    - description: Whether or not to return details about profiles that do not conform to best practices.
-      name: return_nonconforming_profiles
+    - auto: PREDEFINED
       defaultValue: 'no'
-      auto: PREDEFINED
+      description: Whether or not to return details about profiles that do not conform to best practices.
+      name: return_nonconforming_profiles
       predefined:
       - 'yes'
       - 'no'
