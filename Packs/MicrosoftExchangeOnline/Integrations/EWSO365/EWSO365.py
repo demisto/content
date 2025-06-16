@@ -1750,13 +1750,16 @@ def fetch_last_emails(
         demisto.debug(f"[test] {first_fetch_ews_datetime=}")
 
     for index, item in enumerate(qs):
-        demisto.debug(f"[test] {index=}, {item.subject=} {item=}")
+        demisto.debug(f"[test] {index=}, {item.id=} {item.subject=}, {item=}")
 
-    qs = qs.filter().only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
-    qs = qs.filter().order_by("datetime_received")
+    qs = qs.filter(is_read=False).only(*[x.name for x in Message.FIELDS if x.name.lower() != "mime_content"])
+    if incident_filter == RECEIVED_FILTER:
+        qs = qs.filter().order_by("-datetime_received")
+    else:
+        qs = qs.filter().order_by("-last_modified_time")
 
     for index, item in enumerate(qs):
-        demisto.debug(f"[test] #2 {index=}, {item.subject=} {item=}")
+        demisto.debug(f"[test] #2 {index=}, {item.id=} {item.subject=} {item=}")
 
     result = []
     exclude_ids = exclude_ids if exclude_ids else set()
