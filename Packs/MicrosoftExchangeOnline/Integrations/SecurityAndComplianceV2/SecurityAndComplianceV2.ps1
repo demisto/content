@@ -1981,14 +1981,14 @@ function SearchAndDeleteEmailCommand([SecurityAndComplianceClient]$client, [hash
                 $polling_args.already_exist = $false
                 $search = $client.NewSearch($search_name, '', $kql, $description, $false, $exchange_location, @(), @(), @())
                 $client.StartSearch($search_name)
-                $human_readable = "$script:INTEGRATION_NAME : Search created and started."
+                $human_readable = "$script:INTEGRATION_NAME - Search created and started."
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "Starting") {
-                $human_readable = "$script:INTEGRATION_NAME : Search is starting."
+                $human_readable = "$script:INTEGRATION_NAME - Search is starting."
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "NotStarted") {
                 $client.StartSearch($search_name)
-                $human_readable = "$script:INTEGRATION_NAME : Search started (was NotStarted)."
+                $human_readable = "$script:INTEGRATION_NAME - Search started (was NotStarted)."
                 return $human_readable, $entry_context, $search, $polling_args
             } elseif ($status -eq "Completed") {
                 $polling_args.search_completed = $true
@@ -2218,6 +2218,7 @@ function Main {
         UpdateIntegrationContext $oauth2_client
 
         # Return results to Demisto Server
+        # $Demisto.results("polling_args: " + (ConvertTo-Json $polling_args -Depth 3))
         if ($polling_args) {
             ReturnPollingOutputs `
             -ReadableOutput $human_readable `
