@@ -23,7 +23,7 @@ Agentless cloud security platform for detecting and addressing cloud issues, det
 | Use system proxy settings | False |
 | Fetch incidents | False |
 
-4. Click **Test** to validate the URLs, token, and connection.
+4. Click **Test** to validate the URLs, connection, and configuration.
 
 ## Commands
 
