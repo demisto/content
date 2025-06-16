@@ -14607,7 +14607,7 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offse
         dir="forward",
         skip=offset_fetch,
     )
-    demisto.debug(f"{params=}")
+    demisto.debug(f"{params.get('log_type')=},{params.get('query')=},{params.get('nlogs')=},{params.get('skip')=}")
     response = http_request(URL, "GET", params=params)
     return dict_safe_get(response, ("response", "result", "job"))  # type: ignore
 
