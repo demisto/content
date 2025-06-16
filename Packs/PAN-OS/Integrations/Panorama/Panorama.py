@@ -14301,7 +14301,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
         }
     else:
         params = {}
-        demisto.debug(f"{action_type=} -> {params=}")
+        demisto.debug(f"{action_type=} -> {params.get('type')=},{params.get('action')=},{params.get('xpath')=}")
 
     try:
         raw_response = http_request(URL, "GET", params=params)
