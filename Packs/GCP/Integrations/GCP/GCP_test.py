@@ -512,7 +512,7 @@ def test_compute_instance_service_account_set(mocker):
         "zone": "us-central1-c",
         "resource_name": "test-instance",
         "service_account_email": "service-account@test-project.iam.gserviceaccount.com",
-        "scopes": "https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/devstorage.read_only"
+        "scopes": "https://www.googleapis.com/auth/compute,https://www.googleapis.com/auth/devstorage.read_only",
     }
 
     # Mock response
@@ -522,7 +522,7 @@ def test_compute_instance_service_account_set(mocker):
         "operationType": "setServiceAccount",
         "progress": "100",
         "zone": "us-central1-c",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Use MagicMock for compute
@@ -547,10 +547,7 @@ def test_compute_instance_service_account_set(mocker):
     # Check that email and scopes are set correctly
     body = called_kwargs["body"]
     assert body["email"] == "service-account@test-project.iam.gserviceaccount.com"
-    assert body["scopes"] == [
-        "https://www.googleapis.com/auth/compute",
-        "https://www.googleapis.com/auth/devstorage.read_only"
-    ]
+    assert body["scopes"] == ["https://www.googleapis.com/auth/compute", "https://www.googleapis.com/auth/devstorage.read_only"]
 
     # Check outputs
     assert result.outputs_prefix == "GCP.Compute.Operations"
@@ -570,7 +567,7 @@ def test_compute_instance_service_account_set_empty_scopes(mocker):
         "project_id": "test-project",
         "zone": "us-central1-c",
         "resource_name": "test-instance",
-        "service_account_email": "service-account@test-project.iam.gserviceaccount.com"
+        "service_account_email": "service-account@test-project.iam.gserviceaccount.com",
     }
 
     # Mock response
@@ -580,7 +577,7 @@ def test_compute_instance_service_account_set_empty_scopes(mocker):
         "operationType": "setServiceAccount",
         "progress": "100",
         "zone": "us-central1-c",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Use MagicMock for compute
@@ -617,11 +614,7 @@ def test_compute_instance_service_account_remove(mocker):
     from GCP import compute_instance_service_account_remove
 
     # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "zone": "us-central1-c",
-        "resource_name": "test-instance"
-    }
+    args = {"project_id": "test-project", "zone": "us-central1-c", "resource_name": "test-instance"}
 
     # Mock response
     mock_response = {
@@ -630,7 +623,7 @@ def test_compute_instance_service_account_remove(mocker):
         "operationType": "setServiceAccount",
         "progress": "100",
         "zone": "us-central1-c",
-        "status": "RUNNING"
+        "status": "RUNNING",
     }
 
     # Use MagicMock for compute
@@ -671,25 +664,18 @@ def test_iam_project_policy_binding_remove(mocker):
     from GCP import iam_project_policy_binding_remove
 
     # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "member": "user:test@example.com,serviceAccount:sa@example.com",
-        "role": "roles/editor"
-    }
+    args = {"project_id": "test-project", "member": "user:test@example.com,serviceAccount:sa@example.com", "role": "roles/editor"}
 
     # Mock policy response with multiple roles and members
     mock_policy = {
         "bindings": [
             {
                 "role": "roles/editor",
-                "members": ["user:test@example.com", "serviceAccount:sa@example.com", "user:keep@example.com"]
+                "members": ["user:test@example.com", "serviceAccount:sa@example.com", "user:keep@example.com"],
             },
-            {
-                "role": "roles/viewer",
-                "members": ["user:test@example.com", "user:other@example.com"]
-            }
+            {"role": "roles/viewer", "members": ["user:test@example.com", "user:other@example.com"]},
         ],
-        "etag": "BwWKmjvelug="
+        "etag": "BwWKmjvelug=",
     }
 
     # Use MagicMock for resource manager
@@ -741,7 +727,7 @@ def test_iam_project_deny_policy_create(mocker):
         "policy_id": "test-deny-policy",
         "display_name": "Test Deny Policy",
         "denied_principals": "user:test@example.com,serviceAccount:sa@example.com",
-        "denied_permissions": "compute.instances.create,compute.instances.delete"
+        "denied_permissions": "compute.instances.create,compute.instances.delete",
     }
 
     # Mock response
@@ -754,10 +740,10 @@ def test_iam_project_deny_policy_create(mocker):
             {
                 "denyRule": {
                     "deniedPrincipals": ["user:test@example.com", "serviceAccount:sa@example.com"],
-                    "deniedPermissions": ["compute.instances.create", "compute.instances.delete"]
+                    "deniedPermissions": ["compute.instances.create", "compute.instances.delete"],
                 }
             }
-        ]
+        ],
     }
 
     # Use MagicMock for IAM
@@ -798,10 +784,7 @@ def test_iam_service_account_delete(mocker):
     from GCP import iam_service_account_delete
 
     # Mock arguments
-    args = {
-        "project_id": "test-project",
-        "service_account_email": "test-sa@test-project.iam.gserviceaccount.com"
-    }
+    args = {"project_id": "test-project", "service_account_email": "test-sa@test-project.iam.gserviceaccount.com"}
 
     # Use MagicMock for IAM
     mock_iam = MagicMock()
@@ -833,10 +816,7 @@ def test_iam_group_membership_delete(mocker):
     from GCP import iam_group_membership_delete
 
     # Mock arguments
-    args = {
-        "group_id": "01abc123def456",
-        "membership_id": "member789ghi"
-    }
+    args = {"group_id": "01abc123def456", "membership_id": "member789ghi"}
 
     # Use MagicMock for Cloud Identity
     mock_cloud_identity = MagicMock()
