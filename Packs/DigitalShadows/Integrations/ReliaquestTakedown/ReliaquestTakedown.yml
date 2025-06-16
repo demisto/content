@@ -95,7 +95,7 @@ script:
     description: Returns list of allowed brand details for takedown.
     name: rq-takedown-list-brand
   - arguments:
-    - defaultValue: Investigate the tekedown
+    - defaultValue: Investigate the takedown
       description: Comment for takedown.
       name: comment
       required: true
@@ -107,8 +107,10 @@ script:
     name: rq-takedown-create-comment
   - arguments:
     - name: file_id
+      description: File id.
       required: true
     - name: takedown_id
+      description: Takedown id.
       required: true
     description: Uploads attachment for takedown.
     name: rq-takedown-upload-attachment
@@ -126,7 +128,7 @@ script:
   ismappable: true
   isremotesyncin: true
   isremotesyncout: true
-fromversion: 6.0.0
+fromversion: 6.10.0
 defaultmapperin: Reliaquest Takedown Mapper
 defaultclassifier: Reliaquest Takedown Classifier
 tests:
