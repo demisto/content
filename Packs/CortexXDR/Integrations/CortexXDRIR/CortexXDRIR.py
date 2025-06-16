@@ -18,7 +18,7 @@ INTEGRATION_NAME = "Cortex XDR - IR"
 ALERTS_LIMIT_PER_INCIDENTS: int = -1
 REMOVE_ALERTS_NULL_VALUES = "null_values"
 FIELDS_TO_EXCLUDE = ["network_artifacts", "file_artifacts"]
-
+ 
 XDR_INCIDENT_FIELDS = {
     "status": {
         "description": 'Current status of the incident: "new","under_'
