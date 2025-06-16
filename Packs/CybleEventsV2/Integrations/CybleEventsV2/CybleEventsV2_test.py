@@ -20,7 +20,8 @@ except ImportError:
 
 import pytest
 
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, call
+
 from datetime import datetime, timedelta, timezone, UTC
 import json
 
@@ -1781,16 +1782,17 @@ class TestFormatIncidents:
             assert len(parsed_data) == 100
             assert all(f"field_{i}" in parsed_data for i in range(10))  # Check first 10
 
-
-# Test migrate_data function
 @patch("CybleEventsV2.demisto")
 @patch("CybleEventsV2.MAX_THREADS", 2)
-def test_migrate_data_success(mock_demisto):
+@patch("CybleEventsV2.datetime")  # patch datetime in the module where migrate_data is defined
+def test_migrate_data_success(mock_datetime, mock_threads, mock_demisto):
     """Test migrate_data with successful execution."""
-    # Setup
     mock_client = Mock()
 
-    # Mock client response: simulate 2 calls, one per service
+    # Set datetime.utcnow() to a fixed past time
+    mock_datetime.utcnow.return_value = datetime(2023, 1, 1, 12, 0, 0)
+    mock_datetime.side_effect = lambda *args, **kw: datetime(*args, **kw)
+
     mock_client.get_data_with_retry.side_effect = [
         ([{"alert": "test_alert"}], datetime(2023, 1, 1, 13, 0, 0)),
         ([{"alert": "test_alert"}], datetime(2023, 1, 1, 14, 0, 0)),
@@ -1806,14 +1808,12 @@ def test_migrate_data_success(mock_demisto):
         "take": 10,
     }
 
-    # Execute
     result_alerts, result_time = migrate_data(mock_client, input_params)
 
-    # Assert
-    assert len(result_alerts) == 2  # One alert from each service
+    assert len(result_alerts) == 2
     assert result_alerts[0] == {"alert": "test_alert"}
     assert isinstance(result_time, datetime)
-    assert result_time == datetime(2023, 1, 1, 14, 0, 0)  # latest timestamp
+    assert result_time == datetime(2023, 1, 1, 14, 0, 0)
     assert mock_client.get_data_with_retry.call_count == 2
 
 
@@ -1928,18 +1928,18 @@ class TestClientMethods(unittest.TestCase):
         mock_response_fail_code.status_code = 404
         mock_response_fail_code.json.return_value = {}
 
-        with patch.object(self.client, "make_request", return_value=mock_response_fail_code):
-            with pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
-                self.client.get_all_services(self.test_api_key, self.test_url)
+        with patch.object(self.client, "make_request", return_value=mock_response_fail_code), \
+            pytest.raises(Exception, match="Failed to get services: Wrong status code: 404"):
+            self.client.get_all_services(self.test_api_key, self.test_url)
 
         # --- FAILURE: WRONG FORMAT ---
         mock_response_bad_format = Mock()
         mock_response_bad_format.status_code = 200
         mock_response_bad_format.json.return_value = {"wrong_key": []}
 
-        with patch.object(self.client, "make_request", return_value=mock_response_bad_format):
-            with pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
-                self.client.get_all_services(self.test_api_key, self.test_url)
+        with patch.object(self.client, "make_request", return_value=mock_response_bad_format), \
+            pytest.raises(Exception, match="Failed to get services: Wrong Format for services response"):
+            self.client.get_all_services(self.test_api_key, self.test_url)
 
     @patch("requests.request")
     def test_get_response_success(self, mock_request):
@@ -2249,8 +2249,8 @@ class TestCybleEventsFunctions(unittest.TestCase):
         with pytest.raises(SystemExit) as exit_info:
             migrate_data(self.mock_client, input_params)
 
-        assert exit_info.type == SystemExit
-        assert exit_info.value.code == 0  # return_error uses sys.exit(0)
+        assert exit_info.type is SystemExit  # FIX: use `is` instead of `==`
+        assert exit_info.value.code == 0
         mock_demisto.error.assert_called_with("[migrate_data] Error in future: Test error")
 
     @patch("CybleEventsV2.demisto")
