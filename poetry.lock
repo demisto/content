@@ -790,8 +790,8 @@ generate-unit-tests = ["klara (>=0.6.3,<0.7.0)"]
 [package.source]
 type = "git"
 url = "https://github.com/demisto/demisto-sdk.git"
-reference = "ddf719d874221492a9eb4850ac7498a21349e1e3"
-resolved_reference = "ddf719d874221492a9eb4850ac7498a21349e1e3"
+reference = "ce03a00bc99462966a370826cfa6109c4f381fc9"
+resolved_reference = "ce03a00bc99462966a370826cfa6109c4f381fc9"
 
 [[package]]
 name = "deprecated"
@@ -4549,4 +4549,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "ab96fa2cdb4f94b7b5f1656ee3d71f7ee80464a5486f7bddccb23ebbf12019e3"
+content-hash = "8847a1fe0af077a4efe71a3f37403ccfce7cb67eb2e6d9ee7699d3013d61bb76"
