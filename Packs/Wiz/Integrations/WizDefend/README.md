@@ -30,14 +30,14 @@ Agentless cloud security platform for detecting and addressing cloud issues, det
 You can execute these commands from the Cortex XSOAR CLI, as part of an automation, or in a playbook.
 After you successfully execute a command, a DBot message appears in the War Room with the command details.
 
-### wiz-get-detections
+### wiz-defend-get-detections
 
 ***
 Retrieve Wiz security detections based on specified filters.
 
 #### Base Command
 
-`wiz-get-detections`
+`wiz-defend-get-detections`
 
 #### Input
 
@@ -66,14 +66,14 @@ Retrieve Wiz security detections based on specified filters.
 | Wiz.Manager.Detections.severity | String | Wiz Detection severity. |
 | Wiz.Manager.Detections.status | String | Wiz Detection status. |
 
-### wiz-get-detection
+### wiz-defend-get-detection
 
 ***
 Retrieve detailed information about a specific Wiz detection by ID.
 
 #### Base Command
 
-`wiz-get-detection`
+`wiz-defend-get-detection`
 
 #### Input
 
@@ -92,14 +92,14 @@ Retrieve detailed information about a specific Wiz detection by ID.
 | Wiz.Manager.Detection.resources | String | Related resources. |
 | Wiz.Manager.Detection.url | String | URL to the Wiz Detection in the Wiz console. |
 
-### wiz-get-threat
+### wiz-defend-get-threat
 
 ***
 Retrieve detailed information about a specific Wiz threat by issue ID.
 
 #### Base Command
 
-`wiz-get-threat`
+`wiz-defend-get-threat`
 
 #### Input
 
@@ -118,14 +118,14 @@ Retrieve detailed information about a specific Wiz threat by issue ID.
 | Wiz.Manager.Threat.resources | String | Related resources. |
 | Wiz.Manager.Threat.url | String | URL to the Wiz Threat in the Wiz console. |
 
-### wiz-get-threats
+### wiz-defend-get-threats
 
 ***
 Retrieve Wiz threats based on specified filters.
 
 #### Base Command
 
-`wiz-get-threats`
+`wiz-defend-get-threats`
 
 #### Input
 
@@ -151,6 +151,85 @@ Retrieve Wiz threats based on specified filters.
 | Wiz.Manager.Threats.severity | String | Wiz Threat severity. |
 | Wiz.Manager.Threats.status | String | Wiz Threat status. |
 
+### wiz-defend-reopen-threat
+
+***
+Reopen a Wiz Threat.
+
+#### Base Command
+
+`wiz-defend-reopen-threat`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Threat issue id. | Required |
+| reopen_note | Reopen note. | Optional |
+
+### wiz-defend-resolve-threat
+
+***
+Resolve a Wiz Threat.
+
+#### Base Command
+
+`wiz-defend-resolve-threat`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Threat issue id. | Required |
+| resolution_reason | Resolution reason. Possible values are: OBJECT_DELETED, ISSUE_FIXED, FALSE_POSITIVE, EXCEPTION, CONTROL_DISABLED, CONTROL_DELETED, WONT_FIX, DETECTION_EXPIRED. | Required |
+| resolution_note | Resolution note. | Required |
+
+### wiz-defend-set-threat-in-progress
+
+***
+Set a Wiz Threat to in progress.
+
+#### Base Command
+
+`wiz-defend-set-threat-in-progress`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Threat issue id. | Required |
+
+### wiz-defend-set-threat-comment
+
+***
+Set a comment on a Wiz Threat.
+
+#### Base Command
+
+`wiz-defend-set-threat-comment`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Threat issue id. | Required |
+| note | Note. | Required |
+
+### wiz-defend-clear-threat-comments
+
+***
+Clear all the comments from a Wiz Threat.
+
+#### Base Command
+
+`wiz-defend-clear-threat-comments`
+
+#### Input
+
+| **Argument Name** | **Description** | **Required** |
+| --- | --- | --- |
+| issue_id | Threat issue id. | Required |
+
 ## Known Limitations
 
 - Maximum fetch limit is 1000 detections per run
@@ -160,7 +239,6 @@ Retrieve Wiz threats based on specified filters.
 
 If you encounter issues:
 
-1. Verify your Service Account credentials are correct
+1. Verify you created a Wiz Service Account through a Wiz integration
 2. Ensure the Authentication and API endpoints are accessible
-3. Check that your Wiz account has the necessary permissions
 4. Review the integration logs for detailed error messages
