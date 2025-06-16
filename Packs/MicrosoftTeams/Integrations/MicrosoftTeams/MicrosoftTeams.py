@@ -34,7 +34,6 @@ EXTERNAL_FORM_URL_DEFAULT_HEADER = "Microsoft Teams Form"
 PARAMS: dict = demisto.params()
 BOT_ID: str = PARAMS.get("credentials", {}).get("identifier", "") or PARAMS.get("bot_id", "")
 BOT_PASSWORD: str = PARAMS.get("credentials", {}).get("password", "") or PARAMS.get("bot_password", "")
-TENANT_ID: str = PARAMS.get("tenant_id", "")
 APP: Flask = Flask("demisto-teams")
 PLAYGROUND_INVESTIGATION_TYPE: int = 9
 GRAPH_BASE_URL: str = "https://graph.microsoft.com"
@@ -353,7 +352,7 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         if api == "graph":
             error_codes = response.get("error_codes", [""])
             if set(error_codes).issubset(TOKEN_EXPIRED_ERROR_CODES):
-                reset_graph_auth(error_codes, response.get("error_description", ""))
+                reset_auth(error_codes, response.get("error_description", ""))
 
             error = response.get("error", {})
             err_str = (
@@ -373,10 +372,10 @@ def error_parser(resp_err: requests.Response, api: str = "graph") -> str:
         return resp_err.text
 
 
-def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
+def reset_auth(error_codes: list = [], error_desc: str = ""):
     """
     Reset the Graph API authorization in the integration context.
-    This function clears the current graph authorization data: current_refresh_token, graph_access_token, graph_valid_until
+    This function clears the current authorization data: current_refresh_token, graph_access_token, graph_valid_until
     """
 
     integration_context: dict = get_integration_context()
@@ -385,6 +384,9 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     integration_context.pop("graph_valid_until", "")
     integration_context[AUTHCODE_TOKEN_PARAMS] = "{}"
     integration_context[CREDENTIALS_TOKEN_PARAMS] = "{}"
+    integration_context.pop("bot_access_token", "")
+    integration_context.pop("bot_valid_until", "")
+    integration_context.pop("bot_type", "")
     set_integration_context(integration_context)
 
     if error_codes or error_desc:
@@ -399,11 +401,11 @@ def reset_graph_auth(error_codes: list = [], error_desc: str = ""):
     demisto.debug("Successfully reset the current_refresh_token, graph_access_token and graph_valid_until.")
 
 
-def reset_graph_auth_command():
+def reset_auth_command():
     """
-    A wrapper function for the reset_graph_auth() which resets the Graph API authorization in the integration context.
+    A wrapper function for the reset_auth() which resets the Graph API authorization in the integration context.
     """
-    reset_graph_auth()
+    reset_auth()
     return_results(CommandResults(readable_output="Authorization was reset successfully."))
 
 
@@ -825,20 +827,40 @@ def get_bot_access_token() -> str:
     """
     integration_context: dict = get_integration_context()
     access_token: str = integration_context.get("bot_access_token", "")
-    valid_until: int = integration_context.get("bot_valid_until", int)
+    valid_until: int = integration_context.get("bot_valid_until", 0)
+    bot_type : str = integration_context.get("bot_type", "multi-tenant")
     if access_token and valid_until and epoch_seconds() < valid_until:
         return access_token
-    url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+
     data: dict = {
         "grant_type": "client_credentials",
         "client_id": BOT_ID,
         "client_secret": BOT_PASSWORD,
         "scope": "https://api.botframework.com/.default",
     }
-    response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
+    if bot_type == "multi-tenant":
+        url: str = "https://login.microsoftonline.com/botframework.com/oauth2/v2.0/token"
+        response: requests.Response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+        if response.json().get("error", "") == "unauthorized_client":
+            # Could not find bot-id in the common directory for multi-tenant bots, assume it is a single-tenant bot
+            bot_type = "single-tenant"
+
+    if bot_type == "single-tenant":
+        tenant_id = integration_context.get("tenant_id")
+        if not tenant_id:
+            raise ValueError(MISS_CONFIGURATION_ERROR_MESSAGE)
+        url = f"https://login.microsoftonline.com/{tenant_id}/oauth2/v2.0/token"
+        response = requests.post(url, data=data, verify=USE_SSL, proxies=PROXIES)
+
     if not response.ok:
+        if "bot_type" in integration_context: # Clear cached bot type on authentication error to avoid issues
+            integration_context.pop("bot_type")
+            set_integration_context(integration_context)
+
         error = error_parser(response, "bot")
         raise ValueError(f"Failed to get bot access token [{response.status_code}] - {error}")
+
     try:
         response_json: dict = response.json()
         access_token = response_json.get("access_token", "")
@@ -849,6 +871,7 @@ def get_bot_access_token() -> str:
             expires_in -= time_buffer
         integration_context["bot_access_token"] = access_token
         integration_context["bot_valid_until"] = time_now + expires_in
+        integration_context["bot_type"] = bot_type
         set_integration_context(integration_context)
         return access_token
     except ValueError:
@@ -2644,16 +2667,20 @@ def member_added_handler(integration_context: dict, request_body: dict, channel_
     if not service_url:
         raise ValueError("Did not find service URL. Try messaging the bot on Microsoft Teams")
 
+    integration_context["bot_name"] = recipient_name
+
+    if tenant_id != integration_context.get("tenant_id"):
+        # Update the tenant id in context immediately to avoid errors
+        integration_context["tenant_id"] = tenant_id
+        set_integration_context(integration_context)
+
     for member in members_added:
         member_id = member.get("id", "")
         if bot_id in member_id:
-            # The bot was added to a team, caching team ID and team members
             demisto.info(f"The bot was added to team {team_name}")
         else:
-            demisto.info(f"Someone was added to team {team_name}")
-        integration_context["tenant_id"] = tenant_id
-        integration_context["bot_name"] = recipient_name
-        break
+            demisto.info(f"A user was added to team {team_name}")
+
 
     team_members: list = get_team_members(service_url, team_id)
 
@@ -3332,14 +3359,11 @@ def test_module():
     """
     if not BOT_ID or not BOT_PASSWORD:
         raise DemistoException("Bot ID and Bot Password must be provided.")
-    if "Client" not in AUTH_TYPE:
-        raise DemistoException(
-            "Test module is available for Client Credentials only."
-            " For other authentication types use the !microsoft-teams-auth-test command"
-        )
 
-    get_bot_access_token()  # Tests token retrieval for Bot Framework API
-    return_results("ok")
+    raise DemistoException(
+        "Test module is unavailable for the Microsoft Teams Integration."
+        " Please use the !microsoft-teams-integration-health command to test connectivity."
+    )
 
 
 def generate_login_url_command():
@@ -3399,7 +3423,7 @@ def auth_type_switch_handling():
             f"The user switched the instance authentication type from {current_auth_type} to {AUTH_TYPE}.\n"
             f"Resetting the integration context."
         )
-        reset_graph_auth()
+        reset_auth()
         integration_context = get_integration_context()
         demisto.debug(f"Setting the current_auth_type in the integration context to {AUTH_TYPE}.")
         integration_context["current_auth_type"] = AUTH_TYPE
@@ -3534,7 +3558,7 @@ def main():  # pragma: no cover
         "microsoft-teams-channel-user-list": channel_user_list_command,
         "microsoft-teams-user-remove-from-channel": user_remove_from_channel_command,
         "microsoft-teams-generate-login-url": generate_login_url_command,
-        "microsoft-teams-auth-reset": reset_graph_auth_command,
+        "microsoft-teams-auth-reset": reset_auth_command,
         "microsoft-teams-token-permissions-list": token_permissions_list_command,
         "microsoft-teams-create-messaging-endpoint": create_messaging_endpoint_command,
         "microsoft-teams-message-update": message_update_command,
