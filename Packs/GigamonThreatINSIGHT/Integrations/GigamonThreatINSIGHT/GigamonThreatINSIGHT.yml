@@ -144,7 +144,7 @@ script:
       description: Filter to a specific task.
     outputs:
     - contextPath: Insight.Tasks.task_uuid
-      description: Unique ID of the task
+      description: Unique ID of the task.
       type: string
     - contextPath: Insight.Tasks.actual_start_time
       description: Date when the task actually ended.
@@ -278,7 +278,7 @@ script:
     - name: start_date
       description: Scopes the returned metrics to dates after the given start_date. If empty returns most current packet stats.
     - name: end_date
-      description: Scopes the returned metrics to dates before the given end_date. If empty returns most current packet stats
+      description: Scopes the returned metrics to dates before the given end_date. If empty returns most current packet stats.
     - name: interval
       description: Aggregation interval. 1 hr is not specified by default.
     - name: group_by
@@ -463,14 +463,14 @@ script:
       description: Sensor ID that recorded the entity data.
       type: string
     - contextPath: Insight.Entity.DHCP.start_lease_as_long
-      description: Start Date as a long value
+      description: Start Date as a long value.
       type: number
     description: Get DHCP information about an IP address.
   - name: insight-get-entity-file
     arguments:
     - name: hash
       required: true
-      description: File hash. Can be an MD5, SHA1, or SHA256 hash of the file
+      description: File hash. Can be an MD5, SHA1, or SHA256 hash of the file.
     outputs:
     - contextPath: Insight.Entity.File.entity
       description: The entity identifier.
@@ -680,7 +680,7 @@ script:
       predefined:
       - 'true'
       - 'false'
-      description: Enabled rules only
+      description: Enabled rules only.
     - name: sort_by
       auto: PREDEFINED
       predefined:
@@ -760,7 +760,7 @@ script:
     arguments:
     - name: detection_uuid
       required: true
-      description: Detection UUID to resolve
+      description: Detection UUID to resolve.
     - name: resolution
       required: true
       auto: PREDEFINED
@@ -777,7 +777,7 @@ script:
     arguments:
     - name: rule_uuid
       required: true
-      description: Rule UUID to get events for
+      description: Rule UUID to get events for.
     - name: account_uuid
       description: Account uuid to filter by.
     - name: offset
@@ -789,7 +789,7 @@ script:
       description: Source IP address.
       type: string
     - contextPath: Insight.Events.dst_ip
-      description: Destination IP address
+      description: Destination IP address.
       type: string
     - contextPath: Insight.Events.src_port
       description: Source port number.
@@ -872,7 +872,7 @@ script:
       description: The confidence of the rule.
     - name: run_account_uuids
       required: true
-      description: Account UUIDs on which this rule will run. This will usually be just your own account UUID. (separate multiple accounts by comma)
+      description: Account UUIDs on which this rule will run. This will usually be just your own account UUID. (separate multiple accounts by comma).
     - name: auto_resolution_minutes
       description: The number of minutes after which detections will be auto-resolved. If 0 then detections have to be manually resolved.
     - name: device_ip_fields
@@ -899,7 +899,7 @@ script:
       - suricata:http.host.ip
       - x509:san_dns.ip
       - x509:san_ip.ip
-      description: List of event fields to check for impacted devices
+      description: List of event fields to check for impacted devices.
     description: Create a new detection rule.
   dockerimage: demisto/python3:3.12.8.3720084
   isfetch: true
