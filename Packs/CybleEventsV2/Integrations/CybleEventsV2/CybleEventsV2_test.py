@@ -1790,29 +1790,31 @@ class TestFormatIncidents:
             assert len(parsed_data) == 100
             assert all(f"field_{i}" in parsed_data for i in range(10))  # Check first 10
 
+
+
 def test_migrate_data_success(monkeypatch):
     """Test migrate_data with successful execution."""
-    mock_client = Mock()
 
-    # Patch MAX_THREADS to 2
-    monkeypatch.setattr("CybleEventsV2.MAX_THREADS", 2)
-
-    # Patch demisto with a mock that has .debug and .error methods
+    # Patch demisto
     mock_demisto = Mock()
-    monkeypatch.setattr("CybleEventsV2.demisto", mock_demisto)
+    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.demisto", mock_demisto)
 
-    # Patch datetime.utcnow to return a fixed datetime
-    class MockDatetime(real_datetime.datetime):
+    # Patch MAX_THREADS
+    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.MAX_THREADS", 2)
+
+    # Patch datetime.utcnow inside CybleEventsV2
+    class FixedDatetime(datetime):
         @classmethod
         def utcnow(cls):
-            return real_datetime.datetime(2023, 1, 1, 12, 0, 0)
+            return datetime(2023, 1, 1, 12, 0, 0)
 
-    monkeypatch.setattr("CybleEventsV2.datetime", MockDatetime)
+    monkeypatch.setitem(__import__('sys').modules, "CybleEventsV2.datetime", FixedDatetime)
 
-    # Set side effect for mock client's get_data_with_retry method
+    # Mock client
+    mock_client = Mock()
     mock_client.get_data_with_retry.side_effect = [
-        ([{"alert": "test_alert"}], real_datetime.datetime(2023, 1, 1, 13, 0, 0)),
-        ([{"alert": "test_alert"}], real_datetime.datetime(2023, 1, 1, 14, 0, 0)),
+        ([{"alert": "test_alert"}], datetime(2023, 1, 1, 13, 0, 0)),
+        ([{"alert": "test_alert"}], datetime(2023, 1, 1, 14, 0, 0)),
     ]
 
     input_params = {
@@ -1825,13 +1827,15 @@ def test_migrate_data_success(monkeypatch):
         "take": 10,
     }
 
+
     result_alerts, result_time = migrate_data(mock_client, input_params)
 
     assert len(result_alerts) == 2
     assert result_alerts[0] == {"alert": "test_alert"}
-    assert isinstance(result_time, real_datetime.datetime)
-    assert result_time == real_datetime.datetime(2023, 1, 1, 14, 0, 0)
+    assert isinstance(result_time, datetime)
+    assert result_time == datetime(2023, 1, 1, 14, 0, 0)
     assert mock_client.get_data_with_retry.call_count == 2
+
 
 
 # Test validate_iocs_input function
