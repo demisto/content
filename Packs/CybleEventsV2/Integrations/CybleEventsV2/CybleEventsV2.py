@@ -8,7 +8,6 @@ import pytz
 import urllib3
 import dateparser
 import json
-import demisto
 from dateutil.parser import isoparse
 from collections.abc import Sequence
 
