@@ -6689,29 +6689,380 @@ script:
     description: Checks for the latest available dynamic update versions and returns a list of latest available / currently installed content.
     name: pan-os-check-dynamic-updates-status
     outputs:
-    - contextPath: Panorama.Content.Versions.CurrentlyInstalled
-      description: Currently installed version of App/Threat dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
       type: String
-    - contextPath: Panorama.Content.Versions.LatestAvailable
-      description: Latest available version of App/Threat dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
       type: String
-    - contextPath: Panorama.AntiVirus.Versions.CurrentlyInstalled
-      description: Currently installed version of Anti-virus dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
       type: String
-    - contextPath: Panorama.AntiVirus.Versions.LatestAvailable
-      description: Latest available version of Anti-virus dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
       type: String
-    - contextPath: Panorama.WildFire.Versions.CurrentlyInstalled
-      description: Currently installed version of WildFire dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.features
+      description: Features provided by this version.
       type: String
-    - contextPath: Panorama.WildFire.Versions.LatestAvailable
-      description: Latest available version of WildFire dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
       type: String
-    - contextPath: Panorama.GP.Versions.CurrentlyInstalled
-      description: Currently installed version of GlobalProtect Clientless VPN dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
       type: String
-    - contextPath: Panorama.GP.Versions.LatestAvailable
-      description: Latest available version of GlobalProtect Clientless VPN dynamic update.
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.IsUpToDate
+      description: Whether the latest available AntiVirus package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.AntiVirus.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.IsUpToDate
+      description: Whether the latest available App/Threat package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.Content.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.ContentTypesOutOfDate.Count
+      description: The total number of active Dynamic Updates that have updates available.
+      type: Number
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.IsUpToDate
+      description: Whether the latest available GP Clientless VPN package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.GP.LatestAvailable.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.CurrentlyInstalled.version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.IsUpToDate
+      description: Whether the latest available WildFire package is active on the device.
+      type: Boolean
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.app-version
+      description: Version of the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.current
+      description: Whether this version is currently active on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.downloaded
+      description: Whether this version has been downloaded to the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.feature-desc
+      description: Detailed description of features provided.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.features
+      description: Features provided by this version.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.filename
+      description: Filename of the dynamic update.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.installing
+      description: Whether this version is being installed by a running job on the device.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.previous
+      description: Whether this version was previously active on the system and can be reverted to.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.release-notes
+      description: Link to release notes about the dynamic update package.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.released-on
+      description: Date this version was released.
+      type: Date
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.sha256
+      description: SHA256 hash of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.size
+      description: Size of the dynamic update package file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.size-kb
+      description: Size (in KB) of the dynamic update file.
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.update-type
+      description: Type of update package (Full, Incremental, etc)
+      type: String
+    - contextPath: Panorama.DynamicUpdates.WildFire.LatestAvailable.version
+      description: Version of the dynamic update package.
       type: String
   - arguments:
     - description: Serial number of the firewall on which to run the command. Use only for a Panorama instance.
