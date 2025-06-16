@@ -492,30 +492,6 @@ def validate_iocs_input(args):
         demisto.error(f"Failed to process validate_iocs_input with {str(e)}")
 
 
-def validate_alerts_input(args):
-    """
-    Validates the input arguments for the fetch-alerts command.
-
-    :param args: A dictionary of input arguments.
-    :return: None
-    :raises ValueError: If the input arguments are invalid.
-    """
-    try:
-        if int(args.get("from")) < 0:
-            raise ValueError(f"The parameter from has a negative value, from: {arg_to_number(args.get('from'))}'")
-        limit, date_format = int(args.get("limit", 1)), "%Y-%m-%dT%H:%M:%S%z"
-        if limit <= 0 or limit > LIMIT_EVENT_ITEMS:
-            raise ValueError(f"The limit argument number should, up to 1000, limit: {limit}")
-        _start_date, _end_date = (
-            datetime.strptime(args.get("start_date"), date_format),
-            datetime.strptime(args.get("end_date"), date_format),
-        )
-        if _start_date > _end_date:
-            raise ValueError(f"Start date {args.get('start_date')} cannot be after end date {args.get('end_date')}")
-    except Exception as e:
-        demisto.error(f"Failed to process validate_alerts_input with {str(e)}")
-
-
 def alert_input_structure(input_params):
     input_params_alerts = {
         "orderBy": [{"created_at": input_params["order_by"]}],
