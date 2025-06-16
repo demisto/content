@@ -826,6 +826,7 @@ def file_enrichment_script(args: dict[str, Any]) -> list[CommandResults]:
     # Classify hashes by type to check validity and handle commands that only support specific types
     hashes_by_type: dict[str, list] = classify_hashes_by_type(file_hashes)
     invalid_hashes = hashes_by_type.pop("UNKNOWN", [])
+    demisto.debug(f"Found {len(invalid_hashes)} invalid file hashes: {invalid_hashes}.")
     if len(invalid_hashes) == len(file_hashes):  # If all hashes are of an unknown type, throw an error!
         raise ValueError("None of the file hashes are valid. Supported types are: MD5, SHA1, SHA256, and SHA512.")
 

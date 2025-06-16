@@ -204,7 +204,7 @@ outputs:
     description: The local prevalence of the file hash.
     type: Number
   - contextPath: FileEnrichment.AdditionalFields
-    description: Unmapped (secondary) fields.
+    description: Unmapped (secondary) fields. Only available if the additional_fields argument is set to true.
     type: Object
 script: '-'
 timeout: '0'

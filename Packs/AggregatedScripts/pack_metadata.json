@@ -1,6 +1,6 @@
 {
-    "name": "Aggregated Commands",
-    "description": "A pack containing all aggregated commands.",
+    "name": "Aggregated Scripts",
+    "description": "A pack containing all aggregated scripts.",
     "support": "xsoar",
     "currentVersion": "1.0.0",
     "author": "Cortex XSOAR",

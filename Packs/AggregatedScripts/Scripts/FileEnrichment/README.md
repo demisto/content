@@ -83,4 +83,4 @@ This script gathers file reputation data from multiple integrations and returns 
 | FileEnrichment.AssociatedFileNames | The names of other files associated with this file. | Array |
 | FileEnrichment.GlobalPrevalence | The global prevalence of the file hash. | Number |
 | FileEnrichment.LocalPrevalence | The local prevalence of the file hash. | Number |
-| FileEnrichment.AdditionalFields | Unmapped \(secondary\) fields. | Object |
+| FileEnrichment.AdditionalFields | Unmapped \(secondary\) fields. Only available if the additional_fields argument is set to true. | Object |

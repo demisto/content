@@ -59,7 +59,7 @@
                 {
                     "EntityA": "sha256sha256sha256sha256sha256sha256sha256sha256sha256sha256sha2",
                     "EntityAType": "File",
-                    "EntityB": "jmcoru.alcatelupd.xyz",
+                    "EntityB": "test123.com",
                     "EntityBType": "Domain",
                     "Relationship": "communicates-with"
                 }
