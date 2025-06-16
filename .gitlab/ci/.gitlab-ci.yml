@@ -1,5 +1,5 @@
 variables:
-  CURRENT_BRANCH_NAME: "testing-content-test-conf-packs"
+  CURRENT_BRANCH_NAME: "roei-test"
 
 include:
   - file: "/.gitlab/ci/content-ci/ci/.gitlab-ci.yml"
