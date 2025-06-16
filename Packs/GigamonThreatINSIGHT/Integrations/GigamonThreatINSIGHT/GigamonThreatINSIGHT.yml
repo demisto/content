@@ -66,7 +66,7 @@ script:
       description: Filter by true or false. If not provided, all the sensors are returned
     outputs:
     - contextPath: Insight.Sensors.created
-      description: Date when the sensor was created
+      description: Date when the sensor was created.
       type: date
     - contextPath: Insight.Sensors.updated
       description: Date when the sensor was last updated.
@@ -769,7 +769,7 @@ script:
       - true_positive_no_action
       - false_positive
       - unknown
-      description: 'Resolution state. Options: true_positive_mitigated, true_posititve_no_action, false_positive, unknown'
+      description: 'Resolution state. Options: true_positive_mitigated, true_posititve_no_action, false_positive, unknown.'
     - name: resolution_comment
       description: Optional comment for the resolution.
     description: Resolve a specific detection.
@@ -781,7 +781,7 @@ script:
     - name: account_uuid
       description: Account uuid to filter by.
     - name: offset
-      description: The number of records to skip past
+      description: The number of records to skip past.
     - name: limit
       description: 'The number of records to return, default: 100, max: 1000.'
     outputs:
