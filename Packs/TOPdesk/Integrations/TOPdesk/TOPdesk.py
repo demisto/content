@@ -1330,17 +1330,11 @@ def update_asset_command(client: Client, args: dict[str, Any]) -> CommandResults
     Return CommandResults of list of assets.
     """
 
-
     try:
         response = client.update_asset(args)
         return CommandResults(
-            readable_output=response,
-            #outputs_prefix=f"{INTEGRATION_NAME}.Asset",
-            #outputs_key_field="",
-            #outputs=capitalize_for_outputs(assets),
-            #raw_response=assets,
+            outputs=response,
         )
-        # return command_results
     except Exception as e:
         if "Error parsing query" in str(e):
             return "Error parsing query: make sure you are using the right query type."

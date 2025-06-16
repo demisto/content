@@ -29,7 +29,8 @@ from TOPdesk import (
     list_persons_command,
     subcategories_command,
     update_remote_system_command,
-    get_assets_list_command
+    get_assets_list_command,
+    update_asset_command
 )
 
 
@@ -1361,3 +1362,45 @@ def test_assets_list(client, requests_mock, command_args, expected_results):
             == expected_results["outputs"][expected_output]
         )
     assert command_results.readable_output == expected_results["readable_output"]
+
+
+@pytest.mark.parametrize(
+    "command_args, expected_results",
+    [
+        (
+            {
+                "asset_id": "d3861991-b025-48fb-b203-2df82856973",
+                "data": {"TestField": "TestValue"},
+            },
+            {
+                "outputs": {
+                    "data": {
+                        "TestField": "TestValue",
+                        "unid": "d3861991-b025-48fb-b203-2df828569736",
+                    }
+                },
+            },
+        ),
+    ],
+)
+def test_update_asset(client, requests_mock, command_args, expected_results):
+    """
+    Given:
+        - TOPdesk client
+        - Arguments (asset_id, data)
+    When
+        - running update_asset_command
+    Then
+        - The result fits the expected mapping
+    """
+
+    mock_assets = util_load_json("test_data/topdesk_asset_update.json")
+
+    requests_mock.post(
+        f"https://test.com/api/assetmgmt/assets/{command_args["asset_id"]}",
+        json=mock_assets,
+    )
+
+    command_results = update_asset_command(client, command_args)
+    assert requests_mock.called
+    assert command_results.outputs == expected_results["outputs"]
