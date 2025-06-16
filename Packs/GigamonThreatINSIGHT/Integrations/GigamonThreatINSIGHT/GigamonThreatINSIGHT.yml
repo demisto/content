@@ -63,7 +63,7 @@ script:
     - name: include
       description: Include additional metadata such as status, interfaces, admin.sensor, admin.zeek, admin.suricata, etc.
     - name: enabled
-      description: Filter by true or false. If not provided, all the sensors are returned
+      description: Filter by true or false. If not provided, all the sensors are returned.
     outputs:
     - contextPath: Insight.Sensors.created
       description: Date when the sensor was created.
