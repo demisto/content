@@ -3,6 +3,12 @@ Enhanced Unit Tests for CybleEventsV2 Integration -
 
 """
 
+import pytest
+from unittest.mock import patch, Mock
+from CybleEventsV2 import get_modified_remote_data_command
+from CommonServerPython import GetModifiedRemoteDataResponse
+
+
 try:
     from CybleEventsV2 import (
         get_alert_by_id,
@@ -13,6 +19,7 @@ try:
         encode_headers,
         get_event_format,
         time_diff_in_mins,
+        build_auth_headers,
     )
 except ImportError:
     # If direct import fails, these functions need to be defined in your main module
@@ -1026,10 +1033,13 @@ class TestGetFetchSeverities:
                 assert "HIGH" in result
 
 
-import pytest
-from unittest.mock import patch, Mock
-from CybleEventsV2 import get_modified_remote_data_command
-from CommonServerPython import GetModifiedRemoteDataResponse
+def test_build_auth_headers():
+    token = "abc123"
+    expected = {
+        "Authorization": "Bearer abc123",
+        "Content-Type": "application/json"
+    }
+    assert build_auth_headers(token) == expected
 
 
 class TestGetModifiedRemoteDataCommandCore:
@@ -1782,9 +1792,9 @@ class TestFormatIncidents:
             assert len(parsed_data) == 100
             assert all(f"field_{i}" in parsed_data for i in range(10))  # Check first 10
 
-@patch("CybleEventsV2.demisto")
+@patch("CybleEventsV2.datetime")
 @patch("CybleEventsV2.MAX_THREADS", 2)
-@patch("CybleEventsV2.datetime")  # patch datetime in the module where migrate_data is defined
+@patch("CybleEventsV2.demisto")
 def test_migrate_data_success(mock_datetime, mock_threads, mock_demisto):
     """Test migrate_data with successful execution."""
     mock_client = Mock()
