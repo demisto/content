@@ -212,7 +212,7 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, event_typ
             if not e.res or e.res.status_code != 403:
                 raise e
             else:
-                demisto.error(f"User unauthorized to use endpoint/audit_events, execution will continue. Error: {e}")
+                demisto.info(f"User unauthorized to use endpoint/audit_events, execution will continue. Error: {e}")
 
     # --- 2. Fetch Group and Project Events ---
     group_and_project_events = []
@@ -228,14 +228,16 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, event_typ
                 )
                 group_and_project_events.extend(events)
             except DemistoException as e:
-                if not e.res or not e.res.status_code: # if not a http error
+                if not e.res or not e.res.status_code:  # if not a http error
                     raise e
                 elif e.res.status_code == 404:
-                    demisto.error(f"Object id {obj_id} of type {event_type} not found. Moving to next id. Error: {e}")
+                    demisto.info(f"Object id {obj_id} of type {event_type} not found. Moving to next id. Error: {e}")
                     continue
                 else:
-                    demisto.error(f"An HTTP error occurred while fetching events for {event_type} (ID: {obj_id}). "
-                                  f"Skipping remaining '{event_type}' events. Error: {e}")
+                    demisto.info(
+                        f"An HTTP error occurred while fetching events for {event_type} (ID: {obj_id}). "
+                        f"Skipping remaining '{event_type}' events. Error: {e}"
+                    )
                     # The 'break' exits the inner loop and continues to the next endpoint type.
                     break
 

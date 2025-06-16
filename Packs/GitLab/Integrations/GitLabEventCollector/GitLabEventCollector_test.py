@@ -3,13 +3,14 @@ import pytest
 from GitLabEventCollector import Client, prepare_query_params
 from requests import Session
 
+
 class MockResponse:
-    def __init__(self, data: list, status_code: int = 200, ok = True):
+    def __init__(self, data: list, status_code: int = 200, ok=True):
         self.ok = ok
         self.status_code = status_code
         self.data = data
         self.links = None
-        self.reason = 'reason'
+        self.reason = "reason"
 
     def json(self):
         return self.data
@@ -157,6 +158,7 @@ def test_fetch_events_with_groups_and_projects_and_instance(mocker):
     assert new_last_run["groups"]["first_id"] == "1"
     assert "first_id" not in new_last_run["projects"]
 
+
 def test_fetch_events_unauthorized_handling(mocker):
     """
     Given:
@@ -169,9 +171,9 @@ def test_fetch_events_unauthorized_handling(mocker):
     from GitLabEventCollector import fetch_events_command
 
     mock_response = [
-        MockResponse(data = [{}], status_code = 403, ok=False),
-        MockResponse(data = [{}], status_code = 200),
-        MockResponse(data = [{}], status_code = 200)
+        MockResponse(data=[{}], status_code=403, ok=False),
+        MockResponse(data=[{}], status_code=200),
+        MockResponse(data=[{}], status_code=200),
     ]
     mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
 
@@ -179,7 +181,7 @@ def test_fetch_events_unauthorized_handling(mocker):
         Client(base_url=""),
         params={"limit": 1, "url": ""},
         last_run={},
-        event_type_management={"groups_ids": [1], "projects_ids": [1], "instance_events": True}
+        event_type_management={"groups_ids": [1], "projects_ids": [1], "instance_events": True},
     )
 
     assert mocked_request.call_count == 3
@@ -200,7 +202,7 @@ def test_fetch_events_not_found_handling(mocker):
         MockResponse(data=[{}], status_code=200),
         MockResponse(data=[{}], status_code=404, ok=False),
         MockResponse(data=[{}], status_code=200),
-        MockResponse(data=[{}], status_code=200)
+        MockResponse(data=[{}], status_code=200),
     ]
     mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
 
@@ -208,10 +210,11 @@ def test_fetch_events_not_found_handling(mocker):
         Client(base_url=""),
         params={"limit": 1, "url": ""},
         last_run={},
-        event_type_management={"groups_ids": [1,2], "projects_ids": [1], "instance_events": True}
+        event_type_management={"groups_ids": [1, 2], "projects_ids": [1], "instance_events": True},
     )
 
     assert mocked_request.call_count == 4
+
 
 def test_fetch_events_unauthorized_groups_handling(mocker):
     """
@@ -227,7 +230,7 @@ def test_fetch_events_unauthorized_groups_handling(mocker):
     mock_response = [
         MockResponse(data=[{}], status_code=200),
         MockResponse(data=[{}], status_code=403, ok=False),
-        MockResponse(data=[{}], status_code=200)
+        MockResponse(data=[{}], status_code=200),
     ]
     mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
 
@@ -235,7 +238,7 @@ def test_fetch_events_unauthorized_groups_handling(mocker):
         Client(base_url=""),
         params={"limit": 1, "url": ""},
         last_run={},
-        event_type_management={"groups_ids": [1,2], "projects_ids": [1], "instance_events": True}
+        event_type_management={"groups_ids": [1, 2], "projects_ids": [1], "instance_events": True},
     )
 
     assert mocked_request.call_count == 3
