@@ -6,6 +6,13 @@ sectionOrder:
 - Connect
 - Collect
 configuration:
+- defaultvalue: console.us.code42.com
+  display: Code42 Console URL for your Code42 environment
+  name: console_url
+  required: false
+  type: 0
+  section: Connect
+  hidden: true
 - defaultvalue: api.us.code42.com
   display: API Gateway URL for your Code42 environment
   name: api_url
