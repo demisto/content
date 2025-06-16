@@ -1,16 +1,6 @@
 """
 Enhanced Unit Tests for CybleEventsV2 Integration -
 
-This test file covers the remaining functions from your implementation:
-- get_remote_data_command
-- manual_fetch
-- scheduled_fetch
-- update_remote_system
-- get_mapping_fields
-- fetch_subscribed_services_alert
-- cyble_fetch_iocs
-- main function
-- Error handling and edge cases
 """
 
 try:
@@ -1382,24 +1372,17 @@ class TestFetchFewAlerts:
             assert len(result) >= 0
 
     def test_exception_handling(self):
-        """Test that function handles exceptions gracefully"""
-        mock_alerts = [{"id": "alert-001", "service": "compromised_cards", "severity": "High"}]
-        self.client.get_data.side_effect = [Exception("Service unavailable"), {"data": mock_alerts}]
+        """Test that function raises return_error on service failure"""
+        self.client.get_data.side_effect = Exception("Service unavailable")
 
-        with (
-            patch("CybleEventsV2.format_incidents") as mock_format,
-            patch("CybleEventsV2.get_event_format") as mock_get_format,
-            patch("CybleEventsV2.demisto") as mock_demisto,
-        ):
-            mock_format.return_value = [{"formatted": "event"}]
-            mock_get_format.return_value = {"final": "event"}
-
-            _ = fetch_few_alerts(
+        with patch("CybleEventsV2.return_error") as mock_return_error, patch("CybleEventsV2.demisto"):
+            fetch_few_alerts(
                 self.client, self.base_input_params.copy(), ["threat_intel", "compromised_cards"], self.url, self.token
             )
 
-            assert self.client.get_data.call_count == 2
-            mock_demisto.error.assert_called()
+            # Assert return_error was called with the correct message
+            mock_return_error.assert_called_once()
+            assert "[fetch_few_alerts] Failed to fetch data from service" in mock_return_error.call_args[0][0]
 
     def test_invalid_response_handling(self):
         """Test handling of invalid response data"""

@@ -321,17 +321,10 @@ class Client(BaseClient):
 
             if "data" in response and isinstance(response["data"], Sequence):
                 return ["compromised_files"]
-                # services = []
-                # for each_service in response['data']:
-                #     if each_service["name"] not in EXCLUDED_SERVICES:
-                #         services.append(each_service["name"])
-                # return services
             else:
                 raise Exception("Wrong Format for services response")
         except Exception as e:
-            demisto.debug(f"Failed to get services: {str(e)}")
-
-        return []
+            raise Exception(f"Failed to get services: {str(e)}")
 
     def insert_data_in_cortex(self, service, input_params, is_update):
         """
@@ -467,9 +460,9 @@ class Client(BaseClient):
             payload_json = json.dumps(payload)
             response = self.make_request(url, api_key, "PUT", payload_json)
             if response.status_code != 200:
-                raise Exception(f"Wrong status code: {response.status_code}")
+                return_error(f"[update_alert] Unexpected status code: {response.status_code}, response: {response.text}")
         except Exception as e:
-            demisto.debug(f"Failed to process update_alert with {str(e)}")
+            return_error(f"[update_alert] Exception while updating alert: {str(e)}")
 
 
 def validate_iocs_input(args):
@@ -656,10 +649,11 @@ def migrate_data(client: Client, input_params: dict[str, Any], is_update=False):
                     if isinstance(fetched_time, datetime):
                         last_fetched = max(last_fetched, fetched_time)
                 except Exception as inner_e:
-                    demisto.debug(f"Error while processing future in migrate_data: {str(inner_e)}")
+                    demisto.error(f"[migrate_data] Error in future: {str(inner_e)}")
+                    return_error(f"[migrate_data] Failed to process service thread: {str(inner_e)}")
 
     except Exception as e:
-        demisto.debug(f"Issue in migrate_data, Error: {str(e)}")
+        return_error(f"[migrate_data] Migration failed: {str(e)}")
 
     return all_alerts, last_fetched
 
@@ -692,8 +686,7 @@ def fetch_few_alerts(client, input_params, services, url, token, is_update=False
             else:
                 demisto.debug("[fetch_few_alerts] No valid data in response")
         except Exception as e:
-            demisto.error(f"[fetch_few_alerts] Error fetching data: {e}")
-            continue
+            return_error(f"[fetch_few_alerts] Failed to fetch data from service {service}: {e}")
 
         if result:
             break
@@ -1036,7 +1029,10 @@ def update_remote_system(client, method, token, args, url):
         if updated_severity:
             updated_event["user_severity"] = severities.get(updated_severity)
 
-        client.update_alert({"alerts": [updated_event]}, url, token)
+        try:
+            client.update_alert({"alerts": [updated_event]}, url, token)
+        except Exception as e:
+            return_error(f"[update_remote_system] Failed to update alert: {str(e)}")
 
 
 def get_mapping_fields(client, token, url):  # need to be refactored - @TODO
@@ -1090,19 +1086,22 @@ def fetch_subscribed_services_alert(client, method, base_url, token):
     Returns: subscribed service list
 
     """
-    subscribed_services = client.get_all_services(token, base_url)
-    service_name_list = []
+    try:
+        subscribed_services = client.get_all_services(token, base_url)
+        service_name_list = []
 
-    for subscribed_service in subscribed_services:
-        service_name_list.append({"name": subscribed_service["name"]})
+        for subscribed_service in subscribed_services:
+            service_name_list.append({"name": subscribed_service["name"]})
 
-    markdown = tableToMarkdown("Alerts Group Details:", service_name_list)
-    return CommandResults(
-        readable_output=markdown,
-        outputs_prefix="CybleEvents.ServiceList",
-        raw_response=service_name_list,
-        outputs=service_name_list,
-    )
+        markdown = tableToMarkdown("Alerts Group Details:", service_name_list)
+        return CommandResults(
+            readable_output=markdown,
+            outputs_prefix="CybleEvents.ServiceList",
+            raw_response=service_name_list,
+            outputs=service_name_list,
+        )
+    except Exception as e:
+        return_error(f"Failed to fetch subscribed services: {str(e)}")
 
 
 def cyble_fetch_iocs(client, method, token, args, url):
