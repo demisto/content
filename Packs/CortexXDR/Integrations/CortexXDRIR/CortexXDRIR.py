@@ -517,7 +517,7 @@ class Client(CoreClient):
         return response["reply"]["alerts_ids"]
 
 
-def get_headers(params: dict) -> dict:
+def get_headers(params: dict) -> dict: 
     api_key = params.get("apikey_creds", {}).get("password", "") or params.get("apikey", "")
     api_key_id = params.get("apikey_id_creds", {}).get("password", "") or params.get("apikey_id")
     nonce: str = "".join([secrets.choice(string.ascii_letters + string.digits) for _ in range(64)])
