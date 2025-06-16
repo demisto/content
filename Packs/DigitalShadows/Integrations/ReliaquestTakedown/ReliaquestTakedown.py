@@ -522,21 +522,22 @@ def main() -> None:
     """
     PARSE AND VALIDATE INTEGRATION PARAMS
     """
-    secretKey = demisto.params()["apiSecret"]["password"]
-    accessKey = demisto.params()["apiKey"]["password"]
-    accountId = demisto.params()["accountId"]
-    verify_certificate = not demisto.params().get("insecure", False)
-    fetchLimit: int = arg_to_number(demisto.params()["max_fetch"], "max_fetch", True)  # type:ignore
+    params = demisto.params()
+    secretKey = params["apiSecret"]["password"]
+    accessKey = params["apiKey"]["password"]
+    accountId = params["accountId"]
+    verify_certificate = not params.get("insecure", False)
+    fetchLimit: int = arg_to_number(params["max_fetch"], "max_fetch", True)  # type:ignore
     if fetchLimit > 100:
         raise DemistoException("fetch limit must be less than 100")
     if fetchLimit < 0:
         raise DemistoException("fetch limit must be greater than 0")
-    proxy = demisto.params().get("proxy", False)
+    proxy = params.get("proxy", False)
 
-    first_fetch_datetime = arg_to_datetime(arg=demisto.params()["first_fetch"], arg_name="First fetch time", required=True)
+    first_fetch_datetime = arg_to_datetime(arg=params["first_fetch"], arg_name="First fetch time", required=True)
     if not isinstance(first_fetch_datetime, datetime):
         raise ValueError("Failed to get first fetch time.")
-    params = demisto.args()
+    args = demisto.args()
     command = demisto.command()
     if first_fetch_datetime > datetime.now():
         raise DemistoException("Since date should not be greate than current date")
@@ -560,17 +561,17 @@ def main() -> None:
             demisto.setLastRun(next_run)
             demisto.incidents(incidents)
         elif command == "rq-takedown-create":
-            return_results(create_takedown(rq_client, params))
+            return_results(create_takedown(rq_client, args))
         elif command == "rq-takedown-list-brand":
-            return_results(list_brands(rq_client, params))
+            return_results(list_brands(rq_client, args))
         elif command == "rq-takedown-create-comment":
-            return_results(create_comment(rq_client, params))
+            return_results(create_comment(rq_client, args))
         elif command == "rq-takedown-upload-attachment":
-            return_results(upload_attachment(rq_client, params))
+            return_results(upload_attachment(rq_client, args))
         elif command == "rq-takedown-download-attachment":
-            return_results(download_attachment(rq_client, params))
+            return_results(download_attachment(rq_client, args))
         elif command == "get-remote-data":
-            return_results(get_remote_data_command(rq_client, params))
+            return_results(get_remote_data_command(rq_client, args))
         elif command == "get-modified-remote-data":
             last_run_mirroring: Dict[Any, Any] = get_last_mirror_run() or {}
             modified_incidents, next_mirroring_event_num = get_modified_remote_data_command(
