@@ -1,6 +1,6 @@
 {
   "core_packs_list": [
-    "AggregatedCommands",
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",
@@ -30,7 +30,7 @@
     "rasterize"
   ],
   "update_core_packs_list": [
-    "AggregatedCommands",
+    "AggregatedScripts",
     "AutoFocus",
     "Base",
     "CommonDashboards",

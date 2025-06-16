@@ -1,7 +1,7 @@
 {
     "packs": [
         {
-            "id": "AggregatedCommands",
+            "id": "AggregatedScripts",
             "supportedModules": [
                 "C1",
                 "C3",
