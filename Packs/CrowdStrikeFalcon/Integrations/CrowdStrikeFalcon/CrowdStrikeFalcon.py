@@ -2967,7 +2967,6 @@ def get_mapping_fields_command() -> GetMappingFieldsResponse:
         return mapping_response
 
     # Supported only in the new version (Raptor) and not in the legacy version
-    # todo: check if third-party and ngsiem should be here too
     detection_types = [
         "CrowdStrike Falcon Detection",
         "CrowdStrike Falcon OFP Detection",
