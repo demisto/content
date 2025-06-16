@@ -2,7 +2,7 @@
 
 ## Overview
 
-This content pack provides automated and analyst-assisted playbooks for remediating common cloud misconfigurations across AWS (initial release), with planned support for Azure and GCP. The pack also includes a flexible, platform-agnostic playbook for issue ticketing and notifications via ServiceNow, Jira, Slack, and Microsoft Teams.
+This content pack helps fix common cloud misconfigurations automatically with analyst approval. It currently supports AWS, with planned support for Azure and GCP. The pack also includes a versatile and cloud-agnostic playbook for creating tickets and sending notifications through ServiceNow, Jira, Slack, and Microsoft Teams.
 
 ## Key Use Cases
 
@@ -40,8 +40,8 @@ All remediation playbooks leverage:
 ### Generic Utility Playbook
 
 4. **Create Ticket and Notify**
-   - Creates or updates incident tickets using **Jira V3** or **ServiceNow v2**.
-   - Notifies stakeholders via **Slack**, **Microsoft Teams**, or **email**.
+   - Creates or updates incident tickets using Jira V3 or ServiceNow v2.
+   - Notifies stakeholders via Slack, Microsoft Teams, or email.
    - Customizable behavior: ticket-only, notification-only, or both.
    - Detects available integrations and adapts accordingly.
 

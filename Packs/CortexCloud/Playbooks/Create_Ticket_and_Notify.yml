@@ -1,31 +1,21 @@
 id: Create Ticket and Notify
 version: -1
-vcShouldKeepItemLegacyProdMachine: false
 name: Create Ticket and Notify
-description: 'This playbook automates the dispatching of issues through ServiceNow
-  v2 or Jira v3 and notifies stakeholders via Slack v3, Microsoft Teams, and/or email.
-  With this playbook you can choose to create or update a ticket using Jira or ServiceNow,
-  notify other teams using Slack or Microsoft Teams, and/or by sending an Email. It
-  gives you the flexibility to create a ticket only and skip the notification step,
-  skip the creation of a ticket and notify only, or choose to create a ticket and
-  notify stakeholders. The playbook checks for and requires existing Jira, ServiceNow,
-  Slack, or Microsoft Teams integrations to perform the ticketing and notification
-  actions. If none of these integrations are found in your account, then the playbook
-  sends an email with the issue details to the selected issue owner. '
+description: This playbook automates the handling of issues, sending them through ServiceNow v2 or Jira v3 and notifying stakeholders via Slack v3, Microsoft Teams, or email. You have the flexibility to create or update a ticket using Jira or ServiceNow, to notify other teams using Slack or Microsoft Teams, or to send an email. You can choose to only create or update a ticket and skip the notification, skip creating or updating a ticket and send only a notification, or both create or update a ticket and notify relevant parties. This playbook requires existing integrations with Jira, ServiceNow, Slack, or Microsoft Teams to perform these actions. If none of these integrations are found in your account, the playbook will send an email with the issue details directly to the selected issue owner.
 starttaskid: "0"
-fromversion: 5.0.0
+fromversion: 6.10.0
 tasks:
   "0":
     id: "0"
-    taskid: fe8364d2-5fa6-47a9-8f50-a5225ab0a12e
+    taskid: 41d4ba4e-d0b4-44c5-8958-0b6d8e76cf72
     type: start
     task:
-      id: fe8364d2-5fa6-47a9-8f50-a5225ab0a12e
+      id: 41d4ba4e-d0b4-44c5-8958-0b6d8e76cf72
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "30"
@@ -47,16 +37,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "12":
     id: "12"
-    taskid: 76b99633-0f40-4eeb-89b6-723cce496c1d
+    taskid: 48523d9c-4677-49d1-8286-58afd1369d70
     type: condition
     task:
-      id: 76b99633-0f40-4eeb-89b6-723cce496c1d
+      id: 48523d9c-4677-49d1-8286-58afd1369d70
       version: -1
       name: Use ServiceNow for Issue ticket
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "32"
@@ -165,16 +154,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "15":
     id: "15"
-    taskid: 9a44c1a7-03b0-4096-899b-b4bde9d9de9c
+    taskid: ce72476c-be1f-4c3c-819b-6d153ac37fcf
     type: title
     task:
-      id: 9a44c1a7-03b0-4096-899b-b4bde9d9de9c
+      id: ce72476c-be1f-4c3c-819b-6d153ac37fcf
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -193,16 +182,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "16":
     id: "16"
-    taskid: bef52cd2-a7d9-4b93-8b24-049226445df0
+    taskid: 332b542d-5afe-4028-8a7a-6703d6fddde5
     type: condition
     task:
-      id: bef52cd2-a7d9-4b93-8b24-049226445df0
+      id: 332b542d-5afe-4028-8a7a-6703d6fddde5
       version: -1
       name: Notify using Microsoft Teams?
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "40"
@@ -283,10 +271,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "21":
     id: "21"
-    taskid: 55f19350-6ab3-4249-ab24-ecb35d0a0b82
+    taskid: 8e176d70-a3ff-4947-8ba0-556f19c4d5af
     type: regular
     task:
-      id: 55f19350-6ab3-4249-ab24-ecb35d0a0b82
+      id: 8e176d70-a3ff-4947-8ba0-556f19c4d5af
       version: -1
       name: Create Issue ServiceNow ticket
       description: Creates new ServiceNow ticket.
@@ -294,7 +282,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -335,10 +322,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "24":
     id: "24"
-    taskid: 78189357-abef-46f3-b0cd-73ca5ae7b0f5
+    taskid: 8fa57c83-9b2f-4485-8ed0-ed6709f1ec82
     type: regular
     task:
-      id: 78189357-abef-46f3-b0cd-73ca5ae7b0f5
+      id: 8fa57c83-9b2f-4485-8ed0-ed6709f1ec82
       version: -1
       name: Create Issue Jira ticket
       description: Creates a new issue in Jira.
@@ -346,7 +333,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -387,17 +373,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "25":
     id: "25"
-    taskid: c12ced0e-a7e7-4b57-8ae4-2d2a55c3612e
+    taskid: 91ef2365-0aca-407c-80f9-ab4da8ffc9ae
     type: condition
     task:
-      id: c12ced0e-a7e7-4b57-8ae4-2d2a55c3612e
+      id: 91ef2365-0aca-407c-80f9-ab4da8ffc9ae
       version: -1
       name: Send email to recipients
       description: commands.server.mail.sendmail
       type: condition
       iscommand: false
       brand: Builtin
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "15"
@@ -459,16 +444,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "30":
     id: "30"
-    taskid: d5bb5de2-3b8d-41fa-8ff0-7a7569e81016
+    taskid: 0601dc73-7dda-452e-867d-1e8543a5d18e
     type: title
     task:
-      id: d5bb5de2-3b8d-41fa-8ff0-7a7569e81016
+      id: 0601dc73-7dda-452e-867d-1e8543a5d18e
       version: -1
       name: Create or Update Issue ticket
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "12"
@@ -490,16 +475,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "31":
     id: "31"
-    taskid: 57b5384c-5843-477d-8703-a63b516fde4f
+    taskid: c89962f0-b263-424d-8e42-e5b21e98726b
     type: title
     task:
-      id: 57b5384c-5843-477d-8703-a63b516fde4f
+      id: c89962f0-b263-424d-8e42-e5b21e98726b
       version: -1
       name: Issue Notification
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "16"
@@ -521,16 +506,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "32":
     id: "32"
-    taskid: 27756197-ec9d-4c73-813a-12f2849b55a6
+    taskid: c1372f98-8726-469f-8944-c449056954a4
     type: condition
     task:
-      id: 27756197-ec9d-4c73-813a-12f2849b55a6
+      id: c1372f98-8726-469f-8944-c449056954a4
       version: -1
       name: Use Jira for Issue ticket
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "31"
@@ -639,10 +623,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "33":
     id: "33"
-    taskid: 3c8c37ba-b413-498f-83d9-facf92307bfc
+    taskid: 306ac0b1-4dc1-4a2f-85f3-0796b8f9abd0
     type: regular
     task:
-      id: 3c8c37ba-b413-498f-83d9-facf92307bfc
+      id: 306ac0b1-4dc1-4a2f-85f3-0796b8f9abd0
       version: -1
       name: Send Email Notification
       description: commands.server.mail.sendmail
@@ -650,7 +634,6 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -689,16 +672,16 @@ tasks:
     isautoswitchedtoquietmode: false
   "34":
     id: "34"
-    taskid: 05c43439-bd17-4ee0-870d-d6fa6d9f3f50
+    taskid: c656fc3e-05b4-466d-8bd1-c8f88388629b
     type: title
     task:
-      id: 05c43439-bd17-4ee0-870d-d6fa6d9f3f50
+      id: c656fc3e-05b4-466d-8bd1-c8f88388629b
       version: -1
       name: Email Notification
       type: title
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
+      description: ''
     nexttasks:
       '#none#':
       - "25"
@@ -720,10 +703,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "36":
     id: "36"
-    taskid: a405d945-16c3-423e-a740-2fae573b1f2d
+    taskid: 018fa72b-1e77-4cfa-8c32-6ac4429eb012
     type: regular
     task:
-      id: a405d945-16c3-423e-a740-2fae573b1f2d
+      id: 018fa72b-1e77-4cfa-8c32-6ac4429eb012
       version: -1
       name: Send Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -731,7 +714,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -768,10 +750,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "38":
     id: "38"
-    taskid: 8789a29d-2d88-4def-bc3e-e0ccc71cd40d
+    taskid: 0d0b2ba7-fda3-4b94-846e-0aacbd7f75a1
     type: regular
     task:
-      id: 8789a29d-2d88-4def-bc3e-e0ccc71cd40d
+      id: 0d0b2ba7-fda3-4b94-846e-0aacbd7f75a1
       version: -1
       name: Update Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -779,7 +761,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -811,16 +792,15 @@ tasks:
     isautoswitchedtoquietmode: false
   "40":
     id: "40"
-    taskid: f0be0a6a-a804-474a-8311-904fd868bd38
+    taskid: a2dbc27f-7b73-4767-8a17-d8efee458e92
     type: condition
     task:
-      id: f0be0a6a-a804-474a-8311-904fd868bd38
+      id: a2dbc27f-7b73-4767-8a17-d8efee458e92
       version: -1
       name: Notify using Slack?
       type: condition
       iscommand: false
       brand: ""
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#default#':
       - "34"
@@ -901,10 +881,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "41":
     id: "41"
-    taskid: fde55861-9799-445d-8e31-591390a07fac
+    taskid: 7a255a4a-c141-4b17-8b56-273172b18d1a
     type: regular
     task:
-      id: fde55861-9799-445d-8e31-591390a07fac
+      id: 7a255a4a-c141-4b17-8b56-273172b18d1a
       version: -1
       name: Update Slack Notification
       description: Sends a message to a user, group, or channel.
@@ -912,7 +892,6 @@ tasks:
       type: regular
       iscommand: true
       brand: SlackV3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "34"
@@ -944,10 +923,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "42":
     id: "42"
-    taskid: fc3de488-558e-4434-b292-6844d2d9637c
+    taskid: b1f64dcd-cb09-4bf6-8ecc-9084d8ef42b9
     type: regular
     task:
-      id: fc3de488-558e-4434-b292-6844d2d9637c
+      id: b1f64dcd-cb09-4bf6-8ecc-9084d8ef42b9
       version: -1
       name: Send Microsoft Teams Notification
       description: Sends a message to the specified teams.
@@ -955,7 +934,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Microsoft Teams
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "40"
@@ -992,10 +970,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "43":
     id: "43"
-    taskid: fe4674ee-108b-403a-b018-a33432cd7f8c
+    taskid: 80873004-deaf-4585-8e2c-95b0da363e4c
     type: regular
     task:
-      id: fe4674ee-108b-403a-b018-a33432cd7f8c
+      id: 80873004-deaf-4585-8e2c-95b0da363e4c
       version: -1
       name: Update Email Notification
       description: commands.server.mail.sendmail
@@ -1003,7 +981,6 @@ tasks:
       type: regular
       iscommand: true
       brand: mail-sender
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "15"
@@ -1037,10 +1014,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "44":
     id: "44"
-    taskid: 4f3b1be2-0b00-4cea-b812-a410dcdb21d0
+    taskid: c046d37d-b529-42fe-8243-74bd2c86de10
     type: regular
     task:
-      id: 4f3b1be2-0b00-4cea-b812-a410dcdb21d0
+      id: c046d37d-b529-42fe-8243-74bd2c86de10
       version: -1
       name: Update Issue ServiceNow ticket
       description: Updates the specified ticket.
@@ -1048,7 +1025,6 @@ tasks:
       type: regular
       iscommand: true
       brand: ServiceNow v2
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "32"
@@ -1080,10 +1056,10 @@ tasks:
     isautoswitchedtoquietmode: false
   "45":
     id: "45"
-    taskid: 794aa803-d628-4610-8f1a-5764348b1cbe
+    taskid: 0a2d2c27-f919-4225-8965-5757613fdc04
     type: regular
     task:
-      id: 794aa803-d628-4610-8f1a-5764348b1cbe
+      id: 0a2d2c27-f919-4225-8965-5757613fdc04
       version: -1
       name: Update Issue Jira ticket
       description: Adds a new comment to an existing Jira issue.
@@ -1091,7 +1067,6 @@ tasks:
       type: regular
       iscommand: true
       brand: Jira V3
-      playbooktaskmissingcomponent: null
     nexttasks:
       '#none#':
       - "31"
@@ -1140,64 +1115,67 @@ inputs:
 - key: Preferred ticketing platform
   value: {}
   required: false
-  description: "Accepted values \n- Jira\n- ServiceNow\n- Both\n\nNote: Leaving this
-    blank will prevent issue ticket from being generated and the playbook will skip
-    this step."
-  playbookInputQuery: null
+  description: |-
+    Possible values:
+    - Jira
+    - ServiceNow
+    - Both
+
+    Note: If you leave this empty, no issue ticket will be generated, and the playbook will skip this step.
+  playbookInputQuery:
 - key: Preferred notification platform
   value: {}
   required: false
-  description: "Accepted values \n- Microsoft Teams\n- Slack\n\nNote: Leaving this
-    blank will prevent sending notification message and the playbook will skip this
-    step."
-  playbookInputQuery: null
+  description: |-
+    Possible values:
+    - Microsoft Teams
+    - Slack
+
+    Note: If you leave this blank, no notification message will be sent and the playbook will skip this step.
+  playbookInputQuery:
 - key: Notification email recipients
   value: {}
   required: false
   description: |-
-    Provide the email address to send email notification.
+    Provide the email address to send email notifications.
 
-    Note: Leaving this blank will prevent sending email notification and the playbook will skip this step.
-  playbookInputQuery: null
+    Note: If you leave this blank, no email notification will be sent and the playbook will skip this step.
+  playbookInputQuery:
 - key: System Input - Asset details
   value: {}
   required: false
-  description: 'Note: No input is required here; issue asset details will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; issue asset details will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input - Issue State
   value: {}
   required: false
-  description: 'Note: No input is required here; issue state value will be automatically
-    entered from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; issue state value will be automatically entered from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input -ServiceNow Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; ServiceNow ticket ID will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: System Input -Jira Ticket ID
   value: {}
   required: false
-  description: 'Note: No input is required here; Jira ticket ID will be automatically
-    pulled from the remediation playbook.'
-  playbookInputQuery: null
+  description: 'Note: No input is required here; Jira ticket ID will be automatically pulled from the remediation playbook.'
+  playbookInputQuery:
 - key: Jira Project Key
   value: {}
   required: false
   description: Provide Jira project key where the issue will be created.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Teams Channel Name
   value: {}
   required: false
   description: Provide Microsoft Teams channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 - key: Slack Channel Name
   value: {}
   required: false
   description: Provide Slack channel name to which to send messages.
-  playbookInputQuery: null
+  playbookInputQuery:
 inputSections:
 - inputs:
   - Preferred ticketing platform
@@ -1220,11 +1198,10 @@ outputSections:
   description: Generic group for outputs
 outputs:
 - contextPath: Ticket.Id
-  description: Jira Ticket ID
+  description: Jira Ticket ID.
   type: string
 - contextPath: ServiceNow.Ticket.ID
-  description: Service Now Ticket ID
+  description: Service Now Ticket ID.
   type: string
-sourceplaybookid: 29fa1351-7e54-4d92-8304-383588632740
-dirtyInputs: true
-adopted: true
+tests:
+- No tests (auto formatted)
