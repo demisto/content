@@ -184,7 +184,7 @@ def get_events_command(client: Client, args: dict) -> tuple[list, CommandResults
     return events, results
 
 
-def fetch_events_command(client: Client, params: dict, last_run: dict, events_types_ids: dict) -> tuple[list, list, dict]:
+def fetch_events_command(client: Client, params: dict, last_run: dict, event_type_management: dict) -> tuple[list, list, dict]:
     """
     Collects log events from GitLab using pagination.
 
@@ -192,33 +192,33 @@ def fetch_events_command(client: Client, params: dict, last_run: dict, events_ty
         client (Client): the client implementing the API to GitLab.
         params (dict): the instance configuration parameters.
         last_run (dict): the lastRun object, holding information from the previous run.
-        events_types_ids (dict): The groups / projects Ids to fetch events for.
+        event_type_management (dict): The groups / projects Ids to fetch events for as well as whether to fetch instance events.
 
     Returns:
         (list) the audit events retrieved from the API call.
         (list) the groups and projects events retrieved from the API call.
         (dict) the updated lastRun object.
     """
-
     # --- 1. Fetch General Audit Events ---
-    query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
     audit_events = []
-    try:
-        demisto.debug("Starting fetch for general audit events.")
-        fetched_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
-        audit_events.extend(fetched_events)
-        demisto.debug(f"Successfully fetched {len(audit_events)} aggregated audit events.")
-    except DemistoException as e:
-        if not e.res or e.res.status_code != 403:
-            raise e
-        else:
-            demisto.error(f"User unauthorized to use endpoint/audit_events, execution will continue. Error: {e}")
+    if event_type_management.get("instance_events"):
+        try:
+            query_params_url = prepare_query_params(params, last_run.get("audit_events", {}))
+            demisto.debug("Starting fetch for general audit events.")
+            fetched_events = client.fetch_events(query_params_url, last_run.get("audit_events", {}), params)
+            audit_events.extend(fetched_events)
+            demisto.debug(f"Successfully fetched {len(audit_events)} aggregated audit events.")
+        except DemistoException as e:
+            if not e.res or e.res.status_code != 403:
+                raise e
+            else:
+                demisto.error(f"User unauthorized to use endpoint/audit_events, execution will continue. Error: {e}")
 
     # --- 2. Fetch Group and Project Events ---
     group_and_project_events = []
     for event_type in ["groups", "projects"]:
         demisto.debug(f"Starting fetch for '{event_type}' events.")
-        ids_to_fetch = events_types_ids.get(f"{event_type}_ids", [])
+        ids_to_fetch = event_type_management.get(f"{event_type}_ids", [])
         query_params_url = prepare_query_params(params, last_run.get(event_type, {}))
 
         for obj_id in ids_to_fetch:
@@ -261,6 +261,7 @@ def main() -> None:
         )
 
         events_collection_management = {
+            "instance_events": argToBoolean(params.get("fetch_instance_audit_events", True)),
             "groups_ids": argToList(params.get("group_ids", "")),
             "projects_ids": argToList(params.get("project_ids", "")),
         }

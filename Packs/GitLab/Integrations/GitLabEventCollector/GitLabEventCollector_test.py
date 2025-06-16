@@ -3,13 +3,13 @@ import pytest
 from GitLabEventCollector import Client, prepare_query_params
 from requests import Session
 
-
 class MockResponse:
-    def __init__(self, data: list):
-        self.ok = True
-        self.status_code = 200
+    def __init__(self, data: list, status_code: int = 200, ok = True):
+        self.ok = ok
+        self.status_code = status_code
         self.data = data
         self.links = None
+        self.reason = 'reason'
 
     def json(self):
         return self.data
@@ -47,7 +47,7 @@ def test_gitlab_events_params_good(params, last_run, expected_params_url):
 def test_fetch_events(mocker):
     """
     Given:
-        - fetch-events call, where last_id = 1
+        - fetch-events call, where last_id = 1 and fetch_instance_audit_events = True
     When:
         - Three following results are retrieved from the API:
             1. id = 1, created_at = '2023-10-28T20:29:34.872Z'
@@ -64,7 +64,7 @@ def test_fetch_events(mocker):
     mocker.patch.object(demisto, "getLastRun", return_value={"audit_events": {"last_id": "1"}})
 
     last_run = {"audit_events": {"last_id": "1"}}
-
+    types = {"instance_events": True}
     mock_response = MockResponse(
         [
             {"id": "3", "created_at": "2023-10-28T20:29:34.872Z"},
@@ -73,7 +73,7 @@ def test_fetch_events(mocker):
         ]
     )
     mocker.patch.object(Session, "request", return_value=mock_response)
-    events, _, new_last_run = fetch_events_command(Client(base_url=""), params={}, last_run=last_run, events_types_ids={})
+    events, _, new_last_run = fetch_events_command(Client(base_url=""), params={}, last_run=last_run, event_type_management=types)
 
     assert len(events) == 2
     assert events[0].get("id") != "1"
@@ -105,17 +105,19 @@ def test_fetch_events_with_two_iterations(mocker):
 
     first_id = 2
     last_run = {"groups": {}, "projects": {}, "audit_events": {"first_id": first_id}}
+    types = {"instance_events": True}
+    params = {"limit": 300}
 
     mock_response = MockResponse([{"id": i, "created_at": 1521214343} for i in range(200)])
     mock_response.links = {"next": {"url": "https://example.com?param=value"}}
     mock_request = mocker.patch.object(Session, "request", return_value=mock_response)
-    events, _, _ = fetch_events_command(Client(base_url=""), params={"limit": 300}, last_run=last_run, events_types_ids={})
+    events, _, _ = fetch_events_command(Client(base_url=""), params=params, last_run=last_run, event_type_management=types)
 
     assert events[0].get("id") == first_id
     assert mock_request.call_count == 2
 
 
-def test_fetch_events_with_groups_and_projects(mocker):
+def test_fetch_events_with_groups_and_projects_and_instance(mocker):
     """
     Given:
         - fetch-events command execution.
@@ -144,7 +146,7 @@ def test_fetch_events_with_groups_and_projects(mocker):
         Client(base_url=""),
         params={"limit": 4, "url": ""},
         last_run=last_run,
-        events_types_ids={"groups_ids": [1], "projects_ids": [2, 3, 4]},
+        event_type_management={"groups_ids": [1], "projects_ids": [2, 3, 4], "instance_events": True},
     )
 
     assert len(audit_events) == 4
@@ -154,6 +156,89 @@ def test_fetch_events_with_groups_and_projects(mocker):
     assert new_last_run["groups"]["last_id"] == "5"
     assert new_last_run["groups"]["first_id"] == "1"
     assert "first_id" not in new_last_run["projects"]
+
+def test_fetch_events_unauthorized_handling(mocker):
+    """
+    Given:
+        - fetch-events command execution.
+    When:
+        - API returns 403 for the /audit_events endpoint.
+    Then:
+        - The /groups and /projects endpoints are called.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    mock_response = [
+        MockResponse(data = [{}], status_code = 403, ok=False),
+        MockResponse(data = [{}], status_code = 200),
+        MockResponse(data = [{}], status_code = 200)
+    ]
+    mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
+
+    fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 1, "url": ""},
+        last_run={},
+        event_type_management={"groups_ids": [1], "projects_ids": [1], "instance_events": True}
+    )
+
+    assert mocked_request.call_count == 3
+
+
+def test_fetch_events_not_found_handling(mocker):
+    """
+    Given:
+        - fetch-events command execution with two group ids.
+    When:
+        - API returns 404 for the first /groups/<id>/audit_events call.
+    Then:
+        - The second call to /groups/<id>/audit_events is executed and /projects/<id>/audit_events is called.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    mock_response = [
+        MockResponse(data=[{}], status_code=200),
+        MockResponse(data=[{}], status_code=404, ok=False),
+        MockResponse(data=[{}], status_code=200),
+        MockResponse(data=[{}], status_code=200)
+    ]
+    mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
+
+    fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 1, "url": ""},
+        last_run={},
+        event_type_management={"groups_ids": [1,2], "projects_ids": [1], "instance_events": True}
+    )
+
+    assert mocked_request.call_count == 4
+
+def test_fetch_events_unauthorized_groups_handling(mocker):
+    """
+    Given:
+        - fetch-events command execution with two group ids.
+    When:
+        - API returns 403 for the first /groups/<id>/audit_events call.
+    Then:
+        - The second call to /groups/<id>/audit_events is not executed and /projects/<id>/audit_events is called.
+    """
+    from GitLabEventCollector import fetch_events_command
+
+    mock_response = [
+        MockResponse(data=[{}], status_code=200),
+        MockResponse(data=[{}], status_code=403, ok=False),
+        MockResponse(data=[{}], status_code=200)
+    ]
+    mocked_request = mocker.patch.object(Session, "request", side_effect=mock_response)
+
+    fetch_events_command(
+        Client(base_url=""),
+        params={"limit": 1, "url": ""},
+        last_run={},
+        event_type_management={"groups_ids": [1,2], "projects_ids": [1], "instance_events": True}
+    )
+
+    assert mocked_request.call_count == 3
 
 
 def test_get_events(mocker):
