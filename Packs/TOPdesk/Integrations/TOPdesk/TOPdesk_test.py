@@ -1318,12 +1318,23 @@ def test_update_remote_system_command(client, args, params):
 
 
 @pytest.mark.parametrize(
-    "command_args",
+    "command_args, expected_results",
     [
-        ({"search_term": "test", "archived": False, "page_size": 1, "start": 0}),
+        (
+            {"search_term": "test", "archived": False, "page_size": 1, "start": 0},
+            {
+                "outputs": {
+                    "archived": True,
+                    "text": "test.contoso.com",
+                    "etag": "2022-04-11T08:20:42.409         ",
+                    "id": "d3861991-b025-48fb-b203-2df828569736",
+                },
+                "readable_output": "### TOPdesk assets\n|Archived|Etag|Id|Text|\n|---|---|---|---|\n| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
+            },
+        ),
     ],
 )
-def test_assets_list(client, requests_mock, command_args):
+def test_assets_list(client, requests_mock, command_args, expected_results):
     """
     Given:
         - TOPdesk client
@@ -1341,5 +1352,12 @@ def test_assets_list(client, requests_mock, command_args):
         json=mock_assets,
     )
 
-    get_assets_list_command(client, command_args)
+    command_results = get_assets_list_command(client, command_args)
     assert requests_mock.called
+
+    for expected_output in expected_results["outputs"]:
+        assert (
+            command_results.outputs[0][expected_output.title()]
+            == expected_results["outputs"][expected_output]
+        )
+    assert command_results.readable_output == expected_results["readable_output"]
