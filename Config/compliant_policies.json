@@ -1,7 +1,7 @@
 {
     "policies": [
         {
-            "name": "Users Soft Remediation",
+            "name": "User Soft Remediation",
             "category": "IAM",
             "arguments": [
                 "username",
@@ -33,7 +33,7 @@
             ]
         },
         {
-            "name": "Users Hard Remediation",
+            "name": "User Hard Remediation",
             "category": "IAM",
             "arguments": [
                 "username",
@@ -81,7 +81,7 @@
             ]
         },
         {
-            "name": "File Quarantine",
+            "name": "Quarantine File",
             "category": "EndPoint",
             "arguments": []
         },
