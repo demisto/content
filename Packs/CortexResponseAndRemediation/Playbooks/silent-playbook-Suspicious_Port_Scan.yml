@@ -67,8 +67,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 175,
-          "y": 103
+          "x": 170,
+          "y": -22
         }
       }
     note: false
@@ -171,7 +171,7 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 175,
+          "x": 170,
           "y": 921
         }
       }
@@ -369,8 +369,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 175,
-          "y": 246
+          "x": 170,
+          "y": 109
         }
       }
     note: false
@@ -396,7 +396,6 @@ tasks:
     nexttasks:
       '#none#':
       - "144"
-      - "145"
       - "151"
     scriptarguments:
       alert_ids:
@@ -408,8 +407,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 175,
-          "y": 373
+          "x": 170,
+          "y": 236
         }
       }
     note: false
@@ -1235,8 +1234,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 624,
-          "y": 507
+          "x": 414,
+          "y": 369
         }
       }
     note: false
@@ -1266,18 +1265,19 @@ tasks:
       host_id:
         simple: ${Endpoint.ID}
     separatecontext: false
+    continueonerror: true
     continueonerrortype: ""
     view: |-
       {
         "position": {
-          "x": 175,
-          "y": 507
+          "x": 414,
+          "y": 801
         }
       }
     note: false
     timertriggers: []
     ignoreworker: false
-    skipunavailable: false
+    skipunavailable: true
     quietmode: 0
     isoversize: false
     isautoswitchedtoquietmode: false
@@ -1526,8 +1526,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -283,
-          "y": 507
+          "x": -81,
+          "y": 370
         }
       }
     note: false
@@ -1573,8 +1573,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -283,
-          "y": 663
+          "x": -81,
+          "y": 517
         }
       }
     note: false
@@ -1618,8 +1618,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": -283,
-          "y": 800
+          "x": -81,
+          "y": 671
         }
       }
     note: false
@@ -1650,6 +1650,12 @@ tasks:
     conditions:
     - label: "yes"
       condition:
+      - - operator: isNotEmpty
+          left:
+            value:
+              simple: Core.RiskyHost.risk_level
+            iscontext: true
+          ignorecase: true
       - - operator: containsGeneral
           left:
             value:
@@ -2879,8 +2885,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 624,
-          "y": 663
+          "x": 414,
+          "y": 517
         }
       }
     note: false
@@ -2905,7 +2911,7 @@ tasks:
       brand: ""
     nexttasks:
       '#none#':
-      - "2"
+      - "145"
     scriptarguments:
       hostname:
         simple: ${alert.agentid}
@@ -2915,8 +2921,8 @@ tasks:
     view: |-
       {
         "position": {
-          "x": 624,
-          "y": 800
+          "x": 414,
+          "y": 671
         }
       }
     note: false
@@ -3510,10 +3516,10 @@ view: |-
     },
     "paper": {
       "dimensions": {
-        "height": 4397,
+        "height": 4522,
         "width": 5458,
         "x": -974,
-        "y": 103
+        "y": -22
       }
     }
   }
