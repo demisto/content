@@ -62,6 +62,7 @@ class Client:
             url_suffix=None,
             params=remove_empty_elements(params),
         )
+
         return res.get("result")
 
 
@@ -274,6 +275,38 @@ def fetch_events_command(client: Client, last_run: dict, log_types: list):
     return collected_events, last_run
 
 
+def login_command(client: Client, user_name: str, password: str):
+    """
+    Login the user using OAuth authorization
+    Args:
+        client: Client object with request.
+        user_name: Username.
+        password: Password.
+    Returns:
+        Demisto Outputs.
+    """
+    # Verify that the user selected the `Use OAuth Login` checkbox:
+    if not client.sn_client.use_oauth:
+        return_error(
+            "!service-now-oauth-login command can be used only when using OAuth 2.0 authorization.\n "
+            "Please select the `Use OAuth Login` checkbox in the instance configuration before running this "
+            "command."
+        )
+
+    try:
+        client.sn_client.login(user_name, password)
+        return (
+            "Logged in successfully.\n A refresh token was saved to the integration context and will be "
+            "used to generate a new access token once the current one expires."
+        )
+    except Exception as e:
+        return_error(
+            f"Failed to login. Please verify that the provided username and password are correct, and that you"
+            f" entered the correct client id and client secret in the instance configuration (see ? for"
+            f"correct usage when using OAuth).\n\n{e}"
+        )
+
+
 def module_of_testing(client: Client, log_types: list) -> str:  # pragma: no cover
     """
     Test API connectivity and authentication.
@@ -364,6 +397,9 @@ def main() -> None:  # pragma: no cover
                     # saves next_run for the time fetch-events is invoked
                     demisto.debug(f"Setting new last_run to {next_run}")
                     demisto.setLastRun(next_run)
+        elif command == "service-now-oauth-login":
+            return_results(login_command(client=client, user_name=user_name, password=password))
+
         else:
             raise NotImplementedError(f"command {command} is not implemented.")
 
