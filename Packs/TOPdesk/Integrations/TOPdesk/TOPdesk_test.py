@@ -1318,24 +1318,7 @@ def test_update_remote_system_command(client, args, params):
     update_remote_system_command(client, args, params)
 
 
-@pytest.mark.parametrize(
-    "command_args, expected_results",
-    [
-        (
-            {"search_term": "test", "archived": False, "page_size": 1, "start": 0},
-            {
-                "outputs": {
-                    "archived": True,
-                    "text": "test.contoso.com",
-                    "etag": "2022-04-11T08:20:42.409         ",
-                    "id": "d3861991-b025-48fb-b203-2df828569736",
-                },
-                "readable_output": "### TOPdesk assets\n|Archived|Etag|Id|Text|\n|---|---|---|---|\n| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
-            },
-        ),
-    ],
-)
-def test_assets_list(client, requests_mock, command_args, expected_results):
+def test_assets_list(client, requests_mock):
     """
     Given:
         - TOPdesk client
@@ -1345,16 +1328,27 @@ def test_assets_list(client, requests_mock, command_args, expected_results):
     Then
         - The result fits the expected mapping
     """
-
+    command_args = {"search_term": "test", "archived": False, "page_size": 1, "start": 0}
+    expected_results = {
+            "outputs": {
+                "archived": True,
+                "text": "test.contoso.com",
+                "etag": "2022-04-11T08:20:42.409         ",
+                "id": "d3861991-b025-48fb-b203-2df828569736",
+                },
+            "readable_output": "### TOPdesk assets\n|Archived|Etag|Id|Text|\n|---|---|---|---|\n| true | 2022-04-11T08:20:42.409          | d3861991-b025-48fb-b203-2df828569736 | test.contoso.com |\n",
+            }
     mock_assets = util_load_json("test_data/topdesk_asset.json")
+    expected_request_params = {"archived": ["false"], "pagesize": ["1"], "searchterm": ["test"], "pagestart": ["0"]}
 
-    requests_mock.get(
+    mocked_request = requests_mock.get(
         "https://test.com/api/assetmgmt/assets",
         json=mock_assets,
     )
 
     command_results = get_assets_list_command(client, command_args)
-    assert requests_mock.called
+
+    assert mocked_request.last_request.qs == expected_request_params
 
     for expected_output in expected_results["outputs"]:
         assert (
