@@ -515,7 +515,7 @@ class Client(CoreClient):
         if "reply" not in response or "alerts_ids" not in response["reply"]:
             raise DemistoException(f"Parse Error. Response not in format, can't find reply key. The response {response}.")
         return response["reply"]["alerts_ids"]
-
+ 
 
 def get_headers(params: dict) -> dict:
     api_key = params.get("apikey_creds", {}).get("password", "") or params.get("apikey", "")
