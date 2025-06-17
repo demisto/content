@@ -1,23 +1,25 @@
 id: Identity & Access test playbook
-version: -1
+version: 5
+vcShouldKeepItemLegacyProdMachine: false
 name: Identity & Access test playbook
+description: Test playbook for MSGraph Identity & Access
 starttaskid: "0"
 tasks:
   "0":
     id: "0"
-    taskid: 6caa0aef-05cf-4421-844f-722a7fcaed2b
+    taskid: f026b323-d448-403c-8459-399b1941d258
     type: start
     task:
-      id: 6caa0aef-05cf-4421-844f-722a7fcaed2b
+      id: f026b323-d448-403c-8459-399b1941d258
       version: -1
       name: ""
       iscommand: false
       brand: ""
-      description: ''
     nexttasks:
       '#none#':
       - "7"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -30,12 +32,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 04bf540f-25c5-4b38-85e7-963568d5b061
+    taskid: 873b78aa-273b-428b-8943-e9725b891d4c
     type: regular
     task:
-      id: 04bf540f-25c5-4b38-85e7-963568d5b061
+      id: 873b78aa-273b-428b-8943-e9725b891d4c
       version: -1
       name: msgraph-identity-auth-test
       description: Tests connectivity to Microsoft.
@@ -47,6 +51,7 @@ tasks:
       '#none#':
       - "6"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -59,12 +64,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 458d2616-864d-47c6-84e7-37c9373b7628
+    taskid: 636b1e89-e986-4cd5-8dc4-aa04fc935f05
     type: regular
     task:
-      id: 458d2616-864d-47c6-84e7-37c9373b7628
+      id: 636b1e89-e986-4cd5-8dc4-aa04fc935f05
       version: -1
       name: msgraph-identity-directory-role-member-add
       description: Add a user to a role.
@@ -85,6 +92,7 @@ tasks:
           root: MSGraphIdentity.RoleMember
           accessor: user_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -97,12 +105,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "4":
     id: "4"
-    taskid: f37824fe-b943-431d-8adc-ff881ee4c46d
+    taskid: 6869122c-33d1-4866-8604-c68341334078
     type: regular
     task:
-      id: f37824fe-b943-431d-8adc-ff881ee4c46d
+      id: 6869122c-33d1-4866-8604-c68341334078
       version: -1
       name: msgraph-identity-directory-role-member-remove
       description: Removes a user from a role.
@@ -112,7 +122,7 @@ tasks:
       brand: MicrosoftGraphIdentityandAccess
     nexttasks:
       '#none#':
-      - "8"
+      - "10"
     scriptarguments:
       role_id:
         complex:
@@ -123,6 +133,7 @@ tasks:
           root: MSGraphIdentity.RoleMember
           accessor: user_id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -135,12 +146,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "5":
     id: "5"
-    taskid: 9be231ca-cb3c-4bfb-8097-9794792ef035
+    taskid: 16c8a6cb-3d17-4bad-841e-13e8d020d7a8
     type: regular
     task:
-      id: 9be231ca-cb3c-4bfb-8097-9794792ef035
+      id: 16c8a6cb-3d17-4bad-841e-13e8d020d7a8
       version: -1
       name: msgraph-identity-directory-role-members-list
       description: Gets all members in the role ID.
@@ -152,12 +165,12 @@ tasks:
       '#none#':
       - "3"
     scriptarguments:
-      limit: {}
       role_id:
         complex:
           root: MSGraphIdentity.Role.[0]
           accessor: id
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -170,12 +183,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "6":
     id: "6"
-    taskid: 3c9bc415-81cd-4525-8a2c-4677e158c3ca
+    taskid: a3630ed1-7108-4f52-80f0-d62ed6437ff8
     type: regular
     task:
-      id: 3c9bc415-81cd-4525-8a2c-4677e158c3ca
+      id: a3630ed1-7108-4f52-80f0-d62ed6437ff8
       version: -1
       name: msgraph-identity-directory-roles-list
       description: Lists roles in the directory.
@@ -190,6 +205,7 @@ tasks:
       limit:
         simple: "20"
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -202,12 +218,14 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "7":
     id: "7"
-    taskid: 28b7b9a9-8e50-4a9a-88d9-9df339a8d7b7
+    taskid: 8cbfcd74-d9f1-478a-81f4-5e480acb047b
     type: regular
     task:
-      id: 28b7b9a9-8e50-4a9a-88d9-9df339a8d7b7
+      id: 8cbfcd74-d9f1-478a-81f4-5e480acb047b
       version: -1
       name: DeleteContext
       description: Delete field from context
@@ -221,11 +239,8 @@ tasks:
     scriptarguments:
       all:
         simple: "yes"
-      index: {}
-      key: {}
-      keysToKeep: {}
-      subplaybook: {}
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
@@ -238,24 +253,26 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
   "8":
     id: "8"
-    taskid: 3dbfa74a-3063-4be8-883d-1aa66dc6c222
+    taskid: 130cc6d2-6c5e-42aa-8932-5ef34b738b54
     type: title
     task:
-      id: 3dbfa74a-3063-4be8-883d-1aa66dc6c222
+      id: 130cc6d2-6c5e-42aa-8932-5ef34b738b54
       version: -1
       name: Done
       type: title
       iscommand: false
       brand: ""
-      description: ''
     separatecontext: false
+    continueonerrortype: ""
     view: |-
       {
         "position": {
           "x": 50,
-          "y": 1245
+          "y": 2220
         }
       }
     note: false
@@ -263,12 +280,212 @@ tasks:
     ignoreworker: false
     skipunavailable: false
     quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "10":
+    id: "10"
+    taskid: 40c845f1-d663-4064-8e0a-0a618d599115
+    type: regular
+    task:
+      id: 40c845f1-d663-4064-8e0a-0a618d599115
+      version: -1
+      name: msgraph-identity-ca-policy-create
+      description: Creates a Conditional Access policy.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-ca-policy-create
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "15"
+    scriptarguments:
+      grant_control_enforcement:
+        simple: mfa,compliantDevice
+      execution-timeout:
+        simple: "0"
+      grant_control_operator:
+        simple: OR
+      include_applications:
+        simple: 00000002-0000-0ff1-ce00-000000000000
+      include_users:
+        simple: None
+      policy_name:
+        simple: test playbook
+      state:
+        simple: disabled
+      user_risk_levels:
+        simple: high
+      sign_in_risk_levels:
+        simple: high
+      client_app_types:
+        simple: all
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1240
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "13":
+    id: "13"
+    taskid: c8ad09c2-9f56-491b-8845-1d18d21f243a
+    type: regular
+    task:
+      id: c8ad09c2-9f56-491b-8845-1d18d21f243a
+      version: -1
+      name: msgraph-identity-ca-policy-update
+      description: Updates a Conditional Access policy.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-ca-policy-update
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "16"
+    scriptarguments:
+      execution-timeout:
+        simple: "0"
+      policy_id:
+        simple: ${MSGraphIdentity.ConditionalAccessPolicy.id}
+      retry-interval:
+        simple: "2"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1580
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "15":
+    id: "15"
+    taskid: a9ac329c-c74a-4e6c-8f81-a162543b7049
+    type: regular
+    task:
+      id: a9ac329c-c74a-4e6c-8f81-a162543b7049
+      version: -1
+      name: sleep 15 seconds
+      description: Sleep for X seconds.
+      scriptName: Sleep
+      type: regular
+      iscommand: false
+      brand: ""
+    nexttasks:
+      '#none#':
+      - "13"
+    scriptarguments:
+      seconds:
+        simple: "30"
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1390
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "16":
+    id: "16"
+    taskid: ba46138b-2f78-411c-800a-fdd7d5a2ea67
+    type: regular
+    task:
+      id: ba46138b-2f78-411c-800a-fdd7d5a2ea67
+      version: -1
+      name: msgraph-identity-ca-policies-list
+      description: Retrieve one or all Conditional Access policies from Microsoft
+        Graph API.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-ca-policies-list
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "17"
+    scriptarguments:
+      filter:
+        simple: 'displayName eq ''${MSGraphIdentity.ConditionalAccessPolicy.displayName}'' '
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 1800
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
+  "17":
+    id: "17"
+    taskid: 80b40dbf-54f9-44ff-811a-26f9d47f5d3e
+    type: regular
+    task:
+      id: 80b40dbf-54f9-44ff-811a-26f9d47f5d3e
+      version: -1
+      name: msgraph-identity-ca-policy-delete
+      description: Delete specific Conditional Access policy by id.
+      script: MicrosoftGraphIdentityandAccess|||msgraph-identity-ca-policy-delete
+      type: regular
+      iscommand: true
+      brand: MicrosoftGraphIdentityandAccess
+    nexttasks:
+      '#none#':
+      - "8"
+    scriptarguments:
+      policy_id:
+        simple: ${MSGraphIdentity.ConditionalAccessPolicy.id}
+    separatecontext: false
+    continueonerrortype: ""
+    view: |-
+      {
+        "position": {
+          "x": 50,
+          "y": 2030
+        }
+      }
+    note: false
+    timertriggers: []
+    ignoreworker: false
+    skipunavailable: false
+    quietmode: 0
+    isoversize: false
+    isautoswitchedtoquietmode: false
 view: |-
   {
     "linkLabelsPosition": {},
     "paper": {
       "dimensions": {
-        "height": 1260,
+        "height": 2235,
         "width": 380,
         "x": 50,
         "y": 50
@@ -277,5 +494,3 @@ view: |-
   }
 inputs: []
 outputs: []
-fromversion: 5.0.0
-description: Test playbook for MSGraph Identity & Access
