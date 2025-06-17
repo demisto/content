@@ -1,5 +1,5 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97co
-version: 13
+version: 3
 contentitemexportablefields:
   contentitemfields:
     packID: ANYRUN
@@ -12,7 +12,9 @@ contentitemexportablefields:
     isoverridable: false
 vcShouldKeepItemLegacyProdMachine: false
 name: ANY.RUN Detonate File Windows
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps to automate malware detonation and behavior observation on Windows OS.
+description: This playbook submits a file extracted from an incident attachment to
+  the ANY.RUN cloud sandbox for dynamic analysis in an Windows environment. It helps
+  to automate malware detonation and behavior observation on Windows OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,23 +48,21 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: e103c0bb-e4d1-4d5c-b062-162991ba2bf2
+    taskid: 4e720c3e-e7cc-48ab-ae0e-1185dc7de62c
     type: regular
     task:
-      id: e103c0bb-e4d1-4d5c-b062-162991ba2bf2
+      id: 4e720c3e-e7cc-48ab-ae0e-1185dc7de62c
       version: -1
       name: '[ANY.RUN] Detonate File Windows'
       description: Perform File analysis using Windows VM.
-      script: ANY.RUN Sandbox|||anyrun-detonate-file-windows
+      script: '|||anyrun-detonate-file-windows'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
     scriptarguments:
-      auto_confirm_uac:
-        simple: ${inputs.auto_confirm_uac}
       env_bitness:
         simple: ${inputs.env_bitness}
       env_locale:
@@ -99,8 +99,6 @@ tasks:
         simple: ${inputs.opt_privacy_type}
       opt_timeout:
         simple: ${inputs.opt_timeout}
-      task_rerun_uuid:
-        simple: ${inputs.task_rerun_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -119,17 +117,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6688a469-b265-42d3-b325-2cb1a9fcf40f
+    taskid: b8f4e14f-6a8a-439f-9487-3bf1968455bf
     type: regular
     task:
-      id: 6688a469-b265-42d3-b325-2cb1a9fcf40f
+      id: b8f4e14f-6a8a-439f-9487-3bf1968455bf
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -310,18 +308,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+    taskid: 48e50751-0f3d-4262-bd81-0c7274e163d5
     type: regular
     task:
-      id: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+      id: 48e50751-0f3d-4262-bd81-0c7274e163d5
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected,
         Suspicious activity, Malicious activity'
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-verdict
+      script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -346,17 +344,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9a698b84-1524-49f6-8617-8bab2a9064d3
+    taskid: fe59675d-8912-426d-8901-faa7ef425bb5
     type: regular
     task:
-      id: 9a698b84-1524-49f6-8617-8bab2a9064d3
+      id: fe59675d-8912-426d-8901-faa7ef425bb5
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "5"

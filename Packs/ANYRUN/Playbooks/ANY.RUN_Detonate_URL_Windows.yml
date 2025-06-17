@@ -1,5 +1,5 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97cl
-version: 14
+version: 3
 contentitemexportablefields:
   contentitemfields:
     packID: ANYRUN
@@ -46,17 +46,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: 45021feb-0667-403c-b2bf-4fb983c9c6fb
+    taskid: ba727b14-8224-4cc4-a7a5-07eb0088482f
     type: regular
     task:
-      id: 45021feb-0667-403c-b2bf-4fb983c9c6fb
+      id: ba727b14-8224-4cc4-a7a5-07eb0088482f
       version: -1
       name: '[ANY.RUN] Detonate URL Windows'
       description: Perform URL analysis using Windows VM.
-      script: ANY.RUN Sandbox|||anyrun-detonate-url-windows
+      script: '|||anyrun-detonate-url-windows'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -93,8 +93,6 @@ tasks:
         simple: ${inputs.opt_privacy_type}
       opt_timeout:
         simple: ${inputs.opt_timeout}
-      task_rerun_uuid:
-        simple: ${inputs.task_rerun_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -113,17 +111,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 845bf451-e88b-4622-a361-980a5e8cfbb8
+    taskid: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
     type: regular
     task:
-      id: 845bf451-e88b-4622-a361-980a5e8cfbb8
+      id: 06fba4d0-2f3f-47e4-b7f2-c55edc19c029
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -304,18 +302,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+    taskid: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
     type: regular
     task:
-      id: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+      id: 6ec11986-da4b-4bc3-b41e-f8375fe86c7b
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected,
         Suspicious activity, Malicious activity'
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-verdict
+      script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -340,17 +338,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 9b969a85-831f-4e9f-a342-052ad87782a4
+    taskid: f12c2188-8e8f-4cc2-9316-53932fef1fcb
     type: regular
     task:
-      id: 9b969a85-831f-4e9f-a342-052ad87782a4
+      id: f12c2188-8e8f-4cc2-9316-53932fef1fcb
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "5"

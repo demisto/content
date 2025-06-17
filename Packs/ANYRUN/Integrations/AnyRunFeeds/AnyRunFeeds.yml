@@ -16,7 +16,7 @@ configuration:
   type: 0
 - display: Fetch indicators
   name: feed
-  defaultvalue: true
+  defaultvalue: "true"
   type: 8
   required: false
 - display: Indicator Reputation
@@ -44,8 +44,7 @@ configuration:
   - E - Unreliable
   - F - Reliability cannot be judged
   additionalinfo: Reliability of the source providing the intelligence data.
-- display: Feed expiration policy
-  name: feedExpirationPolicy
+- name: feedExpirationPolicy
   defaultvalue: never
   type: 17
   required: false
@@ -65,7 +64,7 @@ configuration:
   required: false
 - display: Bypass exclusion list
   name: feedBypassExclusionList
-  defaultvalue: ""
+  defaultvalue: "false"
   type: 8
   required: false
   additionalinfo: When selected, the exclusion list is ignored for indicators from

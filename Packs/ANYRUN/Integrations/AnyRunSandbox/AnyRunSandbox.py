@@ -76,7 +76,7 @@ def make_api_call(
     api_key_id = params.get('soar_api_key_id')
     api_key = params.get('soar_api_key')
 
-    url = f'https://{fqdn}/xsoar/public/v1/{endpoint_url}'
+    url = f'{fqdn}/xsoar/public/v1/{endpoint_url}'
     headers = {
         'Authorization': api_key,
         'x-xdr-auth-id': api_key_id

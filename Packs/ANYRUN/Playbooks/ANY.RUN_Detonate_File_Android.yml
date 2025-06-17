@@ -1,5 +1,5 @@
 id: 04275315-7598-4042-8fdb-5f93d3ea97ce
-version: 12
+version: 3
 contentitemexportablefields:
   contentitemfields:
     packID: ANYRUN
@@ -12,7 +12,9 @@ contentitemexportablefields:
     isoverridable: false
 vcShouldKeepItemLegacyProdMachine: false
 name: ANY.RUN Detonate File Android
-description: This playbook submits a file extracted from an incident attachment to the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps to automate malware detonation and behavior observation on Android OS.
+description: This playbook submits a file extracted from an incident attachment to
+  the ANY.RUN cloud sandbox for dynamic analysis in an Android environment. It helps
+  to automate malware detonation and behavior observation on Android OS.
 starttaskid: "0"
 tasks:
   "0":
@@ -46,17 +48,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "2":
     id: "2"
-    taskid: b42ec2b4-4a31-4efc-83a2-3dd6cc7201ee
+    taskid: 29050f73-a833-4d28-b383-de0e91bf45d5
     type: regular
     task:
-      id: b42ec2b4-4a31-4efc-83a2-3dd6cc7201ee
+      id: 29050f73-a833-4d28-b383-de0e91bf45d5
       version: -1
       name: '[ANY.RUN] Detonate File Android'
       description: Perform File analysis using Android VM.
-      script: ANY.RUN Sandbox|||anyrun-detonate-file-android
+      script: '|||anyrun-detonate-file-android'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "9"
@@ -65,8 +67,6 @@ tasks:
         simple: ${inputs.env_locale}
       file:
         simple: ${inputs.file}
-      incident_info:
-        simple: ${inputs.incident_info}
       obj_ext_cmd:
         simple: ${inputs.obj_ext_cmd}
       opt_network_connect:
@@ -87,8 +87,6 @@ tasks:
         simple: ${inputs.opt_privacy_type}
       opt_timeout:
         simple: ${inputs.opt_timeout}
-      task_rerun_uuid:
-        simple: ${inputs.task_rerun_id}
     separatecontext: false
     continueonerrortype: ""
     view: |-
@@ -107,17 +105,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "3":
     id: "3"
-    taskid: 6136dfb6-23ee-4194-943d-8a1235edc24c
+    taskid: e60df45d-0efe-4632-832d-174b80a4eb65
     type: regular
     task:
-      id: 6136dfb6-23ee-4194-943d-8a1235edc24c
+      id: e60df45d-0efe-4632-832d-174b80a4eb65
       version: -1
       name: '[ANY.RUN] Get analysis summary'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "10"
@@ -298,18 +296,18 @@ tasks:
     isautoswitchedtoquietmode: false
   "9":
     id: "9"
-    taskid: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+    taskid: 26000f51-4da0-4701-979a-61120a246d81
     type: regular
     task:
-      id: 1386c6af-0901-46d1-a348-a6ae9b2a534d
+      id: 26000f51-4da0-4701-979a-61120a246d81
       version: -1
       name: '[ANY.RUN] Get analysis verdict'
       description: 'Returns a threat level text. Possible values: No threats detected,
         Suspicious activity, Malicious activity'
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-verdict
+      script: '|||anyrun-get-analysis-verdict'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "8"
@@ -334,17 +332,17 @@ tasks:
     isautoswitchedtoquietmode: false
   "10":
     id: "10"
-    taskid: 31bf7150-3c26-441f-93a1-64531907322d
+    taskid: 748c43c9-cbeb-4a0c-b276-5fd80396662a
     type: regular
     task:
-      id: 31bf7150-3c26-441f-93a1-64531907322d
+      id: 748c43c9-cbeb-4a0c-b276-5fd80396662a
       version: -1
       name: '[ANY.RUN] Load IOCs to Threat Intel'
       description: Returns the analysis report summary.
-      script: ANY.RUN Sandbox|||anyrun-get-analysis-report
+      script: '|||anyrun-get-analysis-report'
       type: regular
       iscommand: true
-      brand: ANY.RUN Sandbox
+      brand: ""
     nexttasks:
       '#none#':
       - "5"

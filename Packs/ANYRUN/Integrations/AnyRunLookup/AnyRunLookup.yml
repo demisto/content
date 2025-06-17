@@ -245,7 +245,7 @@ script:
           name: http_response_file_type
           required: false
           type: String
-      description: 'Perform threat intelligence using specified IOC'
+      description: 'Perform threat intelligence using specified IOC.'
       name: anyrun-get-intelligence
       outputs:
         - contextPath: ANYRUN.Lookup.destinationPort
