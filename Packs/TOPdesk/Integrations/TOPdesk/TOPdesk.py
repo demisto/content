@@ -908,7 +908,6 @@ def assets_to_command_results(
     if len(assets) == 0:
         return CommandResults(readable_output="No assets found")
     # Remove '@' prefix from keys in each asset
-    # TODO: This could bring confusion to the user since the "fields" argument needs the correct field name (with @ and without capital
     assets = [{k.replace("@", ""): v for k, v in asset.items()} for asset in assets]
     readable_output = tableToMarkdown(
         f"{INTEGRATION_NAME} assets", capitalize_for_outputs(assets), removeNull=True
