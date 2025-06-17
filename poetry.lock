@@ -710,12 +710,15 @@ reference = "pypi-public"
 
 [[package]]
 name = "demisto-sdk"
-version = "1.38.3"
+version = "1.38.4"
 description = "\"A Python library for the Demisto SDK\""
 optional = false
 python-versions = ">=3.9,<3.13"
-files = []
-develop = false
+groups = ["dev"]
+files = [
+    {file = "demisto_sdk-1.38.4-py3-none-any.whl", hash = "sha256:b0b96f6a32dfc8560bedfee4f1cb1b5c997b36abd45e5a38c6f52987a4b5472a"},
+    {file = "demisto_sdk-1.38.4.tar.gz", hash = "sha256:2ba0727a7e131d8eb9611a9862b05310245001cd8994ce17e7cf2a53032a4411"},
+]
 
 [package.dependencies]
 autopep8 = "^2.0.4"
@@ -777,11 +780,11 @@ typer = {version = "^0.13.0", extras = ["all"]}
 typing-extensions = "^4.1.1"
 ujson = "^5.1.0"
 urllib3 = ">=1.26,<3"
-uv = "^0.1.5"
-vulture = "^2.3"
-wcmatch = "^8.3"
-werkzeug = "^3.1.3"
-yamlordereddictloader = "^0.4.0"
+uv = ">=0.1.5,<0.2.0"
+vulture = ">=2.3,<3.0"
+wcmatch = ">=8.3,<9.0"
+werkzeug = ">=3.1.3,<4.0.0"
+yamlordereddictloader = ">=0.4.0,<0.5.0"
 
 [package.extras]
 build = ["gsutil (==5.17)"]
@@ -4408,6 +4411,7 @@ version = "3.1.3"
 description = "The comprehensive WSGI web application library."
 optional = false
 python-versions = ">=3.9"
+groups = ["dev"]
 files = [
     {file = "werkzeug-3.1.3-py3-none-any.whl", hash = "sha256:54b78bf3716d19a65be4fceccc0d1d7b89e608834989dfae50ea87564639213e"},
     {file = "werkzeug-3.1.3.tar.gz", hash = "sha256:60723ce945c19328679790e3282cc758aa4a6040e4bb330f53d30fa546d44746"},
@@ -4549,4 +4553,4 @@ reference = "pypi-public"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10,<3.12"
-content-hash = "253647516ee6e1b5c893e1e7eca6a0c7ac67205625376f47dc9bb8b0682c2ac4"
+content-hash = "582ff8a363129b3f7c0db26dc3b31f0b1aef1b84f310ee1ed66a8e0f53123e8c"
