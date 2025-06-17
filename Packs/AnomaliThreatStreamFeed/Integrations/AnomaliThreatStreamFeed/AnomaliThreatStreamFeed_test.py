@@ -1,7 +1,7 @@
 from CommonServerPython import tableToMarkdown, Common, FeedIndicatorType, EntityRelationship
 import pytest
 from AnomaliThreatStreamFeed import Client
-from datetime import datetime, UTC
+from datetime import datetime, timezone
 
 from typing import Any
 
@@ -327,7 +327,7 @@ def test_parse_indicators_for_get_command_full_data():
             "Modified": "2023-01-01T12:00:00Z",
             "Confidence": "90",
             "Creation": "2022-01-01T12:00:00Z",
-            "Tags": [{"id": "125a", "name": "tag125a"}, {"id": "125b", "name": "tag125b"}],
+            "Tags": ["tag125a", "tag125b"],
             "TrafficLightProtocol": "RED",
             "Location": "New York",
             "ASN": "AS12345",
@@ -393,7 +393,7 @@ def test_get_past_time_basic_interval(mocker):
     """
     from AnomaliThreatStreamFeed import get_past_time
 
-    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=UTC)
+    mock_now = datetime(2023, 8, 1, 12, 0, 0, 500000, tzinfo=timezone.utc)
     minutes_interval = 60  # one hour ago
     expected_past_time = "2023-08-01T11:00:00.500Z"
 
@@ -863,7 +863,7 @@ TEST_CASES = [
         "mock_http_responses": [{"objects": [], "meta": {"next": None}}],
         "mock_get_past_time_return": None,
         "mock_parse_indicator_for_fetch_side_effect": [],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [],
         "expected_exception": None,
@@ -934,7 +934,7 @@ TEST_CASES = [
         ],
         "mock_get_past_time_return": "2023-08-01T11:00:00.000Z",
         "mock_parse_indicator_for_fetch_side_effect": {"value": "1.1.1.1", "type": "IP"},
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "1.1.1.1", "type": "IP"}],
         "expected_exception": None,
@@ -1015,7 +1015,6 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
         - Calling fetch_indicators_command.
     Then:
         Verify that:
-        - `demisto.error` is called for the skipped indicator.
         - Only successfully parsed indicators are returned.
         - `parse_indicator_for_fetch` is attempted for all raw indicators.
         - The `next_run_timestamp` is correctly updated.
@@ -1045,7 +1044,7 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
             ValueError("Simulated parsing error"),  # First indicator fails parsing
             {"value": "example.com", "type": "DOMAIN"},  # Second indicator parses successfully
         ],
-        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=UTC),
+        "mock_now": datetime(2023, 8, 1, 12, 0, 0, tzinfo=timezone.utc),
         "expected_next_run_timestamp": "2023-08-01T12:00:00Z",
         "expected_parsed_indicators": [{"value": "example.com", "type": "DOMAIN"}],  # Only the second one
     }
@@ -1095,3 +1094,78 @@ def test_fetch_indicators_command_parsing_error_skips_indicator(mocker):
             ),
         ]
     )
+
+
+def test_extract_tag_names_with_valid_tags():
+    """
+    Tests extract_tag_names with a valid list of tags.
+    Verifies that all tag names are extracted correctly.
+
+    Given:
+        - An indicator dictionary with a 'tags' key containing a list of well-formed tag dictionaries.
+    When:
+        - Calling extract_tag_names.
+    Then:
+        Verify that:
+        - A list of expected tag names is returned.
+    """
+    from AnomaliThreatStreamFeed import extract_tag_names
+
+    indicator = {
+        "id": "123",
+        "value": "example.com",
+        "type": "domain",
+        "tags": [
+            {"id": "fce", "name": "test1"},
+            {"id": "94f", "name": "https://1.1.1./example/exampletags"},
+            {"id": "abc", "name": "tag_123"},
+        ],
+    }
+    expected_names = ["test1", "https://1.1.1./example/exampletags", "tag_123"]
+    result = extract_tag_names(indicator)
+    assert result == expected_names
+
+
+def test_extract_tag_names_with_no_tags_none():
+    """
+    Tests extract_tag_names when the 'tags' key value is None.
+    Verifies that an empty list is returned.
+
+    Given:
+        - An indicator dictionary where the 'tags' key's value is None.
+    When:
+        - Calling extract_tag_names.
+    Then:
+        Verify that:
+        - An empty list is returned.
+    """
+    from AnomaliThreatStreamFeed import extract_tag_names
+
+    indicator = {"id": "456", "value": "another.org", "type": "domain", "tags": None}
+    result = extract_tag_names(indicator)
+    assert result == []
+
+
+def test_extract_tag_names_with_tags_not_a_list():
+    """
+    Tests extract_tag_names when the 'tags' value is not a list.
+    Verifies that an empty list is returned.
+
+    Given:
+        - An indicator dictionary where the 'tags' key's value is a string or a dictionary
+          (i.e., not a list).
+    When:
+        - Calling extract_tag_names.
+    Then:
+        Verify that:
+        - An empty list is returned.
+    """
+    from AnomaliThreatStreamFeed import extract_tag_names
+
+    indicator_str = {"id": "333", "value": "not_a_list", "tags": "some_string_value"}
+    result_str = extract_tag_names(indicator_str)
+    assert result_str == []
+
+    indicator_dict = {"id": "444", "value": "not_a_list_dict", "tags": {"key": "value"}}
+    result_dict = extract_tag_names(indicator_dict)
+    assert result_dict == []

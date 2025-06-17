@@ -229,7 +229,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
             demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
             break  # Break pagination on error but process what's already fetched
 
-    parsed_indicators = parse_indicators_for_get_command(indicators_raw)
+    parsed_indicators = parse_indicators_for_get_command(indicators_raw, sort_by=args.get("sort_by", "Created Time"))
     demisto.debug(f"{THREAT_STREAM}-get-indicators command got {len(parsed_indicators)} indicators.")
 
     # Define headers dynamically based on whether an indicator type was specified
@@ -266,15 +266,49 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
     return CommandResults(readable_output=human_readable, raw_response=indicators_raw)
 
 
-def parse_indicators_for_get_command(indicators) -> list[dict[str, Any]]:
+def extract_tag_names(indicator: dict[str, Any]) -> list[str]:
+    """
+    Extracts the 'name' values from the 'tags' list within an indicator dictionary.
+
+    This function safely handles cases where the 'tags' key might be missing or its
+    value might be None, returning an empty list in such scenarios.
+
+    Args:
+        indicator (Dict[str, Any]): A dictionary representing an indicator, which may
+                                     contain a 'tags' key with a list of tag dictionaries.
+
+    Returns:
+        List[str]: A list of tag names (strings) found in the 'tags' list.
+                   Returns an empty list if 'tags' is not present, is None, or
+                   contains no dictionaries with a 'name' key.
+    """
+    tags = indicator.get("tags")
+    if tags is None:
+        return []
+
+    # Ensure tags is a list before attempting to iterate
+    if not isinstance(tags, list):
+        # This case handles if 'tags' exists but is not a list (e.g., a string, int, etc.)
+        return []
+
+    names = []
+    for tag in tags:
+        if isinstance(tag, dict) and "name" in tag:
+            names.append(tag["name"])
+    return names
+
+
+def parse_indicators_for_get_command(indicators, sort_by: str = "Created Time") -> list[dict[str, Any]]:
     """
     Parses a list of raw indicators from the API response into a format suitable for the War Room.
+    The returned list is ordered in descending order by the specified timestamp.
 
     Args:
         indicators (list[dict[str, Any]]): List of raw indicator dictionaries from API response.
+        sort_by (str): The field to sort the indicators by. Can be "Created" or "Modified". Defaults to "Created".
 
     Returns:
-        list[dict[str, Any]]: List of indicators formatted for War Room display.
+        list[dict[str, Any]]: List of indicators formatted for War Room display,
     """
     res: list[dict[str, Any]] = []
     for indicator in indicators:
@@ -298,12 +332,17 @@ def parse_indicators_for_get_command(indicators) -> list[dict[str, Any]]:
                 Confidence=str(indicator.get("confidence")),
                 Creation=indicator.get("created_ts"),
                 Expiration=indicator.get("expires_ts"),
-                Tags=indicator.get("tags"),
+                Tags=extract_tag_names(indicator),
                 TrafficLightProtocol=indicator.get("tlp"),
                 Location=indicator.get("locations"),
                 ASN=indicator.get("asn"),
             )
         )
+        
+    if sort_by == "Created Time":
+        res.sort(key=lambda x: x.get("Creation") or "", reverse=True)
+    else: # sort_by == "Modified Time":
+        res.sort(key=lambda x: x.get("Modified") or "", reverse=True)
     return res
 
 
@@ -354,7 +393,11 @@ def fetch_indicators_command(
     tlp_color = params.get("tlp_color", "WHITE")
     reliability = DBotScoreReliability.get_dbot_score_reliability_from_str(params.get("feedReliability", DBotScoreReliability.C))
     now = get_current_utc_time()
-    order_by = f"{params.get('fetchBy', 'modified')}_ts"
+    order_by = params.get("fetchBy", "Created Time")
+    if order_by == "Created Time":
+        order_by = "created_ts"
+    else:
+        order_by = "modified_ts"
     confidence_threshold = arg_to_number(params.get("confidenceThreshold", DEFAULT_CONFIDENCE_THRESHOLD))
 
     # Initialize last_fetch_time based on the last_run object.
@@ -379,7 +422,7 @@ def fetch_indicators_command(
         # TODO will be deleted later - good for tests and demo
         query["modified_ts__gte"] = last_fetch_time  # "2023-08-04T11:57:00.001Z"
     else:  # order_by == "created_ts"
-        query["created_ts__gte"] = last_fetch_time
+        query["created_ts__gte"] = "2021-01-01T09:48:19.629Z"  # last_fetch_time
 
     demisto.debug(f"{THREAT_STREAM} - Initial API call for fetch-indicators with params: {query}")
     response = client.http_request(method="GET", url_suffix=URL_SUFFIX, params=query)

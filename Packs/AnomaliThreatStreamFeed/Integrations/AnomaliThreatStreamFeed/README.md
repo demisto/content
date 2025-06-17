@@ -1,23 +1,23 @@
-Use the Anomali ThreatStream Feed integration to fetch indicators from the feed.
+Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream.
 
 ## Configure Anomali ThreatStream Feed in Cortex
 
 
 | **Parameter** | **Description** | **Required** |
 | --- | --- | --- |
-| Fetch indicators | Select this check box to fetch indicators. | False |
-| Fetch by | Fetch by the modification or creation date of the indicators. | True |
-| Server URL (e.g., https://www.test.com) | URL of Anomali ThreatStream API | True |
-| Username | Username of the Domain User. | True |
-| API Key | The API Key to use for connection. | True |
-| Feed Fetch Interval | The feed fetch interval. | False |
+| Fetch indicators | Enable this checkbox to automatically pull indicators from Anomali ThreatStream at regular intervals. |  |
+| Fetch by |  | True |
+| Server URL (e.g., https://www.test.com) | Confirm that the pre-filled URL matches the correct API endpoint for your Anomali ThreatStream instance. | True |
+| Username |  | True |
+| API Key |  | True |
+| Feed Fetch Interval |  | False |
 | Confidence Threshold | Will only return indicators above the confidence threshold. | False |
-| Source Reliability | Reliability of the source providing the intelligence data. | False |
-| Traffic Light Protocol Color | Indicator's TLP will override default value. | False |
-| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. | False |
-| Indicator Expiration Method | The feed's expiration method. | False |
-| Create relationships | Create relationships between indicators as part of Enrichment. | False |
-| Trust any certificate (not secure) | Trust server certificate.  | False |
+| Source Reliability | Reliability of the source providing the intelligence data | True |
+| Traffic Light Protocol Color | The Traffic Light Protocol \(TLP\) designation to apply to indicators fetched from the feed. | False |
+| Indicator Reputation | Indicators from this integration instance will be marked with this reputation. Indicators' verdict are determined by their Dbot score from the api, the default is Unknown. | False |
+|  |  | False |
+| Create relationships |  | False |
+| Trust any certificate (not secure) |  | False |
 
 ## Commands
 
@@ -27,8 +27,7 @@ After you successfully execute a command, a DBot message appears in the War Room
 ### threatstream-feed-get-indicators
 
 ***
-Gets indicators from the feed.
-This command is mainly used for testing and debugging purposes.
+Gets indicators from the feed. This command is mainly used for testing and debugging purposes.
 
 #### Base Command
 
@@ -40,21 +39,21 @@ This command is mainly used for testing and debugging purposes.
 | --- | --- | --- |
 | indicator_type | The indictor type to analyze. Possible values are: domain, ip, md5, url, email. | Optional | 
 | limit | Maximum number of objects to return (default is 10). | Optional | 
+| sort_by | Sort the records in descending order according to the Created or Modified Time. Possible values are: Created Time, Modified Time. | Optional | 
 
 #### Context Output
 
 There is no context output for this command.
-
 #### Command example
-```!threatstream-feed-get-indicators indicator_type=domain limit=5```
+```!threatstream-feed-get-indicators indicator_type="domain" limit="5" sort_by="Created Time"```
 #### Human Readable Output
 
 >### Indicators from Anomali ThreatStream Feed:
->|Source|ThreatStreamID|domain|Modified|Confidence|Creation|Tags|TrafficLightProtocol|
+>|Source|ThreatStreamID|Domain|Modified|Confidence|Creation|Tags|TrafficLightProtocol|
 >|---|---|---|---|---|---|---|---|
->| nickelfreesolutions.com | 284008208 | dunnydomain.com | 2025-04-05T01:48:33.997Z | 0 | 2021-11-16T09:40:10.407Z | **-**	***id***: pit<br/>	***name***: domain-test-h-without-approval-cloud-unresolved | amber |
->| Demisto | 440576095 | my.domainnn.com | 2023-12-24T00:00:05.890Z | 50 | 2023-06-20T08:07:33.841Z | **-**	***name***: tag3452<br/>	***org_id***: 88<br/>	***id***: yxy<br/>	***tlp***: amber<br/>	***_valid***: true<br/>**-**	***name***: tag23452<br/>	***org_id***: 88<br/>	***id***: q6q<br/>	***tlp***: amber<br/>	***_valid***: true |  |
->| Demisto | 440126275 | my.domain8961.com | 2023-12-24T00:00:05.877Z | 50 | 2023-06-19T12:14:52.216Z | **-**	***name***: tag3452<br/>	***org_id***: 88<br/>	***id***: yro<br/>	***tlp***: red<br/>	***_valid***: true<br/>**-**	***name***: tag23452<br/>	***org_id***: 88<br/>	***id***: bdw<br/>	***tlp***: red<br/>	***_valid***: true |  |
+>| Demisto | 440576095 | my.domainnn_test.com | 2023-12-24T00:00:05.890Z | 50 | 2023-06-20T08:07:33.841Z | ***values***: tag3452, tag23452 |  |
+>| Demisto | 440126275 | my.domain987.com | 2023-12-24T00:00:05.877Z | 50 | 2023-06-19T12:14:52.216Z | ***values***: tag3452, tag23452 |  |
 >| Demisto | 439658732 | my.domain1357.com | 2023-09-16T10:10:05.788Z | 50 | 2023-06-18T10:02:07.876Z |  |  |
->| Analyst | 231953546 | abctest1.com | 2023-07-17T09:55:54.228Z | 60 | 2021-04-06T09:36:09.122Z | **-**	***id***: 5nt<br/>	***name***: Reconnaissance |  |
+>| nickelfreesolutions.com | 284008208 | test_domain_121.com | 2025-04-05T01:48:33.997Z | 0 | 2021-11-16T09:40:10.407Z | ***values***: domain-test-h-without-approval-cloud-unresolved | amber |
+>| Analyst | 231953546 | abc_testdomain1.com | 2023-07-17T09:55:54.228Z | 60 | 2021-04-06T09:36:09.122Z | ***values***: Reconnaissance |  |
 

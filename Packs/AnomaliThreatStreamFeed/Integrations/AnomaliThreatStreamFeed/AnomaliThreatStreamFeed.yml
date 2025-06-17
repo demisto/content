@@ -11,14 +11,15 @@ configuration:
   name: feed
   type: 8
   section: Collect
+  additionalinfo: Enable this checkbox to automatically pull indicators from Anomali ThreatStream at regular intervals.
 - display: Fetch by
   name: fetchBy
   type: 15
-  defaultvalue: modified
+  defaultvalue: "Created Time"
   required: true
   options:
-  - "created"
-  - "modified"
+  - "Created Time"
+  - "Modified Time"
   section: Collect
 - display: Server URL (e.g., https://www.test.com)
   defaultvalue: https://api.threatstream.com
@@ -26,6 +27,7 @@ configuration:
   required: true
   type: 0
   section: Connect
+  additionalinfo: Confirm that the pre-filled URL matches the correct API endpoint for your Anomali ThreatStream instance.
 - display: Username
   name: credentials
   required: true
@@ -75,8 +77,8 @@ configuration:
   section: Collect
   advanced: true
 - display: Indicator Reputation
+  additionalinfo: Indicators from this integration instance will be marked with this reputation. Indicators' verdict are determined by their Dbot score from the api, the default is Unknown.
   name: feedReputation
-  additionalinfo: Indicators from this integration instance will be marked with this reputation.
   options:
   - None
   - Good
@@ -112,7 +114,7 @@ configuration:
   section: Connect
   advanced: true
   required: false
-description: Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream Feed.
+description: Use the Anomali ThreatStream Feed Integration to fetch indicators from Anomali ThreatStream.
 display: Anomali ThreatStream Feed
 name: Anomali ThreatStream Feed
 script:
@@ -135,6 +137,14 @@ script:
       isArray: false
       required: false
       type: Number
+    - name: sort_by 
+      auto: PREDEFINED
+      description: Sort the records in descending order according to the Created or Modified Time.
+      isArray: false
+      required: false
+      predefined:
+      - 'Created Time'
+      - 'Modified Time'
     description: Gets indicators from the feed. This command is mainly used for testing and debugging purposes.
     name: threatstream-feed-get-indicators
   dockerimage: demisto/py3-tools:1.0.0.3205634
