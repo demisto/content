@@ -1207,11 +1207,13 @@ script:
       name: attachCIDs
     - description: The email address from which to send the email.
       name: from
+      required: true
     - description: The content (body) of the email (in HTML format).
       name: htmlBody
+      required: true
       prettyname: HTML Body
       prettypredefined:
-        Alert Email Content: "<html><body><p><strong>[Security Alert]</strong> A suspicious email from ${issue.xdmemailsender} was removed.</p></body></html>"
+        Alert Email Content: '`<p>Dear recipient</p><p>Our security team has identified and removed a potentially malicious email that was previously delivered to your inbox.</p><p><strong>Email Details:</strong><br>- Subject: ${issue.xdmoriginalemailsubject} <br>- Sender: ${issue.xdmemailsender}</p><p>This message was deemed suspicious or malicious and has been automatically deleted to protect your account and our organization.</p><p><strong>Important</strong><br>Please do <strong>not attempt to reopen retrieve or interact</strong> with the email if you have it cached or archived in any personal folders or devices.</p><p>If you clicked any links or downloaded attachments from the original message or if you experience any suspicious system behavior please notify the Security Team immediately.</p><p>Thank you for your cooperation in keeping our environment secure.</p><p>—<br>Security Operations Team</p>`'
     - description: Indicates whether to render the email body.
       name: renderBody
       auto: PREDEFINED
@@ -1227,7 +1229,7 @@ script:
     description: Sends an email using Microsoft Graph.
     name: send-email-to-recipients-office-365-quick-action
     quickaction: true
-    hidden: true
+    # hidden: true
     prettyname: Send Email to Recipients - Office 365
     outputs:
     - contextPath: MicrosoftGraph.Email.internetMessageHeaders
