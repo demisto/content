@@ -115,6 +115,7 @@ tasks:
       id: a7cf3c73-83a5-42be-8645-af89ad6c9364
       version: -1
       name: Send email for review consent
+      description: Check whether the values provided in arguments are equal. If either of the arguments are missing, no is returned.
       type: condition
       iscommand: false
       brand: ""
@@ -173,7 +174,8 @@ tasks:
     task:
       id: fa88b28b-bea6-4a05-856b-9fb32a4d2edc
       version: -1
-      name: Is remediation available ?
+      name: Is remediation available?
+      description: Check if remediation is available for the issue ruleid.
       type: condition
       iscommand: false
       brand: ""
@@ -342,6 +344,7 @@ tasks:
       id: bf008e9d-70a0-4c2e-8593-21194d7dc365
       version: -1
       name: Is reviewer assigned?
+      description: Check if reviewer email address is provided in playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -590,7 +593,8 @@ tasks:
     task:
       id: 3f1d0dfa-434f-49f2-8016-2826fc659fcc
       version: -1
-      name: 'Confirm AWS Pack Integration '
+      name: 'Confirm AWS Pack Integration'
+      description: Confirm if AWS dependency pack is installed and integrated.
       type: condition
       iscommand: false
       brand: ""

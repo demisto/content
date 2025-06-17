@@ -179,6 +179,7 @@ tasks:
       id: fff091d1-3fc6-4d47-8bf2-1db790baf06c
       version: -1
       name: Is remediation available?
+      description: Check if remediation is available for the issue ruleid.
       type: condition
       iscommand: false
       brand: ""
@@ -402,6 +403,7 @@ tasks:
       id: 60bb49ac-7f54-49a2-8632-c5eb8904765d
       version: -1
       name: Is reviewer assigned?
+      description: Check if reviewer email address is provided in playbook inputs.
       type: condition
       iscommand: false
       brand: ""
@@ -566,7 +568,8 @@ tasks:
     task:
       id: dfcfc90e-3d3a-4ae6-87d1-ebb8bc45afcc
       version: -1
-      name: 'Confirm AWS Pack Integration '
+      name: 'Confirm AWS Pack Integration'
+      description: Confirm if AWS dependency pack is installed and integrated.
       type: condition
       iscommand: false
       brand: ""

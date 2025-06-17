@@ -33,6 +33,7 @@ This content pack helps fix common cloud misconfigurations automatically with an
    - Ensures S3 compliance with cloud security policies.
 
 All remediation playbooks leverage:
+
 - AWS integrations
 - Sub-playbooks for ticket creation and notification
 - Context-aware command execution
@@ -48,6 +49,7 @@ All remediation playbooks leverage:
 ## Dependencies
 
 This pack uses the following integrations:
+
 - AWS
 - Cortex Core - IR
 - Jira V3
@@ -69,6 +71,7 @@ This pack uses the following integrations:
 ### Pack Contributors:
 
 ---
- - Shashi Kiran N
+
+- Shashi Kiran N
 
 Contributions are welcome and appreciated. For more info, visit our [Contribution Guide](https://xsoar.pan.dev/docs/contributing/contributing).
