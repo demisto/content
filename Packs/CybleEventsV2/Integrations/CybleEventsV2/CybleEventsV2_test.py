@@ -18,7 +18,6 @@ try:
         get_event_format,
         time_diff_in_mins,
         build_auth_headers,
-        MAX_THREADS,
     )
 except ImportError:
     # If direct import fails, these functions need to be defined in your main module
