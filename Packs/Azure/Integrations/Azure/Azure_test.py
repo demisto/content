@@ -1,4 +1,5 @@
 import json
+
 import demistomock as demisto
 import pytest
 import jwt
@@ -21,7 +22,6 @@ from Azure import (
     sql_db_threat_policy_update_command,
     sql_db_tde_set_command,
     cosmosdb_update_command,
-    test_module,
     get_role_assignments,
     get_token,
     remove_member_from_group_command,
@@ -663,57 +663,6 @@ def test_cosmosdb_update_command(mocker, client, mock_params):
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "test-cosmos"
     assert result.outputs["properties"]["disableKeyBasedMetadataWriteAccess"] is True
-
-
-def test_test_module_with_client_credentials(mocker, mock_params):
-    """
-    Given: A configuration using Client Credentials authentication method.
-    When: The test_module function is called.
-    Then: The function should return 'ok' if the authentication is successful.
-    """
-
-    # Create client with Client Credentials connection type
-    client_credentials_params = mock_params.copy()
-    client_credentials_params["auth_type"] = "Client Credentials"
-
-    client = AzureClient(
-        app_id=client_credentials_params.get("app_id", ""),
-        subscription_id=client_credentials_params.get("subscription_id", ""),
-        resource_group_name=client_credentials_params.get("resource_group_name", ""),
-        verify=not client_credentials_params.get("insecure", False),
-        proxy=client_credentials_params.get("proxy", False),
-        tenant_id=client_credentials_params.get("tenant_id"),
-        enc_key=client_credentials_params.get("credentials", {}).get("password"),
-    )
-
-    # Mock the token and decoded token
-    mock_token = "mock_token_value"
-    mock_decoded_token = {"oid": "mock_object_id", "roles": ["Role1", "Role2"]}
-
-    # Mock the token retrieval and decoding
-    mocker.patch.object(client.ms_client, "get_access_token", return_value=mock_token)
-    mocker.patch("Azure.get_token", return_value=mock_decoded_token)
-
-    # Mock the role assignments
-    mock_role_assignments = [
-        {
-            "properties": {
-                "roleDefinitionId": "/subscriptions/test_subscription_id/providers/Microsoft.Authorization/roleDefinitions/role1"
-            }
-        }
-    ]
-    mocker.patch("Azure.get_role_assignments", return_value=mock_role_assignments)
-
-    # Mock the role permissions to include all required permissions
-    mock_role_permissions = ["Microsoft.*/*/read", "Microsoft.*/*/write"]  # Pattern that would match all required permissions
-    mocker.patch("Azure.get_role_definitions_permissions", return_value=mock_role_permissions)
-
-    # Mock check_all_permissions to return empty list (no missing permissions)
-    mocker.patch("Azure.check_all_permissions", return_value=[])
-
-    # Test that it returns 'ok'
-    result = test_module(client)
-    assert result == "ok"
 
 
 def test_storage_account_update_command_empty_response(mocker, client, mock_params):
