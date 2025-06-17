@@ -1397,7 +1397,7 @@ def test_update_asset(client, requests_mock, command_args, expected_results):
     mock_assets = util_load_json("test_data/topdesk_asset_update.json")
 
     requests_mock.post(
-        f"https://test.com/api/assetmgmt/assets/{command_args["asset_id"]}",
+        f"https://test.com/api/assetmgmt/assets/{command_args['asset_id']}",
         json=mock_assets,
     )
 
