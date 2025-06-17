@@ -981,6 +981,8 @@ script:
     - contextPath: ASM.ExternalWebsiteReply
       description: Contextual information about the request including total count,
         result count and next page token.
+    - contextPath: ASM.ExternalWebsiteReply.NextPageToken
+      description: The next page token for the request (to be used for pagination).
     description: Get external websites assets.
   - name: asm-reset-last-run
     arguments: []
