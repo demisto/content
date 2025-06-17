@@ -902,11 +902,10 @@ def incidents_to_command_results(client: Client, incidents: list[dict[str, Any]]
 
 def assets_to_command_results(
     client: Client, assets: list[dict[str, Any]]
-) -> CommandResults:
+def assets_to_command_results(assets: list[dict[str, Any]]) -> CommandResults:
     """Receive assets from api and convert to CommandResults.
 
     Args:
-        client: The client from which to take the base_url for clickable links.
         assets: The raw assets list from the API
 
     Return CommandResults of Assets.
