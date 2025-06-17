@@ -98,7 +98,7 @@ class Client(BaseClient):
         Args:
             res: Response of DLP API call
         """
-        if res.status_code < 400 or res.start_code >= 500:
+        if res.status_code < 400 or res.status_code >= 500:
             return
         try:
             print_debug_msg(f"Got {res.status_code}, attempting to refresh access token")
@@ -129,7 +129,7 @@ class Client(BaseClient):
                 resp_type="",
                 return_empty_response=True,
             )
-            if res.status_code < 400 or res.start_code >= 500:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 
@@ -163,7 +163,7 @@ class Client(BaseClient):
                 resp_type="response",
                 return_empty_response=True,
             )
-            if res.status_code < 400 or res.start_code >= 500:
+            if res.status_code < 400 or res.status_code >= 500:
                 break
             count += 1
 
