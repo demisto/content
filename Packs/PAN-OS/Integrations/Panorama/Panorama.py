@@ -14313,7 +14313,7 @@ def profile_exception_crud_requests(args: dict, action_type: str) -> Any:
         }
     else:
         params = {}
-        demisto.debug(f"{action_type=} -> {params.get('type')=},{params.get('action')=},{params.get('xpath')=}")
+        demisto.debug(f"{action_type=} -> {params=}")
 
     try:
         raw_response = http_request(URL, "GET", params=params)
@@ -14619,7 +14619,6 @@ def get_query_by_job_id_request(log_type: str, query: str, max_fetch: int, offse
         dir="forward",
         skip=offset_fetch,
     )
-    demisto.debug(f"{params.get('log_type')=},{params.get('query')=},{params.get('nlogs')=},{params.get('skip')=}")
     response = http_request(URL, "GET", params=params)
     return dict_safe_get(response, ("response", "result", "job"))  # type: ignore
 
