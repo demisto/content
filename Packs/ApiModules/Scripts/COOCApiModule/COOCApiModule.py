@@ -47,11 +47,11 @@ class HealthCheckError:
         self.connector_id = connector_id
         self.message = message
         self.error_type = error_type
+        
+        # Determine classification based on error type
         self.classification = HealthStatus.WARNING if self.error_type == ErrorType.PERMISSION_ERROR else HealthStatus.ERROR
 
     def to_dict(self) -> dict:
-        # Determine classification based on error type
-
         return {
             "account_id": self.account_id,
             "connector_id": self.connector_id,
