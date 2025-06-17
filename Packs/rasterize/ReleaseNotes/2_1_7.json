@@ -1,0 +1,4 @@
+{
+    "breakingChanges": true,
+    "breakingChangesNotes": "Due to this fix, it reverts the changes from version 2.1.6, and the rasterize command will no longer support arrays in the War Room."
+}
