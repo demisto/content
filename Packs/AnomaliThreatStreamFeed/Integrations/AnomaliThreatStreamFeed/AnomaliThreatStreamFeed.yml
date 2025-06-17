@@ -63,7 +63,7 @@ configuration:
   additionalinfo: Reliability of the source providing the intelligence data
   type: 15
   section: Collect
-- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed.
+- additionalinfo: The Traffic Light Protocol (TLP) designation to apply to indicators fetched from the feed. Indicator's TLP will override default value.
   display: Traffic Light Protocol Color
   name: tlp_color
   options:
@@ -122,7 +122,7 @@ script:
   - arguments:
     - name: indicator_type 
       auto: PREDEFINED
-      description: The indictor type to analyze.
+      description: The indicator type to analyze. If not selected we will get indicators from all types.
       isArray: false
       required: false
       predefined:

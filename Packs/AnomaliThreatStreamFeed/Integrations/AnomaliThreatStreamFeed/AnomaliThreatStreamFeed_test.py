@@ -12,7 +12,6 @@ THREAT_STREAM = "Anomali ThreatStream Feed"
 def mock_client():
     return Client(base_url="https://api.threatstream.com", user_name="user", api_key="key", verify=True)
 
-
 def test_get_indicators_command_success_with_type(mocker):
     """
     Tests the successful execution of get_indicators_command when an indicator_type is specified.
@@ -1169,3 +1168,55 @@ def test_extract_tag_names_with_tags_not_a_list():
     indicator_dict = {"id": "444", "value": "not_a_list_dict", "tags": {"key": "value"}}
     result_dict = extract_tag_names(indicator_dict)
     assert result_dict == []
+    
+def test_error_handler_401_raises_demisto_exception():
+    """
+    Tests error_handler when the response status code is 401.
+    Verifies that a DemistoException is raised with the correct message.
+    """
+    import requests
+    from CommonServerPython import DemistoException
+    mock_response = requests.Response()
+    mock_response.status_code = 401
+    mock_response._content = b'Unauthorized access'
+
+    try:
+        mock_client().error_handler(mock_response)
+    except DemistoException as e:
+        expected_message_part = f"{THREAT_STREAM} - Got unauthorized from the server. Check the credentials. Unauthorized access"
+        assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"
+        
+        
+def test_error_handler_404_raises_demisto_exception():
+    """
+    Tests error_handler when the response status code is 404.
+    Verifies that a DemistoException is raised with the correct message.
+    """
+    import requests
+    from CommonServerPython import DemistoException
+    mock_response = requests.Response()
+    mock_response.status_code = 404
+    mock_response._content = b'Not Found'
+
+    try:
+        mock_client().error_handler(mock_response)
+    except DemistoException as e:
+        expected_message_part = f"{THREAT_STREAM} - The resource was not found. Not Found"
+        assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"
+        
+def test_error_handler_generic_error_raises_demisto_exception():
+    """
+    Tests error_handler for a generic error (e.g., 500 status code).
+    Verifies that a DemistoException is raised with a generic error message.
+    """
+    import requests
+    from CommonServerPython import DemistoException
+    mock_response = requests.Response()
+    mock_response.status_code = 500
+    mock_response._content = b'Internal Server Error'
+    
+    try:
+        mock_client().error_handler(mock_response)
+    except DemistoException as e:
+        expected_message_part = f"{THREAT_STREAM} - Error in API call 500 - Internal Server Error"
+        assert expected_message_part in str(e), f"Unexpected exception message: {str(e)}"

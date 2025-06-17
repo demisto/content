@@ -13,12 +13,11 @@ DEFAULT_BENIGN_THRESHOLD = 0
 THREAT_STREAM = "Anomali ThreatStream Feed"
 RETRY_COUNT = 2
 LIMIT_RES_FROM_API = 1000
-STATUS_OF_INDICATORS = "active"
+INDICATOR_STATUS = "active"
 URL_SUFFIX = "v2/intelligence"
 DEFAULT_CONFIDENCE_THRESHOLD = 65
 DEFAULT_FEED_FETCH_INTERVAL = 240
-STRFTIME_CONST = "%Y-%m-%dT%H:%M:%SZ"
-
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%SZ"  # ISO8601 format with UTC, default in XSOAR
 
 INDICATOR_TYPE = {
     "domain": FeedIndicatorType.Domain,
@@ -147,10 +146,6 @@ class DBotScoreCalculator:
                 return Common.DBotScore.GOOD
             else:
                 return Common.DBotScore.NONE
-        # TODO will be deleted later - good for tests and demo
-        # if confidence > 65:
-        #     return Common.DBotScore.BAD
-        # return Common.DBotScore.GOOD
 
 
 def test_module(client: Client) -> str:
@@ -204,8 +199,8 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
         return CommandResults(readable_output="### No indicators were found.")
 
     limit = limit - LIMIT_RES_FROM_API  # type: ignore
-    next_page = res.get("meta", {}).get("next", None)
-    while next_page and limit > 0:
+    next_page = res.get("meta", {}).get("next")
+    while next_page and limit > 0: # Handles pagination
         try:
             if next_page.startswith("/api/"):
                 # /api/ is removed here as it appears in the base_url of the client.
@@ -224,7 +219,7 @@ def get_indicators_command(client: Client, args: dict[str, Any]) -> CommandResul
                 demisto.debug(f"{THREAT_STREAM} - No more indicators found on current page during pagination, breaking.")
                 break
 
-            next_page = res.get("meta", {}).get("next", None)
+            next_page = res.get("meta", {}).get("next")
         except Exception as e:
             demisto.error(f"{THREAT_STREAM} - Error during pagination: {e}. Continuing with fetched indicators.")
             break  # Break pagination on error but process what's already fetched
@@ -415,12 +410,12 @@ def fetch_indicators_command(
         demisto.info(f"{THREAT_STREAM} - Fetching indicators {order_by.replace('_ts', '')} since {last_fetch_time}.")
 
     query: dict[str, Any] = assign_params(
-        limit=LIMIT_RES_FROM_API, status=STATUS_OF_INDICATORS, order_by=order_by, confidence__gt=confidence_threshold
+        limit=LIMIT_RES_FROM_API, status=INDICATOR_STATUS, order_by=order_by, confidence__gt=confidence_threshold
     )
 
     if order_by == "modified_ts":
         # TODO will be deleted later - good for tests and demo
-        query["modified_ts__gte"] = last_fetch_time  # "2023-08-04T11:57:00.001Z"
+        query["modified_ts__gte"] = last_fetch_time
     else:  # order_by == "created_ts"
         query["created_ts__gte"] = "2021-01-01T09:48:19.629Z"  # last_fetch_time
 
@@ -454,7 +449,7 @@ def fetch_indicators_command(
     if not all_raw_indicators:
         demisto.info(f"{THREAT_STREAM} - No new indicators found since last run or no indicators matching criteria.")
         # Update last_run even if no indicators are found, to avoid refetching the same period.
-        return now.strftime(STRFTIME_CONST), []
+        return now.strftime(DATE_FORMAT), []
 
     demisto.debug(f"{THREAT_STREAM} - Total raw indicators fetched: {len(all_raw_indicators)}")
     parsed_indicators_list: list[dict[str, Any]] = []
@@ -470,7 +465,7 @@ def fetch_indicators_command(
 
     demisto.debug(f"{THREAT_STREAM} - Successfully parsed {len(parsed_indicators_list)} indicators for fetch.")
     # Return the current UTC timestamp for the next successful run and the list of parsed indicators
-    return now.strftime(STRFTIME_CONST), parsed_indicators_list
+    return now.strftime(DATE_FORMAT), parsed_indicators_list
 
 
 def create_relationships(create_relationships_param: bool, reliability: str, indicator: dict[str, Any]) -> list[dict[str, Any]]:
