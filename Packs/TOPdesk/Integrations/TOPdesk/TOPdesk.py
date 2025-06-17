@@ -202,7 +202,6 @@ class Client(BaseClient):
             result = self._http_request(
                 method="GET", url_suffix=url_suffix, params=request_params
             )
-            #raise ValueError(result.raw)
 
         except Exception:
             demisto.debug("No items found")
