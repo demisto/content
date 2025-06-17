@@ -1443,11 +1443,11 @@ Variables can be replaced by the standard Cortex XSIAM/XSOAR DT expression.
 In addition, it supports extended variables that start with `.`.
 <!-- markdownlint-disable MD005 -->
 
- - ${.recordset}
-   * It refers to the record set retrieved by the XQL query.
+- ${.recordset}
+  - It refers to the record set retrieved by the XQL query.
 
- - ${.query.string}
-   * It refers to the query string used in the XQL query.
+- ${.query.string}
+  - It refers to the query string used in the XQL query.
 
 - ${.query.timeframe.from}
   - It refers to the start time of the time frame in ISO 8601 time format in UTC applied in the XQL query.

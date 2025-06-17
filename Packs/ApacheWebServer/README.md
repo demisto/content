@@ -76,12 +76,12 @@ Open your Apache Web Server instance, and follow these instructions [Documentati
 
 To configure Apache Reverse Proxy logging, see the following guide [here](https://httpd.apache.org/docs/2.4/howto/reverse_proxy.html).
 
-* Pay attention: Timestamp Parsing is only available for the default **%t** format: \[%d/%b/%Y{Key}%H:%M:%S %z\]
+- Pay attention: Timestamp Parsing is only available for the default **%t** format: \[%d/%b/%Y{Key}%H:%M:%S %z\]
 
-
-### Apache Log Format:
+### Apache Log Format
 
 Supported log format is:
+
 ```
 %V:%{local}p %A %h %l %u %t \"%r\" %>s %B \"%{Referer}i\" \"%{User-Agent}i\" %P %D %{HTTPS}e %{SSL_PROTOCOL}x %{SSL_CIPHER}x %{UNIQUE_ID}e %{remote}p %I %O \"%{Host}i\" main %{CF_RAY_ID}e %{CF_EDGE_COLO}e
 ```

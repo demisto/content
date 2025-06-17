@@ -1579,6 +1579,7 @@ This command retrieve reverse Passive DNS data for specific DNS record types.
 ### **Human Readable Output**  
 
 >### Results
+>
 >| Field             | Value                                |
 >|-------------------|--------------------------------------|
 >| Answer            | vida.ns.cloudflare.com               |
