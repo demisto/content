@@ -1,4 +1,4 @@
-# Cortex Cloud – Remediation and Response Playbooks
+# Cloud Security Posture Management Playbooks
 
 ## Overview
 

@@ -20,23 +20,23 @@ This playbook uses the following sub-playbooks, integrations, and scripts.
 
 ### Sub-playbooks
 
-* Create Ticket and Notify
+- Create Ticket and Notify
 
 ### Integrations
 
-* AWS
-* Cortex Core - IR
+- AWS
+- Cortex Core - IR
 
 ### Scripts
 
-* IsIntegrationAvailable
-* Print
+- IsIntegrationAvailable
+- Print
 
 ### Commands
 
-* aws-iam-account-password-policy-update
-* core-get-asset-details
-* setIssueStatus
+- aws-iam-account-password-policy-update
+- core-get-asset-details
+- setIssueStatus
 
 ## Playbook Inputs
 
