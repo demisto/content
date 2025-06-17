@@ -2149,7 +2149,7 @@ def main():
     params = demisto.params()
     BASE_URL = params.get("url", "https://api.github.com")
     USER = params.get("user")
-    TOKEN = (params.get("api_token") or {}).get("password", "") or params.get("token")
+    TOKEN = (params.get("api_token") or {}).get("password", "") or params.get("token") or ""
     creds: dict = params.get("credentials", {}).get("credentials", {})
     PRIVATE_KEY = creds.get("sshkey", "") if creds else ""
     INTEGRATION_ID = params.get("integration_id")

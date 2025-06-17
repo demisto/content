@@ -321,8 +321,8 @@ def main():
     proxy = params.get("proxy")
     credentials = params.get("credentials")
     api_params = {
-        "key": params.get("creds_key_and_token").get("identifier", "") or params.get("api_key"),
-        "api_token": params.get("creds_key_and_token").get("password", "") or params.get("api_token"),
+        "key": params.get("creds_key_and_token", {}).get("identifier", "") or params.get("api_key"),
+        "api_token": params.get("creds_key_and_token", {}).get("password", "") or params.get("api_token"),
     }
     api_params.update(demisto.args())
     threshold = int(api_params.get("threshold", params.get("threshold", 70)))
