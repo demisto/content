@@ -128,7 +128,6 @@ def test_storage_account_update_command(mocker, client, mock_params):
     When: The storage_account_update_command function is called with valid parameters.
     Then: The function should return the updated storage account information in the expected format.
     """
-
     # Prepare mock response
     storage_response = {
         "name": "teststorage",
@@ -139,13 +138,20 @@ def test_storage_account_update_command(mocker, client, mock_params):
             "supportsHttpsTrafficOnly": True,
         },
     }
-
-    mock_response = mocker.MagicMock()
-    mock_response.json.return_value = storage_response
-    mock_response.text = json.dumps(storage_response)
-
+    
+    # Create a mock response object without using MagicMock
+    class MockResponse:
+        def __init__(self, json_data, text):
+            self._json_data = json_data
+            self.text = text
+            
+        def json(self):
+            return self._json_data
+    
+    mock_response = MockResponse(storage_response, json.dumps(storage_response))
+    
     mocker.patch.object(client, "storage_account_update_request", return_value=mock_response)
-
+    
     # Call the function
     args = {
         "account_name": "teststorage",
@@ -155,16 +161,17 @@ def test_storage_account_update_command(mocker, client, mock_params):
         "network_ruleset_bypass": "AzureServices",
         "network_ruleset_default_action": "Deny",
         "allow_cross_tenant_replication": "false",
-        "supports_https_traffic_only": "true",
+        "supports_https_traffic_only": "true"
     }
-
+    
     result = storage_account_update_command(client, mock_params, args)
-
+    
     # Verify results
     assert result.outputs_prefix == "Azure.StorageAccount"
     assert result.outputs_key_field == "id"
     assert result.outputs["name"] == "teststorage"
     assert result.outputs["properties"]["supportsHttpsTrafficOnly"] is True
+
 
 
 def test_storage_blob_service_properties_set_command(mocker, client, mock_params):
@@ -710,29 +717,34 @@ def test_test_module_with_client_credentials(mocker, mock_params):
     result = test_module(client)
     assert result == "ok"
 
-
 def test_storage_account_update_command_empty_response(mocker, client, mock_params):
     """
     Given: An Azure client and a request to update a storage account that returns an empty response.
     When: The storage_account_update_command function is called with valid parameters.
     Then: The function should return a message indicating the account will be created shortly.
     """
-
     # Prepare mock response with empty text
-    mock_response = mocker.MagicMock()
-    mock_response.text = ""
-
+    class MockResponse:
+        def __init__(self, text=""):
+            self.text = text
+    
+    mock_response = MockResponse("")
+    
     mocker.patch.object(client, "storage_account_update_request", return_value=mock_response)
-
+    
     # Call the function
-    args = {"account_name": "teststorage", "sku": "Standard_LRS", "kind": "StorageV2", "location": "eastus"}
-
+    args = {
+        "account_name": "teststorage",
+        "sku": "Standard_LRS",
+        "kind": "StorageV2",
+        "location": "eastus"
+    }
+    
     result = storage_account_update_command(client, mock_params, args)
-
+    
     # Verify results
     assert isinstance(result, str)
     assert "The request was accepted - the account teststorage will be created shortly" in result
-
 
 def test_update_security_rule_command_rule_not_found(mocker, client, mock_params):
     """
@@ -786,7 +798,6 @@ def test_client_initialization_with_app_id_containing_refresh_token(mocker):
     expected_context = {"current_refresh_token": "refresh_token_123"}
     mock_set_integration_context.assert_called_once_with(expected_context)
 
-
 def test_main_function_success(mocker):
     """
     Given: A command and valid parameters.
@@ -794,38 +805,38 @@ def test_main_function_success(mocker):
     Then: The appropriate command function should be called and results returned.
     """
     from Azure import main
-
+    
     # Mock demisto functions
     mocker.patch.object(demisto, "command", return_value="azure-storage-account-update")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "app_id": "test_app_id",
-            "subscription_id": "test_subscription_id",
-            "resource_group_name": "test_resource_group",
-            "auth_type": "Client Credentials",
-            "tenant_id": "test_tenant_id",
-            "credentials": {"password": "test_enc_key"},
-        },
-    )
-    mocker.patch.object(
-        demisto,
-        "args",
-        return_value={"account_name": "teststorage", "sku": "Standard_LRS", "kind": "StorageV2", "location": "eastus"},
-    )
-
+    mocker.patch.object(demisto, "params", return_value={
+        "app_id": "test_app_id",
+        "subscription_id": "test_subscription_id",
+        "resource_group_name": "test_resource_group",
+        "auth_type": "Client Credentials",
+        "tenant_id": "test_tenant_id",
+        "credentials": {"password": "test_enc_key"}
+    })
+    mocker.patch.object(demisto, "args", return_value={
+        "account_name": "teststorage",
+        "sku": "Standard_LRS",
+        "kind": "StorageV2",
+        "location": "eastus"
+    })
+    
     # Mock return_results
     mock_return_results = mocker.patch("Azure.return_results")
-
-    # Mock AzureClient and storage_account_update_command
-    mocker.patch("Azure.AzureClient")
-    mock_cmd_result = mocker.MagicMock()
+    
+    # Mock AzureClient
+    mock_client = mocker.Mock()
+    mocker.patch("Azure.AzureClient", return_value=mock_client)
+    
+    # Mock storage_account_update_command to return a CommandResults object
+    mock_cmd_result = mocker.Mock()
     mock_storage_account_update = mocker.patch("Azure.storage_account_update_command", return_value=mock_cmd_result)
-
+    
     # Call main function
     main()
-
+    
     # Verify that storage_account_update_command was called and results returned
     mock_storage_account_update.assert_called_once()
     mock_return_results.assert_called_once_with(mock_cmd_result)
@@ -838,34 +849,35 @@ def test_main_function_error_handling(mocker):
     Then: The error should be caught and returned using return_error.
     """
     from Azure import main
-
+    
     # Mock demisto functions
     mocker.patch.object(demisto, "command", return_value="azure-storage-account-update")
-    mocker.patch.object(
-        demisto,
-        "params",
-        return_value={
-            "app_id": "test_app_id",
-            "subscription_id": "test_subscription_id",
-            "resource_group_name": "test_resource_group",
-            "auth_type": "Client Credentials",
-            "tenant_id": "test_tenant_id",
-            "credentials": {"password": "test_enc_key"},
-        },
-    )
-    mocker.patch.object(demisto, "args", return_value={"account_name": "teststorage"})
-
+    mocker.patch.object(demisto, "params", return_value={
+        "app_id": "test_app_id",
+        "subscription_id": "test_subscription_id",
+        "resource_group_name": "test_resource_group",
+        "auth_type": "Client Credentials",
+        "tenant_id": "test_tenant_id",
+        "credentials": {"password": "test_enc_key"}
+    })
+    mocker.patch.object(demisto, "args", return_value={
+        "account_name": "teststorage"
+    })
+    
     # Mock return_error
     mock_return_error = mocker.patch("Azure.return_error")
-
-    # Mock AzureClient but make storage_account_update_command raise an exception
-    mocker.patch("Azure.AzureClient")
+    
+    # Mock AzureClient
+    mock_client = mocker.Mock()
+    mocker.patch("Azure.AzureClient", return_value=mock_client)
+    
+    # Mock storage_account_update_command to raise an exception
     error_message = "Some API error occurred"
     mocker.patch("Azure.storage_account_update_command", side_effect=Exception(error_message))
-
+    
     # Call main function
     main()
-
+    
     # Verify that return_error was called with the expected error message
     mock_return_error.assert_called_once()
     call_args = mock_return_error.call_args[0][0]
@@ -1423,39 +1435,6 @@ def test_check_required_permissions(mocker):
     with pytest.raises(DemistoException):
         check_required_permissions(token, subscription_id, None)
         
-        
-def test_get_azure_client_with_stored_credentials(mocker):
-    """
-    Given: Parameters with credentials, arguments, and a command.
-    When: The get_azure_client function is called.
-    Then: The function should return an initialized Azure client using credentials.
-    """
-    # Import the function to test
-    from Azure import get_azure_client
-    
-    # Setup test data
-    params = {
-        "app_id": "test_app_id",
-        "subscription_id": "test_subscription_id",
-        "resource_group_name": "test_resource_group",
-        "credentials": {"password": "test_password"},
-        "insecure": False,
-        "proxy": False,
-        "tenant_id": "test_tenant_id"
-    }
-    args = {}
-    command = "azure-storage-account-update"
-    
-    # Mock AzureClient to return a dummy client
-    mock_client = mocker.MagicMock()
-    mocker.patch("Azure.AzureClient", return_value=mock_client)
-    
-    # Call the function
-    client, token = get_azure_client(params, args, command)
-    
-    # Verify results
-    assert client == mock_client
-    assert token == ""
 
 def test_get_azure_client_with_stored_credentials(mocker, mock_params):
     """
