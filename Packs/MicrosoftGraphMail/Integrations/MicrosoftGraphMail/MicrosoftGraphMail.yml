@@ -1150,8 +1150,6 @@ script:
       required: true
     description: Delete a specific email rule by ID for a user's mailbox using Microsoft Graph API.
     name: msgraph-mail-delete-rule
-
-
   - arguments:
     - description: A comma-separated list of email addresses for the 'to' field.
       isArray: true
@@ -1162,6 +1160,8 @@ script:
     - description: A comma-separated list of email addresses for the 'bcc' field.
       isArray: true
       name: bcc
+      prettypredefined:
+        Email Recipients: ${issue.xdmemailrecipients}
     - description: The subject of the email.
       name: subject
       required: true
