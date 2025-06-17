@@ -825,14 +825,15 @@ def get_assets_list(
     """
 
     page_size = args.get("page_size", None)
-    start = args.get("start", None)
+    page_size = arg_to_number(args.get("page_size", 50))
+    start = args.get("start", 0)
     query = args.get("filter", None)
     search_term = args.get("search_term", None)
     archived = args.get("archived", None)
+    pagination = False
     # If the page size is 0, we will fetch all data
-    if str(page_size) == "0":
+    if page_size == 0:
         pagination = True
-        start = 0
         page_size = 1000
     else:
         pagination = False
