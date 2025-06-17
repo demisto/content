@@ -596,6 +596,9 @@ def list_alerts_command(client: MsClient, args: dict):
                     "CompromisedEntity": properties.get("compromisedEntity"),
                     "Description": properties.get("description"),
                     "ID": alert.get("name"),
+                    "DetectedTime": alert.get("timeGeneratedUtc"),
+                    "ReportedSeverity": alert.get("severity"),
+                    "State": alert.get("status"),
                 }
             )
 
