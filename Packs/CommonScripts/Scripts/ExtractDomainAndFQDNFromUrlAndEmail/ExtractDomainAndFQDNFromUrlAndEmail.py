@@ -96,7 +96,7 @@ def check_if_known_url(the_input):
 
 def extract_fqdn(the_input):
     the_input = unquote(the_input)
-    if the_input.endswith("@"):
+    if the_input.endswith("@") or the_input.startswith("_"):
         return ""
     if not the_input[0].isalnum():
         the_input = the_input[1:]
@@ -109,7 +109,7 @@ def extract_fqdn(the_input):
     the_input = unescape_url(the_input)
 
     if indicator := get_fqdn(the_input):
-        indicator = ".".join([re.sub("[^\w-]", "", part) for part in indicator.split(".")])
+        indicator = ".".join([re.sub("[^\\w-]", "", part) for part in indicator.split(".")])
     return indicator
 
 
