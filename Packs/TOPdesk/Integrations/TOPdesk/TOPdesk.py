@@ -1310,7 +1310,7 @@ def get_assets_list_command(
 
     try:
         command_results = assets_to_command_results(
-            client, get_assets_list(client=client, args=args)
+            get_assets_list(client=client, args=args)
         )
         return command_results
     except Exception as e:
