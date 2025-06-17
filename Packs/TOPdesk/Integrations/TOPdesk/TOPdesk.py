@@ -258,7 +258,12 @@ class Client(BaseClient):
                 method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
             )
         else:
-            return "Invalid arguments provided."
+        if not asset_id and data:
+            raise DemistoException("Invalid arguments provided.")
+
+        return self._http_request(
+            method="POST", url_suffix=f"/assetmgmt/assets/{asset_id}", json_data=data, params=params
+        )
 
     def update_incident(self, args: dict[str, Any]) -> dict[str, Any]:
         """Update incident in TOPdesk.
