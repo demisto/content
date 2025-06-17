@@ -8694,6 +8694,15 @@ def is_xsiam():
     return demisto.demistoVersion().get("platform") == "x2"
 
 
+def is_platform():
+    """Determines whether or not the platform is platform.
+
+    :return: True iff the platform is unified_platform.
+    :rtype: ``bool``
+    """
+    return demisto.demistoVersion().get("platform") == "unified_platform"
+
+
 def is_using_engine():
     """Determines whether or not the platform is using engine.
     NOTE:
@@ -8820,8 +8829,8 @@ def censor_request_logs(request_log):
         if any(keyword in word.lower() for keyword in lower_keywords_to_censor):
             next_word = request_log_lst[i + 1] if i + 1 < len(request_log_lst) else None
             if next_word:
-                # If the next word is "Bearer", "JWT" or "Basic" then we replace the word after it since thats the token
-                if next_word.lower() in ["bearer", "jwt", "basic"] and i + 2 < len(request_log_lst):
+                # If the next word is "Bearer", "JWT", "Basic" or "LOG" then we replace the word after it since thats the token
+                if next_word.lower() in ["bearer", "jwt", "basic", "log"] and i + 2 < len(request_log_lst):
                     request_log_lst[i + 2] = MASK
                 elif request_log_lst[i + 1].endswith("}'"):
                     request_log_lst[i + 1] = "\"{}\"}}'".format(MASK)
@@ -11202,7 +11211,7 @@ def polling_function(name, interval=30, timeout=600, poll_message='Fetching Resu
     :param name: The name of the command
 
     :type interval: ``int``
-    :param interval: How many seconds until the next run
+    :param interval: How many seconds until the next run. Recommended range: 30-60 seconds.
 
     :type timeout: ``int``
     :param timeout: How long

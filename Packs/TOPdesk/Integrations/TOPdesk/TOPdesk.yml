@@ -46,6 +46,7 @@ configuration:
   defaultvalue: None
   hidden:
   - marketplacev2
+  - platform
   options:
   - None
   - Incoming
@@ -59,6 +60,7 @@ configuration:
   defaultvalue: comments
   hidden:
   - marketplacev2
+  - platform
   required: false
 - defaultvalue: work_notes
   display: Work Note Entry Tag
@@ -67,12 +69,14 @@ configuration:
   additionalinfo: Choose the tag to add to an entry to mirror it as a hidden comment in TOPdesk for the persons.
   hidden:
   - marketplacev2
+  - platform
   required: false
 - additionalinfo: Choose the tag to add to an entry to mirror it as a file in TOPdesk.
   defaultvalue: ForTOPdesk
   display: File Entry Tag
   hidden:
   - marketplacev2
+  - platform
   name: file_tag
   type: 0
   required: false
@@ -81,6 +85,7 @@ configuration:
   display: Close Mirrored Cortex XSOAR Incident
   hidden:
   - marketplacev2
+  - platform
   name: close_incident
   type: 8
   required: false
@@ -89,6 +94,7 @@ configuration:
   display: Close Mirrored TOPdesk Ticket
   hidden:
   - marketplacev2
+  - platform
   name: close_ticket
   type: 8
   required: false
