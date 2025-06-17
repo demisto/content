@@ -1788,11 +1788,7 @@ def handle_closed_notable(notable, notable_id, close_extra_labels, close_end_sta
     status_label = notable.get("status_label", "")
     status_end = argToBoolean(notable.get("status_end", "false"))
 
-    should_close = (
-        (status_label == "Closed")
-        or (status_label in close_extra_labels)
-        or (close_end_statuses and status_end)
-    )
+    should_close = (status_label == "Closed") or (status_label in close_extra_labels) or (close_end_statuses and status_end)
 
     if should_close:
         reason = (
