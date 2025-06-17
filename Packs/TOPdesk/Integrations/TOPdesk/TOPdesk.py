@@ -182,21 +182,15 @@ class Client(BaseClient):
         else:
             url_suffix = f"assetmgmt/{list_type}"
 
-        request_params: dict[str, Any] = {}
-        request_params["archived"] = archived
-        if start:
-            request_params["pageStart"] = start
-
-        if page_size:
-            request_params["pageSize"] = page_size
-
-        if fields:
-            request_params["fields"] = fields
-
+        request_params: dict[str, Any] = assign_params(
+            archived=archived,
+            pageStart=start,
+            pageSize=page_size,
+            field=fields,
+            searchTerm=search_term
+        )
         if query:
             request_params["$filter"] = query
-        if search_term:
-            request_params["searchTerm"] = search_term
 
         try:
             result = self._http_request(
