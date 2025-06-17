@@ -792,7 +792,10 @@ and resource group "{resource_group_name}" was not found.')
         )
 
     def get_role_assignments_call(self, object_id):
-        full_url = f"{PREFIX_URL_AZURE}{self.subscription_id}/providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
+        full_url = (
+            f"{PREFIX_URL_AZURE}{self.subscription_id}/"
+            f"providers/Microsoft.Authorization/roleAssignments?$filter=principalId eq '{object_id}'"
+        )
         params = {"api-version": PERMISSIONS_VERSION}
         return self.http_request(method="GET", full_url=full_url, params=params)
 
@@ -1440,7 +1443,7 @@ def postgres_server_update_command(client: AzureClient, params: dict, args: dict
     resource_group_name = get_from_args_or_params(params=params, args=args, key="resource_group_name")
     server_name = args.get("server_name", "")
     ssl_enforcement = args.get("ssl_enforcement", "")
-    response = client.postgres_server_update(subscription_id, resource_group_name, server_name, ssl_enforcement)
+    client.postgres_server_update(subscription_id, resource_group_name, server_name, ssl_enforcement)
 
 
 def update_key_vault_command(client: AzureClient, params: dict[str, Any], args: dict[str, Any]) -> CommandResults:
@@ -1827,7 +1830,7 @@ def is_azure(command) -> bool:
         "azure-remove-member-from-group",
         # "test-module"
     ]
-    return True if command not in msgraph_commands else False
+    return command not in msgraph_commands
 
 
 def get_azure_client(params, args, command):
