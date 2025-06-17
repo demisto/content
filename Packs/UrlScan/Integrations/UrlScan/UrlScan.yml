@@ -168,6 +168,8 @@ script:
     - contextPath: URLScan.FileType
       description: File type of the file scanned.
       type: string
+    - contextPath: URLScan.Search.Results
+      description: The unformatted search results from a raw search.
     polling: true
   - arguments:
     - description: The URL to scan.
