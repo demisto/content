@@ -853,7 +853,10 @@ def get_assets_list(
         else:
             assets_list += assets["dataSet"]
             start += page_size
-        if not pagination:
+        assets_list.extend(assets["dataSet"])
+        start += page_size
+
+        if not pagination or len(assets["dataSet"]) < 1:
             break
 
     return assets_list
