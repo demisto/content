@@ -1620,7 +1620,6 @@ def fetch_emails_as_incidents(client: EWSClient, last_run, incident_filter, skip
         demisto.debug(f"{last_fetch_time=}, {last_modification_time=}")
         if isinstance(last_modification_time, EWSDateTime):
             last_modification_time = last_modification_time.ewsformat()
-            demisto.debug(f"formatting {last_modification_time=}")
 
         for item in last_emails:
             try:
