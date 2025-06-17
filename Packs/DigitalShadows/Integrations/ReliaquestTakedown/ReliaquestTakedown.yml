@@ -116,6 +116,7 @@ script:
     name: rq-takedown-upload-attachment
   - arguments:
     - name: attachment_id
+      description: Attachment id.
       required: true
     description: Downloads attachment for takedown.
     name: rq-takedown-download-attachment
