@@ -185,7 +185,7 @@ script:
       name: email
       required: true
     deprecated: true
-    description: Creates a Code42 user.
+    description: DEPRECATED. Use the Incydr console to create users.
     name: code42-user-create
     outputs:
     - contextPath: Code42.User.Username
@@ -202,7 +202,7 @@ script:
       name: username
       required: true
     deprecated: true
-    description: Blocks a user in Code42.  A blocked user is not allowed to log in or restore files. Backups will continue if the user is still active.
+    description: DEPRECATED. Use the Incydr console to block users.
     name: code42-user-block
     outputs:
     - contextPath: Code42.User.UserID
@@ -223,7 +223,7 @@ script:
       name: username
       required: true
     deprecated: true
-    description: Removes a block, if one exists, on the user with the given user ID. Unblocked users are allowed to log in and restore.
+    description: DEPRECATED. Use the Incydr console to unblock users.
     name: code42-user-unblock
     outputs:
     - contextPath: Code42.User.UserID
