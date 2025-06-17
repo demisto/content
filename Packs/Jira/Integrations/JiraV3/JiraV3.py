@@ -3437,7 +3437,7 @@ def parse_issue_times_for_next_run(
     issue_id: int,
     issue_created_time: str,
     issue_updated_time: str,
-    dateparser_settings: dict| None,
+    dateparser_settings: dict | None,
 ) -> tuple[str, str]:
     """Parses the the Jira issue created and updated timestamps based on the date parser settings (if given) and formats both
     in the default date format. This makes sure queries by time are not affected by timezone.
@@ -3460,6 +3460,7 @@ def parse_issue_times_for_next_run(
     demisto.debug(f"Converted created time for {issue_id} to: {converted_updated_time} using settings {dateparser_settings}.")
 
     return converted_created_time, converted_updated_time
+
 
 # Fetch Incidents
 def fetch_incidents(
@@ -4012,7 +4013,7 @@ def get_cached_user_timezone(client: JiraBaseClient) -> str:
     """
     integration_context = get_integration_context()
 
-    if user_timezone:= integration_context.get("user_timezone"):
+    if user_timezone := integration_context.get("user_timezone"):
         demisto.debug(f"Got user timezone: {user_timezone} from integration context")
         return user_timezone
 
