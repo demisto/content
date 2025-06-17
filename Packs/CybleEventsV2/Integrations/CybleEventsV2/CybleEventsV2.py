@@ -188,7 +188,7 @@ def format_incidents(alerts, hide_cvv_expiry):
             alert_details = {
                 "name": "Cyble Vision Alert on {}".format(alert.get("service")),
                 "event_type": "{}".format(alert.get("service")),
-                "severity": INCIDENT_SEVERITY.get(alert.get("severity").lower()),
+                "severity": INCIDENT_SEVERITY.get((alert.get("severity") or "").lower()),
                 "event_id": "{}".format(alert.get("id")),
                 "data_message": json.dumps(alert.get("data")),
                 "keyword": "{}".format(alert.get("keyword_name")),
@@ -350,7 +350,7 @@ class Client(BaseClient):
         :return: The latest created time of the data inserted
         """
         latest_created_time = datetime.utcnow()
-        input_params.update({"skip": 0, "take": input_params["limit"]})
+        input_params.update({"skip": 0, "take": int(input_params["limit"])})
 
         all_incidents = []
 

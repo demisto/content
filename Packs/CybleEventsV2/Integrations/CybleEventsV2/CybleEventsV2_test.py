@@ -1405,9 +1405,11 @@ class TestFetchFewAlerts:
         self.client.get_data.return_value = {"data": "not_a_list"}
 
         with patch("CybleEventsV2.demisto"):
-            result = fetch_few_alerts(self.client, self.base_input_params.copy(), ["threat_intel"], self.url, self.token)
-
-            assert isinstance(result, list)
+            try:
+                fetch_few_alerts(self.client, self.base_input_params.copy(), ["threat_intel"], self.url, self.token)
+                pytest.fail("Expected SystemExit due to invalid response, but it did not occur.")
+            except SystemExit as e:
+                assert e.code == 0
 
     def test_hce_parameter_basic(self):
         """Test basic HCE parameter handling"""
